@@ -27,10 +27,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Preference page for startup and shutdown preferences.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public class StartupPreferencePage extends PreferencePage implements IWorkbenchPreferencePage
 {
@@ -48,14 +48,19 @@ public class StartupPreferencePage extends PreferencePage implements IWorkbenchP
   {
     Vector _v = new Vector();
 
-    Composite entryTable = new Composite(parent, SWT.NULL);
+    Composite composite = new Composite(parent, SWT.NULL);
+    GridData data = new GridData(GridData.FILL_BOTH);
+    data.grabExcessHorizontalSpace = true;
+    composite.setLayoutData(data);
+    GridLayout layout = new GridLayout();
+    composite.setLayout(layout);
+
+    Composite entryTable = new Composite(composite, SWT.NONE);
+    entryTable.setLayout(new GridLayout(2, false));
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    GridLayout gridLayout = new GridLayout();
-    gridLayout.marginWidth = 0;
-    gridLayout.marginHeight = 0;
-    entryTable.setLayout(gridLayout);
 
     _v.add(new BooleanFieldEditor("net.sourceforge.eclipsetrader.promptOnExit", "Confirm exit", entryTable));        
+    ((BooleanFieldEditor)_v.elementAt(_v.size() - 1)).fillIntoGrid(entryTable, 2);
 
     // Perform operations common to all field editors
     editor = new FieldEditor[_v.size()];

@@ -99,6 +99,8 @@ public class TrendBar extends Canvas implements PaintListener, IBookUpdateListen
       }
       bidQuantity[level] += bid[i].getQuantity();
     }
+    while(level < band.length)
+      bidQuantity[level++] = 0;
     
     // Calculates the ask quantity
     level = 0;
@@ -121,6 +123,8 @@ public class TrendBar extends Canvas implements PaintListener, IBookUpdateListen
       }
       askQuantity[level] += ask[i].getQuantity();
     }
+    while(level < band.length)
+      askQuantity[level++] = 0;
     
     double total = 0;
     for (int i = 0; i < bidQuantity.length; i++)
