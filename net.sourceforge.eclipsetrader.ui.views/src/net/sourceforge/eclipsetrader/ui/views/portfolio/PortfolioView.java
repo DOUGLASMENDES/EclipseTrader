@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.IAlertData;
 import net.sourceforge.eclipsetrader.IAlertSource;
@@ -32,6 +33,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -39,6 +41,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -50,6 +53,8 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -77,7 +82,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat bpf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
-  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
   private Color evenBackground;
   private Color oddBackground;
   private Color totalBackground;
@@ -88,6 +93,8 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   private Timer timerDaemon = new Timer();
   private int dragColumn = -1;
   private Composite parent;
+  private Vector selectionListeners = new Vector();
+  private PortfolioSelection selection = new PortfolioSelection();
 
   // Set column names
   public static String[] columnNames = new String[] {
@@ -144,16 +151,30 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     positiveForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.positive_value_color")); //$NON-NLS-1$
 
     // Columns width
-    String[] w = pref.getString("portfolio.columnWidth").split(",");
+    String[] w = pref.getString("portfolio.columnWidth").split(","); //$NON-NLS-1$ //$NON-NLS-2$
     for (int i = 0; i < w.length && i < columnWidth.length; i++)
       columnWidth[i] = Integer.parseInt(w[i]);
     
-    table = new Table(parent, SWT.SINGLE|SWT.FULL_SELECTION|SWT.HIDE_SELECTION);
+    table = new Table(parent, SWT.SINGLE|SWT.FULL_SELECTION);
     GridData data = new GridData(GridData.FILL_HORIZONTAL);
     table.setLayoutData(data);
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
     table.setBackground(parent.getBackground());
+    table.addSelectionListener(new SelectionListener() {
+      public void widgetSelected(SelectionEvent e)
+      {
+        TableItem[] items = table.getItems();
+        if (e.item.equals(items[items.length - 1]) == false)
+          selection.item = e.item;
+        else
+          selection.item = null;
+        setSelection(selection);
+      }
+      public void widgetDefaultSelected(SelectionEvent e)
+      {
+      }
+    });
     
     DragSource dragSource = new DragSource(table, DND.DROP_COPY);
     Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
@@ -211,7 +232,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
         column.setAlignment(SWT.LEFT);
       column.addControlListener(this);
     }
-    updateView();
     
     createContextMenu();
     
@@ -229,7 +249,10 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
           asyncUpdateView();
       }
     }, 2000, 1000);
-    System.out.println(this.getClass() + ": createPartControl"); //$NON-NLS-1$
+    
+    // Initial update
+    asyncUpdateView();
+    getSite().setSelectionProvider(this);
   }
 
   /* (non-Javadoc)
@@ -237,7 +260,8 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
    */
   public void setFocus()
   {
-    parent.setFocus();
+    table.forceFocus();
+    setSelection(selection);
   }
 
   /* (non-Javadoc)
@@ -253,11 +277,11 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     TraderPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 
     // Save the columns width
-    String value = "";
+    String value = ""; //$NON-NLS-1$
     for (int i = 0; i < columnWidth.length; i++)
-      value += String.valueOf(columnWidth[i]) + ",";
+      value += String.valueOf(columnWidth[i]) + ","; //$NON-NLS-1$
     IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
-    pref.setValue("portfolio.columnWidth", value);
+    pref.setValue("portfolio.columnWidth", value); //$NON-NLS-1$
     
     super.dispose();
   }
@@ -274,7 +298,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       if (ref == null)
       {
         try {
-          ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol());
+          ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
           IViewPart view = page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
 //          ((ChartView)view).setData(data);
         } catch (PartInitException e) {}
@@ -352,9 +376,8 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   
   public void addItem()
   {
-    // TODO: Allow multiple inserts.
     PortfolioDialog dlg = new PortfolioDialog();
-    if (dlg.open() == PortfolioDialog.OK)
+    while (dlg.open() == PortfolioDialog.OK)
     {
       IExtendedData data = TraderPlugin.createExtendedData();
       data.setSymbol(dlg.getSymbol());
@@ -434,8 +457,11 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     if (index == -1 || index >= max)
       return;
 
-    TraderPlugin.getDataStore().remove(TraderPlugin.getData()[index]);
-    updateView();
+    if (MessageDialog.openConfirm(table.getShell(), Messages.getString("PortfolioView.ConfirmDeleteTitle"), Messages.getString("PortfolioView.ConfirmDeleteMessage")) == true) //$NON-NLS-1$ //$NON-NLS-2$
+    {
+      TraderPlugin.getDataStore().remove(TraderPlugin.getData()[index]);
+      updateView();
+    }
   }
 
   /**
@@ -461,13 +487,15 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   {
     int totalStock = 0;
     double totalPaid = 0, totalSell = 0;
+    IExtendedData[] data = TraderPlugin.getData();
+    if (data == null)
+      return;
 
     lastUpdate = System.currentTimeMillis();
     if (table.isDisposed() == true)
       return;
     table.setRedraw(false);
 
-    IExtendedData[] data = TraderPlugin.getData();
     if (table.getItemCount() != (data.length + 1))
       table.setItemCount(data.length + 1);
     
@@ -725,25 +753,33 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
    */
   public void addSelectionChangedListener(ISelectionChangedListener listener)
   {
+    if (selectionListeners.contains(listener) == false)
+      selectionListeners.add(listener);
   }
+  
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
    */
   public ISelection getSelection()
   {
-    return null;
+    return selection;
   }
+  
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
    */
   public void removeSelectionChangedListener(ISelectionChangedListener listener)
   {
+    selectionListeners.remove(listener);
   }
+
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
    */
   public void setSelection(ISelection selection)
   {
+    for (int i = 0; i < selectionListeners.size(); i++)
+      ((ISelectionChangedListener)selectionListeners.elementAt(i)).selectionChanged(new SelectionChangedEvent(this, selection));
   }
 
   /* (non-Javadoc)
