@@ -16,6 +16,10 @@ import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IBasicDataProvider;
 import net.sourceforge.eclipsetrader.IDataUpdateListener;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -180,12 +184,20 @@ public class NewsView extends ViewPart implements IDataUpdateListener
   
   private void updateList()
   {
-    newsProvider.update();
-    table.getDisplay().asyncExec(new Runnable() {
-      public void run() {
-        update();
+    Job job = new Job("Update News") {
+      public IStatus run(IProgressMonitor monitor)
+      {
+        newsProvider.update();
+        table.getDisplay().asyncExec(new Runnable() {
+          public void run() {
+            update();
+          }
+        });
+        return new Status(0, "plugin.id", 0, "OK", null); 
       }
-    });
+    };
+    job.setUser(true);
+    job.schedule();
   }
   
   /**
