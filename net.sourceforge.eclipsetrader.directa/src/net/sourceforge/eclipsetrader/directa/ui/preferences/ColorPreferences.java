@@ -91,4 +91,25 @@ public class ColorPreferences extends PreferencePage implements IWorkbenchPrefer
     return entryTable;
   }
 
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+   */
+  protected void performDefaults()
+  {
+    for (int i = 0; i < editor.length; i++)
+      editor[i].loadDefault();
+    
+    super.performDefaults();
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.preference.IPreferencePage#performOk()
+   */
+  public boolean performOk()
+  {
+    for (int i = 0; i < editor.length; i++)
+      editor[i].store();
+    
+    return super.performOk();
+  }
 }

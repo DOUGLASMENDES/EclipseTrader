@@ -17,6 +17,10 @@ import net.sourceforge.eclipsetrader.directa.DirectaPlugin;
 import net.sourceforge.eclipsetrader.directa.internal.IStreamerEventReceiver;
 import net.sourceforge.eclipsetrader.directa.internal.Streamer;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -34,13 +38,15 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 
-public class Trading extends ViewPart implements SelectionListener, IStreamerEventReceiver 
+public class Trading extends ViewPart implements SelectionListener, IStreamerEventReceiver, IPropertyChangeListener 
 {
+  private Composite entryTable;
   private Text symbol;
   private Text buy;
   private Text sell;
@@ -48,9 +54,10 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
   private Combo marketPhase;
   private Button valid30Days;
   private NumberFormat pf = NumberFormat.getInstance();
+  private Color foreground = new Color(null, 0, 0, 0);
   private Color background = new Color(null, 222, 253, 254);
   private Color valForeground = new Color(null, 192, 0, 0);
-  private Label label1, label2, label3, label4;
+  private Label label1, label2, label3, label4, label5, label6, label7;
 
   public Trading()
   {
@@ -65,8 +72,14 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
    */
   public void createPartControl(Composite parent)
   {
-    Composite entryTable = new Composite(parent, SWT.NULL);
-    entryTable.setBackground(background);
+    IPreferenceStore pref = DirectaPlugin.getDefault().getPreferenceStore();
+    pref.addPropertyChangeListener(this);
+
+    foreground = new Color(null, PreferenceConverter.getColor(pref, "trading.text_color")); //$NON-NLS-1$
+    valForeground = new Color(null, PreferenceConverter.getColor(pref, "trading.values_color")); //$NON-NLS-1$
+    background = new Color(null, PreferenceConverter.getColor(pref, "trading.background_color")); //$NON-NLS-1$
+
+    entryTable = new Composite(parent, SWT.NULL);
     entryTable.setLayoutData(new GridData(GridData.FILL_VERTICAL));
     entryTable.setLayout(new GridLayout(8, false));
     
@@ -113,7 +126,6 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     // Prima riga
     Label label = new Label(entryTable, SWT.NONE);
     label.setText("Simbolo");
-    label.setBackground(entryTable.getBackground());
     label.setLayoutData(new GridData());
     symbol = new Text(entryTable, SWT.BORDER);
     GridData gridData = new GridData();
@@ -122,7 +134,6 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
 
     label = new Label(entryTable, SWT.NONE);
     label.setText("Compra");
-    label.setBackground(entryTable.getBackground());
     label.setLayoutData(new GridData());
     buy = new Text(entryTable, SWT.BORDER);
     gridData = new GridData();
@@ -135,12 +146,10 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
 
     valid30Days = new Button(entryTable, SWT.CHECK);
     valid30Days.setText("Valido per 30 giorni");
-    valid30Days.setBackground(entryTable.getBackground());
     valid30Days.setLayoutData(new GridData());
 
     label = new Label(entryTable, SWT.NONE);
     label.setText("Fase");
-    label.setBackground(entryTable.getBackground());
     label.setLayoutData(new GridData());
     marketPhase = new Combo(entryTable, SWT.BORDER|SWT.READ_ONLY);
     marketPhase.add("immed.");
@@ -160,7 +169,6 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
 
     label = new Label(entryTable, SWT.NONE);
     label.setText("Vendi");
-    label.setBackground(entryTable.getBackground());
     label.setLayoutData(new GridData());
     sell = new Text(entryTable, SWT.BORDER);
     gridData = new GridData();
@@ -169,7 +177,6 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     
     label = new Label(entryTable, SWT.NONE);
     label.setText("Prezzo");
-    label.setBackground(entryTable.getBackground());
     label.setLayoutData(new GridData());
     price = new Text(entryTable, SWT.BORDER);
     gridData = new GridData();
@@ -216,7 +223,6 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     // Seconda riga
     
     Composite info = new Composite(entryTable, SWT.NONE);
-    info.setBackground(entryTable.getBackground());
     gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
     gridData.horizontalSpan = 8;
     info.setLayoutData(gridData);
@@ -226,39 +232,27 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     info.setLayout(gridLayout);
     label = new Label(info, SWT.NONE);
     label.setText("Liq. Tot:");
-    label.setBackground(info.getBackground());
     label.setLayoutData(new GridData());
     label1 = new Label(info, SWT.RIGHT);
     label1.setText("0 (Lit. 0)");
-    label1.setBackground(info.getBackground());
-    label1.setForeground(valForeground);
     label1.setLayoutData(new GridData());
     label = new Label(info, SWT.NONE);
     label.setText("Liq. Az:");
-    label.setBackground(info.getBackground());
     label.setLayoutData(new GridData());
     label2 = new Label(info, SWT.RIGHT);
     label2.setText("0");
-    label2.setBackground(info.getBackground());
-    label2.setForeground(valForeground);
     label2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     label = new Label(info, SWT.NONE);
     label.setText("Val. Az:");
-    label.setBackground(info.getBackground());
     label.setLayoutData(new GridData());
     label3 = new Label(info, SWT.RIGHT);
     label3.setText("0");
-    label3.setBackground(info.getBackground());
-    label3.setForeground(valForeground);
     label3.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     label = new Label(info, SWT.NONE);
     label.setText("Disp. Az:");
-    label.setBackground(info.getBackground());
     label.setLayoutData(new GridData());
     label4 = new Label(info, SWT.RIGHT);
     label4.setText("0");
-    label4.setBackground(info.getBackground());
-    label4.setForeground(valForeground);
     label4.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
     label = new Label(info, SWT.NONE);
@@ -269,31 +263,22 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     label.setLayoutData(new GridData());
     label = new Label(info, SWT.NONE);
     label.setText("Liq. Der:");
-    label.setBackground(info.getBackground());
     label.setLayoutData(new GridData());
-    label = new Label(info, SWT.RIGHT);
-    label.setText("0");
-    label.setBackground(info.getBackground());
-    label.setForeground(valForeground);
-    label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+    label5 = new Label(info, SWT.RIGHT);
+    label5.setText("0");
+    label5.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     label = new Label(info, SWT.NONE);
     label.setText("Val. Der:");
-    label.setBackground(info.getBackground());
     label.setLayoutData(new GridData());
-    label = new Label(info, SWT.RIGHT);
-    label.setText("0");
-    label.setBackground(info.getBackground());
-    label.setForeground(valForeground);
-    label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+    label6 = new Label(info, SWT.RIGHT);
+    label6.setText("0");
+    label6.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     label = new Label(info, SWT.NONE);
     label.setText("Disp. Der:");
-    label.setBackground(info.getBackground());
     label.setLayoutData(new GridData());
-    label = new Label(info, SWT.RIGHT);
-    label.setText("0");
-    label.setBackground(info.getBackground());
-    label.setForeground(valForeground);
-    label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+    label7 = new Label(info, SWT.RIGHT);
+    label7.setText("0");
+    label7.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
     DropTarget dropSell = new DropTarget(sell, DND.DROP_COPY);
     dropSell.setTransfer(types);
@@ -354,6 +339,16 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
         price.setText(pf.format(Double.parseDouble(item[4])));
       }
     });
+    
+    changeBackground(entryTable);
+    changeForeground(entryTable);
+    label1.setForeground(valForeground);
+    label2.setForeground(valForeground);
+    label3.setForeground(valForeground);
+    label4.setForeground(valForeground);
+    label5.setForeground(valForeground);
+    label6.setForeground(valForeground);
+    label7.setForeground(valForeground);
 
     orderStatusChanged();
     Streamer.getInstance().addEventReceiver(this);
@@ -364,7 +359,11 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
    */
   public void dispose()
   {
+    IPreferenceStore pref = DirectaPlugin.getDefault().getPreferenceStore();
+    pref.removePropertyChangeListener(this);
+    
     Streamer.getInstance().removeEventReceiver(this);
+    
     super.dispose();
   }
 
@@ -453,15 +452,77 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
 
   private double getPriceTick(double price) 
   {
-    if (price <= 0.3)
+    if (price <= 0.25)
+      return 0.0001;
+    else if (price <= 1)
       return 0.0005;
-    else if (price <= 1.5)
-      return 0.001;
-    else if (price <= 3)
-      return 0.005;
-    else if (price <= 30)
-      return 0.01;
+    else if (price <= 2)
+      return 0.0010;
+    else if (price <= 5)
+      return 0.0025;
+    else if (price <= 10)
+      return 0.0050;
     else
-      return 0.05;
+      return 0.0100;
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+   */
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    String property = event.getProperty();
+    IPreferenceStore pref = DirectaPlugin.getDefault().getPreferenceStore();
+    if (property.equalsIgnoreCase("trading.text_color") == true)
+    {
+      foreground = new Color(null, PreferenceConverter.getColor(pref, "trading.text_color")); //$NON-NLS-1$
+      changeForeground(entryTable);
+    }
+    else if (property.equalsIgnoreCase("trading.values_color") == true)
+    {
+      valForeground = new Color(null, PreferenceConverter.getColor(pref, "trading.values_color")); //$NON-NLS-1$
+      label1.setForeground(valForeground);
+      label2.setForeground(valForeground);
+      label3.setForeground(valForeground);
+      label4.setForeground(valForeground);
+      label5.setForeground(valForeground);
+      label6.setForeground(valForeground);
+      label7.setForeground(valForeground);
+    }
+    else if (property.equalsIgnoreCase("trading.background_color") == true)
+    {
+      background = new Color(null, PreferenceConverter.getColor(pref, "trading.background_color")); //$NON-NLS-1$
+      changeBackground(entryTable);
+    }
+  }
+  
+  private void changeBackground(Composite composite)
+  {
+    composite.setBackground(background);
+    Control[] controls = composite.getChildren();
+    for (int i = 0; i < controls.length; i++)
+    {
+      if (controls[i] instanceof Text || controls[i] instanceof Combo || (controls[i] instanceof Button && controls[i] != valid30Days))
+        continue;
+      controls[i].setBackground(background);
+      if (controls[i] instanceof Composite)
+        changeBackground((Composite)controls[i]);
+    }
+  }
+  
+  private void changeForeground(Composite composite)
+  {
+    composite.setForeground(foreground);
+    Control[] controls = composite.getChildren();
+    for (int i = 0; i < controls.length; i++)
+    {
+      if (controls[i] instanceof Text)
+        continue;
+      if (controls[i] == label1 || controls[i] == label2 || controls[i] == label3 || controls[i] == label4 || controls[i] == label5 || controls[i] == label6 || controls[i] == label7)
+        continue;
+      controls[i].setForeground(foreground);
+      if (controls[i] instanceof Composite)
+        changeForeground((Composite)controls[i]);
+    }
   }
 }

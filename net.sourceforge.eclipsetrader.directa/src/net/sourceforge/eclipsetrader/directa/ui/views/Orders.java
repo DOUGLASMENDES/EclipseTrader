@@ -13,11 +13,16 @@ package net.sourceforge.eclipsetrader.directa.ui.views;
 import java.util.Timer;
 
 import net.sourceforge.eclipsetrader.IBasicData;
+import net.sourceforge.eclipsetrader.directa.DirectaPlugin;
 import net.sourceforge.eclipsetrader.directa.internal.IStreamerEventReceiver;
 import net.sourceforge.eclipsetrader.directa.internal.OrderData;
 import net.sourceforge.eclipsetrader.directa.internal.Streamer;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
@@ -28,7 +33,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 
 
-public class Orders extends ViewPart implements IStreamerEventReceiver 
+public class Orders extends ViewPart implements IStreamerEventReceiver, IPropertyChangeListener 
 {
   private Table table;
   private Color background = new Color(null, 255, 255, 255);
@@ -44,6 +49,12 @@ public class Orders extends ViewPart implements IStreamerEventReceiver
    */
   public void createPartControl(Composite parent)
   {
+    IPreferenceStore pref = DirectaPlugin.getDefault().getPreferenceStore();
+    pref.addPropertyChangeListener(this);
+
+    foreground = new Color(null, PreferenceConverter.getColor(pref, "orders.text_color")); //$NON-NLS-1$
+    background = new Color(null, PreferenceConverter.getColor(pref, "orders.background_color")); //$NON-NLS-1$
+
     table = new Table(parent, SWT.SINGLE|SWT.FULL_SELECTION|SWT.HIDE_SELECTION);
     GridData gd = new GridData(GridData.FILL_HORIZONTAL);
     table.setLayoutData(gd);
@@ -95,7 +106,11 @@ public class Orders extends ViewPart implements IStreamerEventReceiver
    */
   public void dispose()
   {
+    IPreferenceStore pref = DirectaPlugin.getDefault().getPreferenceStore();
+    pref.removePropertyChangeListener(this);
+
     Streamer.getInstance().removeEventReceiver(this);
+    
     super.dispose();
   }
 
@@ -156,6 +171,25 @@ public class Orders extends ViewPart implements IStreamerEventReceiver
         if (ret == true)
           Streamer.getInstance().cancelOrder(data[table.getSelectionIndex()].id);
       }
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+   */
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    String property = event.getProperty();
+    IPreferenceStore pref = DirectaPlugin.getDefault().getPreferenceStore();
+    if (property.equalsIgnoreCase("orders.text_color") == true)
+    {
+      foreground = new Color(null, PreferenceConverter.getColor(pref, "orders.text_color")); //$NON-NLS-1$
+      table.setForeground(foreground);
+    }
+    else if (property.equalsIgnoreCase("orders.background_color") == true)
+    {
+      background = new Color(null, PreferenceConverter.getColor(pref, "orders.background_color")); //$NON-NLS-1$
+      table.setBackground(background);
     }
   }
 }
