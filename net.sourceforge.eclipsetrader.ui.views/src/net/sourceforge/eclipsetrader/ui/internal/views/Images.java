@@ -30,7 +30,7 @@ public class Images
   static {
     String iconPath = "icons/";
 
-    ICON_REFRESH = createImageDescriptor(iconPath + "restart.gif");
+    ICON_REFRESH = createImageDescriptor(iconPath + "refresh.gif");
     ICON_AUTOREFRESH = createImageDescriptor(iconPath + "auto_refresh.gif");
   }
 
