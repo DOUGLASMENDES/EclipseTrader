@@ -12,10 +12,6 @@ package net.sourceforge.eclipsetrader.yahoo;
 
 import java.util.Vector;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -38,7 +34,6 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
 {
   private FieldEditor[] editor;
   private Button button1, button2, button3, button4, button5, button6;
-  private Combo newsSource;
   
   public void init(IWorkbench workbench) {
     //Initialize the preference store we wish to use
@@ -118,33 +113,6 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     button6 = new Button(composite, SWT.CHECK);
     button6.setText("Use mapping");
     button6.setLayoutData(new GridData());
-
-    group = new Group(entryTable, SWT.NONE);
-    ((Group)group).setText("News");
-    group.setLayout(new GridLayout(2, false));
-    group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    
-    label = new Label(group, SWT.NONE);
-    label.setText("Source");
-    label.setLayoutData(new GridData());
-    newsSource = new Combo(group, SWT.BORDER|SWT.DROP_DOWN|SWT.READ_ONLY);
-    newsSource.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
-
-    // Add the plugin names to the combo
-    String id = getPreferenceStore().getString("net.sourceforge.eclipsetrader.yahoo.newsSource");
-    IExtensionRegistry registry = Platform.getExtensionRegistry();
-    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.yahoo.newsSource");
-    if (extensionPoint != null)
-    {
-      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
-      for (int i = 0; i < members.length; i++)
-      {
-        newsSource.add(members[i].getAttribute("label"), i);
-        newsSource.setData(String.valueOf(i), members[i].getAttribute("id"));
-        if (id.equalsIgnoreCase(members[i].getAttribute("id")) == true)
-          newsSource.setText(members[i].getAttribute("label"));
-      }
-    }
     
     // Set the individual buttons state
     IPreferenceStore ps = getPreferenceStore();
@@ -194,7 +162,6 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     else if (button5.getSelection() == true)
       ps.setValue("yahoo.charts.field", 1);
     ps.setValue("yahoo.charts.mapping", button6.getSelection());
-    ps.setValue("net.sourceforge.eclipsetrader.yahoo.newsSource", getComboValue(newsSource));
 
     return super.performOk();
   }
