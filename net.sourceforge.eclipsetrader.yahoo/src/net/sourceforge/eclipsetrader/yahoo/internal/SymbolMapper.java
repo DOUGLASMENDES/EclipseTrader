@@ -42,6 +42,7 @@ public class SymbolMapper
 {
   private static String FILE_NAME = "mapping.xml";
   private static Hashtable map = new Hashtable();
+  private static boolean doMapping = false;
   private static String defaultSuffix = "";
 
   static {
@@ -84,6 +85,11 @@ public class SymbolMapper
     }
   }
   
+  public static void setDoMapping(boolean value)
+  {
+    doMapping = value;
+  }
+  
   public static void setDefaultSuffix(String suffix)
   {
     defaultSuffix = suffix;
@@ -98,12 +104,14 @@ public class SymbolMapper
    */
   public static String getYahooSymbol(String s)
   {
-    String r = (String)map.get(s);
-    if (r != null)
-      return r;
-    
-    if (s.indexOf(".") == -1)
-      s += defaultSuffix;
+    if (doMapping == true)
+    {
+      String r = (String)map.get(s);
+      if (r != null)
+        return r;
+      if (s.indexOf(".") == -1)
+        s += defaultSuffix;
+    }
 
     return s;
   }

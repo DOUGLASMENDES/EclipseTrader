@@ -14,6 +14,7 @@ import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -43,14 +44,20 @@ public class MappingPreferencePage extends PreferencePage implements IWorkbenchP
   protected Control createContents(Composite parent)
   {
     Vector _v = new Vector();
-    
-    Composite entryTable = new Composite(parent, SWT.NULL);
-    entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    GridLayout gridLayout = new GridLayout(2, false);
-//    gridLayout.marginWidth = 0;
-    gridLayout.marginHeight = 0;
-    entryTable.setLayout(gridLayout);
 
+    Composite composite = new Composite(parent, SWT.NULL);
+    GridData data = new GridData(GridData.FILL_BOTH);
+    data.grabExcessHorizontalSpace = true;
+    composite.setLayoutData(data);
+    GridLayout layout = new GridLayout();
+    composite.setLayout(layout);
+
+    Composite entryTable = new Composite(composite, SWT.NONE);
+    entryTable.setLayout(new GridLayout(2, false));
+    entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+    _v.add(new BooleanFieldEditor("yahoo.mapping", "Enable symbol mapping", entryTable));
+    ((BooleanFieldEditor)_v.lastElement()).fillIntoGrid(entryTable, 2);
     _v.add(new StringFieldEditor("yahoo.suffix", "Default Suffix", 10, entryTable));
 
     // Perform operations common to all field editors

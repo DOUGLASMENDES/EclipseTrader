@@ -16,13 +16,15 @@ import java.util.ResourceBundle;
 import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class YahooPlugin extends AbstractUIPlugin 
+public class YahooPlugin extends AbstractUIPlugin implements IPropertyChangeListener 
 {
 	private static YahooPlugin plugin;
 	private ResourceBundle resourceBundle;
@@ -51,10 +53,15 @@ public class YahooPlugin extends AbstractUIPlugin
     // Sets the default preferences
     IPreferenceStore ps = getPreferenceStore();
     ps.setDefault("yahoo.refresh", "15");
-    ps.setDefault("yahoo.url", "http://it.finance.yahoo.com/d/quotes.csv");
+    ps.setDefault("yahoo.url", "http://finance.yahoo.com/d/quotes.csv");
     ps.setDefault("yahoo.charts.url", "http://table.finance.yahoo.com/table.csv");
+    ps.setDefault("yahoo.mapping", false);
+    ps.setDefault("yahoo.suffix", "");
     ps.setDefault("net.sourceforge.eclipsetrader.yahoo.newsSource", "yahoo.news.us");
     ps.setDefault("NEW_CHART_YEARS", "1");
+    ps.addPropertyChangeListener(this);
+    
+    SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
     SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
     
 /*    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
@@ -75,6 +82,7 @@ public class YahooPlugin extends AbstractUIPlugin
 	 */
 	public void stop(BundleContext context) throws Exception 
   {
+    getPreferenceStore().removePropertyChangeListener(this);
 		super.stop(context);
 	}
 
@@ -107,4 +115,18 @@ public class YahooPlugin extends AbstractUIPlugin
   {
 		return resourceBundle;
 	}
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+   */
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    IPreferenceStore ps = getPreferenceStore();
+    String property = event.getProperty();
+
+    if (property.equalsIgnoreCase("yahoo.mapping") == true)
+      SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
+    else if (property.equalsIgnoreCase("yahoo.suffix") == true)
+      SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
+  }
 }
