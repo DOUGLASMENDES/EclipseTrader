@@ -51,17 +51,26 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
   public void run(IAction action)
   {
     IWorkbenchPage pg = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-    if (pg.getActivePart() instanceof HistoryChartView)
+    if (pg.getActivePart() instanceof ChartView)
     {
-      HistoryChartView view = (HistoryChartView)pg.getActivePart();
+      ChartView view = (ChartView)pg.getActivePart();
 
-      if (action.getId().equalsIgnoreCase("chart.refresh") == true)
-        view.updateChart();
-      else if (action.getId().equalsIgnoreCase("chart.next") == true)
-        view.showNext();
-      else if (action.getId().equalsIgnoreCase("chart.previous") == true)
-        view.showPrevious();
-      else if (action.getId().equalsIgnoreCase("chart.add") == true)
+      if (pg.getActivePart() instanceof HistoryChartView)
+      {
+        if (action.getId().equalsIgnoreCase("chart.refresh") == true)
+          ((HistoryChartView)view).updateChart();
+        else if (action.getId().equalsIgnoreCase("chart.next") == true)
+          ((HistoryChartView)view).showNext();
+        else if (action.getId().equalsIgnoreCase("chart.previous") == true)
+          ((HistoryChartView)view).showPrevious();
+      }
+      else if (pg.getActivePart() instanceof RealtimeChartView)
+      {
+        if (action.getId().equalsIgnoreCase("chart.refresh") == true)
+          ((RealtimeChartView)view).refreshChart();
+      }
+
+      if (action.getId().equalsIgnoreCase("chart.add") == true)
       {
         OscillatorDialog dlg = new OscillatorDialog();
         if (dlg.open() == OscillatorDialog.OK)
@@ -93,10 +102,10 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
    */
   public void selectionChanged(IAction action, ISelection selection)
   {
-    IWorkbenchPage pg = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-    if (pg != null && pg.getActivePart() instanceof HistoryChartView)
+    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    if (page != null && page.getActivePart() instanceof HistoryChartView)
     {
-      HistoryChartView view = (HistoryChartView)pg.getActivePart();
+      HistoryChartView view = (HistoryChartView)page.getActivePart();
 
       if (action.getId().equalsIgnoreCase("chart.line") == true)
         action.setChecked(view.getChartType() == PriceChart.LINE);
@@ -112,6 +121,47 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
         action.setChecked(view.getLimitPeriod() == 12);
       else if (action.getId().equalsIgnoreCase("view.last2years") == true)
         action.setChecked(view.getLimitPeriod() == 24);
+    }
+    else if (page != null && page.getActivePart() instanceof RealtimeChartView)
+    {
+      RealtimeChartView view = (RealtimeChartView)page.getActivePart();
+
+      if (action.getId().equalsIgnoreCase("chart.line") == true)
+        action.setChecked(view.getChartType() == PriceChart.LINE);
+      else if (action.getId().equalsIgnoreCase("chart.candle") == true)
+        action.setChecked(view.getChartType() == PriceChart.CANDLE);
+      else if (action.getId().equalsIgnoreCase("chart.bar") == true)
+        action.setChecked(view.getChartType() == PriceChart.BAR);
+      else if (action.getId().equalsIgnoreCase("view.all") == true)
+      {
+        action.setChecked(false);
+        action.setEnabled(false);
+      }
+      else if (action.getId().equalsIgnoreCase("view.last6months") == true)
+      {
+        action.setChecked(false);
+        action.setEnabled(false);
+      }
+      else if (action.getId().equalsIgnoreCase("view.last1year") == true)
+      {
+        action.setChecked(false);
+        action.setEnabled(false);
+      }
+      else if (action.getId().equalsIgnoreCase("view.last2years") == true)
+      {
+        action.setChecked(false);
+        action.setEnabled(false);
+      }
+      else if (action.getId().equalsIgnoreCase("chart.next") == true)
+      {
+        action.setChecked(false);
+        action.setEnabled(false);
+      }
+      else if (action.getId().equalsIgnoreCase("chart.previous") == true)
+      {
+        action.setChecked(false);
+        action.setEnabled(false);
+      }
     }
   }
 }
