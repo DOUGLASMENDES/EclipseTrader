@@ -57,12 +57,12 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
    */
   public void paintChart(GC gc, int width, int height)
   {
-    // Grafico
+    super.paintChart(gc, width, height);
     if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      max = 105;
-      min = -5;
+      max = 100;
+      min = 0;
       double pixelRatio = (height) / (max - min);
 
       gc.setForeground(gridColor);

@@ -74,7 +74,8 @@ public class AccumulationDistributionChart extends ChartPlotter implements IChar
           double v1 = chartData[i].getClosePrice() - chartData[i].getMinPrice();
           double v2 = chartData[i].getMaxPrice() - chartData[i].getClosePrice();
           double v3 = chartData[i].getMaxPrice() - chartData[i].getMinPrice();
-          value[i] = (((v1 - v2) / v3) * chartData[i].getVolume()) + previous;
+          if (v3 != 0)
+            value[i] = (((v1 - v2) / v3) * chartData[i].getVolume()) + previous;
           if (min == 0 || value[i] < min)
             min = value[i];
           if (value[i] > max)

@@ -16,6 +16,8 @@ import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,6 +28,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IRealtimeChartListener;
@@ -34,6 +37,9 @@ import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -58,11 +64,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.part.ViewPart;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -93,13 +101,14 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
   private Label minPrice;
   private Label variance;
   private Label volume;
-  private IBasicData data;
-  private IChartData[] chartData;
+  private IBasicData basicData;
+  private IChartData[] data = new IChartData[0];
   private Vector chart = new Vector();
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
   private SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+  private int selectedZone = 0;
   
   public RealtimeChart()
   {
@@ -207,6 +216,13 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     bottombar.setLayoutData(gridData);
     bottombar.addPaintListener(this);
     
+    // Drag and drop support
+    DropTarget target = new DropTarget(parent, DND.DROP_COPY);
+    Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
+    target.setTransfer(types);
+    target.addDropListener(this);
+
+/*
     ChartCanvas canvas = new ChartCanvas(form);
     canvas.addMouseListener(this);
     chart.addElement(canvas);
@@ -228,18 +244,230 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     chart.addElement(canvas);
     canvas.addPainter(new VolumeChart());
     
-    // Drag and drop support
-    DropTarget target = new DropTarget(parent, DND.DROP_COPY);
-    Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
-    target.setTransfer(types);
-    target.addDropListener(this);
-    
     setMargin(1);
     setWidth(3);
     
     int[] weights = { 70, 15, 15 };
     form.setWeights(weights);
     reloadData();
+*/
+    
+    // Restore del grafico precedente
+    String id = getViewSite().getSecondaryId();
+    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id);
+    if (!symbol.equals(""))
+    {
+      IBasicData bd = TraderPlugin.getData(symbol);
+      if (bd == null)
+      {
+        bd = new BasicData();
+        bd.setSymbol(symbol);
+        bd.setTicker(symbol);
+        bd.setDescription(symbol);
+      }
+      setData(bd);
+    }
+  }
+  
+  public void reloadPreferences()
+  {
+    File folder = new File(Platform.getLocation().toFile(), "rtcharts");
+    Vector sectionHeights = new Vector();
+    
+    // Remove all charts
+    for (int i = 0; i < chart.size(); i++)
+    {
+      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      canvas.removeMouseListener(this);
+      canvas.dispose();
+    }
+    chart.removeAllElements();
+
+    // Read the preferences files for the new chart
+    File f = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs");
+    if (f.exists() == true)
+    {
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(f);
+
+        int index = 0;
+        NodeList firstChild = document.getFirstChild().getChildNodes();
+        for (int i = 0; i < firstChild.getLength(); i++)
+        {
+          Node n = firstChild.item(i);
+          if (n.getNodeName().equalsIgnoreCase("section"))
+          {
+            ChartCanvas canvas = new ChartCanvas(form);
+            canvas.createContextMenu(this);
+            canvas.addMouseListener(this);
+            chart.addElement(canvas);
+
+            // Standard attributes
+            Node attr = n.getAttributes().getNamedItem("price");
+            if (attr != null && attr.getNodeValue().equalsIgnoreCase("true") == true)
+              canvas.addPainter(new PriceChart());
+            attr = n.getAttributes().getNamedItem("volume");
+            if (attr != null && attr.getNodeValue().equalsIgnoreCase("true") == true)
+              canvas.addPainter(new VolumeChart());
+            String height = n.getAttributes().getNamedItem("height").getNodeValue();
+            sectionHeights.addElement(new Integer(height));
+
+            // Charts
+            NodeList parent = n.getChildNodes();
+            for (int ii = 0; ii < parent.getLength(); ii++)
+            {
+              Node item = parent.item(ii);
+              if (item.getNodeName().equalsIgnoreCase("chart") == true)
+              {
+                Object obj = null;
+                String id = item.getAttributes().getNamedItem("id").getNodeValue();
+                if (id.equalsIgnoreCase("price") == true)
+                  obj = new PriceChart();
+                else
+                {
+                  IExtensionRegistry registry = Platform.getExtensionRegistry();
+                  IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter");
+                  if (extensionPoint != null)
+                  {
+                    IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+                    for (int m = 0; m < members.length; m++)
+                    {
+                      IConfigurationElement member = members[m];
+                      if (id.equalsIgnoreCase(member.getAttribute("id")))
+                        try {
+                          obj = member.createExecutableExtension("class");
+                        } catch(Exception x) { x.printStackTrace(); };
+                    }
+                  }
+                }
+                if (obj != null && obj instanceof IChartPlotter)
+                {
+                  setPlotterParameters((NodeList)item, (IChartPlotter)obj);
+                  if (item.getAttributes().getNamedItem("name") != null)
+                    ((IChartPlotter)obj).setName(item.getAttributes().getNamedItem("name").getNodeValue());
+                  canvas.addPainter((IChartPlotter)obj);
+                }
+              }
+            }
+          }
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+
+      int[] weights = new int[sectionHeights.size()];
+      for (int i = 0; i < weights.length; i++)
+        weights[i] = ((Integer)sectionHeights.elementAt(i)).intValue();
+      form.setWeights(weights);
+    }
+    else
+    {
+      ChartCanvas canvas = new ChartCanvas(form);
+      canvas.createContextMenu(this);
+      canvas.addMouseListener(this);
+      chart.addElement(canvas);
+      canvas.addPainter(new PriceChart());
+      
+      canvas = new ChartCanvas(form);
+      canvas.createContextMenu(this);
+      chart.addElement(canvas);
+      canvas.addPainter(new VolumeChart());
+
+      int[] weights = { 80, 20 };
+      form.setWeights(weights);
+    }
+  }
+  
+  private void setPlotterParameters(NodeList parent, IChartPlotter obj)
+  {
+    for (int i = 0; i < parent.getLength(); i++)
+    {
+      Node node = parent.item(i);
+      if (node.getNodeName().equalsIgnoreCase("params") == true)
+      {
+        NamedNodeMap map = node.getAttributes();
+        for (int ii = 0; ii < map.getLength(); ii++)
+        {
+          String name = map.item(ii).getNodeName();
+          String value = map.item(ii).getNodeValue();
+          if (name != null && value != null)
+            obj.setParameter(name, value);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save the chart's preference to an XML file.
+   * <p></p>
+   */
+  public void savePreferences()
+  {
+    File folder = new File(Platform.getLocation().toFile(), "rtcharts");
+
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.getDOMImplementation().createDocument("", "preferences", null);
+
+      int[] weights = form.getWeights();
+      for (int i = 0; i < weights.length; i++)
+      {
+        Element element = document.createElement("section");
+        element.setAttribute("height", String.valueOf(weights[i]));
+        ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+        for (int ii = 0; ii < canvas.getPainterCount(); ii++)
+        {
+//          if (canvas.getPainter(ii) instanceof PriceChart)
+//            element.setAttribute("price", "true");
+          if (canvas.getPainter(ii) instanceof VolumeChart)
+            element.setAttribute("volume", "true");
+        }
+        document.getDocumentElement().appendChild(element);
+
+        // Get all plotters for the given canvas
+        for (int ii = 0; ii < canvas.getPainterCount(); ii++)
+        {
+          IChartPlotter painter = canvas.getPainter(ii);
+          if (painter instanceof VolumeChart)
+            continue;
+
+          // Set the standard attributes
+          Element node = document.createElement("chart");
+          node.setAttribute("id", painter.getId());
+          if (painter.getName() != null)
+            node.setAttribute("name", painter.getName());
+          
+          // Append the parameters map
+          HashMap params = painter.getParameters();
+          Iterator keys = params.keySet().iterator();
+          while (keys.hasNext())
+          {
+            String key = (String)keys.next();
+            Element p = document.createElement("params");
+            p.setAttribute(key, (String)params.get(key));
+            node.appendChild(p);
+          }
+          
+          element.appendChild(node);
+        }
+      }
+
+      // XML transform
+      File f = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs");
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+      DOMSource source = new DOMSource(document);
+      BufferedWriter out = new BufferedWriter(new FileWriter(f));
+      StreamResult result = new StreamResult(out);
+      transformer.transform(source, result);
+      out.flush();
+      out.close();
+    } catch (Exception ex) { ex.printStackTrace(); };
   }
 
   /* (non-Javadoc)
@@ -247,10 +475,10 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
    */
   public void dispose()
   {
-    if (data != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-      rtp.removeRealtimeChartListener(data, this);
+      rtp.removeRealtimeChartListener(basicData, this);
     }
     super.dispose();
   }
@@ -263,38 +491,229 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     container.setFocus();
   }
   
+  public void setData(final IBasicData d)
+  {
+    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    {
+      IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+      rtp.removeRealtimeChartListener(basicData, this);
+    }
+    basicData = d;
+    reloadPreferences();
+    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    {
+      IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+      rtp.addRealtimeChartListener(basicData, this);
+    }
+
+    String id = getViewSite().getSecondaryId();
+    ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + id, basicData.getSymbol());
+    setPartName(basicData.getTicker() + " - RTChart");
+
+    new Thread(new Runnable() {
+      public void run()
+      {
+        load();
+        if (TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+        {
+          IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+          IChartData[] _d = rtp.getHistoryData(basicData);
+          if (_d != null)
+          {
+            data = _d;
+            store();
+          }
+        }
+        if (data != null)
+        {
+          container.getDisplay().asyncExec(new Runnable() {
+            public void run() {
+              if (data != null && data.length > 0)
+              {
+                if (data[0].getMaxPrice() >= 10)
+                {
+                  pf.setMinimumFractionDigits(2);
+                  pf.setMaximumFractionDigits(2);
+                  setScaleWidth(42);
+                }
+                else
+                {
+                  pf.setMinimumFractionDigits(4);
+                  pf.setMaximumFractionDigits(4);
+                  setScaleWidth(50);
+                }
+              }
+              else
+                setScaleWidth(50);
+              controlResized(null);
+              bottombar.redraw();
+              title.setText(basicData.getDescription());
+              updateLabels();
+            }
+          });
+          for (int i = 0; i < chart.size(); i++)
+            ((ChartCanvas)chart.elementAt(i)).setData(data);
+        }
+      }
+    }).start();
+  }
+  
+  public void updateView()
+  {
+    for (int i = 0; i < chart.size(); i++)
+      ((ChartCanvas)chart.elementAt(i)).setData(data);
+  }
+  
+  public void addOscillator(String id)
+  {
+    IExtensionRegistry registry = Platform.getExtensionRegistry();
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter");
+    if (extensionPoint != null)
+    {
+      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+      for (int m = 0; m < members.length; m++)
+      {
+        IConfigurationElement member = members[m];
+        if (id.equalsIgnoreCase(member.getAttribute("id")))
+          try {
+            Object obj = member.createExecutableExtension("class");
+            if (obj instanceof IChartPlotter)
+            {
+              IChartPlotter chartPlotter = (IChartPlotter)obj;
+              ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)chartPlotter);
+              if (pdlg.open() == ChartParametersDialog.OK)
+              {
+                if (pdlg.getPosition() == ChartParametersDialog.SELECTED_ZONE)
+                  ((ChartCanvas)chart.elementAt(selectedZone)).addPainter(chartPlotter);
+                else
+                {
+                  int[] w = form.getWeights();
+                  ChartCanvas canvas = new ChartCanvas(form);
+                  Control[] children = form.getChildren();
+                  children[children.length - 1].moveBelow(children[0]);
+                  canvas.createContextMenu(this);
+                  chart.insertElementAt(canvas, 1);
+                  canvas.addPainter(chartPlotter);
+                  int[] weights = new int[chart.size()];
+                  for (int i = 0; i < w.length; i++)
+                    weights[i] = w[i];
+                  weights[0] -= 150;
+                  weights[weights.length - 1] = 150;
+                  form.layout();
+                }
+                updateView();
+                savePreferences();
+              }
+            }
+          } catch(Exception x) { x.printStackTrace(); };
+      }
+    }
+  }
+  
+  public void editOscillator()
+  {
+    ChartDialog dlg = new ChartDialog();
+    dlg.setChart(chart);
+    if (dlg.open() == ChartDialog.OK)
+    {
+      IChartPlotter chartPlotter = dlg.getObject();
+      if (chartPlotter != null)
+      {
+        ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)chartPlotter);
+        if (pdlg.openEdit() == ChartParametersDialog.OK)
+        {
+          updateView();
+          savePreferences();
+        }
+      }
+    }
+  }
+  
+  public void removeOscillator()
+  {
+    ChartDialog dlg = new ChartDialog();
+    dlg.setChart(chart);
+    if (dlg.open() == ChartDialog.OK)
+    {
+      IChartPlotter obj = dlg.getObject();
+      if (obj != null)
+      {
+        for (int i = chart.size() - 1; i >= 0; i--)
+        {
+          ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+          for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
+          {
+            if (canvas.getPainter(ii) == obj)
+            {
+              canvas.removePainter(obj);
+              if (canvas.getPainterCount() == 0)
+              {
+                canvas.removeMouseListener(this);
+                canvas.dispose();
+                chart.removeElementAt(i);
+                form.layout();
+              }
+              break;
+            }
+          }
+        }
+        updateView();
+        savePreferences();
+      }
+    }
+  }
+  
+  public void setChartType(int type)
+  {
+    for (int i = chart.size() - 1; i >= 0; i--)
+    {
+      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
+      {
+        if (canvas.getPainter(ii) instanceof PriceChart)
+        {
+          canvas.getPainter(ii).setParameter("type", String.valueOf(type));
+          updateView();
+          savePreferences();
+          break;
+        }
+      }
+    }
+  }
+
+/*
   private void reloadData()
   {
     String id = getViewSite().getSecondaryId();
     String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id);
 
-    if (data != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-      rtp.removeRealtimeChartListener(data, this);
+      rtp.removeRealtimeChartListener(basicData, this);
     }
     
-    data = null;
+    basicData = null;
 
     IBasicData[] _tpData = TraderPlugin.getData();
     for (int i = 0; i < _tpData.length; i++)
     {
       if (_tpData[i].getSymbol().equalsIgnoreCase(symbol) == true)
       {
-        data = _tpData[i];
-        setPartName(data.getTicker() + " - RTChart");
+        basicData = _tpData[i];
+        setPartName(basicData.getTicker() + " - RTChart");
         load();
         if (TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
         {
           IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-          IChartData[] _d = rtp.getHistoryData(data);
+          IChartData[] _d = rtp.getHistoryData(basicData);
           if (_d != null)
           {
-            chartData = _d;
+            data = _d;
             store();
           }
         }
-        if (chartData != null && chartData.length > 0 && chartData[0].getMaxPrice() >= 10)
+        if (data != null && data.length > 0 && data[0].getMaxPrice() >= 10)
         {
           pf.setMinimumFractionDigits(2);
           pf.setMaximumFractionDigits(2);
@@ -308,21 +727,22 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
         }
         controlResized(null);
         bottombar.redraw();
-        title.setText(data.getDescription());
+        title.setText(basicData.getDescription());
         updateLabels();
         for (int m = 0; m < chart.size(); m++)
-          ((ChartCanvas)chart.elementAt(m)).setData(chartData);
+          ((ChartCanvas)chart.elementAt(m)).setData(data);
         break;
       }
     }
 
-    if (data != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-      rtp.addRealtimeChartListener(data, this);
+      rtp.addRealtimeChartListener(basicData, this);
     }
   }
-  
+*/
+
   public void load()
   {
     Vector _data = new Vector();
@@ -335,7 +755,7 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     nf.setMinimumFractionDigits(4);
     nf.setMinimumIntegerDigits(1);
     
-    File file = new File(folder, data.getSymbol().toLowerCase() + ".xml");
+    File file = new File(folder, basicData.getSymbol().toLowerCase() + ".xml");
     if (file.exists() == true)
       try {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -380,8 +800,8 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
         ex.printStackTrace();
       }
       
-    chartData = new IChartData[_data.size()];
-    _data.toArray(chartData);
+    data = new IChartData[_data.size()];
+    _data.toArray(data);
   }
 
   /**
@@ -402,29 +822,29 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.getDOMImplementation().createDocument("", "chart", null);
 
-      for (int i = 0; i < chartData.length; i++)
+      for (int i = 0; i < data.length; i++)
       {
         Element element = document.createElement("data");
         document.getDocumentElement().appendChild(element);
 
         Node node = document.createElement("date");
         element.appendChild(node);
-        node.appendChild(document.createTextNode(df.format(chartData[i].getDate())));
+        node.appendChild(document.createTextNode(df.format(data[i].getDate())));
         node = document.createElement("open");
         element.appendChild(node);
-        node.appendChild(document.createTextNode(nf.format(chartData[i].getOpenPrice())));
+        node.appendChild(document.createTextNode(nf.format(data[i].getOpenPrice())));
         node = document.createElement("close");
         element.appendChild(node);
-        node.appendChild(document.createTextNode(nf.format(chartData[i].getClosePrice())));
+        node.appendChild(document.createTextNode(nf.format(data[i].getClosePrice())));
         node = document.createElement("max");
         element.appendChild(node);
-        node.appendChild(document.createTextNode(nf.format(chartData[i].getMaxPrice())));
+        node.appendChild(document.createTextNode(nf.format(data[i].getMaxPrice())));
         node = document.createElement("min");
         element.appendChild(node);
-        node.appendChild(document.createTextNode(nf.format(chartData[i].getMinPrice())));
+        node.appendChild(document.createTextNode(nf.format(data[i].getMinPrice())));
         node = document.createElement("volume");
         element.appendChild(node);
-        node.appendChild(document.createTextNode("" + chartData[i].getVolume()));
+        node.appendChild(document.createTextNode("" + data[i].getVolume()));
       }
 
       File folder = new File(Platform.getLocation().toFile(), "rtcharts");
@@ -435,35 +855,31 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
       DOMSource source = new DOMSource(document);
-      BufferedWriter out = new BufferedWriter(new FileWriter(new File(folder, data.getSymbol().toLowerCase() + ".xml")));
+      BufferedWriter out = new BufferedWriter(new FileWriter(new File(folder, basicData.getSymbol().toLowerCase() + ".xml")));
       StreamResult result = new StreamResult(out);
       transformer.transform(source, result);
       out.flush();
       out.close();
     } catch (Exception ex) {};
   }
-  
-  public void setData(final IBasicData data)
-  {
-  }
 
   public void updateLabels()
   {
-    updateLabels(chartData.length - 1);
+    updateLabels(data.length - 1);
   }
   
   public void updateLabels(int index)
   {
-    if (chartData.length > 0)
+    if (data.length > 0)
     {
-      date.setText(df.format(chartData[index].getDate()));
-      closePrice.setText(pf.format(chartData[index].getClosePrice()));
-      maxPrice.setText(pf.format(chartData[index].getMaxPrice()));
-      minPrice.setText(pf.format(chartData[index].getMinPrice()));
+      date.setText(df.format(data[index].getDate()));
+      closePrice.setText(pf.format(data[index].getClosePrice()));
+      maxPrice.setText(pf.format(data[index].getMaxPrice()));
+      minPrice.setText(pf.format(data[index].getMinPrice()));
       if (index >= 1)
       {
-        double pc = chartData[index].getClosePrice() - chartData[index - 1].getClosePrice();
-        pc = pc / chartData[index - 1].getClosePrice();
+        double pc = data[index].getClosePrice() - data[index - 1].getClosePrice();
+        pc = pc / data[index - 1].getClosePrice();
         variance.setText(pcf.format(pc * 100) + "%");
         if (pc > 0)
           variance.setForeground(positiveColor);
@@ -474,8 +890,8 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
       }
       else
       {
-        double pc = chartData[index].getClosePrice() - chartData[index].getOpenPrice();
-        pc = pc / chartData[index].getOpenPrice();
+        double pc = data[index].getClosePrice() - data[index].getOpenPrice();
+        pc = pc / data[index].getOpenPrice();
         variance.setText(pcf.format(pc * 100) + "%");
         if (pc > 0)
           variance.setForeground(positiveColor);
@@ -484,7 +900,7 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
         else
           variance.setForeground(textColor);
       }
-      volume.setText(nf.format(chartData[index].getVolume()));
+      volume.setText(nf.format(data[index].getVolume()));
     }
     else
     {
@@ -506,7 +922,7 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     new Thread(new Runnable() {
       public void run() 
       {
-        chartData = provider.getHistoryData(data);
+        data = provider.getHistoryData(basicData);
         store();
         updateChart();
       }
@@ -519,10 +935,10 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
       public void run() {
         controlResized(null);
         bottombar.redraw();
-        title.setText(data.getDescription());
+        title.setText(basicData.getDescription());
         updateLabels();
         for (int m = 0; m < chart.size(); m++)
-          ((ChartCanvas)chart.elementAt(m)).setData(chartData);
+          ((ChartCanvas)chart.elementAt(m)).setData(data);
       }
     });
   }
@@ -560,7 +976,7 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
       gc.setForeground(textColor);
       gc.drawLine(0, 0, bottombar.getClientArea().width, 0); 
 
-      if (data != null)
+      if (basicData != null)
       {
         int lastValue = -1;
         Calendar c = Calendar.getInstance();
@@ -571,12 +987,12 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
         int x = margin + width / 2;
         if (container.getHorizontalBar().isVisible() == true)
           x -= container.getHorizontalBar().getSelection();
-        for (int i = 0; i < chartData.length; i++, x += width)
+        for (int i = 0; i < data.length; i++, x += width)
         {
-          c.setTime(chartData[i].getDate());
+          c.setTime(data[i].getDate());
           if (c.get(Calendar.HOUR_OF_DAY) != lastValue || c.get(Calendar.MINUTE) == 30)
           {
-            String s = df.format(chartData[i].getDate());
+            String s = df.format(data[i].getDate());
             int x1 = x - gc.stringExtent(s).x / 2;
             gc.drawLine(x, 0, x, 5);
             gc.drawString(s, x1, 5);
@@ -608,11 +1024,11 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     if (container.isDisposed() == true)
       return;
     ScrollBar sb = container.getHorizontalBar();
-    if (data != null)
+    if (basicData != null)
     {
-      if (sb != null && (chartData.length * width + margin * 2) > container.getClientArea().width - scaleWidth)
+      if (sb != null && (data.length * width + margin * 2) > container.getClientArea().width - scaleWidth)
       {
-        sb.setMaximum(chartData.length * width + margin * 2);
+        sb.setMaximum(data.length * width + margin * 2);
         sb.setMinimum(0);
         sb.setIncrement(6);
         sb.setPageIncrement(container.getClientArea().width - scaleWidth);
@@ -676,6 +1092,12 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
       mouseGC.setForeground(background);
       mouseMove(e);
     }
+    for (int i = 0; i < chart.size(); i++)
+    {
+      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      if (e.getSource() == canvas.getChart())
+        selectedZone = i;
+    }
   }
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
@@ -702,7 +1124,7 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     if (mouseDown == true)
     {
       int index = (e.x - margin) / width;
-      if (index >= 0 && index < chartData.length)
+      if (index >= 0 && index < data.length)
       {
         updateLabels(index);
         if (mousePreviousX != -1)
@@ -740,7 +1162,19 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
   {
     String[] item = ((String)event.data).split(";");
     String id = getViewSite().getSecondaryId();
+    String symbol = item[1];
     ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + id, item[1]);
-    reloadData();
+    if (!symbol.equals(""))
+    {
+      IBasicData bd = TraderPlugin.getData(symbol);
+      if (bd == null)
+      {
+        bd = new BasicData();
+        bd.setSymbol(symbol);
+        bd.setTicker(symbol);
+        bd.setDescription(symbol);
+      }
+      setData(bd);
+    }
   }
 }

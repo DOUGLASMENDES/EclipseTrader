@@ -19,15 +19,15 @@ import org.eclipse.ui.IViewPart;
  */
 public class ChartActions implements IViewActionDelegate
 {
-  private static ChartView view;
+  private static HistoryChartView view;
 
   /* (non-Javadoc)
    * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
    */
   public void init(IViewPart viewPart)
   {
-    if (viewPart instanceof ChartView)
-      view = (ChartView)viewPart;
+    if (viewPart instanceof HistoryChartView)
+      view = (HistoryChartView)viewPart;
   }
 
   /* (non-Javadoc)

@@ -31,17 +31,12 @@ import javax.xml.transform.stream.StreamResult;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
-import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
@@ -69,36 +64,36 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ChartView extends ViewPart implements ControlListener, MouseListener, MouseMoveListener, PaintListener, SelectionListener
+public abstract class ChartView extends ViewPart implements ControlListener, MouseListener, MouseMoveListener, PaintListener, SelectionListener
 {
-  private Color background = new Color(null, 255, 255, 255);
-  private Color lineColor = new Color(null, 0, 0, 255);
-  private Color textColor = new Color(null, 0, 0, 0);
-  private Color positiveColor = new Color(null, 0, 192, 0);
-  private Color negativeColor = new Color(null, 192, 0, 0);
-  private int width = 5;
-  private int margin = 2;
-  private int scaleWidth = 60;
-  private Composite container;
-  private Composite composite;
-  private SashForm form;
-  private Composite bottombar;
-  private Label title;
-  private Label date;
-  private Label closePrice;
-  private Label maxPrice;
-  private Label minPrice;
-  private Label variance;
-  private Label volume;
-  private IChartDataProvider dataProvider;
-  private IBasicData basicData;
-  private IChartData[] data = new IChartData[0];
-  private Vector chart = new Vector();
-  private NumberFormat nf = NumberFormat.getInstance();
-  private NumberFormat pf = NumberFormat.getInstance();
-  private NumberFormat pcf = NumberFormat.getInstance();
-  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-  private int selectedZone = 0;
+  protected Color background = new Color(null, 255, 255, 255);
+  protected Color lineColor = new Color(null, 0, 0, 255);
+  protected Color textColor = new Color(null, 0, 0, 0);
+  protected Color positiveColor = new Color(null, 0, 192, 0);
+  protected Color negativeColor = new Color(null, 192, 0, 0);
+  protected int width = 5;
+  protected int margin = 2;
+  protected int scaleWidth = 60;
+  protected Composite container;
+  protected Composite composite;
+  protected SashForm form;
+  protected Composite bottombar;
+  protected Label title;
+  protected Label date;
+  protected Label closePrice;
+  protected Label maxPrice;
+  protected Label minPrice;
+  protected Label variance;
+  protected Label volume;
+  protected IChartDataProvider dataProvider;
+  protected IBasicData basicData;
+  protected IChartData[] data = new IChartData[0];
+  protected Vector chart = new Vector();
+  protected NumberFormat nf = NumberFormat.getInstance();
+  protected NumberFormat pf = NumberFormat.getInstance();
+  protected NumberFormat pcf = NumberFormat.getInstance();
+  protected SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+  protected int selectedZone = 0;
   
   public ChartView()
   {
@@ -205,17 +200,12 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
     gridData.heightHint = 20;
     bottombar.setLayoutData(gridData);
     bottombar.addPaintListener(this);
-    
-    // Restore del grafico precedente
-    String id = getViewSite().getSecondaryId();
-    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id);
-    if (!symbol.equals(""))
-      setData(TraderPlugin.getData(symbol));
   }
+
+  public abstract void reloadPreferences();
   
-  public void reloadPreferences()
+  public void reloadPreferences(File folder)
   {
-    File folder = new File(Platform.getLocation().toFile(), "charts");
     Vector sectionHeights = new Vector();
     
     // Remove all charts
@@ -347,10 +337,10 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
    * Save the chart's preference to an XML file.
    * <p></p>
    */
-  public void savePreferences()
+  public abstract void savePreferences();
+  
+  public void savePreferences(File folder)
   {
-    File folder = new File(Platform.getLocation().toFile(), "charts");
-
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
@@ -429,23 +419,25 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
   {
     container.setFocus();
   }
-  
-  public void setData(final IBasicData d)
+
+  public abstract void setData(final IBasicData d);
+  public abstract IChartData[] getChartData(IBasicData data);
+
+  public void setData(final IBasicData d, String stitle, String prefId)
   {
     basicData = d;
     reloadPreferences();
 
     String id = getViewSite().getSecondaryId();
-    ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + id, basicData.getSymbol());
-    setPartName(basicData.getTicker() + " - Chart");
+    ViewsPlugin.getDefault().getPreferenceStore().setValue(prefId + id, basicData.getSymbol());
+    setPartName(stitle);
 
     new Thread(new Runnable() {
       public void run()
       {
-        dataProvider = TraderPlugin.getChartDataProvider();
-        if (dataProvider != null)
+        data = getChartData(basicData);
+        if (data != null)
         {
-          data = dataProvider.getData(basicData);
           container.getDisplay().asyncExec(new Runnable() {
             public void run() {
               if (data != null && data.length > 0)
@@ -652,72 +644,18 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
     composite.layout();
   }
   
-  public void updateChart()
+  protected void setWidth(int width)
   {
-    Job job = new Job("Update Chart") {
-      public IStatus run(IProgressMonitor monitor)
-      {
-        dataProvider = TraderPlugin.getChartDataProvider();
-        if (dataProvider != null)
-        {
-          try {
-          dataProvider.update(basicData);
-          } catch(Exception e) {
-            return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause()); 
-          };
-          data = dataProvider.getData(basicData);
-          container.getDisplay().asyncExec(new Runnable() {
-            public void run() {
-              controlResized(null);
-              bottombar.redraw();
-              updateLabels();
-            }
-          });
-          for (int i = 0; i < chart.size(); i++)
-            ((ChartCanvas)chart.elementAt(i)).setData(data);
-        }
-        return new Status(0, "plugin.id", 0, "OK", null); 
-      }
-    };
-    job.setUser(true);
-    job.schedule();
-    new Thread(new Runnable() {
-      public void run()
-      {
-      }
-    }).start();
+    this.width = width;
+    for (int i = 0; i < chart.size(); i++)
+      ((ChartCanvas)chart.elementAt(i)).setColumnWidth(width);
   }
   
-  public void showNext()
+  protected void setMargin(int margin)
   {
-    IBasicData[] _tpData = TraderPlugin.getData();
-    for (int i = 0; i < _tpData.length; i++)
-    {
-      if (_tpData[i].getSymbol().equalsIgnoreCase(basicData.getSymbol()) == true)
-      {
-        if (i < _tpData.length - 1)
-          setData(_tpData[i + 1]);
-        else
-          setData(_tpData[0]);
-        break;
-      }
-    }
-  }
-  
-  public void showPrevious()
-  {
-    IBasicData[] _tpData = TraderPlugin.getData();
-    for (int i = 0; i < _tpData.length; i++)
-    {
-      if (_tpData[i].getSymbol().equalsIgnoreCase(basicData.getSymbol()) == true)
-      {
-        if (i > 0)
-          setData(_tpData[i - 1]);
-        else
-          setData(_tpData[_tpData.length - 1]);
-        break;
-      }
-    }
+    this.margin = margin;
+    for (int i = 0; i < chart.size(); i++)
+      ((ChartCanvas)chart.elementAt(i)).setMargin(margin);
   }
   
   private void setScaleWidth(int scaleWidth)

@@ -57,6 +57,8 @@ public class VolumeChart extends ChartPlotter
    */
   public void paintChart(GC gc, int width, int height)
   {
+    super.paintChart(gc, width, height);
+
     // Line type and color
     gc.setLineStyle(SWT.LINE_SOLID);
     gc.setForeground(lineColor);

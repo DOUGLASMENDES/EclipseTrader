@@ -121,6 +121,11 @@ public class ChartPlotter implements IChartPlotter
    */
   public void paintChart(GC gc, int width, int height)
   {
+    if (chartCanvas != null)
+    {
+      columnWidth = chartCanvas.getColumnWidth();
+      chartMargin = chartCanvas.getMargin();
+    }
   }
 
   /* (non-Javadoc)
