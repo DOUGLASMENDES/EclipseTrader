@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -21,6 +21,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -29,6 +30,10 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
@@ -46,17 +51,22 @@ import org.eclipse.ui.IWorkbenchActionConstants;
  */
 public class ChartCanvas implements ControlListener, PaintListener, ISelectionProvider
 {
+  private boolean hilight = false;
   private Composite container;
   private Composite chartContainer;
   private Canvas chart;
   private Canvas scale;
+  private Image chartImage;
   private Color chartBackground = new Color(Display.getCurrent(), 255, 255, 240);
   private Color scaleBackground = new Color(Display.getCurrent(), 255, 255, 240);
+  private Color separatorColor = new Color(null, 255, 0, 0);
   private int columnWidth = 5;
   private int margin = 2;
   private int scaleWidth = 60;
   private Vector painters = new Vector();
   private IChartData[] data;
+  private ChartPlotterSelection selection = new ChartPlotterSelection();
+  private Vector selectionChangedListeners = new Vector();
 
   /**
    * Standard SWT widget constructor.
@@ -105,6 +115,8 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     chart.dispose();
     chartContainer.dispose();
     container.dispose();
+    if (chartImage != null)
+      chartImage.dispose();
   }
   
   public void createContextMenu(IViewPart part) 
@@ -115,6 +127,7 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     menuMgr.addMenuListener(new IMenuListener() {
       public void menuAboutToShow(IMenuManager mgr) {
         mgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+        setSelection(selection);
       }
     });
     
@@ -146,27 +159,32 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
    */
   public void addSelectionChangedListener(ISelectionChangedListener listener)
   {
+    if (selectionChangedListeners.contains(listener) == false)
+      selectionChangedListeners.add(listener);
   }
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
    */
   public ISelection getSelection()
   {
-    return null;
+    return selection;
   }
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
    */
   public void removeSelectionChangedListener(ISelectionChangedListener listener)
   {
+    selectionChangedListeners.remove(listener);
   }
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
    */
   public void setSelection(ISelection selection)
   {
+    for (int i = 0; i < selectionChangedListeners.size(); i++)
+      ((ISelectionChangedListener)selectionChangedListeners.elementAt(i)).selectionChanged(new SelectionChangedEvent(this, selection));
   }
-  
+
   public void addMouseListener(Object listener)
   {
     if (listener instanceof MouseMoveListener)
@@ -324,6 +342,32 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     return scaleWidth;
   }
   
+  /**
+   * Method to return the hilight field.<br>
+   *
+   * @return Returns the hilight.
+   */
+  public boolean isHilight()
+  {
+    return hilight;
+  }
+
+  /**
+   * Method to set the hilight field.<br>
+   * 
+   * @param hilight The hilight to set.
+   */
+  public void setHilight(boolean hilight)
+  {
+    this.hilight = hilight;
+    scale.redraw();
+  }
+  
+  public void redraw()
+  {
+    chart.redraw();
+  }
+  
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
    */
@@ -333,11 +377,14 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     {
       if (e.getSource() == chart)
       { 
+        GC gc = new GC(chartImage);
+        gc.setBackground(chartBackground);
+        gc.fillRectangle(chartImage.getBounds());
         for (int i = 0; i < painters.size(); i++)
         {
           Object obj = painters.elementAt(i);
           if (obj instanceof IChartPlotter)
-            ((IChartPlotter)obj).paintChart(e.gc, chart.getClientArea().width, chart.getClientArea().height);
+            ((IChartPlotter)obj).paintChart(gc, chart.getClientArea().width, chart.getClientArea().height);
         }
         int y = 0;
         for (int i = 0; i < painters.size(); i++)
@@ -345,11 +392,13 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
           IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
           if (plotter.getDescription() != null)
           {
-            e.gc.setForeground(plotter.getColor());
-            e.gc.drawString(((IChartPlotter)painters.elementAt(i)).getDescription(), 2, y);
-            y += e.gc.getFontMetrics().getHeight();
+            gc.setForeground(plotter.getColor());
+            gc.drawString(((IChartPlotter)painters.elementAt(i)).getDescription(), 2, y);
+            y += gc.getFontMetrics().getHeight();
           }
         }
+        gc.dispose();
+        e.gc.drawImage(chartImage, 0, 0);
       }
       else if (e.getSource() == scale)
       {
@@ -358,6 +407,12 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
           Object obj = painters.elementAt(i);
           if (obj instanceof IChartPlotter)
             ((IChartPlotter)painters.elementAt(i)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
+        }
+  
+        if (isHilight() == true)
+        {
+          e.gc.setForeground(separatorColor);
+          e.gc.drawLine(0, 0, 0, scale.getClientArea().height);
         }
       }
     }
@@ -385,5 +440,47 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     }
     else
       chart.setSize(chartContainer.getClientArea().width, chartContainer.getClientArea().height);
+    
+    if (chartImage != null)
+      chartImage.dispose();
+    chartImage = new Image(chart.getDisplay(), chart.getSize().x, chart.getSize().y);
+  }
+  
+  public void selectChart(IChartPlotter plotter)
+  {
+    if (plotter != selection.getPlotter())
+    {
+      if (selection.isEmpty() == false)
+        ((ChartPlotter)selection.getPlotter()).setSelected(false);
+      
+      selection.setPlotter(plotter);
+      setSelection(selection);
+  
+      if (plotter != null && ((ChartPlotter)plotter).isSelected() == false)
+        ((ChartPlotter)plotter).setSelected(true);
+  
+      chart.redraw();
+    }
+  }
+  
+  public IChartPlotter getSelectedChart(int x, int y)
+  {
+
+    ImageData imageData = chartImage.getImageData(); 
+    for (int y1 = y - 1; y1 <= y + 1; y1++)
+    {
+      for (int x1 = x - 1; x1 <= x + 1; x1++)
+      {
+        int pixel = imageData.getPixel(x1, y1);
+        RGB rgb = imageData.palette.getRGB(pixel);
+        for (int i = 0; i < painters.size(); i++)
+        {
+          IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
+          if (plotter.getColor().getRGB().equals(rgb) == true && !(plotter instanceof PriceChart))
+            return plotter;
+        }
+      }
+    }
+    return null;
   }
 }
