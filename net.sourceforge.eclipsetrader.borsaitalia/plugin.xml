@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.borsaitalia"
    name="Borsa Italiana"
-   version="0.11.0"
+   version="0.11.1"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.borsaitalia.BorsaitaliaPlugin">
 
@@ -46,37 +46,37 @@
             name="Borsa Italiana"
             id="borsaitalia.indexProvider">
       <index
+            ticker="SPMIB"
+            label="S/P MIB"
+            symbol="IS945"/>
+      <index
             ticker="MIBTEL"
             label="MIBTEL"
             symbol="II999"/>
       <index
-            ticker="MIB30"
-            label="MIB30"
-            symbol="II930"/>
+            ticker="ALL STARS"
+            label="ALL STARS"
+            symbol="II952"/>
+      <index
+            ticker="STAR"
+            label="STAR"
+            symbol="II951"/>
+      <index
+            ticker="techSTAR"
+            label="techSTAR"
+            symbol="II950"/>
       <index
             ticker="MIDEX"
             label="MIDEX"
             symbol="II932"/>
       <index
-            ticker="NUMTEL"
-            label="NUMTEL"
-            symbol="II936"/>
-      <index
-            ticker="SPMIB"
-            label="S/P MIB"
-            symbol="IS945"/>
-      <index
-            ticker="MIBTEL-S"
-            label="MIBTEL-S"
+            ticker="MIBTEL-s"
+            label="MIBTEL-s"
             symbol="II935"/>
       <index
-            ticker="MIB30-S"
-            label="MIB30-S"
+            ticker="MIB30-s"
+            label="MIB30-s"
             symbol="II933"/>
-      <index
-            ticker="NUMTEL-S"
-            label="NUMTEL-S"
-            symbol="II939"/>
       </provider>
    </extension>
 
