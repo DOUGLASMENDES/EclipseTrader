@@ -301,6 +301,18 @@
                id="view.all"/>
       </viewContribution>
       <viewContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"
+            id="net.sourceforge.eclipsetrader.realtimeChartActions">
+         <action
+               toolbarPath="additions"
+               label="Backfill"
+               tooltip="Backfill"
+               icon="icons/refresh.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               style="push"
+               id="chart.refresh"/>
+      </viewContribution>
+      <viewContribution
             targetID="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"
             id="net.sourceforge.eclipsetrader.browserActions">
          <action
