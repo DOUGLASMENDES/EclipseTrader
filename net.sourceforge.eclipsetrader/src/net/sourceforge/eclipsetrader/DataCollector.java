@@ -218,8 +218,12 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
         if (chartData.getVolume() != 0)
         {
           // Check if the existing data is obsolete
-          if (current.get(Calendar.DAY_OF_YEAR) != last.get(Calendar.DAY_OF_YEAR))
-            values.clear();
+          if (values.size() != 0)
+          {
+            last.setTime(((ChartData)values.lastElement()).getDate());
+            if (current.get(Calendar.DAY_OF_YEAR) != last.get(Calendar.DAY_OF_YEAR))
+              values.clear();
+          }
 
           // Adjust the time to a period's boundary
           current.setTimeInMillis(current.getTimeInMillis() - (current.getTimeInMillis() % (period * 1000)));
