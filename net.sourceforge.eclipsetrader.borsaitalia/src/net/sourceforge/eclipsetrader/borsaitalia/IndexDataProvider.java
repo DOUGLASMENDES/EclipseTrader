@@ -186,7 +186,7 @@ public class IndexDataProvider extends ChartDataProvider implements IIndexDataPr
               data[i].setDate(now.getTime());
               if ((line = in.readLine()) == null)
                 break;
-              int s = line.indexOf("nobr>") + 5;
+              int s = line.indexOf("nowrap>") + 7;
               try {
                 data[i].setLastPrice(pf.parse(line.substring(s)).doubleValue());
               } catch(Exception e1) {};
