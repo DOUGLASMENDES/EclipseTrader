@@ -122,6 +122,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
    */
   public void fireDataUpdated(IBasicData data)
   {
+    // Notify the specific listeners
     Vector _v = (Vector)_dataListeners.get(data.getSymbol());
     if (_v != null)
     {
@@ -130,6 +131,15 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
         IDataUpdateListener l = (IDataUpdateListener)_v.elementAt(i);
         l.dataUpdated(this, data);
       }
+    }
+    
+    // Notify generic listeners using the data-specific update notification method.
+    // Avoids updating the same listener twice.
+    for (int i = 0; i < _listeners.size(); i++)
+    {
+      IDataUpdateListener l = (IDataUpdateListener)_listeners.elementAt(i);
+      if (_v.contains(l) == false)
+        l.dataUpdated(this, data);
     }
   }
   
