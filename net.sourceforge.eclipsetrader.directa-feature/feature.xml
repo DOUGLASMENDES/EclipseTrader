@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.sourceforge.eclipsetrader.directa"
+      label="%featureName"
+      version="0.10.0"
+      provider-name="%providerName">
+
+   <install-handler/>
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      Copyright (c) 2004 Eclipse Trader Contributors and Others.
+   </copyright>
+
+   <url>
+      <update label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
+      <discovery label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
+   </url>
+
+   <requires>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+   </requires>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.directa"
+         download-size="0"
+         install-size="0"
+         version="0.10.0"/>
+
+</feature>

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader.directa"
+   name="Directa Italy"
+   version="0.10.0"
+   provider-name="Sourceforge.net"
+   class="net.sourceforge.eclipsetrader.directa.DirectaPlugin">
+
+   <runtime>
+      <library name="directa.jar">
+         <export name="*"/>
+      </library>
+      <library name="push.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+   </requires>
+   <extension
+         point="net.sourceforge.eclipsetrader.dataProvider">
+      <provider
+            label="Directa Italy (realtime, cust. only)"
+            class="net.sourceforge.eclipsetrader.directa.PushDataProvider"
+            id="net.sourceforge.eclipsetrader.directa.pushDataProvider"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.bookDataProvider">
+      <provider
+            label="Directa Italy (realtime, cust. only)"
+            class="net.sourceforge.eclipsetrader.directa.BookDataProvider"
+            id="net.sourceforge.eclipsetrader.directa.bookDataProvider"/>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            icon="icons/sample.gif"
+            class="net.sourceforge.eclipsetrader.directa.ui.views.Trading"
+            category="directa"
+            name="Modulo Ordine"
+            id="net.sourceforge.eclipsetrader.directa.views.trading"/>
+      <view
+            icon="icons/sample.gif"
+            class="net.sourceforge.eclipsetrader.directa.ui.views.Orders"
+            category="directa"
+            name="Stato Ordini"
+            id="net.sourceforge.eclipsetrader.directa.views.orders"/>
+      <view
+            icon="icons/sample.gif"
+            class="net.sourceforge.eclipsetrader.directa.internal.WebBrowser"
+            category="directa"
+            name="Browser Web"
+            id="net.sourceforge.eclipsetrader.directa.views.browser"/>
+      <category
+            name="Directa"
+            id="directa"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.directa.views.trading"
+            id="net.sourceforge.eclipsetrader.directa.views.tradingActions">
+         <action
+               toolbarPath="additions"
+               label="Aggiorna"
+               tooltip="Aggiorna"
+               icon="icons/refresh.gif"
+               class="net.sourceforge.eclipsetrader.directa.internal.ActionReceiver"
+               style="push"
+               id="trading.refresh"/>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.directa.views.orders"
+            id="net.sourceforge.eclipsetrader.directa.views.ordersActions">
+         <action
+               toolbarPath="additions"
+               label="Aggiorna"
+               tooltip="Aggiorna"
+               icon="icons/refresh.gif"
+               class="net.sourceforge.eclipsetrader.directa.internal.ActionReceiver"
+               style="push"
+               id="orders.refresh"/>
+         <action
+               toolbarPath="additions"
+               label="Annulla Ordine"
+               tooltip="Annulla Ordine"
+               icon="icons/remove.gif"
+               class="net.sourceforge.eclipsetrader.directa.internal.ActionReceiver"
+               style="push"
+               id="orders.cancel"/>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.directa.views.browser"
+            id="net.sourceforge.eclipsetrader.directa.views.tradingActions">
+         <action
+               toolbarPath="additions"
+               label="Aggiorna"
+               tooltip="Aggiorna"
+               icon="icons/refresh.gif"
+               class="net.sourceforge.eclipsetrader.directa.internal.ActionReceiver"
+               style="push"
+               id="browser.refresh"/>
+      </viewContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="net.sourceforge.eclipsetrader.TraderPerspective">
+         <view
+               visible="false"
+               id="net.sourceforge.eclipsetrader.directa.views.trading"
+               relative="trading"
+               relationship="stack"/>
+         <view
+               visible="false"
+               id="net.sourceforge.eclipsetrader.directa.views.orders"
+               relative="trading"
+               relationship="stack"/>
+         <view
+               visible="false"
+               id="net.sourceforge.eclipsetrader.directa.views.browser"
+               relative="org.eclipse.ui.editorss"
+               relationship="stack"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.directa.views.orders"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.directa.views.trading"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Directa"
+            visible="true"
+            id="net.sourceforge.eclipsetrader.directa.ActionSet">
+         <menu
+               label="Directa"
+               path="additions"
+               id="directa">
+            <separator name="group.top"/>
+            <separator name="group.views"/>
+            <separator name="group.info1"/>
+            <separator name="group.estrattoConto"/>
+            <separator name="group.info2"/>
+            <separator name="group.info3"/>
+            <separator name="additions"/>
+            <separator name="group.bottom"/>
+         </menu>
+         <menu
+               label="Estratto Conto"
+               path="directa/group.estrattoConto"
+               id="estrattoConto">
+            <separator name="group.info1"/>
+            <separator name="group.info2"/>
+            <separator name="group.info3"/>
+         </menu>
+         <action
+               label="Mostra Modulo Ordine"
+               class="net.sourceforge.eclipsetrader.directa.internal.ActionReceiver"
+               style="push"
+               menubarPath="directa/group.views"
+               id="directa.showTrading"/>
+         <action
+               label="Mostra Stato Ordini"
+               class="net.sourceforge.eclipsetrader.directa.internal.ActionReceiver"
+               style="push"
+               menubarPath="directa/group.views"
+               id="directa.showOrders"/>
+         <action
+               label="Cambio giornaliero Euro / Dollaro"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.5"/>
+         <action
+               label="Derivati: margini-codici"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.4"/>
+         <action
+               label="Situazione scoperti"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.3"/>
+         <action
+               label="Warrant più trattati"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.2"/>
+         <action
+               label="Titoli più trattati"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.1"/>
+         <action
+               label="Titoli Derivati US"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info3"
+               id="directa.browsePage.11"/>
+         <action
+               label="Titoli Derivati EU"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info3"
+               id="directa.browsePage.10"/>
+         <action
+               label="Titoli US"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info2"
+               id="directa.browsePage.9"/>
+         <action
+               label="Titoli EU"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info2"
+               id="directa.browsePage.8"/>
+         <action
+               label="Euro Derivati"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info1"
+               id="directa.browsePage.7"/>
+         <action
+               label="Euro"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info1"
+               id="directa.browsePage.6"/>
+         <action
+               label="Situazione Prestiti in Corso"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.17"/>
+         <action
+               label="Riepilogo Dividendi Esteri"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.16"/>
+         <action
+               label="Valorizzazione Sez. Derivati"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.15"/>
+         <action
+               label="Rienute su Capital Gain / Ricalcoli"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.14"/>
+         <action
+               label="Performace Giornaliera"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.13"/>
+         <action
+               label="Conferme / Note informative"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.12"/>
+         <action
+               label="News Affari Italiani"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info3"
+               id="directa.browsePage.19"/>
+         <action
+               label="News ASCA"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info3"
+               id="directa.browsePage.18"/>
+         <action
+               label="Calendario di Borsa"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.top"
+               id="directa.browsePage.0"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.eclipsetrader.directa.ui.preferences.GeneralPreferences"
+            name="Directa"
+            id="net.sourceforge.eclipsetrader.directa.general"/>
+      <page
+            class="net.sourceforge.eclipsetrader.directa.ui.preferences.ColorPreferences"
+            category="net.sourceforge.eclipsetrader.directa.general"
+            name="Colori"
+            id="net.sourceforge.eclipsetrader.directa.color"/>
+   </extension>
+
+</plugin>
