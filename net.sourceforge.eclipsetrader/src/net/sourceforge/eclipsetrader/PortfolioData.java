@@ -11,10 +11,10 @@
 package net.sourceforge.eclipsetrader;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Default implementation of the IPortfolioData interface.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public class PortfolioData extends BasicData implements IPortfolioData
 {

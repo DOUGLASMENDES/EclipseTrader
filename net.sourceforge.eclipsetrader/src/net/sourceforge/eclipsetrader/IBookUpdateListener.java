@@ -11,10 +11,10 @@
 package net.sourceforge.eclipsetrader;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Interface for Book / Level II data update listeners.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public interface IBookUpdateListener
 {

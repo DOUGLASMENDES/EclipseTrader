@@ -67,6 +67,7 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
   public DataCollector(IRealtimeChartProvider realtimeChartProvider)
   {
     this.realtimeChartProvider = realtimeChartProvider;
+    load();
 
     IPreferenceStore pref = TraderPlugin.getDefault().getPreferenceStore();
     period = pref.getInt("net.sourceforge.eclipsetrader.rtchart.period") * 60;
