@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.11.0"
+   version="0.11.1"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 

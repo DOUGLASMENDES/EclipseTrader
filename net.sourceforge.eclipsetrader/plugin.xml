@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader"
    name="%pluginName"
-   version="0.11.0"
+   version="0.11.1"
    provider-name="%providerName"
    class="net.sourceforge.eclipsetrader.TraderPlugin">
 
