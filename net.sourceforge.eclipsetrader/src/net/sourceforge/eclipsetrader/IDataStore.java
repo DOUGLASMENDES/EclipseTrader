@@ -43,4 +43,7 @@ public interface IDataStore
    * @param data The new data array.
    */
   public void update(IExtendedData[] data);
+
+  public IExtendedData[] loadIndexData();
+  public void storeIndexData(IExtendedData[] data);
 }

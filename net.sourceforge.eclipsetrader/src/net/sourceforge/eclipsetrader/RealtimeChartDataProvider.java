@@ -44,6 +44,11 @@ public class RealtimeChartDataProvider extends DataProvider implements IRealtime
     super.fireDataUpdated(data);
     dataCollector.dataUpdated(this, data);
   }
+  
+  public DataCollector getDataCollector()
+  {
+    return dataCollector;
+  }
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IRealtimeChartProvider#addRealtimeChartListener(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IRealtimeChartListener)

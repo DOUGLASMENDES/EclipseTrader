@@ -27,9 +27,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import net.sourceforge.eclipsetrader.ExtendedData;
+import net.sourceforge.eclipsetrader.IBasicData;
+import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IDataStore;
 import net.sourceforge.eclipsetrader.IExtendedData;
+import net.sourceforge.eclipsetrader.TraderPlugin;
 
 import org.eclipse.core.runtime.Platform;
 import org.w3c.dom.Document;
@@ -47,6 +49,8 @@ public class XMLDataStore implements IDataStore
 {
   private static String PORTFOLIO_FILE_NAME = "portfolio.xml";
   private static String STOCKWATCH_FILE_NAME = "stockwatch.xml";
+  private static String INDICES_FILE_NAME = "indices.xml";
+  private static File HISTORY_CHART_FOLDER = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
   private Document document = null;
   private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
   private NumberFormat nf = NumberFormat.getInstance();
@@ -103,7 +107,7 @@ public class XMLDataStore implements IDataStore
       }
     }
 
-    dataArray = new ExtendedData[data.size()];
+    dataArray = new IExtendedData[data.size()];
     data.toArray(dataArray);
   }
   
@@ -121,7 +125,7 @@ public class XMLDataStore implements IDataStore
 
       for (int i = 0; i < data.size(); i++)
       {
-        ExtendedData item = (ExtendedData)data.elementAt(i);
+        IExtendedData item = (IExtendedData)data.elementAt(i);
 
         Element element = document.createElement("stock");
         element.setAttribute("symbol", item.getSymbol());
@@ -190,11 +194,11 @@ public class XMLDataStore implements IDataStore
     } catch (Exception ex) { ex.printStackTrace(); };
   }
 
-  private ExtendedData decodeData(int index, NodeList parent) throws ParseException
+  private IExtendedData decodeData(int index, NodeList parent) throws ParseException
   {
-    ExtendedData pd = new ExtendedData();
+    IExtendedData pd = TraderPlugin.createExtendedData();
     
-    pd.symbol = ((Node)parent).getAttributes().getNamedItem("symbol").getNodeValue();
+    pd.setSymbol(((Node)parent).getAttributes().getNamedItem("symbol").getNodeValue());
 
     for (int i = 0; i < parent.getLength(); i++)
     {
@@ -203,42 +207,39 @@ public class XMLDataStore implements IDataStore
       if (value != null)
       {
         if (n.getNodeName().equalsIgnoreCase("ticker") == true)
-          pd.ticker = value.getNodeValue();
+          pd.setTicker(value.getNodeValue());
         else if (n.getNodeName().equalsIgnoreCase("description") == true)
-          pd.description = value.getNodeValue();
+          pd.setDescription(value.getNodeValue());
         else if (n.getNodeName().equalsIgnoreCase("ticker") == true)
-          pd.ticker = value.getNodeValue();
+          pd.setTicker(value.getNodeValue());
         else if (n.getNodeName().equalsIgnoreCase("last_price") == true)
           pd.setLastPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("bid_price") == true)
           pd.setBidPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("bid_size") == true)
-          pd.bidSize = nf.parse(value.getNodeValue()).intValue();
+          pd.setBidSize(nf.parse(value.getNodeValue()).intValue());
         else if (n.getNodeName().equalsIgnoreCase("ask_price") == true)
-          pd.askPrice = pf.parse(value.getNodeValue()).doubleValue();
+          pd.setAskPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("ask_size") == true)
-          pd.askSize = nf.parse(value.getNodeValue()).intValue();
+          pd.setAskSize(nf.parse(value.getNodeValue()).intValue());
         else if (n.getNodeName().equalsIgnoreCase("volume") == true)
-          pd.volume = nf.parse(value.getNodeValue()).intValue();
+          pd.setVolume(nf.parse(value.getNodeValue()).intValue());
         else if (n.getNodeName().equalsIgnoreCase("minimum_quantity") == true)
-          pd.minimumQuantity = nf.parse(value.getNodeValue()).intValue();
+          pd.setMinimumQuantity(nf.parse(value.getNodeValue()).intValue());
         else if (n.getNodeName().equalsIgnoreCase("quantity") == true)
-          pd.quantity = Integer.parseInt(value.getNodeValue());
+          pd.setQuantity(Integer.parseInt(value.getNodeValue()));
         else if (n.getNodeName().equalsIgnoreCase("paid") == true)
           pd.setPaid(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("time") == true)
-        {
-          pd.time = value.getNodeValue();
           pd.setDate(df.parse(value.getNodeValue()));
-        }
         else if (n.getNodeName().equalsIgnoreCase("open_price") == true)
-          pd.openPrice = pf.parse(value.getNodeValue()).doubleValue();
+          pd.setOpenPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("high_price") == true)
-          pd.highPrice = pf.parse(value.getNodeValue()).doubleValue();
+          pd.setHighPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("low_price") == true)
-          pd.lowPrice = pf.parse(value.getNodeValue()).doubleValue();
+          pd.setLowPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("close_price") == true)
-          pd.closePrice = pf.parse(value.getNodeValue()).doubleValue();
+          pd.setClosePrice(pf.parse(value.getNodeValue()).doubleValue());
         else
           System.out.println(n.getNodeName() + "=" + value.getNodeValue());
       }
@@ -303,5 +304,238 @@ public class XMLDataStore implements IDataStore
         return d1.description.compareTo(d2.description);
       }
     });*/
+  }
+
+  /**
+   * Load the historycal chart data for the given stock item.
+   * 
+   * @param data - The stock item.
+   * @return An array of IChartData items.
+   */
+  public IChartData[] loadHistoryChart(IBasicData data)
+  {
+    Vector v = new Vector();
+    
+    File f = new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
+    if (f.exists() == true)
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(f);
+
+        int index = 0;
+        NodeList firstChild = document.getFirstChild().getChildNodes();
+        for (int i = 0; i < firstChild.getLength(); i++)
+        {
+          Node node = firstChild.item(i);
+          if (node.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
+          {
+            IChartData cd = new ChartData();
+            NodeList parent = node.getChildNodes();
+            for (int ii = 0; ii < parent.getLength(); ii++)
+            {
+              Node item = parent.item(ii);
+              Node value = item.getFirstChild();
+              if (value != null)
+              {
+                if (item.getNodeName().equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
+                  cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
+                else if (item.getNodeName().equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
+                  cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
+                else if (item.getNodeName().equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
+                  cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
+                else if (item.getNodeName().equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
+                  cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
+                else if (item.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
+                  cd.setVolume(Integer.parseInt(value.getNodeValue()));
+                else if (item.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
+                {
+                  try {
+                    cd.setDate(df.parse(value.getNodeValue()));
+                  } catch(Exception e) {};
+                }
+              }
+            }
+            v.add(cd);
+          }
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+
+    IChartData[] chartData = new IChartData[v.size()];
+    v.toArray(chartData);
+    return chartData;
+  }
+
+  /**
+   * Stores the historical chart data for the given stock item.
+   * 
+   * @param data - The stock item.
+   * @param chartData - The array of IChartData items to store. 
+   */
+  public void storeHistoryData(IBasicData data, IChartData[] chartData)
+  {
+    if (chartData != null)
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.getDOMImplementation().createDocument("", "chart", null);
+
+        Element element = document.createElement("data");
+        document.getDocumentElement().appendChild(element);
+        Node node = document.createElement("symbol");
+        node.appendChild(document.createTextNode(data.getTicker()));
+        element.appendChild(node);
+
+        for (int i = 0; i < chartData.length; i++)
+        {
+          element = document.createElement("data");
+          document.getDocumentElement().appendChild(element);
+
+          node = document.createElement("date");
+          node.appendChild(document.createTextNode(df.format(chartData[i].getDate())));
+          element.appendChild(node);
+          node = document.createElement("open_price");
+          node.appendChild(document.createTextNode(pf.format(chartData[i].getOpenPrice())));
+          element.appendChild(node);
+          node = document.createElement("max_price");
+          node.appendChild(document.createTextNode(pf.format(chartData[i].getMaxPrice())));
+          element.appendChild(node);
+          node = document.createElement("min_price");
+          node.appendChild(document.createTextNode(pf.format(chartData[i].getMinPrice())));
+          element.appendChild(node);
+          node = document.createElement("close_price");
+          node.appendChild(document.createTextNode(pf.format(chartData[i].getClosePrice())));
+          element.appendChild(node);
+          node = document.createElement("volume");
+          node.appendChild(document.createTextNode(nf.format(chartData[i].getVolume())));
+          element.appendChild(node);
+        }
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+        DOMSource source = new DOMSource(document);
+        BufferedWriter out = new BufferedWriter(new FileWriter(new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml")));
+        StreamResult result = new StreamResult(out);
+        transformer.transform(source, result);
+        out.flush();
+        out.close();
+      } catch (Exception ex) { ex.printStackTrace(); };
+  }
+
+  public IExtendedData[] loadIndexData()
+  {
+    Vector v = new Vector();
+    
+    File f = new File(Platform.getLocation().toFile(), INDICES_FILE_NAME);
+    if (f.exists() == true)
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(f);
+
+        int index = 0;
+        NodeList firstChild = document.getFirstChild().getChildNodes();
+        for (int i = 0; i < firstChild.getLength(); i++)
+        {
+          Node node = firstChild.item(i);
+          if (node.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
+          {
+            IExtendedData ed = TraderPlugin.createExtendedData();
+            ed.setSymbol(node.getAttributes().getNamedItem("symbol").getNodeValue());
+            ed.setTicker(node.getAttributes().getNamedItem("ticker").getNodeValue());
+            ed.setDescription(node.getAttributes().getNamedItem("description").getNodeValue());
+            
+            NodeList parent = (NodeList)node;
+            for (int ii = 0; ii < parent.getLength(); ii++)
+            {
+              Node item = parent.item(ii);
+              Node value = item.getFirstChild();
+              if (value != null)
+              {
+                if (item.getNodeName().equalsIgnoreCase("price") == true) //$NON-NLS-1$
+                  ed.setLastPrice(pf.parse(value.getNodeValue()).doubleValue());
+                else if (item.getNodeName().equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
+                  ed.setOpenPrice(pf.parse(value.getNodeValue()).doubleValue());
+                else if (item.getNodeName().equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
+                  ed.setHighPrice(pf.parse(value.getNodeValue()).doubleValue());
+                else if (item.getNodeName().equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
+                  ed.setLowPrice(pf.parse(value.getNodeValue()).doubleValue());
+                else if (item.getNodeName().equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
+                  ed.setClosePrice(pf.parse(value.getNodeValue()).doubleValue());
+                else if (item.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
+                  ed.setVolume(nf.parse(value.getNodeValue()).intValue());
+                else if (item.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
+                {
+                  try {
+                    ed.setDate(df.parse(value.getNodeValue()));
+                  } catch(Exception e) {};
+                }
+              }
+            }
+            v.add(ed);
+          }
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+
+    IExtendedData[] data = new IExtendedData[v.size()];
+    v.toArray(data);
+    return data;
+  }
+
+  public void storeIndexData(IExtendedData[] data)
+  {
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.getDOMImplementation().createDocument("", "index", null);
+
+        for (int i = 0; i < data.length; i++)
+        {
+          Element element = document.createElement("data");
+          element.setAttribute("symbol", data[i].getSymbol());
+          element.setAttribute("ticker", data[i].getTicker());
+          element.setAttribute("description", data[i].getDescription());
+          document.getDocumentElement().appendChild(element);
+
+          Node node = document.createElement("date");
+          node.appendChild(document.createTextNode(df.format(data[i].getDate())));
+          element.appendChild(node);
+          node = document.createElement("price");
+          node.appendChild(document.createTextNode(pf.format(data[i].getLastPrice())));
+          element.appendChild(node);
+          node = document.createElement("open_price");
+          node.appendChild(document.createTextNode(pf.format(data[i].getOpenPrice())));
+          element.appendChild(node);
+          node = document.createElement("max_price");
+          node.appendChild(document.createTextNode(pf.format(data[i].getHighPrice())));
+          element.appendChild(node);
+          node = document.createElement("min_price");
+          node.appendChild(document.createTextNode(pf.format(data[i].getLowPrice())));
+          element.appendChild(node);
+          node = document.createElement("close_price");
+          node.appendChild(document.createTextNode(pf.format(data[i].getClosePrice())));
+          element.appendChild(node);
+          node = document.createElement("volume");
+          node.appendChild(document.createTextNode(nf.format(data[i].getVolume())));
+          element.appendChild(node);
+        }
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+        DOMSource source = new DOMSource(document);
+        BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), INDICES_FILE_NAME)));
+        StreamResult result = new StreamResult(out);
+        transformer.transform(source, result);
+        out.flush();
+        out.close();
+      } catch (Exception ex) { ex.printStackTrace(); };
   }
 }
