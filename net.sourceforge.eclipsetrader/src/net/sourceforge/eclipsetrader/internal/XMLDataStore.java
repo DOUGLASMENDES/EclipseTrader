@@ -247,6 +247,38 @@ public class XMLDataStore implements IDataStore
     
     return pd;
   }
+  
+  public void add(IExtendedData data)
+  {
+    Vector v = new Vector(Arrays.asList(dataArray));
+    v.add(data);
+    IExtendedData[] da = new IExtendedData[v.size()];
+    v.toArray(da);
+    dataArray = da;
+    store();
+    if (TraderPlugin.getDataProvider() != null)
+      TraderPlugin.getDataProvider().setData(dataArray);
+  }
+  
+  public void remove(IExtendedData data)
+  {
+    Vector v = new Vector(Arrays.asList(dataArray));
+    v.remove(data);
+    IExtendedData[] da = new IExtendedData[v.size()];
+    v.toArray(da);
+    dataArray = da;
+    store();
+    if (TraderPlugin.getDataProvider() != null)
+      TraderPlugin.getDataProvider().setData(dataArray);
+  }
+  
+  public void update(int index, IExtendedData data)
+  {
+    dataArray[index] = data;
+    store();
+    if (TraderPlugin.getDataProvider() != null)
+      TraderPlugin.getDataProvider().setData(dataArray);
+  }
 
   /**
    * Updates the portfolio data with the given data array, adding, removing
@@ -256,7 +288,18 @@ public class XMLDataStore implements IDataStore
    */
   public void update(IExtendedData[] newData)
   {
+    // Set the new data to the data provider
+    if (newData.length != dataArray.length)
+    {
+      if (TraderPlugin.getDataProvider() != null)
+        TraderPlugin.getDataProvider().setData(newData);
+    }
+
+    // Update the current data array
     dataArray = newData;
+    
+    // Store the data on file
+    store();
 
 /*    int m;
 

@@ -37,6 +37,28 @@ public interface IDataStore
   public IExtendedData[] getData();
 
   /**
+   * Add an item to the portfolio data.
+   * 
+   * @param data The new data item.
+   */
+  public void add(IExtendedData data);
+
+  /**
+   * Remove an item from the portfolio data.
+   * 
+   * @param data The data item to remove.
+   */
+  public void remove(IExtendedData data);
+
+  /**
+   * Update the item at the give location.
+   * 
+   * @param index The position of the data item to update.
+   * @param data The data that replaces the existing item.
+   */
+  public void update(int index, IExtendedData data);
+
+  /**
    * Updates the portfolio data with the given data array, adding, removing
    * or updating data as needed.<br>
    * 
