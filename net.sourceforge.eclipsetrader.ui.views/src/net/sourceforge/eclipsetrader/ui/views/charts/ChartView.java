@@ -209,7 +209,8 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
     // Restore del grafico precedente
     String id = getViewSite().getSecondaryId();
     String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id);
-    setData(TraderPlugin.getData(symbol));
+    if (!symbol.equals(""))
+      setData(TraderPlugin.getData(symbol));
   }
   
   public void reloadPreferences()

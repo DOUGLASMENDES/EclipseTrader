@@ -25,7 +25,6 @@ import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
-import net.sourceforge.eclipsetrader.ui.views.charts.ChartView;
 
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
@@ -251,8 +250,9 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
       if (ref == null)
       {
         try {
+          ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol());
           IViewPart view = page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
-          ((ChartView)view).setData(data);
+//          ((ChartView)view).setData(data);
         } catch (PartInitException e) {}
         break;
       }
