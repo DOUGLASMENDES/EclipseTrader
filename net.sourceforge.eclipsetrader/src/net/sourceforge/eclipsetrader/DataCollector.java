@@ -43,8 +43,9 @@ import org.w3c.dom.NodeList;
  * Class for collecting realtime data used to build charts.
  * <p></p>
  */
-public class DataCollector implements IDataUpdateListener, IPropertyChangeListener
+public class DataCollector implements IRealtimeChartProvider, IPropertyChangeListener
 {
+  private static DataCollector instance;
   private int period = 120;
   private boolean session1 = true;
   private Calendar startTime1 = Calendar.getInstance();
@@ -61,14 +62,12 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
   private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   private SimpleDateFormat dtf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private HashMap _rtListener = new HashMap();
-  private IRealtimeChartProvider realtimeChartProvider;
   private boolean needSaving = false;
   private Calendar current = Calendar.getInstance();
   private Calendar last = Calendar.getInstance();
   
-  public DataCollector(IRealtimeChartProvider realtimeChartProvider)
+  private DataCollector()
   {
-    this.realtimeChartProvider = realtimeChartProvider;
     load();
 
     IPreferenceStore pref = TraderPlugin.getDefault().getPreferenceStore();
@@ -103,6 +102,13 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
     pf.setMaximumFractionDigits(4);
   }
   
+  public static DataCollector getInstance()
+  {
+    if (instance == null)
+      instance = new DataCollector();
+    return instance;
+  }
+  
   public void clear()
   {
     map.clear();
@@ -114,16 +120,6 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
   {
     chartMap.put(symbol, values);
     store();
-  }
-  
-  public IChartData[] getData(String symbol)
-  {
-    Vector values = (Vector)chartMap.get(symbol);
-    if (values == null)
-      values = new Vector();
-    IChartData[] data = new IChartData[values.size()];
-    values.toArray(data);
-    return data;
   }
 
   /* (non-Javadoc)
@@ -154,6 +150,26 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
     }
     System.out.println("Remove RT listener for " + data.getSymbol());
   }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IRealtimeChartProvider#backfill(net.sourceforge.eclipsetrader.IBasicData)
+   */
+  public void backfill(IBasicData data)
+  {
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IRealtimeChartProvider#getHistoryData(net.sourceforge.eclipsetrader.IBasicData)
+   */
+  public IChartData[] getHistoryData(IBasicData data)
+  {
+    Vector values = (Vector)chartMap.get(data.getSymbol());
+    if (values == null)
+      values = new Vector();
+    IChartData[] chartData = new IChartData[values.size()];
+    values.toArray(chartData);
+    return chartData;
+  }
   
   private void fireRealtimeChartUpdate()
   {
@@ -164,7 +180,7 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
       for (int i = 0; i < _v.size(); i++)
       {
         IRealtimeChartListener listener = (IRealtimeChartListener)_v.elementAt(i);
-        listener.realtimeChartUpdated(realtimeChartProvider);
+        listener.realtimeChartUpdated(this);
       }
     }
   }
@@ -177,20 +193,13 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
       for (int i = 0; i < _v.size(); i++)
       {
         IRealtimeChartListener listener = (IRealtimeChartListener)_v.elementAt(i);
-        listener.realtimeChartUpdated(realtimeChartProvider);
+        listener.realtimeChartUpdated(this);
       }
     }
   }
 
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IDataUpdateListener#dataUpdated(net.sourceforge.eclipsetrader.IBasicDataProvider, net.sourceforge.eclipsetrader.IBasicData)
-   */
-  public void dataUpdated(IBasicDataProvider dataProvider, IBasicData basicData)
+  public void dataUpdated(IExtendedData data)
   {
-    IExtendedData data = (IExtendedData)basicData;
-    
-//    if (data.getTicker().equalsIgnoreCase("STM") == true)
-//      System.out.println(dtf.format(data.getDate()) + " " + pf.format(data.getLastPrice()) + " " + nf.format(data.getVolume()));
     
     if (lastUpdate == 0)
     {
@@ -237,7 +246,7 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
           needSaving = true;
 
           // Notify all listeners of the chart update
-          fireRealtimeChartUpdate(basicData);
+          fireRealtimeChartUpdate((IBasicData)data);
         }
 
         // Remove this period's data from the hashmap
@@ -272,7 +281,7 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
   {
     IExtendedData[] data = TraderPlugin.getData();
     for (int i = 0; i < data.length; i++)
-      dataUpdated(dataProvider, data[i]);
+      dataUpdated(data[i]);
     store();
   }
 
