@@ -28,10 +28,15 @@ public class TraderPerspective implements IPerspectiveFactory
   {
     layout.setEditorAreaVisible(false);
 
-    IPlaceholderFolderLayout folder = layout.createPlaceholderFolder("trading", IPageLayout.TOP, 0.17f, IPageLayout.ID_EDITOR_AREA);
+    IPlaceholderFolderLayout folder = layout.createPlaceholderFolder("strips", IPageLayout.TOP, 0.11f, IPageLayout.ID_EDITOR_AREA);
 
-    folder = layout.createPlaceholderFolder("book", IPageLayout.LEFT, 0.35f, IPageLayout.ID_EDITOR_AREA);
+    folder = layout.createPlaceholderFolder("trading", IPageLayout.TOP, 0.17f, IPageLayout.ID_EDITOR_AREA);
+
+    folder = layout.createPlaceholderFolder("book", IPageLayout.LEFT, 0.30f, IPageLayout.ID_EDITOR_AREA);
     folder.addPlaceholder("net.sourceforge.eclipsetrader.ui.views.Book:*");
+
+    folder = layout.createPlaceholderFolder("rtcharts", IPageLayout.BOTTOM, 0.50f, "book");
+    folder.addPlaceholder("net.sourceforge.eclipsetrader.ui.views.RealtimeChart:*");
 
     folder = layout.createPlaceholderFolder("news", IPageLayout.BOTTOM, 0.75f, IPageLayout.ID_EDITOR_AREA);
   }
