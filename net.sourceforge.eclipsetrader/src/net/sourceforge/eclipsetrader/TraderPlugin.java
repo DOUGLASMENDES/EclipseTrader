@@ -38,6 +38,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   private IDataStore dataStore;
   private IBasicDataProvider dataProvider;
   private IChartDataProvider chartDataProvider;
+  private Object newsProvider;
 	
 	/**
 	 * The constructor.
@@ -139,6 +140,17 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     }
 
     return plugin.chartDataProvider; 
+  }
+
+  public static Object getNewsProvider() 
+  { 
+    if (plugin.newsProvider == null)
+    {
+      // Load the news provider plugin
+      plugin.newsProvider = (Object)plugin.activatePlugin("net.sourceforge.eclipsetrader.newsProvider");
+    }
+
+    return plugin.newsProvider; 
   }
 
   /* (non-Javadoc)

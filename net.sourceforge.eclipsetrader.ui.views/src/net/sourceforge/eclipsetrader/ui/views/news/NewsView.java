@@ -10,14 +10,34 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.news;
 
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
 import java.util.Timer;
+import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IBasicDataProvider;
 import net.sourceforge.eclipsetrader.IDataUpdateListener;
+import net.sourceforge.eclipsetrader.INewsData;
+import net.sourceforge.eclipsetrader.INewsProvider;
+import net.sourceforge.eclipsetrader.NewsData;
+import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
@@ -33,17 +53,19 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class NewsView extends ViewPart implements IDataUpdateListener 
 {
   private Table table;
   private Color background = new Color(Display.getCurrent(), 255, 255, 224);
   private Color foreground = new Color(Display.getCurrent(), 0, 0, 0);
+  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm"); //$NON-NLS-1$
   private Timer timer;
-//  private Action refreshAction;
-//  private Action autoRefreshAction;
-//  private Action doubleClickAction;
-  private NewsProvider newsProvider = new NewsProvider();
+  private INewsData[] data;
 
   public NewsView()
   {
@@ -62,59 +84,24 @@ public class NewsView extends ViewPart implements IDataUpdateListener
     table.setBackground(background);
 
     TableColumn column = new TableColumn(table, SWT.RIGHT, 0);
-    column.setText("Data");
+    column.setText(Messages.getString("NewsView.1")); //$NON-NLS-1$
     column.setWidth(105);
     column = new TableColumn(table, SWT.LEFT, 1);
-    column.setText("Titolo");
-    column.setWidth(735);
+    column.setText(Messages.getString("NewsView.2")); //$NON-NLS-1$
+    column.setWidth(435);
     column = new TableColumn(table, SWT.LEFT, 2);
-    column.setText("Agenzia");
+    column.setText(Messages.getString("NewsView.3")); //$NON-NLS-1$
     column.setWidth(145);
-
-/*    IActionBars bars = getViewSite().getActionBars();
-    
-    refreshAction = new Action() {
-      public void run() {
-        refreshAction.setEnabled(false);
-        startUpdate();
-      }
-    };
-    refreshAction.setText("Refresh");
-    refreshAction.setToolTipText("Refresh List");
-    refreshAction.setImageDescriptor(Images.ICON_REFRESH);
-    bars.getToolBarManager().add(refreshAction);
-    
-    autoRefreshAction = new Action() {
-      public void run() {
-        if (isChecked() == true)
-        {
-          timer.cancel();
-          timer = new Timer();
-          timer.schedule(new TimerTask() {
-            public void run() {
-              updateList();
-            }
-          }, 10 * 60000);
-        }
-        else
-          timer.cancel();
-      }
-    };
-    autoRefreshAction.setChecked(false);
-    autoRefreshAction.setText("Auto-Refresh");
-    autoRefreshAction.setToolTipText("Auto Refresh");
-    autoRefreshAction.setImageDescriptor(Images.ICON_AUTOREFRESH);
-    bars.getToolBarManager().add(autoRefreshAction);*/
 
     table.addMouseListener(new MouseListener() {
       public void mouseDoubleClick(MouseEvent e) {
-        NewsData item = newsProvider.getData()[table.getSelectionIndex()];
+        INewsData item = ((INewsProvider)TraderPlugin.getNewsProvider()).getData()[table.getSelectionIndex()];
         try {
-          IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser");
+          IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
           if (browser != null)
           {
             browser.setFocus();
-            ((NewsBrowser)browser).setUrl(item.url);
+            ((NewsBrowser)browser).setUrl(item.getUrl());
           }
         } catch(PartInitException x) {};
       }
@@ -123,21 +110,9 @@ public class NewsView extends ViewPart implements IDataUpdateListener
       public void mouseUp(MouseEvent e) {
       }
     });
-/*
-    timer = new Timer();
-    timer.schedule(new TimerTask() {
-      public void run() {
-        updateList();
-      }
-    }, 2 * 1000);*/
-    update();
-    
-//    String s = "Location:         " + Platform.getLocation() + "\r\n";
-//    s += "InstanceLocation: " + Platform.getInstanceLocation().getURL() + "\r\n";
-//    s += "InstallLocation:  " + Platform.getInstallLocation().getURL() + "\r\n";
-//    MessageDialog.openInformation(table.getShell(), "Sample View", s);
 
-    System.out.println(this.getClass() + ": createPartControl");
+    load();
+    update();
   }
   
   public void startUpdate()
@@ -157,12 +132,16 @@ public class NewsView extends ViewPart implements IDataUpdateListener
       index = 0;
     table.setSelection(index);
 
-    NewsData item = newsProvider.getData()[table.getSelectionIndex()];
-    try {
-      IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser");
-      if (browser != null)
-        ((NewsBrowser)browser).setUrl(item.url);
-    } catch(PartInitException x) {};
+    INewsProvider provider = (INewsProvider)TraderPlugin.getNewsProvider();
+    if (provider != null)
+    {
+      INewsData item = provider.getData()[table.getSelectionIndex()];
+      try {
+        IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
+        if (browser != null)
+          ((NewsBrowser)browser).setUrl(item.getUrl());
+      } catch(PartInitException x) {};
+    }
   }
   
   public void previous()
@@ -174,26 +153,36 @@ public class NewsView extends ViewPart implements IDataUpdateListener
       index--;
     table.setSelection(index);
 
-    NewsData item = newsProvider.getData()[table.getSelectionIndex()];
-    try {
-      IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser");
-      if (browser != null)
-        ((NewsBrowser)browser).setUrl(item.url);
-    } catch(PartInitException x) {};
+    INewsProvider provider = (INewsProvider)TraderPlugin.getNewsProvider();
+    if (provider != null)
+    {
+      INewsData item = provider.getData()[table.getSelectionIndex()];
+      try {
+        IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
+        if (browser != null)
+          ((NewsBrowser)browser).setUrl(item.getUrl());
+      } catch(PartInitException x) {};
+    }
   }
   
   private void updateList()
   {
-    Job job = new Job("Update News") {
+    Job job = new Job(Messages.getString("NewsView.4")) { //$NON-NLS-1$
       public IStatus run(IProgressMonitor monitor)
       {
-        newsProvider.update(monitor);
-        table.getDisplay().asyncExec(new Runnable() {
-          public void run() {
-            update();
-          }
-        });
-        return new Status(0, "plugin.id", 0, "OK", null); 
+        INewsProvider provider = (INewsProvider)TraderPlugin.getNewsProvider();
+        if (provider != null)
+        {
+          provider.update(monitor);
+          data = provider.getData();
+          store();
+          table.getDisplay().asyncExec(new Runnable() {
+            public void run() {
+              update();
+            }
+          });
+        }
+        return new Status(0, "plugin.id", 0, "OK", null);  //$NON-NLS-1$ //$NON-NLS-2$
       }
     };
     job.setUser(true);
@@ -205,21 +194,21 @@ public class NewsView extends ViewPart implements IDataUpdateListener
    */
   public void update()
   {
-    NewsData[] data = newsProvider.getData();
-    
-    table.setRedraw(false);
-    table.setItemCount(data.length);
-
-    for (int row = 0; row < data.length; row++)
+    if (data != null)
     {
-      TableItem item = table.getItem(row);
-      item.setText(0, data[row].getFormattedDate());
-      item.setText(1, data[row].getTitle());
-      item.setText(2, data[row].getSource());
+      table.setRedraw(false);
+      table.setItemCount(data.length);
+  
+      for (int row = 0; row < data.length; row++)
+      {
+        TableItem item = table.getItem(row);
+        item.setText(0, df.format(data[row].getDate()));
+        item.setText(1, data[row].getTitle());
+        item.setText(2, data[row].getSource());
+      }
+  
+      table.setRedraw(true);
     }
-
-    table.setRedraw(true);
-//    refreshAction.setEnabled(true);
   }
   
   /* (non-Javadoc)
@@ -253,5 +242,101 @@ public class NewsView extends ViewPart implements IDataUpdateListener
   public void setFocus()
   {
     table.setFocus();
+  }
+
+  public void load()
+  {
+    Vector _data = new Vector();
+    
+    File file = new File(Platform.getLocation().toFile(), "news.xml"); //$NON-NLS-1$
+    if (file.exists() == true)
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(file);
+
+        int index = 0;
+        NodeList firstChild = document.getFirstChild().getChildNodes();
+        for (int i = 0; i < firstChild.getLength(); i++)
+        {
+          Node n = firstChild.item(i);
+          if (n.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
+            _data.add(decodeData(n.getChildNodes()));
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+      
+    data = new INewsData[_data.size()];
+    _data.toArray(data);
+  }
+  
+  private INewsData decodeData(NodeList parent)
+  {
+    INewsData item = new NewsData();
+    for (int i = 0; i < parent.getLength(); i++)
+    {
+      Node n = parent.item(i);
+      Node value = n.getFirstChild();
+      if (value != null)
+      {
+        if (n.getNodeName().equalsIgnoreCase("title") == true) //$NON-NLS-1$
+          item.setTitle(value.getNodeValue());
+        else if (n.getNodeName().equalsIgnoreCase("source") == true) //$NON-NLS-1$
+          item.setSource(value.getNodeValue());
+        else if (n.getNodeName().equalsIgnoreCase("url") == true) //$NON-NLS-1$
+          item.setUrl(value.getNodeValue());
+        else if (n.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
+        {
+          try {
+            item.setDate(df.parse(value.getNodeValue()));
+          } catch(Exception e) {};
+        }
+      }
+    }
+    return item;
+  }
+
+  /**
+   * Method to store the chart data.<br>
+   */
+  public void store()
+  {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.getDOMImplementation().createDocument("", "news", null); //$NON-NLS-1$ //$NON-NLS-2$
+
+      for (int i = 0; i < data.length; i++)
+      {
+        Element element = document.createElement("data"); //$NON-NLS-1$
+        document.getDocumentElement().appendChild(element);
+
+        INewsData item = data[i];
+        Node node = document.createElement("date"); //$NON-NLS-1$
+        element.appendChild(node);
+        node.appendChild(document.createTextNode(df.format(item.getDate())));
+        node = document.createElement("title"); //$NON-NLS-1$
+        element.appendChild(node);
+        node.appendChild(document.createTextNode(item.getTitle()));
+        node = document.createElement("source"); //$NON-NLS-1$
+        element.appendChild(node);
+        node.appendChild(document.createTextNode(item.getSource()));
+        node = document.createElement("url"); //$NON-NLS-1$
+        element.appendChild(node);
+        node.appendChild(document.createTextNode(item.getUrl()));
+      }
+
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1"); //$NON-NLS-1$
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+      transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
+      DOMSource source = new DOMSource(document);
+      BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), "news.xml"))); //$NON-NLS-1$
+      StreamResult result = new StreamResult(out);
+      transformer.transform(source, result);
+      out.flush();
+      out.close();
+    } catch (Exception ex) {};
   }
 }

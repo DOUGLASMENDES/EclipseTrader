@@ -46,6 +46,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
   private FieldEditor[] editor;
   private Combo dataProvider;
   private Combo chartProvider;
+  private Combo newsProvider;
   
   public void init(IWorkbench workbench) 
   {
@@ -85,6 +86,14 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     chartProvider = combo;
 
+    label = new Label(group, SWT.NONE);
+    label.setText("News");
+    label.setLayoutData(new GridData());
+    combo = new Combo(group, SWT.BORDER|SWT.DROP_DOWN|SWT.READ_ONLY);
+    addPluginList("net.sourceforge.eclipsetrader.newsProvider", combo);
+    combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
+    newsProvider = combo;
+
     // Perform operations common to all field editors
     editor = new FieldEditor[_v.size()];
     for (int i = 0; i < _v.size(); i++)
@@ -114,6 +123,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     IPreferenceStore ps = getPreferenceStore(); 
     ps.setValue("net.sourceforge.eclipsetrader.dataProvider", getComboValue(dataProvider));
     ps.setValue("net.sourceforge.eclipsetrader.chartDataProvider", getComboValue(chartProvider));
+    ps.setValue("net.sourceforge.eclipsetrader.newsProvider", getComboValue(newsProvider));
 
     return super.performOk();
   }
