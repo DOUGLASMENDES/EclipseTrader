@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader.ui.views"
+   name="Views"
+   version="0.4.0"
+   provider-name="Sourceforge.net"
+   class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
+
+   <runtime>
+      <library name="views.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+   </requires>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="false"
+            icon="icons/stock_watch.gif"
+            class="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioView"
+            category="trader"
+            name="Stock Watch"
+            id="net.sourceforge.eclipsetrader.ui.views.Portfolio">
+      </view>
+      <view
+            class="net.sourceforge.eclipsetrader.ui.views.news.NewsView"
+            icon="icons/macrodef_obj.gif"
+            category="trader"
+            name="News List"
+            id="net.sourceforge.eclipsetrader.ui.views.News"/>
+      <view
+            class="net.sourceforge.eclipsetrader.ui.views.news.NewsBrowser"
+            icon="icons/news_tab.gif"
+            category="trader"
+            name="News Browser"
+            id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
+      <view
+            allowMultiple="true"
+            icon="icons/chart_persp.gif"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.ChartView"
+            category="trader"
+            name="Chart"
+            id="net.sourceforge.eclipsetrader.ui.views.ChartView"/>
+      <view
+            allowMultiple="true"
+            icon="icons/sample.gif"
+            class="net.sourceforge.eclipsetrader.ui.views.trading.Book"
+            name="Book"
+            id="net.sourceforge.eclipsetrader.ui.views.Book"/>
+      <view
+            allowMultiple="true"
+            icon="icons/chart_persp.gif"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChart"
+            name="RTChart"
+            id="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"/>
+      <category
+            name="Trader"
+            id="trader"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="net.sourceforge.eclipsetrader.TraderPerspective">
+         <view
+               visible="false"
+               id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"/>
+         <view
+               visible="false"
+               id="net.sourceforge.eclipsetrader.ui.views.ChartView"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"/>
+         <view
+               relative="org.eclipse.ui.editorss"
+               relationship="stack"
+               id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
+         <view
+               id="net.sourceforge.eclipsetrader.ui.views.News"
+               relationship="stack"
+               relative="news"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Book"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.ChartView"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.News"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.NewsPerspective"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.NewsPerspective">
+         <view
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
+         <view
+               ratio="0.75"
+               relationship="bottom"
+               relative="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"
+               id="net.sourceforge.eclipsetrader.ui.views.News"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.ChartView"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.News"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.TraderPerspective"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.eclipsetrader.ui.views.portfolio.GeneralPreferencePage"
+            category="eclipsetrader"
+            name="Stock Watch"
+            id="eclipsetrader.portfolio"/>
+      <page
+            class="net.sourceforge.eclipsetrader.ui.views.portfolio.ColorsPreferencePage"
+            category="eclipsetrader.portfolio"
+            name="Colors"
+            id="eclipsetrader.portfolio.colors"/>
+      <page
+            class="net.sourceforge.eclipsetrader.ui.views.news.ColorsPreferencePage"
+            category="eclipsetrader"
+            name="News"
+            id="eclipsetrader.news"/>
+   </extension>
+
+   <extension point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.Portfolio"
+            id="net.sourceforge.eclipsetrader.ui.views.Portfolio.contextMenu">
+         <action
+               label="Grafico Storico"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group1"
+               id="net.sourceforge.eclipsetrader.views.openChart"/>
+         <action
+               label="Grafico Realtime"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group2"
+               id="net.sourceforge.eclipsetrader.views.openRealtimeChart"/>
+         <action
+               label="Book a 5 Livelli"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group2"
+               id="net.sourceforge.eclipsetrader.views.openPriceBook"/>
+         <action
+               label="Elimina"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group3"
+               id="portfolio.remove"/>
+         <action
+               label="Modifica"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group3"
+               id="portfolio.edit"/>
+         <action
+               label="Aggiungi"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group3"
+               id="portfolio.add"/>
+      </viewerContribution>
+      <viewerContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
+            id="net.sourceforge.eclipsetrader.ui.views.ChartView.contextMenu">
+         <action
+               label="Oscillatori"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="group3"
+               id="chart.oscillator"/>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
+            id="net.sourceforge.eclipsetrader.chartActions">
+         <action
+               toolbarPath="additions"
+               label="Next"
+               tooltip="Next"
+               icon="icons/forward.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               id="chart.next"/>
+         <action
+               toolbarPath="additions"
+               label="Previous"
+               tooltip="Previous"
+               icon="icons/back.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               id="chart.previous"/>
+         <action
+               toolbarPath="additions"
+               label="Aggiorna"
+               tooltip="Aggiorna"
+               icon="icons/refresh.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               id="chart.refresh"/>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"
+            id="net.sourceforge.eclipsetrader.browserActions">
+         <action
+               toolbarPath="additions"
+               label="Next"
+               tooltip="Next"
+               icon="icons/next_nav.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
+               style="push"
+               id="news.next"/>
+         <action
+               toolbarPath="additions"
+               label="Previous"
+               tooltip="Previous"
+               icon="icons/prev_nav.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
+               style="push"
+               id="news.previous"/>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.News"
+            id="net.sourceforge.eclipsetrader.newsActions">
+         <action
+               toolbarPath="additions"
+               label="Aggiorna"
+               tooltip="Aggiorna"
+               icon="icons/refresh.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
+               style="push"
+               id="news.refresh"/>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.Portfolio"
+            id="net.sourceforge.eclipsetrader.portfolioActions">
+         <action
+               toolbarPath="additions"
+               label="Down"
+               tooltip="Sposta in Basso"
+               icon="icons/next_nav.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               style="push"
+               id="portfolio.movedown"/>
+         <action
+               toolbarPath="additions"
+               label="Up"
+               tooltip="Sposta in Alto"
+               icon="icons/prev_nav.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               style="push"
+               id="portfolio.moveup"/>
+         <action
+               toolbarPath="additions"
+               label="Add Item"
+               tooltip="Aggiungi Titolo"
+               icon="icons/add_exc.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               style="push"
+               id="portfolio.add"/>
+      </viewContribution>
+   </extension>
+
+</plugin>
