@@ -162,7 +162,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
                 try {
                   data[i].setDate(df.parse(item[6] + " " + item[5]));
                 } catch(Exception e) {};
-                data[i].setTime(tf.format(data[i].getDate()));
                 data[i].setBidPrice(pf.parse(item[7]).doubleValue());
                 data[i].setBidSize(nf.parse(item[8]).intValue());
                 data[i].setAskPrice(pf.parse(item[9]).doubleValue());
@@ -172,7 +171,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
                 data[i].setClosePrice(pf.parse(item[13]).doubleValue());
                 data[i].setLowPrice(pf.parse(item[14]).doubleValue());
                 data[i].setHighPrice(pf.parse(item[15]).doubleValue());
-                break;
               }
             }
           }
