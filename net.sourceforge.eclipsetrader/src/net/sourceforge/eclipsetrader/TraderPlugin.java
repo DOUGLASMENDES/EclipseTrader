@@ -11,6 +11,7 @@
 package net.sourceforge.eclipsetrader;
 
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -75,6 +76,27 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       if (getPluginCount("net.sourceforge.eclipsetrader.dataProvider") == 1)
         ps.setValue("net.sourceforge.eclipsetrader.dataProvider", getFirstPlugin("net.sourceforge.eclipsetrader.dataProvider"));
     }
+    
+    // Sets the proxy preferences
+    if (ps.getInt("PROXY_ENABLED") == 1)
+    {
+      Properties prop = System.getProperties();
+      if (ps.getString("HTTP_PROXY_HOST").length() != 0)
+        prop.setProperty("http.proxyHost", ps.getString("HTTP_PROXY_HOST"));
+      prop.setProperty("http.proxyPort", ps.getString("HTTP_PROXY_PORT"));
+      prop.setProperty("http.proxyUser", ps.getString("PROXY_USER_NAME"));
+      prop.setProperty("http.proxyPassword", ps.getString("PROXY_PASSWORD"));
+      if (ps.getString("HTTPS_PROXY_HOST").length() != 0)
+        prop.setProperty("https.proxyHost", ps.getString("HTTPS_PROXY_HOST"));
+      prop.setProperty("https.proxyPort", ps.getString("HTTPS_PROXY_PORT"));
+      prop.setProperty("https.proxyUser", ps.getString("PROXY_USER_NAME"));
+      prop.setProperty("https.proxyPassword", ps.getString("PROXY_PASSWORD"));
+      if (ps.getString("SOCKS_PROXY_HOST").length() != 0)
+        prop.setProperty("socksProxyHost", ps.getString("SOCKS_PROXY_HOST"));
+      prop.setProperty("socksProxyPort", ps.getString("SOCKS_PROXY_PORT"));
+      prop.setProperty("java.net.socks.username", ps.getString("PROXY_USER_NAME"));
+      prop.setProperty("java.net.socks.password", ps.getString("PROXY_PASSWORD"));
+    }
 
     // Listen for changes on the plugin's preferences
     getPreferenceStore().addPropertyChangeListener(this);
@@ -123,6 +145,111 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       if (dataProvider != null)
         dataProvider.setData(dataStore.getData());
     }
+    else if (property.equalsIgnoreCase("PROXY_ENABLED") == true)
+    {
+      IPreferenceStore ps = getPreferenceStore();
+      Properties prop = System.getProperties();
+      Integer newValue = (Integer)event.getNewValue();
+      if (newValue.intValue() == 0)
+      {
+        prop.remove("http.proxyHost");
+        prop.remove("http.proxyPort");
+        prop.remove("http.proxyUser");
+        prop.remove("http.proxyPassword");
+        prop.remove("https.proxyHost");
+        prop.remove("https.proxyPort");
+        prop.remove("https.proxyUser");
+        prop.remove("https.proxyPassword");
+        prop.remove("socksProxyHost");
+        prop.remove("socksProxyPort");
+        prop.remove("java.net.socks.username");
+        prop.remove("java.net.socks.password");
+      }
+      else
+      {
+        if (ps.getString("HTTP_PROXY_HOST").length() != 0)
+          prop.setProperty("http.proxyHost", ps.getString("HTTP_PROXY_HOST"));
+        prop.setProperty("http.proxyPort", ps.getString("HTTP_PROXY_PORT"));
+        prop.setProperty("http.proxyUser", ps.getString("PROXY_USER_NAME"));
+        prop.setProperty("http.proxyPassword", ps.getString("PROXY_PASSWORD"));
+        if (ps.getString("HTTPS_PROXY_HOST").length() != 0)
+          prop.setProperty("https.proxyHost", ps.getString("HTTPS_PROXY_HOST"));
+        prop.setProperty("https.proxyPort", ps.getString("HTTPS_PROXY_PORT"));
+        prop.setProperty("https.proxyUser", ps.getString("PROXY_USER_NAME"));
+        prop.setProperty("https.proxyPassword", ps.getString("PROXY_PASSWORD"));
+        if (ps.getString("SOCKS_PROXY_HOST").length() != 0)
+          prop.setProperty("socksProxyHost", ps.getString("SOCKS_PROXY_HOST"));
+        prop.setProperty("socksProxyPort", ps.getString("SOCKS_PROXY_PORT"));
+        prop.setProperty("java.net.socks.username", ps.getString("PROXY_USER_NAME"));
+        prop.setProperty("java.net.socks.password", ps.getString("PROXY_PASSWORD"));
+      }
+    }
+/*
+    else if (property.equalsIgnoreCase("HTTP_PROXY_HOST") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      if (newValue.length() == 0)
+        System.getProperties().remove("http.proxyHost");
+      else
+        System.getProperties().setProperty("http.proxyHost", newValue);
+    }
+    else if (property.equalsIgnoreCase("HTTP_PROXY_PORT") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      if (newValue.length() == 0)
+        System.getProperties().remove("http.proxyPort");
+      else
+        System.getProperties().setProperty("http.proxyPort", newValue);
+    }
+    else if (property.equalsIgnoreCase("HTTPS_PROXY_HOST") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      if (newValue.length() == 0)
+        System.getProperties().remove("https.proxyHost");
+      else
+        System.getProperties().setProperty("https.proxyHost", newValue);
+    }
+    else if (property.equalsIgnoreCase("HTTPS_PROXY_PORT") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      if (newValue.length() == 0)
+        System.getProperties().remove("https.proxyPort");
+      else
+        System.getProperties().setProperty("https.proxyPort", newValue);
+    }
+    else if (property.equalsIgnoreCase("SOCKS_PROXY_HOST") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      if (newValue.length() == 0)
+        System.getProperties().remove("socksProxyHost");
+      else
+        System.getProperties().setProperty("socksProxyHost", newValue);
+    }
+    else if (property.equalsIgnoreCase("SOCKS_PROXY_PORT") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      if (newValue.length() == 0)
+        System.getProperties().remove("socksProxyPort");
+      else
+        System.getProperties().setProperty("socksProxyPort", newValue);
+    }
+    else if (property.equalsIgnoreCase("PROXY_USER_NAME") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      Properties prop = System.getProperties();
+      prop.setProperty("http.proxyUser", newValue);
+      prop.setProperty("https.proxyUser", newValue);
+      prop.setProperty("java.net.socks.username", newValue);
+    }
+    else if (property.equalsIgnoreCase("PROXY_PASSWORD") == true)
+    {
+      String newValue = (String)event.getNewValue();
+      Properties prop = System.getProperties();
+      prop.setProperty("http.proxyPassword", newValue);
+      prop.setProperty("https.proxyPassword", newValue);
+      prop.setProperty("java.net.socks.password", newValue);
+    }
+*/
   }
 
 	/**
