@@ -26,7 +26,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -88,78 +88,77 @@ public class PortfolioDialog extends TitleAreaDialog implements ModifyListener
   {
     Composite composite = new Composite(parent, SWT.NONE);
     composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-    composite.setLayout(new GridLayout(2, false));
+    composite.setLayout(new GridLayout(1, false));
     
-    Label label = new Label(composite, SWT.NONE);
-    label.setText(Messages.getString("PortfolioDialog.5")); //$NON-NLS-1$
-    label.setAlignment(SWT.CENTER);
-    label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-    GridData gridData = new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL);
-    gridData.horizontalSpan = 2;
-    label.setLayoutData(gridData);
+    Group group = new Group(composite, SWT.NONE);
+    group.setText(Messages.getString("PortfolioDialog.5"));
+    group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    group.setLayout(new GridLayout(2, false));
     
-    label = new Label(composite, SWT.NONE);
+    Label label = new Label(group, SWT.NONE);
     label.setText(Messages.getString("PortfolioDialog.Symbol")); //$NON-NLS-1$
-    label.setLayoutData(new GridData());
-    text1 = new Text(composite, SWT.BORDER);
+    GridData gridData = new GridData();
+    gridData.widthHint = 100;
+    label.setLayoutData(gridData);
+    text1 = new Text(group, SWT.BORDER);
     text1.addModifyListener(this);
     text1.setText(symbol);
     gridData = new GridData();
     gridData.widthHint = 75;
     text1.setLayoutData(gridData);
 
-    label = new Label(composite, SWT.NONE);
+    label = new Label(group, SWT.NONE);
     label.setText(Messages.getString("PortfolioDialog.Ticker")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
-    text2 = new Text(composite, SWT.BORDER);
+    text2 = new Text(group, SWT.BORDER);
     text2.setText(ticker);
     text2.addModifyListener(this);
     gridData = new GridData();
     gridData.widthHint = 75;
     text2.setLayoutData(gridData);
 
-    label = new Label(composite, SWT.NONE);
+    label = new Label(group, SWT.NONE);
     label.setText(Messages.getString("PortfolioDialog.8")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
-    combo = new Combo(composite, SWT.BORDER);
+    combo = new Combo(group, SWT.BORDER);
     loadStocklist();
     combo.setText(description);
     combo.addModifyListener(this);
     gridData = new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL);
     combo.setLayoutData(gridData);
+    combo.setVisibleItemCount(20);
 
-    label = new Label(composite, SWT.NONE);
+    label = new Label(group, SWT.NONE);
     label.setText(Messages.getString("PortfolioDialog.9")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
-    text3 = new Text(composite, SWT.BORDER);
+    text3 = new Text(group, SWT.BORDER);
     text3.setText(nf.format(minimumQuantity));
     text3.addModifyListener(this);
     gridData = new GridData();
     gridData.widthHint = 75;
     text3.setLayoutData(gridData);
     
-    label = new Label(composite, SWT.NONE);
-    label.setText(Messages.getString("PortfolioDialog.10")); //$NON-NLS-1$
-    label.setAlignment(SWT.CENTER);
-    label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-    gridData = new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL);
-    gridData.horizontalSpan = 2;
-    label.setLayoutData(gridData);
+    group = new Group(composite, SWT.NONE);
+    group.setText(Messages.getString("PortfolioDialog.10"));
+    group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    group.setLayout(new GridLayout(2, false));
 
-    label = new Label(composite, SWT.NONE);
+    label = new Label(group, SWT.NONE);
     label.setText(Messages.getString("PortfolioDialog.11")); //$NON-NLS-1$
-    label.setLayoutData(new GridData());
-    text4 = new Text(composite, SWT.BORDER);
+    gridData = new GridData();
+    gridData.widthHint = 100;
+    label.setLayoutData(gridData);
+    text4 = new Text(group, SWT.BORDER);
     text4.setText(nf.format(quantity));
     text4.addModifyListener(this);
     gridData = new GridData();
     gridData.widthHint = 75;
     text4.setLayoutData(gridData);
 
-    label = new Label(composite, SWT.NONE);
+    label = new Label(group, SWT.NONE);
     label.setText(Messages.getString("PortfolioDialog.12")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
-    text5 = new Text(composite, SWT.BORDER);
+    text5 = new Text(group, SWT.BORDER);
     text5.setText(pf.format(paid));
     text5.addModifyListener(this);
     gridData = new GridData();
