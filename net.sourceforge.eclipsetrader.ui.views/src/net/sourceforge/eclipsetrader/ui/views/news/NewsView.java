@@ -70,6 +70,7 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm"); //$NON-NLS-1$
   private Timer timer;
   private INewsData[] data;
+  private int columnWidth[] = { 105, 435, 145 };
 
   public NewsView()
   {
@@ -88,19 +89,23 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
     table.setBackground(background);
 
     IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
-    String[] columnWidth = pref.getString("news.columnWidth").split(",");
+
+    // Columns width
+    String[] w = pref.getString("news.columnWidth").split(",");
+    for (int i = 0; i < w.length && i < columnWidth.length; i++)
+      columnWidth[i] = Integer.parseInt(w[i]);
 
     TableColumn column = new TableColumn(table, SWT.RIGHT, 0);
     column.setText(Messages.getString("NewsView.1")); //$NON-NLS-1$
-    column.setWidth(Integer.parseInt(columnWidth[0]));
+    column.setWidth(columnWidth[0]);
     column.addControlListener(this);
     column = new TableColumn(table, SWT.LEFT, 1);
     column.setText(Messages.getString("NewsView.2")); //$NON-NLS-1$
-    column.setWidth(Integer.parseInt(columnWidth[1]));
+    column.setWidth(columnWidth[1]);
     column.addControlListener(this);
     column = new TableColumn(table, SWT.LEFT, 2);
     column.setText(Messages.getString("NewsView.3")); //$NON-NLS-1$
-    column.setWidth(Integer.parseInt(columnWidth[2]));
+    column.setWidth(columnWidth[2]);
     column.addControlListener(this);
 
     table.addMouseListener(new MouseListener() {
@@ -226,6 +231,13 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
    */
   public void dispose()
   {
+    // Save the columns width
+    String value = "";
+    for (int i = 0; i < columnWidth.length; i++)
+      value += String.valueOf(columnWidth[i]) + ",";
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    pref.setValue("news.columnWidth", value);
+
     super.dispose();
   }
 
@@ -364,14 +376,15 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
   {
     if (e.getSource() instanceof TableColumn)
     {
-      String value = "";
       for (int i = 0; i < table.getColumnCount(); i++)
       {
         TableColumn column = table.getColumn(i);
-        value += String.valueOf(column.getWidth()) + ",";
+        if (column == e.getSource())
+        {
+          columnWidth[i] = column.getWidth();
+          break;
+        }
       }
-      IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
-      pref.setValue("news.columnWidth", value);
     }
   }
 }
