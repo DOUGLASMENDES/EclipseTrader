@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader"
+   name="%pluginName"
+   version="0.4.0"
+   provider-name="%providerName"
+   class="net.sourceforge.eclipsetrader.TraderPlugin">
+
+   <runtime>
+      <library name="eclipsetrader.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+   </requires>
+   <extension-point id="dataStore" name="Data Store" schema="schema/portfolioData.exsd"/>
+   <extension-point id="chartDataProvider" name="Chart Data Provider" schema="schema/chartDataProvider.exsd"/>
+   <extension-point id="chartProvider" name="Chart Provider" schema="schema/chartProvider.exsd"/>
+   <extension-point id="chartPlotter" name="Chart Plotter" schema="schema/chartPlotter.exsd"/>
+   <extension-point id="dataProvider" name="Data Provider" schema="schema/dataProvider.exsd"/>
+   <extension-point id="tradingProvider" name="Trading Provider" schema="schema/tradingProvider.exsd"/>
+   <extension
+         id="Product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="%productName"
+            application="net.sourceforge.eclipsetrader.application">
+            <property name="windowImages" value="eclipse.gif,eclipse32.gif"/>
+            <property name="aboutImage" value="eclipse_lg.gif"/>
+            <property name="aboutText" value="%productBlurb"/>
+      </product>
+   </extension>
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+         <application>
+             <run
+                  class="net.sourceforge.eclipsetrader.internal.Application">
+             </run>
+         </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            icon="icons/twowaycompare_co.gif"
+            class="net.sourceforge.eclipsetrader.internal.TraderPerspective"
+            name="Trader"
+            id="net.sourceforge.eclipsetrader.TraderPerspective"/>
+      <perspective
+            icon="icons/news_persp.gif"
+            class="net.sourceforge.eclipsetrader.internal.NewsPerspective"
+            name="News"
+            id="net.sourceforge.eclipsetrader.NewsPerspective"/>
+      <perspective
+            icon="icons/chart.gif"
+            class="net.sourceforge.eclipsetrader.internal.ChartsPerspective"
+            name="Charts"
+            id="net.sourceforge.eclipsetrader.ChartsPerspective"/>
+   </extension>
+   <extension
+         name="XML Data Store"
+         point="net.sourceforge.eclipsetrader.dataStore">
+      <provider
+            class="net.sourceforge.eclipsetrader.internal.XMLDataStore"
+            id="net.sourceforge.eclipsetrader.xml_data_store"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.eclipsetrader.preferences.GeneralPreferencePage"
+            name="Eclipse Trader"
+            id="eclipsetrader"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Streaming Control"
+            visible="true"
+            id="net.sourceforge.eclipsetrader.streaming">
+         <action
+               toolbarPath="additions"
+               label="Stop Streaming"
+               class="net.sourceforge.eclipsetrader.internal.StreamingControl"
+               icon="icons/stop.gif"
+               tooltip="Stop Streaming"
+               pulldown="false"
+               style="push"
+               id="net.sourceforge.eclipsetrader.stopStreaming"/>
+         <action
+               toolbarPath="additions"
+               label="Start Streaming"
+               tooltip="Start Streaming"
+               icon="icons/run.gif"
+               class="net.sourceforge.eclipsetrader.internal.StreamingControl"
+               style="push"
+               pulldown="false"
+               id="net.sourceforge.eclipsetrader.startStreaming"/>
+      </actionSet>
+   </extension>
+
+</plugin>
