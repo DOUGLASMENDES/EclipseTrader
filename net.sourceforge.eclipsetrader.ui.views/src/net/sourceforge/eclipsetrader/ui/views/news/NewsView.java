@@ -34,13 +34,17 @@ import net.sourceforge.eclipsetrader.INewsProvider;
 import net.sourceforge.eclipsetrader.NewsData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
@@ -58,7 +62,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class NewsView extends ViewPart implements IDataUpdateListener 
+public class NewsView extends ViewPart implements IDataUpdateListener, ControlListener 
 {
   private Table table;
   private Color background = new Color(Display.getCurrent(), 255, 255, 224);
@@ -83,15 +87,21 @@ public class NewsView extends ViewPart implements IDataUpdateListener
     table.setLinesVisible(true);
     table.setBackground(background);
 
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    String[] columnWidth = pref.getString("news.columnWidth").split(",");
+
     TableColumn column = new TableColumn(table, SWT.RIGHT, 0);
     column.setText(Messages.getString("NewsView.1")); //$NON-NLS-1$
-    column.setWidth(105);
+    column.setWidth(Integer.parseInt(columnWidth[0]));
+    column.addControlListener(this);
     column = new TableColumn(table, SWT.LEFT, 1);
     column.setText(Messages.getString("NewsView.2")); //$NON-NLS-1$
-    column.setWidth(435);
+    column.setWidth(Integer.parseInt(columnWidth[1]));
+    column.addControlListener(this);
     column = new TableColumn(table, SWT.LEFT, 2);
     column.setText(Messages.getString("NewsView.3")); //$NON-NLS-1$
-    column.setWidth(145);
+    column.setWidth(Integer.parseInt(columnWidth[2]));
+    column.addControlListener(this);
 
     table.addMouseListener(new MouseListener() {
       public void mouseDoubleClick(MouseEvent e) {
@@ -338,5 +348,30 @@ public class NewsView extends ViewPart implements IDataUpdateListener
       out.flush();
       out.close();
     } catch (Exception ex) {};
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.ControlListener#controlMoved(org.eclipse.swt.events.ControlEvent)
+   */
+  public void controlMoved(ControlEvent e)
+  {
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.ControlListener#controlResized(org.eclipse.swt.events.ControlEvent)
+   */
+  public void controlResized(ControlEvent e)
+  {
+    if (e.getSource() instanceof TableColumn)
+    {
+      String value = "";
+      for (int i = 0; i < table.getColumnCount(); i++)
+      {
+        TableColumn column = table.getColumn(i);
+        value += String.valueOf(column.getWidth()) + ",";
+      }
+      IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+      pref.setValue("news.columnWidth", value);
+    }
   }
 }

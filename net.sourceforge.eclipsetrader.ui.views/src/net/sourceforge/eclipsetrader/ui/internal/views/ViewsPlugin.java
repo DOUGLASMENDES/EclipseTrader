@@ -69,6 +69,8 @@ public class ViewsPlugin extends AbstractUIPlugin
     PreferenceConverter.setDefault(pref, "book.level5_color", new RGB(255, 255, 0));
 
     PreferenceConverter.setDefault(pref, "trendbar.indicator", new RGB(0, 0, 0));
+    
+    pref.setDefault("news.columnWidth", "105,435,145");
 	}
 
 	/**
