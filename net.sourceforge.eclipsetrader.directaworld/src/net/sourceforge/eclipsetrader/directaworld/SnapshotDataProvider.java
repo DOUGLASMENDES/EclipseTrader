@@ -22,19 +22,14 @@ import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.eclipsetrader.IExtendedData;
+import net.sourceforge.eclipsetrader.RealtimeChartDataProvider;
+import net.sourceforge.eclipsetrader.TraderPlugin;
 import sun.misc.BASE64Encoder;
 
-import net.sourceforge.eclipsetrader.DataProvider;
-import net.sourceforge.eclipsetrader.IExtendedData;
-import net.sourceforge.eclipsetrader.TraderPlugin;
-
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
-public class SnapshotDataProvider extends DataProvider
+public class SnapshotDataProvider extends RealtimeChartDataProvider
 {
   private Timer timer;
   private String userName = "";
@@ -42,6 +37,10 @@ public class SnapshotDataProvider extends DataProvider
   private Socket socket;
   private OutputStream os;
   private DataInputStream is;
+  
+  public SnapshotDataProvider()
+  {
+  }
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IBasicDataProvider#startStreaming()

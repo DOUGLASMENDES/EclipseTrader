@@ -20,8 +20,8 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.sourceforge.eclipsetrader.DataProvider;
 import net.sourceforge.eclipsetrader.IExtendedData;
+import net.sourceforge.eclipsetrader.RealtimeChartDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 
@@ -33,24 +33,15 @@ import sun.misc.BASE64Encoder;
 /**
  * @author Marco Maccaferri
  */
-public class SnapshotDataProvider extends DataProvider
+public class SnapshotDataProvider extends RealtimeChartDataProvider
 {
   private Timer timer;
-  private Calendar startTime = Calendar.getInstance();
-  private Calendar stopTime = Calendar.getInstance();
   private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-  private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy K:mma");
+  private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy h:mma");
   private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   
   public SnapshotDataProvider()
   {
-    startTime.set(Calendar.HOUR, 9);
-    startTime.set(Calendar.MINUTE, 0);
-    startTime.set(Calendar.SECOND, 0);
-
-    stopTime.set(Calendar.HOUR, 17);
-    stopTime.set(Calendar.MINUTE, 25);
-    stopTime.set(Calendar.SECOND, 0);
   }
   
   /**
