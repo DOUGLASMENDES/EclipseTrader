@@ -273,41 +273,6 @@ public interface IExtendedData extends IBasicData
   public abstract void setVolume(int volume);
 
   /**
-   * Method to return the askPriceVariance field.<br>
-   *
-   * @return Returns the askPriceVariance.
-   */
-  public abstract double getAskPriceVariance();
-
-  /**
-   * Method to return the askSizeVariance field.<br>
-   *
-   * @return Returns the askSizeVariance.
-   */
-  public abstract double getAskSizeVariance();
-
-  /**
-   * Method to return the bidPriceVariance field.<br>
-   *
-   * @return Returns the bidPriceVariance.
-   */
-  public abstract double getBidPriceVariance();
-
-  /**
-   * Method to return the bidSizeVariance field.<br>
-   *
-   * @return Returns the bidSizeVariance.
-   */
-  public abstract double getBidSizeVariance();
-
-  /**
-   * Method to return the lastPriceVariance field.<br>
-   *
-   * @return Returns the lastPriceVariance.
-   */
-  public abstract double getLastPriceVariance();
-
-  /**
    * Method to return the date field.<br>
    *
    * @return Returns the date.

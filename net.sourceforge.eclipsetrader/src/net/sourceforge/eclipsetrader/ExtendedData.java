@@ -22,21 +22,11 @@ import java.util.Date;
 public class ExtendedData extends BasicData implements IExtendedData 
 {
   private double lastPrice = 0;
-  private double lastPriceVariance = 0;
-  private long lastPriceTimestamp = 0;
   private String change = "0.00%";
   private double bidPrice = 0;
-  private double bidPriceVariance = 0;
-  private long bidPriceTimestamp = 0;
   public int bidSize = 0;
-  public double bidSizeVariance = 0;
-  private long bidSizeTimestamp = 0;
   public double askPrice = 0;
-  public double askPriceVariance = 0;
-  private long askPriceTimestamp = 0;
   public int askSize = 0;
-  public double askSizeVariance = 0;
-  private long askSizeTimestamp = 0;
   public int volume = 0;
   public double marketValue = 0;
   public String time = "";
@@ -70,23 +60,7 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setAskPrice(double askPrice)
   {
-    if (askPrice != 0 && this.askPrice != 0 && (this.askPrice != askPrice || (System.currentTimeMillis() - askPriceTimestamp) >= 15000))
-    {
-      this.askPriceVariance = askPrice - this.askPrice;
-      this.askPriceTimestamp = System.currentTimeMillis();
-    }
     this.askPrice = askPrice;
-  }
-  /**
-   * Method to return the askPriceVariance field.<br>
-   *
-   * @return Returns the askPriceVariance.
-   */
-  public double getAskPriceVariance()
-  {
-    if ((System.currentTimeMillis() - askPriceTimestamp) >= 15000)
-      askPriceVariance = 0;
-    return askPriceVariance;
   }
   /**
    * Method to return the askSize field.<br>
@@ -104,23 +78,7 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setAskSize(int askSize)
   {
-    if (askSize != 0 && this.askSize != 0 && (this.askSize != askSize || (System.currentTimeMillis() - askSizeTimestamp) >= 15000))
-    {
-      this.askSizeVariance = askSize - this.askSize;
-      this.askSizeTimestamp = System.currentTimeMillis();
-    }
     this.askSize = askSize;
-  }
-  /**
-   * Method to return the askSizeVariance field.<br>
-   *
-   * @return Returns the askSizeVariance.
-   */
-  public double getAskSizeVariance()
-  {
-    if ((System.currentTimeMillis() - askSizeTimestamp) >= 15000)
-      askSizeVariance = 0;
-    return askSizeVariance;
   }
   /**
    * Method to return the bidPrice field.<br>
@@ -138,23 +96,7 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setBidPrice(double bidPrice)
   {
-    if (bidPrice != 0 && this.bidPrice != 0 && (this.bidPrice != bidPrice || (System.currentTimeMillis() - bidPriceTimestamp) >= 15000))
-    {
-      this.bidPriceVariance = bidPrice - this.bidPrice;
-      this.bidPriceTimestamp = System.currentTimeMillis();
-    }
     this.bidPrice = bidPrice;
-  }
-  /**
-   * Method to return the bidPriceVariance field.<br>
-   *
-   * @return Returns the bidPriceVariance.
-   */
-  public double getBidPriceVariance()
-  {
-    if ((System.currentTimeMillis() - bidPriceTimestamp) >= 15000)
-      bidPriceVariance = 0;
-    return bidPriceVariance;
   }
   /**
    * Method to return the bidSize field.<br>
@@ -172,23 +114,7 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setBidSize(int bidSize)
   {
-    if (bidSize != 0 && this.bidSize != 0 && (this.bidSize != bidSize || (System.currentTimeMillis() - bidSizeTimestamp) >= 15000))
-    {
-      this.bidSizeVariance = bidSize - this.bidSize;
-      this.bidSizeTimestamp = System.currentTimeMillis();
-    }
     this.bidSize = bidSize;
-  }
-  /**
-   * Method to return the bidSizeVariance field.<br>
-   *
-   * @return Returns the bidSizeVariance.
-   */
-  public double getBidSizeVariance()
-  {
-    if ((System.currentTimeMillis() - bidSizeTimestamp) >= 15000)
-      bidSizeVariance = 0;
-    return bidSizeVariance;
   }
   /**
    * Method to return the change field.<br>
@@ -278,23 +204,7 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setLastPrice(double lastPrice)
   {
-    if (lastPrice != 0 && this.lastPrice != 0 && (this.lastPrice != lastPrice || (System.currentTimeMillis() - lastPriceTimestamp) >= 15000))
-    {
-      this.lastPriceVariance = lastPrice - this.lastPrice;
-      this.lastPriceTimestamp = System.currentTimeMillis();
-    }
     this.lastPrice = lastPrice;
-  }
-  /**
-   * Method to return the lastPriceVariance field.<br>
-   *
-   * @return Returns the lastPriceVariance.
-   */
-  public double getLastPriceVariance()
-  {
-    if ((System.currentTimeMillis() - lastPriceTimestamp) >= 15000)
-      lastPriceVariance = 0;
-    return lastPriceVariance;
   }
   /**
    * Method to return the lowPrice field.<br>
