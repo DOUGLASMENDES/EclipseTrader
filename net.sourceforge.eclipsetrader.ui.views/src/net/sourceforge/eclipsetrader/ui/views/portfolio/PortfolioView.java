@@ -50,6 +50,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -154,7 +155,7 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
       public void dragSetData(DragSourceEvent event) 
       {
         IExtendedData data = TraderPlugin.getData()[table.getSelectionIndex()];
-        if (getColumnDataIndex(dragColumn) == 12 && data.getQuantity() != 0)
+        if ((dragColumn == 12 || dragColumn == 13 || dragColumn == 15) && data.getQuantity() != 0)
           event.data = "S;" + data.getSymbol() + ";" + data.getTicker() + ";" + data.getQuantity() + ";" + data.getLastPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         else
           event.data = "B;" + data.getSymbol() + ";" + data.getTicker() + ";" + data.getMinimumQuantity() + ";" + data.getLastPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -752,6 +753,10 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
   {
     int column = -1;
     
+    ScrollBar bar = table.getHorizontalBar();
+    if (bar != null)
+      x += bar.getSelection();
+    
     for (int i = 0, left = 0; i < table.getColumnCount(); i++)
     {
       TableColumn tc = table.getColumn(i);
@@ -760,6 +765,6 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
       left += tc.getWidth();
     }
     
-    return column;
+    return getColumnDataIndex(column);
   }
 }
