@@ -64,7 +64,7 @@
             allowMultiple="false"
             class="net.sourceforge.eclipsetrader.ui.views.indices.IndexView"
             icon="icons/sample.gif"
-            name="Indices"
+            name="%indices.title"
             id="net.sourceforge.eclipsetrader.ui.views.indices"/>
       <category
             name="Trader"
@@ -139,7 +139,7 @@
       <page
             class="net.sourceforge.eclipsetrader.ui.views.indices.IndicesPreferencePage"
             category="eclipsetrader"
-            name="Indices"
+            name="%indices.title"
             id="eclipsetrader.indices"/>
    </extension>
 
@@ -416,7 +416,7 @@
             visible="true"
             id="net.sourceforge.eclipsetrader.views.actionSet">
          <action
-               label="Mostra Indici"
+               label="%actions.showIndices"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
                style="push"
                menubarPath="window/additions"

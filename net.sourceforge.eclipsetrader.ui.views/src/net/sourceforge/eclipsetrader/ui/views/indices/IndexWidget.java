@@ -245,6 +245,8 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
     if (price != data.getLastPrice())
       timeStamp = System.currentTimeMillis();
     price = data.getLastPrice();
+    
+    layout();
   }
 
   /* (non-Javadoc)

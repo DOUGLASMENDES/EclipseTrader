@@ -309,6 +309,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
           for (int ii = 0; ii < symbols.length; ii++)
           {
             IndexWidget w = (IndexWidget)widgets.get(index);
+            w.setSymbol(symbols[ii]);
             w.clear();
             index++;
           }

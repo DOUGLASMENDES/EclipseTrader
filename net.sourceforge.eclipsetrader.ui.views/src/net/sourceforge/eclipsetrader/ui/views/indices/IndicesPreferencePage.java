@@ -52,8 +52,8 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
   
   class IndexProvider
   {
-    private String id = "";
-    private String label = "";
+    private String id = ""; //$NON-NLS-1$
+    private String label = ""; //$NON-NLS-1$
     private Vector children = new Vector();
     private IndexProvider parent = null;
     
@@ -98,9 +98,9 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
   
   class IndexItem
   {
-    private String id = "";
-    private String label = "";
-    private String symbol = "";
+    private String id = ""; //$NON-NLS-1$
+    private String label = ""; //$NON-NLS-1$
+    private String symbol = ""; //$NON-NLS-1$
     private IndexProvider parent = null;
     
     public IndexItem(String label, String symbol)
@@ -154,17 +154,17 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
     // Standard color preferences
-    _v.add(new ColorFieldEditor("index.text_color", "Text Foreground", entryTable));
-    _v.add(new ColorFieldEditor("index.background", "Background", entryTable));
-    _v.add(new ColorFieldEditor("index.positive_value_color", Messages.getString("BookPreferencePage.positiveValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
-    _v.add(new ColorFieldEditor("index.negative_value_color", Messages.getString("BookPreferencePage.negativeValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("index.text_color", Messages.getString("IndicesPreferencePage.textForeground"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("index.background", Messages.getString("IndicesPreferencePage.background"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("index.positive_value_color", Messages.getString("IndicesPreferencePage.positiveValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("index.negative_value_color", Messages.getString("IndicesPreferencePage.negativeValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
 
     // Index table label
     Label label = new Label(entryTable, SWT.NONE);
     GridData gridData = new GridData();
     gridData.horizontalSpan = 2;
     label.setLayoutData(gridData);
-    label.setText("Available indices:");
+    label.setText(Messages.getString("IndicesPreferencePage.availableIndices")); //$NON-NLS-1$
 
     // Index tree view
     tree = new Tree(entryTable, SWT.CHECK|SWT.BORDER);
@@ -221,28 +221,28 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
     // Insert the index providers
     Vector sources = new Vector();
     IExtensionRegistry registry = Platform.getExtensionRegistry();
-    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.indexProvider");
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.indexProvider"); //$NON-NLS-1$
     if (extensionPoint != null)
     {
       IConfigurationElement[] members = extensionPoint.getConfigurationElements();
       for (int i = 0; i < members.length; i++)
       {
-        IndexProvider provider = new IndexProvider(members[i].getAttribute("id"), members[i].getAttribute("name"));
+        IndexProvider provider = new IndexProvider(members[i].getAttribute("id"), members[i].getAttribute("name")); //$NON-NLS-1$ //$NON-NLS-2$
         sources.add(provider);
 
         IConfigurationElement[] children = members[i].getChildren();
         for (int ii = 0; ii < children.length; ii++)
         {
-          if (children[ii].getName().equalsIgnoreCase("category") == true)
+          if (children[ii].getName().equalsIgnoreCase("category") == true) //$NON-NLS-1$
           {
-            IndexProvider subProvider = new IndexProvider(members[i].getAttribute("id"), children[ii].getAttribute("name"));
+            IndexProvider subProvider = new IndexProvider(members[i].getAttribute("id"), children[ii].getAttribute("name")); //$NON-NLS-1$ //$NON-NLS-2$
             provider.add(subProvider);
             IConfigurationElement[] items = children[ii].getChildren();
             for (int iii = 0; iii < items.length; iii++)
-              subProvider.add(new IndexItem(items[iii].getAttribute("label"), items[iii].getAttribute("symbol")));
+              subProvider.add(new IndexItem(items[iii].getAttribute("label"), items[iii].getAttribute("symbol"))); //$NON-NLS-1$ //$NON-NLS-2$
           }
-          else if (children[ii].getName().equalsIgnoreCase("index") == true)
-            provider.add(new IndexItem(children[ii].getAttribute("label"), children[ii].getAttribute("symbol")));
+          else if (children[ii].getName().equalsIgnoreCase("index") == true) //$NON-NLS-1$
+            provider.add(new IndexItem(children[ii].getAttribute("label"), children[ii].getAttribute("symbol"))); //$NON-NLS-1$ //$NON-NLS-2$
         }
       }
     }
@@ -253,7 +253,7 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
     {
       if (sources.get(i) instanceof IndexProvider)
       {
-        String symbols[] = getPreferenceStore().getString("index." + ((IndexProvider)sources.get(i)).getId()).split(",");
+        String symbols[] = getPreferenceStore().getString("index." + ((IndexProvider)sources.get(i)).getId()).split(","); //$NON-NLS-1$ //$NON-NLS-2$
 
         int totalItems = 0;
         int topChecked = 0;
@@ -376,29 +376,29 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
             for (int iii = 0; iii < items.length; iii++)
             {
               if (items[iii].getChecked() == true)
-                symbols.append(((IndexItem)items[iii].getData()).getSymbol() + ",");
+                symbols.append(((IndexItem)items[iii].getData()).getSymbol() + ","); //$NON-NLS-1$
             }
           }
           else if (childs[ii].getData() instanceof IndexItem)
           {
             if (childs[ii].getChecked() == true)
-              symbols.append(((IndexItem)childs[ii].getData()).getSymbol() + ",");
+              symbols.append(((IndexItem)childs[ii].getData()).getSymbol() + ","); //$NON-NLS-1$
           }
         }
         if (symbols.length() != 0)
         {
-          providers.append(provider.getId() + ",");
+          providers.append(provider.getId() + ","); //$NON-NLS-1$
           symbols.deleteCharAt(symbols.length() - 1);
-          getPreferenceStore().setValue("index." + provider.getId(), symbols.toString());
+          getPreferenceStore().setValue("index." + provider.getId(), symbols.toString()); //$NON-NLS-1$
           System.out.println(provider.getId());
-          System.out.println("   " + symbols);
+          System.out.println("   " + symbols); //$NON-NLS-1$
         }
       }
     }
     if (providers.length() != 0)
     {
       providers.deleteCharAt(providers.length() - 1);
-      getPreferenceStore().setValue("index.providers", providers.toString());
+      getPreferenceStore().setValue("index.providers", providers.toString()); //$NON-NLS-1$
     }
     
     for (int i = 0; i < editor.length; i++)
