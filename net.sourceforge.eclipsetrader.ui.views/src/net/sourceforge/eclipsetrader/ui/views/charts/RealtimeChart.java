@@ -28,7 +28,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
-import net.sourceforge.eclipsetrader.IChartDataProvider;
 import net.sourceforge.eclipsetrader.IRealtimeChartListener;
 import net.sourceforge.eclipsetrader.IRealtimeChartProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
@@ -94,7 +93,6 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
   private Label minPrice;
   private Label variance;
   private Label volume;
-  private IChartDataProvider dataProvider;
   private IBasicData data;
   private IChartData[] chartData;
   private Vector chart = new Vector();
@@ -280,6 +278,16 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
         data = _tpData[i];
         setPartName(data.getTicker() + " - RTChart");
         load();
+        if (TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+        {
+          IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+          IChartData[] _d = rtp.getHistoryData(data);
+          if (_d != null)
+          {
+            chartData = _d;
+            store();
+          }
+        }
         if (chartData != null && chartData.length > 0 && chartData[0].getMaxPrice() >= 10)
         {
           pf.setMinimumFractionDigits(2);
@@ -489,25 +497,26 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
    */
   public void realtimeChartUpdated(final IRealtimeChartProvider provider)
   {
-    getViewSite().getShell().getDisplay().asyncExec(new Runnable() {
+    new Thread(new Runnable() {
       public void run() 
       {
         chartData = provider.getHistoryData(data);
-        controlResized(null);
-        bottombar.redraw();
-        title.setText(data.getDescription());
-        updateLabels();
-        for (int m = 0; m < chart.size(); m++)
-          ((ChartCanvas)chart.elementAt(m)).setData(chartData);
         store();
+        updateChart();
       }
-    });
+    }).start();
   }
   
   public void updateChart()
   {
     container.getDisplay().asyncExec(new Runnable() {
       public void run() {
+        controlResized(null);
+        bottombar.redraw();
+        title.setText(data.getDescription());
+        updateLabels();
+        for (int m = 0; m < chart.size(); m++)
+          ((ChartCanvas)chart.elementAt(m)).setData(chartData);
       }
     });
   }
