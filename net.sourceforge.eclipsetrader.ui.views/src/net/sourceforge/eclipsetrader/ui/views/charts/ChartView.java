@@ -206,39 +206,10 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
     bottombar.setLayoutData(gridData);
     bottombar.addPaintListener(this);
     
-/*    ChartCanvas canvas = new ChartCanvas(form);
-    canvas.createContextMenu(this);
-    canvas.addMouseListener(this);
-    chart.addElement(canvas);
-    canvas.addPainter(new PriceChart());
-//    canvas.addPainter(new AverageChart(7, new Color(null, 0, 255, 0)));
-//    canvas.addPainter(new AverageChart(21, new Color(null, 255, 0, 0)));
-
-    canvas = new ChartCanvas(form);
-    canvas.createContextMenu(this);
-    chart.addElement(canvas);
-    canvas.addPainter(new RSIChart(21));
-    
-    canvas = new ChartCanvas(form);
-    canvas.createContextMenu(this);
-    chart.addElement(canvas);
-    canvas.addPainter(new VolumeChart());
-    
-    int[] weights = { 75, 10, 15 };
-    form.setWeights(weights);*/
-
     // Restore del grafico precedente
     String id = getViewSite().getSecondaryId();
     String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id);
-    IBasicData[] _tpData = TraderPlugin.getData();
-    for (int i = 0; i < _tpData.length; i++)
-    {
-      if (_tpData[i].getSymbol().equalsIgnoreCase(symbol) == true)
-      {
-        setData(_tpData[i]);
-        break;
-      }
-    }
+    setData(TraderPlugin.getData(symbol));
   }
   
   public void reloadPreferences()
@@ -293,27 +264,33 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
               Node item = parent.item(ii);
               if (item.getNodeName().equalsIgnoreCase("chart") == true)
               {
+                Object obj = null;
                 String id = item.getAttributes().getNamedItem("id").getNodeValue();
-                String name = item.getAttributes().getNamedItem("name").getNodeValue();
-
-                IExtensionRegistry registry = Platform.getExtensionRegistry();
-                IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter");
-                if (extensionPoint != null)
+                if (id.equalsIgnoreCase("price") == true)
+                  obj = new PriceChart();
+                else
                 {
-                  IConfigurationElement[] members = extensionPoint.getConfigurationElements();
-                  for (int m = 0; m < members.length; m++)
+                  IExtensionRegistry registry = Platform.getExtensionRegistry();
+                  IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter");
+                  if (extensionPoint != null)
                   {
-                    IConfigurationElement member = members[m];
-                    if (id.equalsIgnoreCase(member.getAttribute("id")))
-                      try {
-                        Object obj = member.createExecutableExtension("class");
-                        if (obj instanceof IChartPlotter)
-                        {
-                          setPlotterParameters((NodeList)item, (IChartPlotter)obj);
-                          canvas.addPainter((ChartPainter)obj);
-                        }
-                      } catch(Exception x) { x.printStackTrace(); };
+                    IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+                    for (int m = 0; m < members.length; m++)
+                    {
+                      IConfigurationElement member = members[m];
+                      if (id.equalsIgnoreCase(member.getAttribute("id")))
+                        try {
+                          obj = member.createExecutableExtension("class");
+                        } catch(Exception x) { x.printStackTrace(); };
+                    }
                   }
+                }
+                if (obj != null && obj instanceof IChartPlotter)
+                {
+                  setPlotterParameters((NodeList)item, (IChartPlotter)obj);
+                  if (item.getAttributes().getNamedItem("name") != null)
+                    ((IChartPlotter)obj).setName(item.getAttributes().getNamedItem("name").getNodeValue());
+                  canvas.addPainter((IChartPlotter)obj);
                 }
               }
             }
@@ -364,7 +341,11 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
       }
     }
   }
-  
+
+  /**
+   * Save the chart's preference to an XML file.
+   * <p></p>
+   */
   public void savePreferences()
   {
     File folder = new File(Platform.getLocation().toFile(), "charts");
@@ -382,24 +363,28 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
         ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
         for (int ii = 0; ii < canvas.getPainterCount(); ii++)
         {
-          if (canvas.getPainter(ii) instanceof PriceChart)
-            element.setAttribute("price", "true");
+//          if (canvas.getPainter(ii) instanceof PriceChart)
+//            element.setAttribute("price", "true");
           if (canvas.getPainter(ii) instanceof VolumeChart)
             element.setAttribute("volume", "true");
         }
         document.getDocumentElement().appendChild(element);
 
+        // Get all plotters for the given canvas
         for (int ii = 0; ii < canvas.getPainterCount(); ii++)
         {
-          ChartPainter painter = canvas.getPainter(ii);
-          if (!(painter instanceof IChartPlotter))
+          IChartPlotter painter = canvas.getPainter(ii);
+          if (painter instanceof VolumeChart)
             continue;
-          System.out.println(painter.getClass());
-          HashMap params = ((IChartPlotter)painter).getParameters();
-          
+
+          // Set the standard attributes
           Element node = document.createElement("chart");
-          node.setAttribute("id", ((IChartPlotter)painter).getId());
-          node.setAttribute("name", ((ChartPainter)painter).getName());
+          node.setAttribute("id", painter.getId());
+          if (painter.getName() != null)
+            node.setAttribute("name", painter.getName());
+          
+          // Append the parameters map
+          HashMap params = painter.getParameters();
           Iterator keys = params.keySet().iterator();
           while (keys.hasNext())
           {
@@ -413,6 +398,7 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
         }
       }
 
+      // XML transform
       File f = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs");
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
       transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
@@ -512,11 +498,12 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
             Object obj = member.createExecutableExtension("class");
             if (obj instanceof IChartPlotter)
             {
-              ChartParametersDialog dlg = ((IChartPlotter)obj).showParametersDialog();
-              if (dlg.getReturnCode() == ChartParametersDialog.OK)
+              IChartPlotter chartPlotter = (IChartPlotter)obj;
+              ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)chartPlotter);
+              if (pdlg.open() == ChartParametersDialog.OK)
               {
-                if (dlg.getPosition() == ChartParametersDialog.SELECTED_ZONE)
-                  ((ChartCanvas)chart.elementAt(selectedZone)).addPainter((ChartPainter)obj);
+                if (pdlg.getPosition() == ChartParametersDialog.SELECTED_ZONE)
+                  ((ChartCanvas)chart.elementAt(selectedZone)).addPainter(chartPlotter);
                 else
                 {
                   int[] w = form.getWeights();
@@ -525,7 +512,7 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
                   children[children.length - 1].moveBelow(children[0]);
                   canvas.createContextMenu(this);
                   chart.insertElementAt(canvas, 1);
-                  canvas.addPainter((ChartPainter)obj);
+                  canvas.addPainter(chartPlotter);
                   int[] weights = new int[chart.size()];
                   for (int i = 0; i < w.length; i++)
                     weights[i] = w[i];
@@ -548,11 +535,11 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
     dlg.setChart(chart);
     if (dlg.open() == ChartDialog.OK)
     {
-      IChartPlotter obj = dlg.getObject();
-      if (obj != null)
+      IChartPlotter chartPlotter = dlg.getObject();
+      if (chartPlotter != null)
       {
-        ChartParametersDialog pdlg = obj.showParametersDialog();
-        if (pdlg.getReturnCode() == ChartParametersDialog.OK)
+        ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)chartPlotter);
+        if (pdlg.openEdit() == ChartParametersDialog.OK)
         {
           updateView();
           savePreferences();
@@ -575,9 +562,9 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
           ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
           for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
           {
-            if (obj == canvas.getPainter(ii))
+            if (canvas.getPainter(ii) == obj)
             {
-              canvas.removePainter((ChartPainter)obj);
+              canvas.removePainter(obj);
               if (canvas.getPainterCount() == 0)
               {
                 canvas.removeMouseListener(this);
@@ -591,6 +578,24 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
         }
         updateView();
         savePreferences();
+      }
+    }
+  }
+  
+  public void setChartType(int type)
+  {
+    for (int i = chart.size() - 1; i >= 0; i--)
+    {
+      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
+      {
+        if (canvas.getPainter(ii) instanceof PriceChart)
+        {
+          canvas.getPainter(ii).setParameter("type", String.valueOf(type));
+          updateView();
+          savePreferences();
+          break;
+        }
       }
     }
   }
