@@ -76,6 +76,8 @@ public class ViewsPlugin extends AbstractUIPlugin
     PreferenceConverter.setDefault(pref, "index.positive_value_color", new RGB(0, 190, 0));
     PreferenceConverter.setDefault(pref, "index.negative_value_color", new RGB(200, 0, 0));
     
+    PreferenceConverter.setDefault(pref, "news.color", new RGB(0, 0, 0));
+    PreferenceConverter.setDefault(pref, "news.background", new RGB(255, 255, 224));
     pref.setDefault("news.columnWidth", "105,435,145");
 /*    
     System.err.println("ViewsPlugin.start");
