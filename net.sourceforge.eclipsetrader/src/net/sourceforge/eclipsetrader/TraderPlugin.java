@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -16,11 +16,13 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import net.sourceforge.eclipsetrader.internal.ExtendedData;
+import net.sourceforge.eclipsetrader.internal.PreferenceInitializer;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -60,7 +62,11 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
 	}
 
   // Static methods that returns application-wide objects
-  public static IExtendedData[] getData() { return plugin.dataStore.getData(); }
+  public static IExtendedData[] getData() {
+    if (plugin == null || plugin.dataStore == null)
+      return null;
+    return plugin.dataStore.getData();
+  }
   public static IExtendedData getData(String symbol) 
   { 
     IExtendedData[] _data = plugin.dataStore.getData();
@@ -72,65 +78,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     return null; 
   }
   public static IDataStore getDataStore() { return plugin.dataStore; }
-
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(BundleContext context) throws Exception 
-  {
-    super.start(context);
-
-    // Set the default preferences
-    IPreferenceStore ps = getPreferenceStore();
-    ps.setDefault("net.sourceforge.eclipsetrader.dataStore", "net.sourceforge.eclipsetrader.xml_data_store");
-    ps.setDefault("net.sourceforge.eclipsetrader.dataProvider", "");
-    ps.setDefault("net.sourceforge.eclipsetrader.promptOnExit", true);
-    
-    // Timing 
-    ps.setDefault("net.sourceforge.eclipsetrader.timing.session1", true);
-    ps.setDefault("net.sourceforge.eclipsetrader.timing.startTime1", 9 * 60 + 5);
-    ps.setDefault("net.sourceforge.eclipsetrader.timing.stopTime1", 17 * 60 + 25);
-    ps.setDefault("net.sourceforge.eclipsetrader.timing.session2", true);
-    ps.setDefault("net.sourceforge.eclipsetrader.timing.startTime2", 18 * 60 + 0);
-    ps.setDefault("net.sourceforge.eclipsetrader.timing.stopTime2", 20 * 60 + 30);
-    ps.setDefault("net.sourceforge.eclipsetrader.rtchart.period", 2);
-
-    // Sets the one and only avalable plugin as selected
-    if (ps.getString("net.sourceforge.eclipsetrader.dataProvider").length() == 0)
-    {
-      if (getPluginCount("net.sourceforge.eclipsetrader.dataProvider") == 1)
-        ps.setValue("net.sourceforge.eclipsetrader.dataProvider", getFirstPlugin("net.sourceforge.eclipsetrader.dataProvider"));
-    }
-    
-    // Sets the proxy preferences
-    if (ps.getInt("PROXY_ENABLED") == 1)
-    {
-      Properties prop = System.getProperties();
-      if (ps.getString("HTTP_PROXY_HOST").length() != 0)
-        prop.setProperty("http.proxyHost", ps.getString("HTTP_PROXY_HOST"));
-      prop.setProperty("http.proxyPort", ps.getString("HTTP_PROXY_PORT"));
-      prop.setProperty("http.proxyUser", ps.getString("PROXY_USER_NAME"));
-      prop.setProperty("http.proxyPassword", ps.getString("PROXY_PASSWORD"));
-      if (ps.getString("HTTPS_PROXY_HOST").length() != 0)
-        prop.setProperty("https.proxyHost", ps.getString("HTTPS_PROXY_HOST"));
-      prop.setProperty("https.proxyPort", ps.getString("HTTPS_PROXY_PORT"));
-      prop.setProperty("https.proxyUser", ps.getString("PROXY_USER_NAME"));
-      prop.setProperty("https.proxyPassword", ps.getString("PROXY_PASSWORD"));
-      if (ps.getString("SOCKS_PROXY_HOST").length() != 0)
-        prop.setProperty("socksProxyHost", ps.getString("SOCKS_PROXY_HOST"));
-      prop.setProperty("socksProxyPort", ps.getString("SOCKS_PROXY_PORT"));
-      prop.setProperty("java.net.socks.username", ps.getString("PROXY_USER_NAME"));
-      prop.setProperty("java.net.socks.password", ps.getString("PROXY_PASSWORD"));
-    }
-
-    // Listen for changes on the plugin's preferences
-    getPreferenceStore().addPropertyChangeListener(this);
-    
-    // Load the data store plugin and reads the stored data
-    dataStore = (IDataStore)activatePlugin("net.sourceforge.eclipsetrader.dataStore");
-    if (dataStore != null)
-      dataStore.load();
-	}
+  public static void setDataStore(IDataStore store) { plugin.dataStore = store; };
 
   public static IBasicDataProvider getDataProvider()
   {
@@ -318,10 +266,23 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
 */
   }
 
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(BundleContext context) throws Exception 
+  /* (non-Javadoc)
+   * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+   */
+  public void start(BundleContext context) throws Exception
+  {
+    super.start(context);
+    
+    // TODO: Initializing preferences here is causing problems with RCP 3.1.0M5a
+    //       See https://bugs.eclipse.org/bugs/show_bug.cgi?id=86750
+    PreferenceInitializer initializer = new PreferenceInitializer();
+    initializer.initializeDefaultPreferences();
+  }
+
+  /* (non-Javadoc)
+   * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+   */
+  public void stop(BundleContext context) throws Exception
   {
     if (dataProvider != null)
       dataProvider.stopStreaming();
@@ -389,30 +350,6 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     return null;
   }
 
-  public int getPluginCount(String ep)
-  {
-    IExtensionRegistry registry = Platform.getExtensionRegistry();
-    IExtensionPoint extensionPoint = registry.getExtensionPoint(ep);
-    if (extensionPoint == null)
-      return 0;
-    
-    return extensionPoint.getConfigurationElements().length;
-  }
-
-  public String getFirstPlugin(String ep)
-  {
-    IExtensionRegistry registry = Platform.getExtensionRegistry();
-    IExtensionPoint extensionPoint = registry.getExtensionPoint(ep);
-    if (extensionPoint == null)
-      return "";
-    
-    IConfigurationElement[] members = extensionPoint.getConfigurationElements();
-    if (members.length == 0)
-      return "";
-    IConfigurationElement member = members[0];
-    return member.getAttribute("id");
-  }
-
   /**
    * Creates an object that implements the IBasicData interface.
    */
@@ -457,8 +394,34 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     return obj;
   }
   
+  /**
+   * Returns the status of the data streaming.
+   * 
+   * @return true if data streaming is active
+   */
   public static boolean isStreaming()
   {
     return getDefault().getPreferenceStore().getBoolean("net.sourceforge.eclipsetrader.streaming");
+  }
+
+  /**
+   * Log a message in the system log with the default INFO severity.
+   * 
+   * @param message the message to log
+   */
+  public static void log(String message)
+  {
+    plugin.getLog().log(new Status(Status.INFO, "eclipsetrader", 0, message, null));
+  }
+  
+  /**
+   * Log a message in the system log with the default given severity status.
+   * 
+   * @param severity the severity; one of OK, ERROR, INFO, WARNING, or CANCEL
+   * @param message the message to log
+   */
+  public static void log(int severity, String message)
+  {
+    plugin.getLog().log(new Status(severity, "eclipsetrader", 0, message, null));
   }
 }
