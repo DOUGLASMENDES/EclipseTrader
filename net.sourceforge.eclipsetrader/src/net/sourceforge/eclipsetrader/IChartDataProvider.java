@@ -12,23 +12,26 @@ package net.sourceforge.eclipsetrader;
 
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Interface for history chart data providers.
+ * <p></p>
+ * @since 1.0
  */
 public interface IChartDataProvider
 {
 
   /**
-   * Method to return the chart data array.<br>
-   *
+   * Read the chart data from the provider's storage.
+   * <p></p>
+   * @param data The IBasicData object of the chart.
    * @return Returns the IChartData array.
    */
   public abstract IChartData[] getData(IBasicData data);
 
   /**
-   * Method to update the chart data.<br>
+   * Update the chart data by reading the new elements from the provider's storage.
+   * <p></p>
+   * @param data The IBasicData object of the chart.
+   * @return Returns the updated IChartData array.
    */
   public abstract void update(IBasicData data);
 }
