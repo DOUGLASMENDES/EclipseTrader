@@ -345,6 +345,7 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
           IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
           if (plotter.getDescription() != null)
           {
+            e.gc.setForeground(plotter.getColor());
             e.gc.drawString(((IChartPlotter)painters.elementAt(i)).getDescription(), 2, y);
             y += e.gc.getFontMetrics().getHeight();
           }

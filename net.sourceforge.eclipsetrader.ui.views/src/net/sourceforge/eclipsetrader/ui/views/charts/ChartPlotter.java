@@ -109,6 +109,14 @@ public class ChartPlotter implements IChartPlotter
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getColor()
+   */
+  public Color getColor()
+  {
+    return lineColor;
+  }
+  
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(org.eclipse.swt.graphics.GC, int, int)
    */
   public void paintChart(GC gc, int width, int height)

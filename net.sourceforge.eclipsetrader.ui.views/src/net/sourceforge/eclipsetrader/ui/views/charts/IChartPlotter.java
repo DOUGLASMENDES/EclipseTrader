@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import net.sourceforge.eclipsetrader.IChartData;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
 /**
@@ -68,6 +69,14 @@ public interface IChartPlotter
    * <p></p>
    */
   public void setData(IChartData[] data);
+  
+  /**
+   * Get the main drawing color.
+   * <p></p>
+   * 
+   * @return Color object
+   */
+  public Color getColor();
   
   /**
    * Paint the chart section.
