@@ -13,6 +13,8 @@ package net.sourceforge.eclipsetrader.yahoo;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -51,6 +53,7 @@ public class YahooPlugin extends AbstractUIPlugin
     ps.setDefault("yahoo.refresh", "15");
     ps.setDefault("yahoo.url", "http://it.finance.yahoo.com/d/quotes.csv");
     ps.setDefault("yahoo.charts.url", "http://table.finance.yahoo.com/table.csv");
+    SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
     
 /*    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
       public void run() {

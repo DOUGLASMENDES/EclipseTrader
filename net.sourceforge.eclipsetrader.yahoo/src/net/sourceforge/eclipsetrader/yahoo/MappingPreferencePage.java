@@ -10,37 +10,31 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.yahoo;
 
+import java.util.Vector;
+
+import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
+
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 /**
  * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class MappingPreferencePage extends PreferencePage implements IWorkbenchPreferencePage
 {
-  private List availableColumns;
-  private List displayColumns;
-  // Set column descriptions
-  public static String[] columnDescriptions = {
-      "Codice", "Ticker", "Descrizione", "Ultimo Prezzo", "Variazione %", "Denaro", "Q.tà Denaro",
-      "Lettera", "Q.ta Lettera", "Volume", "Quantità minima", "Valore di Mercato", "Q.tà Posseduta",
-      "Pagato", "Valore Posseduto", "Ricavo", "Prezzo Apertura", "Prezzo Massimo", "Prezzo Minimo", "Chiusura Prec.", "Orario"
-      };
+  FieldEditor[] editor; 
   
   public void init(IWorkbench workbench) {
     //Initialize the preference store we wish to use
+    setPreferenceStore(YahooPlugin.getDefault().getPreferenceStore());
   }
 
   /*
@@ -48,37 +42,28 @@ public class MappingPreferencePage extends PreferencePage implements IWorkbenchP
    */
   protected Control createContents(Composite parent)
   {
-    // Crea un composite grande come tutta la pagina
+    Vector _v = new Vector();
+    
     Composite entryTable = new Composite(parent, SWT.NULL);
-    GridData data = new GridData(GridData.FILL_BOTH);
-    data.grabExcessHorizontalSpace = true;
-    entryTable.setLayoutData(data);
-    GridLayout layout = new GridLayout();
-    layout.horizontalSpacing = 0;
-    entryTable.setLayout(layout);     
+    entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    GridLayout gridLayout = new GridLayout(2, false);
+//    gridLayout.marginWidth = 0;
+    gridLayout.marginHeight = 0;
+    entryTable.setLayout(gridLayout);
+
+    _v.add(new StringFieldEditor("yahoo.suffix", "Default Suffix", 10, entryTable));
+
+    // Perform operations common to all field editors
+    editor = new FieldEditor[_v.size()];
+    for (int i = 0; i < _v.size(); i++)
+    {
+      editor[i] = (FieldEditor)_v.elementAt(i);
+      editor[i].setPreferencePage(this);
+      editor[i].setPreferenceStore(getPreferenceStore());
+      editor[i].load();
+    }
 
     return entryTable;
-  }
-
-  public Button createButton(Composite parent, String text, String action)
-  {
-    Button b = new Button(parent, SWT.PUSH);
-    b.setText(text);
-    b.setData(action);
-    return b;
-  }
-
-  public Button createButton(Composite parent, String text, String action, String tooltipText)
-  {
-    Button b = new Button(parent, SWT.PUSH);
-    b.setText(text);
-    b.setData(action);
-    b.setToolTipText(tooltipText);
-    return b;
-  }
-  
-  public void widgetDefaultSelected(SelectionEvent e)
-  {
   }
 
   /** 
@@ -87,6 +72,10 @@ public class MappingPreferencePage extends PreferencePage implements IWorkbenchP
    */
   public boolean performOk() 
   {
+    for (int i = 0; i < editor.length; i++)
+      editor[i].store();
+    SymbolMapper.setDefaultSuffix(getPreferenceStore().getString("yahoo.suffix"));
+
     return super.performOk();
   }
 }

@@ -42,6 +42,7 @@ public class SymbolMapper
 {
   private static String FILE_NAME = "mapping.xml";
   private static Hashtable map = new Hashtable();
+  private static String defaultSuffix = "";
 
   static {
     InputStream is = null;
@@ -83,6 +84,11 @@ public class SymbolMapper
     }
   }
   
+  public static void setDefaultSuffix(String suffix)
+  {
+    defaultSuffix = suffix;
+  }
+  
   /**
    * Return the Yahoo symbol corresponding to the official stock exchange symbol.<br>
    * If there isn't a mapping then returns the input symbol unmodified.<br>
@@ -96,6 +102,6 @@ public class SymbolMapper
     if (r != null)
       return r;
 
-    return s;
+    return s + defaultSuffix;
   }
 }
