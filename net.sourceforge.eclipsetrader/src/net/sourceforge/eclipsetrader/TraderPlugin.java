@@ -10,9 +10,12 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader;
 
+import java.util.HashMap;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
+import net.sourceforge.eclipsetrader.internal.ExtendedData;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -39,6 +42,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   private IChartDataProvider chartDataProvider;
   private static IBookDataProvider bookDataProvider;
   private Object newsProvider;
+  private static HashMap pluginMap = new HashMap();
 	
 	/**
 	 * The constructor.
@@ -353,6 +357,9 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       return null;
     
     String id = getPreferenceStore().getString(ep);
+    if (id.length() == 0)
+      return null;
+    
     IConfigurationElement[] members = extensionPoint.getConfigurationElements();
     for (int m = 0; m < members.length; m++)
     {
@@ -392,5 +399,54 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       return "";
     IConfigurationElement member = members[0];
     return member.getAttribute("id");
+  }
+
+  /**
+   * Creates an object that implements the IBasicData interface.
+   */
+  public static IBasicData createBasicData()
+  {
+    return new BasicData();
+  }
+  
+  /**
+   * Creates an object that implements the IExtendedData interface.
+   */
+  public static IExtendedData createExtendedData()
+  {
+    return new ExtendedData();
+  }
+  
+  /**
+   * Return the singleton instance of the given extension.
+   */
+  public static Object getExtensionInstance(String extensionPointId, String id)
+  {
+    Object obj = pluginMap.get(extensionPointId + ":" + id);
+    if (obj == null)
+    {
+      IExtensionRegistry registry = Platform.getExtensionRegistry();
+      IExtensionPoint extensionPoint = registry.getExtensionPoint(extensionPointId);
+      if (extensionPoint == null)
+        return null;
+      
+      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+      for (int m = 0; m < members.length; m++)
+      {
+        IConfigurationElement member = members[m];
+        if (id.equalsIgnoreCase(member.getAttribute("id")))
+          try {
+            obj = member.createExecutableExtension("class");
+            pluginMap.put(extensionPointId + ":" + id, obj);
+          } catch(Exception x) { x.printStackTrace(); };
+      }
+    }
+    
+    return obj;
+  }
+  
+  public static boolean isStreaming()
+  {
+    return getDefault().getPreferenceStore().getBoolean("net.sourceforge.eclipsetrader.streaming");
   }
 }
