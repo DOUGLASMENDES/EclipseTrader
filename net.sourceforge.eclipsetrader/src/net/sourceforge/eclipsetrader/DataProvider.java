@@ -35,6 +35,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
   private Vector _listeners = new Vector();
   private HashMap _dataListeners = new HashMap();
   private Thread thread;
+  private boolean streaming = false;
   protected IExtendedData[] data;
   
   public static DataProvider getInstance() { return instance; }
@@ -208,6 +209,16 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
     System.out.println(this.getClass() + ": startStreaming");
     StreamingControl.actionStart.setEnabled(false);
     StreamingControl.actionStop.setEnabled(true);
+    streaming = true;
+    TraderPlugin.getDefault().getPreferenceStore().setValue("net.sourceforge.eclipsetrader.streaming", true);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IBasicDataProvider#isStreaming()
+   */
+  public boolean isStreaming()
+  {
+    return streaming;
   }
 
   /**
@@ -216,8 +227,10 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
    */
   public void stopStreaming()
   {
-    System.out.println(this.getClass() + ": stopStreaming");
+    TraderPlugin.getDefault().getPreferenceStore().setValue("net.sourceforge.eclipsetrader.streaming", false);
+    streaming = false;
     StreamingControl.actionStart.setEnabled(true);
     StreamingControl.actionStop.setEnabled(false);
+    System.out.println(this.getClass() + ": stopStreaming");
   }
 }

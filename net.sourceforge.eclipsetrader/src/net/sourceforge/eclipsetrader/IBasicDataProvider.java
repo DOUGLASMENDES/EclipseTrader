@@ -72,6 +72,13 @@ public interface IBasicDataProvider
    * Start the data streaming.<br>
    */
   public void startStreaming();
+  
+  /**
+   * Test if the streaming was started successfuly.
+   * <p></p>
+   * @return true if the streaming was started, false otherwise.
+   */
+  public boolean isStreaming();
 
   /**
    * Stop the data streaming.<br>
