@@ -27,6 +27,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.BasicData;
+import net.sourceforge.eclipsetrader.IBackfillDataProvider;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IRealtimeChartListener;
@@ -145,7 +146,11 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-      rtp.backfill(basicData);
+      IBackfillDataProvider backfill = TraderPlugin.getBackfillDataProvider(); 
+      if (backfill != null)
+        rtp.setHistoryData(basicData, backfill.getIntradayData(basicData));
+      else
+        rtp.backfill(basicData);
       realtimeChartUpdated(rtp);
     }
   }
@@ -164,6 +169,34 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
 
       if (basicData != null)
       {
+        boolean drawValue = false;
+        Calendar current = Calendar.getInstance();
+        Calendar last = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
+        
+        gc.setClipping(0, 0, bottombar.getClientArea().width - scaleWidth, bottombar.getClientArea().height);
+
+        int x = margin + width / 2;
+        if (container.getHorizontalBar().isVisible() == true)
+          x -= container.getHorizontalBar().getSelection();
+        for (int i = 0; i < data.length; i++, x += width)
+        {
+          current.setTime(data[i].getDate());
+          if (i == 0 || (current.getTimeInMillis() - last.getTimeInMillis()) / 1000 >= 30*60)
+          {
+            String s = df.format(data[i].getDate());
+            int x1 = x - gc.stringExtent(s).x / 2;
+            gc.drawLine(x, 0, x, 5);
+            gc.drawString(s, x1, 5);
+            last.setTime(data[i].getDate());
+            if (last.get(Calendar.MINUTE) < 30)
+              last.add(Calendar.MINUTE, -last.get(Calendar.MINUTE));
+            else
+              last.add(Calendar.MINUTE, -(last.get(Calendar.MINUTE) - 30));
+            drawValue = false;
+          }
+        }
+/*
         int lastValue = -1;
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
@@ -176,7 +209,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
         for (int i = 0; i < data.length; i++, x += width)
         {
           c.setTime(data[i].getDate());
-          if (c.get(Calendar.HOUR_OF_DAY) != lastValue || c.get(Calendar.MINUTE) == 30)
+          if (c.get(Calendar.HOUR_OF_DAY) != lastValue || c.get(Calendar.MINUTE) == 30 || c.get(Calendar.MINUTE) == 31)
           {
             String s = df.format(data[i].getDate());
             int x1 = x - gc.stringExtent(s).x / 2;
@@ -185,6 +218,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
             lastValue = c.get(Calendar.HOUR_OF_DAY);
           }
         }
+*/
       }
     }
     else
