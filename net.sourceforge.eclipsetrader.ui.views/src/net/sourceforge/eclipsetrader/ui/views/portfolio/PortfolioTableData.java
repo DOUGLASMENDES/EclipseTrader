@@ -22,15 +22,17 @@ public class PortfolioTableData
   private double bidPrice = 0;
   private double bidPriceVariance = 0;
   private long bidPriceTimestamp = 0;
-  public int bidSize = 0;
-  public double bidSizeVariance = 0;
+  private int bidSize = 0;
+  private double bidSizeVariance = 0;
   private long bidSizeTimestamp = 0;
-  public double askPrice = 0;
-  public double askPriceVariance = 0;
+  private double askPrice = 0;
+  private double askPriceVariance = 0;
   private long askPriceTimestamp = 0;
-  public int askSize = 0;
-  public double askSizeVariance = 0;
+  private int askSize = 0;
+  private double askSizeVariance = 0;
   private long askSizeTimestamp = 0;
+  private double[] priceHistory = new double[10];
+  private double trend = 0;
 
   public double getLastPrice()
   {
@@ -38,11 +40,43 @@ public class PortfolioTableData
   }
   public void setLastPrice(double lastPrice)
   {
+    if (this.lastPrice == 0)
+    {
+      for (int i = 0; i < priceHistory.length; i++)
+        priceHistory[i] = lastPrice;
+    }
+    
     if (lastPrice != 0 && this.lastPrice != 0 && (this.lastPrice != lastPrice || (System.currentTimeMillis() - lastPriceTimestamp) >= VARIANCE_DELAY))
     {
       this.lastPriceVariance = lastPrice - this.lastPrice;
       this.lastPriceTimestamp = System.currentTimeMillis();
     }
+    
+    // Keep track of the last price changes
+    if (this.lastPrice != lastPrice)
+    {
+      for (int i = 1; i < priceHistory.length; i++)
+        priceHistory[i - 1] = priceHistory[i];
+      priceHistory[priceHistory.length - 1] = lastPrice;
+  
+      // Calculates the trend based on the last price changes
+      double sumxx = 0;
+      double sumxy = 0;
+      double sumx = 0;
+      double sumy = 0;
+      for (int i = 0; i < priceHistory.length; i++)
+      {
+        sumx += i;
+        sumy += priceHistory[i];
+        sumxx += i * i;
+        sumxy += i * priceHistory[i];
+      }
+      double n = (double)priceHistory.length;
+      double Sxx = sumxx - sumx * sumx / n;
+      double Sxy = sumxy - sumx * sumy / n;
+      trend = (Sxy / Sxx);
+    }
+    
     this.lastPrice = lastPrice;
   }
   public double getLastPriceVariance()
@@ -130,5 +164,10 @@ public class PortfolioTableData
     if ((System.currentTimeMillis() - askSizeTimestamp) >= VARIANCE_DELAY)
       askSizeVariance = 0;
     return askSizeVariance;
+  }
+  
+  public double getTrend()
+  {
+    return trend;
   }
 }

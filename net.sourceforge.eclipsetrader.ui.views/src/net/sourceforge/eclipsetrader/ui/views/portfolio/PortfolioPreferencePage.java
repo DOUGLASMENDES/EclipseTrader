@@ -22,7 +22,6 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
@@ -322,22 +321,22 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
     Vector v = new Vector();
     for (int row = 0; row < table.getItemCount(); row++)
     {
-      ExtendedData pd = new ExtendedData();
-      pd.symbol = table.getItem(row).getText(0);
-      pd.ticker = table.getItem(row).getText(1);
-      pd.description = table.getItem(row).getText(2);
+      IExtendedData pd = TraderPlugin.createExtendedData();
+      pd.setSymbol(table.getItem(row).getText(0));
+      pd.setTicker(table.getItem(row).getText(1));
+      pd.setDescription(table.getItem(row).getText(2));
       try {
-        pd.minimumQuantity = nf.parse(table.getItem(row).getText(3)).intValue();
+        pd.setMinimumQuantity(nf.parse(table.getItem(row).getText(3)).intValue());
       } catch (Exception e) {}
       try {
-        pd.quantity = nf.parse(table.getItem(row).getText(4)).intValue();
+        pd.setQuantity(nf.parse(table.getItem(row).getText(4)).intValue());
       } catch (Exception e) {}
       try {
-        pd.paid = pf.parse(table.getItem(row).getText(5)).doubleValue();
+        pd.setPaid(pf.parse(table.getItem(row).getText(5)).doubleValue());
       } catch (Exception e) {}
       v.add(pd);
     }
-    ExtendedData[] arr = new ExtendedData[v.size()];
+    IExtendedData[] arr = new IExtendedData[v.size()];
     v.toArray(arr);
     TraderPlugin.getDataStore().update(arr);
     update();

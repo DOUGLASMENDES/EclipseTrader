@@ -11,13 +11,13 @@
 package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
-import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IBasicDataProvider;
 import net.sourceforge.eclipsetrader.IDataUpdateListener;
@@ -75,6 +75,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat bpf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
+  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   private Color evenBackground;
   private Color oddBackground;
   private Color totalBackground;
@@ -354,7 +355,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     if (dlg.open() == PortfolioDialog.OK)
     {
       Vector v = new Vector(Arrays.asList(TraderPlugin.getData()));
-      ExtendedData data = new ExtendedData();
+      IExtendedData data = TraderPlugin.createExtendedData();
       data.setSymbol(dlg.getSymbol());
       data.setTicker(dlg.getTicker());
       data.setDescription(dlg.getDescription());
@@ -362,7 +363,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       data.setQuantity(dlg.getQuantity());
       data.setPaid(dlg.getPaid());
       v.add(data);
-      ExtendedData[] dataArray = new ExtendedData[v.size()];
+      IExtendedData[] dataArray = new IExtendedData[v.size()];
       v.toArray(dataArray);
       TraderPlugin.getDataStore().update(dataArray);
       updateView();
@@ -405,7 +406,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
 
     Vector v = new Vector(Arrays.asList(TraderPlugin.getData()));
     v.removeElementAt(index);
-    ExtendedData[] dataArray = new ExtendedData[v.size()];
+    IExtendedData[] dataArray = new IExtendedData[v.size()];
     v.toArray(dataArray);
     TraderPlugin.getDataStore().update(dataArray);
     updateView();
@@ -605,7 +606,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
               item.setText(column, pf.format(pd.getClosePrice()));
             break;
           case 20:
-            item.setText(column, pd.getTime());
+            item.setText(column, tf.format(pd.getDate()));
             break;
         }
       }
