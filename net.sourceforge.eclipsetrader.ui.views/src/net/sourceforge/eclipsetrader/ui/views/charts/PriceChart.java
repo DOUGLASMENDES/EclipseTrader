@@ -136,16 +136,16 @@ public class PriceChart extends ChartPlotter
           if (y1 > y2)
           {
             gc.setBackground(chartBackground);
-            gc.fillRectangle(x - 1, y2, 4, y1 - y2);
+            gc.fillRectangle(x - 2, y2, 5, y1 - y2);
             if (y1 == y2)
-              gc.drawRectangle(x - 1, y2, 3, y1 - y2);
+              gc.drawRectangle(x - 2, y2, 4, y1 - y2);
             else
-              gc.drawRectangle(x - 1, y2, 3, y1 - y2 - 1);
+              gc.drawRectangle(x - 2, y2, 4, y1 - y2 - 1);
           }
           else
           {
             gc.setBackground(textColor);
-            gc.fillRectangle(x - 1, y1, 4, y2 - y1 + 1);
+            gc.fillRectangle(x - 2, y1, 5, y2 - y1 + 1);
           }
         }
       }
