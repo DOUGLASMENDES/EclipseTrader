@@ -336,7 +336,6 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
     for (int i = 0; i < _v.size(); i++)
     {
       editor[i] = (FieldEditor)_v.elementAt(i);
-      editor[i].setPreferencePage(this);
       editor[i].setPreferenceStore(getPreferenceStore());
       editor[i].load();
     }
@@ -389,10 +388,10 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
         {
           providers.append(provider.getId() + ","); //$NON-NLS-1$
           symbols.deleteCharAt(symbols.length() - 1);
-          getPreferenceStore().setValue("index." + provider.getId(), symbols.toString()); //$NON-NLS-1$
           System.out.println(provider.getId());
           System.out.println("   " + symbols); //$NON-NLS-1$
         }
+        getPreferenceStore().setValue("index." + provider.getId(), symbols.toString()); //$NON-NLS-1$
       }
     }
     if (providers.length() != 0)
