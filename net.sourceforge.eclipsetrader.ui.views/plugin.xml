@@ -395,6 +395,10 @@
             label="Stochastic Oscillator"
             class="net.sourceforge.eclipsetrader.ui.views.charts.StochasticChart"
             id="net.sourceforge.eclipsetrader.charts.stochastic"/>
+      <plotter
+            label="Trend"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.TrendChart"
+            id="net.sourceforge.eclipsetrader.charts.trend"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
