@@ -48,24 +48,27 @@ public class ViewsPlugin extends AbstractUIPlugin
   {
 		super.start(context);
 
-    IPreferenceStore ps = getPreferenceStore();
+    IPreferenceStore pref = getPreferenceStore();
     
-    ps.setDefault("portfolio.display", "code,ticker,description,price,variance,bid_price,bid_qty,ask_price,ask_qty,volume,open_price,high_price,low_price,close_price,time,");
-    PreferenceConverter.setDefault(ps, "portfolio.text_color", new RGB(0, 0, 0));
-    PreferenceConverter.setDefault(ps, "portfolio.even_row_background", new RGB(255, 255, 255));
-    PreferenceConverter.setDefault(ps, "portfolio.odd_row_background", new RGB(255, 255, 224));
-    PreferenceConverter.setDefault(ps, "portfolio.negative_value_color", new RGB(200, 0, 0));
-    PreferenceConverter.setDefault(ps, "portfolio.positive_value_color", new RGB(0, 190, 0));
-    PreferenceConverter.setDefault(ps, "portfolio.total_row_background", new RGB(255, 255, 0));
+    pref.setDefault("portfolio.display", "code,ticker,description,price,variance,bid_price,bid_qty,ask_price,ask_qty,volume,open_price,high_price,low_price,close_price,time,");
+    PreferenceConverter.setDefault(pref, "portfolio.text_color", new RGB(0, 0, 0));
+    PreferenceConverter.setDefault(pref, "portfolio.even_row_background", new RGB(255, 255, 255));
+    PreferenceConverter.setDefault(pref, "portfolio.odd_row_background", new RGB(255, 255, 224));
+    PreferenceConverter.setDefault(pref, "portfolio.negative_value_color", new RGB(200, 0, 0));
+    PreferenceConverter.setDefault(pref, "portfolio.positive_value_color", new RGB(0, 190, 0));
+    PreferenceConverter.setDefault(pref, "portfolio.total_row_background", new RGB(255, 255, 0));
 
-    PreferenceConverter.setDefault(ps, "book.negative_value_color", new RGB(200, 0, 0));
-    PreferenceConverter.setDefault(ps, "book.positive_value_color", new RGB(0, 190, 0));
-    PreferenceConverter.setDefault(ps, "trendbar.indicator", new RGB(0, 0, 0));
-    PreferenceConverter.setDefault(ps, "trendbar.band1_color", new RGB(0, 0, 255));
-    PreferenceConverter.setDefault(ps, "trendbar.band2_color", new RGB(255, 0, 0));
-    PreferenceConverter.setDefault(ps, "trendbar.band3_color", new RGB(0, 255, 255));
-    PreferenceConverter.setDefault(ps, "trendbar.band4_color", new RGB(0, 255, 0));
-    PreferenceConverter.setDefault(ps, "trendbar.band5_color", new RGB(255, 255, 0));
+    PreferenceConverter.setDefault(pref, "book.text_color", new RGB(0, 0, 0));
+    PreferenceConverter.setDefault(pref, "book.background", new RGB(255, 255, 255));
+    PreferenceConverter.setDefault(pref, "book.negative_value_color", new RGB(200, 0, 0));
+    PreferenceConverter.setDefault(pref, "book.positive_value_color", new RGB(0, 190, 0));
+    PreferenceConverter.setDefault(pref, "book.level1_color", new RGB(0, 0, 192));
+    PreferenceConverter.setDefault(pref, "book.level2_color", new RGB(192, 0, 0));
+    PreferenceConverter.setDefault(pref, "book.level3_color", new RGB(0, 255, 255));
+    PreferenceConverter.setDefault(pref, "book.level4_color", new RGB(0, 255, 0));
+    PreferenceConverter.setDefault(pref, "book.level5_color", new RGB(255, 255, 0));
+
+    PreferenceConverter.setDefault(pref, "trendbar.indicator", new RGB(0, 0, 0));
 	}
 
 	/**
