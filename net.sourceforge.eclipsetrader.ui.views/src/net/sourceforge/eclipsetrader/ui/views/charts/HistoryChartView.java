@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -58,21 +58,27 @@ public class HistoryChartView extends ChartView
   {
     super.createPartControl(parent);
 
-    // Restore del grafico precedente
-    String id = getViewSite().getSecondaryId();
-    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id); //$NON-NLS-1$
-    if (!symbol.equals("")) //$NON-NLS-1$
-    {
-      IBasicData bd = TraderPlugin.getData(symbol);
-      if (bd == null)
-      {
-        bd = new BasicData();
-        bd.setSymbol(symbol);
-        bd.setTicker(symbol);
-        bd.setDescription(symbol);
+    container.getDisplay().asyncExec(new Runnable() {
+      public void run()  {
+        // Restore del grafico precedente
+        String id = getViewSite().getSecondaryId();
+        String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id); //$NON-NLS-1$
+        if (!symbol.equals("")) //$NON-NLS-1$
+        {
+          IBasicData bd = TraderPlugin.getData(symbol);
+          if (bd == null)
+          {
+            bd = new BasicData();
+            bd.setSymbol(symbol);
+            bd.setTicker(symbol);
+            bd.setDescription(symbol);
+          }
+          setData(bd);
+        }
       }
-      setData(bd);
-    }
+    });
+
+    getSite().setSelectionProvider(this);
   }
   
   public void reloadPreferences()
