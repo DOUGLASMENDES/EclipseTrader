@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -182,6 +183,8 @@ public class ChartParametersDialog extends TitleAreaDialog
         continue;
       if (c[i] instanceof Text)
         chartConfigurer.setParameter((String)c[i].getData(), ((Text)c[i]).getText());
+      else if (c[i] instanceof Combo)
+        chartConfigurer.setParameter((String)c[i].getData(), String.valueOf(((Combo)c[i]).getSelectionIndex()));
     }
 
     super.okPressed();
