@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- default platform documentation stylesheets -->
+<style>@import url("book.css");</style>
+<!-- default schema documentation stylesheets -->
+<style>@import url("schema.css");</style>
+</HEAD>
+<BODY>
+<H1>Stock Watch</H1>
+<p>
+The <b>Stock Watch</b> window is shown by selecting <b>Show Stock Watch</b> from 
+the <b>Window</b> menu.</p>
+
+<p align="left">
+<img src="images/stockwatch.gif"></p>
+
+<p>
+The window allows to keep track of the price trend of the selected symbols.</p>
+
+<p>
+The window's toolbar allows to add a symbol to the list e to move the symbol
+towards the high or the bottom. The list is not automatically ordered but keeps the
+order with which the symbols were added, with the possibility to vary the position
+with the toolbar.</p>
+
+<p>
+Right-click on the window to open the menu that allows to modify the symbols
+list and open the windows related to the historical charts, intraday charts and
+level II / market depth data for the selected symbol.</p>
+
+<p align="left">
+<img src="images/stockwatch_menu2.gif"></p>
+
+<p>
+Selecting the <b>Add</b> or <b>Modify</b> items it will be possible to insert a new
+symbol or modify the selected one.</p>
+
+<p align="left">
+<img src="images/stockwatch_dialog.gif"></p>
+
+<p><b>Symbol</b><br>
+This is the symbol used to retrive the data from the sources. For the Italian
+market this is the ISIN code.</p>
+
+<p><b>Ticker</b><br>
+Alphabetic code assigned to the symbol. Usually it is the same as the Symbol 
+field. For the Italian market this is the alphabetic code assigned by Borsa
+Italiana.</p>
+
+<p>
+<b>Note:</b> if your stock market uses different symbols and alphabetic codes, it
+is possible that some sources are using the symbol and other are using the ticker
+to retrive the data, so it is advisable to fill both fields with the proper codes,
+Eclipse Trader's plugins will use the proper field automatically.</p>
+
+<p><b>Description</b><br>
+Company's name or short description of the symbol. From the pull down list it is 
+possible to select one of the items present in the Eclipse Trader's list. The
+selection will overwrite any data already present in the Symbol, Ticker and Minimum
+Quantity fields.</p>
+
+<p><b>Minimum Quantity</b><br>
+Minimum trade quantity. This value will be used by trading plugins to set the
+trade quantity for buys and sells.</p>
+
+<p><b>Owned Quantity</b><br>
+<b>Paid Price</b><br>
+Total quantity and average paid price for owned shares. If used, the Stock Watch
+window will calculate the gains and losses related to the owned shares (see the
+columns Owned Q.ty, Paid Price, Owned Val. and Gain).</p>
+
+<p>
+The Stock Watch preferences page allows to completely customize the viewing mode.
+To open the preferences select the <b>Preferences</b> item from the <b>Window</b>
+menu, the select <b>Stock Watch</b>.</p>
+
+<p align="left">
+<img src="images/preferences_stockwatch.gif"></p>
+
+<p>
+In the left column are listed the elements that is possible to show in the
+Stock Watch window. In the right column are listed the elements that are 
+currenlty shown in the Stock Watch window and the display order.</p>
+
+<p>
+Using the buttons in the middle it is possible to add or remove elements from
+the view and modify the order in which they are shown in the Stock Watch table.</p>
+
+<p>
+The <b>Colors</b> subpage allows to set the colors used by the Stock Watch
+window.</p>
+
+<br>
+<p><img src="cpy.gif"></p>
+<p></p>
+
+</BODY>
+</HTML>

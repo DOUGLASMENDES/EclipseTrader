@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="User Guide">
+    <topic label="Getting Started">
+        <topic label="First Run" href="guide/first_run.html"/>
+    </topic>
+    <topic label="Features">
+        <topic label="Stock Watch" href="guide/stockwatch.html"/>
+        <topic label="Intraday Charts" href="guide/intraday_chart.html">
+            <topic label="Technical Analisys Indicators" href="guide/indicators.html"/>
+        </topic>
+        <topic label="Historical Charts" href="guide/history_chart.html">
+            <topic label="Technical Analisys Indicators" href="guide/indicators.html"/>
+        </topic>
+        <topic label="Level II / Market Depth" href="guide/level2.html"/>
+        <topic label="News" href="guide/news.html"/>
+    </topic>
+    <topic label="Legal Notices" href="guide/notices.html"/>
+</toc>

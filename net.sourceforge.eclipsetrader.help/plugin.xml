@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader.help"
+   name="Help Plug-in"
+   version="0.9.1"
+   provider-name="Sourceforge.net">
+
+   <runtime>
+      <library name="help.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.help"/>
+   </requires>
+
+   <extension
+         name="Primary"
+         point="org.eclipse.help.toc">
+      <toc
+            file="user_guide.xml"
+            primary="true">
+      </toc>
+      <toc
+            file="book.xml"
+            primary="true">
+      </toc>
+   </extension>
+   <extension
+         name="TOC"
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc_Ref.xml">
+      </toc>
+   </extension>
+
+</plugin>
