@@ -256,15 +256,15 @@ public class ChartDataProvider implements IChartDataProvider
               break;
           }
           Calendar day = new GregorianCalendar(yr, mm, Integer.parseInt(dateItem[0]));
-          double adjustRatio = Double.parseDouble(item[4]) / Double.parseDouble(item[6]);
+          double adjustRatio = Double.parseDouble(item[6]) / Double.parseDouble(item[4]);
           
           IChartData cd = new ChartData();
           cd.setDate(day.getTime());
-          cd.setOpenPrice(Double.parseDouble(item[1]) / adjustRatio);
-          cd.setMaxPrice(Double.parseDouble(item[2]) / adjustRatio);
-          cd.setMinPrice(Double.parseDouble(item[3]) / adjustRatio);
-          cd.setClosePrice(Double.parseDouble(item[6]));
-          cd.setVolume((int)(Integer.parseInt(item[5]) * adjustRatio));
+          cd.setOpenPrice(Double.parseDouble(item[1]));
+          cd.setMaxPrice(Double.parseDouble(item[2]));
+          cd.setMinPrice(Double.parseDouble(item[3]));
+          cd.setClosePrice(Double.parseDouble(item[4]));
+          cd.setVolume((int)(Integer.parseInt(item[5])));
           chartData.add(cd);
         }
         in.close();
