@@ -80,6 +80,15 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     ps.setDefault("net.sourceforge.eclipsetrader.dataStore", "net.sourceforge.eclipsetrader.xml_data_store");
     ps.setDefault("net.sourceforge.eclipsetrader.dataProvider", "");
     ps.setDefault("net.sourceforge.eclipsetrader.promptOnExit", true);
+    
+    // Timing 
+    ps.setDefault("net.sourceforge.eclipsetrader.timing.session1", true);
+    ps.setDefault("net.sourceforge.eclipsetrader.timing.startTime1", 9 * 60 + 5);
+    ps.setDefault("net.sourceforge.eclipsetrader.timing.stopTime1", 17 * 60 + 25);
+    ps.setDefault("net.sourceforge.eclipsetrader.timing.session2", true);
+    ps.setDefault("net.sourceforge.eclipsetrader.timing.startTime2", 18 * 60 + 0);
+    ps.setDefault("net.sourceforge.eclipsetrader.timing.stopTime2", 20 * 60 + 30);
+    ps.setDefault("net.sourceforge.eclipsetrader.rtchart.period", 2);
 
     // Sets the one and only avalable plugin as selected
     if (ps.getString("net.sourceforge.eclipsetrader.dataProvider").length() == 0)

@@ -31,6 +31,9 @@ import javax.xml.transform.stream.StreamResult;
 import net.sourceforge.eclipsetrader.internal.ChartData;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
+import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,11 +43,13 @@ import org.w3c.dom.NodeList;
  * Class for collecting realtime data used to build charts.
  * <p></p>
  */
-public class DataCollector implements IDataUpdateListener
+public class DataCollector implements IDataUpdateListener, IPropertyChangeListener
 {
   private int period = 120;
+  private boolean session1 = true;
   private Calendar startTime1 = Calendar.getInstance();
   private Calendar startTime2 = Calendar.getInstance();
+  private boolean session2 = true;
   private Calendar stopTime1 = Calendar.getInstance();
   private Calendar stopTime2 = Calendar.getInstance();
   private HashMap map = new HashMap();
@@ -52,28 +57,36 @@ public class DataCollector implements IDataUpdateListener
   private long lastUpdate = 0;
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
-  private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+  private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+  private SimpleDateFormat dtf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private HashMap _rtListener = new HashMap();
   private IRealtimeChartProvider realtimeChartProvider;
+  private boolean needSaving = false;
   
   public DataCollector(IRealtimeChartProvider realtimeChartProvider)
   {
     this.realtimeChartProvider = realtimeChartProvider;
 
+    IPreferenceStore pref = TraderPlugin.getDefault().getPreferenceStore();
+    period = pref.getInt("net.sourceforge.eclipsetrader.rtchart.period") * 60;
+
     // Regular time
-    startTime1.set(Calendar.HOUR, 9);
-    startTime1.set(Calendar.MINUTE, 5);
+    session1 = pref.getBoolean("net.sourceforge.eclipsetrader.timing.session1");
+    startTime1.set(Calendar.HOUR_OF_DAY, 0);
+    startTime1.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.startTime1"));
     startTime1.set(Calendar.SECOND, 0);
-    stopTime1.set(Calendar.HOUR, 17);
-    stopTime1.set(Calendar.MINUTE, 25);
+    stopTime1.set(Calendar.HOUR_OF_DAY, 0);
+    stopTime1.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.stopTime1"));
     stopTime1.set(Calendar.SECOND, 0);
 
     // After hours
-    startTime2.set(Calendar.HOUR, 18);
-    startTime2.set(Calendar.MINUTE, 0);
+    session2 = pref.getBoolean("net.sourceforge.eclipsetrader.timing.session2");
+    startTime2.set(Calendar.HOUR_OF_DAY, 0);
+    startTime2.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.startTime2"));
     startTime2.set(Calendar.SECOND, 0);
-    stopTime2.set(Calendar.HOUR, 20);
-    stopTime2.set(Calendar.MINUTE, 30);
+    stopTime2.set(Calendar.HOUR_OF_DAY, 0);
+    stopTime2.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.stopTime2"));
     stopTime2.set(Calendar.SECOND, 0);
     
     nf.setGroupingUsed(false);
@@ -92,6 +105,12 @@ public class DataCollector implements IDataUpdateListener
     map.clear();
     chartMap.clear();
     fireRealtimeChartUpdate();
+  }
+  
+  public void setData(String symbol, Vector values)
+  {
+    chartMap.put(symbol, values);
+    store();
   }
   
   public IChartData[] getData(String symbol)
@@ -146,90 +165,107 @@ public class DataCollector implements IDataUpdateListener
       }
     }
   }
+  
+  private void fireRealtimeChartUpdate(IBasicData data)
+  {
+    Vector _v = (Vector)_rtListener.get(data.getSymbol());
+    if (_v != null)
+    {
+      for (int i = 0; i < _v.size(); i++)
+      {
+        IRealtimeChartListener listener = (IRealtimeChartListener)_v.elementAt(i);
+        listener.realtimeChartUpdated(realtimeChartProvider);
+      }
+    }
+  }
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IDataUpdateListener#dataUpdated(net.sourceforge.eclipsetrader.IBasicDataProvider, net.sourceforge.eclipsetrader.IBasicData)
    */
-  public void dataUpdated(IBasicDataProvider dataProvider, IBasicData data)
+  public void dataUpdated(IBasicDataProvider dataProvider, IBasicData basicData)
   {
-  }
+    Calendar current = Calendar.getInstance();
+    IExtendedData data = (IExtendedData)basicData;
+    
+    if (lastUpdate == 0)
+    {
+      lastUpdate = System.currentTimeMillis();
+      lastUpdate -= (lastUpdate % (period * 1000));
+    }
 
+    current.setTime(data.getDate());
+    if ( !( session1 == true && current.after(startTime1) && current.before(stopTime1) ) && !( session2 == true && current.after(startTime2) && current.before(stopTime2) ) )
+      return;
+    
+    ChartData chartData = (ChartData)map.get(data.getSymbol());
+    if (chartData != null)
+    {
+      // Check if the time period is completed
+      Calendar last = Calendar.getInstance();
+      last.setTime(chartData.getDate());
+      if ((current.getTimeInMillis() - last.getTimeInMillis()) / 1000 >= period)
+      {
+        Vector values = (Vector)chartMap.get(data.getSymbol());
+        if (values == null)
+        {
+          values = new Vector();
+          chartMap.put(data.getSymbol(), values);
+        }
+
+        // Adjust the volume so that it represents the exchanged volume in the period
+        chartData.setVolume(data.getVolume() - chartData.getVolume());
+        if (chartData.getVolume() != 0)
+        {
+          // Check if the existing data is obsolete
+          if (current.get(Calendar.DAY_OF_YEAR) != last.get(Calendar.DAY_OF_YEAR))
+            values.clear();
+
+          // Adjust the time to a period's boundary
+          current.setTimeInMillis(current.getTimeInMillis() - (current.getTimeInMillis() % (period * 1000)));
+          chartData.setDate(current.getTime());
+
+          // Add the collected data to the values array
+          values.addElement(chartData);
+          needSaving = true;
+
+          // Notify all listeners of the chart update
+          fireRealtimeChartUpdate(basicData);
+        }
+
+        // Remove this period's data from the hashmap
+        map.remove(data.getSymbol());
+        chartData = null;
+      }
+    }
+    if (chartData == null)
+    {
+      chartData = new ChartData();
+      chartData.setOpenPrice(data.getLastPrice());
+      chartData.setMaxPrice(data.getLastPrice());
+      chartData.setMinPrice(data.getLastPrice());
+      chartData.setVolume(data.getVolume());
+      current.setTimeInMillis(current.getTimeInMillis() - (current.getTimeInMillis() % (period * 1000)));
+      chartData.setDate(current.getTime());
+      map.put(data.getSymbol(), chartData);
+    }
+
+    // Updates the collected values
+    chartData.setClosePrice(data.getLastPrice());
+    if (data.getLastPrice() < chartData.getMinPrice())
+      chartData.setMinPrice(data.getLastPrice());
+    if (data.getLastPrice() > chartData.getMaxPrice())
+      chartData.setMaxPrice(data.getLastPrice());
+  }
+  
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IDataUpdateListener#dataUpdated(net.sourceforge.eclipsetrader.IBasicDataProvider)
    */
   public void dataUpdated(IBasicDataProvider dataProvider)
   {
-    Calendar current = Calendar.getInstance();
     IExtendedData[] data = TraderPlugin.getData();
-    
-    if (lastUpdate == 0)
-      lastUpdate = System.currentTimeMillis();
-    
     for (int i = 0; i < data.length; i++)
-    {
-      current.setTime(data[i].getDate());
-      if (!((current.after(startTime1) && current.before(stopTime1)) || (current.after(startTime2) && current.before(stopTime2))))
-        continue;
-      
-      ChartData chartData = (ChartData)map.get(data[i].getSymbol());
-      if (chartData == null)
-      {
-        chartData = new ChartData();
-        chartData.setOpenPrice(data[i].getLastPrice());
-        chartData.setMaxPrice(data[i].getLastPrice());
-        chartData.setMinPrice(data[i].getLastPrice());
-        chartData.setVolume(data[i].getVolume());
-        chartData.setDate(data[i].getDate());
-        map.put(data[i].getSymbol(), chartData);
-      }
-
-      // Updates the collected values
-      chartData.setClosePrice(data[i].getLastPrice());
-      if (data[i].getLastPrice() < chartData.getMinPrice())
-        chartData.setMinPrice(data[i].getLastPrice());
-      if (data[i].getLastPrice() > chartData.getMaxPrice())
-        chartData.setMaxPrice(data[i].getLastPrice());
-    }
-
-    if ((System.currentTimeMillis() - lastUpdate) / 1000 >= period)
-    {
-      // Set the time of update
-      lastUpdate = System.currentTimeMillis();
-
-      for (int i = 0; i < data.length; i++)
-      {
-        ChartData chartData = (ChartData)map.get(data[i].getSymbol());
-        // Adjust the volume so that it represents the exchanged volume in the period
-        chartData.setVolume(data[i].getVolume() - chartData.getVolume());
-        if (chartData.getVolume() == 0)
-          continue;
-//        chartData.setDate(Calendar.getInstance().getTime());
-        
-        // Add the collected data to the values array
-        Vector values = (Vector)chartMap.get(data[i].getSymbol());
-        if (values == null)
-        {
-          values = new Vector();
-          chartMap.put(data[i].getSymbol(), values);
-        }
-        // If the day has changed from the last period the old data must be discarded
-        if (values.size() != 0)
-        {
-          Calendar last = Calendar.getInstance();
-          last.setTime(((IChartData)values.elementAt(values.size() - 1)).getDate());
-          if (current.get(Calendar.DAY_OF_YEAR) != last.get(Calendar.DAY_OF_YEAR))
-            values.clear();
-        }
-        values.addElement(chartData);
-        
-        // Remove this period's data from the hashmap
-        map.remove(data[i].getSymbol());
-      }
-
-      // Notify all listeners of the chart update
-      fireRealtimeChartUpdate();
-      store();
-    }
+      dataUpdated(dataProvider, data[i]);
+    store();
   }
 
   public void load()
@@ -267,7 +303,7 @@ public class DataCollector implements IDataUpdateListener
               chartData.setMaxPrice(pf.parse(item.getAttributes().getNamedItem("max").getNodeValue()).doubleValue());
               chartData.setClosePrice(pf.parse(item.getAttributes().getNamedItem("close").getNodeValue()).doubleValue());
               chartData.setVolume(nf.parse(item.getAttributes().getNamedItem("volume").getNodeValue()).intValue());
-              chartData.setDate(df.parse(item.getAttributes().getNamedItem("date").getNodeValue()));
+              chartData.setDate(dtf.parse(item.getAttributes().getNamedItem("date").getNodeValue()));
               values.addElement(chartData);
             }
           }
@@ -275,50 +311,86 @@ public class DataCollector implements IDataUpdateListener
       } catch (Exception ex) {
         ex.printStackTrace();
       }
+      
+    needSaving = false;
   }
 
   public void store()
   {
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      Document document = builder.getDOMImplementation().createDocument("", "collector", null); //$NON-NLS-1$ //$NON-NLS-2$
-
-      Iterator key = chartMap.keySet().iterator();
-      while(key.hasNext() == true)
-      {
-        String symbol = (String)key.next();
-
-        Element element = document.createElement("data"); //$NON-NLS-1$
-        element.setAttribute("symbol", symbol);
-        document.getDocumentElement().appendChild(element);
-        
-        Iterator values = ((Vector)chartMap.get(symbol)).iterator();
-        while(values.hasNext() == true)
+    if (needSaving == true)
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.getDOMImplementation().createDocument("", "collector", null); //$NON-NLS-1$ //$NON-NLS-2$
+  
+        Iterator key = chartMap.keySet().iterator();
+        while(key.hasNext() == true)
         {
-          IChartData chartData = (IChartData)values.next();
-          Element item = document.createElement("item"); //$NON-NLS-1$
-          item.setAttribute("date", df.format(chartData.getDate()));
-          item.setAttribute("open", pf.format(chartData.getOpenPrice()));
-          item.setAttribute("max", pf.format(chartData.getMaxPrice()));
-          item.setAttribute("min", pf.format(chartData.getMinPrice()));
-          item.setAttribute("close", pf.format(chartData.getClosePrice()));
-          item.setAttribute("volume", nf.format(chartData.getVolume()));
-          element.appendChild(item);
-        }
-      }
+          String symbol = (String)key.next();
+  
+          Element element = document.createElement("data"); //$NON-NLS-1$
+          element.setAttribute("symbol", symbol);
+          document.getDocumentElement().appendChild(element);
+          
+          Iterator values = ((Vector)chartMap.get(symbol)).iterator();
+          while(values.hasNext() == true)
+          {
+            IChartData chartData = (IChartData)values.next();
+            if (element.getAttribute("date") == null)
+              element.setAttribute("date", df.format(chartData.getDate()));
 
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1"); //$NON-NLS-1$
-      transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
-      transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
-      DOMSource source = new DOMSource(document);
-      BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), "chartData.xml"))); //$NON-NLS-1$
-      StreamResult result = new StreamResult(out);
-      transformer.transform(source, result);
-      out.flush();
-      out.close();
-    } catch (Exception ex) {};
+            Element item = document.createElement("item"); //$NON-NLS-1$
+            item.setAttribute("time", tf.format(chartData.getDate()));
+            item.setAttribute("open", pf.format(chartData.getOpenPrice()));
+            item.setAttribute("max", pf.format(chartData.getMaxPrice()));
+            item.setAttribute("min", pf.format(chartData.getMinPrice()));
+            item.setAttribute("close", pf.format(chartData.getClosePrice()));
+            item.setAttribute("volume", nf.format(chartData.getVolume()));
+            element.appendChild(item);
+          }
+        }
+  
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1"); //$NON-NLS-1$
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+        transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
+        DOMSource source = new DOMSource(document);
+        BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), "chartData.xml"))); //$NON-NLS-1$
+        StreamResult result = new StreamResult(out);
+        transformer.transform(source, result);
+        out.flush();
+        out.close();
+        needSaving = false;
+      } catch (Exception ex) {};
   }
 
+  /* (non-Javadoc)
+   * @see org.eclipse.core.runtime.Preferences.IPropertyChangeListener#propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent)
+   */
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    String property = event.getProperty();
+    
+    if (property.startsWith("net.sourceforge.eclipsetrader.timing") == true)
+    {
+      IPreferenceStore pref = TraderPlugin.getDefault().getPreferenceStore();
+      period = pref.getInt("net.sourceforge.eclipsetrader.rtchart.period") * 60;
+
+      session1 = pref.getBoolean("net.sourceforge.eclipsetrader.timing.session1");
+      startTime1.set(Calendar.HOUR_OF_DAY, 0);
+      startTime1.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.startTime1"));
+      startTime1.set(Calendar.SECOND, 0);
+      stopTime1.set(Calendar.HOUR_OF_DAY, 0);
+      stopTime1.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.stopTime1"));
+      stopTime1.set(Calendar.SECOND, 0);
+
+      session2 = pref.getBoolean("net.sourceforge.eclipsetrader.timing.session2");
+      startTime2.set(Calendar.HOUR_OF_DAY, 0);
+      startTime2.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.startTime2"));
+      startTime2.set(Calendar.SECOND, 0);
+      stopTime2.set(Calendar.HOUR_OF_DAY, 0);
+      stopTime2.set(Calendar.MINUTE, pref.getInt("net.sourceforge.eclipsetrader.timing.stopTime2"));
+      stopTime2.set(Calendar.SECOND, 0);
+    }
+  }
 }

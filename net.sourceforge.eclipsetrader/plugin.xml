@@ -86,6 +86,11 @@
             name="Proxies"
             category="eclipsetrader"
             id="eclipsetrader.proxy"/>
+      <page
+            class="net.sourceforge.eclipsetrader.preferences.TimingPreferencePage"
+            name="Timing"
+            category="eclipsetrader"
+            id="eclipsetrader.timing"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
