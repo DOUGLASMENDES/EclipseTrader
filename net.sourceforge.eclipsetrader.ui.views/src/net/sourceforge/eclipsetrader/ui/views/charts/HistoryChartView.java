@@ -78,13 +78,11 @@ public class HistoryChartView extends ChartView
       IChartData[] chartData = dataProvider.getData(basicData);
 
       // Check if the user has selected a subperiod to display
-      if (limitPeriod != 0)
+      if (chartData != null && chartData.length > 0 && limitPeriod != 0)
       {
         // Set the limit date
         Calendar limit = Calendar.getInstance();
-        limit.set(Calendar.HOUR, 0);
-        limit.set(Calendar.MINUTE, 0);
-        limit.set(Calendar.SECOND, 0);
+        limit.setTime(chartData[chartData.length - 1].getDate());
         limit.add(Calendar.MONTH, -limitPeriod);
   
         // Find the first element that is after the limit date
