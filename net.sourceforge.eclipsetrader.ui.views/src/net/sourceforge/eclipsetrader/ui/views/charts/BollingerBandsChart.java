@@ -31,7 +31,7 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
   
   public BollingerBandsChart()
   {
-    name = Messages.getString("BollingerBandsChart.label"); //$NON-NLS-1$
+    setName(Messages.getString("BollingerBandsChart.label")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -47,7 +47,7 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
    */
   public String getDescription()
   {
-    return name + " (" + period + "," + deviations + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return getName() + " (" + period + "," + deviations + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
   
   /* (non-Javadoc)
@@ -56,13 +56,13 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
   public void paintChart(GC gc, int width, int height)
   {
     super.paintChart(gc, width, height);
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = (height) / (max - min);
+      double pixelRatio = height / (getMax() - getMin());
 
       // Colore della linea
-      gc.setForeground(lineColor);
+      gc.setForeground(getColor());
 
       // Computa i punti
       if (chartData.length >= period)

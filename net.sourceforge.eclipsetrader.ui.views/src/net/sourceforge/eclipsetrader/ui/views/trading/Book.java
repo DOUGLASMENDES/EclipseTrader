@@ -512,7 +512,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     if (data instanceof IExtendedData)
     {
       IExtendedData xd = (IExtendedData)data;
-      label1.setText(xd.getTime());
+      label1.setText(df.format(xd.getDate()));
       label2.setText(nf.format(xd.getVolume()));
       label3.setText(pf.format(xd.getLastPrice()));
       label4.setText(pf.format(xd.getHighPrice()));

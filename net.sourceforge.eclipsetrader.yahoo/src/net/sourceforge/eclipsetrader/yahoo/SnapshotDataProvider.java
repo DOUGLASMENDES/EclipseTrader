@@ -160,7 +160,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
                 pd.setDate(df_us.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3])));
               else
                 pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3]) + ":00"));
-              pd.setTime(tf.format(pd.getDate()));
               // 4 = Change
 //              pd.change = stripQuotes(item[4]);
               // 5 = Open
@@ -189,8 +188,8 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
               pd.setBidSize(0);
               pd.setAskSize(0);
             } catch(Exception x) {
-              System.out.println(x.getMessage());
-              System.out.println(line);
+//              System.out.println(x.getMessage());
+//              System.out.println(line);
             };
           }
         }

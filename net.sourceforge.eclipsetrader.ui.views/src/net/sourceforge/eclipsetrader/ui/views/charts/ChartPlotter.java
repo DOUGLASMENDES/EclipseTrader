@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import net.sourceforge.eclipsetrader.IChartData;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
@@ -28,15 +29,15 @@ import org.eclipse.swt.widgets.Control;
  */
 public class ChartPlotter implements IChartPlotter
 {
-  protected String name;
-  protected ChartCanvas chartCanvas;
-  protected int columnWidth = 5;
+  private String name;
+  private ChartCanvas chartCanvas;
+  private int columnWidth = 5;
   protected int chartMargin = 2;
   protected int scaleWidth = 60;
-  protected Color lineColor = new Color(null, 0, 0, 255);
+  private Color lineColor = new Color(null, 0, 0, 255);
   protected IChartData[] chartData;
-  protected double min;
-  protected double max;
+  private double min;
+  private double max;
   protected HashMap params = new HashMap();
 
   /* (non-Javadoc)
@@ -107,6 +108,22 @@ public class ChartPlotter implements IChartPlotter
       }
     }
   }
+  
+  public void setMinMax(double min, double max)
+  {
+    this.min = min;
+    this.max = max;
+  }
+  
+  public double getMin()
+  {
+    return min;
+  }
+  
+  public double getMax()
+  {
+    return max;
+  }
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getColor()
@@ -126,6 +143,9 @@ public class ChartPlotter implements IChartPlotter
       columnWidth = chartCanvas.getColumnWidth();
       chartMargin = chartCanvas.getMargin();
     }
+    // Default line type and color
+    gc.setLineStyle(SWT.LINE_SOLID);
+    gc.setForeground(lineColor);
   }
 
   /* (non-Javadoc)
@@ -225,4 +245,14 @@ public class ChartPlotter implements IChartPlotter
     gc.drawPolyline(pointArray);
   }
 
+  /**
+   * Method to return the columnWidth field.<br>
+   *
+   * @return Returns the columnWidth.
+   */
+  public int getColumnWidth()
+  {
+    columnWidth = chartCanvas.getColumnWidth();
+    return columnWidth;
+  }
 }

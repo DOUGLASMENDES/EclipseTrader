@@ -39,9 +39,9 @@ public class VolumeChart extends ChartPlotter
    */
   public void setData(IChartData[] data)
   {
-    chartData = data;
-    min = max = 0;
+    double min = 0, max = 0;
     
+    chartData = data;
     if (data != null)
     {
       // Determina massimo e minimo
@@ -51,6 +51,8 @@ public class VolumeChart extends ChartPlotter
           max = data[i].getVolume();
       }
     }
+    
+    setMinMax(min, max);
   }
 
   /* (non-Javadoc)
@@ -62,17 +64,17 @@ public class VolumeChart extends ChartPlotter
 
     // Line type and color
     gc.setLineStyle(SWT.LINE_SOLID);
-    gc.setForeground(lineColor);
+    gc.setForeground(getColor());
     
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = (height - VERTICAL_BORDER * 2) / (max - min);
+      double pixelRatio = (height - VERTICAL_BORDER * 2) / (getMax() - getMin());
 
-      int x = chartMargin + columnWidth / 2;
-      for (int i = 0; i < chartData.length; i++, x += columnWidth)
+      int x = chartMargin + getColumnWidth() / 2;
+      for (int i = 0; i < chartData.length; i++, x += getColumnWidth())
       {
-        int y1 = height - (int)((chartData[i].getVolume() - min) * pixelRatio);
+        int y1 = height - (int)((chartData[i].getVolume() - getMin()) * pixelRatio);
         int y2 = height;
         gc.drawLine(x, y1 - VERTICAL_BORDER, x, y2 - VERTICAL_BORDER);
       }

@@ -31,7 +31,7 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
   
   public TrendChart()
   {
-    name = Messages.getString("TrendChart.label"); //$NON-NLS-1$
+    setName(Messages.getString("TrendChart.label")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -47,7 +47,7 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return name + " (" + period + "," + deviations + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return getName() + " (" + period + "," + deviations + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
   
   /* (non-Javadoc)
@@ -56,13 +56,13 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
   public void paintChart(GC gc, int width, int height)
   {
     super.paintChart(gc, width, height);
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = (height) / (max - min);
+      double pixelRatio = height / (getMax() - getMin());
 
       // Colore della linea
-      gc.setForeground(lineColor);
+      gc.setForeground(getColor());
 
       // Computa i punti
       if (chartData.length >= period)
@@ -94,21 +94,21 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
         average /= numberPlotPoints;
         average /= Math.sqrt(average);
         
-        int e1x = (columnWidth / 2) + (columnWidth * (chartData.length - period));  
-        int e1y = height - (int)((a - min) * pixelRatio);
-        int e2x = columnWidth * period;
-        int e2y = height - (int)(((a + period * b) - min) * pixelRatio);
+        int e1x = (getColumnWidth() / 2) + (getColumnWidth() * (chartData.length - period));  
+        int e1y = height - (int)((a - getMin()) * pixelRatio);
+        int e2x = getColumnWidth() * period;
+        int e2y = height - (int)(((a + period * b) - getMin()) * pixelRatio);
         
         gc.setLineStyle(SWT.LINE_DOT);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
 
-        e1y = height - (int)(((a + average * deviations) - min) * pixelRatio);
-        e2y = height - (int)((((a + average * deviations) + period * b) - min) * pixelRatio);
+        e1y = height - (int)(((a + average * deviations) - getMin()) * pixelRatio);
+        e2y = height - (int)((((a + average * deviations) + period * b) - getMin()) * pixelRatio);
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
 
-        e1y = height - (int)(((a - average * deviations) - min) * pixelRatio);
-        e2y = height - (int)((((a - average * deviations) + period * b) - min) * pixelRatio);
+        e1y = height - (int)(((a - average * deviations) - getMin()) * pixelRatio);
+        e2y = height - (int)((((a - average * deviations) + period * b) - getMin()) * pixelRatio);
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
       }

@@ -65,27 +65,27 @@ public class PriceChart extends ChartPlotter
   public void paintChart(GC gc, int width, int height)
   {
     super.paintChart(gc, width, height);
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = (height) / (max - min);
+      double pixelRatio = height / (getMax() - getMin());
 
       gc.setForeground(gridColor);
       gc.setLineStyle(SWT.LINE_DOT);
       
-      double midPrice = roundToTick((max - min) / 2 + min);
-      int y1 = height - (int)((midPrice - min) * pixelRatio);
+      double midPrice = roundToTick((getMax() - getMin()) / 2 + getMin());
+      int y1 = height - (int)((midPrice - getMin()) * pixelRatio);
       gc.drawLine(0, y1, width, y1);
       
 //      double step = roundToTick(midPrice + (max - min) / 5) - midPrice;
       double step = getPriceTick(midPrice) * 2;
-      while((max - min) / step > 5)
+      while((getMax() - getMin()) / step > 5)
         step += getPriceTick(midPrice);
       for (int i = 1; i <= 2; i++)
       {
-        y1 = height - (int)((midPrice + step * i - min) * pixelRatio);
+        y1 = height - (int)((midPrice + step * i - getMin()) * pixelRatio);
         gc.drawLine(0, y1, width, y1);
-        y1 = height - (int)((midPrice - step * i - min) * pixelRatio);
+        y1 = height - (int)((midPrice - step * i - getMin()) * pixelRatio);
         gc.drawLine(0, y1, width, y1);
       }
 
@@ -117,22 +117,22 @@ public class PriceChart extends ChartPlotter
         }
         
         // Disegna il grafico
-        gc.setForeground(lineColor);
+        gc.setForeground(getColor());
         drawLine(value, gc, height);
       }
       else if (type == CANDLE)
       {
         gc.setForeground(textColor);
 
-        int x = columnWidth / 2;
-        for (int i = 0, pa = 0; i < chartData.length; i++, x += columnWidth)
+        int x = getColumnWidth() / 2;
+        for (int i = 0, pa = 0; i < chartData.length; i++, x += getColumnWidth())
         {
-          y1 = height - (int)((chartData[i].getMaxPrice() - min) * pixelRatio);
-          int y2 = height - (int)((chartData[i].getMinPrice() - min) * pixelRatio);
+          y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
+          int y2 = height - (int)((chartData[i].getMinPrice() - getMin()) * pixelRatio);
           gc.drawLine(x, y1, x, y2);
           
-          y1 = height - (int)((chartData[i].getOpenPrice() - min) * pixelRatio);
-          y2 = height - (int)((chartData[i].getClosePrice() - min) * pixelRatio);
+          y1 = height - (int)((chartData[i].getOpenPrice() - getMin()) * pixelRatio);
+          y2 = height - (int)((chartData[i].getClosePrice() - getMin()) * pixelRatio);
           if (y1 > y2)
           {
             gc.setBackground(chartBackground);
@@ -151,11 +151,11 @@ public class PriceChart extends ChartPlotter
       }
       else if (type == BAR)
       {
-        int x = columnWidth / 2;
-        for (int i = 0, pa = 0; i < chartData.length; i++, x += columnWidth)
+        int x = getColumnWidth() / 2;
+        for (int i = 0, pa = 0; i < chartData.length; i++, x += getColumnWidth())
         {
-          y1 = height - (int)((chartData[i].getMaxPrice() - min) * pixelRatio);
-          int y2 = height - (int)((chartData[i].getMinPrice() - min) * pixelRatio);
+          y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
+          int y2 = height - (int)((chartData[i].getMinPrice() - getMin()) * pixelRatio);
           if (i > 0 && chartData[i].getOpenPrice() < chartData[i - 1].getClosePrice())
             gc.setForeground(neutralColor);
           else if (chartData[i].getClosePrice() >= chartData[i].getOpenPrice())
@@ -163,9 +163,9 @@ public class PriceChart extends ChartPlotter
           else
             gc.setForeground(negativeColor);
           gc.drawLine(x, y1, x, y2);
-          y1 = height - (int)((chartData[i].getOpenPrice() - min) * pixelRatio);
+          y1 = height - (int)((chartData[i].getOpenPrice() - getMin()) * pixelRatio);
           gc.drawLine(x - 2, y1, x, y1);
-          y1 = height - (int)((chartData[i].getClosePrice() - min) * pixelRatio);
+          y1 = height - (int)((chartData[i].getClosePrice() - getMin()) * pixelRatio);
           gc.drawLine(x, y1, x + 2, y1);
         }
       }
@@ -180,7 +180,7 @@ public class PriceChart extends ChartPlotter
     gc.setForeground(separatorColor);
     gc.drawLine(0, 0, 0, height);
 
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       if (chartData[0].getMaxPrice() >= 10)
       {
@@ -194,30 +194,30 @@ public class PriceChart extends ChartPlotter
       }
 
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = height / (max - min);
+      double pixelRatio = height / (getMax() - getMin());
 
       gc.setForeground(textColor);
       gc.setLineStyle(SWT.LINE_SOLID);
       
-      double midPrice = roundToTick((max - min) / 2 + min);
-      int y1 = height - (int)((midPrice - min) * pixelRatio);
+      double midPrice = roundToTick((getMax() - getMin()) / 2 + getMin());
+      int y1 = height - (int)((midPrice - getMin()) * pixelRatio);
       gc.drawLine(1, y1, 5, y1);
       String s = nf.format(midPrice);
       gc.drawString(s, 10, y1 - gc.stringExtent(s).y / 2 - 1);
   
       double step = getPriceTick(midPrice) * 2;
-      while((max - min) / step > 5)
+      while((getMax() - getMin()) / step > 5)
         step += getPriceTick(midPrice);
 //      double step = roundToTick(midPrice + (max - min) / 5) - midPrice;
 //      if (step < getPriceTick(midPrice))
 //        step = getPriceTick(midPrice) * 2;
       for (int i = 1; i <= 2; i++)
       {
-        y1 = height - (int)((midPrice + step * i - min) * pixelRatio);
+        y1 = height - (int)((midPrice + step * i - getMin()) * pixelRatio);
         gc.drawLine(1, y1, 5, y1);
         s = nf.format(midPrice + step * i);
         gc.drawString(s, 10, y1 - gc.stringExtent(s).y / 2 - 1);
-        y1 = height - (int)((midPrice - step * i - min) * pixelRatio);
+        y1 = height - (int)((midPrice - step * i - getMin()) * pixelRatio);
         if (y1 < height)
         {
           gc.drawLine(1, y1, 5, y1);

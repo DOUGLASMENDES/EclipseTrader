@@ -35,7 +35,7 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
   
   public RSIChart()
   {
-    name = Messages.getString("RSIChart.label"); //$NON-NLS-1$
+    setName(Messages.getString("RSIChart.label")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -51,7 +51,7 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return name + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+    return getName() + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
   }
   
   /* (non-Javadoc)
@@ -60,18 +60,17 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
   public void paintChart(GC gc, int width, int height)
   {
     super.paintChart(gc, width, height);
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      max = 105;
-      min = -5;
-      double pixelRatio = (height) / (max - min);
+      setMinMax(-5, 105);
+      double pixelRatio = (height) / (getMax() - getMin());
 
       gc.setForeground(gridColor);
       gc.setLineStyle(SWT.LINE_DOT);
-      int y1 = (int)((70 - min) * pixelRatio);
+      int y1 = (int)((70 - getMin()) * pixelRatio);
       gc.drawLine(0, y1, width, y1);
-      y1 = (int)((30 - min) * pixelRatio);
+      y1 = (int)((30 - getMin()) * pixelRatio);
       gc.drawLine(0, y1, width, y1);
 
       // Computa i punti
@@ -98,14 +97,14 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
         }
 
         gc.setLineStyle(SWT.LINE_SOLID);
-        gc.setForeground(lineColor);
+        gc.setForeground(getColor());
         drawLine(value, gc, height, period);
       }
     }
 
     // Tipo di linea e colore
     gc.setLineStyle(SWT.LINE_SOLID);
-    gc.setForeground(lineColor);
+    gc.setForeground(getColor());
   }
 
   /* (non-Javadoc)

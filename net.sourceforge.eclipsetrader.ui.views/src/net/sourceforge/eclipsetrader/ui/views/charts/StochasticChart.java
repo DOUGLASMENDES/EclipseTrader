@@ -36,7 +36,7 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
   
   public StochasticChart()
   {
-    name = Messages.getString("StochasticChart.label"); //$NON-NLS-1$
+    setName(Messages.getString("StochasticChart.label")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -52,7 +52,7 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return name + " (" + period + ", " + subperiod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return getName() + " (" + period + ", " + subperiod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
   
   /* (non-Javadoc)
@@ -62,18 +62,17 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
   {
     // Grafico
     super.paintChart(gc, width, height);
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      max = 105;
-      min = -5;
-      double pixelRatio = (height) / (max - min);
+      setMinMax(-5, 105);
+      double pixelRatio = (height) / (getMax() - getMin());
 
       gc.setForeground(gridColor);
       gc.setLineStyle(SWT.LINE_DOT);
-      int y1 = (int)((70 - min) * pixelRatio);
+      int y1 = (int)((70 - getMin()) * pixelRatio);
       gc.drawLine(0, y1, width, y1);
-      y1 = (int)((30 - min) * pixelRatio);
+      y1 = (int)((30 - getMin()) * pixelRatio);
       gc.drawLine(0, y1, width, y1);
 
       // Computa i punti
@@ -95,7 +94,7 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
           value[i] = 100 * ((recent - low) / (high - low));
         }
         gc.setLineStyle(SWT.LINE_SOLID);
-        gc.setForeground(lineColor);
+        gc.setForeground(getColor());
         drawLine(value, gc, height, period);
         
         // Media mobile dell'indicatore
@@ -109,7 +108,7 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
             average[i] /= subperiod;
           }
           gc.setLineStyle(SWT.LINE_DOT);
-          gc.setForeground(lineColor);
+          gc.setForeground(getColor());
           drawLine(average, gc, height, period);
         }
       }
@@ -117,7 +116,7 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
 
     // Tipo di linea e colore
     gc.setLineStyle(SWT.LINE_SOLID);
-    gc.setForeground(lineColor);
+    gc.setForeground(getColor());
   }
 
   /* (non-Javadoc)

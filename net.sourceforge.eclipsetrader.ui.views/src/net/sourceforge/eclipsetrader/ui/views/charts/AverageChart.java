@@ -37,7 +37,7 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
   
   public AverageChart()
   {
-    name = Messages.getString("AverageChart.label"); //$NON-NLS-1$
+    setName(Messages.getString("AverageChart.label")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -53,7 +53,7 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return name + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+    return getName() + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
   }
   
   /* (non-Javadoc)
@@ -62,14 +62,14 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
   public void paintChart(GC gc, int width, int height)
   {
     super.paintChart(gc, width, height);
-    if (chartData != null && max > min)
+    if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = height / (max - min);
+      double pixelRatio = height / (getMax() - getMin());
 
       // Tipo di line e colore
       gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(lineColor);
+      gc.setForeground(getColor());
 
       // Computa i punti
       if (chartData.length >= period)

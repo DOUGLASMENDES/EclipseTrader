@@ -31,7 +31,7 @@ public class AccumulationDistributionChart extends ChartPlotter implements IChar
   
   public AccumulationDistributionChart()
   {
-    name = Messages.getString("AccumulationDistributionChart.label"); //$NON-NLS-1$
+    setName(Messages.getString("AccumulationDistributionChart.label")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -47,7 +47,7 @@ public class AccumulationDistributionChart extends ChartPlotter implements IChar
    */
   public String getDescription()
   {
-    return name;
+    return getName();
   }
   
   /* (non-Javadoc)
@@ -55,17 +55,17 @@ public class AccumulationDistributionChart extends ChartPlotter implements IChar
    */
   public void paintChart(GC gc, int width, int height)
   {
+    double min = 0, max = 0;
+    
     super.paintChart(gc, width, height);
-    if (chartData != null && max > min)
+    if (chartData != null)
     {
-      max = min = 0;
-
       gc.setForeground(gridColor);
       gc.setLineStyle(SWT.LINE_DOT);
       gc.drawLine(0, height / 2, width, height / 2);
 
       gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(lineColor);
+      gc.setForeground(getColor());
 
       // Calculate the values
       if (chartData.length >= 1)
@@ -89,6 +89,7 @@ public class AccumulationDistributionChart extends ChartPlotter implements IChar
         double margin = (max - min) / 100 * 2; 
         max += margin;
         min -= margin;
+        setMinMax(min, max);
 
         this.drawLine(value, gc, height);
       }
