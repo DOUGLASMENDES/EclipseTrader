@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -134,20 +134,23 @@ public class Streamer
         if (pd == null)
           continue;
         
-          // 1 = Last price or N/A
-          if (item[1].equalsIgnoreCase("N/A") == false)
-            pd.setLastPrice(Double.parseDouble(item[1].replace(',', '.')));
-          // 2 = Date
-          // 3 = Time
+        // 2 = Date
+        // 3 = Time
         try {
           if (item[3].indexOf("am") != -1 || item[3].indexOf("pm") != -1)
             pd.setDate(df_us.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3])));
           else
-            pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3]) + ":00"));
+            pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3].replace('.', ':')) + ":00"));
         } catch(Exception x) {
           System.out.println(x.getMessage());
+          continue;
         };
-          // 4 = Change
+
+        // 1 = Last price or N/A
+        if (item[1].equalsIgnoreCase("N/A") == false)
+          pd.setLastPrice(Double.parseDouble(item[1].replace(',', '.')));
+        
+        // 4 = Change
           // 5 = Open
           if (item[5].equalsIgnoreCase("N/A") == false)
             pd.setOpenPrice(Double.parseDouble(item[5].replace(',', '.')));
