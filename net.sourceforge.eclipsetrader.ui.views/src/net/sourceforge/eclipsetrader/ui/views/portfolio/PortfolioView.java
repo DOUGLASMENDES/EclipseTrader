@@ -746,7 +746,8 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
       }
       table.setRedraw(true);
     }
-    updateView();
+    if (property.startsWith("portfolio.text_color") == true) //$NON-NLS-1$
+      updateView();
   }
   
   private int getColumn(int x)
