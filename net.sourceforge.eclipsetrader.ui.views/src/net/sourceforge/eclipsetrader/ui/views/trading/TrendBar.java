@@ -94,7 +94,7 @@ public class TrendBar extends Canvas implements PaintListener, IBookUpdateListen
     askWidth[4] = last;
     
     int x = 0;
-    for (int i = bid.length - 1; i >= 0; i--)
+    for (int i = bidWidth.length - 1; i >= 0; i--)
     {
       e.gc.setBackground(band[i]);
       e.gc.fillRectangle(x, 0, bidWidth[i], height);
@@ -103,7 +103,7 @@ public class TrendBar extends Canvas implements PaintListener, IBookUpdateListen
     e.gc.setBackground(indicator);
     e.gc.fillRectangle(x, 0, middle, height);
     x += middle;
-    for (int i = 0; i < ask.length && i < 5; i++)
+    for (int i = 0; i < askWidth.length && i < 5; i++)
     {
       e.gc.setBackground(band[i]);
       e.gc.fillRectangle(x, 0, askWidth[i], height);
