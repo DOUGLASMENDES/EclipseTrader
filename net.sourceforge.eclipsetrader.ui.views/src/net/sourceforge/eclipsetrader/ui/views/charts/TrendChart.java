@@ -53,6 +53,7 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
    */
   public void paintChart(GC gc, int width, int height)
   {
+    super.paintChart(gc, width, height);
     if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
@@ -99,13 +100,13 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
         gc.setLineStyle(SWT.LINE_DOT);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
 
-        e1y = height - (int)(((a + average) - min) * pixelRatio);
-        e2y = height - (int)((((a + average) + period * b) - min) * pixelRatio);
+        e1y = height - (int)(((a + average * deviations) - min) * pixelRatio);
+        e2y = height - (int)((((a + average * deviations) + period * b) - min) * pixelRatio);
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
 
-        e1y = height - (int)(((a - average) - min) * pixelRatio);
-        e2y = height - (int)((((a - average) + period * b) - min) * pixelRatio);
+        e1y = height - (int)(((a - average * deviations) - min) * pixelRatio);
+        e2y = height - (int)((((a - average * deviations) + period * b) - min) * pixelRatio);
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
       }
