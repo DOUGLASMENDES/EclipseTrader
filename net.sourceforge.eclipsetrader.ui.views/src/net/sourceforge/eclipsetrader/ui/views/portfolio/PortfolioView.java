@@ -441,7 +441,8 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     table.setRedraw(false);
 
     IExtendedData[] data = TraderPlugin.getData();
-    table.setItemCount(data.length + 1);
+    if (table.getItemCount() != (data.length + 1))
+      table.setItemCount(data.length + 1);
     
     int row;
     for (row = 0; row < data.length; row++)
@@ -452,6 +453,12 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
         item.setBackground(oddBackground);
       else
         item.setBackground(evenBackground);
+      PortfolioTableData tableData = (PortfolioTableData)item.getData();
+      if (tableData == null)
+      {
+        tableData = new PortfolioTableData();
+        item.setData(tableData);
+      }
       for (int column = 0; column < table.getColumnCount(); column++)
       {
         item.setForeground(column, textForeground);
@@ -468,9 +475,10 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
             item.setText(column, pd.getDescription());
             break;
           case 3:
-            if (pd.getLastPriceVariance() < 0)
+            tableData.setLastPrice(pd.getLastPrice());
+            if (tableData.getLastPriceVariance() < 0)
               item.setForeground(column, negativeForeground);
-            else if (pd.getLastPriceVariance() > 0)
+            else if (tableData.getLastPriceVariance() > 0)
               item.setForeground(column, positiveForeground);
             if (pd.getLastPrice() > 200)
               item.setText(column, nf.format(pd.getLastPrice()));
@@ -490,9 +498,10 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
             item.setText(column, pd.getChange());
             break;
           case 5:
-            if (pd.getBidPriceVariance() < 0)
+            tableData.setBidPrice(pd.getBidPrice());
+            if (tableData.getBidPriceVariance() < 0)
               item.setForeground(column, negativeForeground);
-            else if (pd.getBidPriceVariance() > 0)
+            else if (tableData.getBidPriceVariance() > 0)
               item.setForeground(column, positiveForeground);
             if (pd.getBidPrice() > 200)
               item.setText(column, nf.format(pd.getBidPrice()));
@@ -500,16 +509,18 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
               item.setText(column, pf.format(pd.getBidPrice()));
             break;
           case 6:
-            if (pd.getBidSizeVariance() < 0)
+            tableData.setBidSize(pd.getBidSize());
+            if (tableData.getBidSizeVariance() < 0)
               item.setForeground(column, negativeForeground);
-            else if (pd.getBidSizeVariance() > 0)
+            else if (tableData.getBidSizeVariance() > 0)
               item.setForeground(column, positiveForeground);
             item.setText(column, nf.format(pd.getBidSize()));
             break;
           case 7:
-            if (pd.getAskPriceVariance() < 0)
+            tableData.setAskPrice(pd.getAskPrice());
+            if (tableData.getAskPriceVariance() < 0)
               item.setForeground(column, negativeForeground);
-            else if (pd.getAskPriceVariance() > 0)
+            else if (tableData.getAskPriceVariance() > 0)
               item.setForeground(column, positiveForeground);
             if (pd.getAskPrice() > 200)
               item.setText(column, nf.format(pd.getAskPrice()));
@@ -517,9 +528,10 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
               item.setText(column, pf.format(pd.getAskPrice()));
             break;
           case 8:
-            if (pd.getAskSizeVariance() < 0)
+            tableData.setAskSize(pd.getAskSize());
+            if (tableData.getAskSizeVariance() < 0)
               item.setForeground(column, negativeForeground);
-            else if (pd.getAskSizeVariance() > 0)
+            else if (tableData.getAskSizeVariance() > 0)
               item.setForeground(column, positiveForeground);
             item.setText(column, nf.format(pd.getAskSize()));
             break;
