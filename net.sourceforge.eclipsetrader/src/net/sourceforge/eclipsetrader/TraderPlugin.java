@@ -15,7 +15,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
@@ -38,6 +37,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   private IDataStore dataStore;
   private IBasicDataProvider dataProvider;
   private IChartDataProvider chartDataProvider;
+  private static IBookDataProvider bookDataProvider;
   private Object newsProvider;
 	
 	/**
@@ -131,6 +131,19 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     return plugin.dataProvider;
   }
 
+  /**
+   * Return the selected Book / Level II data provider.
+   * <p></p>
+   * @return Instance of the book data provider plugin.
+   */
+  public static IBookDataProvider getBookDataProvider()
+  {
+    if (bookDataProvider == null)
+      bookDataProvider = (IBookDataProvider)plugin.activatePlugin("net.sourceforge.eclipsetrader.bookDataProvider");
+    
+    return bookDataProvider;
+  }
+
   public static IChartDataProvider getChartDataProvider() 
   { 
     if (plugin.chartDataProvider == null)
@@ -166,6 +179,12 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       dataProvider = (IBasicDataProvider)activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
       if (dataProvider != null)
         dataProvider.setData(dataStore.getData());
+    }
+    else if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
+    {
+      if (bookDataProvider != null)
+        bookDataProvider.dispose();
+      bookDataProvider = (IBookDataProvider)activatePlugin("net.sourceforge.eclipsetrader.bookDataProvider");
     }
     else if (property.equalsIgnoreCase("PROXY_ENABLED") == true)
     {
@@ -329,7 +348,6 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     for (int m = 0; m < members.length; m++)
     {
       IConfigurationElement member = members[m];
-      IExtension extension = member.getDeclaringExtension();
       if (id.equalsIgnoreCase(member.getAttribute("id")))
         try {
           return member.createExecutableExtension("class");
@@ -364,7 +382,6 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     if (members.length == 0)
       return "";
     IConfigurationElement member = members[0];
-    IExtension extension = member.getDeclaringExtension();
     return member.getAttribute("id");
   }
 }
