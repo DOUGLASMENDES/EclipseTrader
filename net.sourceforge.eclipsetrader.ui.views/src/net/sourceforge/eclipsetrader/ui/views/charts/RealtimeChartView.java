@@ -63,7 +63,9 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
   public void createPartControl(Composite parent)
   {
     df = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
+
     super.createPartControl(parent);
+    dateLabel.setText(Messages.getString("ChartView.Time")); //$NON-NLS-1$
     
     // Drag and drop support
     DropTarget target = new DropTarget(parent, DND.DROP_COPY);
@@ -72,20 +74,26 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     target.addDropListener(this);
 
     // Restore del grafico precedente
-    String id = getViewSite().getSecondaryId();
-    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id); //$NON-NLS-1$
-    if (!symbol.equals("")) //$NON-NLS-1$
-    {
-      IBasicData bd = TraderPlugin.getData(symbol);
-      if (bd == null)
-      {
-        bd = new BasicData();
-        bd.setSymbol(symbol);
-        bd.setTicker(symbol);
-        bd.setDescription(symbol);
+    container.getDisplay().asyncExec(new Runnable() {
+      public void run()  {
+        String id = getViewSite().getSecondaryId();
+        String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id); //$NON-NLS-1$
+        if (!symbol.equals("")) //$NON-NLS-1$
+        {
+          IBasicData bd = TraderPlugin.getData(symbol);
+          if (bd == null)
+          {
+            bd = new BasicData();
+            bd.setSymbol(symbol);
+            bd.setTicker(symbol);
+            bd.setDescription(symbol);
+          }
+          setData(bd);
+        }
       }
-      setData(bd);
-    }
+    });
+
+    getSite().setSelectionProvider(this);
   }
   
   /* (non-Javadoc)
@@ -142,10 +150,14 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
   
   public IChartData[] getChartData(IBasicData data)
   {
-    IChartData[] c = chartProvider.getHistoryData(basicData);
+    this.data = load();
+    if (this.data == null && chartProvider != null)
+      this.data = chartProvider.getHistoryData(basicData);
+    return this.data;
+/*    IChartData[] c = chartProvider.getHistoryData(basicData);
     if (c == null)
       c = load();
-    return c;
+    return c;*/
 /*    IChartData[] c = null;
     if (TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
@@ -268,12 +280,13 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
         store();
         container.getDisplay().asyncExec(new Runnable() {
           public void run() {
-            controlResized(null);
+            setData(basicData);
+/*            controlResized(null);
             bottombar.redraw();
-            updateLabels();
+            updateLabels();*/
           }
         });
-        updateView();
+//        updateView();
       }
     }).start();
   }
