@@ -71,6 +71,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   protected Color textColor = new Color(null, 0, 0, 0);
   protected Color positiveColor = new Color(null, 0, 192, 0);
   protected Color negativeColor = new Color(null, 192, 0, 0);
+  protected Color yearColor = new Color(null, 192, 0, 0);
   protected int width = 5;
   protected int margin = 2;
   protected int scaleWidth = 60;
@@ -695,6 +696,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
           {
             String s = df.format(data[i].getDate());
             int x1 = x - gc.stringExtent(s).x / 2;
+            gc.setForeground(textColor);
+            if (c.get(Calendar.MONTH) == Calendar.JANUARY)
+            {
+              s += " " + c.get(Calendar.YEAR);
+              gc.setForeground(yearColor);
+            }
             gc.drawLine(x, 0, x, 5);
             gc.drawString(s, x1, 5);
             month = c.get(Calendar.MONTH);
