@@ -204,7 +204,8 @@ public class ChartDataProvider implements IChartDataProvider
     // If no data is avalable, start from one year back.
     if (chartData.size() == 0)
     {
-      from.add(Calendar.YEAR, -1);
+      String value = YahooPlugin.getDefault().getPreferenceStore().getString("NEW_CHART_YEARS");
+      from.add(Calendar.YEAR, -Integer.parseInt(value));
       to.setTime(from.getTime());
       to.add(Calendar.DATE, 200);
     }

@@ -54,6 +54,7 @@ public class YahooPlugin extends AbstractUIPlugin
     ps.setDefault("yahoo.url", "http://it.finance.yahoo.com/d/quotes.csv");
     ps.setDefault("yahoo.charts.url", "http://table.finance.yahoo.com/table.csv");
     ps.setDefault("net.sourceforge.eclipsetrader.yahoo.newsSource", "yahoo.news.us");
+    ps.setDefault("NEW_CHART_YEARS", "1");
     SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
     
 /*    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {

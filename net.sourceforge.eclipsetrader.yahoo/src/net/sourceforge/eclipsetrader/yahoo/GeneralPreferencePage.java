@@ -77,6 +77,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     composite.setLayout(new GridLayout());
     composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.GRAB_HORIZONTAL));
     _v.add(new StringFieldEditor("yahoo.charts.url", "CSV Download URL", composite));
+    _v.add(new StringFieldEditor("NEW_CHART_YEARS", "Years to Download", 3, composite));
 
     group = new Group(entryTable, SWT.NONE);
     group.setText("News");
