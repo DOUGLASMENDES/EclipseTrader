@@ -13,7 +13,6 @@ package net.sourceforge.eclipsetrader.internal;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 
 import org.eclipse.jface.action.GroupMarker;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -26,7 +25,6 @@ import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -101,7 +99,9 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
       coolBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
     }
   }
-  private void fillMenuBar(IWorkbenchWindow window, IActionBarConfigurer configurer) {
+  
+  private void fillMenuBar(IWorkbenchWindow window, IActionBarConfigurer configurer) 
+  {
     IMenuManager menuBar = configurer.getMenuManager();
     menuBar.add(createFileMenu(window));
     menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -112,7 +112,11 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
   private MenuManager createFileMenu(IWorkbenchWindow window) 
   {
     MenuManager menu = new MenuManager("File", IWorkbenchActionConstants.M_FILE);
+
+    menu.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+    menu.add(new Separator());
     menu.add(ActionFactory.QUIT.create(window));
+    
     return menu;
   }
 
@@ -120,19 +124,7 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
   {
     MenuManager menu = new MenuManager("Window", IWorkbenchActionConstants.M_WINDOW);
 
-    MenuManager perspectiveMenu = new MenuManager("Open_Perspective", "openPerspective"); //$NON-NLS-1$ //$NON-NLS-2$
-    IContributionItem perspectiveList = ContributionItemFactory.PERSPECTIVES_SHORTLIST.create(window);
-    perspectiveMenu.add(perspectiveList);
-    menu.add(perspectiveMenu);
-
-    MenuManager viewMenu = new MenuManager("Show_View"); //$NON-NLS-1$
-    IContributionItem viewList = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
-    viewMenu.add(viewList);
-    menu.add(viewMenu);
-    menu.add(new Separator());
-
-    menu.add(ActionFactory.EDIT_ACTION_SETS.create(window));
-    menu.add(ActionFactory.SAVE_PERSPECTIVE.create(window));
+    menu.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
     menu.add(new Separator());
     menu.add(ActionFactory.PREFERENCES.create(window));
 
