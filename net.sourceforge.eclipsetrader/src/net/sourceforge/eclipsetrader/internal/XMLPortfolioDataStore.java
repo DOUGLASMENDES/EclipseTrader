@@ -92,7 +92,7 @@ public class XMLPortfolioDataStore
         {
           Node n = firstChild.item(i);
           if (n.getNodeName().equalsIgnoreCase("stock"))
-            data.add(decodeData(index++, (NodeList)n));
+            data.add(decodeData(index++, n.getChildNodes()));
         }
       } catch (Exception ex) {
         ex.printStackTrace();

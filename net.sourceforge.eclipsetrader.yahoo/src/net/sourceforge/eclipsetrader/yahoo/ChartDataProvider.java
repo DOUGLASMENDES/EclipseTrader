@@ -76,7 +76,7 @@ public class ChartDataProvider implements IChartDataProvider
         {
           Node n = firstChild.item(i);
           if (n.getNodeName().equalsIgnoreCase("data"))
-            chartData.add(decodeData((NodeList)n));
+            chartData.add(decodeData(n.getChildNodes()));
         }
       } catch (Exception ex) {
         ex.printStackTrace();

@@ -166,18 +166,18 @@ public class StockList
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int i = 0; i < firstChild.getLength(); i++)
         {
-          Node n = firstChild.item(i);
-          if (n.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
+          Node item = firstChild.item(i);
+          if (item.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
           {
-            NodeList parent = (NodeList)n;
+            NodeList childNodes = item.getChildNodes();
             IBasicData data = new BasicData();
 
-            data.setSymbol(((Node)parent).getAttributes().getNamedItem("symbol").getNodeValue());
-            data.setTicker(((Node)parent).getAttributes().getNamedItem("ticker").getNodeValue());
+            data.setSymbol(item.getAttributes().getNamedItem("symbol").getNodeValue());
+            data.setTicker(item.getAttributes().getNamedItem("ticker").getNodeValue());
             
-            for (int x = 0; x < parent.getLength(); x++)
+            for (int x = 0; x < childNodes.getLength(); x++)
             {
-              Node node = parent.item(x);
+              Node node = childNodes.item(x);
               Node value = node.getFirstChild();
               if (value != null)
               {

@@ -72,7 +72,7 @@ public class NewsProvider
         {
           Node n = firstChild.item(i);
           if (n.getNodeName().equalsIgnoreCase("data"))
-            _data.add(decodeData((NodeList)n));
+            _data.add(decodeData(n.getChildNodes()));
         }
       } catch (Exception ex) {
         ex.printStackTrace();
