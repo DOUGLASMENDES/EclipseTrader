@@ -29,6 +29,7 @@ public interface IRealtimeChartProvider
    * Get the realtime chart data.
    */
   public IChartData[] getHistoryData(IBasicData data);
+  public void setHistoryData(IBasicData data, IChartData[] chartData);
 
   public void addRealtimeChartListener(IBasicData data, IRealtimeChartListener listener);
   public void removeRealtimeChartListener(IBasicData data, IRealtimeChartListener listener);

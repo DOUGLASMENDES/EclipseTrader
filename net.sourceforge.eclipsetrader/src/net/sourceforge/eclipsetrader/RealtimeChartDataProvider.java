@@ -75,6 +75,14 @@ public class RealtimeChartDataProvider extends DataProvider implements IRealtime
   }
   
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IRealtimeChartProvider#setHistoryData(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartData[])
+   */
+  public void setHistoryData(IBasicData data, IChartData[] chartData)
+  {
+    dataCollector.setHistoryData(data, chartData);
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IRealtimeChartProvider#removeRealtimeChartListener(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IRealtimeChartListener)
    */
   public void removeRealtimeChartListener(IBasicData data, IRealtimeChartListener listener)

@@ -40,6 +40,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   private IDataStore dataStore;
   private IBasicDataProvider dataProvider;
   private IChartDataProvider chartDataProvider;
+  private IBackfillDataProvider backfillDataProvider;
   private static IBookDataProvider bookDataProvider;
   private Object newsProvider;
   private static HashMap pluginMap = new HashMap();
@@ -166,6 +167,17 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     }
 
     return plugin.chartDataProvider; 
+  }
+
+  public static IBackfillDataProvider getBackfillDataProvider() 
+  { 
+    if (plugin.backfillDataProvider == null)
+    {
+      // Load the chart data provider plugin
+      plugin.backfillDataProvider = (IBackfillDataProvider)plugin.activatePlugin("net.sourceforge.eclipsetrader.backfillDataProvider");
+    }
+
+    return plugin.backfillDataProvider; 
   }
 
   public static Object getNewsProvider() 

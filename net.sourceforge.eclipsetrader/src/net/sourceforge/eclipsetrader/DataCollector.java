@@ -171,6 +171,19 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
     return chartData;
   }
   
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IRealtimeChartProvider#setHistoryData(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartData[])
+   */
+  public void setHistoryData(IBasicData data, IChartData[] chartData)
+  {
+    Vector values = new Vector();
+    for (int i = 0; i < chartData.length; i++)
+      values.add(chartData[i]);
+    chartMap.put(data.getSymbol(), values);
+    needSaving = true;
+    store();
+  }
+
   private void fireRealtimeChartUpdate()
   {
     Iterator e = _rtListener.values().iterator();
