@@ -110,7 +110,7 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
 
     table.addMouseListener(new MouseListener() {
       public void mouseDoubleClick(MouseEvent e) {
-        INewsData item = ((INewsProvider)TraderPlugin.getNewsProvider()).getData()[table.getSelectionIndex()];
+        INewsData item = data[table.getSelectionIndex()];
         try {
           IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
           if (browser != null)
@@ -147,16 +147,12 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
       index = 0;
     table.setSelection(index);
 
-    INewsProvider provider = (INewsProvider)TraderPlugin.getNewsProvider();
-    if (provider != null)
-    {
-      INewsData item = provider.getData()[table.getSelectionIndex()];
-      try {
-        IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
-        if (browser != null)
-          ((NewsBrowser)browser).setUrl(item.getUrl());
-      } catch(PartInitException x) {};
-    }
+    INewsData item = data[table.getSelectionIndex()];
+    try {
+      IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
+      if (browser != null)
+        ((NewsBrowser)browser).setUrl(item.getUrl());
+    } catch(PartInitException x) {};
   }
   
   public void previous()
@@ -168,16 +164,12 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
       index--;
     table.setSelection(index);
 
-    INewsProvider provider = (INewsProvider)TraderPlugin.getNewsProvider();
-    if (provider != null)
-    {
-      INewsData item = provider.getData()[table.getSelectionIndex()];
-      try {
-        IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
-        if (browser != null)
-          ((NewsBrowser)browser).setUrl(item.getUrl());
-      } catch(PartInitException x) {};
-    }
+    INewsData item = data[table.getSelectionIndex()];
+    try {
+      IViewPart browser = getSite().getPage().showView("net.sourceforge.eclipsetrader.ui.views.NewsBrowser"); //$NON-NLS-1$
+      if (browser != null)
+        ((NewsBrowser)browser).setUrl(item.getUrl());
+    } catch(PartInitException x) {};
   }
   
   private void updateList()
