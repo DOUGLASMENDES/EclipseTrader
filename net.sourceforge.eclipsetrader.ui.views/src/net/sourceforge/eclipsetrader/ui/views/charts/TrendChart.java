@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -101,18 +102,61 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
         
         gc.setLineStyle(SWT.LINE_DOT);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
+        if (isSelected() == true)
+          drawSelectionMarkers(e1x, e1y, e1x + e2x, e2y, gc);
 
         e1y = height - (int)(((a + average * deviations) - getMin()) * pixelRatio);
         e2y = height - (int)((((a + average * deviations) + period * b) - getMin()) * pixelRatio);
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
+        if (isSelected() == true)
+          drawSelectionMarkers(e1x, e1y, e1x + e2x, e2y, gc);
 
         e1y = height - (int)(((a - average * deviations) - getMin()) * pixelRatio);
         e2y = height - (int)((((a - average * deviations) + period * b) - getMin()) * pixelRatio);
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.drawLine(e1x, e1y, e1x + e2x, e2y);
+        if (isSelected() == true)
+          drawSelectionMarkers(e1x, e1y, e1x + e2x, e2y, gc);
       }
     }
+  }
+  
+  /**
+   * Draws the selection markers over the chart line.
+   * 
+   * @param e1x x coordinate of line begin
+   * @param e1y y coordinate of line begin
+   * @param e2x x coordinate of line end
+   * @param e2y y coordinate of line end
+   * @param gc the current graphics context 
+   */
+  private void drawSelectionMarkers(int e1x, int e1y, int e2x, int e2y, GC gc)
+  {
+    if (e1x > e2x)
+    {
+      int s = e1x;
+      e1x = e2x;
+      e2x = s;
+    }
+    double ratio = ((double)e2y - (double)e1y) / ((double)e2x - (double)e1x);
+
+    Color oldBackground = gc.getBackground();
+    gc.setBackground(getColor());
+    
+    if (period <= 20)
+      gc.fillRectangle(e1x - 1, e1y - 1, 5, 5);
+    else
+    {
+      for (int x = e1x, i = 0; i < period - 5; x += getColumnWidth() * 10, i++)
+      {
+        int y = (int)(ratio * (x - e1x)) + e1y;
+        gc.fillRectangle(x - 1, y - 2, 5, 5);
+      }
+    }
+    gc.fillRectangle(e2x - 1, e2y - 1, 5, 5);
+    
+    gc.setBackground(oldBackground);
   }
 
   /* (non-Javadoc)
