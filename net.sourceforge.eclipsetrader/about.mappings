@@ -3,4 +3,10 @@
 # java.io.Properties file (ISO 8859-1 with "\" escapes)
 # This file does not need to be translated.
 
-0=200411010950
+0=0.9.0
+1=200411080950
+2=(c) Copyright Eclipse Trader contributors and others 2004.  All rights reserved.\n\
+Visit http://eclipsetrader.sourceforge.net\n\
+\n\
+This product includes software developed by the\n\
+Apache Software Foundation http://www.apache.org/

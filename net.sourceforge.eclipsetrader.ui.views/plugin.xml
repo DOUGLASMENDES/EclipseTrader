@@ -396,5 +396,25 @@
             class="net.sourceforge.eclipsetrader.ui.views.charts.StochasticChart"
             id="net.sourceforge.eclipsetrader.charts.stochastic"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Views ActionSet"
+            visible="true"
+            id="net.sourceforge.eclipsetrader.views.actionSet">
+         <action
+               label="Show StockWatch"
+               class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
+               style="push"
+               menubarPath="window/additions"
+               id="net.sourceforge.eclipsetrader.actions.showStockwatch"/>
+         <action
+               label="Show News"
+               class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
+               style="push"
+               menubarPath="window/additions"
+               id="net.sourceforge.eclipsetrader.actions.showNews"/>
+      </actionSet>
+   </extension>
 
 </plugin>
