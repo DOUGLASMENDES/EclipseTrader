@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.9.1"
+   version="0.10.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -60,6 +60,12 @@
             class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartView"
             name="%chart.title2"
             id="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"/>
+      <view
+            allowMultiple="false"
+            class="net.sourceforge.eclipsetrader.ui.views.indices.IndexView"
+            icon="icons/sample.gif"
+            name="Indices"
+            id="net.sourceforge.eclipsetrader.ui.views.indices"/>
       <category
             name="Trader"
             id="trader"/>
@@ -75,23 +81,21 @@
                relative="org.eclipse.ui.editorss"/>
          <view
                visible="false"
-               id="net.sourceforge.eclipsetrader.ui.views.ChartView"
+               id="net.sourceforge.eclipsetrader.ui.views.ChartView:*"
                relationship="stack"
                relative="org.eclipse.ui.editorss"/>
          <view
-               relative="org.eclipse.ui.editorss"
+               id="net.sourceforge.eclipsetrader.ui.views.Portfolio"
                relationship="stack"
-               id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
+               relative="org.eclipse.ui.editorss"/>
          <view
                id="net.sourceforge.eclipsetrader.ui.views.News"
                relationship="stack"
                relative="news"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Book"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.ChartView"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.News"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
-         <perspectiveShortcut id="net.sourceforge.eclipsetrader.NewsPerspective"/>
+         <view
+               id="net.sourceforge.eclipsetrader.ui.views.indices"
+               relative="strips"
+               relationship="stack"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="net.sourceforge.eclipsetrader.NewsPerspective">
          <view
@@ -132,6 +136,11 @@
             category="eclipsetrader"
             name="%book.title"
             id="eclipsetrader.book"/>
+      <page
+            class="net.sourceforge.eclipsetrader.ui.views.indices.IndicesPreferencePage"
+            category="eclipsetrader"
+            name="Indices"
+            id="eclipsetrader.indices"/>
    </extension>
 
    <extension point="org.eclipse.ui.popupMenus">
@@ -406,6 +415,12 @@
             label="Views ActionSet"
             visible="true"
             id="net.sourceforge.eclipsetrader.views.actionSet">
+         <action
+               label="Mostra Indici"
+               class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
+               style="push"
+               menubarPath="window/additions"
+               id="net.sourceforge.eclipsetrader.actions.showIndexes"/>
          <action
                label="%actions.showStockwatch"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
