@@ -74,24 +74,20 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     target.addDropListener(this);
 
     // Restore del grafico precedente
-    container.getDisplay().asyncExec(new Runnable() {
-      public void run()  {
-        String id = getViewSite().getSecondaryId();
-        String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id); //$NON-NLS-1$
-        if (!symbol.equals("")) //$NON-NLS-1$
-        {
-          IBasicData bd = TraderPlugin.getData(symbol);
-          if (bd == null)
-          {
-            bd = new BasicData();
-            bd.setSymbol(symbol);
-            bd.setTicker(symbol);
-            bd.setDescription(symbol);
-          }
-          setData(bd);
-        }
+    String id = getViewSite().getSecondaryId();
+    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id); //$NON-NLS-1$
+    if (!symbol.equals("")) //$NON-NLS-1$
+    {
+      IBasicData bd = TraderPlugin.getData(symbol);
+      if (bd == null)
+      {
+        bd = new BasicData();
+        bd.setSymbol(symbol);
+        bd.setTicker(symbol);
+        bd.setDescription(symbol);
       }
-    });
+      setData(bd);
+    }
 
     getSite().setSelectionProvider(this);
   }
@@ -280,13 +276,29 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
         store();
         container.getDisplay().asyncExec(new Runnable() {
           public void run() {
-            setData(basicData);
-/*            controlResized(null);
+            if (data != null && data.length > 0)
+            {
+              if (data[0].getMaxPrice() >= 10)
+              {
+                pf.setMinimumFractionDigits(2);
+                pf.setMaximumFractionDigits(2);
+                setScaleWidth(42);
+              }
+              else
+              {
+                pf.setMinimumFractionDigits(4);
+                pf.setMaximumFractionDigits(4);
+                setScaleWidth(50);
+              }
+            }
+            else
+              setScaleWidth(50);
+            controlResized(null);
             bottombar.redraw();
-            updateLabels();*/
+            updateLabels();
           }
         });
-//        updateView();
+        updateView();
       }
     }).start();
   }

@@ -58,25 +58,21 @@ public class HistoryChartView extends ChartView
   {
     super.createPartControl(parent);
 
-    container.getDisplay().asyncExec(new Runnable() {
-      public void run()  {
-        // Restore del grafico precedente
-        String id = getViewSite().getSecondaryId();
-        String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id); //$NON-NLS-1$
-        if (!symbol.equals("")) //$NON-NLS-1$
-        {
-          IBasicData bd = TraderPlugin.getData(symbol);
-          if (bd == null)
-          {
-            bd = new BasicData();
-            bd.setSymbol(symbol);
-            bd.setTicker(symbol);
-            bd.setDescription(symbol);
-          }
-          setData(bd);
-        }
+    // Restore del grafico precedente
+    String id = getViewSite().getSecondaryId();
+    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id); //$NON-NLS-1$
+    if (!symbol.equals("")) //$NON-NLS-1$
+    {
+      IBasicData bd = TraderPlugin.getData(symbol);
+      if (bd == null)
+      {
+        bd = new BasicData();
+        bd.setSymbol(symbol);
+        bd.setTicker(symbol);
+        bd.setDescription(symbol);
       }
-    });
+      setData(bd);
+    }
 
     getSite().setSelectionProvider(this);
   }
