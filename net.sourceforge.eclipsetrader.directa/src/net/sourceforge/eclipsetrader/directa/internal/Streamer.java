@@ -408,11 +408,13 @@ public class Streamer implements Runnable
                   data[i].setLastPrice(ap.val_aper);
                   data[i].setOpenPrice(ap.val_aper);
                   data[i].setVolume((int)ap.qta_aper);
+                  fireDataUpdated(data[i]);
                   break;
                 }
                 case TipiRecord.TIP_ASTACHIUSURA: {
                   _ASTACHIUSURA ac = (_ASTACHIUSURA)obj;
                   data[i].setLastPrice(ac.val_chiu);
+                  fireDataUpdated(data[i]);
                   break;
                 }
                 default:
@@ -428,7 +430,7 @@ public class Streamer implements Runnable
           // Propaga l'aggiornamento ai listeners.
           if ((System.currentTimeMillis() - lastUpdate) >= 1000) 
           {
-//            fireDataUpdated();
+            fireDataUpdated();
             lastUpdate = System.currentTimeMillis();
           }
         }
