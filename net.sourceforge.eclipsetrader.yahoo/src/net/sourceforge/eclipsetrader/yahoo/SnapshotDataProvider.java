@@ -120,7 +120,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     
     System.out.println(Calendar.getInstance().getTimeInMillis() + ": " + url);
 
-    // Legge la pagina contenente gli ultimi prezzi
+    // Read the last price changes
     try {
       String line;
       HttpURLConnection con = (HttpURLConnection)new URL(url).openConnection();
@@ -139,92 +139,69 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       while ((line = in.readLine()) != null) 
       {
-        double value;
         String[] item = line.split(",");
-        // 0 = Codice
-        IExtendedData pd = findData(item[0]);
-        if (pd != null)
+
+        // 0 = Code
+        String ticker = stripQuotes(item[0]);
+        for (int i = 0; i < data.length; i++) 
         {
-          try {
-            // 1 = Ultimo prezzo o N/A
-            if (item[1].equalsIgnoreCase("N/A") == false)
-            {
-              value = Double.parseDouble(item[1]);
-              pd.setLastPrice(value);
-            }
-            // 2 = Data
-            // 3 = Ora
-            if (item[3].indexOf("am") != -1 || item[3].indexOf("pm") != -1)
-              pd.setDate(df_us.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3])));
-            else
-              pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3]) + ":00"));
-            pd.setTime(tf.format(pd.getDate()));
-            // 4 = Variazione
-//            pd.change = stripQuotes(item[4]);
-            // 5 = Apertura
-            if (item[5].equalsIgnoreCase("N/A") == false)
-              pd.setOpenPrice(Double.parseDouble(item[5]));
-            // 6 = Massimo
-            if (item[6].equalsIgnoreCase("N/A") == false)
-              pd.setHighPrice(Double.parseDouble(item[6]));
-            // 7 = Minimo
-            if (item[7].equalsIgnoreCase("N/A") == false)
-              pd.setLowPrice(Double.parseDouble(item[7]));
-            // 8 = Volume
-            if (item[8].equalsIgnoreCase("N/A") == false)
-              pd.setVolume(Integer.parseInt(item[8]));
-            // 9 = Bid Price
-            if (item[9].equalsIgnoreCase("N/A") == false)
-            {
-              value = Double.parseDouble(item[9]);
-              pd.setBidPrice(value);
-            }
-            // 10 = Ask Price
-            if (item[10].equalsIgnoreCase("N/A") == false)
-            {
-              value = Double.parseDouble(item[10]);
-              pd.setAskPrice(value);
-            }
-            // 11 = Close Price
-            if (item[11].equalsIgnoreCase("N/A") == false)
-              pd.setClosePrice(Double.parseDouble(item[11]));
-            
-            // Dati non ricavati da Yahoo
-            pd.setBidSize(0);
-            pd.setAskSize(0);
-            
-/*            // Colleziona i dati
-            Calendar now = Calendar.getInstance();
-            if (pd.getDate().after(startTime.getTime()) && pd.getDate().before(stopTime.getTime()))
-            {
-              Vector _v = (Vector)collector.get(pd.getSymbol());
-              if (_v == null)
-              {
-                _v = new Vector();
-                collector.put(pd.getSymbol(), _v);
-              }
-              if (_v.size() > 0)
-              {
-                IChartData _cd = (IChartData)_v.elementAt(_v.size() - 1);
-                if (pd.getDate().equals(_cd.getDate()) == false)
-                  _v.add(new ChartData(pd));
-              }
+          if (ticker.equalsIgnoreCase(SymbolMapper.getYahooSymbol(data[i].getTicker())))
+          {
+            if (!(data[i] instanceof IExtendedData))
+              continue;
+            IExtendedData pd = data[i];
+            try {
+              // 1 = Last price or N/A
+              if (item[1].equalsIgnoreCase("N/A") == false)
+                pd.setLastPrice(Double.parseDouble(item[1]));
+              // 2 = Date
+              // 3 = Time
+              if (item[3].indexOf("am") != -1 || item[3].indexOf("pm") != -1)
+                pd.setDate(df_us.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3])));
               else
-                _v.add(new ChartData(pd));
-            }*/
-          } catch(Exception x) {
-            System.out.println(x.getMessage());
-            System.out.println(line);
-          };
+                pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3]) + ":00"));
+              pd.setTime(tf.format(pd.getDate()));
+              // 4 = Change
+//              pd.change = stripQuotes(item[4]);
+              // 5 = Open
+              if (item[5].equalsIgnoreCase("N/A") == false)
+                pd.setOpenPrice(Double.parseDouble(item[5]));
+              // 6 = Maximum
+              if (item[6].equalsIgnoreCase("N/A") == false)
+                pd.setHighPrice(Double.parseDouble(item[6]));
+              // 7 = Minimum
+              if (item[7].equalsIgnoreCase("N/A") == false)
+                pd.setLowPrice(Double.parseDouble(item[7]));
+              // 8 = Volume
+              if (item[8].equalsIgnoreCase("N/A") == false)
+                pd.setVolume(Integer.parseInt(item[8]));
+              // 9 = Bid Price
+              if (item[9].equalsIgnoreCase("N/A") == false)
+                pd.setBidPrice(Double.parseDouble(item[9]));
+              // 10 = Ask Price
+              if (item[10].equalsIgnoreCase("N/A") == false)
+                pd.setAskPrice(Double.parseDouble(item[10]));
+              // 11 = Close Price
+              if (item[11].equalsIgnoreCase("N/A") == false)
+                pd.setClosePrice(Double.parseDouble(item[11]));
+              
+              // Data not available from Yahoo
+              pd.setBidSize(0);
+              pd.setAskSize(0);
+            } catch(Exception x) {
+              System.out.println(x.getMessage());
+              System.out.println(line);
+            };
+          }
         }
       }
       in.close();
     } catch(IOException x) {};
     
-    // Propaga l'aggiornamento ai listeners.
+    // Signal the update to all listeners.
     fireDataUpdated();
 
-    // Schedula il prossimo aggiornamento.
+    // Schedule the next update.
     int refresh = YahooPlugin.getDefault().getPreferenceStore().getInt("yahoo.refresh");
     try {
       if (timer != null)
