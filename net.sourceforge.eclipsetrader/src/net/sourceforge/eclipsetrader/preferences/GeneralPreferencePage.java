@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -57,14 +57,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
   {
     Vector _v = new Vector();
 
-    Composite composite = new Composite(parent, SWT.NULL);
-    GridData data = new GridData(GridData.FILL_BOTH);
-    data.grabExcessHorizontalSpace = true;
-    composite.setLayoutData(data);
-    GridLayout layout = new GridLayout();
-    composite.setLayout(layout);
-
-    Composite entryTable = new Composite(composite, SWT.NONE);
+    Composite entryTable = new Composite(parent, SWT.NONE);
     entryTable.setLayout(new GridLayout(2, false));
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
@@ -113,7 +106,6 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     for (int i = 0; i < _v.size(); i++)
     {
       editor[i] = (FieldEditor)_v.elementAt(i);
-      editor[i].setPreferencePage(this);
       editor[i].setPreferenceStore(getPreferenceStore());
       editor[i].load();
     }
@@ -144,6 +136,13 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     return super.performOk();
   }
   
+  protected void performDefaults() 
+  {
+    for (int i = 0; i < editor.length; i++)
+      editor[i].loadDefault();
+    super.performDefaults();
+  }
+
   private String getComboValue(Combo combo)
   {
     String value = ""; //$NON-NLS-1$
