@@ -101,6 +101,7 @@ public class Streamer
     if (url.charAt(url.length() - 1) == '+')
       url.deleteCharAt(url.length() - 1);
     url.append("&f=sl1d1t1c1ohgvbap&e=.csv");
+    System.out.println(url.toString());
     
     // Read the last prices
     try {
@@ -121,7 +122,11 @@ public class Streamer
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       while ((line = in.readLine()) != null) 
       {
-        String[] item = line.split(",");
+        String[] item;
+        if (line.indexOf(";") != -1)
+          item = line.split(";");
+        else
+          item = line.split(",");
 
         // 0 = Code
         IExtendedData pd = (IExtendedData)data.get(stripQuotes(item[0]));
@@ -131,7 +136,7 @@ public class Streamer
         try {
           // 1 = Last price or N/A
           if (item[1].equalsIgnoreCase("N/A") == false)
-            pd.setLastPrice(Double.parseDouble(item[1]));
+            pd.setLastPrice(Double.parseDouble(item[1].replace(',', '.')));
           // 2 = Date
           // 3 = Time
           if (item[3].indexOf("am") != -1 || item[3].indexOf("pm") != -1)
@@ -141,30 +146,30 @@ public class Streamer
           // 4 = Change
           // 5 = Open
           if (item[5].equalsIgnoreCase("N/A") == false)
-            pd.setOpenPrice(Double.parseDouble(item[5]));
+            pd.setOpenPrice(Double.parseDouble(item[5].replace(',', '.')));
           // 6 = Maximum
           if (item[6].equalsIgnoreCase("N/A") == false)
-            pd.setHighPrice(Double.parseDouble(item[6]));
+            pd.setHighPrice(Double.parseDouble(item[6].replace(',', '.')));
           // 7 = Minimum
           if (item[7].equalsIgnoreCase("N/A") == false)
-            pd.setLowPrice(Double.parseDouble(item[7]));
+            pd.setLowPrice(Double.parseDouble(item[7].replace(',', '.')));
           // 8 = Volume
           if (item[8].equalsIgnoreCase("N/A") == false)
             pd.setVolume(Integer.parseInt(item[8]));
           // 9 = Bid Price
           if (item[9].equalsIgnoreCase("N/A") == false)
-            pd.setBidPrice(Double.parseDouble(item[9]));
+            pd.setBidPrice(Double.parseDouble(item[9].replace(',', '.')));
           // 10 = Ask Price
           if (item[10].equalsIgnoreCase("N/A") == false)
-            pd.setAskPrice(Double.parseDouble(item[10]));
+            pd.setAskPrice(Double.parseDouble(item[10].replace(',', '.')));
           // 11 = Close Price
           if (item[11].equalsIgnoreCase("N/A") == false)
-            pd.setClosePrice(Double.parseDouble(item[11]));
+            pd.setClosePrice(Double.parseDouble(item[11].replace(',', '.')));
           
           // Data not available from Yahoo
           pd.setBidSize(0);
           pd.setAskSize(0);
-        } catch(Exception x) {};
+        } catch(Exception x) { x.printStackTrace(); };
       }
       in.close();
     } catch(IOException x) {};
