@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Plug-in"
-   version="0.7.0"
+   version="0.8.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
@@ -20,6 +20,7 @@
       <import plugin="net.sourceforge.eclipsetrader"/>
       <import plugin="org.eclipse.jface"/>
    </requires>
+   <extension-point id="newsSource" name="News Source" schema="schema/newsSource.exsd"/>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -45,6 +46,25 @@
       <provider
             class="net.sourceforge.eclipsetrader.yahoo.ChartDataProvider"
             id="yahoo.chart.provider"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.yahoo.newsSource">
+      <source
+            label="Yahoo Italia"
+            class="net.sourceforge.eclipsetrader.yahoo.NewsSourceItaly"
+            id="yahoo.news.it"/>
+      <source
+            label="Yahoo U.S."
+            class="net.sourceforge.eclipsetrader.yahoo.NewsSourceUS"
+            id="yahoo.news.us"/>
+   </extension>
+   <extension
+         name="Yahoo News Provider"
+         point="net.sourceforge.eclipsetrader.newsProvider">
+      <provider
+            label="Yahoo News Provider"
+            class="net.sourceforge.eclipsetrader.yahoo.NewsProvider"
+            id="yahoo.newsProvider"/>
    </extension>
 
 </plugin>

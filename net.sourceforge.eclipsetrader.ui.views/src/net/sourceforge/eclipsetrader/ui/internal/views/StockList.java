@@ -50,7 +50,7 @@ public class StockList
     InputStream is = null;
     
     // Attempt to read a locale-specific file from the workspace
-    File f = new File(Platform.getLocation().toFile(), FILE_NAME + Locale.getDefault().getCountry().toLowerCase() + FILE_EXT);
+    File f = new File(Platform.getLocation().toFile(), FILE_NAME + "_" + Locale.getDefault().getCountry().toLowerCase() + FILE_EXT);
     System.out.println(f);
     if (f.exists() == true)
     {
@@ -62,7 +62,7 @@ public class StockList
     if (is == null)
     {
       try {
-        is = ViewsPlugin.getDefault().openStream(new Path(FILE_NAME + Locale.getDefault().getCountry().toLowerCase() + FILE_EXT));
+        is = ViewsPlugin.getDefault().openStream(new Path(FILE_NAME + "_" + Locale.getDefault().getCountry().toLowerCase() + FILE_EXT));
       } catch (IOException e) {}
     }
     

@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.7.0"
+   version="0.8.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -44,7 +44,7 @@
       <view
             allowMultiple="true"
             icon="icons/chart_persp.gif"
-            class="net.sourceforge.eclipsetrader.ui.views.charts.ChartView"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.HistoryChartView"
             category="trader"
             name="Chart"
             id="net.sourceforge.eclipsetrader.ui.views.ChartView"/>
@@ -57,7 +57,7 @@
       <view
             allowMultiple="true"
             icon="icons/chart_persp.gif"
-            class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChart"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartView"
             name="RTChart"
             id="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"/>
       <category
@@ -195,6 +195,40 @@
          <action
                label="%chart.add"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="group3"
+               id="chart.add"/>
+      </viewerContribution>
+      <viewerContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"
+            id="net.sourceforge.eclipsetrader.ui.views.RealtimeChart.contextMenu">
+         <action
+               label="%chart.bar"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               menubarPath="group1"
+               id="chart.bar"/>
+         <action
+               label="%chart.candle"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               menubarPath="group1"
+               id="chart.candle"/>
+         <action
+               label="%chart.line"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               menubarPath="group1"
+               id="chart.line"/>
+         <action
+               label="%chart.remove"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               menubarPath="group3"
+               id="chart.remove"/>
+         <action
+               label="%chart.edit"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               menubarPath="group3"
+               id="chart.edit"/>
+         <action
+               label="%chart.add"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
                menubarPath="group3"
                id="chart.add"/>
       </viewerContribution>
