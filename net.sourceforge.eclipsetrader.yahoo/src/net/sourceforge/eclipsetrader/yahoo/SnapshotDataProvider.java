@@ -76,6 +76,45 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IBasicDataProvider#setData(net.sourceforge.eclipsetrader.IExtendedData[])
+   */
+  public void setData(IExtendedData[] newData)
+  {
+    IExtendedData[] data = getData();
+    if (data != null)
+    {
+      System.out.println("old_data = " + data.length);
+      for (int i = 0; i < data.length; i++)
+      {
+        String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
+        if (useMapping == true)
+        {
+          symbol = SymbolMapper.getYahooSymbol(symbol);
+          if (symbol.indexOf(".") == -1)
+            symbol += defaultExtension;
+        }
+        streamer.removeSymbol(symbol);
+      }
+    }
+    
+    data = newData;
+    System.out.println("new_data = " + data.length);
+    for (int i = 0; i < data.length; i++)
+    {
+      String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
+      if (useMapping == true)
+      {
+        symbol = SymbolMapper.getYahooSymbol(symbol);
+        if (symbol.indexOf(".") == -1)
+          symbol += defaultExtension;
+      }
+      streamer.addSymbol(symbol);
+    }
+
+    super.setData(newData);
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IDataStreamer#stopStreaming()
    */
   public void stopStreaming()
