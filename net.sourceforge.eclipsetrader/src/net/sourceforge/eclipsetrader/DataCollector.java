@@ -290,6 +290,7 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
           {
             NodeList element = node.getChildNodes();
             String symbol = node.getAttributes().getNamedItem("symbol").getNodeValue();
+            String date = node.getAttributes().getNamedItem("date").getNodeValue();
             Vector values = new Vector();
             chartMap.put(symbol, values);
 
@@ -304,7 +305,7 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
               chartData.setMaxPrice(pf.parse(item.getAttributes().getNamedItem("max").getNodeValue()).doubleValue());
               chartData.setClosePrice(pf.parse(item.getAttributes().getNamedItem("close").getNodeValue()).doubleValue());
               chartData.setVolume(nf.parse(item.getAttributes().getNamedItem("volume").getNodeValue()).intValue());
-              chartData.setDate(dtf.parse(item.getAttributes().getNamedItem("date").getNodeValue()));
+              chartData.setDate(dtf.parse(date + " " + item.getAttributes().getNamedItem("time").getNodeValue()));
               values.addElement(chartData);
             }
           }
@@ -328,17 +329,19 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
         while(key.hasNext() == true)
         {
           String symbol = (String)key.next();
+          Vector v = (Vector)chartMap.get(symbol);
+          if (v == null || v.size() == 0)
+            continue;
   
           Element element = document.createElement("data"); //$NON-NLS-1$
           element.setAttribute("symbol", symbol);
+          element.setAttribute("date", df.format(((IChartData)v.elementAt(0)).getDate()));
           document.getDocumentElement().appendChild(element);
           
-          Iterator values = ((Vector)chartMap.get(symbol)).iterator();
+          Iterator values = v.iterator();
           while(values.hasNext() == true)
           {
             IChartData chartData = (IChartData)values.next();
-            if (element.getAttribute("date") == null)
-              element.setAttribute("date", df.format(chartData.getDate()));
 
             Element item = document.createElement("item"); //$NON-NLS-1$
             item.setAttribute("time", tf.format(chartData.getDate()));
@@ -372,10 +375,14 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
   {
     String property = event.getProperty();
     
-    if (property.startsWith("net.sourceforge.eclipsetrader.timing") == true)
+    if (property.startsWith("net.sourceforge.eclipsetrader.rtchart.period") == true)
     {
       IPreferenceStore pref = TraderPlugin.getDefault().getPreferenceStore();
       period = pref.getInt("net.sourceforge.eclipsetrader.rtchart.period") * 60;
+    }
+    else if (property.startsWith("net.sourceforge.eclipsetrader.timing") == true)
+    {
+      IPreferenceStore pref = TraderPlugin.getDefault().getPreferenceStore();
 
       session1 = pref.getBoolean("net.sourceforge.eclipsetrader.timing.session1");
       startTime1.set(Calendar.HOUR_OF_DAY, 0);
