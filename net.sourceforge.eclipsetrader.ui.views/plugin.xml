@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.8.0"
+   version="0.9.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -127,6 +127,11 @@
             category="eclipsetrader"
             name="News"
             id="eclipsetrader.news"/>
+      <page
+            class="net.sourceforge.eclipsetrader.ui.views.trading.BookPreferencePage"
+            category="eclipsetrader"
+            name="Level II Book"
+            id="eclipsetrader.book"/>
    </extension>
 
    <extension point="org.eclipse.ui.popupMenus">
