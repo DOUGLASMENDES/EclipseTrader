@@ -16,6 +16,7 @@
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.update.ui"/>
    </requires>
    <extension-point id="dataStore" name="Data Store" schema="schema/portfolioData.exsd"/>
    <extension-point id="chartDataProvider" name="Chart Data Provider" schema="schema/chartDataProvider.exsd"/>
@@ -94,6 +95,38 @@
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%UpdateActionSet.label"
+            visible="true"
+            id="org.eclipse.update.ui.softwareUpdates">
+         <menu
+               label="%UpdateActionSet.menu.label"
+               path="help/group.updates"
+               id="org.eclipse.update.ui.updateMenu">
+            <separator
+                  name="group0">
+            </separator>
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="%UpdateActionSet.configManager.label"
+               icon="icons/configs.gif"
+               helpContextId="org.eclipse.update.ui.newUpdates"
+               class="net.sourceforge.eclipsetrader.internal.ConfigurationManagerAction"
+               menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
+               id="org.eclipse.update.ui.configManager">
+         </action>
+         <action
+               label="%UpdateActionSet.updates.label"
+               icon="icons/usearch_obj.gif"
+               helpContextId="org.eclipse.update.ui.newUpdates"
+               class="net.sourceforge.eclipsetrader.internal.InstallWizardAction"
+               menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
+               id="org.eclipse.update.ui.newUpdates">
+         </action>
+      </actionSet>
       <actionSet
             label="Streaming Control"
             visible="true"
