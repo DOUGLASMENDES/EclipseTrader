@@ -85,7 +85,7 @@ public class SymbolMapper
   
   /**
    * Return the Yahoo symbol corresponding to the official stock exchange symbol.<br>
-   * If there isn't a mapping then returns the input symbol with the suffix .MI.<br>
+   * If there isn't a mapping then returns the input symbol unmodified.<br>
    * 
    * @param s The official stock exchange symbol.
    * @return The Yahoo symbol
@@ -93,8 +93,9 @@ public class SymbolMapper
   public static String getYahooSymbol(String s)
   {
     String r = (String)map.get(s);
-    if (r == null)
-      r = s + ".MI";
-    return r;
+    if (r != null)
+      return r;
+
+    return s;
   }
 }
