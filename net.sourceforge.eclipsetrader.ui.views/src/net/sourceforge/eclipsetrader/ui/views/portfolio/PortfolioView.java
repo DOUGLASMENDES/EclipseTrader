@@ -548,8 +548,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
               item.setText(column, pf.format(pd.getPaid()));
             break;
           case 14:
+            pd.setValuePaid(pd.getPaid() * pd.getQuantity());
             if (pd.getPaid() != 0 && pd.getQuantity() != 0)
-              item.setText(column, pf.format(pd.getValuePaid()));
+              item.setText(column, bpf.format(pd.getValuePaid()));
             else
               item.setText(column, ""); //$NON-NLS-1$
             break;
@@ -624,6 +625,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
         item.setForeground(columnData, textForeground);
       item.setText(columnData, bpf.format(totalGain) + " (" + pcf.format(totalGain / totalPaid * 100) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
     }
+    columnData = getDataColumnIndex(14);
+    if (columnData != -1)
+      item.setText(columnData, bpf.format(totalPaid));
 
     table.setRedraw(true);
   }
