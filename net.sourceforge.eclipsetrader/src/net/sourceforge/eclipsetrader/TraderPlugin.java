@@ -55,6 +55,16 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
 
   // Static methods that returns application-wide objects
   public static IExtendedData[] getData() { return plugin.dataStore.getData(); }
+  public static IExtendedData getData(String symbol) 
+  { 
+    IExtendedData[] _data = plugin.dataStore.getData();
+    for (int i = 0; i < _data.length; i++)
+    {
+      if (_data[i].getSymbol().equalsIgnoreCase(symbol) == true)
+        return _data[i];
+    }
+    return null; 
+  }
   public static IDataStore getDataStore() { return plugin.dataStore; }
 
 	/**
