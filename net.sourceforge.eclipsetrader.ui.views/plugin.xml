@@ -303,7 +303,7 @@
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                menubarPath="period"
-               id="view.last2year"/>
+               id="view.last2years"/>
          <action
                label="%actions.viewLastYear"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
