@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -14,57 +14,78 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PlatformUI;
 
 /**
  */
-public class ChartActions implements IViewActionDelegate
+public class ChartActions implements IViewActionDelegate, IWorkbenchWindowActionDelegate
 {
-  private static HistoryChartView view;
 
   /* (non-Javadoc)
    * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
    */
   public void init(IViewPart viewPart)
   {
-    if (viewPart instanceof HistoryChartView)
-      view = (HistoryChartView)viewPart;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
+   */
+  public void init(IWorkbenchWindow window)
+  {
   }
 
+  /* (non-Javadoc)
+   * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
+   */
+  public void dispose()
+  {
+  }
+  
   /* (non-Javadoc)
    * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
    */
   public void run(IAction action)
   {
-    if (action.getId().equalsIgnoreCase("chart.refresh") == true)
-      view.updateChart();
-    else if (action.getId().equalsIgnoreCase("chart.next") == true)
-      view.showNext();
-    else if (action.getId().equalsIgnoreCase("chart.previous") == true)
-      view.showPrevious();
-    else if (action.getId().equalsIgnoreCase("chart.add") == true)
+    IWorkbenchPage pg = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    if (pg.getActivePart() instanceof HistoryChartView)
     {
-      OscillatorDialog dlg = new OscillatorDialog();
-      if (dlg.open() == OscillatorDialog.OK)
-        view.addOscillator(dlg.getId());
+      HistoryChartView view = (HistoryChartView)pg.getActivePart();
+
+      if (action.getId().equalsIgnoreCase("chart.refresh") == true)
+        view.updateChart();
+      else if (action.getId().equalsIgnoreCase("chart.next") == true)
+        view.showNext();
+      else if (action.getId().equalsIgnoreCase("chart.previous") == true)
+        view.showPrevious();
+      else if (action.getId().equalsIgnoreCase("chart.add") == true)
+      {
+        OscillatorDialog dlg = new OscillatorDialog();
+        if (dlg.open() == OscillatorDialog.OK)
+          view.addOscillator(dlg.getId());
+      }
+      else if (action.getId().equalsIgnoreCase("chart.edit") == true)
+        view.editOscillator();
+      else if (action.getId().equalsIgnoreCase("chart.remove") == true)
+        view.removeOscillator();
+      else if (action.getId().equalsIgnoreCase("chart.line") == true)
+        view.setChartType(PriceChart.LINE);
+      else if (action.getId().equalsIgnoreCase("chart.candle") == true)
+        view.setChartType(PriceChart.CANDLE);
+      else if (action.getId().equalsIgnoreCase("chart.bar") == true)
+        view.setChartType(PriceChart.BAR);
+      else if (action.getId().equalsIgnoreCase("view.all") == true)
+        view.setLimitPeriod(0);
+      else if (action.getId().equalsIgnoreCase("view.last6months") == true)
+        view.setLimitPeriod(6);
+      else if (action.getId().equalsIgnoreCase("view.last1year") == true)
+        view.setLimitPeriod(12);
+      else if (action.getId().equalsIgnoreCase("view.last2years") == true)
+        view.setLimitPeriod(24);
     }
-    else if (action.getId().equalsIgnoreCase("chart.edit") == true)
-      view.editOscillator();
-    else if (action.getId().equalsIgnoreCase("chart.remove") == true)
-      view.removeOscillator();
-    else if (action.getId().equalsIgnoreCase("chart.line") == true)
-      view.setChartType(PriceChart.LINE);
-    else if (action.getId().equalsIgnoreCase("chart.candle") == true)
-      view.setChartType(PriceChart.CANDLE);
-    else if (action.getId().equalsIgnoreCase("chart.bar") == true)
-      view.setChartType(PriceChart.BAR);
-    else if (action.getId().equalsIgnoreCase("view.all") == true)
-      view.setLimitPeriod(0);
-    else if (action.getId().equalsIgnoreCase("view.last6months") == true)
-      view.setLimitPeriod(6);
-    else if (action.getId().equalsIgnoreCase("view.last1year") == true)
-      view.setLimitPeriod(12);
-    else if (action.getId().equalsIgnoreCase("view.last2years") == true)
-      view.setLimitPeriod(24);
   }
 
   /* (non-Javadoc)
@@ -72,5 +93,25 @@ public class ChartActions implements IViewActionDelegate
    */
   public void selectionChanged(IAction action, ISelection selection)
   {
+    IWorkbenchPage pg = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    if (pg != null && pg.getActivePart() instanceof HistoryChartView)
+    {
+      HistoryChartView view = (HistoryChartView)pg.getActivePart();
+
+      if (action.getId().equalsIgnoreCase("chart.line") == true)
+        action.setChecked(view.getChartType() == PriceChart.LINE);
+      else if (action.getId().equalsIgnoreCase("chart.candle") == true)
+        action.setChecked(view.getChartType() == PriceChart.CANDLE);
+      else if (action.getId().equalsIgnoreCase("chart.bar") == true)
+        action.setChecked(view.getChartType() == PriceChart.BAR);
+      else if (action.getId().equalsIgnoreCase("view.all") == true)
+        action.setChecked(view.getLimitPeriod() == 0);
+      else if (action.getId().equalsIgnoreCase("view.last6months") == true)
+        action.setChecked(view.getLimitPeriod() == 6);
+      else if (action.getId().equalsIgnoreCase("view.last1year") == true)
+        action.setChecked(view.getLimitPeriod() == 12);
+      else if (action.getId().equalsIgnoreCase("view.last2years") == true)
+        action.setChecked(view.getLimitPeriod() == 24);
+    }
   }
 }
