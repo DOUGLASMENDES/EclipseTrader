@@ -138,7 +138,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
     for (int i = 0; i < _listeners.size(); i++)
     {
       IDataUpdateListener l = (IDataUpdateListener)_listeners.elementAt(i);
-      if (_v.contains(l) == false)
+      if (_v == null || _v.contains(l) == false)
         l.dataUpdated(this, data);
     }
   }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
@@ -83,7 +83,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
     IExtendedData[] data = getData();
     if (data != null)
     {
-      System.out.println("old_data = " + data.length);
       for (int i = 0; i < data.length; i++)
       {
         String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
@@ -98,7 +97,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
     }
     
     data = newData;
-    System.out.println("new_data = " + data.length);
     for (int i = 0; i < data.length; i++)
     {
       String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();

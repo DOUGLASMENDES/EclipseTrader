@@ -458,6 +458,63 @@
                menubarPath="window/additions"
                id="net.sourceforge.eclipsetrader.actions.showNews"/>
       </actionSet>
+      <actionSet
+            label="%stockwatch.title"
+            visible="true"
+            id="net.sourceforge.eclipsetrader.ui.portfolio">
+         <menu
+               label="%stockwatch.menu"
+               path="group1"
+               id="stockwatch">
+            <separator name="group.top"/>
+            <separator name="group1"/>
+            <separator name="group2"/>
+            <separator name="group3"/>
+            <separator name="group4"/>
+            <separator name="additions"/>
+            <separator name="group.bottom"/>
+         </menu>
+         <action
+               label="%stockwatch.openChart"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group1"
+               id="net.sourceforge.eclipsetrader.views.openChart"/>
+         <action
+               label="%stockwatch.openRealtimeChart"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group2"
+               id="net.sourceforge.eclipsetrader.views.openRealtimeChart"/>
+         <action
+               label="%stockwatch.openPriceBook"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group2"
+               id="net.sourceforge.eclipsetrader.views.openPriceBook"/>
+         <action
+               label="%stockwatch.remove"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group3"
+               id="portfolio.remove"/>
+         <action
+               label="%stockwatch.edit"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group3"
+               id="portfolio.edit"/>
+         <action
+               label="%stockwatch.add"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group3"
+               id="portfolio.add"/>
+         <action
+               label="%stockwatch.clearAlerts"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group4"
+               id="portfolio.clearAlerts"/>
+         <action
+               label="%stockwatch.editAlerts"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="stockwatch/group4"
+               id="portfolio.editAlerts"/>
+      </actionSet>
    </extension>
 
 </plugin>

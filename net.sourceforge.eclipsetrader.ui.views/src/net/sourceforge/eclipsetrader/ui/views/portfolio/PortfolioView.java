@@ -390,7 +390,10 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     {
       IAlertData[] ad = ((IAlertSource)data[i]).getAlerts();
       for (int n = 0; n < ad.length; n++)
-        ad[n].setAcknowledge(true);
+      {
+        if (ad[n].isTrigger() == true)
+          ad[n].setAcknowledge(true);
+      }
     }
     asyncUpdateView();
   }
@@ -518,6 +521,10 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       return;
 
     TableItem item = table.getItem(row);
+    Color color = item.getBackground();
+    if (color != null && color != oddBackground && color != evenBackground)
+      color.dispose();
+    
     if ((row & 1) == 1)
       item.setBackground(oddBackground);
     else

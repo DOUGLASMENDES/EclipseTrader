@@ -104,6 +104,10 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
   {
     IMenuManager menuBar = configurer.getMenuManager();
     menuBar.add(createFileMenu(window));
+    menuBar.add(new GroupMarker("group1"));
+    menuBar.add(new GroupMarker("group2"));
+    menuBar.add(new GroupMarker("group3"));
+    menuBar.add(new GroupMarker("group4"));
     menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
     menuBar.add(createWindowMenu(window));
     menuBar.add(createHelpMenu(window));
@@ -111,7 +115,7 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
 
   private MenuManager createFileMenu(IWorkbenchWindow window) 
   {
-    MenuManager menu = new MenuManager("File", IWorkbenchActionConstants.M_FILE);
+    MenuManager menu = new MenuManager("&File", IWorkbenchActionConstants.M_FILE);
 
     menu.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
     menu.add(new Separator());
@@ -122,7 +126,7 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
 
   private MenuManager createWindowMenu(IWorkbenchWindow window) 
   {
-    MenuManager menu = new MenuManager("Window", IWorkbenchActionConstants.M_WINDOW);
+    MenuManager menu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW);
 
     menu.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
     menu.add(new Separator());
@@ -133,7 +137,7 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
 
   private MenuManager createHelpMenu(IWorkbenchWindow window) 
   {
-    MenuManager menu = new MenuManager("Help", IWorkbenchActionConstants.M_HELP); //$NON-NLS-1$
+    MenuManager menu = new MenuManager("&Help", IWorkbenchActionConstants.M_HELP); //$NON-NLS-1$
     // Welcome or intro page would go here
     menu.add(ActionFactory.HELP_CONTENTS.create(window));
     // Tips and tricks page would go here

@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsetrader"
       label="%featureName"
-      version="0.11.1"
+      version="0.12.0"
       provider-name="%providerName">
 
    <install-handler/>
@@ -28,18 +28,18 @@
          id="net.sourceforge.eclipsetrader"
          download-size="0"
          install-size="0"
-         version="0.11.1"/>
+         version="0.12.0"/>
 
    <plugin
          id="net.sourceforge.eclipsetrader.help"
          download-size="0"
          install-size="0"
-         version="0.11.0"/>
+         version="0.12.0"/>
 
    <plugin
          id="net.sourceforge.eclipsetrader.ui.views"
          download-size="0"
          install-size="0"
-         version="0.11.1"/>
+         version="0.12.0"/>
 
 </feature>

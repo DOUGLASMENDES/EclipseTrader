@@ -14,6 +14,11 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * Stockwatch view action handler.
@@ -21,7 +26,7 @@ import org.eclipse.ui.IViewPart;
  * 
  * @author Marco Maccaferri
  */
-public class ContextAction implements IViewActionDelegate
+public class ContextAction implements IWorkbenchWindowActionDelegate, IViewActionDelegate
 {
   private static PortfolioView view;
   
@@ -34,11 +39,35 @@ public class ContextAction implements IViewActionDelegate
       view = (PortfolioView)viewPart;
   }
 
+  /* (non-Javadoc)
+   * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
+   */
+  public void init(IWorkbenchWindow window)
+  {
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
+   */
+  public void dispose()
+  {
+  }
+
   /*
    * @see IActionDelegate#run(IAction)
    */
   public void run(IAction action) 
   {
+    if (view == null)
+    {
+      try {
+        IWorkbenchPage pg = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        view = (PortfolioView)pg.showView("net.sourceforge.eclipsetrader.ui.views.Portfolio");
+      } catch(PartInitException x) {
+        return;
+      };
+    }
+    
     if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.views.openChart") == true)
       view.openHistoryChart();
     else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.views.openRealtimeChart") == true)

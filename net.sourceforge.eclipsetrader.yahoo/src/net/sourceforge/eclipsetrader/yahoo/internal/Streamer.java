@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
@@ -101,7 +101,7 @@ public class Streamer
     if (url.charAt(url.length() - 1) == '+')
       url.deleteCharAt(url.length() - 1);
     url.append("&f=sl1d1t1c1ohgvbap&e=.csv");
-    System.out.println(url.toString());
+//    System.out.println(url.toString());
     
     // Read the last prices
     try {

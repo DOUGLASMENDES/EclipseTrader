@@ -100,7 +100,6 @@ public class PushDataProvider extends DataProvider implements IStreamerEventRece
    */
   public void dataUpdated(IBasicData data)
   {
-System.out.println("Qui arriva");
     fireDataUpdated(data);
     if (data instanceof IExtendedData)
       dataCollector.dataUpdated((IExtendedData)data);
