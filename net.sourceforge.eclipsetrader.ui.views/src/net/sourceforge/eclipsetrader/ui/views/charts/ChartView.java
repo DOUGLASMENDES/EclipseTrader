@@ -10,10 +10,23 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
@@ -21,6 +34,14 @@ import net.sourceforge.eclipsetrader.IChartDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
@@ -41,6 +62,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.part.ViewPart;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class ChartView extends ViewPart implements ControlListener, MouseListener, MouseMoveListener, PaintListener, SelectionListener
 {
@@ -65,7 +91,7 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
   private Label volume;
   private IChartDataProvider dataProvider;
   private IBasicData basicData;
-  private IChartData[] data;
+  private IChartData[] data = new IChartData[0];
   private Vector chart = new Vector();
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
@@ -178,18 +204,18 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
     bottombar.setLayoutData(gridData);
     bottombar.addPaintListener(this);
     
-    ChartCanvas canvas = new ChartCanvas(form);
+/*    ChartCanvas canvas = new ChartCanvas(form);
     canvas.createContextMenu(this);
     canvas.addMouseListener(this);
     chart.addElement(canvas);
     canvas.addPainter(new PriceChart());
-    canvas.addPainter(new AverageChart(7, new Color(null, 0, 255, 0)));
-    canvas.addPainter(new AverageChart(21, new Color(null, 255, 0, 0)));
+//    canvas.addPainter(new AverageChart(7, new Color(null, 0, 255, 0)));
+//    canvas.addPainter(new AverageChart(21, new Color(null, 255, 0, 0)));
 
     canvas = new ChartCanvas(form);
     canvas.createContextMenu(this);
     chart.addElement(canvas);
-    canvas.addPainter(new RSIChart(10));
+    canvas.addPainter(new RSIChart(21));
     
     canvas = new ChartCanvas(form);
     canvas.createContextMenu(this);
@@ -197,7 +223,7 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
     canvas.addPainter(new VolumeChart());
     
     int[] weights = { 75, 10, 15 };
-    form.setWeights(weights);
+    form.setWeights(weights);*/
 
     // Restore del grafico precedente
     String id = getViewSite().getSecondaryId();
@@ -211,6 +237,192 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
         break;
       }
     }
+  }
+  
+  public void reloadPreferences()
+  {
+    File folder = new File(Platform.getLocation().toFile(), "charts");
+    Vector sectionHeights = new Vector();
+    
+    // Remove all charts
+    for (int i = 0; i < chart.size(); i++)
+    {
+      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      canvas.removeMouseListener(this);
+      canvas.dispose();
+    }
+    chart.removeAllElements();
+
+    // Read the preferences files for the new chart
+    File f = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs");
+    if (f.exists() == true)
+    {
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(f);
+
+        int index = 0;
+        NodeList firstChild = document.getFirstChild().getChildNodes();
+        for (int i = 0; i < firstChild.getLength(); i++)
+        {
+          Node n = firstChild.item(i);
+          if (n.getNodeName().equalsIgnoreCase("section"))
+          {
+            ChartCanvas canvas = new ChartCanvas(form);
+            canvas.createContextMenu(this);
+            canvas.addMouseListener(this);
+            chart.addElement(canvas);
+
+            // Standard attributes
+            Node attr = n.getAttributes().getNamedItem("price");
+            if (attr != null && attr.getNodeValue().equalsIgnoreCase("true") == true)
+              canvas.addPainter(new PriceChart());
+            attr = n.getAttributes().getNamedItem("volume");
+            if (attr != null && attr.getNodeValue().equalsIgnoreCase("true") == true)
+              canvas.addPainter(new VolumeChart());
+            String height = n.getAttributes().getNamedItem("height").getNodeValue();
+            sectionHeights.addElement(new Integer(height));
+
+            // Charts
+            NodeList parent = (NodeList)n;
+            for (int ii = 0; ii < parent.getLength(); ii++)
+            {
+              Node item = parent.item(ii);
+              if (item.getNodeName().equalsIgnoreCase("chart") == true)
+              {
+                String id = item.getAttributes().getNamedItem("id").getNodeValue();
+                String name = item.getAttributes().getNamedItem("name").getNodeValue();
+
+                IExtensionRegistry registry = Platform.getExtensionRegistry();
+                IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter");
+                if (extensionPoint != null)
+                {
+                  IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+                  for (int m = 0; m < members.length; m++)
+                  {
+                    IConfigurationElement member = members[m];
+                    if (id.equalsIgnoreCase(member.getAttribute("id")))
+                      try {
+                        Object obj = member.createExecutableExtension("class");
+                        if (obj instanceof IChartPlotter)
+                        {
+                          setPlotterParameters((NodeList)item, (IChartPlotter)obj);
+                          canvas.addPainter((ChartPainter)obj);
+                        }
+                      } catch(Exception x) { x.printStackTrace(); };
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+
+      int[] weights = new int[sectionHeights.size()];
+      for (int i = 0; i < weights.length; i++)
+        weights[i] = ((Integer)sectionHeights.elementAt(i)).intValue();
+      form.setWeights(weights);
+    }
+    else
+    {
+      ChartCanvas canvas = new ChartCanvas(form);
+      canvas.createContextMenu(this);
+      canvas.addMouseListener(this);
+      chart.addElement(canvas);
+      canvas.addPainter(new PriceChart());
+      
+      canvas = new ChartCanvas(form);
+      canvas.createContextMenu(this);
+      chart.addElement(canvas);
+      canvas.addPainter(new VolumeChart());
+
+      int[] weights = { 85, 15 };
+      form.setWeights(weights);
+    }
+  }
+  
+  private void setPlotterParameters(NodeList parent, IChartPlotter obj)
+  {
+    for (int i = 0; i < parent.getLength(); i++)
+    {
+      Node node = parent.item(i);
+      if (node.getNodeName().equalsIgnoreCase("params") == true)
+      {
+        NamedNodeMap map = node.getAttributes();
+        for (int ii = 0; ii < map.getLength(); ii++)
+        {
+          String name = map.item(ii).getNodeName();
+          String value = map.item(ii).getNodeValue();
+          if (name != null && value != null)
+            obj.setParameter(name, value);
+        }
+      }
+    }
+  }
+  
+  public void savePreferences()
+  {
+    File folder = new File(Platform.getLocation().toFile(), "charts");
+
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.getDOMImplementation().createDocument("", "preferences", null);
+
+      int[] weights = form.getWeights();
+      for (int i = 0; i < weights.length; i++)
+      {
+        Element element = document.createElement("section");
+        element.setAttribute("height", String.valueOf(weights[i]));
+        ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+        for (int ii = 0; ii < canvas.getPainterCount(); ii++)
+        {
+          if (canvas.getPainter(ii) instanceof PriceChart)
+            element.setAttribute("price", "true");
+          if (canvas.getPainter(ii) instanceof VolumeChart)
+            element.setAttribute("volume", "true");
+        }
+        document.getDocumentElement().appendChild(element);
+
+        for (int ii = 0; ii < canvas.getPainterCount(); ii++)
+        {
+          ChartPainter painter = canvas.getPainter(ii);
+          if (!(painter instanceof IChartPlotter))
+            continue;
+          System.out.println(painter.getClass());
+          HashMap params = ((IChartPlotter)painter).getParameters();
+          
+          Element node = document.createElement("chart");
+          node.setAttribute("id", ((IChartPlotter)painter).getId());
+          node.setAttribute("name", ((ChartPainter)painter).getName());
+          Iterator keys = params.keySet().iterator();
+          while (keys.hasNext())
+          {
+            String key = (String)keys.next();
+            Element p = document.createElement("params");
+            p.setAttribute(key, (String)params.get(key));
+            node.appendChild(p);
+          }
+          
+          element.appendChild(node);
+        }
+      }
+
+      File f = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs");
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+      DOMSource source = new DOMSource(document);
+      BufferedWriter out = new BufferedWriter(new FileWriter(f));
+      StreamResult result = new StreamResult(out);
+      transformer.transform(source, result);
+      out.flush();
+      out.close();
+    } catch (Exception ex) { ex.printStackTrace(); };
   }
 
   /* (non-Javadoc)
@@ -232,7 +444,8 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
   public void setData(final IBasicData d)
   {
     basicData = d;
-    
+    reloadPreferences();
+
     String id = getViewSite().getSecondaryId();
     ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + id, basicData.getSymbol());
     setPartName(basicData.getTicker() + " - Chart");
@@ -274,6 +487,77 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
         }
       }
     }).start();
+  }
+  
+  public void updateView()
+  {
+    for (int i = 0; i < chart.size(); i++)
+      ((ChartCanvas)chart.elementAt(i)).setData(data);
+  }
+  
+  public void addOscillator(String id)
+  {
+    IExtensionRegistry registry = Platform.getExtensionRegistry();
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter");
+    if (extensionPoint != null)
+    {
+      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+      for (int m = 0; m < members.length; m++)
+      {
+        IConfigurationElement member = members[m];
+        if (id.equalsIgnoreCase(member.getAttribute("id")))
+          try {
+            Object obj = member.createExecutableExtension("class");
+            if (obj instanceof IChartPlotter)
+            {
+              ((IChartPlotter)obj).setParameters();
+              ((ChartCanvas)chart.elementAt(0)).addPainter((ChartPainter)obj);
+              updateView();
+              savePreferences();
+            }
+          } catch(Exception x) { x.printStackTrace(); };
+      }
+    }
+  }
+  
+  public void editOscillator()
+  {
+    ChartDialog dlg = new ChartDialog();
+    dlg.setChart(chart);
+    if (dlg.open() == ChartDialog.OK)
+    {
+      IChartPlotter obj = dlg.getObject();
+      if (obj != null)
+      {
+        obj.setParameters();
+        updateView();
+        savePreferences();
+      }
+    }
+  }
+  
+  public void removeOscillator()
+  {
+    ChartDialog dlg = new ChartDialog();
+    dlg.setChart(chart);
+    if (dlg.open() == ChartDialog.OK)
+    {
+      IChartPlotter obj = dlg.getObject();
+      if (obj != null)
+      {
+        for (int i = 0; i < chart.size(); i++)
+        {
+          ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+          for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
+          {
+            if (obj == canvas.getPainter(ii))
+              canvas.removePainter((ChartPainter)obj);
+          }
+        }
+        updateView();
+        savePreferences();
+      }
+    }
   }
 
   public void updateLabels()
@@ -329,13 +613,17 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
   
   public void updateChart()
   {
-    new Thread(new Runnable() {
-      public void run()
+    Job job = new Job("Update Chart") {
+      public IStatus run(IProgressMonitor monitor)
       {
         dataProvider = TraderPlugin.getChartDataProvider();
         if (dataProvider != null)
         {
+          try {
           dataProvider.update(basicData);
+          } catch(Exception e) {
+            return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause()); 
+          };
           data = dataProvider.getData(basicData);
           container.getDisplay().asyncExec(new Runnable() {
             public void run() {
@@ -347,6 +635,14 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
           for (int i = 0; i < chart.size(); i++)
             ((ChartCanvas)chart.elementAt(i)).setData(data);
         }
+        return new Status(0, "plugin.id", 0, "OK", null); 
+      }
+    };
+    job.setUser(true);
+    job.schedule();
+    new Thread(new Runnable() {
+      public void run()
+      {
       }
     }).start();
   }

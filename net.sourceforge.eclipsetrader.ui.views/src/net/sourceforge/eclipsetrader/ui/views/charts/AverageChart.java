@@ -1,10 +1,16 @@
-/*
- * Created on 29-ago-2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+/*******************************************************************************
+ * Copyright (c) 2004 Marco Maccaferri and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Marco Maccaferri - initial API and implementation
+ *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
+
+import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -16,9 +22,15 @@ import org.eclipse.swt.graphics.GC;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class AverageChart extends ChartPainter
+public class AverageChart extends ChartPainter implements IChartPlotter
 {
   private int period = 7;
+  private HashMap params = new HashMap();
+  
+  public AverageChart()
+  {
+    name = "Media Mobile";
+  }
   
   public AverageChart(int period)
   {
@@ -64,5 +76,63 @@ public class AverageChart extends ChartPainter
 
   public void paintScale(GC gc, int width, int height)
   {
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
+   */
+  public String getId()
+  {
+    return "net.sourceforge.eclipsetrader.charts.average";
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
+   */
+  public String getDescription()
+  {
+    return name + " (" + period + ")";
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters()
+   */
+  public void setParameters()
+  {
+    AverageChartDialog dlg = new AverageChartDialog();
+    dlg.setPeriod(period);
+    dlg.setName(name);
+    dlg.setColor(lineColor.getRGB());
+    if (dlg.open() == AverageChartDialog.OK)
+    {
+      name = dlg.getName();
+      period = dlg.getPeriod();
+      params.put("period", String.valueOf(period));
+      lineColor = new Color(null, dlg.getColor());
+      params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
+    }
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters(String name, String value)
+   */
+  public void setParameter(String name, String value)
+  {
+    params.put(name, value);
+    if (name.equalsIgnoreCase("period") == true)
+      period = Integer.parseInt(value);
+    if (name.equalsIgnoreCase("color") == true)
+    {
+      String[] values = value.split(",");
+      lineColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParameters()
+   */
+  public HashMap getParameters()
+  {
+    return params;
   }
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.util.HashMap;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -20,9 +22,15 @@ import org.eclipse.swt.graphics.GC;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class RSIChart extends ChartPainter
+public class RSIChart extends ChartPainter implements IChartPlotter
 {
   private int period = 14;
+  private HashMap params = new HashMap();
+  
+  public RSIChart()
+  {
+    name = "RSI";
+  }
   
   public RSIChart(int period)
   {
@@ -92,5 +100,59 @@ public class RSIChart extends ChartPainter
 
   public void paintScale(GC gc, int width, int height)
   {
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
+   */
+  public String getId()
+  {
+    return "net.sourceforge.eclipsetrader.charts.rsi";
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
+   */
+  public String getDescription()
+  {
+    return name + " (" + period + ")";
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters()
+   */
+  public void setParameters()
+  {
+    AverageChartDialog dlg = new AverageChartDialog();
+    if (dlg.open() == AverageChartDialog.OK)
+    {
+      period = dlg.getPeriod();
+      params.put("period", String.valueOf(period));
+      lineColor = new Color(null, dlg.getColor());
+      params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
+    }
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters(String name, String value)
+   */
+  public void setParameter(String name, String value)
+  {
+    params.put(name, value);
+    if (name.equalsIgnoreCase("period") == true)
+      period = Integer.parseInt(value);
+    if (name.equalsIgnoreCase("color") == true)
+    {
+      String[] values = value.split(",");
+      lineColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParameters()
+   */
+  public HashMap getParameters()
+  {
+    return params;
   }
 }

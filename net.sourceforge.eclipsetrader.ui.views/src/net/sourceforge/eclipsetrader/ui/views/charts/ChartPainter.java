@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.GC;
  */
 public abstract class ChartPainter
 {
+  protected String name = "";
   protected Color gridColor = new Color(null, 192, 192, 192);
   protected Color lineColor = new Color(null, 0, 0, 255);
   protected Color textColor = new Color(null, 0, 0, 0);
@@ -108,7 +109,26 @@ public abstract class ChartPainter
   {
     return chartMargin;
   }
-  
+
+  /**
+   * Method to return the name field.<br>
+   *
+   * @return Returns the name.
+   */
+  public String getName()
+  {
+    return name;
+  }
+  /**
+   * Method to set the name field.<br>
+   * 
+   * @param name The name to set.
+   */
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+
   public void drawLine(double[] value, GC gc, int height)
   {
     int[] pointArray = new int[value.length * 2];

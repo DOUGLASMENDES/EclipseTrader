@@ -41,6 +41,16 @@ public class ChartActions implements IViewActionDelegate
       view.showNext();
     else if (action.getId().equalsIgnoreCase("chart.previous") == true)
       view.showPrevious();
+    else if (action.getId().equalsIgnoreCase("chart.add") == true)
+    {
+      OscillatorDialog dlg = new OscillatorDialog();
+      if (dlg.open() == OscillatorDialog.OK)
+        view.addOscillator(dlg.getId());
+    }
+    else if (action.getId().equalsIgnoreCase("chart.edit") == true)
+      view.editOscillator();
+    else if (action.getId().equalsIgnoreCase("chart.remove") == true)
+      view.removeOscillator();
   }
 
   /* (non-Javadoc)

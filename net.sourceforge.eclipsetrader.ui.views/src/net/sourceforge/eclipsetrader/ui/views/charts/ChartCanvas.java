@@ -87,6 +87,20 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     scale.addPaintListener(this);
   }
   
+  public void dispose()
+  {
+    scale.removePaintListener(this);
+    chartContainer.removeControlListener(this);
+    chart.removePaintListener(this);
+    
+    painter.removeAllElements();
+
+    scale.dispose();
+    chart.dispose();
+    chartContainer.dispose();
+    container.dispose();
+  }
+  
   public void createContextMenu(IViewPart part) 
   {
     // Create menu manager.
@@ -139,6 +153,14 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     if (listener instanceof MouseListener)
       chart.addMouseListener((MouseListener)listener);
   }
+  
+  public void removeMouseListener(Object listener)
+  {
+    if (listener instanceof MouseMoveListener)
+      chart.removeMouseMoveListener((MouseMoveListener)listener);
+    if (listener instanceof MouseListener)
+      chart.removeMouseListener((MouseListener)listener);
+  }
 
   /**
    * Add a painter object to this canvas.
@@ -160,12 +182,32 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
   }
   
   /**
+   * Return the number of painter objects in this canvas.
+   * <p></p>
+   */
+  public int getPainterCount()
+  {
+    return painter.size();
+  }
+  
+  /**
+   * Return the painter object at index position.
+   * <p></p>
+   */
+  public ChartPainter getPainter(int index)
+  {
+    return (ChartPainter)painter.elementAt(index);
+  }
+  
+  /**
    * Set the chart data to all registered painter objects.
    * <p></p>
    */
   public void setData(IChartData[] d)
   {
     data = d;
+    if (chartContainer.isDisposed() == true)
+      return;
     chartContainer.getDisplay().asyncExec(new Runnable() {
       public void run()  
       {
