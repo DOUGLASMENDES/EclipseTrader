@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -39,6 +39,7 @@ public class ChartPlotter implements IChartPlotter
   private double min;
   private double max;
   protected HashMap params = new HashMap();
+  private boolean selected = false;
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
@@ -88,6 +89,26 @@ public class ChartPlotter implements IChartPlotter
     return chartCanvas;
   }
 
+  /**
+   * Method to return the selected field.<br>
+   *
+   * @return Returns the selected.
+   */
+  public boolean isSelected()
+  {
+    return selected;
+  }
+
+  /**
+   * Method to set the selected field.<br>
+   * 
+   * @param selected The selected to set.
+   */
+  public void setSelected(boolean selected)
+  {
+    this.selected = selected;
+  }
+  
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
@@ -224,6 +245,9 @@ public class ChartPlotter implements IChartPlotter
       pointArray[pa++] = height - y;
     }
     gc.drawPolyline(pointArray);
+    
+    if (isSelected() == true)
+      drawSelectionMarkers(pointArray, gc);
   }
   
   /**
@@ -243,6 +267,32 @@ public class ChartPlotter implements IChartPlotter
       pointArray[pa++] = height - y;
     }
     gc.drawPolyline(pointArray);
+    
+    if (isSelected() == true)
+      drawSelectionMarkers(pointArray, gc);
+  }
+
+  /**
+   * Draws the selection markers over the chart line.
+   */
+  public void drawSelectionMarkers(int[] pointArray, GC gc)
+  {
+    int length = pointArray.length / 2;
+    
+    Color oldBackground = gc.getBackground();
+    gc.setBackground(getColor());
+    if (length <= 20)
+    {
+      gc.fillRectangle(pointArray[0] - 1, pointArray[1] - 1, 5, 5);
+      gc.fillRectangle(pointArray[(length / 2) * 2] - 1, pointArray[(length / 2) * 2 + 1] - 1, 5, 5);
+    }
+    else
+    {
+      for (int i = 0; i < length - 5; i += 10)
+        gc.fillRectangle(pointArray[i * 2] - 1, pointArray[i * 2 + 1] - 1, 5, 5);
+    }
+    gc.fillRectangle(pointArray[pointArray.length - 2] - 1, pointArray[pointArray.length - 1] - 1, 5, 5);
+    gc.setBackground(oldBackground);
   }
 
   /**
