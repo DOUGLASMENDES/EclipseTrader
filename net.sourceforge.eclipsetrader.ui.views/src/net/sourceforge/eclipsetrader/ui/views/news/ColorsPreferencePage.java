@@ -60,7 +60,6 @@ public class ColorsPreferencePage extends PreferencePage implements IWorkbenchPr
     colorEditor[1] = new ColorFieldEditor("news.background", "Background Color", colorComposite);        
     for(int i = 0; i < colorEditor.length; i++)
     {
-      colorEditor[i].setPreferencePage(this);
       colorEditor[i].setPreferenceStore(getPreferenceStore());
       colorEditor[i].load();
     }
