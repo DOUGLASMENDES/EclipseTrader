@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.12.0"
+   version="0.13.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -23,7 +23,7 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="false"
-            icon="icons/stock_watch.gif"
+            icon="icons/eview16/stockwatch.gif"
             class="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioView"
             category="trader"
             name="%stockwatch.title"
@@ -43,7 +43,7 @@
             id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
       <view
             allowMultiple="true"
-            icon="icons/chart_persp.gif"
+            icon="icons/eview16/historychart.gif"
             class="net.sourceforge.eclipsetrader.ui.views.charts.HistoryChartView"
             category="trader"
             name="%chart.title1"
@@ -56,7 +56,7 @@
             id="net.sourceforge.eclipsetrader.ui.views.Book"/>
       <view
             allowMultiple="true"
-            icon="icons/chart_persp.gif"
+            icon="icons/eview16/intradaychart.gif"
             class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartView"
             name="%chart.title2"
             id="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"/>
@@ -96,6 +96,11 @@
                id="net.sourceforge.eclipsetrader.ui.views.indices"
                relative="strips"
                relationship="stack"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.News"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.indices"/>
+         <actionSet id="net.sourceforge.eclipsetrader.ui.portfolio"/>
+         <actionSet id="net.sourceforge.eclipsetrader.views.chartActionSet"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="net.sourceforge.eclipsetrader.NewsPerspective">
          <view
@@ -123,17 +128,17 @@
             id="eclipsetrader.portfolio"/>
       <page
             class="net.sourceforge.eclipsetrader.ui.views.portfolio.ColorsPreferencePage"
-            category="eclipsetrader.portfolio"
-            name="%stockwatch.colors"
+            category="eclipsetrader.colors"
+            name="%stockwatch.title"
             id="eclipsetrader.portfolio.colors"/>
       <page
             class="net.sourceforge.eclipsetrader.ui.views.news.ColorsPreferencePage"
-            category="eclipsetrader"
+            category="eclipsetrader.colors"
             name="%news.title"
             id="eclipsetrader.news"/>
       <page
             class="net.sourceforge.eclipsetrader.ui.views.trading.BookPreferencePage"
-            category="eclipsetrader"
+            category="eclipsetrader.colors"
             name="%book.title"
             id="eclipsetrader.book"/>
       <page
@@ -194,24 +199,29 @@
          <action
                label="%chart.bar"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
                menubarPath="group1"
                id="chart.bar"/>
          <action
                label="%chart.candle"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
                menubarPath="group1"
                id="chart.candle"/>
          <action
                label="%chart.line"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
                menubarPath="group1"
                id="chart.line"/>
          <action
+               enablesFor="1"
                label="%chart.remove"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
                id="chart.remove"/>
          <action
+               enablesFor="1"
                label="%chart.edit"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
@@ -228,25 +238,31 @@
          <action
                label="%chart.bar"
                class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               style="radio"
                menubarPath="group1"
                id="chart.bar"/>
          <action
                label="%chart.candle"
                class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               style="radio"
                menubarPath="group1"
                id="chart.candle"/>
          <action
                label="%chart.line"
                class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               style="radio"
                menubarPath="group1"
                id="chart.line"/>
          <action
+               enablesFor="1"
                label="%chart.remove"
                class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
                menubarPath="group3"
                id="chart.remove"/>
          <action
+               enablesFor="1"
                label="%chart.edit"
+               overrideActionId="1"
                class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
                menubarPath="group3"
                id="chart.edit"/>
@@ -300,10 +316,30 @@
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                id="chart.refresh"/>
-         <menu
-               label="%actions.viewAll"
-               path="all"
-               id="chart.menu1"/>
+         <action
+               toolbarPath="additions"
+               label="%chart.bar"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               icon="icons/bar.gif"
+               tooltip="%chart.bar"
+               style="radio"
+               id="chart.bar"/>
+         <action
+               toolbarPath="additions"
+               label="%chart.candle"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               icon="icons/candle.gif"
+               tooltip="%chart.candle"
+               style="radio"
+               id="chart.candle"/>
+         <action
+               toolbarPath="additions"
+               label="%chart.line"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               icon="icons/line.gif"
+               tooltip="%chart.line"
+               style="radio"
+               id="chart.line"/>
          <menu
                label="%actions.viewPeriod"
                path="period"
@@ -311,25 +347,25 @@
          <action
                label="%actions.viewLast2Years"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               style="push"
+               style="radio"
                menubarPath="period"
                id="view.last2years"/>
          <action
                label="%actions.viewLastYear"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               style="push"
+               style="radio"
                menubarPath="period"
                id="view.last1year"/>
          <action
                label="%actions.viewLast6Months"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               style="push"
+               style="radio"
                menubarPath="period"
                id="view.last6months"/>
          <action
                label="%actions.viewAll"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               style="push"
+               style="radio"
                menubarPath="all"
                id="view.all"/>
       </viewContribution>
@@ -349,19 +385,21 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"
             id="net.sourceforge.eclipsetrader.browserActions">
          <action
+               disabledIcon="icons/dlcl16/next_nav.gif"
                toolbarPath="additions"
                label="%actions.next"
-               tooltip="%actions.next"
-               icon="icons/next_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
+               icon="icons/elcl16/next_nav.gif"
+               tooltip="%actions.next"
                style="push"
                id="news.next"/>
          <action
+               disabledIcon="icons/dlcl16/prev_nav.gif"
                toolbarPath="additions"
                label="%actions.previous"
-               tooltip="%actions.previous"
-               icon="icons/prev_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
+               icon="icons/elcl16/prev_nav.gif"
+               tooltip="%actions.previous"
                style="push"
                id="news.previous"/>
       </viewContribution>
@@ -381,27 +419,42 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.Portfolio"
             id="net.sourceforge.eclipsetrader.portfolioActions">
          <action
+               disabledIcon="icons/dlcl16/rem_co.gif"
+               enablesFor="1"
+               toolbarPath="additions"
+               label="%actions.delete"
+               tooltip="%actions.delete"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               icon="icons/elcl16/rem_co.gif"
+               style="push"
+               id="portfolio.remove"/>
+         <action
+               disabledIcon="icons/dlcl16/next_nav.gif"
+               enablesFor="1"
                toolbarPath="additions"
                label="%actions.moveDown"
-               tooltip="%actions.moveDown"
-               icon="icons/next_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               icon="icons/elcl16/next_nav.gif"
+               tooltip="%actions.moveDown"
                style="push"
                id="portfolio.movedown"/>
          <action
+               disabledIcon="icons/dlcl16/prev_nav.gif"
+               enablesFor="1"
                toolbarPath="additions"
                label="%actions.moveUp"
-               tooltip="%actions.moveUp"
-               icon="icons/prev_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               icon="icons/elcl16/prev_nav.gif"
+               tooltip="%actions.moveUp"
                style="push"
                id="portfolio.moveup"/>
          <action
+               disabledIcon="icons/dlcl16/addtsk_tsk.gif"
                toolbarPath="additions"
                label="%stockwatch.add"
-               tooltip="%stockwatch.add"
-               icon="icons/add_exc.gif"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               icon="icons/elcl16/addtsk_tsk.gif"
+               tooltip="%stockwatch.add"
                style="push"
                id="portfolio.add"/>
       </viewContribution>
@@ -436,31 +489,58 @@
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            label="Views ActionSet"
+            label="Views"
             visible="true"
             id="net.sourceforge.eclipsetrader.views.actionSet">
          <action
-               label="%actions.showIndices"
+               label="%actions.showNews"
+               tooltip="%actions.showNews"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
                style="push"
-               menubarPath="window/additions"
+               menubarPath="window/showView"
+               id="net.sourceforge.eclipsetrader.actions.showNews"/>
+         <action
+               label="%actions.showIndices"
+               tooltip="%actions.showIndices"
+               class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
+               style="push"
+               menubarPath="window/showView"
                id="net.sourceforge.eclipsetrader.actions.showIndexes"/>
          <action
                label="%actions.showStockwatch"
+               tooltip="%actions.showStockwatch"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
                style="push"
-               menubarPath="window/additions"
+               menubarPath="window/showView"
                id="net.sourceforge.eclipsetrader.actions.showStockwatch"/>
          <action
+               toolbarPath="additions"
                label="%actions.showNews"
+               tooltip="%actions.showNews"
+               icon="icons/news_tab.gif"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
                style="push"
-               menubarPath="window/additions"
                id="net.sourceforge.eclipsetrader.actions.showNews"/>
+         <action
+               toolbarPath="additions"
+               label="%actions.showIndices"
+               tooltip="%actions.showIndices"
+               icon="icons/sample.gif"
+               class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
+               style="push"
+               id="net.sourceforge.eclipsetrader.actions.showIndexes"/>
+         <action
+               toolbarPath="additions"
+               label="%actions.showStockwatch"
+               tooltip="%actions.showStockwatch"
+               icon="icons/eview16/stockwatch.gif"
+               class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
+               style="push"
+               id="net.sourceforge.eclipsetrader.actions.showStockwatch"/>
       </actionSet>
       <actionSet
             label="%stockwatch.title"
-            visible="true"
+            visible="false"
             id="net.sourceforge.eclipsetrader.ui.portfolio">
          <menu
                label="%stockwatch.menu"
@@ -475,46 +555,336 @@
             <separator name="group.bottom"/>
          </menu>
          <action
+               enablesFor="1"
                label="%stockwatch.openChart"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group1"
-               id="net.sourceforge.eclipsetrader.views.openChart"/>
+               id="net.sourceforge.eclipsetrader.views.openChart">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
          <action
+               enablesFor="1"
                label="%stockwatch.openRealtimeChart"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group2"
-               id="net.sourceforge.eclipsetrader.views.openRealtimeChart"/>
+               id="net.sourceforge.eclipsetrader.views.openRealtimeChart">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
          <action
+               enablesFor="1"
                label="%stockwatch.openPriceBook"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group2"
-               id="net.sourceforge.eclipsetrader.views.openPriceBook"/>
+               id="net.sourceforge.eclipsetrader.views.openPriceBook">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
          <action
+               enablesFor="1"
                label="%stockwatch.remove"
+               definitionId="org.eclipse.ui.edit.delete"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group3"
-               id="portfolio.remove"/>
+               id="portfolio.remove">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
          <action
+               enablesFor="1"
                label="%stockwatch.edit"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group3"
-               id="portfolio.edit"/>
+               id="portfolio.edit">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
          <action
                label="%stockwatch.add"
+               definitionId="net.sourceforge.eclipsetrader.commands.add"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group3"
-               id="portfolio.add"/>
+               id="portfolio.add">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
          <action
+               enablesFor="1"
                label="%stockwatch.clearAlerts"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group4"
-               id="portfolio.clearAlerts"/>
+               id="portfolio.clearAlerts">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
          <action
+               enablesFor="1"
                label="%stockwatch.editAlerts"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="stockwatch/group4"
-               id="portfolio.editAlerts"/>
+               id="portfolio.editAlerts">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioSelection"/>
+            </enablement>
+         </action>
+      </actionSet>
+      <actionSet
+            label="Chart"
+            visible="false"
+            id="net.sourceforge.eclipsetrader.views.chartActionSet">
+         <menu
+               label="Chart"
+               path="group2"
+               id="chart">
+            <separator name="group.top"/>
+            <separator name="group1"/>
+            <separator name="group2"/>
+            <separator name="group3"/>
+            <separator name="group4"/>
+            <separator name="additions"/>
+            <separator name="group.bottom"/>
+         </menu>
+         <action
+               label="%chart.bar"
+               definitionId="net.sourceforge.eclipsetrader.commands.bar"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
+               menubarPath="chart/group1"
+               state="false"
+               id="chart.bar">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%chart.candle"
+               definitionId="net.sourceforge.eclipsetrader.commands.candle"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
+               menubarPath="chart/group1"
+               state="false"
+               id="chart.candle">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%chart.line"
+               definitionId="net.sourceforge.eclipsetrader.commands.line"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
+               menubarPath="chart/group1"
+               state="false"
+               id="chart.line">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <menu
+               label="Indicatori"
+               path="chart/group2"
+               id="indicators">
+            <separator name="group.top"/>
+            <separator name="group1"/>
+            <separator name="group2"/>
+            <separator name="group3"/>
+            <separator name="group4"/>
+            <separator name="additions"/>
+            <separator name="group.bottom"/>
+         </menu>
+         <action
+               enablesFor="1"
+               label="%chart.remove"
+               definitionId="org.eclipse.ui.edit.delete"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="chart/indicators/group2"
+               id="chart.remove">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               enablesFor="1"
+               label="%chart.edit"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="chart/indicators/group1"
+               id="chart.edit">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%chart.add"
+               definitionId="net.sourceforge.eclipsetrader.commands.add"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="chart/indicators/group1"
+               id="chart.add">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <menu
+               label="Mostra"
+               path="chart/group2"
+               id="show">
+            <separator name="group.top"/>
+            <separator name="group1"/>
+            <separator name="group2"/>
+            <separator name="group3"/>
+            <separator name="group4"/>
+            <separator name="additions"/>
+            <separator name="group.bottom"/>
+         </menu>
+         <action
+               label="%actions.viewAll"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
+               menubarPath="chart/show/group1"
+               id="view.all">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%actions.viewLast2Years"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
+               menubarPath="chart/show/group2"
+               id="view.last2years">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%actions.viewLastYear"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
+               menubarPath="chart/show/group2"
+               id="view.last1year">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%actions.viewLast6Months"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="radio"
+               menubarPath="chart/show/group2"
+               id="view.last6months">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%actions.next"
+               definitionId="net.sourceforge.eclipsetrader.commands.next"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               menubarPath="chart/group3"
+               id="chart.next">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%actions.previous"
+               definitionId="net.sourceforge.eclipsetrader.commands.previous"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               menubarPath="chart/group3"
+               id="chart.previous">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
+         <action
+               label="%actions.update"
+               definitionId="org.eclipse.ui.file.refresh"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               menubarPath="chart/group4"
+               id="chart.refresh">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+            </enablement>
+         </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            description="Next"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Next"
+            id="net.sourceforge.eclipsetrader.commands.next"/>
+      <command
+            description="Previous"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Previous"
+            id="net.sourceforge.eclipsetrader.commands.previous"/>
+      <command
+            description="Line Chart"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Line Chart"
+            id="net.sourceforge.eclipsetrader.commands.line"/>
+      <command
+            description="Bar Chart"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Bar Chart"
+            id="net.sourceforge.eclipsetrader.commands.bar"/>
+      <command
+            description="Candle Chart"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Candle Chart"
+            id="net.sourceforge.eclipsetrader.commands.candle"/>
+      <command
+            description="Add"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Add"
+            id="net.sourceforge.eclipsetrader.commands.add"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.next"
+            keySequence="Ctrl+Arrow_Right"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.previous"
+            keySequence="Ctrl+Arrow_Left"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.line"
+            keySequence="L"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.bar"
+            keySequence="B"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.candle"
+            keySequence="C"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.add"
+            keySequence="INSERT"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            platform="carbon"
+            commandId="net.sourceforge.eclipsetrader.commands.next"
+            keySequence="Command+Arrow_Right"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            platform="carbon"
+            commandId="net.sourceforge.eclipsetrader.commands.previous"
+            keySequence="Command+Arrow_Left"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+   </extension>
+
 
 </plugin>
