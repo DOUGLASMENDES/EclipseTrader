@@ -66,4 +66,9 @@ public interface IBookDataProvider
    * @param listener The data listener.
    */
   public void removeBookListener(IBasicData data, IBookUpdateListener listener);
+  
+  /**
+   * Disposes this object.
+   */
+  public void dispose();
 }
