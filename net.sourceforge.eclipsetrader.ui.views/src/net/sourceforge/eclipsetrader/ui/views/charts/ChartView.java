@@ -445,42 +445,37 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     ViewsPlugin.getDefault().getPreferenceStore().setValue(prefId + id, basicData.getSymbol());
     setPartName(stitle);
 
-    new Thread(new Runnable() {
-      public void run()
-      {
-        data = getChartData(basicData);
-        if (data != null)
-        {
-          container.getDisplay().asyncExec(new Runnable() {
-            public void run() {
-              if (data != null && data.length > 0)
-              {
-                if (data[0].getMaxPrice() >= 10)
-                {
-                  pf.setMinimumFractionDigits(2);
-                  pf.setMaximumFractionDigits(2);
-                  setScaleWidth(42);
-                }
-                else
-                {
-                  pf.setMinimumFractionDigits(4);
-                  pf.setMaximumFractionDigits(4);
-                  setScaleWidth(50);
-                }
-              }
-              else
-                setScaleWidth(50);
-              controlResized(null);
-              bottombar.redraw();
-              title.setText(basicData.getDescription());
-              updateLabels();
+    data = getChartData(basicData);
+    if (data != null)
+    {
+      container.getDisplay().asyncExec(new Runnable() {
+        public void run() {
+          if (data != null && data.length > 0)
+          {
+            if (data[0].getMaxPrice() >= 10)
+            {
+              pf.setMinimumFractionDigits(2);
+              pf.setMaximumFractionDigits(2);
+              setScaleWidth(42);
             }
-          });
-          for (int i = 0; i < chart.size(); i++)
-            ((ChartCanvas)chart.elementAt(i)).setData(data);
+            else
+            {
+              pf.setMinimumFractionDigits(4);
+              pf.setMaximumFractionDigits(4);
+              setScaleWidth(50);
+            }
+          }
+          else
+            setScaleWidth(50);
+          controlResized(null);
+          bottombar.redraw();
+          title.setText(basicData.getDescription());
+          updateLabels();
         }
-      }
-    }).start();
+      });
+      for (int i = 0; i < chart.size(); i++)
+        ((ChartCanvas)chart.elementAt(i)).setData(data);
+    }
   }
   
   public void updateView()

@@ -10,13 +10,24 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -25,9 +36,17 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class HistoryChartView extends ChartView
 {
+  private File folder = new File(Platform.getLocation().toFile(), "charts");
+  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+  private NumberFormat nf = NumberFormat.getInstance(Locale.US);
+  private NumberFormat pf = NumberFormat.getInstance(Locale.US);
+  private IChartData[] chartData;
   
   /* (non-Javadoc)
    * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -72,43 +91,38 @@ public class HistoryChartView extends ChartView
   
   public IChartData[] getChartData(IBasicData data)
   {
-    dataProvider = TraderPlugin.getChartDataProvider();
-    if (dataProvider != null)
+    if (chartData == null)
+      load(basicData);
+    
+    // Check if the user has selected a subperiod to display
+    if (chartData != null && chartData.length > 0 && limitPeriod != 0)
     {
-      IChartData[] chartData = dataProvider.getData(basicData);
+      // Set the limit date
+      Calendar limit = Calendar.getInstance();
+      limit.setTime(chartData[chartData.length - 1].getDate());
+      limit.add(Calendar.MONTH, -limitPeriod);
 
-      // Check if the user has selected a subperiod to display
-      if (chartData != null && chartData.length > 0 && limitPeriod != 0)
+      // Find the first element that is after the limit date
+      int srcPos = 0;
+      Calendar chart = Calendar.getInstance();
+      for (; srcPos < chartData.length; srcPos++)
       {
-        // Set the limit date
-        Calendar limit = Calendar.getInstance();
-        limit.setTime(chartData[chartData.length - 1].getDate());
-        limit.add(Calendar.MONTH, -limitPeriod);
-  
-        // Find the first element that is after the limit date
-        int srcPos = 0;
-        Calendar chart = Calendar.getInstance();
-        for (; srcPos < chartData.length; srcPos++)
-        {
-          chart.setTime(chartData[srcPos].getDate());
-          if (chart.after(limit) == true || chart.equals(limit) == true)
-            break;
-        }
-
-        // Create an array with a subset of the original chart data
-        if (srcPos != 0)
-        {
-          int length = chartData.length - srcPos;
-          IChartData[] newChartData = new IChartData[length];
-          System.arraycopy(chartData, srcPos, newChartData, 0, length);
-          chartData = newChartData;
-        }
+        chart.setTime(chartData[srcPos].getDate());
+        if (chart.after(limit) == true || chart.equals(limit) == true)
+          break;
       }
 
-      return chartData;
+      // Create an array with a subset of the original chart data
+      if (srcPos != 0)
+      {
+        int length = chartData.length - srcPos;
+        IChartData[] newChartData = new IChartData[length];
+        System.arraycopy(chartData, srcPos, newChartData, 0, length);
+        return newChartData;
+      }
     }
     
-    return null;
+    return chartData;
   }
   
   public void updateChart()
@@ -120,35 +134,27 @@ public class HistoryChartView extends ChartView
         if (dataProvider != null)
         {
           try {
-            dataProvider.update(basicData);
+            chartData = dataProvider.update(basicData, chartData);
+            store(basicData);
           } catch(Exception e) {
             return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause()); 
           };
-          data = dataProvider.getData(basicData);
           container.getDisplay().asyncExec(new Runnable() {
             public void run() {
-              controlResized(null);
-              bottombar.redraw();
-              updateLabels();
+              setData(basicData);
             }
           });
-          for (int i = 0; i < chart.size(); i++)
-            ((ChartCanvas)chart.elementAt(i)).setData(data);
         }
         return new Status(0, "plugin.id", 0, "OK", null); 
       }
     };
     job.setUser(true);
     job.schedule();
-    new Thread(new Runnable() {
-      public void run()
-      {
-      }
-    }).start();
   }
   
   public void showNext()
   {
+    chartData = null;
     IBasicData[] _tpData = TraderPlugin.getData();
     for (int i = 0; i < _tpData.length; i++)
     {
@@ -165,6 +171,7 @@ public class HistoryChartView extends ChartView
   
   public void showPrevious()
   {
+    chartData = null;
     IBasicData[] _tpData = TraderPlugin.getData();
     for (int i = 0; i < _tpData.length; i++)
     {
@@ -177,5 +184,120 @@ public class HistoryChartView extends ChartView
         break;
       }
     }
+  }
+
+  /**
+   * Method to load the chart data.<br>
+   *
+   * @param symbol The symbol of the data to load.
+   */
+  private void load(IBasicData data)
+  {
+    Vector v = new Vector();
+    
+    File f = new File(folder, data.getSymbol().toLowerCase() + ".xml");
+    if (f.exists() == true)
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(f);
+
+        int index = 0;
+        NodeList firstChild = document.getFirstChild().getChildNodes();
+        for (int i = 0; i < firstChild.getLength(); i++)
+        {
+          Node n = firstChild.item(i);
+          if (n.getNodeName().equalsIgnoreCase("data"))
+            v.add(decodeData(n.getChildNodes()));
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+
+    sort(v);
+
+    chartData = new IChartData[v.size()];
+    v.toArray(chartData);
+  }
+
+  /**
+   * Order by date.
+   */
+  private void sort(Vector v)
+  {
+    java.util.Collections.sort(v, new Comparator() {
+      public int compare(Object o1, Object o2) 
+      {
+        IChartData d1 = (IChartData)o1;
+        IChartData d2 = (IChartData)o2;
+        if (d1.getDate().after(d2.getDate()) == true)
+          return 1;
+        else if (d1.getDate().before(d2.getDate()) == true)
+          return -1;
+        return 0;
+      }
+    });
+  }
+  
+  private IChartData decodeData(NodeList parent)
+  {
+    IChartData cd = new ChartData();
+    for (int i = 0; i < parent.getLength(); i++)
+    {
+      Node n = parent.item(i);
+      Node value = n.getFirstChild();
+      if (value != null)
+      {
+        if (n.getNodeName().equalsIgnoreCase("open_price") == true)
+          cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
+        else if (n.getNodeName().equalsIgnoreCase("max_price") == true)
+          cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
+        else if (n.getNodeName().equalsIgnoreCase("min_price") == true)
+          cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
+        else if (n.getNodeName().equalsIgnoreCase("close_price") == true)
+          cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
+        else if (n.getNodeName().equalsIgnoreCase("volume") == true)
+          cd.setVolume(Integer.parseInt(value.getNodeValue()));
+        else if (n.getNodeName().equalsIgnoreCase("date") == true)
+        {
+          try {
+            cd.setDate(df.parse(value.getNodeValue()));
+          } catch(Exception e) {};
+        }
+      }
+    }
+    return cd;
+  }
+
+  /**
+   * Method to store the chart data.<br>
+   */
+  private void store(IBasicData data)
+  {
+    
+    if (chartData != null)
+      try {
+        folder.mkdirs();
+        BufferedWriter xmlout = new BufferedWriter(new FileWriter(new File(folder, data.getSymbol().toLowerCase() + ".xml")));
+
+        xmlout.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\r\n");
+        xmlout.write("<chart>\r\n");
+        xmlout.write("    <symbol>" + data.getTicker() + "</symbol>\r\n");
+        for (int i = 0; i < chartData.length; i++)
+        {
+          IChartData cd = (IChartData)chartData[i];
+          xmlout.write("    <data>\r\n");
+          xmlout.write("        <date>" + df.format(cd.getDate()) + "</date>\r\n");
+          xmlout.write("        <open_price>" + pf.format(cd.getOpenPrice()) + "</open_price>\r\n");
+          xmlout.write("        <max_price>" + pf.format(cd.getMaxPrice()) + "</max_price>\r\n");
+          xmlout.write("        <min_price>" + pf.format(cd.getMinPrice()) + "</min_price>\r\n");
+          xmlout.write("        <close_price>" + pf.format(cd.getClosePrice()) + "</close_price>\r\n");
+          xmlout.write("        <volume>" + cd.getVolume() + "</volume>\r\n");
+          xmlout.write("    </data>\r\n");
+        }
+        xmlout.write("</chart>\r\n");
+        xmlout.flush();
+        xmlout.close();
+      } catch (Exception ex) {};
   }
 }

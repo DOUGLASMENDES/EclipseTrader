@@ -33,5 +33,5 @@ public interface IChartDataProvider
    * @param data The IBasicData object of the chart.
    * @return Returns the updated IChartData array.
    */
-  public abstract void update(IBasicData data);
+  public abstract IChartData[] update(IBasicData data, IChartData[] chartData);
 }
