@@ -22,12 +22,18 @@ public class Images
   static final URL BASE_URL = ViewsPlugin.getDefault().getBundle().getEntry("/");
   public static final ImageDescriptor ICON_REFRESH;
   public static final ImageDescriptor ICON_AUTOREFRESH;
+  public static final ImageDescriptor ICON_UP;
+  public static final ImageDescriptor ICON_DOWN;
+  public static final ImageDescriptor ICON_EQUAL;
 
   static {
     String iconPath = "icons/";
 
     ICON_REFRESH = createImageDescriptor(iconPath + "refresh.gif");
     ICON_AUTOREFRESH = createImageDescriptor(iconPath + "auto_refresh.gif");
+    ICON_UP = createImageDescriptor(iconPath + "up.gif");
+    ICON_DOWN = createImageDescriptor(iconPath + "down.gif");
+    ICON_EQUAL = createImageDescriptor(iconPath + "equal.gif");
   }
 
   /**
