@@ -17,11 +17,13 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -52,6 +54,21 @@ public class ChartDataProvider implements IChartDataProvider
   private IBasicData data;
   private File folder = new File(Platform.getLocation().toFile(), "charts");
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+  private NumberFormat nf = NumberFormat.getInstance(Locale.US);
+  private NumberFormat pf = NumberFormat.getInstance(Locale.US);
+  
+  public ChartDataProvider()
+  {
+    nf.setGroupingUsed(false);
+    nf.setMinimumIntegerDigits(1);
+    nf.setMinimumFractionDigits(0);
+    nf.setMaximumFractionDigits(0);
+
+    pf.setGroupingUsed(false);
+    pf.setMinimumIntegerDigits(1);
+    pf.setMinimumFractionDigits(4);
+    pf.setMaximumFractionDigits(4);
+  }
 
   /**
    * Method to load the chart data.<br>
@@ -157,10 +174,10 @@ public class ChartDataProvider implements IChartDataProvider
           IChartData cd = (IChartData)chartData.elementAt(i);
           xmlout.write("    <data>\r\n");
           xmlout.write("        <date>" + df.format(cd.getDate()) + "</date>\r\n");
-          xmlout.write("        <open_price>" + cd.getOpenPrice() + "</open_price>\r\n");
-          xmlout.write("        <max_price>" + cd.getMaxPrice() + "</max_price>\r\n");
-          xmlout.write("        <min_price>" + cd.getMinPrice() + "</min_price>\r\n");
-          xmlout.write("        <close_price>" + cd.getClosePrice() + "</close_price>\r\n");
+          xmlout.write("        <open_price>" + pf.format(cd.getOpenPrice()) + "</open_price>\r\n");
+          xmlout.write("        <max_price>" + pf.format(cd.getMaxPrice()) + "</max_price>\r\n");
+          xmlout.write("        <min_price>" + pf.format(cd.getMinPrice()) + "</min_price>\r\n");
+          xmlout.write("        <close_price>" + pf.format(cd.getClosePrice()) + "</close_price>\r\n");
           xmlout.write("        <volume>" + cd.getVolume() + "</volume>\r\n");
           xmlout.write("    </data>\r\n");
         }
@@ -182,7 +199,7 @@ public class ChartDataProvider implements IChartDataProvider
     
     Calendar from = Calendar.getInstance();
     Calendar to = Calendar.getInstance();
-    
+    do {
     // Start reading data from the most recent data available +1
     // If no data is avalable, start from one year back.
     if (chartData.size() != 0)
@@ -190,13 +207,19 @@ public class ChartDataProvider implements IChartDataProvider
       IChartData cd = (IChartData)chartData.elementAt(chartData.size() - 1);
       from.setTime(cd.getDate());
       from.add(Calendar.DATE, 1);
+      to.setTime(from.getTime());
+      to.add(Calendar.DATE, 200);
     }
     else
+    {
       from.add(Calendar.YEAR, -1);
+      to.setTime(from.getTime());
+      to.add(Calendar.DATE, 200);
+    }
 
     try {
       URL url = new URL(YahooPlugin.getDefault().getPreferenceStore().getString("yahoo.charts.url") + "?s=" + SymbolMapper.getYahooSymbol(data.getTicker()) + "&a=" + from.get(GregorianCalendar.MONTH) + "&b=" + from.get(GregorianCalendar.DAY_OF_MONTH) + "&c=" + from.get(GregorianCalendar.YEAR) + "&d=" + to.get(GregorianCalendar.MONTH) + "&e=" + to.get(GregorianCalendar.DAY_OF_MONTH) + "&f=" + to.get(GregorianCalendar.YEAR) + "&g=d&q=q&y=0&z=&x=.csv");
-      System.out.println(getClass() + " " + url);
+      System.out.println(getClass() + " " + df.format(from.getTime()) + "->" + df.format(to.getTime()) + " " + url);
 
       HttpURLConnection con = (HttpURLConnection)url.openConnection();
       String proxyHost = (String)System.getProperties().get("http.proxyHost");
@@ -229,18 +252,21 @@ public class ChartDataProvider implements IChartDataProvider
             break;
         }
         Calendar day = new GregorianCalendar(yr, mm, Integer.parseInt(dateItem[0]));
+        double adjustRatio = Double.parseDouble(item[4]) / Double.parseDouble(item[6]);
         
         IChartData cd = new ChartData();
         cd.setDate(day.getTime());
-        cd.setOpenPrice(Double.parseDouble(item[1]));
-        cd.setMaxPrice(Double.parseDouble(item[2]));
-        cd.setMinPrice(Double.parseDouble(item[3]));
-        cd.setClosePrice(Double.parseDouble(item[4]));
-        cd.setVolume(Integer.parseInt(item[5]));
+        cd.setOpenPrice(Double.parseDouble(item[1]) / adjustRatio);
+        cd.setMaxPrice(Double.parseDouble(item[2]) / adjustRatio);
+        cd.setMinPrice(Double.parseDouble(item[3]) / adjustRatio);
+        cd.setClosePrice(Double.parseDouble(item[6]));
+        cd.setVolume((int)(Integer.parseInt(item[5]) * adjustRatio));
         chartData.add(cd);
       }
       in.close();
+      sort(chartData);
     } catch(Exception e) { e.printStackTrace(); };
+    } while(to.before(Calendar.getInstance()));
 
     sort(chartData);
     charts.put(data.getSymbol(), chartData);
