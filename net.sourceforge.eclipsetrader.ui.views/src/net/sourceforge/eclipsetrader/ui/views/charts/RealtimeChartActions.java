@@ -51,6 +51,8 @@ public class RealtimeChartActions implements IViewActionDelegate
       view.setChartType(PriceChart.CANDLE);
     else if (action.getId().equalsIgnoreCase("chart.bar") == true)
       view.setChartType(PriceChart.BAR);
+    else if (action.getId().equalsIgnoreCase("chart.refresh") == true)
+      view.refreshChart();
   }
 
   /* (non-Javadoc)

@@ -84,6 +84,19 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     }
   }
   
+  /* (non-Javadoc)
+   * @see org.eclipse.ui.IWorkbenchPart#dispose()
+   */
+  public void dispose()
+  {
+    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    {
+      IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+      rtp.removeRealtimeChartListener(basicData, this);
+    }
+    super.dispose();
+  }
+
   public void reloadPreferences()
   {
     File folder = new File(Platform.getLocation().toFile(), "rtcharts");
@@ -105,7 +118,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
       rtp.removeRealtimeChartListener(basicData, this);
     }
-    setData(d, d.getTicker() + " - RTChart", "rtchart.");
+    setData(d, d.getTicker() + " - Intraday", "rtchart.");
     if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
@@ -124,6 +137,16 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     if (c == null)
       c = load();
     return c;
+  }
+  
+  public void refreshChart()
+  {
+    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    {
+      IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+      rtp.backfill(basicData);
+      realtimeChartUpdated(rtp);
+    }
   }
   
   /* (non-Javadoc)
