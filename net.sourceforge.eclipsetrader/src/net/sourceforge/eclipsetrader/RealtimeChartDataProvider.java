@@ -21,7 +21,7 @@ package net.sourceforge.eclipsetrader;
  */
 public class RealtimeChartDataProvider extends DataProvider implements IRealtimeChartProvider
 {
-  private DataCollector dataCollector = new DataCollector(this);
+  private DataCollector dataCollector = DataCollector.getInstance();
 
   /**
    * Notify the listeners of a data update event, and collects the data for
@@ -42,7 +42,8 @@ public class RealtimeChartDataProvider extends DataProvider implements IRealtime
   public void fireDataUpdated(IBasicData data)
   {
     super.fireDataUpdated(data);
-    dataCollector.dataUpdated(this, data);
+    if (data instanceof IExtendedData)
+      dataCollector.dataUpdated((IExtendedData)data);
   }
   
   public DataCollector getDataCollector()
@@ -70,7 +71,7 @@ public class RealtimeChartDataProvider extends DataProvider implements IRealtime
    */
   public IChartData[] getHistoryData(IBasicData data)
   {
-    return dataCollector.getData(data.getSymbol());
+    return dataCollector.getHistoryData(data);
   }
   
   /* (non-Javadoc)

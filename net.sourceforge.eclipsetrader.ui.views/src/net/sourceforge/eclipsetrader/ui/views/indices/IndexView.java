@@ -12,6 +12,7 @@ package net.sourceforge.eclipsetrader.ui.views.indices;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -22,19 +23,33 @@ import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.Images;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
+import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 /**
  */
-public class IndexView extends ViewPart implements IPropertyChangeListener, IIndexUpdateListener
+public class IndexView extends ViewPart implements IPropertyChangeListener, IIndexUpdateListener, ISelectionProvider
 {
   private static String EXTENSION_POINT_ID = "net.sourceforge.eclipsetrader.indexProvider";
   private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -49,6 +64,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
   private Image equal = Images.ICON_EQUAL.createImage();
   private Vector widgets = new Vector();
   private HashMap map = new HashMap();
+  private String selectedSymbol = "";
   
   public IndexView()
   {
@@ -97,6 +113,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
           w.setSymbol(symbols[ii]);
           w.setLayoutData(new RowData());
           widgets.add(w);
+          createContextMenu(w);
         }
         ip.setSymbols(symbols);
         ip.addUpdateListener(this);
@@ -115,6 +132,8 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
    */
   public void setFocus()
   {
+    if (widgets.size() != 0)
+      ((Composite)widgets.firstElement()).setFocus();
   }
 
   /* (non-Javadoc)
@@ -148,6 +167,27 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
     super.dispose();
   }
   
+  private void createContextMenu(IndexWidget parent) 
+  {
+    // Create menu manager.
+    MenuManager menuMgr = new MenuManager("#popupMenu", parent.getSymbol()); //$NON-NLS-1$ //$NON-NLS-2$
+    menuMgr.setRemoveAllWhenShown(true);
+    menuMgr.addMenuListener(new IMenuListener() {
+      public void menuAboutToShow(IMenuManager mgr) {
+        System.out.println("aboutToShow: " + mgr.getId());
+        selectedSymbol = mgr.getId();
+        mgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+      }
+    });
+    
+    // Create menu.
+    Menu menu = menuMgr.createContextMenu(parent);
+    parent.setMenu(menu);
+    
+    // Register menu for extension.
+    getSite().registerContextMenu(menuMgr, this);
+  }
+  
   private void restoreSavedData()
   {
     IExtendedData[] data = TraderPlugin.getDataStore().loadIndexData();
@@ -158,11 +198,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
         IndexWidget widget = (IndexWidget)widgets.get(ii);
         if (widget.getSymbol().equalsIgnoreCase(data[i].getSymbol()) == true)
         {
-          Image image = (data[i].getLastPrice() == data[i].getClosePrice()) ? equal : ((data[i].getLastPrice() < data[i].getClosePrice()) ? down : up);
-          double change = data[i].getLastPrice() - data[i].getClosePrice();
-          widget.setValues(data[i].getDescription(), pf.format(data[i].getLastPrice()), pf.format(change) + " (" + pcf.format(change / data[i].getClosePrice() * 100) + ")", tf.format(data[i].getDate()), image);
-          widget.setTimeStamp(System.currentTimeMillis());
-          widget.setPrice(data[i].getLastPrice());
+          widget.setData(data[i]);
           map.put(data[i].getSymbol(), data[i]);
         }
       }
@@ -185,24 +221,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
           {
             IndexWidget widget = (IndexWidget)widgets.get(ii);
             if (widget.getSymbol().equalsIgnoreCase(data[i].getSymbol()) == true)
-            {
-              Image image = null;
-              if (widget.getPrice() == 0)
-                image = (data[i].getLastPrice() == data[i].getClosePrice()) ? equal : ((data[i].getLastPrice() < data[i].getClosePrice()) ? down : up);
-              else if (widget.getPrice() != data[i].getLastPrice())
-                image = (data[i].getLastPrice() == widget.getPrice()) ? equal : ((data[i].getLastPrice() < widget.getPrice()) ? down : up);
-              else if ((System.currentTimeMillis() - widget.getTimeStamp()) >= 60000)
-                image = equal;
-              double change = data[i].getLastPrice() - data[i].getClosePrice();
-              if (image != null)
-                widget.setValues(data[i].getDescription(), pf.format(data[i].getLastPrice()), pf.format(change) + " (" + pcf.format(change / data[i].getClosePrice() * 100) + ")", tf.format(data[i].getDate()), image);
-              else
-                widget.setValues(data[i].getDescription(), pf.format(data[i].getLastPrice()), pf.format(change) + " (" + pcf.format(change / data[i].getClosePrice() * 100) + ")", tf.format(data[i].getDate()));
-              
-              if (widget.getPrice() != data[i].getLastPrice())
-                widget.setTimeStamp(System.currentTimeMillis());
-              widget.setPrice(data[i].getLastPrice());
-            }
+              widget.setData(data[i]);
           }
         }
         parent.setRedraw(true);
@@ -276,6 +295,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
         IndexWidget w = new IndexWidget(parent, SWT.NONE);
         w.setLayoutData(new RowData());
         widgets.add(w);
+        createContextMenu(w);
       }
       
       // Updates the widget symbols and listeners
@@ -289,10 +309,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
           for (int ii = 0; ii < symbols.length; ii++)
           {
             IndexWidget w = (IndexWidget)widgets.get(index);
-            w.setValues("", "", "", "", null);
-            w.setSymbol(symbols[ii]);
-            w.setPrice(0);
-            w.setTimeStamp(0);
+            w.clear();
             index++;
           }
           ip.setSymbols(symbols);
@@ -304,5 +321,57 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
       restoreSavedData();
       parent.layout(true);
     }
+  }
+  
+  public void openIntradayChart()
+  {
+    Enumeration enum = widgets.elements();
+    while(enum.hasMoreElements() == true)
+    {
+      IndexWidget w = (IndexWidget)enum.nextElement();
+      if (w.getSymbol().equalsIgnoreCase(selectedSymbol) == true)
+      {
+        IExtendedData data = (IExtendedData)w.getData();
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        for (int i = 1;; i++)
+        {
+          IViewReference ref = page.findViewReference("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i)); //$NON-NLS-1$
+          if (ref == null)
+          {
+            ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
+            try {
+              IViewPart view = page.showView("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
+            } catch (PartInitException e) {}
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+   */
+  public void addSelectionChangedListener(ISelectionChangedListener listener)
+  {
+  }
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
+   */
+  public ISelection getSelection()
+  {
+    return null;
+  }
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+   */
+  public void removeSelectionChangedListener(ISelectionChangedListener listener)
+  {
+  }
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
+   */
+  public void setSelection(ISelection selection)
+  {
   }
 }

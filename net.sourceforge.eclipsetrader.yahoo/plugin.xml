@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Finance"
-   version="0.9.0"
+   version="0.10.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
@@ -64,6 +64,77 @@
             label="Yahoo Finance"
             class="net.sourceforge.eclipsetrader.yahoo.NewsProvider"
             id="yahoo.newsProvider"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.indexProvider">
+      <provider
+            class="net.sourceforge.eclipsetrader.yahoo.IndexDataProvider"
+            name="Yahoo Finance"
+            id="yahoo.indexProvider">
+         <category name="Europe">
+            <index
+                  label="DJ Euro STOXX 50"
+                  symbol="^STOXX50E"/>
+            <index
+                  label="Bruxelles BFX"
+                  symbol="^BFX"/>
+            <index
+                  label="Frankfurt DAX30"
+                  symbol="^GDAXI"/>
+            <index
+                  label="Paris CAC40"
+                  symbol="^FCHI"/>
+            <index
+                  label="London FTSE100"
+                  symbol="^FTSE"/>
+         </category>
+         <category name="Italy">
+            <index
+                  label="MIBTEL"
+                  symbol="^MIBTEL"/>
+            <index
+                  label="MIB30"
+                  symbol="^MIB30"/>
+            <index
+                  label="MIDEX"
+                  symbol="^MIDEX"/>
+            <index
+                  label="NUMTEL"
+                  symbol="^NUMTEL"/>
+            <index
+                  label="NUMEX"
+                  symbol="^NUMEX"/>
+            <index
+                  label="S/P MIB"
+                  symbol="^SPMIB"/>
+            <index
+                  label="MIBTEL-S"
+                  symbol="^MIBTELS"/>
+            <index
+                  label="MIB30-S"
+                  symbol="^MIB30S"/>
+            <index
+                  label="MIDEX-S"
+                  symbol="^MIDEXS"/>
+            <index
+                  label="NUMTEL-S"
+                  symbol="^NUMTELS"/>
+         </category>
+         <category name="United States">
+            <index
+                  label="DJ USA"
+                  symbol="^DJI"/>
+            <index
+                  label="NASDAQ 100"
+                  symbol="^NDX"/>
+            <index
+                  label="NASDAQ Comp."
+                  symbol="^IXIC"/>
+            <index
+                  label="S/P 500"
+                  symbol="^SPX"/>
+         </category>
+      </provider>
    </extension>
 
 </plugin>

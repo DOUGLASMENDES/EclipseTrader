@@ -10,6 +10,11 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.indices;
 
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+
+import net.sourceforge.eclipsetrader.IExtendedData;
+import net.sourceforge.eclipsetrader.ui.internal.views.Images;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -28,6 +33,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 
 /**
  */
@@ -48,10 +54,30 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
   private Color foreground = new Color(null, 0, 0, 0);
   private Color negativeForeground = new Color(null, 240, 0, 0);
   private Color positiveForeground = new Color(null, 0, 192, 0);
+  private Image up = Images.ICON_UP.createImage();
+  private Image down = Images.ICON_DOWN.createImage();
+  private Image equal = Images.ICON_EQUAL.createImage();
+  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+  private NumberFormat pf = NumberFormat.getInstance();
+  private NumberFormat nf = NumberFormat.getInstance();
+  private NumberFormat pcf = NumberFormat.getInstance();
+  private IExtendedData data;
 
   public IndexWidget(Composite parent, int style)
   {
     super(parent, style);
+
+    pf.setGroupingUsed(true);
+    pf.setMaximumFractionDigits(2);
+    pf.setMinimumFractionDigits(2);
+
+    pcf.setGroupingUsed(true);
+    pcf.setMaximumFractionDigits(2);
+    pcf.setMinimumFractionDigits(2);
+
+    nf.setGroupingUsed(true);
+    nf.setMaximumFractionDigits(0);
+    nf.setMinimumFractionDigits(0);
 
     // Read the preferences
     IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
@@ -81,12 +107,12 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
     row1.setBackground(background);
     
     name = new Label(row1, SWT.NONE);
-    name.setLayoutData(new GridData());
+    name.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     name.setForeground(foreground);
     name.setBackground(background);
     
     time = new Label(row1, SWT.NONE);
-    time.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
+    time.setLayoutData(new GridData());
     time.setForeground(foreground);
     time.setBackground(background);
     time.setAlignment(SWT.RIGHT);
@@ -144,6 +170,9 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
     foreground.dispose();
     negativeForeground.dispose();
     positiveForeground.dispose();
+    up.dispose();
+    down.dispose();
+    equal.dispose();
     
     super.dispose();
   }
@@ -158,33 +187,64 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
     e.gc.drawRectangle(0, 0, rect.width - 1, rect.height - 1);
   }
   
-  /**
-   * Set the widget's values.
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.widgets.Control#setMenu(org.eclipse.swt.widgets.Menu)
    */
-  public void setValues(String name, String value, String change, String time, Image image)
+  public void setMenu(Menu menu)
   {
-    this.name.setText(name);
-    this.value.setText(value);
-    this.change.setText(change);
-    if (change.indexOf("-") != -1)
-      this.change.setForeground(negativeForeground);
-    else
-      this.change.setForeground(positiveForeground);
-    this.icon.setImage(image);
-    this.time.setText(time);
-    this.layout();
+    super.setMenu(menu);
+    row1.setMenu(menu);
+    row2.setMenu(menu);
+    composite.setMenu(menu);
+    name.setMenu(menu);
+    time.setMenu(menu);
+    value.setMenu(menu);
+    change.setMenu(menu);
+    icon.setMenu(menu);
   }
-  public void setValues(String name, String value, String change, String time)
+  
+  public void clear()
   {
-    this.name.setText(name);
-    this.value.setText(value);
-    this.change.setText(change);
-    if (change.indexOf("-") != -1)
-      this.change.setForeground(negativeForeground);
+    name.setText("");
+    value.setText("");
+    change.setText("");
+    time.setText("");
+    icon.setImage(null);
+    price = 0;
+    timeStamp = 0;
+  }
+  
+  public void setData(IExtendedData data)
+  {
+    super.setData(data);
+    this.data = data;
+
+    double chg = data.getLastPrice() - data.getClosePrice();
+    name.setText(data.getDescription());
+    value.setText(pf.format(data.getLastPrice()));
+    change.setText(pf.format(chg) + " (" + pcf.format(chg / data.getClosePrice() * 100) + ")");
+    if (change.getText().indexOf("-") != -1)
+      change.setForeground(negativeForeground);
     else
-      this.change.setForeground(positiveForeground);
-    this.time.setText(time);
-    this.layout();
+      change.setForeground(positiveForeground);
+    time.setText(tf.format(data.getDate()));
+    
+    if (price == 0)
+    {
+      Image image = (data.getLastPrice() == data.getClosePrice()) ? equal : ((data.getLastPrice() < data.getClosePrice()) ? down : up);
+      icon.setImage(image);
+    }
+    else if (price != data.getLastPrice())
+    {
+      Image image = (data.getLastPrice() == price) ? equal : ((data.getLastPrice() < price) ? down : up);
+      icon.setImage(image);
+    }
+    else if ((System.currentTimeMillis() - timeStamp) >= 60000)
+      icon.setImage(equal);
+
+    if (price != data.getLastPrice())
+      timeStamp = System.currentTimeMillis();
+    price = data.getLastPrice();
   }
 
   /* (non-Javadoc)
@@ -192,40 +252,49 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
    */
   public void propertyChange(PropertyChangeEvent event)
   {
-    if (isDisposed() == true)
-      return;
-    if (event.getProperty().startsWith("index.") == true)
+    String id = event.getProperty();
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+
+    if (id.equalsIgnoreCase("index.text_color") == true)
     {
-      background.dispose();
-      foreground.dispose();
-      negativeForeground.dispose();
-      positiveForeground.dispose();
-  
-      IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+      Color old = foreground;
       foreground = new Color(null, PreferenceConverter.getColor(pref, "index.text_color")); //$NON-NLS-1$
-      background = new Color(null, PreferenceConverter.getColor(pref, "index.background")); //$NON-NLS-1$
-      negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "index.negative_value_color")); //$NON-NLS-1$
-      positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "index.positive_value_color")); //$NON-NLS-1$
-  
-      setBackground(background);
       name.setForeground(foreground);
-      name.setBackground(background);
       time.setForeground(foreground);
-      time.setBackground(background);
       value.setForeground(foreground);
+      old.dispose();
+      redraw();
+    }
+    else if (id.equalsIgnoreCase("index.background") == true)
+    {
+      Color old = background;
+      background = new Color(null, PreferenceConverter.getColor(pref, "index.background")); //$NON-NLS-1$
+      setBackground(background);
+      name.setBackground(background);
+      time.setBackground(background);
       value.setBackground(background);
-      change.setForeground(foreground);
       change.setBackground(background);
-      if (change.getText().indexOf("-") != -1)
-        change.setForeground(negativeForeground);
-      else
-        change.setForeground(positiveForeground);
       icon.setBackground(background);
       row1.setBackground(background);
       row2.setBackground(background);
       composite.setBackground(background);
-      update();
-      redraw();
+      old.dispose();
+    }
+    else if (id.equalsIgnoreCase("index.negative_value_color") == true)
+    {
+      Color old = negativeForeground;
+      negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "index.negative_value_color")); //$NON-NLS-1$
+      if (change.getText().indexOf("-") != -1)
+        change.setForeground(negativeForeground);
+      old.dispose();
+    }
+    else if (id.equalsIgnoreCase("index.positive_value_color") == true)
+    {
+      Color old = positiveForeground;
+      positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "index.positive_value_color")); //$NON-NLS-1$
+      if (change.getText().indexOf("-") == -1)
+        change.setForeground(positiveForeground);
+      old.dispose();
     }
   }
   
