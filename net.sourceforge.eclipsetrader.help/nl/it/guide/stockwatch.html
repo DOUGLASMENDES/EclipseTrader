@@ -41,14 +41,59 @@ oppure modificare i dati relativi al titolo selezionato.</p>
 <p align="left">
 <img src="images/stockwatch_dialog.gif"></p>
 
-<p><b>Codice</b><br>
+<table width="85%" border="1">
+  <tr> 
+    <td><strong>Campo</strong></td>
+    <td><strong>Descrizione</strong></td>
+    <td><strong>Predefinito</strong></td>
+  </tr>
+  <tr> 
+    <td>Codice</td>
+    <td>
 Codice ISIN del titolo. Per i mercati esteri è il codice che normalmente viene
 utilizzato per reperire i dati dai fornitori di quotazioni. Spesso è identico al
-campo Ticker.</p>
-
-<p><b>Ticker</b><br>
+campo Ticker.
+    </td>
+    <td>&nbsp;<br></td>
+  </tr>
+  <tr> 
+    <td>Ticker</td>
+    <td>
 Codice alfanumerico del titolo. Per i mercati esteri è il codice che normalmente 
-viene utilizzato per identificare il titolo. Spesso è identico al campo Codice.</p>
+viene utilizzato per identificare il titolo. Spesso è identico al campo Codice.
+    </td>
+    <td>&nbsp;<br></td>
+  </tr>
+  <tr> 
+    <td>Descrizione</td>
+    <td>
+Nome dell'azienda o breve descrizione del titolo. Dalla lista a discesa è possibile
+selezionare uno dei titoli presenti nell'elenco di Eclipse Trader. La selezione
+sovrascriverà automaticamente i dati presenti nei campi Codice, Ticker e Lotto
+Minimo.
+    </td>
+    <td>&nbsp;<br></td>
+  </tr>
+  <tr> 
+    <td>Lotto Minimo</td>
+    <td>
+Numero di pezzi minimo che si intende trattare. Questo valore verrà utilizzato dai
+plugin di trading per impostare le quantità nelle operazioni di acquisto e
+vendita.
+    </td>
+    <td>&nbsp;<br></td>
+  </tr>
+  <tr> 
+    <td nowrap>Quantità Posseduta<br>Prezzo Pagato</td>
+    <td>
+Quantità di azioni presenti nel proprio portafoglio e prezzo medio di acquisto.
+Se utilizzati, il Tabellone Prezzi permette di calcolare automaticamente i 
+guadagni e le perdite relativi alle azioni possedute (vedi colonne Q.tà Posseduta, 
+Pagato, Valore Posseduto e Ricavo).
+    </td>
+    <td>&nbsp;<br></td>
+  </tr>
+</table>
 
 <p>
 <b>Nota:</b> alcuni fornitori di dati del mercato italiano utilizzano il 
@@ -56,24 +101,6 @@ codice ISIN per reperire i dati, mentre altri utilizzano il codice alfanumerico
 (Ticker), quindi è consigliabile riempire entrambi i campi con i dati corretti,
 i plugin di Eclipse Trader utilizzeranno automaticamente il codice più adatto al 
 fornitore.</p>
-
-<p><b>Descrizione</b><br>
-Nome dell'azienda o breve descrizione del titolo. Dalla lista a discesa è possibile
-selezionare uno dei titoli presenti nell'elenco di Eclipse Trader. La selezione
-sovrascriverà automaticamente i dati presenti nei campi Codice, Ticker e Lotto
-Minimo.</p>
-
-<p><b>Lotto Minimo</b><br>
-Numero di pezzi minimo che si intende trattare. Questo valore verrà utilizzato dai
-plugin di trading per impostare le quantità nelle operazioni di acquisto e
-vendita.</p>
-
-<p><b>Quantità Posseduta</b><br>
-<b>Prezzo Pagato</b><br>
-Quantità di azioni presenti nel proprio portafoglio e prezzo medio di acquisto.
-Se utilizzati, il Tabellone Prezzi permette di calcolare automaticamente i 
-guadagni e le perdite relativi alle azioni possedute (vedi colonne Q.tà Posseduta, 
-Pagato, Valore Posseduto e Ricavo).</p>
 
 <p>
 La pagina delle preferenze relative al Tabellone Prezzi consente di personalizzare

@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- default platform documentation stylesheets -->
+<style>@import url("book.css");</style>
+<!-- default schema documentation stylesheets -->
+<style>@import url("schema.css");</style>
+</HEAD>
+<BODY>
+<H1>Inspecting the current configuration</H1>
+
+<p>The About Eclipse Platform dialog (<b>Help &gt; About Eclipse Platform</b>) 
+  shows most of the important information about the features and plug-in configured in 
+  the product. To find out further detailed information about the current configuration:
+</p>
+
+<ol>
+  <li>Open the update configuration manager by clicking <b>Help &gt; Software Updates &gt; 
+  Manage Configuration</b>. This opens the Product Configuration dialog.</li>
+  <li>In the Product Configuration dialog expand the root node (current&nbsp; 
+  configuration).
+    The first tier of items are locations on the local computer where the files
+    for features and plug-ins are stored. For a typical product, all features
+    are installed in a single directory sub-tree. However, a feature that is
+    installed as an extension of another product are usually located in a
+    separate directory sub-tree.</li>
+  <li>Expand the location to see the feature versions installed there.</li>
+  <li>The nesting of the features indicates which child features are included in
+    a given parent feature. Nested features act as a unit.</li>
+  <li>Select a feature version and click <b>Show Properties</b> to open the 
+  Properties dialog which presents more detailed information about the selected feature.</li>
+  <li>Click <b>Show Disabled Features</b> filter on the toolbar of the Product
+    Configuration dialog. Any feature versions that are disabled are now
+    shown (you might not have any). Disabled feature versions are ones that are
+    installed on the local computer but excluded from the current configuration.
+    At most one version of any given feature can be present in a given
+    configuration; usually the ones with the lower version numbers will be in a
+    disabled state.</li>
+  <li>In the Properties dialog of a feature, click <b>Status</b> to find out whether
+    the selected feature is configured exactly as packaged. The status will show
+    when a feature's plug-ins are present at different versions, or disabled due
+    to missing prerequisite plug-ins that are expected to be supplied by some
+    other feature.</li>
+</ol>
+
+<p>
+In this dialog you can revert to a previous install configuration, view the installation history, or
+even add another eclipse product extension. A product extension is a local folder that has a similar
+file layout as the eclipse installation, but with a .eclipseextension marker (instead of .eclipseproduct). 
+If you add a product extension, make sure there are no duplicate features in the extension
+you add.
+</p>
+<p>
+When the install wizard is used to install features in a user selected location, that location
+automatically becomes an eclipse product extension.
+</p>
+
+<br>
+<p><img src="cpy_ibm.gif"></p>
+<p></p>
+
+</p>
+</BODY>
+</HTML>

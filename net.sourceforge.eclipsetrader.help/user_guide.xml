@@ -15,6 +15,16 @@
         </topic>
         <topic label="Level II / Market Depth" href="guide/level2.html"/>
         <topic label="News" href="guide/news.html"/>
+        <topic label="Indices" href="guide/indices.html"/>
+    </topic>
+    <!-- install update topics -->
+    <topic label="Updating with the update manager" href="tasks/tasks-36.htm" >
+        <topic label="Inspecting the current configuration" href="tasks/tasks-33.htm" />
+        <topic label="Restoring a saved configuration" href="tasks/tasks-38.htm" />
+        <topic label="Installing new features with the update manager" href="tasks/tasks-34.htm" />
+        <topic label="Enable, disable, uninstall a feature" href="tasks/tasks-35.htm" />
+        <topic label="Update policy" href="tasks/tasks-37.htm" />
+        <topic label="Automatic update scheduler" href="tasks/tasks-37a.htm" />
     </topic>
     <topic label="Legal Notices" href="guide/notices.html"/>
 </toc>

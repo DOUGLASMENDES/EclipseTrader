@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.help"
    name="Help Plug-in"
-   version="0.9.1"
+   version="0.10.0"
    provider-name="Sourceforge.net">
 
    <runtime>
