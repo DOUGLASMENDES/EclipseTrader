@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -27,13 +29,13 @@ import org.eclipse.swt.widgets.Text;
  */
 public class RSIChart extends ChartPlotter implements IChartConfigurer
 {
-  private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.rsi";
+  private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.rsi"; //$NON-NLS-1$
   private int period = 14;
   private Color gridColor = new Color(null, 192, 192, 192);
   
   public RSIChart()
   {
-    name = "RSI";
+    name = Messages.getString("RSIChart.label"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -49,7 +51,7 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return name + " (" + period + ")";
+    return name + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
   }
   
   /* (non-Javadoc)
@@ -61,8 +63,8 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
     if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      max = 100;
-      min = 0;
+      max = 105;
+      min = -5;
       double pixelRatio = (height) / (max - min);
 
       gc.setForeground(gridColor);
@@ -75,37 +77,24 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
       // Computa i punti
       if (chartData.length > period)
       {
-        // First period averages
-        double gains = 0;
-        double losses = 0;
-        for (int m = 1; m <= period; m++)
-        {
-          if (chartData[m].getClosePrice() >= chartData[m - 1].getClosePrice())
-            gains += chartData[m].getClosePrice() - chartData[m - 1].getClosePrice();
-          else
-            losses += chartData[m - 1].getClosePrice() - chartData[m].getClosePrice();;
-        }
-        double averageGain = gains / period;
-        double averageLoss = losses / period;
-
         // RSI
         double[] value = new double[chartData.length - period];
-        if (averageLoss == 0) value[0] = 100;
-        else value[0] = 100 - (100 / (1 + (averageGain / averageLoss)));
-        for (int i = 1; i < value.length; i++)
+        for (int i = 0; i < value.length; i++)
         {
-          // Current gain/loss
-          double currentGain = 0;
-          double currentLoss = 0;
-          if (chartData[i + period].getClosePrice() >= chartData[i + period - 1].getClosePrice())
-            currentGain = chartData[i + period].getClosePrice() - chartData[i + period - 1].getClosePrice();
-          else
-            currentLoss = chartData[i + period - 1].getClosePrice() - chartData[i + period].getClosePrice();;
-          // Smoothed RS
-          averageGain = ((averageGain * (period - 1)) + currentGain) / period;
-          averageLoss = ((averageLoss * (period - 1)) + currentLoss) / period; 
-          if (averageLoss == 0) value[i] = 100;
-          else value[i] = 100 - (100 / (1 + (averageGain / averageLoss)));
+          double gains = 0;
+          double losses = 0;
+          for (int m = 1; m <= period; m++)
+          {
+            double close1 = chartData[i + m - 1].getClosePrice();
+            double close2 = chartData[i + m].getClosePrice();
+            if (close2 > close1)
+              gains += close2 - close1;
+            else
+              losses += close1 - close2;
+          }
+          double averageGain = gains / period;
+          double averageLoss = losses / period;
+          value[i] = 100 - (100 / (1 + (averageGain / averageLoss)));
         }
 
         gc.setLineStyle(SWT.LINE_SOLID);
@@ -131,7 +120,7 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
    */
   public void setParameter(String name, String value)
   {
-    if (name.equalsIgnoreCase("period") == true)
+    if (name.equalsIgnoreCase("period") == true) //$NON-NLS-1$
       period = Integer.parseInt(value);
     super.setParameter(name, value);
   }
@@ -143,10 +132,10 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
   public Control createContents(Composite parent)
   {
     Label label = new Label(parent, SWT.NONE);
-    label.setText("Selected Periods");
+    label.setText(Messages.getString("RSIChart.periods")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(parent, SWT.BORDER);
-    text.setData("period");
+    text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
     GridData gridData = new GridData();
     gridData.widthHint = 25;
