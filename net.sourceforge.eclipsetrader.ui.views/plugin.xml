@@ -278,9 +278,21 @@
    <extension
          point="net.sourceforge.eclipsetrader.chartPlotter">
       <plotter
+            label="Bande di Bollinger"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.BollingerBandsChart"
+            id="net.sourceforge.eclipsetrader.charts.bollinger"/>
+      <plotter
             label="Media Mobile"
             class="net.sourceforge.eclipsetrader.ui.views.charts.AverageChart"
             id="net.sourceforge.eclipsetrader.charts.average"/>
+      <plotter
+            label="Stochastic Oscillator"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.StochasticChart"
+            id="net.sourceforge.eclipsetrader.charts.stochastic"/>
+      <plotter
+            label="R.S.I."
+            class="net.sourceforge.eclipsetrader.ui.views.charts.RSIChart"
+            id="net.sourceforge.eclipsetrader.charts.rsi"/>
    </extension>
 
 </plugin>
