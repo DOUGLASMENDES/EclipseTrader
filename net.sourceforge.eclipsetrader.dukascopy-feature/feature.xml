@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.sourceforge.eclipsetrader.dukascopy"
+      label="%featureName"
+      version="1.0.0"
+      provider-name="%providerName">
+
+   <install-handler/>
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      Copyright (c) 2004 Eclipse Trader Contributors and Others.
+   </copyright>
+
+   <license>
+      %license
+   </license>
+
+   <url>
+      <update label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
+      <discovery label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+   </requires>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.dukascopy"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+</feature>
