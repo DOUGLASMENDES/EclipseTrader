@@ -30,10 +30,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import sun.misc.BASE64Encoder;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Marco Maccaferri
  */
 public class SnapshotDataProvider extends DataProvider
 {
@@ -41,6 +38,7 @@ public class SnapshotDataProvider extends DataProvider
   private Calendar startTime = Calendar.getInstance();
   private Calendar stopTime = Calendar.getInstance();
   private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+  private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy K:mma");
   private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   
   public SnapshotDataProvider()
@@ -164,7 +162,10 @@ public class SnapshotDataProvider extends DataProvider
             }
             // 2 = Data
             // 3 = Ora
-            pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3]) + ":00"));
+            if (item[3].indexOf("am") != -1 || item[3].indexOf("pm") != -1)
+              pd.setDate(df_us.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3])));
+            else
+              pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3]) + ":00"));
             pd.setTime(tf.format(pd.getDate()));
             // 4 = Variazione
 //            pd.change = stripQuotes(item[4]);
@@ -219,7 +220,10 @@ public class SnapshotDataProvider extends DataProvider
               else
                 _v.add(new ChartData(pd));
             }*/
-          } catch(Exception x) {};
+          } catch(Exception x) {
+            System.out.println(x.getMessage());
+            System.out.println(line);
+          };
         }
       }
       in.close();
