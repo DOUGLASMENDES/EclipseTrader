@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader"
    name="%pluginName"
-   version="0.12.0"
+   version="0.13.0"
    provider-name="%providerName"
    class="net.sourceforge.eclipsetrader.TraderPlugin">
 
@@ -94,6 +94,11 @@
             name="%Preferences.timing"
             category="eclipsetrader"
             id="eclipsetrader.timing"/>
+      <page
+            class="net.sourceforge.eclipsetrader.preferences.ColorsPreferencePage"
+            name="Colors"
+            category="eclipsetrader"
+            id="eclipsetrader.colors"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
@@ -131,27 +136,73 @@
       </actionSet>
       <actionSet
             label="Streaming Control"
-            visible="true"
+            visible="false"
             id="net.sourceforge.eclipsetrader.streaming">
          <action
+               disabledIcon="icons/dtool16/stop.gif"
                toolbarPath="additions"
                label="%Actions.stopStreaming"
+               definitionId="net.sourceforge.eclipsetrader.commands.stop"
                tooltip="%Actions.stopStreaming"
-               icon="icons/stop.gif"
+               icon="icons/etool16/stop.gif"
                class="net.sourceforge.eclipsetrader.internal.StreamingControl"
                style="push"
-               pulldown="false"
                id="net.sourceforge.eclipsetrader.stopStreaming"/>
          <action
+               disabledIcon="icons/dtool16/run.gif"
                toolbarPath="additions"
                label="%Actions.startStreaming"
+               definitionId="net.sourceforge.eclipsetrader.commands.start"
                tooltip="%Actions.startStreaming"
-               icon="icons/run.gif"
+               icon="icons/etool16/run.gif"
                class="net.sourceforge.eclipsetrader.internal.StreamingControl"
                style="push"
-               pulldown="false"
                id="net.sourceforge.eclipsetrader.startStreaming"/>
       </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.TraderPerspective">
+         <actionSet id="net.sourceforge.eclipsetrader.streaming"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.NewsPerspective"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.ChartsPerspective"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.NewsPerspective"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            description="Eclipse Trader Commands"
+            name="Trader"
+            id="net.sourceforge.eclipsetrader.commands"/>
+      <command
+            description="Start Streaming"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Start"
+            id="net.sourceforge.eclipsetrader.commands.start"/>
+      <command
+            description="Stop Streaming"
+            categoryId="net.sourceforge.eclipsetrader.commands"
+            name="Stop"
+            id="net.sourceforge.eclipsetrader.commands.stop"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.start"
+            keySequence="Ctrl+F5"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            commandId="net.sourceforge.eclipsetrader.commands.stop"
+            keySequence="Ctrl+F10"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            platform="carbon"
+            commandId="net.sourceforge.eclipsetrader.commands.start"
+            keySequence="Command+F5"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <keyBinding
+            platform="carbon"
+            commandId="net.sourceforge.eclipsetrader.commands.stop"
+            keySequence="Command+F10"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    </extension>
 
 </plugin>
