@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Finance"
-   version="0.13.0"
+   version="0.13.1"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
@@ -54,6 +54,10 @@
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.yahoo.newsSource">
+      <source
+            label="Yahoo Deutschland"
+            class="net.sourceforge.eclipsetrader.yahoo.NewsSourceGermany"
+            id="yahoo.news.de"/>
       <source
             label="Yahoo Italia"
             class="net.sourceforge.eclipsetrader.yahoo.NewsSourceItaly"
@@ -135,6 +139,28 @@
                   ticker="MIB30-S"
                   label="Mib30-S"
                   symbol="^MIB30S"/>
+         </category>
+         <category name="Norway">
+            <index
+                  ticker="OSEBX"
+                  label="Oslo OSEBX"
+                  symbol="^OSEBX"/>
+            <index
+                  ticker="OSEAX"
+                  label="Oslo All Share OSEAX"
+                  symbol="^OSEAX"/>
+            <index
+                  ticker="OBX"
+                  label="Oslo OBX Index"
+                  symbol="^OBX"/>
+            <index
+                  ticker="OSEFX"
+                  label="Oslo Fund Index"
+                  symbol="^OSEFX"/>
+            <index
+                  ticker="OSESX"
+                  label="Oslo SMA Index"
+                  symbol="^OSESX"/>
          </category>
          <category name="United States">
             <index
