@@ -86,7 +86,7 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
         // Calcola la banda superiore
         double[] value = new double[chartData.length - period];
         for (int i = 0; i < value.length; i++)
-          value[i] = average[i] + deviation[2] * deviations;
+          value[i] = average[i] + deviation[i] * deviations;
         gc.setLineStyle(SWT.LINE_SOLID);
         this.drawLine(value, gc, height, period);
 
@@ -96,7 +96,7 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
         
         // Calcola la banda inferiore
         for (int i = 0; i < value.length; i++)
-          value[i] = average[i] - deviation[2] * deviations;
+          value[i] = average[i] - deviation[i] * deviations;
         gc.setLineStyle(SWT.LINE_SOLID);
         this.drawLine(value, gc, height, period);
       }
