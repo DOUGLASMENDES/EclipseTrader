@@ -217,20 +217,6 @@ public interface IExtendedData extends IBasicData
   public abstract void setQuantity(int quantity);
 
   /**
-   * Method to return the time field.<br>
-   *
-   * @return Returns the time.
-   */
-  public abstract String getTime();
-
-  /**
-   * Method to set the time field.<br>
-   * 
-   * @param time The time to set.
-   */
-  public abstract void setTime(String time);
-
-  /**
    * Method to return the valueChange field.<br>
    *
    * @return Returns the valueChange.
