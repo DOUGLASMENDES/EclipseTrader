@@ -439,168 +439,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     int row;
     for (row = 0; row < data.length; row++)
     {
-      IExtendedData pd = data[row];
-      TableItem item = table.getItem(row);
-      if ((row & 1) == 1)
-        item.setBackground(oddBackground);
-      else
-        item.setBackground(evenBackground);
-      PortfolioTableData tableData = (PortfolioTableData)item.getData();
-      if (tableData == null)
-      {
-        tableData = new PortfolioTableData();
-        item.setData(tableData);
-      }
-      for (int column = 0; column < table.getColumnCount(); column++)
-      {
-        item.setForeground(column, textForeground);
-        int columnData = getColumnDataIndex(column);
-        switch(columnData)
-        {
-          case 0:
-            item.setText(column, pd.getSymbol());
-            break;
-          case 1:
-            item.setText(column, pd.getTicker());
-            break;
-          case 2:
-            item.setText(column, pd.getDescription());
-            break;
-          case 3:
-            tableData.setLastPrice(pd.getLastPrice());
-            if (tableData.getLastPriceVariance() < 0)
-              item.setForeground(column, negativeForeground);
-            else if (tableData.getLastPriceVariance() > 0)
-              item.setForeground(column, positiveForeground);
-            if (pd.getLastPrice() > 200)
-              item.setText(column, nf.format(pd.getLastPrice()));
-            else
-              item.setText(column, pf.format(pd.getLastPrice()));
-            break;
-          case 4:
-            if (pd.getLastPrice() != 0 && pd.getClosePrice() != 0)
-            {
-              double gain = (pd.getLastPrice() - pd.getClosePrice()) / pd.getClosePrice() * 100;
-              pd.setChange(pcf.format(gain) + "%"); //$NON-NLS-1$
-              if (gain < 0)
-                item.setForeground(column, negativeForeground);
-              else if (gain > 0)
-                item.setForeground(column, positiveForeground);
-            }
-            item.setText(column, pd.getChange());
-            break;
-          case 5:
-            tableData.setBidPrice(pd.getBidPrice());
-            if (tableData.getBidPriceVariance() < 0)
-              item.setForeground(column, negativeForeground);
-            else if (tableData.getBidPriceVariance() > 0)
-              item.setForeground(column, positiveForeground);
-            if (pd.getBidPrice() > 200)
-              item.setText(column, nf.format(pd.getBidPrice()));
-            else
-              item.setText(column, pf.format(pd.getBidPrice()));
-            break;
-          case 6:
-            tableData.setBidSize(pd.getBidSize());
-            if (tableData.getBidSizeVariance() < 0)
-              item.setForeground(column, negativeForeground);
-            else if (tableData.getBidSizeVariance() > 0)
-              item.setForeground(column, positiveForeground);
-            item.setText(column, nf.format(pd.getBidSize()));
-            break;
-          case 7:
-            tableData.setAskPrice(pd.getAskPrice());
-            if (tableData.getAskPriceVariance() < 0)
-              item.setForeground(column, negativeForeground);
-            else if (tableData.getAskPriceVariance() > 0)
-              item.setForeground(column, positiveForeground);
-            if (pd.getAskPrice() > 200)
-              item.setText(column, nf.format(pd.getAskPrice()));
-            else
-              item.setText(column, pf.format(pd.getAskPrice()));
-            break;
-          case 8:
-            tableData.setAskSize(pd.getAskSize());
-            if (tableData.getAskSizeVariance() < 0)
-              item.setForeground(column, negativeForeground);
-            else if (tableData.getAskSizeVariance() > 0)
-              item.setForeground(column, positiveForeground);
-            item.setText(column, nf.format(pd.getAskSize()));
-            break;
-          case 9:
-            item.setText(column, nf.format(pd.getVolume()));
-            break;
-          case 10:
-            item.setText(column, nf.format(pd.getMinimumQuantity()));
-            break;
-          case 11:
-            pd.setMarketValue(pd.getMinimumQuantity() * pd.getLastPrice());
-            if (pd.getMarketValue() > 2000)
-              item.setText(column, nf.format(pd.getMarketValue()));
-            else
-              item.setText(column, bpf.format(pd.getMarketValue()));
-            break;
-          case 12:
-            if (pd.getQuantity() == 0)
-              item.setText(column, ""); //$NON-NLS-1$
-            else
-              item.setText(column, nf.format(pd.getQuantity()));
-            break;
-          case 13:
-            if (pd.getPaid() == 0)
-              item.setText(column, ""); //$NON-NLS-1$
-            else
-              item.setText(column, pf.format(pd.getPaid()));
-            break;
-          case 14:
-            pd.setValuePaid(pd.getPaid() * pd.getQuantity());
-            if (pd.getPaid() != 0 && pd.getQuantity() != 0)
-              item.setText(column, bpf.format(pd.getValuePaid()));
-            else
-              item.setText(column, ""); //$NON-NLS-1$
-            break;
-          case 15:
-            if (pd.getPaid() != 0 && pd.getQuantity() != 0)
-            {
-              pd.setGain((pd.getLastPrice() - pd.getPaid()) / pd.getPaid() * 100);
-              if (pd.getGain() < 0)
-                item.setForeground(column, negativeForeground);
-              else if (pd.getGain() > 0)
-                item.setForeground(column, positiveForeground);
-              item.setText(column, bpf.format((pd.getLastPrice() * pd.getQuantity()) - (pd.getPaid() * pd.getQuantity())) + " (" + pcf.format(pd.getGain()) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            else
-              item.setText(column, ""); //$NON-NLS-1$
-            break;
-          case 16:
-            if (pd.getOpenPrice() > 200)
-              item.setText(column, nf.format(pd.getOpenPrice()));
-            else
-              item.setText(column, pf.format(pd.getOpenPrice()));
-            break;
-          case 17:
-            if (pd.getHighPrice() > 200)
-              item.setText(column, nf.format(pd.getHighPrice()));
-            else
-              item.setText(column, pf.format(pd.getHighPrice()));
-            break;
-          case 18:
-            if (pd.getLowPrice() > 200)
-              item.setText(column, nf.format(pd.getLowPrice()));
-            else
-              item.setText(column, pf.format(pd.getLowPrice()));
-            break;
-          case 19:
-            if (pd.getClosePrice() > 200)
-              item.setText(column, nf.format(pd.getClosePrice()));
-            else
-              item.setText(column, pf.format(pd.getClosePrice()));
-            break;
-          case 20:
-            item.setText(column, tf.format(pd.getDate()));
-            break;
-        }
-      }
+      updateRow(row, data[row]);
       totalStock += data[row].getQuantity();
       totalPaid += data[row].getQuantity() * data[row].getPaid();
       totalSell += data[row].getQuantity() * data[row].getLastPrice();
@@ -635,6 +474,178 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       item.setText(columnData, bpf.format(totalPaid));
 
     table.setRedraw(true);
+  }
+  
+  /**
+   * Updates the contents of a single row.
+   * <p>This call is not thread-safe.</p>
+   */
+  private void updateRow(int row, IExtendedData data)
+  {
+    if (table.isDisposed() == true)
+      return;
+
+    TableItem item = table.getItem(row);
+    if ((row & 1) == 1)
+      item.setBackground(oddBackground);
+    else
+      item.setBackground(evenBackground);
+    PortfolioTableData tableData = (PortfolioTableData)item.getData();
+    if (tableData == null)
+    {
+      tableData = new PortfolioTableData();
+      item.setData(tableData);
+    }
+    for (int column = 0; column < table.getColumnCount(); column++)
+    {
+      item.setForeground(column, textForeground);
+      int columnData = getColumnDataIndex(column);
+      switch(columnData)
+      {
+        case 0:
+          item.setText(column, data.getSymbol());
+          break;
+        case 1:
+          item.setText(column, data.getTicker());
+          break;
+        case 2:
+          item.setText(column, data.getDescription());
+          break;
+        case 3:
+          tableData.setLastPrice(data.getLastPrice());
+          if (tableData.getLastPriceVariance() < 0)
+            item.setForeground(column, negativeForeground);
+          else if (tableData.getLastPriceVariance() > 0)
+            item.setForeground(column, positiveForeground);
+          if (data.getLastPrice() > 200)
+            item.setText(column, nf.format(data.getLastPrice()));
+          else
+            item.setText(column, pf.format(data.getLastPrice()));
+          break;
+        case 4:
+          if (data.getLastPrice() != 0 && data.getClosePrice() != 0)
+          {
+            double gain = (data.getLastPrice() - data.getClosePrice()) / data.getClosePrice() * 100;
+            data.setChange(pcf.format(gain) + "%"); //$NON-NLS-1$
+            if (gain < 0)
+              item.setForeground(column, negativeForeground);
+            else if (gain > 0)
+              item.setForeground(column, positiveForeground);
+          }
+          item.setText(column, data.getChange());
+          break;
+        case 5:
+          tableData.setBidPrice(data.getBidPrice());
+          if (tableData.getBidPriceVariance() < 0)
+            item.setForeground(column, negativeForeground);
+          else if (tableData.getBidPriceVariance() > 0)
+            item.setForeground(column, positiveForeground);
+          if (data.getBidPrice() > 200)
+            item.setText(column, nf.format(data.getBidPrice()));
+          else
+            item.setText(column, pf.format(data.getBidPrice()));
+          break;
+        case 6:
+          tableData.setBidSize(data.getBidSize());
+          if (tableData.getBidSizeVariance() < 0)
+            item.setForeground(column, negativeForeground);
+          else if (tableData.getBidSizeVariance() > 0)
+            item.setForeground(column, positiveForeground);
+          item.setText(column, nf.format(data.getBidSize()));
+          break;
+        case 7:
+          tableData.setAskPrice(data.getAskPrice());
+          if (tableData.getAskPriceVariance() < 0)
+            item.setForeground(column, negativeForeground);
+          else if (tableData.getAskPriceVariance() > 0)
+            item.setForeground(column, positiveForeground);
+          if (data.getAskPrice() > 200)
+            item.setText(column, nf.format(data.getAskPrice()));
+          else
+            item.setText(column, pf.format(data.getAskPrice()));
+          break;
+        case 8:
+          tableData.setAskSize(data.getAskSize());
+          if (tableData.getAskSizeVariance() < 0)
+            item.setForeground(column, negativeForeground);
+          else if (tableData.getAskSizeVariance() > 0)
+            item.setForeground(column, positiveForeground);
+          item.setText(column, nf.format(data.getAskSize()));
+          break;
+        case 9:
+          item.setText(column, nf.format(data.getVolume()));
+          break;
+        case 10:
+          item.setText(column, nf.format(data.getMinimumQuantity()));
+          break;
+        case 11:
+          data.setMarketValue(data.getMinimumQuantity() * data.getLastPrice());
+          if (data.getMarketValue() > 2000)
+            item.setText(column, nf.format(data.getMarketValue()));
+          else
+            item.setText(column, bpf.format(data.getMarketValue()));
+          break;
+        case 12:
+          if (data.getQuantity() == 0)
+            item.setText(column, ""); //$NON-NLS-1$
+          else
+            item.setText(column, nf.format(data.getQuantity()));
+          break;
+        case 13:
+          if (data.getPaid() == 0)
+            item.setText(column, ""); //$NON-NLS-1$
+          else
+            item.setText(column, pf.format(data.getPaid()));
+          break;
+        case 14:
+          data.setValuePaid(data.getPaid() * data.getQuantity());
+          if (data.getPaid() != 0 && data.getQuantity() != 0)
+            item.setText(column, bpf.format(data.getValuePaid()));
+          else
+            item.setText(column, ""); //$NON-NLS-1$
+          break;
+        case 15:
+          if (data.getPaid() != 0 && data.getQuantity() != 0)
+          {
+            data.setGain((data.getLastPrice() - data.getPaid()) / data.getPaid() * 100);
+            if (data.getGain() < 0)
+              item.setForeground(column, negativeForeground);
+            else if (data.getGain() > 0)
+              item.setForeground(column, positiveForeground);
+            item.setText(column, bpf.format((data.getLastPrice() * data.getQuantity()) - (data.getPaid() * data.getQuantity())) + " (" + pcf.format(data.getGain()) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
+          }
+          else
+            item.setText(column, ""); //$NON-NLS-1$
+          break;
+        case 16:
+          if (data.getOpenPrice() > 200)
+            item.setText(column, nf.format(data.getOpenPrice()));
+          else
+            item.setText(column, pf.format(data.getOpenPrice()));
+          break;
+        case 17:
+          if (data.getHighPrice() > 200)
+            item.setText(column, nf.format(data.getHighPrice()));
+          else
+            item.setText(column, pf.format(data.getHighPrice()));
+          break;
+        case 18:
+          if (data.getLowPrice() > 200)
+            item.setText(column, nf.format(data.getLowPrice()));
+          else
+            item.setText(column, pf.format(data.getLowPrice()));
+          break;
+        case 19:
+          if (data.getClosePrice() > 200)
+            item.setText(column, nf.format(data.getClosePrice()));
+          else
+            item.setText(column, pf.format(data.getClosePrice()));
+          break;
+        case 20:
+          item.setText(column, tf.format(data.getDate()));
+          break;
+      }
+    }
   }
  
   private void createContextMenu() 
@@ -692,6 +703,18 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
 
   public void dataUpdated(IBasicDataProvider dataProvider, final IBasicData data)
   {
+    if (table.isDisposed() == true)
+      return;
+    table.getDisplay().asyncExec(new Runnable() {
+      public void run()  {
+        IExtendedData[] d = TraderPlugin.getData();
+        for (int i = 0; i < d.length; i++)
+        {
+          if (d[i].getSymbol().equalsIgnoreCase(data.getSymbol()) == true)
+            updateRow(i, d[i]);
+        }
+      }
+    });
   }
 
   private int getColumnDataIndex(int index)
