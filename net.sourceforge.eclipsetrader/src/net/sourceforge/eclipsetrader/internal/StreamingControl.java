@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -51,7 +51,7 @@ public class StreamingControl implements IWorkbenchWindowActionDelegate
    */
   public void run(IAction action)
   {
-    if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.startStreaming") == true)
+    if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.startStreaming") == true) //$NON-NLS-1$
     {
       IBasicDataProvider dataProvider = TraderPlugin.getDataProvider();
       if (dataProvider == null)
@@ -59,13 +59,13 @@ public class StreamingControl implements IWorkbenchWindowActionDelegate
         // remind user to choose Data Provider
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
         MessageBox msg = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-        msg.setMessage("Choose Data Provider\nIt is under Window -> Preferences");
+        msg.setMessage(Messages.getString("StreamingControl.ChooseDataProvider")); //$NON-NLS-1$
         msg.open();
       } 
       else
         TraderPlugin.getDataProvider().startStreaming();
     }
-    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.stopStreaming") == true)
+    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.stopStreaming") == true) //$NON-NLS-1$
     {
       IBasicDataProvider dataProvider = TraderPlugin.getDataProvider();
       if (dataProvider != null)
@@ -78,12 +78,15 @@ public class StreamingControl implements IWorkbenchWindowActionDelegate
    */
   public void selectionChanged(IAction action, ISelection selection)
   {
-    if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.startStreaming") == true)
+    if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.startStreaming") == true) //$NON-NLS-1$
+    {
       actionStart = action;
-    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.stopStreaming") == true)
+      action.setEnabled(!(TraderPlugin.isStreaming()));
+    }
+    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.stopStreaming") == true) //$NON-NLS-1$
     {
       actionStop = action;
-      action.setEnabled(false);
+      action.setEnabled(TraderPlugin.isStreaming());
     }
   }
 
