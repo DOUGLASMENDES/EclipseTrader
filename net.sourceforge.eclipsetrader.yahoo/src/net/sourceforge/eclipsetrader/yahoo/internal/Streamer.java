@@ -88,7 +88,7 @@ public class Streamer
   
   public IExtendedData getData(String symbol)
   {
-    return (IExtendedData)data.get(stripQuotes(symbol));
+    return (IExtendedData)data.get(symbol);
   }
 
   private void update()
@@ -101,7 +101,6 @@ public class Streamer
     if (url.charAt(url.length() - 1) == '+')
       url.deleteCharAt(url.length() - 1);
     url.append("&f=sl1d1t1c1ohgvbap&e=.csv");
-    System.out.println(url);
     
     // Read the last prices
     try {

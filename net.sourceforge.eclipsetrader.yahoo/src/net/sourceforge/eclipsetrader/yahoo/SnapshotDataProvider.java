@@ -20,11 +20,14 @@ import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 /**
  * @author Marco Maccaferri
  */
-public class SnapshotDataProvider extends RealtimeChartDataProvider
+public class SnapshotDataProvider extends RealtimeChartDataProvider implements IPropertyChangeListener
 {
   private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy h:mma");
@@ -47,6 +50,9 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     for (int i = 0; i < data.length; i++)
       streamer.addSymbol(SymbolMapper.getYahooSymbol(data[i].getTicker()));
 
+    // Listen to changes to plugin settings
+    YahooPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+    
     streamer.addListener(this);
     streamer.start();
     super.startStreaming();
@@ -59,6 +65,8 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
   {
     streamer.stop();
     streamer.removeListener(this);
+
+    YahooPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 
     data = TraderPlugin.getData();
     for (int i = 0; i < data.length; i++)
@@ -73,20 +81,51 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     for (int i = 0; i < data.length; i++) 
     {
       IExtendedData ed = streamer.getData(SymbolMapper.getYahooSymbol(data[i].getTicker()));
-      data[i].setLastPrice(ed.getLastPrice());
-      data[i].setBidPrice(ed.getBidPrice());
-      data[i].setBidSize(ed.getBidSize());
-      data[i].setAskPrice(ed.getAskPrice());
-      data[i].setAskSize(ed.getAskSize());
-      data[i].setOpenPrice(ed.getOpenPrice());
-      data[i].setHighPrice(ed.getHighPrice());
-      data[i].setLowPrice(ed.getLowPrice());
-      data[i].setClosePrice(ed.getClosePrice());
-      data[i].setVolume(ed.getVolume());
-      data[i].setDate(ed.getDate());
+      if (ed != null)
+      {
+        data[i].setLastPrice(ed.getLastPrice());
+        data[i].setBidPrice(ed.getBidPrice());
+        data[i].setBidSize(ed.getBidSize());
+        data[i].setAskPrice(ed.getAskPrice());
+        data[i].setAskSize(ed.getAskSize());
+        data[i].setOpenPrice(ed.getOpenPrice());
+        data[i].setHighPrice(ed.getHighPrice());
+        data[i].setLowPrice(ed.getLowPrice());
+        data[i].setClosePrice(ed.getClosePrice());
+        data[i].setVolume(ed.getVolume());
+        data[i].setDate(ed.getDate());
+      }
     }
     
     // Signal the update to all listeners.
     fireDataUpdated();
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+   */
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    String property = event.getProperty();
+
+    // Check if the one of the mapping preferences are changed
+    if (property.equalsIgnoreCase("yahoo.mapping") == true || property.equalsIgnoreCase("yahoo.suffix") == true)
+    {
+      // Remove the old-mapping symbols from the streamer 
+      IExtendedData[] data = TraderPlugin.getData();
+      for (int i = 0; i < data.length; i++)
+        streamer.removeSymbol(SymbolMapper.getYahooSymbol(data[i].getTicker()));
+
+      // Sets the new mapping preferences
+      IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
+      if (property.equalsIgnoreCase("yahoo.mapping") == true)
+        SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
+      else if (property.equalsIgnoreCase("yahoo.suffix") == true)
+        SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
+
+      // Add the new-mapped symbols to the streamer
+      for (int i = 0; i < data.length; i++)
+        streamer.addSymbol(SymbolMapper.getYahooSymbol(data[i].getTicker()));
+    }
   }
 }

@@ -121,12 +121,5 @@ public class YahooPlugin extends AbstractUIPlugin implements IPropertyChangeList
    */
   public void propertyChange(PropertyChangeEvent event)
   {
-    IPreferenceStore ps = getPreferenceStore();
-    String property = event.getProperty();
-
-    if (property.equalsIgnoreCase("yahoo.mapping") == true)
-      SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
-    else if (property.equalsIgnoreCase("yahoo.suffix") == true)
-      SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
   }
 }

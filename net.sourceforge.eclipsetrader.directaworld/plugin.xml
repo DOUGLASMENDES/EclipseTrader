@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.directaworld"
    name="DirectaWorld Italy"
-   version="0.9.0"
+   version="0.10.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin">
 

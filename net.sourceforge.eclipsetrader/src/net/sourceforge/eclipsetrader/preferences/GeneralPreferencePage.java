@@ -43,6 +43,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
   private FieldEditor[] editor;
   private Combo dataProvider;
   private Combo bookDataProvider;
+  private Combo backfillProvider;
   private Combo chartProvider;
   private Combo newsProvider;
   
@@ -82,6 +83,14 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     addPluginList("net.sourceforge.eclipsetrader.bookDataProvider", combo); //$NON-NLS-1$
     combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     bookDataProvider = combo;
+
+    label = new Label(entryTable, SWT.NONE);
+    label.setText("Backfill");
+    label.setLayoutData(new GridData());
+    combo = new Combo(entryTable, SWT.BORDER|SWT.DROP_DOWN|SWT.READ_ONLY);
+    addPluginList("net.sourceforge.eclipsetrader.backfillDataProvider", combo); //$NON-NLS-1$
+    combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
+    backfillProvider = combo;
 
     label = new Label(entryTable, SWT.NONE);
     label.setText(Messages.getString("GeneralPreferencePage.charts")); //$NON-NLS-1$
@@ -128,6 +137,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     IPreferenceStore ps = getPreferenceStore(); 
     ps.setValue("net.sourceforge.eclipsetrader.dataProvider", getComboValue(dataProvider)); //$NON-NLS-1$
     ps.setValue("net.sourceforge.eclipsetrader.bookDataProvider", getComboValue(bookDataProvider)); //$NON-NLS-1$
+    ps.setValue("net.sourceforge.eclipsetrader.backfillDataProvider", getComboValue(backfillProvider)); //$NON-NLS-1$
     ps.setValue("net.sourceforge.eclipsetrader.chartDataProvider", getComboValue(chartProvider)); //$NON-NLS-1$
     ps.setValue("net.sourceforge.eclipsetrader.newsProvider", getComboValue(newsProvider)); //$NON-NLS-1$
 

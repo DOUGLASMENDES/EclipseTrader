@@ -27,6 +27,7 @@
    <extension-point id="newsProvider" name="News Provider" schema="schema/newsProvider.exsd"/>
    <extension-point id="bookDataProvider" name="Book Data Provider" schema="schema/bookDataProvider.exsd"/>
    <extension-point id="indexProvider" name="Index Provider" schema="schema/indexProvider.exsd"/>
+   <extension-point id="backfillDataProvider" name="Backfill Data Provider" schema="schema/backfillDataProvider.exsd"/>
    <extension
          id="Product"
          point="org.eclipse.core.runtime.products">

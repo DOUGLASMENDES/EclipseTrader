@@ -12,8 +12,6 @@ package net.sourceforge.eclipsetrader.yahoo;
 
 import java.util.Vector;
 
-import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
-
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.PreferencePage;
@@ -81,7 +79,6 @@ public class MappingPreferencePage extends PreferencePage implements IWorkbenchP
   {
     for (int i = 0; i < editor.length; i++)
       editor[i].store();
-    SymbolMapper.setDefaultSuffix(getPreferenceStore().getString("yahoo.suffix"));
 
     return super.performOk();
   }

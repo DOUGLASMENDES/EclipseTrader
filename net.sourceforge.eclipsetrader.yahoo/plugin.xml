@@ -122,17 +122,59 @@
          </category>
          <category name="United States">
             <index
-                  label="DJ USA"
+                  label="DJ Ind."
                   symbol="^DJI"/>
             <index
-                  label="NASDAQ 100"
-                  symbol="^NDX"/>
+                  label="DJ Trans."
+                  symbol="^DJT"/>
             <index
-                  label="NASDAQ Comp."
+                  label="DJ Util."
+                  symbol="^DJU"/>
+            <index
+                  label="DJ Comp."
+                  symbol="^DJA"/>
+            <index
+                  label="Nasdaq Comp."
                   symbol="^IXIC"/>
             <index
+                  label="Nasdaq 100"
+                  symbol="^NDX"/>
+            <index
+                  label="Nasdaq Fin."
+                  symbol="^IXFN"/>
+            <index
+                  label="Nasdaq Fin.100"
+                  symbol="^IXF"/>
+            <index
+                  label="Nasdaq Ind."
+                  symbol="^IXID"/>
+            <index
+                  label="Nasdaq Ins."
+                  symbol="^IXIS"/>
+            <index
+                  label="Nasdaq Computers"
+                  symbol="^IXK"/>
+            <index
+                  label="Nasdaq Trans."
+                  symbol="^IXTR"/>
+            <index
+                  label="Nasdaq Tel."
+                  symbol="^IXUT"/>
+            <index
+                  label="S/P 100"
+                  symbol="^OEX"/>
+            <index
                   label="S/P 500"
-                  symbol="^SPX"/>
+                  symbol="^GSPC"/>
+            <index
+                  label="S/P MidCap"
+                  symbol="^MID"/>
+            <index
+                  label="S/P SmallCap"
+                  symbol="^SML"/>
+            <index
+                  label="S/P SuperComp"
+                  symbol="^SPSUPX"/>
          </category>
       </provider>
    </extension>

@@ -74,7 +74,14 @@ public class IndexDataProvider implements IIndexDataProvider, IPropertyChangeLis
    */
   public void setSymbols(String[] symbols)
   {
+    if (TraderPlugin.isStreaming() == true)
+      streamer.removeListener(this);
+    
+    for (int i = 0; i < this.symbols.length; i++)
+      streamer.removeSymbol(this.symbols[i]);
+    
     this.symbols = symbols;
+    
     data = new IExtendedData[symbols.length];
     for (int i = 0; i < symbols.length; i++)
     {
@@ -82,6 +89,9 @@ public class IndexDataProvider implements IIndexDataProvider, IPropertyChangeLis
       setDescription(symbols[i], data[i]);
       streamer.addSymbol(symbols[i]);
     }
+
+    if (TraderPlugin.isStreaming() == true)
+      streamer.addListener(this);
   }
   
   private void setDescription(String symbol, IExtendedData data)
@@ -140,22 +150,22 @@ public class IndexDataProvider implements IIndexDataProvider, IPropertyChangeLis
   {
     for (int i = 0; i < data.length; i++) 
     {
-      IExtendedData ed = streamer.getData(symbols[i]);
-      data[i].setSymbol(ed.getSymbol());
-      data[i].setTicker(ed.getTicker());
-      data[i].setDescription(ed.getDescription());
-      data[i].setLastPrice(ed.getLastPrice());
-      data[i].setBidPrice(ed.getBidPrice());
-      data[i].setBidSize(ed.getBidSize());
-      data[i].setAskPrice(ed.getAskPrice());
-      data[i].setAskSize(ed.getAskSize());
-      data[i].setOpenPrice(ed.getOpenPrice());
-      data[i].setHighPrice(ed.getHighPrice());
-      data[i].setLowPrice(ed.getLowPrice());
-      data[i].setClosePrice(ed.getClosePrice());
-      data[i].setVolume(ed.getVolume());
-      data[i].setDate(ed.getDate());
-      dataCollector.dataUpdated(data[i]);
+      IExtendedData ed = streamer.getData(data[i].getSymbol());
+      if (ed != null)
+      {
+        data[i].setLastPrice(ed.getLastPrice());
+        data[i].setBidPrice(ed.getBidPrice());
+        data[i].setBidSize(ed.getBidSize());
+        data[i].setAskPrice(ed.getAskPrice());
+        data[i].setAskSize(ed.getAskSize());
+        data[i].setOpenPrice(ed.getOpenPrice());
+        data[i].setHighPrice(ed.getHighPrice());
+        data[i].setLowPrice(ed.getLowPrice());
+        data[i].setClosePrice(ed.getClosePrice());
+        data[i].setVolume(ed.getVolume());
+        data[i].setDate(ed.getDate());
+        dataCollector.dataUpdated(data[i]);
+      }
     }
     
     // Notify all listeners
