@@ -11,10 +11,8 @@
 package net.sourceforge.eclipsetrader;
 
 /**
- * Interface for the book data.
+ * Interface for the Level II / Market depth / Book data.
  * <p></p>
- * 
- * @author Marco Maccaferri - 17/08/2004
  */
 public interface IBookData
 {
@@ -38,4 +36,10 @@ public interface IBookData
   public double getPrice();
   public void setPrice(double price);
   public double getPriceVariance();
+  
+  /**
+   * Return the market maker id
+   */
+  public String getMarketMaker();
+  public void setMarketMaker(String marketMaker);
 }

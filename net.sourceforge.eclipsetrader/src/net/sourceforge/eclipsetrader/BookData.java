@@ -11,10 +11,8 @@
 package net.sourceforge.eclipsetrader;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Default implementation of IBookData interface.
+ * <p></p>
  */
 public class BookData implements IBookData
 {
@@ -27,6 +25,7 @@ public class BookData implements IBookData
   private long numberTimestamp = 0;
   private long quantityTimestamp = 0;
   private long priceTimestamp = 0;
+  private String marketMaker = "";
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IBookData#getNumber()
@@ -109,4 +108,19 @@ public class BookData implements IBookData
     this.price = price;
   }
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IBookData#getMarketMaker()
+   */
+  public String getMarketMaker()
+  {
+    return marketMaker;
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IBookData#setMarketMaker(String)
+   */
+  public void setMarketMaker(String marketMaker)
+  {
+    this.marketMaker = marketMaker;
+  }
 }
