@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Finance"
-   version="0.12.0"
+   version="0.13.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
@@ -101,44 +101,40 @@
          <category name="Italy">
             <index
                   ticker="MIBTEL"
-                  label="MIBTEL"
+                  label="Mibtel"
                   symbol="^MIBTEL"/>
             <index
                   ticker="MIB30"
-                  label="MIB30"
+                  label="Mib30"
                   symbol="^MIB30"/>
             <index
                   ticker="MIDEX"
-                  label="MIDEX"
+                  label="Midex"
                   symbol="^MIDEX"/>
             <index
-                  ticker="NUMTEL"
-                  label="NUMTEL"
-                  symbol="^NUMTEL"/>
+                  ticker="TSTAR"
+                  label="TechStar"
+                  symbol="^TSTAR"/>
             <index
-                  ticker="NUMEX"
-                  label="NUMEX"
-                  symbol="^NUMEX"/>
+                  ticker="STAR"
+                  label="Star"
+                  symbol="^STAR"/>
             <index
                   ticker="SPMIB"
-                  label="S/P MIB"
+                  label="S/P Mib"
                   symbol="^SPMIB"/>
             <index
+                  ticker="ALLST"
+                  label="All Star"
+                  symbol="^ALLST"/>
+            <index
                   ticker="MIBTEL-S"
-                  label="MIBTEL-S"
+                  label="Mibtel-S"
                   symbol="^MIBTELS"/>
             <index
                   ticker="MIB30-S"
-                  label="MIB30-S"
+                  label="Mib30-S"
                   symbol="^MIB30S"/>
-            <index
-                  ticker="MIDEX-S"
-                  label="MIDEX-S"
-                  symbol="^MIDEXS"/>
-            <index
-                  ticker="NUMTEL-S"
-                  label="NUMTEL-S"
-                  symbol="^NUMTELS"/>
          </category>
          <category name="United States">
             <index
