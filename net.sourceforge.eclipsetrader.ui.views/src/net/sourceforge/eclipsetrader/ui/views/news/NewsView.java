@@ -42,6 +42,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -50,7 +53,6 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -62,11 +64,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class NewsView extends ViewPart implements IDataUpdateListener, ControlListener 
+public class NewsView extends ViewPart implements IDataUpdateListener, ControlListener, IPropertyChangeListener 
 {
   private Table table;
-  private Color background = new Color(Display.getCurrent(), 255, 255, 224);
-  private Color foreground = new Color(Display.getCurrent(), 0, 0, 0);
+  private Color background = new Color(null, 255, 255, 224);
+  private Color foreground = new Color(null, 0, 0, 0);
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm"); //$NON-NLS-1$
   private Timer timer;
   private INewsData[] data;
@@ -81,14 +83,18 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
    */
   public void createPartControl(Composite parent)
   {
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    pref.addPropertyChangeListener(this);
+
+    foreground = new Color(null, PreferenceConverter.getColor(pref, "news.color")); //$NON-NLS-1$
+    background = new Color(null, PreferenceConverter.getColor(pref, "news.background")); //$NON-NLS-1$
+
     table = new Table(parent, SWT.SINGLE|SWT.FULL_SELECTION);
     GridData gd = new GridData(GridData.FILL_HORIZONTAL);
     table.setLayoutData(gd);
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
     table.setBackground(background);
-
-    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
 
     // Columns width
     String[] w = pref.getString("news.columnWidth").split(",");
@@ -209,6 +215,7 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
       for (int row = 0; row < data.length; row++)
       {
         TableItem item = table.getItem(row);
+        item.setForeground(foreground);
         item.setText(0, df.format(data[row].getDate()));
         item.setText(1, data[row].getTitle());
         item.setText(2, data[row].getSource());
@@ -227,7 +234,9 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
     String value = "";
     for (int i = 0; i < columnWidth.length; i++)
       value += String.valueOf(columnWidth[i]) + ",";
+    
     IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    pref.removePropertyChangeListener(this);
     pref.setValue("news.columnWidth", value);
 
     super.dispose();
@@ -377,6 +386,29 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
           break;
         }
       }
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+   */
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    String property = event.getProperty();
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    if (property.equalsIgnoreCase("news.color") == true)
+    {
+      foreground = new Color(null, PreferenceConverter.getColor(pref, "news.color")); //$NON-NLS-1$
+      for (int row = 0; row < data.length; row++)
+      {
+        TableItem item = table.getItem(row);
+        item.setForeground(foreground);
+      }
+    }
+    if (property.equalsIgnoreCase("news.background") == true)
+    {
+      background = new Color(null, PreferenceConverter.getColor(pref, "news.background")); //$NON-NLS-1$
+      table.setBackground(background);
     }
   }
 }

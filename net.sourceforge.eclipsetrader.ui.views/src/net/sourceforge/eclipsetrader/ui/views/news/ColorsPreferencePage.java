@@ -41,8 +41,8 @@ public class ColorsPreferencePage extends PreferencePage implements IWorkbenchPr
   /*
    * @see PreferencePage#createContents(Composite)
    */
-  protected Control createContents(Composite parent) {
-
+  protected Control createContents(Composite parent) 
+  {
     Composite entryTable = new Composite(parent, SWT.NULL);
 
     // Create a data that takes up the extra space in the dialog .
@@ -57,7 +57,7 @@ public class ColorsPreferencePage extends PreferencePage implements IWorkbenchPr
     colorComposite.setLayout(new GridLayout());
     colorComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     colorEditor[0] = new ColorFieldEditor("news.color", "Text Color", colorComposite);        
-    colorEditor[1] = new ColorFieldEditor("news.background", "Even Row Background", colorComposite);        
+    colorEditor[1] = new ColorFieldEditor("news.background", "Background Color", colorComposite);        
     for(int i = 0; i < colorEditor.length; i++)
     {
       colorEditor[i].setPreferencePage(this);
