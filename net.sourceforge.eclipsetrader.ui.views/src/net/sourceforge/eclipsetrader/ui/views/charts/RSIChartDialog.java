@@ -22,14 +22,14 @@ import org.eclipse.swt.widgets.Text;
 /**
  * @author Marco
  */
-public class RSIChartDialog extends ChartParametersDialog implements ModifyListener
+public class RSIChartDialog implements ModifyListener
 {
   private String period = "30";
   private Text text2;
   
   public RSIChartDialog()
   {
-    name = "R.S.I.";
+    String name = "R.S.I.";
   }
   
   /* (non-Javadoc)

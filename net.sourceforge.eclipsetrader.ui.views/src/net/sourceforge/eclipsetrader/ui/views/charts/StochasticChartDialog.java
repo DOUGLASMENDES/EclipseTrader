@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * @author Marco
  */
-public class StochasticChartDialog extends ChartParametersDialog implements ModifyListener
+public class StochasticChartDialog implements ModifyListener
 {
   private String period = "14";
   private String subperiod = "3";
@@ -31,7 +31,7 @@ public class StochasticChartDialog extends ChartParametersDialog implements Modi
   
   public StochasticChartDialog()
   {
-    name = "Stochastic Oscillator";
+    String name = "Stochastic Oscillator";
   }
   
   /* (non-Javadoc)

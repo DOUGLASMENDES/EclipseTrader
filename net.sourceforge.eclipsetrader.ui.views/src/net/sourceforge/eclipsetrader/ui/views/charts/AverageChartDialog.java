@@ -11,8 +11,6 @@
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -22,14 +20,14 @@ import org.eclipse.swt.widgets.Text;
 /**
  * @author Marco
  */
-public class AverageChartDialog extends ChartParametersDialog implements ModifyListener
+public class AverageChartDialog
 {
   private String period = "30";
-  private Text text2;
+  private Text selectedPeriods;
   
   public AverageChartDialog()
   {
-    name = "Media Mobile";
+    String name = "Moving Average";
   }
   
   /* (non-Javadoc)
@@ -38,23 +36,22 @@ public class AverageChartDialog extends ChartParametersDialog implements ModifyL
   public void createPartControl(Composite parent)
   {
     Label label = new Label(parent, SWT.NONE);
-    label.setText("Periodi Selezionati");
+    label.setText("Selected Periods");
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
-    text2 = new Text(parent, SWT.BORDER);
-    text2.addModifyListener(this);
-    text2.setText(period);
+    selectedPeriods = new Text(parent, SWT.BORDER);
+    selectedPeriods.setText(period);
     GridData gridData = new GridData();
     gridData.widthHint = 25;
-    text2.setLayoutData(gridData);
+    selectedPeriods.setLayoutData(gridData);
   }
   
   /* (non-Javadoc)
-   * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
+   * @see org.eclipse.jface.dialogs.Dialog#okPressed()
    */
-  public void modifyText(ModifyEvent e)
+  protected void okPressed()
   {
-    if (e.getSource() == text2)
-      period = text2.getText();
+    period = selectedPeriods.getText();
+//    super.okPressed();
   }
 
   /**

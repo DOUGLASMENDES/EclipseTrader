@@ -211,12 +211,18 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
     canvas.addMouseListener(this);
     chart.addElement(canvas);
     canvas.addPainter(new PriceChart());
-    canvas.addPainter(new AverageChart(7, new Color(null, 0, 255, 0)));
-    canvas.addPainter(new AverageChart(21, new Color(null, 255, 0, 0)));
+    IChartPlotter chartPlotter = new AverageChart();
+    chartPlotter.setParameter("period", "7");
+    chartPlotter.setParameter("color", "0,255,0");
+    canvas.addPainter(chartPlotter);
+    chartPlotter = new AverageChart();
+    chartPlotter.setParameter("period", "21");
+    chartPlotter.setParameter("color", "255,0,0");
+    canvas.addPainter(chartPlotter);
 
     canvas = new ChartCanvas(form);
     chart.addElement(canvas);
-    canvas.addPainter(new RSIChart(10));
+    canvas.addPainter(new RSIChart());
     
     canvas = new ChartCanvas(form);
     chart.addElement(canvas);
@@ -525,7 +531,7 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
   {
     this.width = width;
     for (int i = 0; i < chart.size(); i++)
-      ((ChartCanvas)chart.elementAt(i)).setWidth(width);
+      ((ChartCanvas)chart.elementAt(i)).setColumnWidth(width);
   }
   
   private void setMargin(int margin)

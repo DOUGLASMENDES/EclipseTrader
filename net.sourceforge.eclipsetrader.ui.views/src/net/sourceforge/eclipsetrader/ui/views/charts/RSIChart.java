@@ -10,53 +10,60 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import java.util.HashMap;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Relative Strength Index
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
-public class RSIChart extends ChartPainter implements IChartPlotter
+public class RSIChart extends ChartPlotter implements IChartConfigurer
 {
+  private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.rsi";
   private int period = 14;
-  private HashMap params = new HashMap();
+  private Color gridColor = new Color(null, 192, 192, 192);
   
   public RSIChart()
   {
     name = "RSI";
   }
-  
-  public RSIChart(int period)
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
+   */
+  public String getId()
   {
-    this.period = period;
+    return PLUGIN_ID;
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
+   */
+  public String getDescription()
+  {
+    return name + " (" + period + ")";
   }
   
-  public RSIChart(int period, Color color)
-  {
-    this.period = period;
-    this.lineColor = color;
-  }
-  
-  public void setPeriod(int period)
-  {
-    this.period = period;
-  }
-  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
   public void paintChart(GC gc, int width, int height)
   {
     // Grafico
-    if (data != null && max > min && visible == true)
+    if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
       max = 105;
       min = -5;
-      pixelRatio = (height) / (max - min);
+      double pixelRatio = (height) / (max - min);
 
       gc.setForeground(gridColor);
       gc.setLineStyle(SWT.LINE_DOT);
@@ -66,23 +73,23 @@ public class RSIChart extends ChartPainter implements IChartPlotter
       gc.drawLine(0, y1, width, y1);
 
       // Computa i punti
-      if (data.length > period)
+      if (chartData.length > period)
       {
         // First period averages
         double gains = 0;
         double losses = 0;
         for (int m = 1; m <= period; m++)
         {
-          if (data[m].getClosePrice() >= data[m - 1].getClosePrice())
-            gains += data[m].getClosePrice() - data[m - 1].getClosePrice();
+          if (chartData[m].getClosePrice() >= chartData[m - 1].getClosePrice())
+            gains += chartData[m].getClosePrice() - chartData[m - 1].getClosePrice();
           else
-            losses += data[m - 1].getClosePrice() - data[m].getClosePrice();;
+            losses += chartData[m - 1].getClosePrice() - chartData[m].getClosePrice();;
         }
         double averageGain = gains / period;
         double averageLoss = losses / period;
 
         // RSI
-        double[] value = new double[data.length - period];
+        double[] value = new double[chartData.length - period];
         if (averageLoss == 0) value[0] = 100;
         else value[0] = 100 - (100 / (1 + (averageGain / averageLoss)));
         for (int i = 1; i < value.length; i++)
@@ -90,10 +97,10 @@ public class RSIChart extends ChartPainter implements IChartPlotter
           // Current gain/loss
           double currentGain = 0;
           double currentLoss = 0;
-          if (data[i + period].getClosePrice() >= data[i + period - 1].getClosePrice())
-            currentGain = data[i + period].getClosePrice() - data[i + period - 1].getClosePrice();
+          if (chartData[i + period].getClosePrice() >= chartData[i + period - 1].getClosePrice())
+            currentGain = chartData[i + period].getClosePrice() - chartData[i + period - 1].getClosePrice();
           else
-            currentLoss = data[i + period - 1].getClosePrice() - data[i + period].getClosePrice();;
+            currentLoss = chartData[i + period - 1].getClosePrice() - chartData[i + period].getClosePrice();;
           // Smoothed RS
           averageGain = ((averageGain * (period - 1)) + currentGain) / period;
           averageLoss = ((averageLoss * (period - 1)) + currentLoss) / period; 
@@ -112,66 +119,39 @@ public class RSIChart extends ChartPainter implements IChartPlotter
     gc.setForeground(lineColor);
   }
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintScale(GC gc, int width, int height)
+   */
   public void paintScale(GC gc, int width, int height)
   {
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
-   */
-  public String getId()
-  {
-    return "net.sourceforge.eclipsetrader.charts.rsi";
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
-   */
-  public String getDescription()
-  {
-    return name + " (" + period + ")";
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParametersDialog()
-   */
-  public ChartParametersDialog showParametersDialog()
-  {
-    RSIChartDialog dlg = new RSIChartDialog();
-    dlg.setName(name);
-    dlg.setPeriod(period);
-    dlg.setColor(lineColor.getRGB());
-    if (dlg.open() == AverageChartDialog.OK)
-    {
-      name = dlg.getName();
-      period = dlg.getPeriod();
-      params.put("period", String.valueOf(period));
-      lineColor = new Color(null, dlg.getColor());
-      params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
-    }
-    return dlg;
-  }
-  
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters(String name, String value)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameter(String name, String value)
    */
   public void setParameter(String name, String value)
   {
-    params.put(name, value);
     if (name.equalsIgnoreCase("period") == true)
       period = Integer.parseInt(value);
-    if (name.equalsIgnoreCase("color") == true)
-    {
-      String[] values = value.split(",");
-      lineColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
-    }
+    super.setParameter(name, value);
   }
 
+  
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParameters()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#createContents(org.eclipse.swt.widgets.Composite)
    */
-  public HashMap getParameters()
+  public Control createContents(Composite parent)
   {
-    return params;
+    Label label = new Label(parent, SWT.NONE);
+    label.setText("Selected Periods");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    Text text = new Text(parent, SWT.BORDER);
+    text.setData("period");
+    text.setText(String.valueOf(period));
+    GridData gridData = new GridData();
+    gridData.widthHint = 25;
+    text.setLayoutData(gridData);
+
+    return parent;
   }
 }

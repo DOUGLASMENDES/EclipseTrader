@@ -39,8 +39,9 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
 /**
- * Define a canvas over which a ChartPainter object can draw.
+ * Define a canvas over which a IChartPlotter object can draw.
  * <p></p>
+ * 
  * @since 1.0
  */
 public class ChartCanvas implements ControlListener, PaintListener, ISelectionProvider
@@ -51,10 +52,10 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
   private Canvas scale;
   private Color chartBackground = new Color(Display.getCurrent(), 255, 255, 240);
   private Color scaleBackground = new Color(Display.getCurrent(), 255, 255, 240);
-  private int width = 5;
+  private int columnWidth = 5;
   private int margin = 2;
   private int scaleWidth = 60;
-  private Vector painter = new Vector();
+  private Vector painters = new Vector();
   private IChartData[] data;
 
   /**
@@ -63,6 +64,8 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
    */
   public ChartCanvas(Composite parent)
   {
+    // Main container with a GridLayout of 2 columns to accomodate for the chart
+    // and the scale
     container = new Composite(parent, SWT.NONE);
     GridLayout gridLayout = new GridLayout(2, false);
     gridLayout.marginWidth = 0;
@@ -71,14 +74,17 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     gridLayout.verticalSpacing = 0;
     container.setLayout(gridLayout);
 
+    // Container of the chart, needed for the horizontal scroll
     chartContainer = new Composite(container, SWT.NONE);
     chartContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
     chartContainer.addControlListener(this);
     
+    // Chart canvas
     chart = new Canvas(chartContainer, SWT.NONE);
     chart.setBackground(chartBackground);
     chart.addPaintListener(this);
     
+    // Scale canvas
     scale = new Canvas(container, SWT.NONE);
     scale.setBackground(scaleBackground);
     GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL|GridData.VERTICAL_ALIGN_FILL);
@@ -93,7 +99,7 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     chartContainer.removeControlListener(this);
     chart.removePaintListener(this);
     
-    painter.removeAllElements();
+    painters.removeAllElements();
 
     scale.dispose();
     chart.dispose();
@@ -128,6 +134,11 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
   public Composite getChart()
   {
     return chart;
+  }
+  
+  public Composite getScale()
+  {
+    return scale;
   }
 
   /* (non-Javadoc)
@@ -177,18 +188,19 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
    * <p></p>
    * <p><b>Note:</b><br>The charts are painted in the same order as they are added.</p>
    */
-  public void addPainter(ChartPainter painter)
+  public void addPainter(IChartPlotter plotter)
   {
-    this.painter.addElement(painter);
+    painters.addElement(plotter);
+    plotter.setCanvas(this);
   }
   
   /**
    * Remove a painter object from this canvas.
    * <p></p>
    */
-  public void removePainter(ChartPainter painter)
+  public void removePainter(IChartPlotter plotter)
   {
-    this.painter.removeElement(painter);
+    painters.removeElement(plotter);
   }
   
   /**
@@ -197,36 +209,36 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
    */
   public int getPainterCount()
   {
-    return painter.size();
+    return painters.size();
   }
   
   /**
    * Return the painter object at index position.
    * <p></p>
    */
-  public ChartPainter getPainter(int index)
+  public IChartPlotter getPainter(int index)
   {
-    return (ChartPainter)painter.elementAt(index);
+    return (IChartPlotter)painters.elementAt(index);
   }
   
   /**
    * Set the chart data to all registered painter objects.
    * <p></p>
    */
-  public void setData(IChartData[] d)
+  public void setData(IChartData[] chartData)
   {
-    data = d;
+    data = chartData;
+    for (int i = 0; i < painters.size(); i++)
+      ((IChartPlotter)painters.elementAt(i)).setData(data);
+    
     if (chartContainer.isDisposed() == true)
       return;
     chartContainer.getDisplay().asyncExec(new Runnable() {
       public void run()  
       {
-        for (int i = 0; i < painter.size(); i++)
-          ((ChartPainter)painter.elementAt(i)).setData(data);
-
         if (data != null)
         {
-          int w = data.length * width + margin * 2;
+          int w = data.length * columnWidth + margin * 2;
           if (w > chartContainer.getClientArea().width)
             chart.setSize(w, chartContainer.getClientArea().height);
           else
@@ -242,46 +254,77 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
       }
     });
   }
-  
+
+  /**
+   * Set the origin of the chart canvas from within the container.
+   * <p></p>
+   */
   public void setChartOrigin(int x)
   {
     chart.setLocation(x, 0);
   }
   
-  public void setWidth(int width)
+  /**
+   * Get the height of the chart canvas.
+   * <p></p>
+   */
+  public int getHeight()
   {
-    this.width = width;
-    for (int i = 0; i < painter.size(); i++)
-      ((ChartPainter)painter.elementAt(i)).setColumnWidth(width);
-  }
-  public int getWidth()
-  {
-    return width;
+    return chart.getClientArea().height;
   }
   
+  /**
+   * Set the width of a chart column.
+   * <p></p>
+   */
+  public void setColumnWidth(int columnWidth)
+  {
+    this.columnWidth = columnWidth;
+  }
+  /**
+   * Get the width of a chart column.
+   * <p></p>
+   */
+  public int getColumnWidth()
+  {
+    return columnWidth;
+  }
+  
+  /**
+   * Set the chart margin (blank border around the drawing area).
+   * <p></p>
+   */
   public void setMargin(int margin)
   {
     this.margin = margin;
-    for (int i = 0; i < painter.size(); i++)
-      ((ChartPainter)painter.elementAt(i)).setChartMargin(margin);
   }
+  /**
+   * Get the chart margin (blank border around the drawing area).
+   * <p></p>
+   */
   public int getMargin()
   {
     return margin;
   }
   
+  /**
+   * Set the width the scale canvas.
+   * <p></p>
+   */
   public void setScaleWidth(int scaleWidth)
   {
     this.scaleWidth = scaleWidth;
-    for (int i = 0; i < painter.size(); i++)
-      ((ChartPainter)painter.elementAt(i)).setScaleWidth(scaleWidth);
   }
+  /**
+   * Get the width the scale canvas.
+   * <p></p>
+   */
   public int getScaleWidth()
   {
     return scaleWidth;
   }
   
-  /**
+  /* (non-Javadoc)
    * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
    */
   public void paintControl(PaintEvent e)
@@ -290,23 +333,31 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     {
       if (e.getSource() == chart)
       { 
-        for (int i = 0; i < painter.size(); i++)
-          ((ChartPainter)painter.elementAt(i)).paintChart(e.gc, chart.getClientArea().width, chart.getClientArea().height);
-        int y = 0;
-        for (int i = 0; i < painter.size(); i++)
+        for (int i = 0; i < painters.size(); i++)
         {
-          e.gc.setForeground(((ChartPainter)painter.elementAt(i)).lineColor);
-          if (painter.elementAt(i) instanceof IChartPlotter)
+          Object obj = painters.elementAt(i);
+          if (obj instanceof IChartPlotter)
+            ((IChartPlotter)obj).paintChart(e.gc, chart.getClientArea().width, chart.getClientArea().height);
+        }
+        int y = 0;
+        for (int i = 0; i < painters.size(); i++)
+        {
+          IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
+          if (plotter.getDescription() != null)
           {
-            e.gc.drawString(((IChartPlotter)painter.elementAt(i)).getDescription(), 2, y);
+            e.gc.drawString(((IChartPlotter)painters.elementAt(i)).getDescription(), 2, y);
             y += e.gc.getFontMetrics().getHeight();
           }
         }
       }
       else if (e.getSource() == scale)
       {
-        for (int i = 0; i < painter.size(); i++)
-          ((ChartPainter)painter.elementAt(i)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
+        for (int i = 0; i < painters.size(); i++)
+        {
+          Object obj = painters.elementAt(i);
+          if (obj instanceof IChartPlotter)
+            ((IChartPlotter)painters.elementAt(i)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
+        }
       }
     }
   }
@@ -325,7 +376,7 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
   {
     if (data != null)
     {
-      int w = data.length * width + margin * 2;
+      int w = data.length * columnWidth + margin * 2;
       if (w > chartContainer.getClientArea().width)
         chart.setSize(w, chartContainer.getClientArea().height);
       else

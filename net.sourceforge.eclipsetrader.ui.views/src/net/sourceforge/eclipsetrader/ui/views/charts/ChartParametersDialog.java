@@ -13,10 +13,6 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -33,24 +29,25 @@ import org.eclipse.ui.PlatformUI;
 /**
  * @author Marco
  */
-public abstract class ChartParametersDialog extends TitleAreaDialog implements ModifyListener, SelectionListener
+public class ChartParametersDialog extends TitleAreaDialog
 {
   public final static int SELECTED_ZONE = 1;
   public final static int NEW_ZONE = 2;
   public static final int NEW_CHART = 1;
   public static final int EDIT_CHART = 2;
   private int type = NEW_CHART;
-  protected String name = "";
-  protected RGB color = new RGB(0, 0, 255);
   protected int position = SELECTED_ZONE;
-  private Text text1;
-  private Button button1;
-  private Button button2;
+//  private Text chartName;
+  private Group paramGroup;
+  private Button selectedZone;
+  private Button newZone;
   private ColorSelector colorSelector;
+  private IChartConfigurer chartConfigurer;
   
-  public ChartParametersDialog()
+  public ChartParametersDialog(IChartConfigurer chartConfigurer)
   {
     super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+    this.chartConfigurer = chartConfigurer;
   }
   
   /**
@@ -58,7 +55,7 @@ public abstract class ChartParametersDialog extends TitleAreaDialog implements M
    */
   protected void configureShell(Shell newShell) {
     super.configureShell(newShell);
-    newShell.setText("Parametri " + name);
+    newShell.setText("Parameters " + chartConfigurer.getName());
   }
 
   /* (non-Javadoc)
@@ -70,29 +67,31 @@ public abstract class ChartParametersDialog extends TitleAreaDialog implements M
     composite.setLayoutData(new GridData(GridData.FILL_BOTH));
     composite.setLayout(new GridLayout(1, false));
     
-    Group group = new Group(composite, SWT.NONE);
-    group.setText("Definizione parametri");
-    group.setLayoutData(new GridData(GridData.FILL_BOTH));
-    group.setLayout(new GridLayout(2, false));
+    paramGroup = new Group(composite, SWT.NONE);
+    paramGroup.setText("Parameters definition");
+    paramGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+    paramGroup.setLayout(new GridLayout(2, false));
     
-    Label label = new Label(group, SWT.NONE);
-    label.setText("Nome");
+    Label label = new Label(paramGroup, SWT.NONE);
+    label.setText("Name");
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
-    text1 = new Text(group, SWT.BORDER);
-    text1.addModifyListener(this);
-    text1.setText(name);
+    Text text = new Text(paramGroup, SWT.BORDER);
+    text.setData("name");
+    text.setText(chartConfigurer.getName());
     GridData gridData = new GridData();
     gridData.widthHint = 175;
-    text1.setLayoutData(gridData);
+    text.setLayoutData(gridData);
 
-    // Adds the paramters specific to the given chart
-    createPartControl(group);
+    // Adds the parameters specific to the given chart
+    if (chartConfigurer != null)
+      chartConfigurer.createContents(paramGroup);
     
-    label = new Label(group, SWT.NONE);
-    label.setText("Colore");
+    label = new Label(paramGroup, SWT.NONE);
+    label.setText("Color");
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
-    colorSelector = new ColorSelector(group);
-    colorSelector.setColorValue(color);
+    colorSelector = new ColorSelector(paramGroup);
+    colorSelector.getButton().setData("color");
+    colorSelector.setColorValue(chartConfigurer.getColorParameter("color"));
     
 /*    group = new Group(composite, SWT.NONE);
     group.setText("Parametri grafico");
@@ -115,112 +114,77 @@ public abstract class ChartParametersDialog extends TitleAreaDialog implements M
 
     if (type == NEW_CHART)
     {
-      group = new Group(composite, SWT.NONE);
-      group.setText("Inserire l'oscillatore");
+      Group group = new Group(composite, SWT.NONE);
+      group.setText("Insert indicator");
       group.setLayoutData(new GridData(GridData.FILL_BOTH));
       group.setLayout(new GridLayout(1, false));
       
-      button1 = new Button(group, SWT.RADIO);
-      button1.addSelectionListener(this);
-      button1.setText("Nella zona selezionata");
-      button1.setSelection(true);
-      button2 = new Button(group, SWT.RADIO);
-      button2.addSelectionListener(this);
-      button2.setText("In una nuova zona");
+      selectedZone = new Button(group, SWT.RADIO);
+      selectedZone.setText("On the selected zone");
+      selectedZone.setSelection(true);
+      newZone = new Button(group, SWT.RADIO);
+      newZone.setText("On a new zone");
     }
 
     return super.createDialogArea(parent);
   }
 
   /**
-   * Override this method to provide customer parameters configuration.
-   * <p><p/>
+   * Override this method to provide custom parameters configuration.
+   * <p></p>
    */
-  public abstract void createPartControl(Composite parent);
+//  public abstract void createPartControl(Composite parent);
 
+  /**
+   * Open the dialog for a new chart.
+   * <p></p>
+   */
   public int open()
   {
     create();
+
+    setTitle(chartConfigurer.getName());
+    setMessage("Set parameters for " + chartConfigurer.getName());
     
-    setTitle(name);
-    setMessage("Impostare i parametri per " + name);
-    
-    int ret = super.open();
-    color = colorSelector.getColorValue();
-    
-    return ret;
+    return super.open();
   }
 
+  /**
+   * Open the dialog for editing.
+   * <p></p>
+   */
   public int openEdit()
   {
     type = EDIT_CHART;
     return open();
   }
 
-  
   /* (non-Javadoc)
-   * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
+   * @see org.eclipse.jface.dialogs.Dialog#okPressed()
    */
-  public void modifyText(ModifyEvent e)
+  protected void okPressed()
   {
-    if (e.getSource() == text1)
-      name = text1.getText();
-  }
+    if (type == NEW_CHART)
+    {
+      if (selectedZone.getSelection() == true)
+        position = SELECTED_ZONE;
+      else if (newZone.getSelection() == true)
+        position = NEW_ZONE;
+    }
 
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
-   */
-  public void widgetDefaultSelected(SelectionEvent e)
-  {
-  }
+    RGB rgb = colorSelector.getColorValue(); 
+    chartConfigurer.setParameter("color", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
+    
+    Control[] c = paramGroup.getChildren();
+    for (int i = 0; i < c.length; i++)
+    {
+      if (c[i].getData() == null || !(c[i].getData() instanceof String))
+        continue;
+      if (c[i] instanceof Text)
+        chartConfigurer.setParameter((String)c[i].getData(), ((Text)c[i]).getText());
+    }
 
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-   */
-  public void widgetSelected(SelectionEvent e)
-  {
-    if (e.getSource() == button1)
-      position = SELECTED_ZONE;
-    else if (e.getSource() == button2)
-      position = NEW_ZONE;
-  }
-  
-  /**
-   * Method to return the name field.<br>
-   *
-   * @return Returns the name.
-   */
-  public String getName()
-  {
-    return name;
-  }
-  /**
-   * Method to set the name field.<br>
-   * 
-   * @param name The name to set.
-   */
-  public void setName(String name)
-  {
-    this.name = name;
-  }
-
-  /**
-   * Method to return the color field.<br>
-   *
-   * @return Returns the color.
-   */
-  public RGB getColor()
-  {
-    return color;
-  }
-  /**
-   * Method to set the color field.<br>
-   * 
-   * @param color The color to set.
-   */
-  public void setColor(RGB color)
-  {
-    this.color = color;
+    super.okPressed();
   }
 
   /**

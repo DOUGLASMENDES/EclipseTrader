@@ -10,72 +10,28 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import java.util.HashMap;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Moving Average chart.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
-public class AverageChart extends ChartPainter implements IChartPlotter
+public class AverageChart extends ChartPlotter implements IChartConfigurer
 {
+  public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.average";
   private int period = 7;
-  private HashMap params = new HashMap();
   
   public AverageChart()
   {
-    name = "Media Mobile";
-  }
-  
-  public AverageChart(int period)
-  {
-    this.period = period;
-  }
-  
-  public AverageChart(int period, Color color)
-  {
-    this.period = period;
-    this.lineColor = color;
-  }
-  
-  public void setPeriod(int period)
-  {
-    this.period = period;
-  }
-  
-  public void paintChart(GC gc, int width, int height)
-  {
-    if (data != null && max > min && visible == true)
-    {
-      // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      pixelRatio = (height) / (max - min);
-
-      // Tipo di line e colore
-      gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(lineColor);
-
-      // Computa i punti
-      if (data.length >= period)
-      {
-        double[] value = new double[data.length - period];
-        for (int i = 0; i < value.length; i++)
-        {
-          for (int m = 0; m < period; m++)
-            value[i] += data[i + m].getClosePrice();
-          value[i] /= period;
-        }
-        this.drawLine(value, gc, height, period);
-      }
-    }
-  }
-
-  public void paintScale(GC gc, int width, int height)
-  {
+    name = "Moving Average";
   }
 
   /* (non-Javadoc)
@@ -83,7 +39,7 @@ public class AverageChart extends ChartPainter implements IChartPlotter
    */
   public String getId()
   {
-    return "net.sourceforge.eclipsetrader.charts.average";
+    return PLUGIN_ID;
   }
 
   /* (non-Javadoc)
@@ -93,47 +49,69 @@ public class AverageChart extends ChartPainter implements IChartPlotter
   {
     return name + " (" + period + ")";
   }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#showParametersDialog()
-   */
-  public ChartParametersDialog showParametersDialog()
-  {
-    AverageChartDialog dlg = new AverageChartDialog();
-    dlg.setPeriod(period);
-    dlg.setName(name);
-    dlg.setColor(lineColor.getRGB());
-    if (dlg.open() == AverageChartDialog.OK)
-    {
-      name = dlg.getName();
-      period = dlg.getPeriod();
-      params.put("period", String.valueOf(period));
-      lineColor = new Color(null, dlg.getColor());
-      params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
-    }
-    return dlg;
-  }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters(String name, String value)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    if (chartData != null && max > min)
+    {
+      // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
+      double pixelRatio = height / (max - min);
+
+      // Tipo di line e colore
+      gc.setLineStyle(SWT.LINE_SOLID);
+      gc.setForeground(lineColor);
+
+      // Computa i punti
+      if (chartData.length >= period)
+      {
+        double[] value = new double[chartData.length - period];
+        for (int i = 0; i < value.length; i++)
+        {
+          for (int m = 0; m < period; m++)
+            value[i] += chartData[i + m].getClosePrice();
+          value[i] /= period;
+        }
+        this.drawLine(value, gc, height, period);
+      }
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintScale(GC gc, int width, int height)
+   */
+  public void paintScale(GC gc, int width, int height)
+  {
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameter(String name, String value)
    */
   public void setParameter(String name, String value)
   {
-    params.put(name, value);
     if (name.equalsIgnoreCase("period") == true)
       period = Integer.parseInt(value);
-    if (name.equalsIgnoreCase("color") == true)
-    {
-      String[] values = value.split(",");
-      lineColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
-    }
+    super.setParameter(name, value);
   }
 
+  
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParameters()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#createContents(org.eclipse.swt.widgets.Composite)
    */
-  public HashMap getParameters()
+  public Control createContents(Composite parent)
   {
-    return params;
+    Label label = new Label(parent, SWT.NONE);
+    label.setText("Selected Periods");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    Text text = new Text(parent, SWT.BORDER);
+    text.setData("period");
+    text.setText(String.valueOf(period));
+    GridData gridData = new GridData();
+    gridData.widthHint = 25;
+    text.setLayoutData(gridData);
+
+    return parent;
   }
 }

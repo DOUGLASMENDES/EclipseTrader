@@ -46,7 +46,7 @@ public class OscillatorDialog extends TitleAreaDialog implements SelectionListen
    */
   protected void configureShell(Shell newShell) {
     super.configureShell(newShell);
-    newShell.setText("Oscillatori");
+    newShell.setText("Indicators");
   }
 
   /* (non-Javadoc)
@@ -84,8 +84,8 @@ public class OscillatorDialog extends TitleAreaDialog implements SelectionListen
   {
     create();
     
-    setTitle("Selezione Oscillatore");
-    setMessage("Selezionare l'oscillatore da aggiungere al grafico");
+    setTitle("Select Indicator");
+    setMessage("Select the indicator to add to the chart.");
     
     return super.open();
   }

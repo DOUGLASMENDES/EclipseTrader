@@ -10,16 +10,18 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import java.util.HashMap;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * @author Marco
  */
-public class BollingerBandsChart extends ChartPainter implements IChartPlotter
+public class BollingerBandsChart extends ChartPlotter implements IChartConfigurer
 {
   private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.bollinger";
   private int period = 15;
@@ -27,43 +29,62 @@ public class BollingerBandsChart extends ChartPainter implements IChartPlotter
   
   public BollingerBandsChart()
   {
-    name = "Bande di Bollinger";
+    name = "Bollinger Bands";
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
+   */
+  public String getId()
+  {
+    return PLUGIN_ID;
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
+   */
+  public String getDescription()
+  {
+    return name + " (" + period + "," + deviations + ")";
   }
   
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
   public void paintChart(GC gc, int width, int height)
   {
-    if (data != null && max > min && visible == true)
+    if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      pixelRatio = (height) / (max - min);
+      double pixelRatio = (height) / (max - min);
 
       // Colore della linea
       gc.setForeground(lineColor);
 
       // Computa i punti
-      if (data.length >= period)
+      if (chartData.length >= period)
       {
         // Calcola la media mobile
-        double[] average = new double[data.length - period];
+        double[] average = new double[chartData.length - period];
         for (int i = 0; i < average.length; i++)
         {
           for (int m = 0; m < period; m++)
-            average[i] += data[i + m].getClosePrice();
+            average[i] += chartData[i + m].getClosePrice();
           average[i] /= period;
         }
         
         // Calcola la deviazione standard
-        double[] deviation = new double[data.length - period];
+        double[] deviation = new double[chartData.length - period];
         for (int i = 0; i < deviation.length; i++)
         {
           for (int m = 0; m < period; m++)
-            deviation[i] += Math.pow(data[i + m].getClosePrice() - average[i], 2);
+            deviation[i] += Math.pow(chartData[i + m].getClosePrice() - average[i], 2);
           deviation[i] /= period;
           deviation[i] = Math.sqrt(deviation[i]);
         }
         
         // Calcola la banda superiore
-        double[] value = new double[data.length - period];
+        double[] value = new double[chartData.length - period];
         for (int i = 0; i < value.length; i++)
           value[i] = average[i] + deviation[2] * deviations;
         gc.setLineStyle(SWT.LINE_SOLID);
@@ -82,71 +103,51 @@ public class BollingerBandsChart extends ChartPainter implements IChartPlotter
     }
   }
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintScale(GC gc, int width, int height)
+   */
   public void paintScale(GC gc, int width, int height)
   {
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
-   */
-  public String getId()
-  {
-    return PLUGIN_ID;
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
-   */
-  public String getDescription()
-  {
-    return name + " (" + period + "," + deviations + ")";
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters()
-   */
-  public ChartParametersDialog showParametersDialog()
-  {
-    BollingerBandsChartDialog dlg = new BollingerBandsChartDialog();
-    dlg.setName(name);
-    dlg.setPeriod(period);
-    dlg.setDeviations(deviations);
-    dlg.setColor(lineColor.getRGB());
-    if (dlg.open() == AverageChartDialog.OK)
-    {
-      name = dlg.getName();
-      period = dlg.getPeriod();
-      params.put("period", String.valueOf(period));
-      deviations = dlg.getDeviations();
-      params.put("deviations", String.valueOf(deviations));
-      lineColor = new Color(null, dlg.getColor());
-      params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
-    }
-    return dlg;
-  }
-  
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters(String name, String value)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameter(String name, String value)
    */
   public void setParameter(String name, String value)
   {
-    params.put(name, value);
     if (name.equalsIgnoreCase("period") == true)
       period = Integer.parseInt(value);
-    if (name.equalsIgnoreCase("deviations") == true)
+    else if (name.equalsIgnoreCase("deviations") == true)
       deviations = Integer.parseInt(value);
-    if (name.equalsIgnoreCase("color") == true)
-    {
-      String[] values = value.split(",");
-      lineColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
-    }
+    super.setParameter(name, value);
   }
 
+  
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParameters()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#createContents(org.eclipse.swt.widgets.Composite)
    */
-  public HashMap getParameters()
+  public Control createContents(Composite parent)
   {
-    return params;
+    Label label = new Label(parent, SWT.NONE);
+    label.setText("Selected Periods");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    Text text = new Text(parent, SWT.BORDER);
+    text.setData("period");
+    text.setText(String.valueOf(period));
+    GridData gridData = new GridData();
+    gridData.widthHint = 25;
+    text.setLayoutData(gridData);
+    
+    label = new Label(parent, SWT.NONE);
+    label.setText("Deviazioni standard");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    text = new Text(parent, SWT.BORDER);
+    text.setData("deviations");
+    text.setText(String.valueOf(deviations));
+    gridData = new GridData();
+    gridData.widthHint = 25;
+    text.setLayoutData(gridData);
+
+    return parent;
   }
 }

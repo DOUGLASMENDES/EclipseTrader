@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * @author Marco
  */
-public class BollingerBandsChartDialog extends ChartParametersDialog implements ModifyListener
+public class BollingerBandsChartDialog implements ModifyListener
 {
   private String period = "15";
   private String deviations = "2";
@@ -31,7 +31,7 @@ public class BollingerBandsChartDialog extends ChartParametersDialog implements 
   
   public BollingerBandsChartDialog()
   {
-    name = "Bande di Bollinger";
+    String name = "Bande di Bollinger";
   }
   
   /* (non-Javadoc)

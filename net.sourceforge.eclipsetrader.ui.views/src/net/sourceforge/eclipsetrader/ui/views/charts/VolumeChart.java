@@ -16,23 +16,34 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Volume chart.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
-public class VolumeChart extends ChartPainter
+public class VolumeChart extends ChartPlotter
 {
   private static int VERTICAL_BORDER = 3;
-  
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
+   */
+  public String getDescription()
+  {
+    return "Volume";
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
+   */
   public void setData(IChartData[] data)
   {
-    this.data = data;
+    chartData = data;
+    min = max = 0;
     
     if (data != null)
     {
       // Determina massimo e minimo
-      min = max = 0;
       for (int i = 0; i < data.length; i++)
       {
         if (data[i].getVolume() > max)
@@ -40,35 +51,34 @@ public class VolumeChart extends ChartPainter
       }
     }
   }
-  
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
   public void paintChart(GC gc, int width, int height)
   {
-    // Tipo di line e colore
+    // Line type and color
     gc.setLineStyle(SWT.LINE_SOLID);
     gc.setForeground(lineColor);
     
-    if (data != null && max > min && visible == true)
+    if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
       double pixelRatio = (height - VERTICAL_BORDER * 2) / (max - min);
 
       int x = chartMargin + columnWidth / 2;
-      for (int i = 0; i < data.length; i++, x += columnWidth)
+      for (int i = 0; i < chartData.length; i++, x += columnWidth)
       {
-        int y1 = height - (int)((data[i].getVolume() - min) * pixelRatio);
+        int y1 = height - (int)((chartData[i].getVolume() - min) * pixelRatio);
         int y2 = height;
         gc.drawLine(x, y1 - VERTICAL_BORDER, x, y2 - VERTICAL_BORDER);
       }
     }
-
-    // Tipo di line e colore
-    gc.setLineStyle(SWT.LINE_SOLID);
-    gc.setForeground(lineColor);
-    
-    // Titolo del grafico
-    gc.drawString("Volume", 2, 0);
   }
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintScale(GC gc, int width, int height)
+   */
   public void paintScale(GC gc, int width, int height)
   {
   }

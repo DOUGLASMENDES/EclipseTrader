@@ -10,43 +10,61 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import java.util.HashMap;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Stochastic indicator
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
-public class StochasticChart extends ChartPainter implements IChartPlotter
+public class StochasticChart extends ChartPlotter implements IChartConfigurer
 {
+  private static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.stochastic";
   private int period = 14;
   private int subperiod = 3;
-  private HashMap params = new HashMap();
+  private Color gridColor = new Color(null, 192, 192, 192);
   
   public StochasticChart()
   {
     name = "Stochastic";
   }
-  
-  public void setPeriod(int period)
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
+   */
+  public String getId()
   {
-    this.period = period;
+    return PLUGIN_ID;
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
+   */
+  public String getDescription()
+  {
+    return name + " (" + period + ", " + subperiod + ")";
   }
   
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
   public void paintChart(GC gc, int width, int height)
   {
     // Grafico
-    if (data != null && max > min && visible == true)
+    if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
       max = 105;
       min = -5;
-      pixelRatio = (height) / (max - min);
+      double pixelRatio = (height) / (max - min);
 
       gc.setForeground(gridColor);
       gc.setLineStyle(SWT.LINE_DOT);
@@ -56,16 +74,16 @@ public class StochasticChart extends ChartPainter implements IChartPlotter
       gc.drawLine(0, y1, width, y1);
 
       // Computa i punti
-      if (data.length >= period)
+      if (chartData.length >= period)
       {
         // Indicatore stocastico
-        double[] value = new double[data.length - period];
+        double[] value = new double[chartData.length - period];
         for (int i = 0; i < value.length; i++)
         {
           double high = 0, low = 0, recent = 0;
           for (int m = 0; m < period; m++)
           {
-            recent = data[i + m].getClosePrice();
+            recent = chartData[i + m].getClosePrice();
             if (recent > high)
               high = recent;
             if (recent < low || low == 0)
@@ -99,71 +117,51 @@ public class StochasticChart extends ChartPainter implements IChartPlotter
     gc.setForeground(lineColor);
   }
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintScale(GC gc, int width, int height)
+   */
   public void paintScale(GC gc, int width, int height)
   {
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
-   */
-  public String getId()
-  {
-    return "net.sourceforge.eclipsetrader.charts.stochastic";
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getDescription()
-   */
-  public String getDescription()
-  {
-    return name + " (" + period + ", " + subperiod + ")";
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParametersDialog()
-   */
-  public ChartParametersDialog showParametersDialog()
-  {
-    StochasticChartDialog dlg = new StochasticChartDialog();
-    dlg.setName(name);
-    dlg.setPeriod(period);
-    dlg.setSubPeriod(subperiod);
-    dlg.setColor(lineColor.getRGB());
-    if (dlg.open() == AverageChartDialog.OK)
-    {
-      name = dlg.getName();
-      period = dlg.getPeriod();
-      params.put("period", String.valueOf(period));
-      subperiod = dlg.getSubPeriod();
-      params.put("subperiod", String.valueOf(subperiod));
-      lineColor = new Color(null, dlg.getColor());
-      params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
-    }
-    return dlg;
-  }
-  
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters(String name, String value)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameter(String name, String value)
    */
   public void setParameter(String name, String value)
   {
-    params.put(name, value);
     if (name.equalsIgnoreCase("period") == true)
       period = Integer.parseInt(value);
     if (name.equalsIgnoreCase("subperiod") == true)
       subperiod = Integer.parseInt(value);
-    if (name.equalsIgnoreCase("color") == true)
-    {
-      String[] values = value.split(",");
-      lineColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
-    }
+    super.setParameter(name, value);
   }
 
+  
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParameters()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#createContents(org.eclipse.swt.widgets.Composite)
    */
-  public HashMap getParameters()
+  public Control createContents(Composite parent)
   {
-    return params;
+    Label label = new Label(parent, SWT.NONE);
+    label.setText("Selected Periods");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    Text text = new Text(parent, SWT.BORDER);
+    text.setData("period");
+    text.setText(String.valueOf(period));
+    GridData gridData = new GridData();
+    gridData.widthHint = 25;
+    text.setLayoutData(gridData);
+
+    label = new Label(parent, SWT.NONE);
+    label.setText("Moving Average Periods");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    text = new Text(parent, SWT.BORDER);
+    text.setData("subperiod");
+    text.setText(String.valueOf(subperiod));
+    gridData = new GridData();
+    gridData.widthHint = 25;
+    text.setLayoutData(gridData);
+
+    return parent;
   }
 }

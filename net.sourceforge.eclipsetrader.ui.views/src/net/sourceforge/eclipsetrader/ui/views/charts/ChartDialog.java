@@ -69,10 +69,10 @@ public class ChartDialog extends TitleAreaDialog implements SelectionListener
       ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
       for (int ii = 0; ii < canvas.getPainterCount(); ii++)
       {
-        ChartPainter painter = canvas.getPainter(ii);
-        if (!(painter instanceof IChartPlotter))
+        IChartPlotter painter = canvas.getPainter(ii);
+        if (painter instanceof PriceChart || painter instanceof VolumeChart)
           continue;
-        list.add(((IChartPlotter)painter).getDescription(), index);
+        list.add(painter.getDescription(), index);
         list.setData(String.valueOf(index), painter);
         index++;
       }
