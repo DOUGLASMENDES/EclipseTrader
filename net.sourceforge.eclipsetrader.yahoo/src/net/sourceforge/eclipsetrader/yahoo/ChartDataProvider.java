@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.yahoo;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -197,76 +198,93 @@ public class ChartDataProvider implements IChartDataProvider
     if (chartData == null)
       chartData = new Vector();
     
+    Calendar today = Calendar.getInstance();
     Calendar from = Calendar.getInstance();
     Calendar to = Calendar.getInstance();
-    do {
-    // Start reading data from the most recent data available +1
     // If no data is avalable, start from one year back.
-    if (chartData.size() != 0)
-    {
-      IChartData cd = (IChartData)chartData.elementAt(chartData.size() - 1);
-      from.setTime(cd.getDate());
-      from.add(Calendar.DATE, 1);
-      to.setTime(from.getTime());
-      to.add(Calendar.DATE, 200);
-    }
-    else
+    if (chartData.size() == 0)
     {
       from.add(Calendar.YEAR, -1);
       to.setTime(from.getTime());
       to.add(Calendar.DATE, 200);
     }
 
-    try {
-      URL url = new URL(YahooPlugin.getDefault().getPreferenceStore().getString("yahoo.charts.url") + "?s=" + SymbolMapper.getYahooSymbol(data.getTicker()) + "&a=" + from.get(GregorianCalendar.MONTH) + "&b=" + from.get(GregorianCalendar.DAY_OF_MONTH) + "&c=" + from.get(GregorianCalendar.YEAR) + "&d=" + to.get(GregorianCalendar.MONTH) + "&e=" + to.get(GregorianCalendar.DAY_OF_MONTH) + "&f=" + to.get(GregorianCalendar.YEAR) + "&g=d&q=q&y=0&z=&x=.csv");
-      System.out.println(getClass() + " " + df.format(from.getTime()) + "->" + df.format(to.getTime()) + " " + url);
-
-      HttpURLConnection con = (HttpURLConnection)url.openConnection();
-      String proxyHost = (String)System.getProperties().get("http.proxyHost");
-      String proxyUser = (String)System.getProperties().get("http.proxyUser");
-      String proxyPassword = (String)System.getProperties().get("http.proxyPassword");
-      if (proxyHost != null && proxyHost.length() != 0 && proxyUser != null && proxyUser.length() != 0 && proxyPassword != null)
+    do {
+      // Start reading data from the most recent data available +1
+      if (chartData.size() != 0)
       {
-        String login = proxyUser + ":" + proxyPassword;
-        String encodedLogin = new BASE64Encoder().encodeBuffer(login.getBytes());
-        con.setRequestProperty("Proxy-Authorization", "Basic " + encodedLogin.trim());
+        IChartData cd = (IChartData)chartData.elementAt(chartData.size() - 1);
+        from.setTime(cd.getDate());
+        from.add(Calendar.DATE, 1);
+        to.setTime(from.getTime());
+        to.add(Calendar.DATE, 200);
       }
-      con.setAllowUserInteraction(true);
-      con.setRequestMethod("GET");
-      con.setInstanceFollowRedirects(true);
-      BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-      String inputLine = in.readLine();
-      while ((inputLine = in.readLine()) != null) 
-      {
-        if (inputLine.startsWith("<") == true)
-          continue;
-        String[] item = inputLine.split(",");
-        String[] dateItem = item[0].split("-");
-
-        int yr = Integer.parseInt(dateItem[2]);
-        if (yr < 30) yr += 2000;
-        else yr += 1900;
-        int mm = 0;
-        for (mm = 0; mm < months.length; mm++) {
-          if (dateItem[1].equalsIgnoreCase(months[mm]) == true)
-            break;
+  
+      try {
+        URL url = new URL(YahooPlugin.getDefault().getPreferenceStore().getString("yahoo.charts.url") + "?s=" + SymbolMapper.getYahooSymbol(data.getTicker()) + "&a=" + from.get(GregorianCalendar.MONTH) + "&b=" + from.get(GregorianCalendar.DAY_OF_MONTH) + "&c=" + from.get(GregorianCalendar.YEAR) + "&d=" + to.get(GregorianCalendar.MONTH) + "&e=" + to.get(GregorianCalendar.DAY_OF_MONTH) + "&f=" + to.get(GregorianCalendar.YEAR) + "&g=d&q=q&y=0&z=&x=.csv");
+        System.out.println(getClass() + " " + df.format(from.getTime()) + "->" + df.format(to.getTime()) + " " + url);
+  
+        HttpURLConnection con = (HttpURLConnection)url.openConnection();
+        String proxyHost = (String)System.getProperties().get("http.proxyHost");
+        String proxyUser = (String)System.getProperties().get("http.proxyUser");
+        String proxyPassword = (String)System.getProperties().get("http.proxyPassword");
+        if (proxyHost != null && proxyHost.length() != 0 && proxyUser != null && proxyUser.length() != 0 && proxyPassword != null)
+        {
+          String login = proxyUser + ":" + proxyPassword;
+          String encodedLogin = new BASE64Encoder().encodeBuffer(login.getBytes());
+          con.setRequestProperty("Proxy-Authorization", "Basic " + encodedLogin.trim());
         }
-        Calendar day = new GregorianCalendar(yr, mm, Integer.parseInt(dateItem[0]));
-        double adjustRatio = Double.parseDouble(item[4]) / Double.parseDouble(item[6]);
-        
-        IChartData cd = new ChartData();
-        cd.setDate(day.getTime());
-        cd.setOpenPrice(Double.parseDouble(item[1]) / adjustRatio);
-        cd.setMaxPrice(Double.parseDouble(item[2]) / adjustRatio);
-        cd.setMinPrice(Double.parseDouble(item[3]) / adjustRatio);
-        cd.setClosePrice(Double.parseDouble(item[6]));
-        cd.setVolume((int)(Integer.parseInt(item[5]) * adjustRatio));
-        chartData.add(cd);
-      }
-      in.close();
-      sort(chartData);
-    } catch(Exception e) { e.printStackTrace(); };
-    } while(to.before(Calendar.getInstance()));
+        con.setAllowUserInteraction(true);
+        con.setRequestMethod("GET");
+        con.setInstanceFollowRedirects(true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine = in.readLine();
+        while ((inputLine = in.readLine()) != null) 
+        {
+          if (inputLine.startsWith("<") == true)
+            continue;
+          String[] item = inputLine.split(",");
+          String[] dateItem = item[0].split("-");
+  
+          int yr = Integer.parseInt(dateItem[2]);
+          if (yr < 30) yr += 2000;
+          else yr += 1900;
+          int mm = 0;
+          for (mm = 0; mm < months.length; mm++) {
+            if (dateItem[1].equalsIgnoreCase(months[mm]) == true)
+              break;
+          }
+          Calendar day = new GregorianCalendar(yr, mm, Integer.parseInt(dateItem[0]));
+          double adjustRatio = Double.parseDouble(item[4]) / Double.parseDouble(item[6]);
+          
+          IChartData cd = new ChartData();
+          cd.setDate(day.getTime());
+          cd.setOpenPrice(Double.parseDouble(item[1]) / adjustRatio);
+          cd.setMaxPrice(Double.parseDouble(item[2]) / adjustRatio);
+          cd.setMinPrice(Double.parseDouble(item[3]) / adjustRatio);
+          cd.setClosePrice(Double.parseDouble(item[6]));
+          cd.setVolume((int)(Integer.parseInt(item[5]) * adjustRatio));
+          chartData.add(cd);
+        }
+        in.close();
+        sort(chartData);
+      } catch(FileNotFoundException e) {
+        // Still no data, maybe the symbol was not present yet
+        if (chartData.size() == 0)
+        {
+          from.add(Calendar.DATE, 200);
+          to.setTime(from.getTime());
+          to.add(Calendar.DATE, 200);
+          if (to.after(today) == true)
+          {
+            to.setTime(today.getTime());
+            to.add(Calendar.DATE, -1);
+          }
+        }
+      } catch(Exception e) {
+        e.printStackTrace(); 
+      };
+    } while(to.before(today));
 
     sort(chartData);
     charts.put(data.getSymbol(), chartData);
