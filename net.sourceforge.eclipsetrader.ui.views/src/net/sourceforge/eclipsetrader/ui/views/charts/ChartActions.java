@@ -51,6 +51,12 @@ public class ChartActions implements IViewActionDelegate
       view.editOscillator();
     else if (action.getId().equalsIgnoreCase("chart.remove") == true)
       view.removeOscillator();
+    else if (action.getId().equalsIgnoreCase("chart.line") == true)
+      view.setChartType(PriceChart.LINE);
+    else if (action.getId().equalsIgnoreCase("chart.candle") == true)
+      view.setChartType(PriceChart.CANDLE);
+    else if (action.getId().equalsIgnoreCase("chart.bar") == true)
+      view.setChartType(PriceChart.BAR);
   }
 
   /* (non-Javadoc)
@@ -59,5 +65,4 @@ public class ChartActions implements IViewActionDelegate
   public void selectionChanged(IAction action, ISelection selection)
   {
   }
-
 }

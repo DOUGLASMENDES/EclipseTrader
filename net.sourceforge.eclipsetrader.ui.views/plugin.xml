@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.6.0"
+   version="0.7.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -168,17 +168,32 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
             id="net.sourceforge.eclipsetrader.ui.views.ChartView.contextMenu">
          <action
-               label="Rimuovi"
+               label="Bar"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="group1"
+               id="chart.bar"/>
+         <action
+               label="Candle"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="group1"
+               id="chart.candle"/>
+         <action
+               label="Line"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="group1"
+               id="chart.line"/>
+         <action
+               label="Remove"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
                id="chart.remove"/>
          <action
-               label="Modifica"
+               label="Edit"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
                id="chart.edit"/>
          <action
-               label="Aggiungi"
+               label="Add"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
                id="chart.add"/>
@@ -278,21 +293,21 @@
    <extension
          point="net.sourceforge.eclipsetrader.chartPlotter">
       <plotter
-            label="Bande di Bollinger"
+            label="Bollinger Bands"
             class="net.sourceforge.eclipsetrader.ui.views.charts.BollingerBandsChart"
             id="net.sourceforge.eclipsetrader.charts.bollinger"/>
       <plotter
-            label="Media Mobile"
+            label="Moving Average"
             class="net.sourceforge.eclipsetrader.ui.views.charts.AverageChart"
             id="net.sourceforge.eclipsetrader.charts.average"/>
-      <plotter
-            label="Stochastic Oscillator"
-            class="net.sourceforge.eclipsetrader.ui.views.charts.StochasticChart"
-            id="net.sourceforge.eclipsetrader.charts.stochastic"/>
       <plotter
             label="R.S.I."
             class="net.sourceforge.eclipsetrader.ui.views.charts.RSIChart"
             id="net.sourceforge.eclipsetrader.charts.rsi"/>
+      <plotter
+            label="Stochastic Oscillator"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.StochasticChart"
+            id="net.sourceforge.eclipsetrader.charts.stochastic"/>
    </extension>
 
 </plugin>
