@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
 
+import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.IIndexDataProvider;
 import net.sourceforge.eclipsetrader.IIndexUpdateListener;
@@ -23,6 +24,10 @@ import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.Images;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -321,6 +326,83 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
       // Updates the parent container
       restoreSavedData();
       parent.layout(true);
+    }
+  }
+  
+  public void updateIndexData(IBasicData d)
+  {
+    IExtensionRegistry registry = Platform.getExtensionRegistry();
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.indexProvider"); //$NON-NLS-1$
+    if (extensionPoint != null)
+    {
+      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+      for (int i = 0; i < members.length; i++)
+      {
+        IConfigurationElement[] children = members[i].getChildren();
+        for (int ii = 0; ii < children.length; ii++)
+        {
+          if (children[ii].getName().equalsIgnoreCase("category") == true) //$NON-NLS-1$
+          {
+            IConfigurationElement[] items = children[ii].getChildren();
+            for (int iii = 0; iii < items.length; iii++)
+            {
+              String symbol = items[iii].getAttribute("symbol"); //$NON-NLS-1$
+              String ticker = items[iii].getAttribute("ticker"); //$NON-NLS-1$
+              String label = items[iii].getAttribute("label"); //$NON-NLS-1$
+              if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+              {
+                if (ticker.length() != 0)
+                  d.setTicker(ticker);
+                d.setDescription(label);
+                return;
+              }
+            }
+          }
+          else if (children[ii].getName().equalsIgnoreCase("index") == true) //$NON-NLS-1$
+          {
+            String symbol = children[ii].getAttribute("symbol"); //$NON-NLS-1$
+            String ticker = children[ii].getAttribute("ticker"); //$NON-NLS-1$
+            String label = children[ii].getAttribute("label"); //$NON-NLS-1$
+            if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+            {
+              if (ticker.length() != 0)
+                d.setTicker(ticker);
+              d.setDescription(label);
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  public void openHistoryChart() 
+  {
+    String CHART_ID = "net.sourceforge.eclipsetrader.ui.views.ChartView"; //$NON-NLS-1$
+
+    Enumeration enum = widgets.elements();
+    while(enum.hasMoreElements() == true)
+    {
+      IndexWidget w = (IndexWidget)enum.nextElement();
+      if (w.getSymbol().equalsIgnoreCase(selectedSymbol) == true)
+      {
+        IExtendedData data = (IExtendedData)w.getData();
+        updateIndexData(data);
+        
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        for (int i = 1;; i++)
+        {
+          IViewReference ref = page.findViewReference(CHART_ID, String.valueOf(i));
+          if (ref == null)
+          {
+            try {
+              ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol());
+              IViewPart view = page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
+            } catch (PartInitException e) {}
+            break;
+          }
+        }
+      }
     }
   }
   

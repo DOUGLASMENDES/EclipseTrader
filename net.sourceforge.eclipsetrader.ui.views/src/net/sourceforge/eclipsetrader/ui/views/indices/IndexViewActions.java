@@ -39,6 +39,8 @@ public class IndexViewActions implements IViewActionDelegate
     System.out.println("run " + view);
     if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.views.openRealtimeChart") == true)
       view.openIntradayChart();
+    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.views.openChart") == true)
+      view.openHistoryChart();
   }
 
   /* (non-Javadoc)
