@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.dukascopy"
    name="Dukascopy Data Provider Plug-in"
-   version="1.0.0"
+   version="0.11.0"
    provider-name=""
    class="net.sourceforge.eclipsetrader.dukascopy.DukascopyPlugin">
 
