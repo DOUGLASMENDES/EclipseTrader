@@ -24,6 +24,7 @@ import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -48,24 +49,31 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 
+/**
+ * Book / Level II data view.
+ * <p></p>
+ */
 public class Book extends ViewPart implements IBookUpdateListener, ControlListener, IPropertyChangeListener 
 {
   private Table table;
   private TrendBar trendBar;
-  private Color background = new Color(Display.getCurrent(), 255, 255, 255);
-  private Color foreground = new Color(Display.getCurrent(), 0, 0, 0);
+  private Color background;
+  private Color foreground;
   private Color negativeForeground;
   private Color positiveForeground;
+  private boolean groupPrices = false;
+  private boolean hilightVariations = false;
   private IBasicData data;
   private IBookData[] bid;
   private IBookData[] ask;
+  private boolean colorizeLevels = true;
+  private Color[] levelColor = new Color[5];
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
@@ -106,8 +114,22 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
   public void createPartControl(Composite parent)
   {
     this.parent = parent;
-    negativeForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.negative_value_color"));
-    positiveForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.positive_value_color"));
+    
+    // Read the preferences
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    groupPrices = pref.getBoolean("book.group_prices");
+    foreground = new Color(null, PreferenceConverter.getColor(pref, "book.text_color"));
+    background = new Color(null, PreferenceConverter.getColor(pref, "book.background"));
+    negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "book.negative_value_color"));
+    positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "book.positive_value_color"));
+    levelColor[0] = new Color(null, PreferenceConverter.getColor(pref, "book.level1_color"));
+    levelColor[1] = new Color(null, PreferenceConverter.getColor(pref, "book.level2_color"));
+    levelColor[2] = new Color(null, PreferenceConverter.getColor(pref, "book.level3_color"));
+    levelColor[3] = new Color(null, PreferenceConverter.getColor(pref, "book.level4_color"));
+    levelColor[4] = new Color(null, PreferenceConverter.getColor(pref, "book.level5_color"));
+    hilightVariations = pref.getBoolean("book.hilight_variations");
+    colorizeLevels = pref.getBoolean("book.colorize_levels");
+    pref.addPropertyChangeListener(this);
 
     Composite entryTable = new Composite(parent, SWT.NULL);
     entryTable.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -225,16 +247,16 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     column.setText("#");
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 2);
-    column.setText("Q.tà");
+    column.setText("Q.ty");
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 3);
-    column.setText("Denaro");
+    column.setText("Bid");
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 4);
-    column.setText("Lettera");
+    column.setText("Ask");
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 5);
-    column.setText("Q.tà");
+    column.setText("Q.ty");
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 6);
     column.setText("#");
@@ -292,13 +314,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
       {
       }
     });  
-/*    
-    new Thread(new Runnable() {
-      public void run()
-      {
-        setData();
-      }
-    }).start();*/
+
     TraderPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
     
     restoreData();
@@ -320,13 +336,14 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
   {
     if (timerDaemon != null)
       timerDaemon.cancel();
-    if (data != null && TraderPlugin.getDataProvider() instanceof IBookDataProvider)
+    if (data != null && TraderPlugin.getBookDataProvider() != null)
     {
-      IBookDataProvider _dp = (IBookDataProvider)TraderPlugin.getDataProvider();
+      IBookDataProvider _dp = TraderPlugin.getBookDataProvider();
       _dp.removeBookListener(data, this);
       _dp.stopBook(data);
     }
     TraderPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
+    ViewsPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 
     super.dispose();
   }
@@ -353,9 +370,9 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     {
       setPartName(data.getTicker() + " - Book");
 
-      if (TraderPlugin.getDataProvider() instanceof IBookDataProvider)
+      if (TraderPlugin.getBookDataProvider() != null)
       {
-        IBookDataProvider _dp = (IBookDataProvider)TraderPlugin.getDataProvider();
+        IBookDataProvider _dp = TraderPlugin.getBookDataProvider();
         _dp.addBookListener(data, this);
         _dp.startBook(data);
       }
@@ -369,9 +386,9 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     String id = getViewSite().getSecondaryId();
     String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("book." + id);
 
-    if (data != null && TraderPlugin.getDataProvider() instanceof IBookDataProvider)
+    if (data != null && TraderPlugin.getBookDataProvider() != null)
     {
-      IBookDataProvider _dp = (IBookDataProvider)TraderPlugin.getDataProvider();
+      IBookDataProvider _dp = TraderPlugin.getBookDataProvider();
       _dp.removeBookListener(data, this);
     }
 
@@ -392,9 +409,9 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
           setPartName(data.getTicker() + " - Book");
         }
       });
-      if (TraderPlugin.getDataProvider() instanceof IBookDataProvider)
+      if (TraderPlugin.getBookDataProvider() != null)
       {
-        IBookDataProvider _dp = (IBookDataProvider)TraderPlugin.getDataProvider();
+        IBookDataProvider _dp = TraderPlugin.getBookDataProvider();
         _dp.addBookListener(data, this);
         _dp.startBook(data);
       }
@@ -470,6 +487,8 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
    */
   public void asyncUpdateView()
   {
+    if (table.isDisposed() == true)
+      return;
     table.getDisplay().asyncExec(new Runnable() {
       public void run()  {
         updateView();
@@ -524,66 +543,161 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     if (table.getItemCount() != items)
       table.setItemCount(items);
 
+    int level = 0, number = 0, quantity = 0;
+    double levelPrice = 0;
     for (int i = 0; i < bid.length; i++)
     {
-      TableItem item = table.getItem(i);
+      // Update the price level
+      if (levelPrice == 0)
+        levelPrice = bid[i].getPrice();
+      if (levelPrice != bid[i].getPrice())
+      {
+        level++;
+        levelPrice = bid[i].getPrice();
+        number = 0;
+        quantity = 0;
+      }
+      number++;
+      quantity += bid[i].getQuantity();
 
-      item.setBackground(1, background);
-      if (bid[i].getNumberVariance() > 0)
-        item.setForeground(1, positiveForeground);
-      else if (bid[i].getNumberVariance() < 0)
-        item.setForeground(1, negativeForeground);
+      // Get the table row
+      TableItem item = table.getItem(i);
+      if (groupPrices == true && level != i)
+        item = table.getItem(level);
+
+      // Set the background of each price level
+      if (colorizeLevels == true)
+      {
+        if (level < levelColor.length)
+        {
+          item.setBackground(1, levelColor[level]);
+          item.setBackground(2, levelColor[level]);
+          item.setBackground(3, levelColor[level]);
+        }
+        else
+        {
+          item.setBackground(1, background);
+          item.setBackground(2, background);
+          item.setBackground(3, background);
+        }
+      }
       else
+      {
+        item.setBackground(1, background);
+        item.setBackground(2, background);
+        item.setBackground(3, background);
+      }
+
+      if (hilightVariations == true)
+      {
+        if (bid[i].getNumberVariance() > 0)
+          item.setForeground(1, positiveForeground);
+        else if (bid[i].getNumberVariance() < 0)
+          item.setForeground(1, negativeForeground);
+        else
+          item.setForeground(1, foreground);
+        if (bid[i].getQuantityVariance() > 0)
+          item.setForeground(2, positiveForeground);
+        else if (bid[i].getQuantityVariance() < 0)
+          item.setForeground(2, negativeForeground);
+        else
+          item.setForeground(2, foreground);
+        if (bid[i].getPriceVariance() > 0)
+          item.setForeground(3, positiveForeground);
+        else if (bid[i].getPriceVariance() < 0)
+          item.setForeground(3, negativeForeground);
+        else
+          item.setForeground(3, foreground);
+      }
+      else
+      {
         item.setForeground(1, foreground);
-      item.setText(1, nf.format(bid[i].getNumber()));
-      
-      item.setBackground(2, background);
-      if (bid[i].getQuantityVariance() > 0)
-        item.setForeground(2, positiveForeground);
-      else if (bid[i].getQuantityVariance() < 0)
-        item.setForeground(2, negativeForeground);
-      else
         item.setForeground(2, foreground);
-      item.setText(2, nf.format(bid[i].getQuantity()));
-      
-      item.setBackground(3, background);
-      if (bid[i].getPriceVariance() > 0)
-        item.setForeground(3, positiveForeground);
-      else if (bid[i].getPriceVariance() < 0)
-        item.setForeground(3, negativeForeground);
-      else
         item.setForeground(3, foreground);
-      item.setText(3, pf.format(bid[i].getPrice()));
+      }
+
+      if (groupPrices == true)
+      {
+        item.setText(1, nf.format(number));
+        item.setText(2, nf.format(quantity));
+        item.setText(3, pf.format(levelPrice));
+      }
+      else
+      {
+        item.setText(1, nf.format(bid[i].getNumber()));
+        item.setText(2, nf.format(bid[i].getQuantity()));
+        item.setText(3, pf.format(bid[i].getPrice()));
+      }
     }
+
+    level = 0;
+    levelPrice = 0;
     for (int i = 0; i < ask.length; i++)
     {
       TableItem item = table.getItem(i);
+      
+      // Update the price level
+      if (levelPrice == 0)
+        levelPrice = ask[i].getPrice();
+      if (levelPrice != ask[i].getPrice())
+      {
+        level++;
+        levelPrice = ask[i].getPrice();
+      }
 
-      item.setBackground(4, background);
-      if (ask[i].getPriceVariance() > 0)
-        item.setForeground(4, positiveForeground);
-      else if (ask[i].getPriceVariance() < 0)
-        item.setForeground(4, negativeForeground);
+      // Set the background of each price level
+      if (colorizeLevels == true)
+      {
+        if (level < levelColor.length)
+        {
+          item.setBackground(4, levelColor[level]);
+          item.setBackground(5, levelColor[level]);
+          item.setBackground(6, levelColor[level]);
+        }
+        else
+        {
+          item.setBackground(4, background);
+          item.setBackground(5, background);
+          item.setBackground(6, background);
+        }
+      }
       else
+      {
+        item.setBackground(4, background);
+        item.setBackground(5, background);
+        item.setBackground(6, background);
+      }
+
+      if (hilightVariations == true)
+      {
+        if (ask[i].getPriceVariance() > 0)
+          item.setForeground(4, positiveForeground);
+        else if (ask[i].getPriceVariance() < 0)
+          item.setForeground(4, negativeForeground);
+        else
+          item.setForeground(4, foreground);
+        if (ask[i].getQuantityVariance() > 0)
+          item.setForeground(5, positiveForeground);
+        else if (ask[i].getQuantityVariance() < 0)
+          item.setForeground(5, negativeForeground);
+        else
+          item.setForeground(5, foreground);
+        if (ask[i].getNumberVariance() > 0)
+          item.setForeground(6, positiveForeground);
+        else if (ask[i].getNumberVariance() < 0)
+          item.setForeground(6, negativeForeground);
+        else
+          item.setForeground(6, foreground);
+      }
+      else
+      {
         item.setForeground(4, foreground);
-      item.setText(4, pf.format(ask[i].getPrice()));
-      
-      item.setBackground(5, background);
-      if (ask[i].getQuantityVariance() > 0)
-        item.setForeground(5, positiveForeground);
-      else if (ask[i].getQuantityVariance() < 0)
-        item.setForeground(5, negativeForeground);
-      else
         item.setForeground(5, foreground);
-      item.setText(5, nf.format(ask[i].getQuantity()));
-      
-      item.setBackground(6, background);
-      if (ask[i].getNumberVariance() > 0)
-        item.setForeground(6, positiveForeground);
-      else if (ask[i].getNumberVariance() < 0)
-        item.setForeground(6, negativeForeground);
-      else
         item.setForeground(6, foreground);
+      }
+      
+      item.setText(4, pf.format(ask[i].getPrice()));
+      item.setText(5, nf.format(ask[i].getQuantity()));
       item.setText(6, nf.format(ask[i].getNumber()));
     }
     
@@ -598,14 +712,33 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     String property = event.getProperty();
 
     // Property changed for the Trader plugin
-    if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.dataProvider") == true)
+    if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
     {
-      if (TraderPlugin.getDataProvider() != null && TraderPlugin.getDataProvider() instanceof IBookDataProvider)
+      if (TraderPlugin.getBookDataProvider() != null)
       {
-        IBookDataProvider _dp = (IBookDataProvider)TraderPlugin.getDataProvider();
+        IBookDataProvider _dp = TraderPlugin.getBookDataProvider();
         _dp.addBookListener(data, this);
         _dp.startBook(data);
       }
+    }
+    else if (property.startsWith("book.") == true)
+    {
+      IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+      groupPrices = pref.getBoolean("book.group_prices");
+      foreground = new Color(null, PreferenceConverter.getColor(pref, "book.text_color"));
+      background = new Color(null, PreferenceConverter.getColor(pref, "book.background"));
+      negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "book.negative_value_color"));
+      positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "book.positive_value_color"));
+      levelColor[0] = new Color(null, PreferenceConverter.getColor(pref, "book.level1_color"));
+      levelColor[1] = new Color(null, PreferenceConverter.getColor(pref, "book.level2_color"));
+      levelColor[2] = new Color(null, PreferenceConverter.getColor(pref, "book.level3_color"));
+      levelColor[3] = new Color(null, PreferenceConverter.getColor(pref, "book.level4_color"));
+      levelColor[4] = new Color(null, PreferenceConverter.getColor(pref, "book.level5_color"));
+      hilightVariations = pref.getBoolean("book.hilight_variations");
+      colorizeLevels = pref.getBoolean("book.colorize_levels");
+      if (property.startsWith("book.level") == true)
+        trendBar.reloadPreferences();
+      updateView();
     }
   }
 }

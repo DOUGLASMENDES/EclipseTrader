@@ -15,6 +15,7 @@ import net.sourceforge.eclipsetrader.IBookData;
 import net.sourceforge.eclipsetrader.IBookUpdateListener;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -35,19 +36,26 @@ public class TrendBar extends Canvas implements PaintListener, IBookUpdateListen
   private IBookData[] ask;
   private Color[] band = new Color[5];
   private Color indicator;
+  private int bidQuantity[] = new int[5]; 
+  private int askQuantity[] = new int[5]; 
 
   public TrendBar(Composite parent, int style)
   {
     super(parent, style);
 
-    indicator = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "trendbar.indicator"));
-    band[0] = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "trendbar.band1_color"));
-    band[1] = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "trendbar.band2_color"));
-    band[2] = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "trendbar.band3_color"));
-    band[3] = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "trendbar.band4_color"));
-    band[4] = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "trendbar.band5_color"));
-    
+    reloadPreferences();
     this.addPaintListener(this);
+  }
+  
+  public void reloadPreferences()
+  {
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    indicator = new Color(Display.getCurrent(), PreferenceConverter.getColor(pref, "trendbar.indicator"));
+    band[0] = new Color(null, PreferenceConverter.getColor(pref, "book.level1_color"));
+    band[1] = new Color(null, PreferenceConverter.getColor(pref, "book.level2_color"));
+    band[2] = new Color(null, PreferenceConverter.getColor(pref, "book.level3_color"));
+    band[3] = new Color(null, PreferenceConverter.getColor(pref, "book.level4_color"));
+    band[4] = new Color(null, PreferenceConverter.getColor(pref, "book.level5_color"));
   }
 
   public void bookUpdated(IBasicData data, IBookData[] bid, IBookData[] ask)
@@ -70,25 +78,69 @@ public class TrendBar extends Canvas implements PaintListener, IBookUpdateListen
     if (bid == null || ask == null)
       return;
     
+    // Calculates the bid quantity
+    int level = 0;
+    double levelPrice = 0;
+    for (int i = 0; i < bid.length; i++)
+    {
+      // Update the price level
+      if (levelPrice == 0)
+      {
+        levelPrice = bid[i].getPrice();
+        bidQuantity[level] = 0;
+      }
+      if (levelPrice != bid[i].getPrice())
+      {
+        level++;
+        if (level >= band.length)
+          break;
+        levelPrice = bid[i].getPrice();
+        bidQuantity[level] = 0;
+      }
+      bidQuantity[level] += bid[i].getQuantity();
+    }
+    
+    // Calculates the ask quantity
+    level = 0;
+    levelPrice = 0;
+    for (int i = 0; i < ask.length; i++)
+    {
+      // Update the price level
+      if (levelPrice == 0)
+      {
+        levelPrice = ask[i].getPrice();
+        askQuantity[level] = 0;
+      }
+      if (levelPrice != ask[i].getPrice())
+      {
+        level++;
+        if (level >= band.length)
+          break;
+        levelPrice = ask[i].getPrice();
+        askQuantity[level] = 0;
+      }
+      askQuantity[level] += ask[i].getQuantity();
+    }
+    
     double total = 0;
-    for (int i = 0; i < bid.length && i < 5; i++)
-      total += bid[i].getQuantity();
-    for (int i = 0; i < ask.length && i < 5; i++)
-      total += ask[i].getQuantity();
+    for (int i = 0; i < bidQuantity.length; i++)
+      total += bidQuantity[i];
+    for (int i = 0; i < askQuantity.length; i++)
+      total += askQuantity[i];
     if (total == 0)
       return;
 
     int last = this.getClientArea().width - middle;
     int[] bidWidth = new int[5];
-    for (int i = 0; i < bid.length && i < 5; i++)
+    for (int i = 0; i < bidQuantity.length; i++)
     {
-      bidWidth[i] = (int)((width / total) * bid[i].getQuantity());
+      bidWidth[i] = (int)((width / total) * bidQuantity[i]);
       last -= bidWidth[i];
     }
     int[] askWidth = new int[5];
-    for (int i = 0; i < ask.length && i < 4; i++)
+    for (int i = 0; i < askQuantity.length - 1; i++)
     {
-      askWidth[i] = (int)((width / total) * ask[i].getQuantity());
+      askWidth[i] = (int)((width / total) * askQuantity[i]);
       last -= askWidth[i];
     }
     askWidth[4] = last;
