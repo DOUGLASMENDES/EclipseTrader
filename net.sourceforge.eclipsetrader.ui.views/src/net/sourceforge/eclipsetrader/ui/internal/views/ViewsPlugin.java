@@ -57,6 +57,7 @@ public class ViewsPlugin extends AbstractUIPlugin
     PreferenceConverter.setDefault(pref, "portfolio.negative_value_color", new RGB(200, 0, 0));
     PreferenceConverter.setDefault(pref, "portfolio.positive_value_color", new RGB(0, 190, 0));
     PreferenceConverter.setDefault(pref, "portfolio.total_row_background", new RGB(255, 255, 0));
+    pref.setDefault("portfolio.columnWidth", "80,48,148,62,52,62,62,62,62,78,45,61,45,61,61,111,62,62,62,62,60");
 
     PreferenceConverter.setDefault(pref, "book.text_color", new RGB(0, 0, 0));
     PreferenceConverter.setDefault(pref, "book.background", new RGB(255, 255, 255));

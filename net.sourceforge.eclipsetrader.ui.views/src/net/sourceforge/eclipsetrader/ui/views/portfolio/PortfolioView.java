@@ -30,6 +30,7 @@ import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -43,6 +44,8 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
@@ -63,9 +66,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * @author Marco Maccaferri - 09/08/2004
+ * @author Marco Maccaferri
  */
-public class PortfolioView extends ViewPart implements IDataUpdateListener, IPropertyChangeListener, ISelectionProvider 
+public class PortfolioView extends ViewPart implements ControlListener, IDataUpdateListener, IPropertyChangeListener, ISelectionProvider 
 {
   private static Table table;
   private NumberFormat nf = NumberFormat.getInstance();
@@ -127,6 +130,7 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
   public void createPartControl(Composite parent)
   {
     this.parent = parent;
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
 
     // Colors
     textForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.text_color")); //$NON-NLS-1$
@@ -135,6 +139,11 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
     totalBackground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.total_row_background")); //$NON-NLS-1$
     negativeForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.negative_value_color")); //$NON-NLS-1$
     positiveForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.positive_value_color")); //$NON-NLS-1$
+
+    // Columns width
+    String[] w = pref.getString("portfolio.columnWidth").split(",");
+    for (int i = 0; i < w.length && i < columnWidth.length; i++)
+      columnWidth[i] = Integer.parseInt(w[i]);
     
     table = new Table(parent, SWT.SINGLE|SWT.FULL_SELECTION|SWT.HIDE_SELECTION);
     GridData data = new GridData(GridData.FILL_HORIZONTAL);
@@ -197,6 +206,7 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
       column.setData(elements[i]);
       if (getColumnDataIndex(i) <= 2)
         column.setAlignment(SWT.LEFT);
+      column.addControlListener(this);
     }
     updateView();
     
@@ -234,8 +244,18 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
   {
     if (TraderPlugin.getDataProvider() != null)
       TraderPlugin.getDataProvider().removeDataListener(this);
+
+    // Remove the property change listeners
     ViewsPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
     TraderPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
+
+    // Save the columns width
+    String value = "";
+    for (int i = 0; i < columnWidth.length; i++)
+      value += String.valueOf(columnWidth[i]) + ",";
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    pref.setValue("portfolio.columnWidth", value);
+    
     super.dispose();
   }
   
@@ -767,5 +787,31 @@ public class PortfolioView extends ViewPart implements IDataUpdateListener, IPro
     }
     
     return getColumnDataIndex(column);
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.ControlListener#controlMoved(org.eclipse.swt.events.ControlEvent)
+   */
+  public void controlMoved(ControlEvent e)
+  {
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.ControlListener#controlResized(org.eclipse.swt.events.ControlEvent)
+   */
+  public void controlResized(ControlEvent e)
+  {
+    if (e.getSource() instanceof TableColumn)
+    {
+      for (int i = 0; i < table.getColumnCount(); i++)
+      {
+        TableColumn column = table.getColumn(i);
+        if (column == e.getSource())
+        {
+          columnWidth[getColumnDataIndex(i)] = column.getWidth();
+          break;
+        }
+      }
+    }
   }
 }
