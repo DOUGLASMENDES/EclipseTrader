@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.PreferencePage;
@@ -142,14 +143,7 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
   {
     Vector _v = new Vector();
 
-    Composite composite = new Composite(parent, SWT.NULL);
-    GridData data = new GridData(GridData.FILL_BOTH);
-    data.grabExcessHorizontalSpace = true;
-    composite.setLayoutData(data);
-    GridLayout layout = new GridLayout();
-    composite.setLayout(layout);
-
-    Composite entryTable = new Composite(composite, SWT.NONE);
+    Composite entryTable = new Composite(parent, SWT.NONE);
     entryTable.setLayout(new GridLayout(2, false));
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
@@ -158,6 +152,10 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
     _v.add(new ColorFieldEditor("index.background", Messages.getString("IndicesPreferencePage.background"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
     _v.add(new ColorFieldEditor("index.positive_value_color", Messages.getString("IndicesPreferencePage.positiveValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
     _v.add(new ColorFieldEditor("index.negative_value_color", Messages.getString("IndicesPreferencePage.negativeValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+
+    // Box layout preferences
+    Composite group = new Composite(entryTable, SWT.NONE);
+    _v.add(new BooleanFieldEditor("index.equal_size", Messages.getString("IndicesPreferencePage.makeBoxEqual"), group));         //$NON-NLS-1$ //$NON-NLS-2$
 
     // Index table label
     Label label = new Label(entryTable, SWT.NONE);
@@ -388,8 +386,6 @@ public class IndicesPreferencePage extends PreferencePage implements IWorkbenchP
         {
           providers.append(provider.getId() + ","); //$NON-NLS-1$
           symbols.deleteCharAt(symbols.length() - 1);
-          System.out.println(provider.getId());
-          System.out.println("   " + symbols); //$NON-NLS-1$
         }
         getPreferenceStore().setValue("index." + provider.getId(), symbols.toString()); //$NON-NLS-1$
       }

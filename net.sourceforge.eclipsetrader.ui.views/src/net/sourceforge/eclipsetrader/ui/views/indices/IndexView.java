@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -63,7 +63,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
-  private Composite parent;
+  private Composite parent, composite;
   private Image up = Images.ICON_UP.createImage();
   private Image down = Images.ICON_DOWN.createImage();
   private Image equal = Images.ICON_EQUAL.createImage();
@@ -92,9 +92,13 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
   public void createPartControl(Composite parent)
   {
     this.parent = parent;
+    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
+    
+    composite = new Composite(parent, SWT.NONE);
     RowLayout rowLayout = new RowLayout();
     rowLayout.wrap = true;
-    rowLayout.pack = false;
+    rowLayout.pack = pref.getBoolean("index.equal_size") == true ? false : true;
+    rowLayout.fill = true;
     rowLayout.justify = false;
     rowLayout.type = SWT.HORIZONTAL;
     rowLayout.marginLeft = 2;
@@ -102,9 +106,8 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
     rowLayout.marginRight = 2;
     rowLayout.marginBottom = 2;
     rowLayout.spacing = 3;
-    parent.setLayout(rowLayout);
+    composite.setLayout(rowLayout);
     
-    IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
     String[] providers = pref.getString("index.providers").split(",");
     for (int i = 0; i < providers.length; i++)
     {
@@ -114,7 +117,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
       {
         for (int ii = 0; ii < symbols.length; ii++)
         {
-          IndexWidget w = new IndexWidget(parent, SWT.NONE);
+          IndexWidget w = new IndexWidget(composite, SWT.NONE);
           w.setSymbol(symbols[ii]);
           w.setLayoutData(new RowData());
           widgets.add(w);
@@ -179,7 +182,6 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
     menuMgr.setRemoveAllWhenShown(true);
     menuMgr.addMenuListener(new IMenuListener() {
       public void menuAboutToShow(IMenuManager mgr) {
-        System.out.println("aboutToShow: " + mgr.getId());
         selectedSymbol = mgr.getId();
         mgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
       }
@@ -216,9 +218,9 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
   public void indexUpdate(IIndexDataProvider provider)
   {
     final IExtendedData[] data = provider.getIndexData();
-    parent.getDisplay().asyncExec(new Runnable() {
+    composite.getDisplay().asyncExec(new Runnable() {
       public void run() {
-        parent.setRedraw(false);
+        composite.setRedraw(false);
         for (int i = 0; i < data.length; i++)
         {
           map.put(data[i].getSymbol(), data[i]);
@@ -229,8 +231,8 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
               widget.setData(data[i]);
           }
         }
-        parent.setRedraw(true);
-        parent.layout();
+        composite.setRedraw(true);
+        composite.layout();
       }
     });
   }
@@ -258,6 +260,26 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
         if (ip != null)
           ip.removeUpdateListener(this);
       }
+      updateWidgets = true;
+    }
+    else if (event.getProperty().equalsIgnoreCase("index.equal_size") == true)
+    {
+      composite.dispose();
+      parent.layout();
+      composite = new Composite(parent, SWT.NONE);
+      RowLayout rowLayout = new RowLayout();
+      rowLayout.wrap = true;
+      rowLayout.pack = pref.getBoolean("index.equal_size") == true ? false : true;
+      rowLayout.fill = true;
+      rowLayout.justify = false;
+      rowLayout.type = SWT.HORIZONTAL;
+      rowLayout.marginLeft = 2;
+      rowLayout.marginTop = 2;
+      rowLayout.marginRight = 2;
+      rowLayout.marginBottom = 2;
+      rowLayout.spacing = 3;
+      composite.setLayout(rowLayout);
+      widgets.removeAllElements();
       updateWidgets = true;
     }
     else if (event.getProperty().startsWith("index.") == true)
@@ -297,7 +319,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
       // Creates new widgets for new symbols
       while (totalWidgets > widgets.size())
       {
-        IndexWidget w = new IndexWidget(parent, SWT.NONE);
+        IndexWidget w = new IndexWidget(composite, SWT.NONE);
         w.setLayoutData(new RowData());
         widgets.add(w);
         createContextMenu(w);
@@ -380,10 +402,10 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
   {
     String CHART_ID = "net.sourceforge.eclipsetrader.ui.views.ChartView"; //$NON-NLS-1$
 
-    Enumeration enum = widgets.elements();
-    while(enum.hasMoreElements() == true)
+    Enumeration enumeration = widgets.elements();
+    while(enumeration.hasMoreElements() == true)
     {
-      IndexWidget w = (IndexWidget)enum.nextElement();
+      IndexWidget w = (IndexWidget)enumeration.nextElement();
       if (w.getSymbol().equalsIgnoreCase(selectedSymbol) == true)
       {
         IExtendedData data = (IExtendedData)w.getData();
@@ -408,10 +430,10 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
   
   public void openIntradayChart()
   {
-    Enumeration enum = widgets.elements();
-    while(enum.hasMoreElements() == true)
+    Enumeration enumeration = widgets.elements();
+    while(enumeration.hasMoreElements() == true)
     {
-      IndexWidget w = (IndexWidget)enum.nextElement();
+      IndexWidget w = (IndexWidget)enumeration.nextElement();
       if (w.getSymbol().equalsIgnoreCase(selectedSymbol) == true)
       {
         IExtendedData data = (IExtendedData)w.getData();
