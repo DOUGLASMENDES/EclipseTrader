@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -67,34 +68,34 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
     Label label = new Label(entryTable, SWT.NONE);
-    label.setText("Stock Quotes");
+    label.setText(Messages.getString("GeneralPreferencePage.stockQuotes")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     Combo combo = new Combo(entryTable, SWT.BORDER|SWT.DROP_DOWN|SWT.READ_ONLY);
-    addPluginList("net.sourceforge.eclipsetrader.dataProvider", combo);
+    addPluginList("net.sourceforge.eclipsetrader.dataProvider", combo); //$NON-NLS-1$
     combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     dataProvider = combo;
 
     label = new Label(entryTable, SWT.NONE);
-    label.setText("Level II / Market Depth");
+    label.setText(Messages.getString("GeneralPreferencePage.level2")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     combo = new Combo(entryTable, SWT.BORDER|SWT.DROP_DOWN|SWT.READ_ONLY);
-    addPluginList("net.sourceforge.eclipsetrader.bookDataProvider", combo);
+    addPluginList("net.sourceforge.eclipsetrader.bookDataProvider", combo); //$NON-NLS-1$
     combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     bookDataProvider = combo;
 
     label = new Label(entryTable, SWT.NONE);
-    label.setText("Charts");
+    label.setText(Messages.getString("GeneralPreferencePage.charts")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     combo = new Combo(entryTable, SWT.BORDER|SWT.DROP_DOWN|SWT.READ_ONLY);
-    addPluginList("net.sourceforge.eclipsetrader.chartDataProvider", combo);
+    addPluginList("net.sourceforge.eclipsetrader.chartDataProvider", combo); //$NON-NLS-1$
     combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     chartProvider = combo;
 
     label = new Label(entryTable, SWT.NONE);
-    label.setText("News");
+    label.setText(Messages.getString("GeneralPreferencePage.news")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     combo = new Combo(entryTable, SWT.BORDER|SWT.DROP_DOWN|SWT.READ_ONLY);
-    addPluginList("net.sourceforge.eclipsetrader.newsProvider", combo);
+    addPluginList("net.sourceforge.eclipsetrader.newsProvider", combo); //$NON-NLS-1$
     combo.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     newsProvider = combo;
 
@@ -125,17 +126,17 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
       editor[i].store();
 
     IPreferenceStore ps = getPreferenceStore(); 
-    ps.setValue("net.sourceforge.eclipsetrader.dataProvider", getComboValue(dataProvider));
-    ps.setValue("net.sourceforge.eclipsetrader.bookDataProvider", getComboValue(bookDataProvider));
-    ps.setValue("net.sourceforge.eclipsetrader.chartDataProvider", getComboValue(chartProvider));
-    ps.setValue("net.sourceforge.eclipsetrader.newsProvider", getComboValue(newsProvider));
+    ps.setValue("net.sourceforge.eclipsetrader.dataProvider", getComboValue(dataProvider)); //$NON-NLS-1$
+    ps.setValue("net.sourceforge.eclipsetrader.bookDataProvider", getComboValue(bookDataProvider)); //$NON-NLS-1$
+    ps.setValue("net.sourceforge.eclipsetrader.chartDataProvider", getComboValue(chartProvider)); //$NON-NLS-1$
+    ps.setValue("net.sourceforge.eclipsetrader.newsProvider", getComboValue(newsProvider)); //$NON-NLS-1$
 
     return super.performOk();
   }
   
   private String getComboValue(Combo combo)
   {
-    String value = "";
+    String value = ""; //$NON-NLS-1$
     if (combo.getSelectionIndex() != -1)
       value = (String)combo.getData(String.valueOf(combo.getSelectionIndex()));
     return value;
@@ -160,19 +161,25 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
       {
         IConfigurationElement item1 = (IConfigurationElement)o1;
         IConfigurationElement item2 = (IConfigurationElement)o2;
-        return item1.getAttribute("label").compareTo(item2.getAttribute("label"));
+        return item1.getAttribute("label").compareTo(item2.getAttribute("label")); //$NON-NLS-1$ //$NON-NLS-2$
       }
     });
-
+    
     // Inserisce l'elenco nel combo impostando l'id nei dati del controllo
     String id = getPreferenceStore().getString(ep);
+    
+    combo.add("-- None --");
+    combo.setData(String.valueOf(0), "");
+    if (id.equalsIgnoreCase("") == true) //$NON-NLS-1$
+      combo.setText(combo.getItem(0));
+    
     for (int i = 0; i < v.size(); i++)
     {
       IConfigurationElement member = (IConfigurationElement)v.elementAt(i);
-      combo.add(member.getAttribute("label"));
-      combo.setData(String.valueOf(i), member.getAttribute("id"));
-      if (id.equalsIgnoreCase(member.getAttribute("id")) == true)
-        combo.setText(member.getAttribute("label"));
+      combo.add(member.getAttribute("label")); //$NON-NLS-1$
+      combo.setData(String.valueOf(i + 1), member.getAttribute("id")); //$NON-NLS-1$
+      if (id.equalsIgnoreCase(member.getAttribute("id")) == true) //$NON-NLS-1$
+        combo.setText(combo.getItem(i + 1));
     }
   }
 }

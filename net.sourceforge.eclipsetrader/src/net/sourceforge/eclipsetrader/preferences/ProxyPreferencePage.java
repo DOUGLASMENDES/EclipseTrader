@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.preferences;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.internal.Messages;
 
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -71,91 +72,91 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
     entryTable.setLayout(gridLayout);
 
     button1 = new Button(entryTable, SWT.RADIO);
-    button1.setText("Direct connection to the Internet");
-    button1.setSelection(getPreferenceStore().getInt("PROXY_ENABLED") == 0 ? true : false);
+    button1.setText(Messages.getString("ProxyPreferencePage.directConnection")); //$NON-NLS-1$
+    button1.setSelection(getPreferenceStore().getInt("PROXY_ENABLED") == 0 ? true : false); //$NON-NLS-1$
     GridData gridData = new GridData();
     gridData.horizontalSpan = 4;
     button1.setLayoutData(gridData);
     
     button2 = new Button(entryTable, SWT.RADIO);
-    button2.setText("Manual proxy configuration");
-    button2.setSelection(getPreferenceStore().getInt("PROXY_ENABLED") == 1 ? true : false);
+    button2.setText(Messages.getString("ProxyPreferencePage.manualConfiguration")); //$NON-NLS-1$
+    button2.setSelection(getPreferenceStore().getInt("PROXY_ENABLED") == 1 ? true : false); //$NON-NLS-1$
     gridData = new GridData();
     gridData.horizontalSpan = 4;
     button2.setLayoutData(gridData);
 
     Label label = new Label(entryTable, SWT.NONE);
-    label.setText("HTTP Proxy");
+    label.setText(Messages.getString("ProxyPreferencePage.httpProxy")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     httpHost = new Text(entryTable, SWT.BORDER);
-    httpHost.setText(getPreferenceStore().getString("HTTP_PROXY_HOST"));
+    httpHost.setText(getPreferenceStore().getString("HTTP_PROXY_HOST")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 120;
     httpHost.setLayoutData(gridData);
     label = new Label(entryTable, SWT.NONE);
-    label.setText("Port");
+    label.setText(Messages.getString("ProxyPreferencePage.httpPort")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     httpPort = new Text(entryTable, SWT.BORDER);
-    httpPort.setText(getPreferenceStore().getString("HTTP_PROXY_PORT"));
+    httpPort.setText(getPreferenceStore().getString("HTTP_PROXY_PORT")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 30;
     httpPort.setLayoutData(gridData);
 
     label = new Label(entryTable, SWT.NONE);
-    label.setText("SSL Proxy");
+    label.setText(Messages.getString("ProxyPreferencePage.sslProxy")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     httpsHost = new Text(entryTable, SWT.BORDER);
-    httpsHost.setText(getPreferenceStore().getString("HTTPS_PROXY_HOST"));
+    httpsHost.setText(getPreferenceStore().getString("HTTPS_PROXY_HOST")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 120;
     httpsHost.setLayoutData(gridData);
     label = new Label(entryTable, SWT.NONE);
-    label.setText("Port");
+    label.setText(Messages.getString("ProxyPreferencePage.sslPort")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     httpsPort = new Text(entryTable, SWT.BORDER);
-    httpsPort.setText(getPreferenceStore().getString("HTTPS_PROXY_PORT"));
+    httpsPort.setText(getPreferenceStore().getString("HTTPS_PROXY_PORT")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 30;
     httpsPort.setLayoutData(gridData);
 
     label = new Label(entryTable, SWT.NONE);
-    label.setText("SOCKS Host");
+    label.setText(Messages.getString("ProxyPreferencePage.socksProxy")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     socksHost = new Text(entryTable, SWT.BORDER);
-    socksHost.setText(getPreferenceStore().getString("SOCKS_PROXY_HOST"));
+    socksHost.setText(getPreferenceStore().getString("SOCKS_PROXY_HOST")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 120;
     socksHost.setLayoutData(gridData);
     label = new Label(entryTable, SWT.NONE);
-    label.setText("Port");
+    label.setText(Messages.getString("ProxyPreferencePage.socksPort")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     socksPort = new Text(entryTable, SWT.BORDER);
-    socksPort.setText(getPreferenceStore().getString("SOCKS_PROXY_PORT"));
+    socksPort.setText(getPreferenceStore().getString("SOCKS_PROXY_PORT")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 30;
     socksPort.setLayoutData(gridData);
 
     Group group = new Group(entryTable, SWT.NONE);
-    group.setText("Authentication");
+    group.setText(Messages.getString("ProxyPreferencePage.authentication")); //$NON-NLS-1$
     group.setLayout(new GridLayout(2, false));
     gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.horizontalSpan = 4;
     group.setLayoutData(gridData);
 
     label = new Label(group, SWT.NONE);
-    label.setText("User");
+    label.setText(Messages.getString("ProxyPreferencePage.user")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     text7 = new Text(group, SWT.BORDER);
-    text7.setText(getPreferenceStore().getString("PROXY_USER_NAME"));
+    text7.setText(getPreferenceStore().getString("PROXY_USER_NAME")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 120;
     text7.setLayoutData(gridData);
     label = new Label(group, SWT.NONE);
-    label.setText("Password");
+    label.setText(Messages.getString("ProxyPreferencePage.password")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     text8 = new Text(group, SWT.BORDER);
     text8.setEchoChar('*');
-    text8.setText(getPreferenceStore().getString("PROXY_PASSWORD"));
+    text8.setText(getPreferenceStore().getString("PROXY_PASSWORD")); //$NON-NLS-1$
     gridData = new GridData();
     gridData.widthHint = 120;
     text8.setLayoutData(gridData);
@@ -191,18 +192,18 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
       editor[i].store();
 
     IPreferenceStore ps = getPreferenceStore();
-    ps.setValue("HTTP_PROXY_HOST", httpHost.getText());
-    ps.setValue("HTTP_PROXY_PORT", httpPort.getText());
-    ps.setValue("HTTPS_PROXY_HOST", httpsHost.getText());
-    ps.setValue("HTTPS_PROXY_PORT", httpsPort.getText());
-    ps.setValue("SOCKS_PROXY_HOST", socksHost.getText());
-    ps.setValue("SOCKS_PROXY_PORT", socksPort.getText());
-    ps.setValue("PROXY_USER_NAME", text7.getText());
-    ps.setValue("PROXY_PASSWORD", text8.getText());
+    ps.setValue("HTTP_PROXY_HOST", httpHost.getText()); //$NON-NLS-1$
+    ps.setValue("HTTP_PROXY_PORT", httpPort.getText()); //$NON-NLS-1$
+    ps.setValue("HTTPS_PROXY_HOST", httpsHost.getText()); //$NON-NLS-1$
+    ps.setValue("HTTPS_PROXY_PORT", httpsPort.getText()); //$NON-NLS-1$
+    ps.setValue("SOCKS_PROXY_HOST", socksHost.getText()); //$NON-NLS-1$
+    ps.setValue("SOCKS_PROXY_PORT", socksPort.getText()); //$NON-NLS-1$
+    ps.setValue("PROXY_USER_NAME", text7.getText()); //$NON-NLS-1$
+    ps.setValue("PROXY_PASSWORD", text8.getText()); //$NON-NLS-1$
     if (button1.getSelection() == true)
-      ps.setValue("PROXY_ENABLED", 0);
+      ps.setValue("PROXY_ENABLED", 0); //$NON-NLS-1$
     else if (button2.getSelection() == true)
-      ps.setValue("PROXY_ENABLED", 1);
+      ps.setValue("PROXY_ENABLED", 1); //$NON-NLS-1$
 
     return super.performOk();
   }

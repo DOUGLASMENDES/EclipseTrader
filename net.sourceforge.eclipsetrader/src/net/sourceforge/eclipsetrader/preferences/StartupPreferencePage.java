@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.preferences;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.internal.Messages;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
@@ -59,7 +60,7 @@ public class StartupPreferencePage extends PreferencePage implements IWorkbenchP
     entryTable.setLayout(new GridLayout(2, false));
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-    _v.add(new BooleanFieldEditor("net.sourceforge.eclipsetrader.promptOnExit", "Confirm exit", entryTable));        
+    _v.add(new BooleanFieldEditor("net.sourceforge.eclipsetrader.promptOnExit", Messages.getString("StartupPreferencePage.confirmExit"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
     ((BooleanFieldEditor)_v.elementAt(_v.size() - 1)).fillIntoGrid(entryTable, 2);
 
     // Perform operations common to all field editors
@@ -97,7 +98,7 @@ public class StartupPreferencePage extends PreferencePage implements IWorkbenchP
   
   private String getComboValue(Combo combo)
   {
-    String value = "";
+    String value = ""; //$NON-NLS-1$
     if (combo.getSelectionIndex() != -1)
       value = (String)combo.getData(String.valueOf(combo.getSelectionIndex()));
     return value;

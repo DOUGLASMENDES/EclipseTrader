@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.preferences;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.internal.Messages;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
@@ -58,15 +59,15 @@ public class TimingPreferencePage extends PreferencePage implements IWorkbenchPr
     Composite entryTable = new Composite(composite, SWT.NONE);
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-    _v.add(new BooleanFieldEditor("net.sourceforge.eclipsetrader.timing.session1", "Regular Session Time", entryTable));
-    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.startTime1", "Start", entryTable));
-    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.stopTime1", "End", entryTable));
+    _v.add(new BooleanFieldEditor("net.sourceforge.eclipsetrader.timing.session1", Messages.getString("TimingPreferencePage.regularSession"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.startTime1", Messages.getString("TimingPreferencePage.regularSessionStart"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.stopTime1", Messages.getString("TimingPreferencePage.regularSessionEnd"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
 
-    _v.add(new BooleanFieldEditor("net.sourceforge.eclipsetrader.timing.session2", "AfterHours Session Time", entryTable));
-    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.startTime2", "Start", entryTable));
-    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.stopTime2", "End", entryTable));
+    _v.add(new BooleanFieldEditor("net.sourceforge.eclipsetrader.timing.session2", Messages.getString("TimingPreferencePage.afterHoursSession"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.startTime2", Messages.getString("TimingPreferencePage.afterHoursSessionStart"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new TimeFieldEditor("net.sourceforge.eclipsetrader.timing.stopTime2", Messages.getString("TimingPreferencePage.afterHoursSessionEnd"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
 
-    _v.add(new StringFieldEditor("net.sourceforge.eclipsetrader.rtchart.period", "Intraday Chart Period", 3, entryTable));
+    _v.add(new StringFieldEditor("net.sourceforge.eclipsetrader.rtchart.period", Messages.getString("TimingPreferencePage.intradayChartPeriod"), 3, entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
     ((StringFieldEditor)_v.lastElement()).fillIntoGrid(entryTable, 5);
 
     // Must be here, otherwise the layout will be replaced by FieldEditors.
