@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Finance"
-   version="0.10.0"
+   version="0.11.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
@@ -32,6 +32,11 @@
             category="yahoo"
             name="Mapping"
             id="yahoo.mapping"/>
+      <page
+            class="net.sourceforge.eclipsetrader.yahoo.NewsPreferencePage"
+            category="yahoo"
+            name="News"
+            id="yahoo.news"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.dataProvider">
@@ -73,106 +78,139 @@
             id="yahoo.indexProvider">
          <category name="Europe">
             <index
+                  ticker="STOXX50E"
                   label="DJ Euro STOXX 50"
                   symbol="^STOXX50E"/>
             <index
+                  ticker="BFX"
                   label="Bruxelles BFX"
                   symbol="^BFX"/>
             <index
+                  ticker="GDAXI"
                   label="Frankfurt DAX30"
                   symbol="^GDAXI"/>
             <index
+                  ticker="FCHI"
                   label="Paris CAC40"
                   symbol="^FCHI"/>
             <index
+                  ticker="FTSE"
                   label="London FTSE100"
                   symbol="^FTSE"/>
          </category>
          <category name="Italy">
             <index
+                  ticker="MIBTEL"
                   label="MIBTEL"
                   symbol="^MIBTEL"/>
             <index
+                  ticker="MIB30"
                   label="MIB30"
                   symbol="^MIB30"/>
             <index
+                  ticker="MIDEX"
                   label="MIDEX"
                   symbol="^MIDEX"/>
             <index
+                  ticker="NUMTEL"
                   label="NUMTEL"
                   symbol="^NUMTEL"/>
             <index
+                  ticker="NUMEX"
                   label="NUMEX"
                   symbol="^NUMEX"/>
             <index
+                  ticker="SPMIB"
                   label="S/P MIB"
                   symbol="^SPMIB"/>
             <index
+                  ticker="MIBTEL-S"
                   label="MIBTEL-S"
                   symbol="^MIBTELS"/>
             <index
+                  ticker="MIB30-S"
                   label="MIB30-S"
                   symbol="^MIB30S"/>
             <index
+                  ticker="MIDEX-S"
                   label="MIDEX-S"
                   symbol="^MIDEXS"/>
             <index
+                  ticker="NUMTEL-S"
                   label="NUMTEL-S"
                   symbol="^NUMTELS"/>
          </category>
          <category name="United States">
             <index
+                  ticker="DJI"
                   label="DJ Ind."
                   symbol="^DJI"/>
             <index
+                  ticker="DJT"
                   label="DJ Trans."
                   symbol="^DJT"/>
             <index
+                  ticker="DJU"
                   label="DJ Util."
                   symbol="^DJU"/>
             <index
+                  ticker="DJA"
                   label="DJ Comp."
                   symbol="^DJA"/>
             <index
+                  ticker="IXIC"
                   label="Nasdaq Comp."
                   symbol="^IXIC"/>
             <index
+                  ticker="NDX"
                   label="Nasdaq 100"
                   symbol="^NDX"/>
             <index
+                  ticker="IXFN"
                   label="Nasdaq Fin."
                   symbol="^IXFN"/>
             <index
+                  ticker="IXF"
                   label="Nasdaq Fin.100"
                   symbol="^IXF"/>
             <index
+                  ticker="IXID"
                   label="Nasdaq Ind."
                   symbol="^IXID"/>
             <index
+                  ticker="IXIS"
                   label="Nasdaq Ins."
                   symbol="^IXIS"/>
             <index
+                  ticker="IXK"
                   label="Nasdaq Computers"
                   symbol="^IXK"/>
             <index
+                  ticker="IXTR"
                   label="Nasdaq Trans."
                   symbol="^IXTR"/>
             <index
+                  ticker="IXUT"
                   label="Nasdaq Tel."
                   symbol="^IXUT"/>
             <index
+                  ticker="OEX"
                   label="S/P 100"
                   symbol="^OEX"/>
             <index
+                  ticker="GSPC"
                   label="S/P 500"
                   symbol="^GSPC"/>
             <index
+                  ticker="MID"
                   label="S/P MidCap"
                   symbol="^MID"/>
             <index
+                  ticker="SML"
                   label="S/P SmallCap"
                   symbol="^SML"/>
             <index
+                  ticker="SPSUPX"
                   label="S/P SuperComp"
                   symbol="^SPSUPX"/>
          </category>
