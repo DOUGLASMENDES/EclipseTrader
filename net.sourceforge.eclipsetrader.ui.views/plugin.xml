@@ -134,32 +134,32 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.Portfolio"
             id="net.sourceforge.eclipsetrader.ui.views.Portfolio.contextMenu">
          <action
-               label="Grafico Storico"
+               label="%stockwatch.openChart"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="group1"
                id="net.sourceforge.eclipsetrader.views.openChart"/>
          <action
-               label="Grafico Realtime"
+               label="%stockwatch.openRealtimeChart"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="group2"
                id="net.sourceforge.eclipsetrader.views.openRealtimeChart"/>
          <action
-               label="Book a 5 Livelli"
+               label="%stockwatch.openPriceBook"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="group2"
                id="net.sourceforge.eclipsetrader.views.openPriceBook"/>
          <action
-               label="Elimina"
+               label="%stockwatch.remove"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="group3"
                id="portfolio.remove"/>
          <action
-               label="Modifica"
+               label="%stockwatch.edit"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="group3"
                id="portfolio.edit"/>
          <action
-               label="Aggiungi"
+               label="%stockwatch.add"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="group3"
                id="portfolio.add"/>
@@ -168,32 +168,32 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
             id="net.sourceforge.eclipsetrader.ui.views.ChartView.contextMenu">
          <action
-               label="Bar"
+               label="%chart.bar"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group1"
                id="chart.bar"/>
          <action
-               label="Candle"
+               label="%chart.candle"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group1"
                id="chart.candle"/>
          <action
-               label="Line"
+               label="%chart.line"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group1"
                id="chart.line"/>
          <action
-               label="Remove"
+               label="%chart.remove"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
                id="chart.remove"/>
          <action
-               label="Edit"
+               label="%chart.edit"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
                id="chart.edit"/>
          <action
-               label="Add"
+               label="%chart.add"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
                id="chart.add"/>
