@@ -80,6 +80,11 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
    */
   public void setData(IExtendedData[] newData)
   {
+    IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
+    symbolField = ps.getInt("yahoo.field");
+    useMapping = ps.getBoolean("yahoo.mapping");
+    defaultExtension = ps.getString("yahoo.suffix");
+
     IExtendedData[] data = getData();
     if (data != null)
     {

@@ -78,17 +78,17 @@ public class Streamer
   public void addSymbol(String symbol)
   {
     if (data.get(symbol) == null)
-      data.put(symbol, TraderPlugin.createExtendedData());
+      data.put(symbol.toUpperCase(), TraderPlugin.createExtendedData());
   }
   
   public void removeSymbol(String symbol)
   {
-    data.remove(symbol);
+    data.remove(symbol.toUpperCase());
   }
   
   public IExtendedData getData(String symbol)
   {
-    return (IExtendedData)data.get(symbol);
+    return (IExtendedData)data.get(symbol.toUpperCase());
   }
 
   private void update()
@@ -127,22 +127,26 @@ public class Streamer
           item = line.split(";");
         else
           item = line.split(",");
+//        System.out.println(line);
 
         // 0 = Code
-        IExtendedData pd = (IExtendedData)data.get(stripQuotes(item[0]));
+        IExtendedData pd = (IExtendedData)data.get(stripQuotes(item[0].toUpperCase()));
         if (pd == null)
           continue;
         
-        try {
           // 1 = Last price or N/A
           if (item[1].equalsIgnoreCase("N/A") == false)
             pd.setLastPrice(Double.parseDouble(item[1].replace(',', '.')));
           // 2 = Date
           // 3 = Time
+        try {
           if (item[3].indexOf("am") != -1 || item[3].indexOf("pm") != -1)
             pd.setDate(df_us.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3])));
           else
             pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3]) + ":00"));
+        } catch(Exception x) {
+          System.out.println(x.getMessage());
+        };
           // 4 = Change
           // 5 = Open
           if (item[5].equalsIgnoreCase("N/A") == false)
@@ -169,15 +173,14 @@ public class Streamer
           // Data not available from Yahoo
           pd.setBidSize(0);
           pd.setAskSize(0);
-        } catch(Exception x) { x.printStackTrace(); };
       }
       in.close();
     } catch(IOException x) {};
     
-    Enumeration enum = listeners.elements();
-    while(enum.hasMoreElements() == true)
+    Enumeration enumeration = listeners.elements();
+    while(enumeration.hasMoreElements() == true)
     {
-      Object obj = enum.nextElement();
+      Object obj = enumeration.nextElement();
       if (obj instanceof SnapshotDataProvider)
         ((SnapshotDataProvider)obj).update();
       if (obj instanceof IndexDataProvider)
