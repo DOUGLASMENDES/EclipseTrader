@@ -63,6 +63,8 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
   private HashMap _rtListener = new HashMap();
   private IRealtimeChartProvider realtimeChartProvider;
   private boolean needSaving = false;
+  private Calendar current = Calendar.getInstance();
+  private Calendar last = Calendar.getInstance();
   
   public DataCollector(IRealtimeChartProvider realtimeChartProvider)
   {
@@ -185,8 +187,10 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
    */
   public void dataUpdated(IBasicDataProvider dataProvider, IBasicData basicData)
   {
-    Calendar current = Calendar.getInstance();
     IExtendedData data = (IExtendedData)basicData;
+    
+//    if (data.getTicker().equalsIgnoreCase("STM") == true)
+//      System.out.println(dtf.format(data.getDate()) + " " + pf.format(data.getLastPrice()) + " " + nf.format(data.getVolume()));
     
     if (lastUpdate == 0)
     {
@@ -202,7 +206,6 @@ public class DataCollector implements IDataUpdateListener, IPropertyChangeListen
     if (chartData != null)
     {
       // Check if the time period is completed
-      Calendar last = Calendar.getInstance();
       last.setTime(chartData.getDate());
       if ((current.getTimeInMillis() - last.getTimeInMillis()) / 1000 >= period)
       {
