@@ -928,7 +928,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       ((ChartCanvas)chart.elementAt(i)).setMargin(margin);
   }
   
-  private void setScaleWidth(int scaleWidth)
+  public void setScaleWidth(int scaleWidth)
   {
     this.scaleWidth = scaleWidth;
     for (int i = 0; i < chart.size(); i++)
