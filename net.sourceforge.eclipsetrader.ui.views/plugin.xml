@@ -293,6 +293,10 @@
    <extension
          point="net.sourceforge.eclipsetrader.chartPlotter">
       <plotter
+            label="Accumulation/Distribution"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.AccumulationDistributionChart"
+            id="net.sourceforge.eclipsetrader.charts.accumulationDistribution"/>
+      <plotter
             label="Bollinger Bands"
             class="net.sourceforge.eclipsetrader.ui.views.charts.BollingerBandsChart"
             id="net.sourceforge.eclipsetrader.charts.bollinger"/>
