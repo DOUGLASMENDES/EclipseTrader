@@ -11,6 +11,7 @@
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.io.File;
+import java.util.Calendar;
 
 import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBasicData;
@@ -73,7 +74,42 @@ public class HistoryChartView extends ChartView
   {
     dataProvider = TraderPlugin.getChartDataProvider();
     if (dataProvider != null)
-      return dataProvider.getData(basicData);
+    {
+      IChartData[] chartData = dataProvider.getData(basicData);
+
+      // Check if the user has selected a subperiod to display
+      if (limitPeriod != 0)
+      {
+        // Set the limit date
+        Calendar limit = Calendar.getInstance();
+        limit.set(Calendar.HOUR, 0);
+        limit.set(Calendar.MINUTE, 0);
+        limit.set(Calendar.SECOND, 0);
+        limit.add(Calendar.MONTH, -limitPeriod);
+  
+        // Find the first element that is after the limit date
+        int srcPos = 0;
+        Calendar chart = Calendar.getInstance();
+        for (; srcPos < chartData.length; srcPos++)
+        {
+          chart.setTime(chartData[srcPos].getDate());
+          if (chart.after(limit) == true || chart.equals(limit) == true)
+            break;
+        }
+
+        // Create an array with a subset of the original chart data
+        if (srcPos != 0)
+        {
+          int length = chartData.length - srcPos;
+          IChartData[] newChartData = new IChartData[length];
+          System.arraycopy(chartData, srcPos, newChartData, 0, length);
+          chartData = newChartData;
+        }
+      }
+
+      return chartData;
+    }
+    
     return null;
   }
   
@@ -86,7 +122,7 @@ public class HistoryChartView extends ChartView
         if (dataProvider != null)
         {
           try {
-          dataProvider.update(basicData);
+            dataProvider.update(basicData);
           } catch(Exception e) {
             return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause()); 
           };

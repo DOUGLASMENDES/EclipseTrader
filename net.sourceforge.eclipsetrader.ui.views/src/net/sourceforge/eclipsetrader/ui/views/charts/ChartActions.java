@@ -57,6 +57,14 @@ public class ChartActions implements IViewActionDelegate
       view.setChartType(PriceChart.CANDLE);
     else if (action.getId().equalsIgnoreCase("chart.bar") == true)
       view.setChartType(PriceChart.BAR);
+    else if (action.getId().equalsIgnoreCase("view.all") == true)
+      view.setLimitPeriod(0);
+    else if (action.getId().equalsIgnoreCase("view.last6months") == true)
+      view.setLimitPeriod(6);
+    else if (action.getId().equalsIgnoreCase("view.last1year") == true)
+      view.setLimitPeriod(12);
+    else if (action.getId().equalsIgnoreCase("view.last2years") == true)
+      view.setLimitPeriod(24);
   }
 
   /* (non-Javadoc)

@@ -75,6 +75,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   protected int width = 5;
   protected int margin = 2;
   protected int scaleWidth = 60;
+  protected int limitPeriod = 12;
   protected Composite container;
   protected Composite composite;
   protected SashForm form;
@@ -217,6 +218,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       canvas.dispose();
     }
     chart.removeAllElements();
+    limitPeriod = 12;
 
     // Read the preferences files for the new chart
     File f = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs");
@@ -232,7 +234,13 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         for (int i = 0; i < firstChild.getLength(); i++)
         {
           Node n = firstChild.item(i);
-          if (n.getNodeName().equalsIgnoreCase("section"))
+          if (n.getNodeName().equalsIgnoreCase("settings"))
+          {
+            Node attr = n.getAttributes().getNamedItem("limit");
+            if (attr != null)
+              limitPeriod = Integer.parseInt(attr.getNodeValue());
+          }
+          else if (n.getNodeName().equalsIgnoreCase("section"))
           {
             ChartCanvas canvas = new ChartCanvas(form);
             canvas.createContextMenu(this);
@@ -347,10 +355,14 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.getDOMImplementation().createDocument("", "preferences", null);
 
+      Element element = document.createElement("settings");
+      element.setAttribute("limit", String.valueOf(limitPeriod));
+      document.getDocumentElement().appendChild(element);
+
       int[] weights = form.getWeights();
       for (int i = 0; i < weights.length; i++)
       {
-        Element element = document.createElement("section");
+        element = document.createElement("section");
         element.setAttribute("height", String.valueOf(weights[i]));
         ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
         for (int ii = 0; ii < canvas.getPainterCount(); ii++)
@@ -665,7 +677,26 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     for (int i = 0; i < chart.size(); i++)
       ((ChartCanvas)chart.elementAt(i)).setScaleWidth(scaleWidth);
   }
-  
+
+  /**
+   * Method to return the limitPeriod field.<br>
+   * @return Returns the limitPeriod.
+   */
+  public int getLimitPeriod()
+  {
+    return limitPeriod;
+  }
+  /**
+   * Method to set the limitPeriod field.<br>
+   * @param limitPeriod The limitPeriod to set.
+   */
+  public void setLimitPeriod(int limitPeriod)
+  {
+    this.limitPeriod = limitPeriod;
+    savePreferences();
+    setData(basicData);
+  }
+
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
    */

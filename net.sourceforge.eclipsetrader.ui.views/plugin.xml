@@ -262,6 +262,38 @@
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                id="chart.refresh"/>
+         <menu
+               label="View All"
+               path="all"
+               id="chart.menu1"/>
+         <menu
+               label="View Period"
+               path="period"
+               id="chart.menu2"/>
+         <action
+               label="View last 2 years"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               menubarPath="period"
+               id="view.last2year"/>
+         <action
+               label="View last year"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               menubarPath="period"
+               id="view.last1year"/>
+         <action
+               label="View last 6 months"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               menubarPath="period"
+               id="view.last6months"/>
+         <action
+               label="View all"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               style="push"
+               menubarPath="all"
+               id="view.all"/>
       </viewContribution>
       <viewContribution
             targetID="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"
