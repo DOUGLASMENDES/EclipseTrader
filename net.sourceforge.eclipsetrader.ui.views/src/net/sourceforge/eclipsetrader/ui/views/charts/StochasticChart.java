@@ -22,25 +22,15 @@ import org.eclipse.swt.graphics.GC;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class RSIChart extends ChartPainter implements IChartPlotter
+public class StochasticChart extends ChartPainter implements IChartPlotter
 {
   private int period = 14;
+  private int subperiod = 3;
   private HashMap params = new HashMap();
   
-  public RSIChart()
+  public StochasticChart()
   {
-    name = "RSI";
-  }
-  
-  public RSIChart(int period)
-  {
-    this.period = period;
-  }
-  
-  public RSIChart(int period, Color color)
-  {
-    this.period = period;
-    this.lineColor = color;
+    name = "Stochastic";
   }
   
   public void setPeriod(int period)
@@ -66,44 +56,41 @@ public class RSIChart extends ChartPainter implements IChartPlotter
       gc.drawLine(0, y1, width, y1);
 
       // Computa i punti
-      if (data.length > period)
+      if (data.length >= period)
       {
-        // First period averages
-        double gains = 0;
-        double losses = 0;
-        for (int m = 1; m <= period; m++)
-        {
-          if (data[m].getClosePrice() >= data[m - 1].getClosePrice())
-            gains += data[m].getClosePrice() - data[m - 1].getClosePrice();
-          else
-            losses += data[m - 1].getClosePrice() - data[m].getClosePrice();;
-        }
-        double averageGain = gains / period;
-        double averageLoss = losses / period;
-
-        // RSI
+        // Indicatore stocastico
         double[] value = new double[data.length - period];
-        if (averageLoss == 0) value[0] = 100;
-        else value[0] = 100 - (100 / (1 + (averageGain / averageLoss)));
-        for (int i = 1; i < value.length; i++)
+        for (int i = 0; i < value.length; i++)
         {
-          // Current gain/loss
-          double currentGain = 0;
-          double currentLoss = 0;
-          if (data[i + period].getClosePrice() >= data[i + period - 1].getClosePrice())
-            currentGain = data[i + period].getClosePrice() - data[i + period - 1].getClosePrice();
-          else
-            currentLoss = data[i + period - 1].getClosePrice() - data[i + period].getClosePrice();;
-          // Smoothed RS
-          averageGain = ((averageGain * (period - 1)) + currentGain) / period;
-          averageLoss = ((averageLoss * (period - 1)) + currentLoss) / period; 
-          if (averageLoss == 0) value[i] = 100;
-          else value[i] = 100 - (100 / (1 + (averageGain / averageLoss)));
+          double high = 0, low = 0, recent = 0;
+          for (int m = 0; m < period; m++)
+          {
+            recent = data[i + m].getClosePrice();
+            if (recent > high)
+              high = recent;
+            if (recent < low || low == 0)
+              low = recent;
+          }
+          value[i] = 100 * ((recent - low) / (high - low));
         }
-
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setForeground(lineColor);
         drawLine(value, gc, height, period);
+        
+        // Media mobile dell'indicatore
+        if (subperiod != 0)
+        {
+          double[] average = new double[value.length - subperiod];
+          for (int i = 0; i < average.length; i++)
+          {
+            for (int m = 0; m < subperiod; m++)
+              average[i] += value[i + m];
+            average[i] /= subperiod;
+          }
+          gc.setLineStyle(SWT.LINE_DOT);
+          gc.setForeground(lineColor);
+          drawLine(average, gc, height, period);
+        }
       }
     }
 
@@ -121,7 +108,7 @@ public class RSIChart extends ChartPainter implements IChartPlotter
    */
   public String getId()
   {
-    return "net.sourceforge.eclipsetrader.charts.rsi";
+    return "net.sourceforge.eclipsetrader.charts.stochastic";
   }
 
   /* (non-Javadoc)
@@ -129,7 +116,7 @@ public class RSIChart extends ChartPainter implements IChartPlotter
    */
   public String getDescription()
   {
-    return name + " (" + period + ")";
+    return name + " (" + period + ", " + subperiod + ")";
   }
 
   /* (non-Javadoc)
@@ -137,15 +124,18 @@ public class RSIChart extends ChartPainter implements IChartPlotter
    */
   public ChartParametersDialog showParametersDialog()
   {
-    RSIChartDialog dlg = new RSIChartDialog();
+    StochasticChartDialog dlg = new StochasticChartDialog();
     dlg.setName(name);
     dlg.setPeriod(period);
+    dlg.setSubPeriod(subperiod);
     dlg.setColor(lineColor.getRGB());
     if (dlg.open() == AverageChartDialog.OK)
     {
       name = dlg.getName();
       period = dlg.getPeriod();
       params.put("period", String.valueOf(period));
+      subperiod = dlg.getSubPeriod();
+      params.put("subperiod", String.valueOf(subperiod));
       lineColor = new Color(null, dlg.getColor());
       params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
     }
@@ -160,6 +150,8 @@ public class RSIChart extends ChartPainter implements IChartPlotter
     params.put(name, value);
     if (name.equalsIgnoreCase("period") == true)
       period = Integer.parseInt(value);
+    if (name.equalsIgnoreCase("subperiod") == true)
+      subperiod = Integer.parseInt(value);
     if (name.equalsIgnoreCase("color") == true)
     {
       String[] values = value.split(",");

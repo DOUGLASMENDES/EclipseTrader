@@ -22,14 +22,14 @@ import org.eclipse.swt.widgets.Text;
 /**
  * @author Marco
  */
-public class AverageChartDialog extends ChartParametersDialog implements ModifyListener
+public class RSIChartDialog extends ChartParametersDialog implements ModifyListener
 {
   private String period = "30";
   private Text text2;
   
-  public AverageChartDialog()
+  public RSIChartDialog()
   {
-    name = "Media Mobile";
+    name = "R.S.I.";
   }
   
   /* (non-Javadoc)

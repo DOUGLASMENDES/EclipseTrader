@@ -22,14 +22,16 @@ import org.eclipse.swt.widgets.Text;
 /**
  * @author Marco
  */
-public class AverageChartDialog extends ChartParametersDialog implements ModifyListener
+public class BollingerBandsChartDialog extends ChartParametersDialog implements ModifyListener
 {
-  private String period = "30";
+  private String period = "15";
+  private String deviations = "2";
   private Text text2;
+  private Text text3;
   
-  public AverageChartDialog()
+  public BollingerBandsChartDialog()
   {
-    name = "Media Mobile";
+    name = "Bande di Bollinger";
   }
   
   /* (non-Javadoc)
@@ -46,8 +48,18 @@ public class AverageChartDialog extends ChartParametersDialog implements ModifyL
     GridData gridData = new GridData();
     gridData.widthHint = 25;
     text2.setLayoutData(gridData);
+    
+    label = new Label(parent, SWT.NONE);
+    label.setText("Deviazioni standard");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    text3 = new Text(parent, SWT.BORDER);
+    text3.addModifyListener(this);
+    text3.setText(deviations);
+    gridData = new GridData();
+    gridData.widthHint = 25;
+    text3.setLayoutData(gridData);
   }
-  
+
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
    */
@@ -55,6 +67,8 @@ public class AverageChartDialog extends ChartParametersDialog implements ModifyL
   {
     if (e.getSource() == text2)
       period = text2.getText();
+    else if (e.getSource() == text3)
+      deviations = text3.getText();
   }
 
   /**
@@ -74,5 +88,24 @@ public class AverageChartDialog extends ChartParametersDialog implements ModifyL
   public void setPeriod(int period)
   {
     this.period = String.valueOf(period);
+  }
+
+  /**
+   * Method to return the deviations field.<br>
+   *
+   * @return Returns the deviations.
+   */
+  public int getDeviations()
+  {
+    return Integer.parseInt(deviations);
+  }
+  /**
+   * Method to set the deviations field.<br>
+   * 
+   * @param deviations The deviations to set.
+   */
+  public void setDeviations(int deviations)
+  {
+    this.deviations = String.valueOf(deviations);
   }
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.util.HashMap;
+
 import net.sourceforge.eclipsetrader.IChartData;
 
 import org.eclipse.swt.graphics.Color;
@@ -36,6 +38,7 @@ public abstract class ChartPainter
   protected double max = 0;
   protected double pixelRatio = 0;
   protected boolean visible = true;
+  protected HashMap params = new HashMap();
   
   public ChartPainter()
   {

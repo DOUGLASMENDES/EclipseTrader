@@ -119,6 +119,16 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     // Register menu for extension.
     part.getSite().registerContextMenu(menuMgr, this);
   }
+  
+  public Composite getContainer()
+  {
+    return container;
+  }
+  
+  public Composite getChart()
+  {
+    return chart;
+  }
 
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
@@ -282,6 +292,16 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
       { 
         for (int i = 0; i < painter.size(); i++)
           ((ChartPainter)painter.elementAt(i)).paintChart(e.gc, chart.getClientArea().width, chart.getClientArea().height);
+        int y = 0;
+        for (int i = 0; i < painter.size(); i++)
+        {
+          e.gc.setForeground(((ChartPainter)painter.elementAt(i)).lineColor);
+          if (painter.elementAt(i) instanceof IChartPlotter)
+          {
+            e.gc.drawString(((IChartPlotter)painter.elementAt(i)).getDescription(), 2, y);
+            y += e.gc.getFontMetrics().getHeight();
+          }
+        }
       }
       else if (e.getSource() == scale)
       {

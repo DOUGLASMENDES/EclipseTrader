@@ -34,10 +34,10 @@ public interface IChartPlotter
   public String getDescription();
   
   /**
-   * Open the plotter's parameters dialog.
+   * Create the plotter's parameters dialog.
    * <p></p>
    */
-  public void setParameters();
+  public ChartParametersDialog showParametersDialog();
 
   /**
    * Set a parameter value.

@@ -22,14 +22,16 @@ import org.eclipse.swt.widgets.Text;
 /**
  * @author Marco
  */
-public class AverageChartDialog extends ChartParametersDialog implements ModifyListener
+public class StochasticChartDialog extends ChartParametersDialog implements ModifyListener
 {
-  private String period = "30";
+  private String period = "14";
+  private String subperiod = "3";
   private Text text2;
+  private Text text3;
   
-  public AverageChartDialog()
+  public StochasticChartDialog()
   {
-    name = "Media Mobile";
+    name = "Stochastic Oscillator";
   }
   
   /* (non-Javadoc)
@@ -46,6 +48,16 @@ public class AverageChartDialog extends ChartParametersDialog implements ModifyL
     GridData gridData = new GridData();
     gridData.widthHint = 25;
     text2.setLayoutData(gridData);
+
+    label = new Label(parent, SWT.NONE);
+    label.setText("Periodi Media Mobile");
+    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    text3 = new Text(parent, SWT.BORDER);
+    text3.addModifyListener(this);
+    text3.setText(subperiod);
+    gridData = new GridData();
+    gridData.widthHint = 25;
+    text3.setLayoutData(gridData);
   }
   
   /* (non-Javadoc)
@@ -55,6 +67,8 @@ public class AverageChartDialog extends ChartParametersDialog implements ModifyL
   {
     if (e.getSource() == text2)
       period = text2.getText();
+    else if (e.getSource() == text3)
+      subperiod = text3.getText();
   }
 
   /**
@@ -74,5 +88,24 @@ public class AverageChartDialog extends ChartParametersDialog implements ModifyL
   public void setPeriod(int period)
   {
     this.period = String.valueOf(period);
+  }
+
+  /**
+   * Method to return the period field.<br>
+   *
+   * @return Returns the period.
+   */
+  public int getSubPeriod()
+  {
+    return Integer.parseInt(subperiod);
+  }
+  /**
+   * Method to set the period field.<br>
+   * 
+   * @param period The period to set.
+   */
+  public void setSubPeriod(int subperiod)
+  {
+    this.subperiod = String.valueOf(subperiod);
   }
 }

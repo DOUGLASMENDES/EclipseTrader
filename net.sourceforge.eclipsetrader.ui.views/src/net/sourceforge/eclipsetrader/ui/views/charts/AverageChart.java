@@ -95,9 +95,9 @@ public class AverageChart extends ChartPainter implements IChartPlotter
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#showParametersDialog()
    */
-  public void setParameters()
+  public ChartParametersDialog showParametersDialog()
   {
     AverageChartDialog dlg = new AverageChartDialog();
     dlg.setPeriod(period);
@@ -111,6 +111,7 @@ public class AverageChart extends ChartPainter implements IChartPlotter
       lineColor = new Color(null, dlg.getColor());
       params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
     }
+    return dlg;
   }
   
   /* (non-Javadoc)

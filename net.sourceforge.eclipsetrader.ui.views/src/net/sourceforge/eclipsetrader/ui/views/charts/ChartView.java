@@ -59,6 +59,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.part.ViewPart;
@@ -97,6 +98,7 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+  private int selectedZone = 0;
   
   public ChartView()
   {
@@ -510,10 +512,30 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
             Object obj = member.createExecutableExtension("class");
             if (obj instanceof IChartPlotter)
             {
-              ((IChartPlotter)obj).setParameters();
-              ((ChartCanvas)chart.elementAt(0)).addPainter((ChartPainter)obj);
-              updateView();
-              savePreferences();
+              ChartParametersDialog dlg = ((IChartPlotter)obj).showParametersDialog();
+              if (dlg.getReturnCode() == ChartParametersDialog.OK)
+              {
+                if (dlg.getPosition() == ChartParametersDialog.SELECTED_ZONE)
+                  ((ChartCanvas)chart.elementAt(selectedZone)).addPainter((ChartPainter)obj);
+                else
+                {
+                  int[] w = form.getWeights();
+                  ChartCanvas canvas = new ChartCanvas(form);
+                  Control[] children = form.getChildren();
+                  children[children.length - 1].moveBelow(children[0]);
+                  canvas.createContextMenu(this);
+                  chart.insertElementAt(canvas, 1);
+                  canvas.addPainter((ChartPainter)obj);
+                  int[] weights = new int[chart.size()];
+                  for (int i = 0; i < w.length; i++)
+                    weights[i] = w[i];
+                  weights[0] -= 150;
+                  weights[weights.length - 1] = 150;
+                  form.layout();
+                }
+                updateView();
+                savePreferences();
+              }
             }
           } catch(Exception x) { x.printStackTrace(); };
       }
@@ -529,9 +551,12 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
       IChartPlotter obj = dlg.getObject();
       if (obj != null)
       {
-        obj.setParameters();
-        updateView();
-        savePreferences();
+        ChartParametersDialog pdlg = obj.showParametersDialog();
+        if (pdlg.getReturnCode() == ChartParametersDialog.OK)
+        {
+          updateView();
+          savePreferences();
+        }
       }
     }
   }
@@ -545,13 +570,23 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
       IChartPlotter obj = dlg.getObject();
       if (obj != null)
       {
-        for (int i = 0; i < chart.size(); i++)
+        for (int i = chart.size() - 1; i >= 0; i--)
         {
           ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
           for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
           {
             if (obj == canvas.getPainter(ii))
+            {
               canvas.removePainter((ChartPainter)obj);
+              if (canvas.getPainterCount() == 0)
+              {
+                canvas.removeMouseListener(this);
+                canvas.dispose();
+                chart.removeElementAt(i);
+                form.layout();
+              }
+              break;
+            }
           }
         }
         updateView();
@@ -811,6 +846,12 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
       mouseGC.setXORMode(true);
       mouseGC.setForeground(background);
       mouseMove(e);
+    }
+    for (int i = 0; i < chart.size(); i++)
+    {
+      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      if (e.getSource() == canvas.getChart())
+        selectedZone = i;
     }
   }
   /* (non-Javadoc)

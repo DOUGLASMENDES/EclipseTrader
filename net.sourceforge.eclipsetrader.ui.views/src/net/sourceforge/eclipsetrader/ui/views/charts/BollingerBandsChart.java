@@ -18,98 +18,68 @@ import org.eclipse.swt.graphics.GC;
 
 /**
  * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
-public class RSIChart extends ChartPainter implements IChartPlotter
+public class BollingerBandsChart extends ChartPainter implements IChartPlotter
 {
-  private int period = 14;
-  private HashMap params = new HashMap();
+  private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.bollinger";
+  private int period = 15;
+  private int deviations = 2;
   
-  public RSIChart()
+  public BollingerBandsChart()
   {
-    name = "RSI";
-  }
-  
-  public RSIChart(int period)
-  {
-    this.period = period;
-  }
-  
-  public RSIChart(int period, Color color)
-  {
-    this.period = period;
-    this.lineColor = color;
-  }
-  
-  public void setPeriod(int period)
-  {
-    this.period = period;
+    name = "Bande di Bollinger";
   }
   
   public void paintChart(GC gc, int width, int height)
   {
-    // Grafico
     if (data != null && max > min && visible == true)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      max = 105;
-      min = -5;
       pixelRatio = (height) / (max - min);
 
-      gc.setForeground(gridColor);
-      gc.setLineStyle(SWT.LINE_DOT);
-      int y1 = (int)((70 - min) * pixelRatio);
-      gc.drawLine(0, y1, width, y1);
-      y1 = (int)((30 - min) * pixelRatio);
-      gc.drawLine(0, y1, width, y1);
+      // Colore della linea
+      gc.setForeground(lineColor);
 
       // Computa i punti
-      if (data.length > period)
+      if (data.length >= period)
       {
-        // First period averages
-        double gains = 0;
-        double losses = 0;
-        for (int m = 1; m <= period; m++)
+        // Calcola la media mobile
+        double[] average = new double[data.length - period];
+        for (int i = 0; i < average.length; i++)
         {
-          if (data[m].getClosePrice() >= data[m - 1].getClosePrice())
-            gains += data[m].getClosePrice() - data[m - 1].getClosePrice();
-          else
-            losses += data[m - 1].getClosePrice() - data[m].getClosePrice();;
+          for (int m = 0; m < period; m++)
+            average[i] += data[i + m].getClosePrice();
+          average[i] /= period;
         }
-        double averageGain = gains / period;
-        double averageLoss = losses / period;
-
-        // RSI
+        
+        // Calcola la deviazione standard
+        double[] deviation = new double[data.length - period];
+        for (int i = 0; i < deviation.length; i++)
+        {
+          for (int m = 0; m < period; m++)
+            deviation[i] += Math.pow(data[i + m].getClosePrice() - average[i], 2);
+          deviation[i] /= period;
+          deviation[i] = Math.sqrt(deviation[i]);
+        }
+        
+        // Calcola la banda superiore
         double[] value = new double[data.length - period];
-        if (averageLoss == 0) value[0] = 100;
-        else value[0] = 100 - (100 / (1 + (averageGain / averageLoss)));
-        for (int i = 1; i < value.length; i++)
-        {
-          // Current gain/loss
-          double currentGain = 0;
-          double currentLoss = 0;
-          if (data[i + period].getClosePrice() >= data[i + period - 1].getClosePrice())
-            currentGain = data[i + period].getClosePrice() - data[i + period - 1].getClosePrice();
-          else
-            currentLoss = data[i + period - 1].getClosePrice() - data[i + period].getClosePrice();;
-          // Smoothed RS
-          averageGain = ((averageGain * (period - 1)) + currentGain) / period;
-          averageLoss = ((averageLoss * (period - 1)) + currentLoss) / period; 
-          if (averageLoss == 0) value[i] = 100;
-          else value[i] = 100 - (100 / (1 + (averageGain / averageLoss)));
-        }
-
+        for (int i = 0; i < value.length; i++)
+          value[i] = average[i] + deviation[2] * deviations;
         gc.setLineStyle(SWT.LINE_SOLID);
-        gc.setForeground(lineColor);
-        drawLine(value, gc, height, period);
+        this.drawLine(value, gc, height, period);
+
+        // Banda intermedia (media mobile)
+        gc.setLineStyle(SWT.LINE_DOT);
+        this.drawLine(average, gc, height, period);
+        
+        // Calcola la banda inferiore
+        for (int i = 0; i < value.length; i++)
+          value[i] = average[i] - deviation[2] * deviations;
+        gc.setLineStyle(SWT.LINE_SOLID);
+        this.drawLine(value, gc, height, period);
       }
     }
-
-    // Tipo di linea e colore
-    gc.setLineStyle(SWT.LINE_SOLID);
-    gc.setForeground(lineColor);
   }
 
   public void paintScale(GC gc, int width, int height)
@@ -121,7 +91,7 @@ public class RSIChart extends ChartPainter implements IChartPlotter
    */
   public String getId()
   {
-    return "net.sourceforge.eclipsetrader.charts.rsi";
+    return PLUGIN_ID;
   }
 
   /* (non-Javadoc)
@@ -129,23 +99,26 @@ public class RSIChart extends ChartPainter implements IChartPlotter
    */
   public String getDescription()
   {
-    return name + " (" + period + ")";
+    return name + " (" + period + "," + deviations + ")";
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getParametersDialog()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameters()
    */
   public ChartParametersDialog showParametersDialog()
   {
-    RSIChartDialog dlg = new RSIChartDialog();
+    BollingerBandsChartDialog dlg = new BollingerBandsChartDialog();
     dlg.setName(name);
     dlg.setPeriod(period);
+    dlg.setDeviations(deviations);
     dlg.setColor(lineColor.getRGB());
     if (dlg.open() == AverageChartDialog.OK)
     {
       name = dlg.getName();
       period = dlg.getPeriod();
       params.put("period", String.valueOf(period));
+      deviations = dlg.getDeviations();
+      params.put("deviations", String.valueOf(deviations));
       lineColor = new Color(null, dlg.getColor());
       params.put("color", String.valueOf(lineColor.getRed()) + "," + String.valueOf(lineColor.getGreen()) + "," + String.valueOf(lineColor.getBlue()));
     }
@@ -160,6 +133,8 @@ public class RSIChart extends ChartPainter implements IChartPlotter
     params.put(name, value);
     if (name.equalsIgnoreCase("period") == true)
       period = Integer.parseInt(value);
+    if (name.equalsIgnoreCase("deviations") == true)
+      deviations = Integer.parseInt(value);
     if (name.equalsIgnoreCase("color") == true)
     {
       String[] values = value.split(",");
