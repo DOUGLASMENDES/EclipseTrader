@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -148,7 +148,14 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
     data = TraderPlugin.getData();
     for (int i = 0; i < data.length; i++) 
     {
-      IExtendedData ed = streamer.getData(SymbolMapper.getYahooSymbol(data[i].getTicker()));
+      String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
+      if (useMapping == true)
+      {
+        symbol = SymbolMapper.getYahooSymbol(symbol);
+        if (symbol.indexOf(".") == -1)
+          symbol += defaultExtension;
+      }
+      IExtendedData ed = streamer.getData(symbol);
       if (ed != null)
       {
         data[i].setLastPrice(ed.getLastPrice());
@@ -177,23 +184,43 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
     String property = event.getProperty();
 
     // Check if the one of the mapping preferences are changed
-    if (property.equalsIgnoreCase("yahoo.mapping") == true || property.equalsIgnoreCase("yahoo.suffix") == true)
+    if (property.equalsIgnoreCase("yahoo.mapping") == true || property.equalsIgnoreCase("yahoo.suffix") == true || property.equalsIgnoreCase("yahoo.field") == true)
     {
       // Remove the old-mapping symbols from the streamer 
       IExtendedData[] data = TraderPlugin.getData();
       for (int i = 0; i < data.length; i++)
-        streamer.removeSymbol(SymbolMapper.getYahooSymbol(data[i].getTicker()));
+      {
+        String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
+        if (useMapping == true)
+        {
+          symbol = SymbolMapper.getYahooSymbol(symbol);
+          if (symbol.indexOf(".") == -1)
+            symbol += defaultExtension;
+        }
+        streamer.removeSymbol(symbol);
+      }
 
       // Sets the new mapping preferences
       IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
-//      if (property.equalsIgnoreCase("yahoo.mapping") == true)
-//        SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
-//      else if (property.equalsIgnoreCase("yahoo.suffix") == true)
-//        SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
+      if (property.equalsIgnoreCase("yahoo.field") == true)
+        symbolField = ps.getInt("yahoo.field");
+      if (property.equalsIgnoreCase("yahoo.mapping") == true)
+        useMapping = ps.getBoolean("yahoo.mapping");
+      if (property.equalsIgnoreCase("yahoo.suffix") == true)
+        defaultExtension = ps.getString("yahoo.suffix");
 
       // Add the new-mapped symbols to the streamer
       for (int i = 0; i < data.length; i++)
-        streamer.addSymbol(SymbolMapper.getYahooSymbol(data[i].getTicker()));
+      {
+        String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
+        if (useMapping == true)
+        {
+          symbol = SymbolMapper.getYahooSymbol(symbol);
+          if (symbol.indexOf(".") == -1)
+            symbol += defaultExtension;
+        }
+        streamer.addSymbol(symbol);
+      }
     }
   }
 }
