@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.11.1"
+   version="0.12.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -177,6 +177,16 @@
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                menubarPath="group3"
                id="portfolio.add"/>
+         <action
+               label="%stockwatch.clearAlerts"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group4"
+               id="portfolio.clearAlerts"/>
+         <action
+               label="%stockwatch.editAlerts"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               menubarPath="group4"
+               id="portfolio.editAlerts"/>
       </viewerContribution>
       <viewerContribution
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"

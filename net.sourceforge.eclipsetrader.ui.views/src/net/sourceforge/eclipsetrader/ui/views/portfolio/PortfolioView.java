@@ -16,11 +16,14 @@ import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.eclipsetrader.IAlertData;
+import net.sourceforge.eclipsetrader.IAlertSource;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IBasicDataProvider;
 import net.sourceforge.eclipsetrader.IDataUpdateListener;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.ui.internal.views.AlertsDialog;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
@@ -28,6 +31,7 @@ import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -364,6 +368,33 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     }
   }
   
+  public void editAlerts()
+  {
+    int max = table.getItemCount() - 1;
+    int index = table.getSelectionIndex();
+    if (index == -1 || index >= max)
+      return;
+
+    IExtendedData data = TraderPlugin.getData()[index];
+    
+    AlertsDialog dlg = new AlertsDialog();
+    dlg.setData(data);
+    if (dlg.open() == Dialog.OK)
+      TraderPlugin.getDataStore().update(index, data);
+  }
+  
+  public void clearAlerts()
+  {
+    IExtendedData[] data = TraderPlugin.getData();
+    for (int i = 0; i < data.length; i++)
+    {
+      IAlertData[] ad = ((IAlertSource)data[i]).getAlerts();
+      for (int n = 0; n < ad.length; n++)
+        ad[n].setAcknowledge(true);
+    }
+    asyncUpdateView();
+  }
+  
   public void editItem()
   {
     int max = table.getItemCount() - 1;
@@ -372,6 +403,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       return;
 
     IExtendedData data = TraderPlugin.getData()[index];
+    
     PortfolioDialog dlg = new PortfolioDialog();
     dlg.setSymbol(data.getSymbol());
     dlg.setTicker(data.getTicker());
@@ -490,6 +522,20 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       item.setBackground(oddBackground);
     else
       item.setBackground(evenBackground);
+    
+    if (data instanceof IAlertSource)
+    {
+      IAlertData[] alerts = ((IAlertSource)data).getAlerts();
+      for (int i = 0; i < alerts.length; i++)
+      {
+        if (alerts[i].isTrigger() == true && alerts[i].isAcknowledge() == false)
+        {
+          if (alerts[i].isHilight())
+            item.setBackground(new Color(null, alerts[i].getHilightColor()));
+        }
+      }
+    }
+    
     PortfolioTableData tableData = (PortfolioTableData)item.getData();
     if (tableData == null)
     {

@@ -27,6 +27,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sourceforge.eclipsetrader.AlertData;
+import net.sourceforge.eclipsetrader.IAlertData;
+import net.sourceforge.eclipsetrader.IAlertSource;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IDataStore;
@@ -34,6 +37,7 @@ import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.graphics.RGB;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -179,6 +183,40 @@ public class XMLDataStore implements IDataStore
         node = document.createElement("paid");
         element.appendChild(node);
         node.appendChild(document.createTextNode(pf.format(item.getPaid())));
+
+        if (item instanceof IAlertSource)
+        {
+          IAlertData[] alerts = ((IAlertSource)item).getAlerts();
+          for (int n = 0; n < alerts.length; n++)
+          {
+            Element alertElement = document.createElement("alert");
+            element.appendChild(alertElement);
+            alertElement.setAttribute("trigger", String.valueOf(alerts[n].isTrigger()));
+            alertElement.setAttribute("acknowledge", String.valueOf(alerts[n].isAcknowledge()));
+
+            node = document.createElement("item");
+            alertElement.appendChild(node);
+            node.appendChild(document.createTextNode(String.valueOf(alerts[n].getItem())));
+            node = document.createElement("condition");
+            alertElement.appendChild(node);
+            node.appendChild(document.createTextNode(String.valueOf(alerts[n].getCondition())));
+            node = document.createElement("price");
+            alertElement.appendChild(node);
+            node.appendChild(document.createTextNode(pf.format(alerts[n].getPrice())));
+            node = document.createElement("hilight");
+            alertElement.appendChild(node);
+            node.appendChild(document.createTextNode(String.valueOf(alerts[n].isHilight())));
+            node = document.createElement("hilightColor");
+            alertElement.appendChild(node);
+            node.appendChild(document.createTextNode(String.valueOf(alerts[n].getHilightColor().red) + "," + String.valueOf(alerts[n].getHilightColor().green) + "," + String.valueOf(alerts[n].getHilightColor().blue)));
+            node = document.createElement("playSound");
+            alertElement.appendChild(node);
+            node.appendChild(document.createTextNode(String.valueOf(alerts[n].isPlaySound())));
+            node = document.createElement("soundFile");
+            alertElement.appendChild(node);
+            node.appendChild(document.createTextNode(alerts[n].getSoundFile()));
+          }
+        }
       }
 
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -192,6 +230,47 @@ public class XMLDataStore implements IDataStore
       out.flush();
       out.close();
     } catch (Exception ex) { ex.printStackTrace(); };
+  }
+  
+  private void decodeAlerts(IAlertSource source, NodeList parent)
+  {
+    IAlertData data = new AlertData();
+    data.setTrigger(((Node)parent).getAttributes().getNamedItem("trigger").getNodeValue().equalsIgnoreCase("true"));
+    data.setAcknowledge(((Node)parent).getAttributes().getNamedItem("acknowledge").getNodeValue().equalsIgnoreCase("true"));
+
+    for (int i = 0; i < parent.getLength(); i++)
+    {
+      Node n = parent.item(i);
+      Node value = n.getFirstChild();
+      if (value != null)
+      {
+        if (n.getNodeName().equalsIgnoreCase("item") == true)
+          data.setItem(Integer.parseInt(value.getNodeValue()));
+        else if (n.getNodeName().equalsIgnoreCase("condition") == true)
+          data.setCondition(Integer.parseInt(value.getNodeValue()));
+        else if (n.getNodeName().equalsIgnoreCase("price") == true)
+        {
+          try {
+            data.setPrice(pf.parse(value.getNodeValue()).doubleValue());
+          } catch(Exception e) {};
+        }
+        else if (n.getNodeName().equalsIgnoreCase("hilight") == true)
+          data.setHilight(value.getNodeValue().equalsIgnoreCase("true"));
+        else if (n.getNodeName().equalsIgnoreCase("hilightColor") == true)
+        {
+          String[] ar = value.getNodeValue().split(",");
+          data.setHilightColor(new RGB(Integer.parseInt(ar[0]), Integer.parseInt(ar[1]), Integer.parseInt(ar[2])));
+        }
+        else if (n.getNodeName().equalsIgnoreCase("playSound") == true)
+          data.setPlaySound(value.getNodeValue().equalsIgnoreCase("true"));
+        else if (n.getNodeName().equalsIgnoreCase("soundFile") == true)
+          data.setSoundFile(value.getNodeValue());
+        else
+          System.out.println(n.getNodeName() + "=" + value.getNodeValue());
+      }
+    }
+    
+    source.addAlert(data);
   }
 
   private IExtendedData decodeData(int index, NodeList parent) throws ParseException
@@ -240,6 +319,8 @@ public class XMLDataStore implements IDataStore
           pd.setLowPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("close_price") == true)
           pd.setClosePrice(pf.parse(value.getNodeValue()).doubleValue());
+        else if (n.getNodeName().equalsIgnoreCase("alert") == true)
+          decodeAlerts((IAlertSource)pd, (NodeList)n);
         else
           System.out.println(n.getNodeName() + "=" + value.getNodeValue());
       }

@@ -10,43 +10,54 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.internal;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.BasicData;
+import net.sourceforge.eclipsetrader.IAlertData;
+import net.sourceforge.eclipsetrader.IAlertListener;
+import net.sourceforge.eclipsetrader.IAlertSource;
 import net.sourceforge.eclipsetrader.IExtendedData;
 
 /**
  * Implementation of the IExtendedData interface.
  * <p></p>
- * 
- * @author Marco Maccaferri - 10/08/2004
  */
-public class ExtendedData extends BasicData implements IExtendedData 
+public class ExtendedData extends BasicData implements IExtendedData, IAlertSource 
 {
   private double lastPrice = 0;
   private String change = "0.00%";
   private double bidPrice = 0;
-  public int bidSize = 0;
-  public double askPrice = 0;
-  public int askSize = 0;
-  public int volume = 0;
-  public double marketValue = 0;
-  public String time = "";
-  public double valuePaid = 0;
-  public int quantity = 0;
-  public double paid = 0;
-  public double gain = 0;
-  public double openPrice = 0;
-  public double closePrice = 0;
-  public double lowPrice = 0;
-  public double highPrice = 0;
-  public double valueChange = 0;
+  private int bidSize = 0;
+  private double askPrice = 0;
+  private int askSize = 0;
+  private int volume = 0;
+  private double marketValue = 0;
+  private String time = "";
+  private double valuePaid = 0;
+  private int quantity = 0;
+  private double paid = 0;
+  private double gain = 0;
+  private double openPrice = 0;
+  private double closePrice = 0;
+  private double lowPrice = 0;
+  private double highPrice = 0;
+  private double valueChange = 0;
   private Date date = Calendar.getInstance().getTime();
+  private Vector alerts = new Vector();
+  private Vector alertsListeners = new Vector();
 
+  /**
+   * Constructs a new instance of this class.
+   */
   public ExtendedData()
   {
   }
+
   /**
    * Method to return the askPrice field.<br>
    *
@@ -63,7 +74,9 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setAskPrice(double askPrice)
   {
+    double oldValue = this.askPrice;
     this.askPrice = askPrice;
+    verifyAlerts(IAlertData.ASK_PRICE, askPrice, oldValue);
   }
   /**
    * Method to return the askSize field.<br>
@@ -99,7 +112,9 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setBidPrice(double bidPrice)
   {
+    double oldValue = this.bidPrice;
     this.bidPrice = bidPrice;
+    verifyAlerts(IAlertData.BID_PRICE, bidPrice, oldValue);
   }
   /**
    * Method to return the bidSize field.<br>
@@ -207,7 +222,9 @@ public class ExtendedData extends BasicData implements IExtendedData
    */
   public void setLastPrice(double lastPrice)
   {
+    double oldValue = this.lastPrice;
     this.lastPrice = lastPrice;
+    verifyAlerts(IAlertData.LAST_PRICE, lastPrice, oldValue);
   }
   /**
    * Method to return the lowPrice field.<br>
@@ -390,5 +407,109 @@ public class ExtendedData extends BasicData implements IExtendedData
   public void setDate(Date date)
   {
     this.date = date;
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IAlertSource#addAlert(IAlertData)
+   */
+  public void addAlert(IAlertData alertData)
+  {
+    alerts.add(alertData);
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IAlertSource#removeAlert(IAlertData)
+   */
+  public void removeAlert(IAlertData alertData)
+  {
+    alerts.remove(alertData);
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IAlertSource#removeAllAlerts()
+   */
+  public void removeAllAlerts()
+  {
+    alerts.removeAllElements();
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IAlertSource#removeAlertListener(net.sourceforge.eclipsetrader.IAlertListener)
+   */
+  public IAlertData[] getAlerts()
+  {
+    IAlertData array[] = new IAlertData[alerts.size()];
+    alerts.toArray(array);
+    return array;
+  }
+
+  /**
+   * Verify if the conditions of the configured alerts are met.
+   * When a condition is verified the alert data is set to the acknowledged state
+   * and a notification is sent to the listeners.
+   * 
+   * @param item the item to check
+   * @param currentValue the current price value
+   * @param oldValue the previous price value
+   */
+  private void verifyAlerts(int item, double currentValue, double oldValue)
+  {
+    for (int i = 0; i < alerts.size(); i++)
+    {
+      IAlertData alertData = (IAlertData)alerts.elementAt(i);
+      if (alertData.isTrigger() == true || alertData.getItem() != item)
+        continue;
+
+      switch(alertData.getCondition())
+      {
+        case IAlertData.FALLS_BELOW:
+          if (currentValue < oldValue && currentValue < alertData.getPrice())
+            fireAlertTrigger(alertData);
+          break;
+        case IAlertData.RAISE_ABOVE:
+          if (currentValue > oldValue && currentValue > alertData.getPrice())
+            fireAlertTrigger(alertData);
+          break;
+      }
+    }
+  }
+  
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IAlertSource#addAlertListener(net.sourceforge.eclipsetrader.IAlertListener)
+   */
+  public void addAlertListener(IAlertListener listener)
+  {
+    alertsListeners.add(listener);
+  }
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IAlertSource#removeAlertListener(net.sourceforge.eclipsetrader.IAlertListener)
+   */
+  public void removeAlertListener(IAlertListener listener)
+  {
+    alertsListeners.remove(listener);
+  }
+  
+  /**
+   * Notify alerts listeners of an acknolwedged alert.
+   * 
+   * @param alertData the originating alert
+   */
+  private void fireAlertTrigger(IAlertData alertData)
+  {
+    alertData.setTrigger(true);
+    
+    if (alertData.isPlaySound() == true)
+    {
+      try {
+        File file = new File(alertData.getSoundFile());
+        AudioClip clip = Applet.newAudioClip(file.toURL());
+        clip.play();
+      } catch(Exception ex) {
+        ex.printStackTrace();
+      }
+    }
+    
+    for (int i = 0; i < alertsListeners.size(); i++)
+      ((IAlertListener)alertsListeners.elementAt(i)).alertVerified(this, alertData);
   }
 }

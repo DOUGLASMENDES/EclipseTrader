@@ -55,6 +55,10 @@ public class ContextAction implements IViewActionDelegate
       view.editItem();
     else if (action.getId().equalsIgnoreCase("portfolio.remove") == true)
       view.deleteItem();
+    else if (action.getId().equalsIgnoreCase("portfolio.editAlerts") == true)
+      view.editAlerts();
+    else if (action.getId().equalsIgnoreCase("portfolio.clearAlerts") == true)
+      view.clearAlerts();
     else
       System.out.println(action.getId());
   }
