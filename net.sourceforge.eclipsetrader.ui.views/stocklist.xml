@@ -5,107 +5,123 @@
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001008876" ticker="ASR">
-        <description>A.S. Roma</description>
+        <description>A.S. ROMA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001207098" ticker="ACE">
-        <description>Acea</description>
+        <description>ACEA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003066146" ticker="AEG">
-        <description>Acegas-Aps</description>
+        <description>ACEGAS-APS</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001469953" ticker="ACO">
+        <description>ACOTEL GROUP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000086022" ticker="ADF">
-        <description>Acq De Ferrari</description>
+        <description>ACQ DE FERRARI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000086048" ticker="ADFR">
-        <description>Acq De Ferrari Rnc</description>
+        <description>ACQ DE FERRARI RNC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000068889" ticker="ANG">
-        <description>Acq Nicolay</description>
+        <description>ACQ NICOLAY</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001040572" ticker="APM">
-        <description>Acq Pia Marcia</description>
+        <description>ACQ PIA MARCIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003128623" ticker="ACP">
-        <description>Acque Potabili</description>
+        <description>ACQUE POTABILI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001382024" ticker="ACS">
-        <description>Acsm</description>
+        <description>ACSM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003198790" ticker="ACT">
-        <description>Actelios</description>
+        <description>ACTELIOS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000074028" ticker="AE">
-        <description>Aedes</description>
+        <description>AEDES</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001233417" ticker="AEM">
-        <description>Aem</description>
+        <description>AEM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003027817" ticker="AET">
-        <description>Aem Torino</description>
+        <description>AEM TORINO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000346798" ticker="AFI">
-        <description>Aeroporto Firenze</description>
+        <description>AEROPORTO FIRENZE</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001477402" ticker="AISW">
+        <description>AISOFTWARE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076171" ticker="ARN">
-        <description>Alerion</description>
+        <description>ALERION</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001162491" ticker="ALGL">
+        <description>ALGOL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001182671" ticker="AZA">
-        <description>Alitalia</description>
+        <description>ALITALIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000078193" ticker="AL">
-        <description>Alleanza Ass</description>
+        <description>ALLEANZA ASS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003101059" ticker="AMP">
-        <description>Amplifon</description>
+        <description>AMPLIFON</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003123608" ticker="ARQ">
-        <description>Arquati</description>
+        <description>ARQUATI</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001441002" ticker="ART">
+        <description>ART'E'</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003275200" ticker="ASM">
-        <description>Asm Brescia</description>
+        <description>ASM BRESCIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003261069" ticker="AST">
-        <description>Astaldi</description>
+        <description>ASTALDI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001137345" ticker="AGL">
-        <description>Autogrill Spa</description>
+        <description>AUTOGRILL SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000084027" ticker="AT">
-        <description>Autostrada To-Mi</description>
+        <description>AUTOSTRADA TO-MI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003506190" ticker="AUTO">
-        <description>Autostrade</description>
+        <description>AUTOSTRADE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000084043" ticker="AUTME">
-        <description>Autostrade Merid</description>
+        <description>AUTOSTRADE MERID</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003261697" ticker="AZM">
-        <description>Azimut</description>
+        <description>AZIMUT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001254884" ticker="BNL">
@@ -113,891 +129,1019 @@
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003188064" ticker="IF">
-        <description>Banca Ifis</description>
+        <description>BANCA IFIS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000074077" ticker="BIM">
-        <description>Banca Intermobiliare</description>
+        <description>BANCA INTERMOBILIARE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003487029" ticker="BPU">
-        <description>Banche Pop Unite</description>
+        <description>BANCHE POP UNITE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001033700" ticker="BAN">
-        <description>Basicnet</description>
+        <description>BASICNET</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072071" ticker="B">
-        <description>Bastogi Spa</description>
+        <description>BASTOGI SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="DE0005752000" ticker="BAY">
-        <description>Bayer</description>
+        <description>BAYER</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CH0001441580" ticker="BB">
+        <description>BB BIOTECH</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003270102" ticker="NTV">
-        <description>Bca Antonveneta</description>
+        <description>BCA ANTONVENETA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003211601" ticker="CRG">
-        <description>Bca Carige</description>
+        <description>BCA CARIGE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003308878" ticker="CRGR">
-        <description>Bca Carige R</description>
+        <description>BCA CARIGE R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000082963" ticker="BFI">
-        <description>Bca Fideuram</description>
+        <description>BCA FIDEURAM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000088853" ticker="BFE">
-        <description>Bca Finnat</description>
+        <description>BCA FINNAT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072618" ticker="BIN">
-        <description>Bca Intesa</description>
+        <description>BCA INTESA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072626" ticker="BINR">
-        <description>Bca Intesa R</description>
+        <description>BCA INTESA R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062197" ticker="BL">
-        <description>Bca Lombarda</description>
+        <description>BCA LOMBARDA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001334587" ticker="BMPS">
-        <description>Bca Mps</description>
+        <description>BCA MPS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001007209" ticker="SPO">
-        <description>Bca Pop Di Spoleto</description>
+        <description>BCA POP DI SPOLETO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000066123" ticker="BPE">
-        <description>Bca Pop Emil Romagna</description>
+        <description>BCA POP EMIL ROMAGNA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000060878" ticker="PEL">
-        <description>Bca Pop Etrur-Lazio</description>
+        <description>BCA POP ETRUR-LAZIO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064441" ticker="PIN">
-        <description>Bca Pop Intra</description>
+        <description>BCA POP INTRA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064300" ticker="PLO">
-        <description>Bca Pop Lodi</description>
+        <description>BCA POP LODI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064482" ticker="PMI">
-        <description>Bca Pop Milano</description>
+        <description>BCA POP MILANO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000784196" ticker="BPSO">
-        <description>Bca Pop Sondrio</description>
+        <description>BCA POP SONDRIO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001073045" ticker="PRO">
-        <description>Bca Profilo</description>
+        <description>BCA PROFILO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="ES0113211835" ticker="BBVA">
-        <description>Bco Bilbao Viz Arg</description>
+        <description>BCO BILBAO VIZ ARG</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001281374" ticker="BDBR">
-        <description>Bco Desio Bria Rnc</description>
+        <description>BCO DESIO BRIA RNC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001041000" ticker="BDB">
-        <description>Bco Desio Brianza</description>
+        <description>BCO DESIO BRIANZA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003262513" ticker="BPVN">
-        <description>Bco Pop Vr E No</description>
+        <description>BCO POP VR E NO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="ES0113900J37" ticker="BSC">
-        <description>Bco Santander C H</description>
+        <description>BCO SANTANDER C H</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001005070" ticker="BSRP">
-        <description>Bco Sardegna Risp</description>
+        <description>BCO SARDEGNA RISP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001223277" ticker="BE">
-        <description>Beghelli</description>
+        <description>BEGHELLI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003106777" ticker="BEN">
-        <description>Benetton Group</description>
+        <description>BENETTON GROUP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001389631" ticker="BNS">
-        <description>Beni Stabili</description>
+        <description>BENI STABILI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003097257" ticker="BSS">
-        <description>Biesse</description>
+        <description>BIESSE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003682926" ticker="BPL">
-        <description>Bipielle Invest</description>
+        <description>BIPIELLE INVEST</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001254892" ticker="BNLR">
-        <description>Bnl Rp Nc</description>
+        <description>BNL RP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000066966" ticker="BOE">
-        <description>Boero Bartolomeo</description>
+        <description>BOERO BARTOLOMEO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000074135" ticker="BF">
-        <description>Bonifiche Ferraresi</description>
+        <description>BONIFICHE FERRARESI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003217335" ticker="BO">
-        <description>Borgosesia</description>
+        <description>BORGOSESIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003217368" ticker="BOR">
-        <description>Borgosesia R</description>
+        <description>BORGOSESIA R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001050910" ticker="BRE">
-        <description>Brembo</description>
+        <description>BREMBO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000066180" ticker="BRI">
-        <description>Brioschi</description>
+        <description>BRIOSCHI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001119087" ticker="BUL">
-        <description>Bulgari</description>
+        <description>BULGARI</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001488607" ticker="BVIT">
+        <description>BUONGIORNO VITAMINIC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001347308" ticker="BZU">
-        <description>Buzzi Unicem</description>
+        <description>BUZZI UNICEM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001369427" ticker="BZUR">
-        <description>Buzzi Unicem     Rnc</description>
+        <description>BUZZI UNICEM     RNC</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001489720" ticker="CAD">
+        <description>CAD IT</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001457222" ticker="CAI">
+        <description>CAIRO COMMUNICATION</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003127930" ticker="CALT">
-        <description>Caltagirone</description>
+        <description>CALTAGIRONE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001472171" ticker="CED">
-        <description>Caltagirone Edit</description>
+        <description>CALTAGIRONE EDIT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003127948" ticker="CALTR">
-        <description>Caltagirone R</description>
+        <description>CALTAGIRONE R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000070810" ticker="CMF">
-        <description>Camfin</description>
+        <description>CAMFIN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003101612" ticker="CPR">
-        <description>Campari</description>
+        <description>CAMPARI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003121495" ticker="CAP">
-        <description>Capitalia</description>
+        <description>CAPITALIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001046553" ticker="CARR">
-        <description>Carraro</description>
+        <description>CARRARO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000784154" ticker="CASS">
-        <description>Cattolica Ass</description>
+        <description>CATTOLICA ASS</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001431805" ticker="CDB">
+        <description>CDB WEB TECH</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001477337" ticker="CDC">
+        <description>CDC</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="US1509341079" ticker="CTIC">
+        <description>CELL THERAPEUTICS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001128047" ticker="CMB">
-        <description>Cembre</description>
+        <description>CEMBRE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003126783" ticker="CEM">
-        <description>Cementir</description>
+        <description>CEMENTIR</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001385324" ticker="CZ">
-        <description>Centenari E Zinelli</description>
+        <description>CENTENARI E ZINELLI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003023980" ticker="CLT">
-        <description>Centrale Latte To</description>
+        <description>CENTRALE LATTE TO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003690283" ticker="RIC">
-        <description>Ceramiche Ricchetti.</description>
+        <description>CERAMICHE RICCHETTI.</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001446613" ticker="CHL">
+        <description>CHL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003389522" ticker="CIA">
-        <description>Cia</description>
+        <description>CIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000080447" ticker="CIR">
-        <description>Cir-Comp Ind Riunite</description>
+        <description>CIR-COMP IND RIUNITE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001375531" ticker="ICT">
-        <description>Cit</description>
+        <description>CIT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001276408" ticker="CLE">
-        <description>Class Editori</description>
+        <description>CLASS EDITORI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000070786" ticker="COF">
-        <description>Cofide Spa</description>
+        <description>COFIDE SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064359" ticker="CB">
-        <description>Cr Bergamasco</description>
+        <description>CR BERGAMASCO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001000725" ticker="CFI">
-        <description>Cr Firenze</description>
+        <description>CR FIRENZE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003121677" ticker="CE">
-        <description>Credem</description>
+        <description>CREDEM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001070769" ticker="CRA">
-        <description>Credito Artigiano</description>
+        <description>CREDITO ARTIGIANO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064516" ticker="CVAL">
-        <description>Credito Valtellinese</description>
+        <description>CREDITO VALTELLINESE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001282547" ticker="CRM">
-        <description>Cremonini</description>
+        <description>CREMONINI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001054904" ticker="CRE">
-        <description>Crespi</description>
+        <description>CRESPI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001127874" ticker="CSP">
-        <description>Csp Int Ind Calze</description>
+        <description>CSP INT IND CALZE</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001485678" ticker="CTO">
+        <description>CTO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000080421" ticker="CC">
-        <description>Cucirini Cantoni C</description>
+        <description>CUCIRINI CANTONI C</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001455473" ticker="DA">
+        <description>DADA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076502" ticker="DAN">
-        <description>Danieli&amp;C</description>
+        <description>DANIELI&amp;C</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076486" ticker="DANR">
-        <description>Danieli&amp;C Risp Nc</description>
+        <description>DANIELI&amp;C RISP NC</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001479523" ticker="DAS">
+        <description>DATA SERVICE</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0003040547" ticker="DAL">
+        <description>DATALOGIC</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001020616" ticker="DAM">
+        <description>DATAMAT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003115950" ticker="DLG">
-        <description>De'Longhi</description>
+        <description>DE'LONGHI</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001469995" ticker="DIB">
+        <description>DIGITAL BROS</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001489357" ticker="DMA">
+        <description>DMAIL.IT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003043418" ticker="DMT">
-        <description>Dmt</description>
+        <description>DMT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001278081" ticker="DMH">
-        <description>Ducati Motor Hold</description>
+        <description>DUCATI MOTOR HOLD</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001423562" ticker="EBI">
+        <description>E.BISCOM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003152417" ticker="EDN">
-        <description>Edison</description>
+        <description>EDISON</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003372205" ticker="EDNR">
-        <description>Edison R</description>
+        <description>EDISON R</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001481867" ticker="ELN">
+        <description>EL.EN.</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003008965" ticker="EH">
-        <description>Elios Holding</description>
+        <description>ELIOS HOLDING</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001237053" ticker="EM">
-        <description>Emak</description>
+        <description>EMAK</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003128367" ticker="ENEL">
-        <description>Enel</description>
+        <description>ENEL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076189" ticker="ENR">
-        <description>Enertad</description>
+        <description>ENERTAD</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0003029441" ticker="ENG">
+        <description>ENGINEERING</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003132476" ticker="ENI">
-        <description>Eni</description>
+        <description>ENI</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001439725" ticker="PLA">
+        <description>EPLANET</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001157020" ticker="ERG">
-        <description>Erg</description>
+        <description>ERG</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001026175" ticker="EGP">
-        <description>Ergo Previdenza</description>
+        <description>ERGO PREVIDENZA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072816" ticker="ERI">
-        <description>Ericsson</description>
+        <description>ERICSSON</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001373783" ticker="PRT">
+        <description>ESPRINET</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001210902" ticker="EUP">
+        <description>EUPHON</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000060886" ticker="FNM">
-        <description>Ferrovie Nord Mi</description>
+        <description>FERROVIE NORD MI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001976403" ticker="F">
-        <description>Fiat</description>
+        <description>FIAT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001976411" ticker="FP">
-        <description>Fiat Priv</description>
+        <description>FIAT PRIV</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001976429" ticker="FR">
-        <description>Fiat Risp</description>
+        <description>FIAT RISP</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001498481" ticker="FDA">
+        <description>FIDIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003365613" ticker="FM">
-        <description>Fiera Milano</description>
+        <description>FIERA MILANO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001339321" ticker="FDP">
-        <description>Filatura Di Pollone</description>
+        <description>FILATURA DI POLLONE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000070273" ticker="FN">
-        <description>Fin Part</description>
+        <description>FIN PART</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000068178" ticker="FCD">
-        <description>Finarte-Sem C D'Aste</description>
+        <description>FINARTE-SEM C D'ASTE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003602155" ticker="FCO">
-        <description>Finecogroup</description>
+        <description>FINECOGROUP</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001391694" ticker="FIN">
+        <description>FINMATICA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001407847" ticker="FNC">
-        <description>Finmeccanica</description>
+        <description>FINMECCANICA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001463071" ticker="FSA">
-        <description>Fondiaria-Sai</description>
+        <description>FONDIARIA-SAI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001463089" ticker="FSAR">
-        <description>Fondiaria-Sai R</description>
+        <description>FONDIARIA-SAI R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062650" ticker="GAB">
-        <description>Gabetti Holding  Spa</description>
+        <description>GABETTI HOLDING  SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000078748" ticker="GAR">
-        <description>Garboli-Conicos</description>
+        <description>GARBOLI-CONICOS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003203947" ticker="GE">
-        <description>Gefran</description>
+        <description>GEFRAN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001480323" ticker="GEM">
-        <description>Gemina</description>
+        <description>GEMINA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001480349" ticker="GEMR">
-        <description>Gemina Risp Port Nc.</description>
+        <description>GEMINA RISP PORT NC.</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062072" ticker="G">
-        <description>Generali Ass</description>
+        <description>GENERALI ASS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001339842" ticker="GEW">
-        <description>Gewiss</description>
+        <description>GEWISS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003667182" ticker="GI">
-        <description>Gim</description>
+        <description>GIM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072428" ticker="GIR">
-        <description>Gim Risp Nc</description>
+        <description>GIM RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001398541" ticker="ES">
-        <description>Gr Edit L'Espresso</description>
+        <description>GR EDIT L'ESPRESSO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001391041" ticker="GNV">
-        <description>Grandi Navi Veloci</description>
+        <description>GRANDI NAVI VELOCI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003087258" ticker="GRF">
-        <description>Granitifiandre</description>
+        <description>GRANITIFIANDRE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003654677" ticker="VIS">
-        <description>Greenvision Amb</description>
+        <description>GREENVISION AMB</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001336772" ticker="GC">
-        <description>Gruppo Coin</description>
+        <description>GRUPPO COIN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001250932" ticker="HER">
-        <description>Hera</description>
+        <description>HERA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001244026" ticker="IGV">
-        <description>I Grandi Viaggi</description>
+        <description>I GRANDI VIAGGI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001049623" ticker="IMA">
         <description>I.M.A.</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
+    <data symbol="IT0001428975" ticker="INE">
+        <description>I.NET</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
     <data symbol="IT0001353157" ticker="IFP">
-        <description>Ifi Priv</description>
+        <description>IFI PRIV</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001353173" ticker="IFL">
-        <description>Ifil</description>
+        <description>IFIL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001353231" ticker="IFR">
-        <description>Ifil Risp</description>
+        <description>IFIL RISP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001312476" ticker="IML">
-        <description>Imm Lombarda</description>
+        <description>IMM LOMBARDA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001413837" ticker="IMS">
-        <description>Immsi</description>
+        <description>IMMSI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072014" ticker="IPG">
-        <description>Impregilo</description>
+        <description>IMPREGILO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072022" ticker="IPGR">
-        <description>Impregilo Rp</description>
+        <description>IMPREGILO RP</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001487047" ticker="INF">
+        <description>INFERENTIA FULLSIX</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076791" ticker="ITK">
-        <description>Intek</description>
+        <description>INTEK</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001078911" ticker="IP">
-        <description>Interpump Group</description>
+        <description>INTERPUMP GROUP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001354155" ticker="IPI">
-        <description>Ipi</description>
+        <description>IPI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001077780" ticker="IRC">
-        <description>Irce</description>
+        <description>IRCE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001069902" ticker="ISG">
-        <description>Isagro</description>
+        <description>ISAGRO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001165049" ticker="ITH">
-        <description>It Holding</description>
+        <description>IT HOLDING</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0003057624" ticker="ITW">
+        <description>IT WAY</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001465159" ticker="IT">
-        <description>Italcementi</description>
+        <description>ITALCEMENTI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001465167" ticker="ITR">
-        <description>Italcementi Risp</description>
+        <description>ITALCEMENTI RISP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000074598" ticker="ITM">
-        <description>Italmobiliare</description>
+        <description>ITALMOBILIARE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000074614" ticker="ITMR">
-        <description>Italmobiliare Rnc</description>
+        <description>ITALMOBILIARE RNC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000066784" ticker="JH">
-        <description>Jolly Hotel</description>
+        <description>JOLLY HOTEL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000336518" ticker="JUVE">
-        <description>Juventus Fc</description>
+        <description>JUVENTUS FC</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001356887" ticker="KAI">
+        <description>KAITECH</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001055521" ticker="LD">
-        <description>La Doria</description>
+        <description>LA DORIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000074630" ticker="GAI">
-        <description>La Gaiana</description>
+        <description>LA GAIANA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001467072" ticker="LAV">
-        <description>Lavorwash</description>
+        <description>LAVORWASH</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001345484" ticker="LI">
-        <description>Linificio</description>
+        <description>LINIFICIO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003380919" ticker="LTT">
-        <description>Lottomatica</description>
+        <description>LOTTOMATICA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001479374" ticker="LUX">
-        <description>Luxottica Group</description>
+        <description>LUXOTTICA GROUP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000078136" ticker="MAF">
-        <description>Maffei Spa</description>
+        <description>MAFFEI SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001129847" ticker="MCL">
-        <description>Marcolin</description>
+        <description>MARCOLIN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001403739" ticker="MBFG">
-        <description>Mariella Burani F.G.</description>
+        <description>MARIELLA BURANI F.G.</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000080819" ticker="MZ">
-        <description>Marzotto</description>
+        <description>MARZOTTO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000080785" ticker="MZR">
-        <description>Marzotto Risp Cv</description>
+        <description>MARZOTTO RISP CV</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000080769" ticker="MZNC">
-        <description>Marzotto Risp Nc</description>
+        <description>MARZOTTO RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001063210" ticker="MS">
-        <description>Mediaset S.P.A</description>
+        <description>MEDIASET S.P.A</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062957" ticker="MB">
-        <description>Mediobanca</description>
+        <description>MEDIOBANCA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001279501" ticker="MED">
-        <description>Mediolanum</description>
+        <description>MEDIOLANUM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001346268" ticker="MEL">
-        <description>Meliorbanca</description>
+        <description>MELIORBANCA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076197" ticker="MER">
-        <description>Merloni</description>
+        <description>MERLONI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076320" ticker="MERR">
-        <description>Merloni Risp Nc</description>
+        <description>MERLONI RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003273312" ticker="MET">
-        <description>Meta</description>
+        <description>META</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062221" ticker="MI">
-        <description>Milano Ass Ord</description>
+        <description>MILANO ASS ORD</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062205" ticker="MIR">
-        <description>Milano Ass Risp Port</description>
+        <description>MILANO ASS RISP PORT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001080925" ticker="MRT">
-        <description>Mirato</description>
+        <description>MIRATO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001447348" ticker="MIT">
-        <description>Mittel</description>
+        <description>MITTEL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001469383" ticker="MN">
-        <description>Mondadori Edit</description>
+        <description>MONDADORI EDIT</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001447785" ticker="MTV">
+        <description>MONDO TV</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000066016" ticker="MON">
-        <description>Monrif</description>
+        <description>MONRIF</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003111462" ticker="MF">
-        <description>Montefibre</description>
+        <description>MONTEFIBRE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003111520" ticker="MFNC">
-        <description>Montefibre R</description>
+        <description>MONTEFIBRE R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001251286" ticker="NM">
-        <description>Navigaz Montanari</description>
+        <description>NAVIGAZ MONTANARI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076544" ticker="NEC">
-        <description>Necchi</description>
+        <description>NECCHI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003138671" ticker="NGB">
-        <description>Negri Bossi</description>
+        <description>NEGRI BOSSI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003388607" ticker="NGP">
-        <description>Ngp</description>
+        <description>NGP</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001425211" ticker="NTS">
+        <description>NTS NETWORK SYSTEMS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001030540" ticker="O">
-        <description>Olcese</description>
+        <description>OLCESE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001350625" ticker="OLI">
-        <description>Olidata</description>
+        <description>OLIDATA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001054581" ticker="PAG">
-        <description>Pagnossin</description>
+        <description>PAGNOSSIN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003121644" ticker="PRF">
-        <description>Parmalat Finan</description>
+        <description>PARMALAT FINAN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000068285" ticker="PE">
-        <description>Perlier</description>
+        <description>PERLIER</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001341111" ticker="PMS">
-        <description>Permasteelisa</description>
+        <description>PERMASTEELISA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003056386" ticker="PINF">
-        <description>Pininfarina Spa</description>
+        <description>PININFARINA SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072725" ticker="PC">
-        <description>Pirelli E C</description>
+        <description>PIRELLI E C</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072733" ticker="PCP">
-        <description>Pirelli E C Risp Por</description>
+        <description>PIRELLI E C RISP POR</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003270615" ticker="PRS">
-        <description>Pirelli&amp;C Real E</description>
+        <description>PIRELLI&amp;C REAL E</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001352217" ticker="PSF">
+        <description>POLIGRAF. S. F.</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000086923" ticker="POL">
-        <description>Poligrafici Edit</description>
+        <description>POLIGRAFICI EDIT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001475109" ticker="PF">
-        <description>Premafin Fin Hp</description>
+        <description>PREMAFIN FIN HP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003676282" ticker="PR">
-        <description>Premuda</description>
+        <description>PREMUDA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0003124663" ticker="PRI">
+        <description>PRIMA INDUSTRIE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003334924" ticker="PRC">
-        <description>Procomac</description>
+        <description>PROCOMAC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062825" ticker="R">
-        <description>Ras Fraz</description>
+        <description>RAS FRAZ</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062833" ticker="RR">
-        <description>Ras Risp Nc</description>
+        <description>RAS RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001343695" ticker="RAT">
-        <description>Ratti</description>
+        <description>RATTI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003039010" ticker="RCS">
-        <description>Rcs Mediagroup</description>
+        <description>RCS MEDIAGROUP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003039028" ticker="RCSR">
-        <description>Rcs Mediagroup Rsp</description>
+        <description>RCS MEDIAGROUP RSP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003074447" ticker="REC">
-        <description>Recordati Ord</description>
+        <description>RECORDATI ORD</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001178299" ticker="RM">
-        <description>Reno De Medici</description>
+        <description>RENO DE MEDICI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001178240" ticker="RMRCV">
-        <description>Reno De Medici Rp Cv</description>
+        <description>RENO DE MEDICI RP CV</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001499679" ticker="REY">
+        <description>REPLY</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064680" ticker="RTBN">
-        <description>Reti Bancarie</description>
+        <description>RETI BANCARIE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001280947" ticker="RG">
-        <description>Richard-Ginori 1735</description>
+        <description>RICHARD-GINORI 1735</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001402269" ticker="RN">
-        <description>Risanamento</description>
+        <description>RISANAMENTO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001070595" ticker="ROE">
-        <description>Roland Europe S.P.A</description>
+        <description>ROLAND EUROPE S.P.A</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001347175" ticker="RON">
-        <description>Roncadin</description>
+        <description>RONCADIN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003621783" ticker="SSL">
-        <description>S.S. Lazio</description>
+        <description>S.S. LAZIO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001042610" ticker="SAB">
-        <description>Sabaf</description>
+        <description>SABAF</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001042297" ticker="SAD">
-        <description>Sadi Spa</description>
+        <description>SADI SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001029492" ticker="SG">
-        <description>Saes Getters</description>
+        <description>SAES GETTERS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001037081" ticker="SGR">
-        <description>Saes Getters Risp Nc</description>
+        <description>SAES GETTERS RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000068525" ticker="SPM">
-        <description>Saipem</description>
+        <description>SAIPEM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000068533" ticker="SPMR">
-        <description>Saipem Risp Cv</description>
+        <description>SAIPEM RISP CV</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001269361" ticker="SPI">
-        <description>San Paolo Imi</description>
+        <description>SAN PAOLO IMI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001163622" ticker="SCH">
-        <description>Schiapparelli</description>
+        <description>SCHIAPPARELLI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003479638" ticker="PG">
-        <description>Seat Pagine  Gialle</description>
+        <description>SEAT PAGINE  GIALLE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003479646" ticker="PGR">
-        <description>Seat Pagine Gialle R</description>
+        <description>SEAT PAGINE GIALLE R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003201198" ticker="SIS">
-        <description>Sias</description>
+        <description>SIAS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001162509" ticker="SIC">
-        <description>Sicc</description>
+        <description>SICC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000086790" ticker="SIT">
-        <description>Sirti</description>
+        <description>SIRTI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003667257" ticker="SMI">
-        <description>Smi Metalli</description>
+        <description>SMI METALLI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000078334" ticker="SMIR">
-        <description>Smi Metalli Risp Nc</description>
+        <description>SMI METALLI RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072055" ticker="SMU">
-        <description>Smurfit Sisa</description>
+        <description>SMURFIT SISA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000074903" ticker="SNA">
-        <description>Snai</description>
+        <description>SNAI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003153415" ticker="SRG">
-        <description>Snam Rete Gas</description>
+        <description>SNAM RETE GAS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001495271" ticker="SN">
-        <description>Snia</description>
+        <description>SNIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000070661" ticker="SPF">
-        <description>So Pa F</description>
+        <description>SO PA F</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000070679" ticker="SPFR">
-        <description>So Pa F  Risp  Nc</description>
+        <description>SO PA F  RISP  NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003270904" ticker="SCT">
-        <description>Socotherm</description>
+        <description>SOCOTHERM</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000076536" ticker="SO">
-        <description>Sogefi</description>
+        <description>SOGEFI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001206769" ticker="SOL">
-        <description>Sol</description>
+        <description>SOL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003544431" ticker="SRN">
-        <description>Sorin</description>
+        <description>SORIN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001111191" ticker="SPC">
-        <description>Spoleto Cred Servizi</description>
+        <description>SPOLETO CRED SERVIZI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003149595" ticker="STEF">
-        <description>Stefanel</description>
+        <description>STEFANEL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003149603" ticker="STEFR">
-        <description>Stefanel Risp Nc</description>
+        <description>STEFANEL RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="NL0000226223" ticker="STM">
-        <description>Stmicroelectronics</description>
+        <description>STMICROELECTRONICS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001052049" ticker="TIM">
@@ -1005,99 +1149,119 @@
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001052056" ticker="TIMR">
-        <description>T.I.M.  Risp Nc</description>
+        <description>T.I.M.  RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001008538" ticker="TS">
-        <description>Targetti Sankey</description>
+        <description>TARGETTI SANKEY</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001424644" ticker="TAS">
+        <description>TAS</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001496030" ticker="TDI">
+        <description>TECNODIFFUSIONE</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001389938" ticker="TMER">
-        <description>Telecom It Media R</description>
+        <description>TELECOM IT MEDIA R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003497168" ticker="TIT">
-        <description>Telecom Italia</description>
+        <description>TELECOM ITALIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001389920" ticker="TME">
-        <description>Telecom Italia Media</description>
+        <description>TELECOM ITALIA MEDIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003497176" ticker="TITR">
-        <description>Telecom Italia R</description>
+        <description>TELECOM ITALIA R</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="LU0156801721" ticker="TEN">
-        <description>Tenaris</description>
+        <description>TENARIS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003242622" ticker="TRN">
-        <description>Terna</description>
+        <description>TERNA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001453924" ticker="TIS">
+        <description>TISCALI</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003007728" ticker="TOD">
-        <description>Tod'S</description>
+        <description>TOD'S</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001351383" ticker="TFI">
-        <description>Trevi Fin Ind</description>
+        <description>TREVI FIN IND</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003347652" ticker="TRV">
-        <description>Trevisan Cometal</description>
+        <description>TREVISAN COMETAL</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="IT0001454435" ticker="TXT">
+        <description>TXT E-SOLUTIONS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064854" ticker="UC">
-        <description>Unicredito It</description>
+        <description>UNICREDITO IT</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000064839" ticker="UCR">
-        <description>Unicredito It Rp</description>
+        <description>UNICREDITO IT RP</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001074571" ticker="UNI">
-        <description>Unipol</description>
+        <description>UNIPOL</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0001074589" ticker="UNIP">
-        <description>Unipol Priv</description>
+        <description>UNIPOL PRIV</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003351639" ticker="VEM">
-        <description>Vemer Siber Gr</description>
+        <description>VEMER SIBER GR</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003081475" ticker="VVE">
-        <description>Viaggi Del Ventaglio</description>
+        <description>VIAGGI DEL VENTAGLIO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003127898" ticker="VIN">
-        <description>Vianini Industria</description>
+        <description>VIANINI INDUSTRIA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0003127864" ticker="VLA">
-        <description>Vianini Lavori</description>
+        <description>VIANINI LAVORI</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="US9264711030" ticker="MICU">
+        <description>VICURON PHARMA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000062882" ticker="VAS">
-        <description>Vittoria Ass</description>
+        <description>VITTORIA ASS</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="DE0007664005" ticker="VW">
-        <description>Volkswagen</description>
+        <description>VOLKSWAGEN</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000072675" ticker="IZ">
-        <description>Zignago</description>
+        <description>ZIGNAGO</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000080553" ticker="ZUC">
-        <description>Zucchi  Spa</description>
+        <description>ZUCCHI  SPA</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
     <data symbol="IT0000080561" ticker="ZUCR">
-        <description>Zucchi Spa Risp Nc</description>
+        <description>ZUCCHI SPA RISP NC</description>
         <minimum_quantity>1</minimum_quantity>
     </data>
 </stocklist>
