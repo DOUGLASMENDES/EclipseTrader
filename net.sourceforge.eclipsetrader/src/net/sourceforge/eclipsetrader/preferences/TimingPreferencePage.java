@@ -81,7 +81,6 @@ public class TimingPreferencePage extends PreferencePage implements IWorkbenchPr
     for (int i = 0; i < _v.size(); i++)
     {
       editor[i] = (FieldEditor)_v.elementAt(i);
-      editor[i].setPreferencePage(this);
       editor[i].setPreferenceStore(getPreferenceStore());
       editor[i].load();
     }
