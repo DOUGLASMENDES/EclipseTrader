@@ -22,6 +22,7 @@ import java.util.TimerTask;
 
 import net.sourceforge.eclipsetrader.DataProvider;
 import net.sourceforge.eclipsetrader.IExtendedData;
+import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 
 import org.eclipse.core.runtime.CoreException;
@@ -118,7 +119,7 @@ public class SnapshotDataProvider extends DataProvider
   {
     // Compone l'url per la lettura degli ultimi prezzi rimappando i codici usati da Yahoo
     String url = YahooPlugin.getDefault().getPreferenceStore().getString("yahoo.url") + "?s=";
-    data = getData();
+    data = TraderPlugin.getData();
     for (int i = 0; i < data.length; i++) {
       if (i > 0)
         url = url + "+";
