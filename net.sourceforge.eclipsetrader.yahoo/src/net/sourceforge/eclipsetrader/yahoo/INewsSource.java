@@ -22,5 +22,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public interface INewsSource
 {
+  public int getTasks();
   public Vector update(IProgressMonitor monitor);
 }

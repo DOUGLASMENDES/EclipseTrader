@@ -23,8 +23,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class NewsSource implements INewsSource
 {
-  protected Vector _data = new Vector();
+  public URL[] url = new URL[0];
+  public Vector _data = new Vector();
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.yahoo.INewsSource#getTasks()
+   */
+  public int getTasks()
+  {
+    return url.length;
+  }
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.yahoo.INewsSource#update(org.eclipse.core.runtime.IProgressMonitor)
    */

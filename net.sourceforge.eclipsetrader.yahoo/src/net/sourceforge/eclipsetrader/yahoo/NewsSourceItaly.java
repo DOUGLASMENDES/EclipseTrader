@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 public class NewsSourceItaly extends NewsSource
 {
   
-  public Vector update(IProgressMonitor monitor)
+  public NewsSourceItaly()
   {
     try {
       URL url[] = {
@@ -41,8 +41,13 @@ public class NewsSourceItaly extends NewsSource
         new URL("http://it.biz.yahoo.com/attualita/cda.html"),
         new URL("http://it.biz.yahoo.com/attualita/comunicati.html")
       };
-      
-      monitor.beginTask("News Update", url.length);
+      this.url = url;
+    } catch(Exception x) {};
+  }
+  
+  public Vector update(IProgressMonitor monitor)
+  {
+    try {
       _data.removeAllElements();
       for (int i = 0; i < url.length; i++)
       {
@@ -53,7 +58,6 @@ public class NewsSourceItaly extends NewsSource
           break;
       }
     } catch(Exception x) {};
-    monitor.done();
     
     return _data;
   }

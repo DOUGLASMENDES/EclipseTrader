@@ -40,7 +40,6 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 public class NewsProvider implements INewsProvider, IPropertyChangeListener
 {
   private static final String SOURCE_PROPERTY = "net.sourceforge.eclipsetrader.yahoo.newsSource";
-  private INewsSource newsSource;
   private Vector _data = new Vector();
   private INewsData[] dataArray;
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm");
@@ -55,9 +54,9 @@ public class NewsProvider implements INewsProvider, IPropertyChangeListener
    */
   public void propertyChange(PropertyChangeEvent event)
   {
-    String property = event.getProperty();
+/*    String property = event.getProperty();
     if (property.equalsIgnoreCase(SOURCE_PROPERTY) == true)
-      newsSource = (INewsSource)activatePlugin(SOURCE_PROPERTY);
+      newsSource = (INewsSource)activatePlugin(SOURCE_PROPERTY);*/
   }
 
   /**
@@ -66,14 +65,13 @@ public class NewsProvider implements INewsProvider, IPropertyChangeListener
    * @return plugin Object or null if plugin cannot be instantiated or no
    * plugins are present.
    */
-  public Object activatePlugin(String ep)
+  public Object activatePlugin(String ep, String id)
   {
     IExtensionRegistry registry = Platform.getExtensionRegistry();
     IExtensionPoint extensionPoint = registry.getExtensionPoint(ep);
     if (extensionPoint == null)
       return null;
     
-    String id = YahooPlugin.getDefault().getPreferenceStore().getString(ep);
     IConfigurationElement[] members = extensionPoint.getConfigurationElements();
     for (int m = 0; m < members.length; m++)
     {
@@ -99,10 +97,21 @@ public class NewsProvider implements INewsProvider, IPropertyChangeListener
 
   public void update(IProgressMonitor monitor)
   {
-    if (newsSource == null)
-      newsSource = (INewsSource)activatePlugin(SOURCE_PROPERTY);
-    if (newsSource != null)
-      _data = newsSource.update(monitor);
+    String sources = YahooPlugin.getDefault().getPreferenceStore().getString(SOURCE_PROPERTY);
+    String[] id = sources.split(",");
+
+    int total = 0;
+    INewsSource[] ns = new INewsSource[id.length];
+    for (int i = 0; i < id.length; i++)
+    {
+      ns[i] = (INewsSource)activatePlugin(SOURCE_PROPERTY, id[i]);
+      total += ns[i].getTasks();
+    }
+    _data.removeAllElements();
+    monitor.beginTask("News Update", total);
+    for (int i = 0; i < ns.length; i++)
+      _data.addAll(ns[i].update(monitor));
+    monitor.done();
     
     java.util.Collections.sort(_data, new Comparator() {
       public int compare(Object o1, Object o2) 

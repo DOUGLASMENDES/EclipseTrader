@@ -26,16 +26,21 @@ import org.eclipse.core.runtime.IProgressMonitor;
 public class NewsSourceUS extends NewsSource
 {
   private SimpleDateFormat df = new SimpleDateFormat("EEEE MMMM d, yyyy h:mm a", Locale.US);
-
-  public Vector update(IProgressMonitor monitor)
+  
+  public NewsSourceUS()
   {
     try {
       URL url[] = {
         new URL("http://biz.yahoo.com/apf/archive.html"),
         new URL("http://biz.yahoo.com/reuters/archive.html"),
       };
-      
-      monitor.beginTask("News Update", url.length);
+      this.url = url;
+    } catch(Exception x) {};
+  }
+
+  public Vector update(IProgressMonitor monitor)
+  {
+    try {
       _data.removeAllElements();
       for (int i = 0; i < url.length; i++)
       {
@@ -46,7 +51,6 @@ public class NewsSourceUS extends NewsSource
           break;
       }
     } catch(Exception x) {};
-    monitor.done();
 
     return _data;
   }
