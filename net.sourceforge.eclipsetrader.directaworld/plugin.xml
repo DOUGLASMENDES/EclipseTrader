@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader.directaworld"
+   name="Directa World"
+   version="0.4.0"
+   provider-name="Sourceforge.net"
+   class="net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin">
+
+   <runtime>
+      <library name="directaworld.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+   </requires>
+   <extension
+         name="Directa World"
+         point="net.sourceforge.eclipsetrader.dataProvider">
+      <provider
+            class="net.sourceforge.eclipsetrader.directaworld.SnapshotDataProvider"
+            id="directaworld.dataProvider"/>
+   </extension>
+
+</plugin>

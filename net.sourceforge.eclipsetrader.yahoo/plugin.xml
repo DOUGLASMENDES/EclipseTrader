@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader.yahoo"
+   name="Yahoo Plug-in"
+   version="0.4.0"
+   provider-name="Sourceforge.net"
+   class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
+
+   <runtime>
+      <library name="yahoo.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+      <import plugin="org.eclipse.jface"/>
+   </requires>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.eclipsetrader.yahoo.GeneralPreferencePage"
+            name="Yahoo"
+            id="yahoo"/>
+      <page
+            class="net.sourceforge.eclipsetrader.yahoo.MappingPreferencePage"
+            category="yahoo"
+            name="Mapping"
+            id="yahoo.mapping"/>
+   </extension>
+   <extension
+         name="Yahoo Data Provider"
+         point="net.sourceforge.eclipsetrader.dataProvider">
+      <provider
+            class="net.sourceforge.eclipsetrader.yahoo.SnapshotDataProvider"
+            id="yahoo.data.provider"/>
+   </extension>
+   <extension
+         name="Yahoo Charts Data Provider"
+         point="net.sourceforge.eclipsetrader.chartDataProvider">
+      <provider
+            class="net.sourceforge.eclipsetrader.yahoo.ChartDataProvider"
+            id="yahoo.chart.provider"/>
+   </extension>
+
+</plugin>

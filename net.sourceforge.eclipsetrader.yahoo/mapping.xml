@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yahoo-mapping>
+    <data ticker="FIB" symbol="IFXU4">FIB30</data>
+    <data ticker="MFIB" symbol="IFNU4">MINIFIB</data>
+    <data ticker="ASR" symbol="ASR.MI">A.S. ROMA</data>
+    <data ticker="ACE" symbol="ACE.MI">ACEA</data>
+    <data ticker="AEG" symbol="AEG.MI">ACEGAS</data>
+    <data ticker="ACO" symbol="ACO.MI">ACOTEL GROUP</data>
+    <data ticker="ADF" symbol="ADFI.MI">ACQD FERRARI</data>
+    <data ticker="ADFR" symbol="ADFIr.MI">ACQD FERRARI  RN</data>
+    <data ticker="ANG" symbol="AQNI.MI">ACQD NICOLAY</data>
+    <data ticker="APM" symbol="APMI.MI">ACQUA PIA MARCIA</data>
+    <data ticker="ACP" symbol="ACP.MI">ACQUE POTABILI</data>
+    <data ticker="ACS" symbol="ACSM.MI">ACSM COMO</data>
+    <data ticker="ACT" symbol="ACT.MI">ACTELIOS</data>
+    <data ticker="AE" symbol="AEDI.MI">AEDES</data>
+    <data ticker="AEDR" symbol="AEDIn.MI">AEDES         RN</data>
+    <data ticker="AEM" symbol="AEMI.MI">AEM</data>
+    <data ticker="AET" symbol="AET.MI">AEM TORINO</data>
+    <data ticker="AFI" symbol="AFI.MI">AEROPORT FIRENZE</data>
+    <data ticker="DLM" symbol="DLM.MI">AIR DOLOMITI</data>
+    <data ticker="AISW" symbol="AISW.MI">AISOFTW@RE</data>
+    <data ticker="ALGL" symbol="ALGL.MI">ALGOL</data>
+    <data ticker="AZA" symbol="AZPIa.MI">ALITALIA A</data>
+    <data ticker="AL" symbol="ALZI.MI">ALLEANZA ASS</data>
+    <data ticker="AMG" symbol="AMG.MI">AMGA ASS MED G+A</data>
+    <data ticker="AMP" symbol="AMP.MI">AMPLIFON</data>
+    <data ticker="ARQ" symbol="ARQ.MI">ARQUATI</data>
+    <data ticker="ART" symbol="ART.MI">ARTE</data>
+    <data ticker="MI" symbol="ADMI.MI">ASS MILANO</data>
+    <data ticker="MIR" symbol="ADMIr.MI">ASS MILANO    RN</data>
+    <data ticker="AGL" symbol="AGL.MI">AUTOGRILL</data>
+    <data ticker="AT" symbol="ATMI.MI">AUTOSTRADA TO-MI</data>
+    <data ticker="AUT" symbol="ACMI.MI">AUTOSTRADE</data>
+    <data ticker="BAGM" symbol="BMAN.MI">B AGRI MANTOVANA</data>
+    <data ticker="CAP" symbol="CPTA.MI">CAPITALIA</data>
+    <data ticker="CRG" symbol="CRGI.MI">B CARIGE</data>
+    <data ticker="BDC" symbol="BDCI.MI">B CHIAVARI</data>
+    <data ticker="BDB" symbol="DESI.MI">B D-BRIANZA</data>
+    <data ticker="BDBR" symbol="DESIn.MI">B D-BRIANZA   RN</data>
+    <data ticker="BFI" symbol="FIBK.MI">B FIDEURAM</data>
+    <data ticker="INTI" symbol="INTI.MI">B INTERMOBILIARE</data>
+    <data ticker="BL" symbol="BL.MI">B LOMBARDA</data>
+    <data ticker="BMPS" symbol="BMPS.MI">B M.PASCHI SIENA</data>
+    <data ticker="BNL" symbol="BANI.MI">B N LAVORO</data>
+    <data ticker="BANIr" symbol="BANIr.MI">B N LAVORO    RN</data>
+    <data ticker="BN" symbol="NAPIn.MI">B NAPOLI      RN</data>
+    <data ticker="PBCV" symbol="PGPI.MI">B P BERGA-CR.VAR</data>
+    <data ticker="PCI" symbol="BPCI.MI">B P COM IND</data>
+    <data ticker="BCRI" symbol="BCRI.MI">B P CREMONA</data>
+    <data ticker="PEL" symbol="PEL.MI">B P ETRURI.LAZIO</data>
+    <data ticker="PIN" symbol="PINI.MI">B P INTRA</data>
+    <data ticker="PMI" symbol="PMII.MI">B P MILANO</data>
+    <data ticker="PNO" symbol="PNOI.MI">B P NOVARA</data>
+    <data ticker="SPO" symbol="SPO.MI">B P SPOLETO</data>
+    <data ticker="PVR" symbol="PVR.MI">B P VERONA</data>
+    <data ticker="PRO" symbol="PRO.MI">B PROFILO</data>
+    <data ticker="BRM" symbol="BRMI.MI">B ROMA</data>
+    <data ticker="BSC" symbol="SCH.MI">B SAN CENT HISP</data>
+    <data ticker="BSRP" symbol="SARIn.MI">B SARDEGNA    RN</data>
+    <data ticker="BT" symbol="TOSI.MI">B TOSCANA</data>
+    <data ticker="PLO" symbol="PLOI.MI">BANCA POP LODI</data>
+    <data ticker="BAN" symbol="BCNT.MI">BASIC NET</data>
+    <data ticker="B" symbol="BTGI.MI">BASTOGI</data>
+    <data ticker="BAY" symbol="BAYI.MI">BAYER AG</data>
+    <data ticker="BV" symbol="BVII.MI">BAYERISCHE VITA</data>
+    <data ticker="BB" symbol="BB.MI">BB BIOTECH</data>
+    <data ticker="NTV" symbol="NTV.MI">BCA ANTONVENETA</data>
+    <data ticker="PGPIa" symbol="PGPIa.MI">BCA POP BG 1GE02</data>
+    <data ticker="BE" symbol="BE.MI">BEGHELLI</data>
+    <data ticker="BEN" symbol="BNG.MI">BENETTON GROUP</data>
+    <data ticker="BNS" symbol="BNSI.MI">BENI STABILI</data>
+    <data ticker="BSS" symbol="BSS.MI">BIESSE</data>
+    <data ticker="BIO" symbol="BIO.MI">BIOSEARCH ITALIA</data>
+    <data ticker="BIP" symbol="BIP.MI">BIPOP - CARIRE</data>
+    <data ticker="BOE" symbol="BOEI.MI">BOERO BARTOLOMEO</data>
+    <data ticker="BON" symbol="CBMI.MI">BONAPARTE</data>
+    <data ticker="BONR" symbol="CBMIr.MI">BONAPARTE 99  RC</data>
+    <data ticker="BF" symbol="BFFI.MI">BONIFI FERRARESI</data>
+    <data ticker="BRE" symbol="BRBI.MI">BREMBO</data>
+    <data ticker="BRI" symbol="BRUI.MI">BRIOSCHI FIN</data>
+    <data ticker="BUL" symbol="BULG.MI">BULGARI</data>
+    <data ticker="BZU" symbol="BZU.MI">BUZZI UNICEM</data>
+    <data ticker="BZUR" symbol="BZUr.MI">BUZZI UNICEM  RN</data>
+    <data ticker="CAD" symbol="CAD.MI">CAD IT</data>
+    <data ticker="CAI" symbol="CAI.MI">CAIRO COMMUNICAT</data>
+    <data ticker="CA" symbol="CLPI.MI">CALP</data>
+    <data ticker="CALT" symbol="CALI.MI">CALTAGIRONE</data>
+    <data ticker="CALTR" symbol="CALIn.MI">CALTAGIRONE   RN</data>
+    <data ticker="CED" symbol="CED.MI">CALTAGIRONE EDIT</data>
+    <data ticker="CMF" symbol="CAMI.MI">CAMFIN</data>
+    <data ticker="CDN" symbol="CDN.MI">CARDNET GROUP</data>
+    <data ticker="CARR" symbol="CARR.MI">CARRARO</data>
+    <data ticker="CFI" symbol="CFI.MI">CAS RISP FIRENZE</data>
+    <data ticker="CASS" symbol="CASS.MI">CATTOLICA ASS</data>
+    <data ticker="CDB" symbol="CDBW.MI">CDB WEB TECH INV</data>
+    <data ticker="CDC" symbol="CDC.MI">CDC</data>
+    <data ticker="CMB" symbol="CMB.MI">CEMBRE</data>
+    <data ticker="CEM" symbol="CEMI.MI">CEMENTIR</data>
+    <data ticker="CLT" symbol="CLT.MI">CENT LATTE TORIN</data>
+    <data ticker="CZ" symbol="CEZI.MI">CENTENARIZINELLI</data>
+    <data ticker="CHL" symbol="CHL.MI">CHL</data>
+    <data ticker="CIR" symbol="CIRX.MI">CIR-COMP</data>
+    <data ticker="CRO" symbol="CBDI.MI">CIRIOFINANZIARIA</data>
+    <data ticker="CLE" symbol="CLE.MI">CLASS EDITORI</data>
+    <data ticker="CMTI" symbol="CMTI.MI">CMI</data>
+    <data ticker="CMIopa" symbol="CMIopa.MI">CMI OPA</data>
+    <data ticker="COF" symbol="COFI.MI">COFIDE</data>
+    <data ticker="GC" symbol="GC.MI">COIN GRUPPO</data>
+    <data ticker="CRA02" symbol="CRA02.MI">CR ARTIGI 1GE02</data>
+    <data ticker="CRA" symbol="CRA.MI">CR ARTIGIANO</data>
+    <data ticker="CB" symbol="CBGI.MI">CR BERGAMASCO</data>
+    <data ticker="CE" symbol="EMBI.MI">CR EMILIANO</data>
+    <data ticker="CVAL" symbol="PCVI.MI">CR VALTELLINES</data>
+    <data ticker="CRM" symbol="CRM.MI">CREMONINI</data>
+    <data ticker="CRE" symbol="CRE.MI">CRESPI</data>
+    <data ticker="CSP" symbol="CSP.MI">CSP INT</data>
+    <data ticker="CTO" symbol="CTO.MI">CTO</data>
+    <data ticker="CC" symbol="CUCI.MI">CUCIRINI</data>
+    <data ticker="DA" symbol="DA.MI">DADA</data>
+    <data ticker="D" symbol="DALI.MI">DALMINE</data>
+    <data ticker="DAN" symbol="DANI.MI">DANIELI</data>
+    <data ticker="DANR" symbol="DANIr.MI">DANIELI       RN</data>
+    <data ticker="DAS" symbol="DAS.MI">DATA SERVICE</data>
+    <data ticker="DAL" symbol="DAL.MI">DATALOGIC</data>
+    <data ticker="DAM" symbol="DAM.MI">DATAMAT</data>
+    <data ticker="CPR" symbol="CPR.MI">DAVIDE CAMPARI</data>
+    <data ticker="DLG" symbol="DLG.MI">DELONGHI</data>
+    <data ticker="DIB" symbol="DIB.MI">DIGITAL BROS</data>
+    <data ticker="DMA" symbol="DMA.MI">DMAIL GROUP</data>
+    <data ticker="DMH" symbol="DMH.MI">DUCATI MOTOR HLD</data>
+    <data ticker="EBI" symbol="BISC.MI">e.BISCOM</data>
+    <data ticker="PLA" symbol="PLA.MI">e.PLANET</data>
+    <data ticker="EDS" symbol="ED.MI">EDISON</data>
+    <data ticker="EDn" symbol="EDn.MI">EDISON RSP</data>
+    <data ticker="ELN" symbol="ELN.MI">EL.EN</data>
+    <data ticker="EM" symbol="EM.MI">EMAK</data>
+    <data ticker="ENEL" symbol="ENEI.MI">ENEL</data>
+    <data ticker="ENG" symbol="ENG.MI">ENGINEER INFORM</data>
+    <data ticker="ENI" symbol="ENI.MI">ENI</data>
+    <data ticker="ERG" symbol="ERG.MI">ERG</data>
+    <data ticker="ERI" symbol="ERII.MI">ERICSSON</data>
+    <data ticker="ESA" symbol="ESA.MI">ESAOTE</data>
+    <data ticker="PRT" symbol="PRT.MI">ESPRINET</data>
+    <data ticker="EUP" symbol="EUP.MI">EUPHON</data>
+    <data ticker="FER" symbol="FER.MI">FERRETTI</data>
+    <data ticker="F" symbol="FIA.MI">FIAT</data>
+    <data ticker="FR" symbol="FIAr.MI">FIAT          RN</data>
+    <data ticker="FP" symbol="FIA_p.MI">FIAT       PRIV</data>
+    <data ticker="FDA" symbol="FDA.MI">FIDIA</data>
+    <data ticker="FDP" symbol="FDP.MI">FILATURA POLLONE</data>
+    <data ticker="FN" symbol="FNAI.MI">FIN.PART</data>
+    <data ticker="FCD" symbol="FCDI.MI">FINARTE C. ASTE</data>
+    <data ticker="FC" symbol="FCAI.MI">FINCASA 44</data>
+    <data ticker="FIN" symbol="FMAT.MI">FINMATICA</data>
+    <data ticker="FNC" symbol="SIFI.MI">FINMECCANICA</data>
+    <data ticker="FDL" symbol="FDL.MI">FREEDOMLAND</data>
+    <data ticker="RIC" symbol="RIC.MI">G CERA RICCHETTI</data>
+    <data ticker="ES" symbol="ESPI.MI">G ED LESPRESSO</data>
+    <data ticker="GAB" symbol="GABI.MI">GABETTI</data>
+    <data ticker="GAN" symbol="GAND.MI">GANDALF</data>
+    <data ticker="GAR" symbol="GARI.MI">GARBOLI CONICOS</data>
+    <data ticker="GE" symbol="GE.MI">GEFRAN</data>
+    <data ticker="GEM" symbol="GEMI.MI">GEMINA</data>
+    <data ticker="GEMR" symbol="GEMIr.MI">GEMINA        RN</data>
+    <data ticker="G" symbol="GASI.MI">GENERALI ASS</data>
+    <data ticker="GEW" symbol="GEWI.MI">GEWISS</data>
+    <data ticker="GSG" symbol="GSG.MI">GIACOMELLI SPORT</data>
+    <data ticker="GDM" symbol="GDM.MI">GILDEMEISTER</data>
+    <data ticker="GI" symbol="GIMI.MI">GIM</data>
+    <data ticker="GIR" symbol="GIMIr.MI">GIM           RN</data>
+    <data ticker="GRF" symbol="GRF.MI">GRANITIFIANDRE</data>
+    <data ticker="GNV" symbol="GNAV.MI">GRD. NAVI VELOCI</data>
+    <data ticker="HER" symbol="HRA.MI">HERA</data>
+    <data ticker="HPI" symbol="HPI.MI">HLD PART IND</data>
+    <data ticker="HPIR" symbol="HPIn.MI">HLD PART IND  RN</data>
+    <data ticker="IGV" symbol="IGV.MI">I GRANDI VIAGGI</data>
+    <data ticker="INE" symbol="INE.MI">I.NET</data>
+    <data ticker="IDP" symbol="IPR.MI">IDRA PRESSE</data>
+    <data ticker="IFP" symbol="IFPI_p.MI">IFI        PRIV</data>
+    <data ticker="IFL" symbol="IFLI.MI">IFIL</data>
+    <data ticker="IFR" symbol="IFLIr.MI">IFIL          RN</data>
+    <data ticker="IML" symbol="IMLO.MI">IM LOMBARDA</data>
+    <data ticker="IMET" symbol="IMMP.MI">IM METANOPOLI</data>
+    <data ticker="IMA" symbol="IMAI.MI">IMA</data>
+    <data ticker="IMS" symbol="IMSI.MI">IMMSI</data>
+    <data ticker="IPG" symbol="IPGI.MI">IMPREGILO</data>
+    <data ticker="IPGR" symbol="IPGIr.MI">IMPREGILO     RN</data>
+    <data ticker="INF" symbol="INF.MI">INFERENTIA DNM</data>
+    <data ticker="ITK" symbol="TEKI.MI">INTEK</data>
+    <data ticker="ITKR" symbol="TEKIr.MI">INTEK         RN</data>
+    <data ticker="TEKI_r" symbol="TEKI_r.MI">INTEK SOTT AZ</data>
+    <data ticker="INT" symbol="INT.MI">INTERBANCA</data>
+    <data ticker="IP" symbol="IP.MI">INTERPUMP GROUP</data>
+    <data ticker="BIN" symbol="BIN.MI">INTESABCI</data>
+    <data ticker="BINR" symbol="BINn.MI">INTESABCI R</data>
+    <data ticker="IIL" symbol="IIL.MI">INV.IM LOMBARDI</data>
+    <data ticker="IPI" symbol="AIMI.MI">IPI</data>
+    <data ticker="IRC" symbol="IRC.MI">IRCE</data>
+    <data ticker="ITH" symbol="ITH.MI">IT HOLDING</data>
+    <data ticker="ITW" symbol="ITW.MI">IT WAY</data>
+    <data ticker="IT" symbol="ITAI.MI">ITALCEMENTI</data>
+    <data ticker="ITR" symbol="ITAIn.MI">ITALCEMENTI   RN</data>
+    <data ticker="IG" symbol="IG.MI">ITALGAS</data>
+    <data ticker="ITM" symbol="ITMI.MI">ITALMOBILIARE</data>
+    <data ticker="ITMR" symbol="ITMIr.MI">ITALMOBILIARE RN</data>
+    <data ticker="GIU" symbol="GIU.MI">ITDESGN GIUGIARO</data>
+    <data ticker="JH" symbol="JHTI.MI">JOLLY HOTEL</data>
+    <data ticker="JHR" symbol="JHTIr.MI">JOLLY HOTEL  RN</data>
+    <data ticker="JUVE" symbol="JUVE.MI">JUVENTUS F.C.</data>
+    <data ticker="LD" symbol="LDO.MI">LA DORIA</data>
+    <data ticker="FASR" symbol="FASn.MI">LA FONDIARIA  RN</data>
+    <data ticker="FAS" symbol="IASI.MI">LA FONDIARIA ASS</data>
+    <data ticker="GAI" symbol="GAIA.MI">LA GAIANA</data>
+    <data ticker="LAV" symbol="LAV.MI">LAVORWASH</data>
+    <data ticker="LI" symbol="LINI.MI">LINIFICIO 500</data>
+    <data ticker="LIR" symbol="LINIr.MI">LINIFICIO 500 RN</data>
+    <data ticker="LO" symbol="ISEI.MI">LOCAT</data>
+    <data ticker="LTT" symbol="LTT.MI">LOTTOMATICA</data>
+    <data ticker="LUX" symbol="LUX.MI">LUXOTTICA</data>
+    <data ticker="MAF" symbol="MAFI.MI">MAFFEI</data>
+    <data ticker="MRI" symbol="MRI.MI">MANULI RUBBER</data>
+    <data ticker="MAR" symbol="MARG.MI">MARANGONI</data>
+    <data ticker="MCL" symbol="MCL.MI">MARCOLIN</data>
+    <data ticker="MBFG" symbol="MBFG.MI">MARIELLA BURANI</data>
+    <data ticker="MZ" symbol="MZTI.MI">MARZOTTO</data>
+    <data ticker="MZR" symbol="MZTIr.MI">MARZOTTO      RC</data>
+    <data ticker="MZNC" symbol="MZTIn.MI">MARZOTTO      RN</data>
+    <data ticker="MS" symbol="MS.MI">MEDIASET</data>
+    <data ticker="MB" symbol="MDBI.MI">MEDIOBANCA</data>
+    <data ticker="MED" symbol="MED.MI">MEDIOLANUM</data>
+    <data ticker="MEL" symbol="MEL.MI">MELIORBANCA</data>
+    <data ticker="MER" symbol="MERI.MI">MERLONI</data>
+    <data ticker="MERR" symbol="MERIn.MI">MERLONI       RN</data>
+    <data ticker="MRT" symbol="MRT.MI">MIRATO</data>
+    <data ticker="MIT" symbol="MTTI.MI">MITTEL</data>
+    <data ticker="MN" symbol="MNDI.MI">MONDADORI</data>
+    <data ticker="MNR" symbol="MNDIn.MI">MONDADORI     RC</data>
+    <data ticker="MTV" symbol="MTV.MI">MONDO TV</data>
+    <data ticker="MON" symbol="EDII.MI">MONRIF</data>
+    <data ticker="MF" symbol="MFBI.MI">MONTEFIBRE</data>
+    <data ticker="MFNC" symbol="MFBIn.MI">MONTEFIBRE    RN</data>
+    <data ticker="NM" symbol="NAII.MI">NAVIG MONTANARI</data>
+    <data ticker="NEC" symbol="NECI.MI">NECCHI</data>
+    <data ticker="NECR" symbol="NECIr.MI">NECCHI        RN</data>
+    <data ticker="NGB" symbol="NGB.MI">NEGRI BOSSI</data>
+    <data ticker="NOV" symbol="NOV.MI">NOVUSPHARMA</data>
+    <data ticker="O" symbol="OLCI.MI">OLCESE</data>
+    <data ticker="OLI" symbol="OLI.MI">OLIDATA</data>
+    <data ticker="OL" symbol="OLIV.MI">OLIVETTI</data>
+    <data ticker="ONB" symbol="ONB.MI">ON BANCA</data>
+    <data ticker="OPG" symbol="OPG.MI">OPENGATE GROUP</data>
+    <data ticker="PAG" symbol="PAG.MI">PAGNOSSIN</data>
+    <data ticker="PRF" symbol="PRFI.MI">PARMALAT FIN</data>
+    <data ticker="PE" symbol="PELI.MI">PERLIER</data>
+    <data ticker="PMS" symbol="PMS.MI">PERMASTEELISA</data>
+    <data ticker="PINF" symbol="PNNI.MI">PININFARINA</data>
+    <data ticker="PINR" symbol="PNNIn.MI">PININFARINA   RN</data>
+    <data ticker="P" symbol="PIRI.MI">PIRELLI</data>
+    <data ticker="PRNC" symbol="PIRIn.MI">PIRELLI       RN</data>
+    <data ticker="PC" symbol="PECI.MI">PIRELLI E C</data>
+    <data ticker="PCP" symbol="PECIn.MI">PIRELLI E C RN</data>
+    <data ticker="PSF" symbol="PSF.MI">POLIGRAF.S.FAUST</data>
+    <data ticker="POL" symbol="POLI.MI">POLIGRAFICI EDIT</data>
+    <data ticker="PF" symbol="PRAI.MI">PREMAFIN FIN HP</data>
+    <data ticker="PR" symbol="PRNI.MI">PREMUDA</data>
+    <data ticker="PRR" symbol="PRNIr.MI">PREMUDA      RC</data>
+    <data ticker="PRI" symbol="PRII.MI">PRIMA INDUSTRIE</data>
+    <data ticker="R" symbol="RASI.MI">RAS</data>
+    <data ticker="RR" symbol="RASIr.MI">RAS PORT      RN</data>
+    <data ticker="RAT" symbol="RATI.MI">RATTI</data>
+    <data ticker="REC" symbol="RECI.MI">RECORDATI</data>
+    <data ticker="RM" symbol="RDM.MI">RENO MEDICI</data>
+    <data ticker="RMRCV" symbol="RDMr.MI">RENO MEDICI   RC</data>
+    <data ticker="REY" symbol="REY.MI">REPLY</data>
+    <data ticker="RG" symbol="RG.MI">RICHARD-GINORI</data>
+    <data ticker="RI" symbol="RINI.MI">RINASCENTE</data>
+    <data ticker="RIR" symbol="RINIr.MI">RINASCENTE    RN</data>
+    <data ticker="RIP" symbol="RINI_p.MI">RINASCENTE PRIV</data>
+    <data ticker="RS" symbol="RN.MI">RISAN NAPOLI</data>
+    <data ticker="ROE" symbol="ROE.MI">ROLAND EUROPE</data>
+    <data ticker="ROL" symbol="CROI.MI">ROLO BANCA 1473</data>
+    <data ticker="RON" symbol="RON.MI">RONCADIN</data>
+    <data ticker="REV" symbol="MROI.MI">ROTONDI EVOLUZIO</data>
+    <data ticker="SSL" symbol="SSL.MI">S.S. LAZIO</data>
+    <data ticker="SAB" symbol="SAB.MI">SABAF</data>
+    <data ticker="SAD" symbol="SAD.MI">SADI</data>
+    <data ticker="SAE" symbol="SAE.MI">SAECO GROUP</data>
+    <data ticker="SG" symbol="SAEI.MI">SAES GETTERS</data>
+    <data ticker="SGR" symbol="SAEIn.MI">SAES GETTERS  RN</data>
+    <data ticker="SA" symbol="SIII.MI">SAI</data>
+    <data ticker="SAR" symbol="SIIIn.MI">SAI           RN</data>
+    <data ticker="SAG" symbol="SAGI.MI">SAIAG</data>
+    <data ticker="SAGR" symbol="SAGIr.MI">SAIAG         RN</data>
+    <data ticker="SPM" symbol="SPMI.MI">SAIPEM</data>
+    <data ticker="SPMR" symbol="SPMIr.MI">SAIPEM        RC</data>
+    <data ticker="SPI" symbol="SPI.MI">SAN PAOLO-IMI</data>
+    <data ticker="SDB" symbol="SDB.MI">SAVINO DEL BENE</data>
+    <data ticker="SCH" symbol="SCHI.MI">SCHIAPPARELLI</data>
+    <data ticker="SPGR" symbol="SPGn.MI">SEAT PAG.GIAL RN</data>
+    <data ticker="SPG" symbol="SPG.MI">SEAT PAG.GIALLE</data>
+    <data ticker="SIS" symbol="SIS.MI">SIAS</data>
+    <data ticker="SIT" symbol="IRTI.MI">SIRTI</data>
+    <data ticker="SMI" symbol="SMII.MI">SMI METALLI</data>
+    <data ticker="SMIR" symbol="SMIIr.MI">SMI METALLI   RN</data>
+    <data ticker="SMU" symbol="SISI.MI">SMURFIT SISA</data>
+    <data ticker="SNA" symbol="SNA.MI">SNAI</data>
+    <data ticker="SRG" symbol="SRG.MI">SNAM RETE GAS</data>
+    <data ticker="SN" symbol="SIAI.MI">SNIA</data>
+    <data ticker="SNR" symbol="SIAIr.MI">SNIA          RC</data>
+    <data ticker="SNRNC" symbol="SIAIn.MI">SNIA          RN</data>
+    <data ticker="SO" symbol="SGFI.MI">SOGEFI</data>
+    <data ticker="SOL" symbol="SOL.MI">SOL</data>
+    <data ticker="SPF" symbol="SPFI.MI">SOPAF</data>
+    <data ticker="SPFR" symbol="SPFIr.MI">SOPAF         RN</data>
+    <data ticker="STY" symbol="STAY.MI">STAYER</data>
+    <data ticker="STEF" symbol="STEP.MI">STEFANEL</data>
+    <data ticker="STEFR" symbol="STEPr.MI">STEFANEL RC</data>
+    <data ticker="STM" symbol="STM.MI">STMICROELEC.N.V</data>
+    <data ticker="TS" symbol="TRGT.MI">TARGETTI SANKEY</data>
+    <data ticker="TAS" symbol="TAS.MI">TAS</data>
+    <data ticker="TCS" symbol="TCS.MI">TC SISTEMA</data>
+    <data ticker="TDI" symbol="TDIF.MI">TECNODIFFUSIONE</data>
+    <data ticker="TIR" symbol="TITn.MI">TELECOM ITALI RN</data>
+    <data ticker="TIT" symbol="TLIT.MI">TELECOM ITALIA</data>
+    <data ticker="TME" symbol="TCM.MI">TELECOM ITALIA MEDIA</data>
+    <data ticker="TA" symbol="TAQI.MI">TERME ACQUI</data>
+    <data ticker="TAR" symbol="TAQIr.MI">TERME ACQUI RN</data>
+    <data ticker="TIM" symbol="TIM.MI">TIM</data>
+    <data ticker="TIMR" symbol="TIMn.MI">TIM RN</data>
+    <data ticker="TIS" symbol="TIS.MI">TISCALI</data>
+    <data ticker="TOD" symbol="TOD.MI">TODS</data>
+    <data ticker="TFI" symbol="TFI.MI">TREVI FIN.IND</data>
+    <data ticker="TXT" symbol="TXTS.MI">TXT e-SOLUTIONS</data>
+    <data ticker="UC" symbol="CRDI.MI">UNICREDITO</data>
+    <data ticker="UCR" symbol="CRDIr.MI">UNICREDITO RC</data>
+    <data ticker="UNM" symbol="UNM.MI">UNIMED</data>
+    <data ticker="UNI" symbol="UNPI.MI">UNIPOL</data>
+    <data ticker="UNIP" symbol="UNPI_p.MI">UNIPOL PRIV</data>
+    <data ticker="VEM" symbol="VEM.MI">VEMER SIBER GR</data>
+    <data ticker="VVE" symbol="VVE.MI">VIAGGI VENTAGLIO</data>
+    <data ticker="VIN" symbol="VIAIr.MI">VIANINI INDUSTRI</data>
+    <data ticker="VLA" symbol="VIAI.MI">VIANINI LAVORI</data>
+    <data ticker="VIT" symbol="VIT.MI">VITAMINIC</data>
+    <data ticker="VAS" symbol="VITI.MI">VITTORIA ASS</data>
+    <data ticker="VW" symbol="VWAI.MI">VOLKSWAGEN</data>
+    <data ticker="IZ" symbol="ZIGI.MI">ZIGNAGO IND</data>
+    <data ticker="ZUC" symbol="ZUCI.MI">ZUCCHI</data>
+    <data ticker="ZUCR" symbol="ZUCIn.MI">ZUCCHI RN</data>
+</yahoo-mapping>
