@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader.archipelago"
+   name="Archipelago"
+   version="0.9.0"
+   provider-name="Sourceforge.net"
+   class="net.sourceforge.eclipsetrader.archipelago.ArchipelagoPlugin">
+
+   <runtime>
+      <library name="archipelago.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+   </requires>
+   <extension
+         point="net.sourceforge.eclipsetrader.bookDataProvider">
+      <provider
+            label="Archipelago Streaming"
+            class="net.sourceforge.eclipsetrader.archipelago.BookDataProvider"
+            id="archipelago.bookDataProvider"/>
+   </extension>
+
+</plugin>

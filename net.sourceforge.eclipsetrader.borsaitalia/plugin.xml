@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.eclipsetrader.borsaitalia"
+   name="Borsa Italiana"
+   version="0.11.0"
+   provider-name="Sourceforge.net"
+   class="net.sourceforge.eclipsetrader.borsaitalia.BorsaitaliaPlugin">
+
+   <runtime>
+      <library name="borsaitalia.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="net.sourceforge.eclipsetrader"/>
+   </requires>
+   <extension
+         point="net.sourceforge.eclipsetrader.chartDataProvider">
+      <provider
+            label="Borsa Italiana"
+            class="net.sourceforge.eclipsetrader.borsaitalia.ChartDataProvider"
+            id="borsaitalia.chart"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.eclipsetrader.borsaitalia.GeneralPreferencePage"
+            name="Borsa Italiana"
+            id="borsaitalia.generalPreferences"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.backfillDataProvider">
+      <provider
+            label="Borsa Italiana"
+            class="net.sourceforge.eclipsetrader.borsaitalia.BackfillDataProvider"
+            id="borsaitalia.backfill"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.indexProvider">
+      <provider
+            class="net.sourceforge.eclipsetrader.borsaitalia.IndexDataProvider"
+            name="Borsa Italiana"
+            id="borsaitalia.indexProvider">
+      <index
+            ticker="MIBTEL"
+            label="MIBTEL"
+            symbol="II999"/>
+      <index
+            ticker="MIB30"
+            label="MIB30"
+            symbol="II930"/>
+      <index
+            ticker="MIDEX"
+            label="MIDEX"
+            symbol="II932"/>
+      <index
+            ticker="NUMTEL"
+            label="NUMTEL"
+            symbol="II936"/>
+      <index
+            ticker="SPMIB"
+            label="S/P MIB"
+            symbol="IS945"/>
+      <index
+            ticker="MIBTEL-S"
+            label="MIBTEL-S"
+            symbol="II935"/>
+      <index
+            ticker="MIB30-S"
+            label="MIB30-S"
+            symbol="II933"/>
+      <index
+            ticker="NUMTEL-S"
+            label="NUMTEL-S"
+            symbol="II939"/>
+      </provider>
+   </extension>
+
+</plugin>
