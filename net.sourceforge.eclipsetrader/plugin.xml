@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader"
    name="%pluginName"
-   version="0.9.2"
+   version="0.10.0"
    provider-name="%providerName"
    class="net.sourceforge.eclipsetrader.TraderPlugin">
 
@@ -26,6 +26,7 @@
    <extension-point id="tradingProvider" name="Trading Provider" schema="schema/tradingProvider.exsd"/>
    <extension-point id="newsProvider" name="News Provider" schema="schema/newsProvider.exsd"/>
    <extension-point id="bookDataProvider" name="Book Data Provider" schema="schema/bookDataProvider.exsd"/>
+   <extension-point id="indexProvider" name="Index Provider" schema="schema/indexProvider.exsd"/>
    <extension
          id="Product"
          point="org.eclipse.core.runtime.products">
