@@ -18,10 +18,10 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * News view actions handler.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public class NewsAction implements IViewActionDelegate
 {

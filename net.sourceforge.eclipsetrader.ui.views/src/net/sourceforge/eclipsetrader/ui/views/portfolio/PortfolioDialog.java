@@ -34,10 +34,10 @@ import org.eclipse.ui.PlatformUI;
 
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Dialog for selection of the stock item to add or edit.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public class PortfolioDialog extends TitleAreaDialog implements ModifyListener
 {

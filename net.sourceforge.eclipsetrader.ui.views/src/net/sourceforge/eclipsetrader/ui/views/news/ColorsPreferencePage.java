@@ -23,10 +23,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * News View colors preference page.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public class ColorsPreferencePage extends PreferencePage implements IWorkbenchPreferencePage
 {

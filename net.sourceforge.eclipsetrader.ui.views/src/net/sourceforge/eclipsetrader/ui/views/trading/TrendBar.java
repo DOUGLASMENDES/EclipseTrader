@@ -25,10 +25,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Color bar that shows the pressure of each price level in a book / level II
+ * data view.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public class TrendBar extends Canvas implements PaintListener, IBookUpdateListener
 {

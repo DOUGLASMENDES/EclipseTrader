@@ -16,10 +16,10 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Stockwatch view action handler.
+ * <p></p>
+ * 
+ * @author Marco Maccaferri
  */
 public class ContextAction implements IViewActionDelegate
 {

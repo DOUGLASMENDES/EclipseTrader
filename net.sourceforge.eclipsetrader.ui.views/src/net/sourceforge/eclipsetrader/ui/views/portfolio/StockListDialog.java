@@ -45,10 +45,6 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * @author Marco
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class StockListDialog extends TitleAreaDialog implements ModifyListener
 {
