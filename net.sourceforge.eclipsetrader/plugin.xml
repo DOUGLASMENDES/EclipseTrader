@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader"
    name="%pluginName"
-   version="0.6.0"
+   version="0.7.0"
    provider-name="%providerName"
    class="net.sourceforge.eclipsetrader.TraderPlugin">
 
@@ -79,6 +79,11 @@
             name="Startup and Shutdown"
             category="eclipsetrader"
             id="eclipsetrader.startup"/>
+      <page
+            class="net.sourceforge.eclipsetrader.preferences.ProxyPreferencePage"
+            name="Proxies"
+            category="eclipsetrader"
+            id="eclipsetrader.proxy"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
