@@ -53,6 +53,7 @@ public class AccumulationDistributionChart extends ChartPlotter implements IChar
    */
   public void paintChart(GC gc, int width, int height)
   {
+    super.paintChart(gc, width, height);
     if (chartData != null && max > min)
     {
       max = min = 0;

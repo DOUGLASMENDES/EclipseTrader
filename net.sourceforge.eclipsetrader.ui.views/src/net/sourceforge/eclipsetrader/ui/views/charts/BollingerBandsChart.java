@@ -53,6 +53,7 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
    */
   public void paintChart(GC gc, int width, int height)
   {
+    super.paintChart(gc, width, height);
     if (chartData != null && max > min)
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
