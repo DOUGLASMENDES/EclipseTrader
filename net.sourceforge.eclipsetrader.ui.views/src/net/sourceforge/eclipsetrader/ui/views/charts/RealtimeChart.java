@@ -331,9 +331,9 @@ public class RealtimeChart extends ViewPart implements IRealtimeChartListener, C
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int c = 0; c < firstChild.getLength(); c++)
         {
-          NodeList parent = (NodeList)firstChild.item(c);
-          if (((Node)parent).getNodeName().equalsIgnoreCase("data"))
+          if (firstChild.item(c).getNodeName().equalsIgnoreCase("data"))
           {
+            NodeList parent = firstChild.item(c).getChildNodes();
             IChartData cd = new ChartData();
             for (int i = 0; i < parent.getLength(); i++)
             {

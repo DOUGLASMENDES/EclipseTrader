@@ -391,7 +391,7 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
           Node n = firstChild.item(i);
           if (n.getNodeName().equalsIgnoreCase("data"))
           {
-            NodeList parent = (NodeList)n;
+            NodeList parent = n.getChildNodes();
             for (int x = 0; x < parent.getLength(); x++)
             {
               Node node = parent.item(x);

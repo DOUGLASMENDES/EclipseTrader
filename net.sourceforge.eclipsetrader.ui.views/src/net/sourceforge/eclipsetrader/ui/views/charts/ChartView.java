@@ -287,7 +287,7 @@ public class ChartView extends ViewPart implements ControlListener, MouseListene
             sectionHeights.addElement(new Integer(height));
 
             // Charts
-            NodeList parent = (NodeList)n;
+            NodeList parent = n.getChildNodes();
             for (int ii = 0; ii < parent.getLength(); ii++)
             {
               Node item = parent.item(ii);

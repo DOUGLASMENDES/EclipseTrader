@@ -148,7 +148,7 @@ public class StockListDialog extends TitleAreaDialog implements ModifyListener
           Node n = firstChild.item(i);
           if (n.getNodeName().equalsIgnoreCase("data"))
           {
-            NodeList parent = (NodeList)n;
+            NodeList parent = n.getChildNodes();
             IBasicData data = new BasicData();
             for (int x = 0; x < parent.getLength(); x++)
             {
