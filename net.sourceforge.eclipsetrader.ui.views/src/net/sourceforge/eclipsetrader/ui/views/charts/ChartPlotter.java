@@ -274,6 +274,9 @@ public class ChartPlotter implements IChartPlotter
 
   /**
    * Draws the selection markers over the chart line.
+   * 
+   * @param pointArray array of x,y coordinates that represents the chart line
+   * @param gc the current graphics context 
    */
   public void drawSelectionMarkers(int[] pointArray, GC gc)
   {
