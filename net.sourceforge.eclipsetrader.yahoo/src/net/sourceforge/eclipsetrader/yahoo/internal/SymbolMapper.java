@@ -101,7 +101,10 @@ public class SymbolMapper
     String r = (String)map.get(s);
     if (r != null)
       return r;
+    
+    if (s.indexOf(".") == -1)
+      s += defaultSuffix;
 
-    return s + defaultSuffix;
+    return s;
   }
 }
