@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Plug-in"
-   version="0.8.0"
+   version="0.9.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
@@ -34,16 +34,16 @@
             id="yahoo.mapping"/>
    </extension>
    <extension
-         name="Yahoo Data Provider"
          point="net.sourceforge.eclipsetrader.dataProvider">
       <provider
+            label="Yahoo Finance (delayed)"
             class="net.sourceforge.eclipsetrader.yahoo.SnapshotDataProvider"
             id="yahoo.data.provider"/>
    </extension>
    <extension
-         name="Yahoo Charts Data Provider"
          point="net.sourceforge.eclipsetrader.chartDataProvider">
       <provider
+            label="Yahoo Finance"
             class="net.sourceforge.eclipsetrader.yahoo.ChartDataProvider"
             id="yahoo.chart.provider"/>
    </extension>
@@ -59,10 +59,9 @@
             id="yahoo.news.us"/>
    </extension>
    <extension
-         name="Yahoo News Provider"
          point="net.sourceforge.eclipsetrader.newsProvider">
       <provider
-            label="Yahoo News Provider"
+            label="Yahoo Finance"
             class="net.sourceforge.eclipsetrader.yahoo.NewsProvider"
             id="yahoo.newsProvider"/>
    </extension>

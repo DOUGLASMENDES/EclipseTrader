@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.directaworld"
    name="Directa World"
-   version="0.7.0"
+   version="0.9.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin">
 
@@ -19,9 +19,9 @@
       <import plugin="net.sourceforge.eclipsetrader"/>
    </requires>
    <extension
-         name="Directa World"
          point="net.sourceforge.eclipsetrader.dataProvider">
       <provider
+            label="DirectaWorld Italy (realtime, free w/registration)"
             class="net.sourceforge.eclipsetrader.directaworld.SnapshotDataProvider"
             id="directaworld.dataProvider"/>
    </extension>
