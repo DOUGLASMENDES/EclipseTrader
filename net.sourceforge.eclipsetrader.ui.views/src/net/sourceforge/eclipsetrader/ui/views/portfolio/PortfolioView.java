@@ -12,11 +12,9 @@ package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IBasicDataProvider;
@@ -354,7 +352,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     PortfolioDialog dlg = new PortfolioDialog();
     if (dlg.open() == PortfolioDialog.OK)
     {
-      Vector v = new Vector(Arrays.asList(TraderPlugin.getData()));
       IExtendedData data = TraderPlugin.createExtendedData();
       data.setSymbol(dlg.getSymbol());
       data.setTicker(dlg.getTicker());
@@ -362,10 +359,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       data.setMinimumQuantity(dlg.getMinimumQuantity());
       data.setQuantity(dlg.getQuantity());
       data.setPaid(dlg.getPaid());
-      v.add(data);
-      IExtendedData[] dataArray = new IExtendedData[v.size()];
-      v.toArray(dataArray);
-      TraderPlugin.getDataStore().update(dataArray);
+      TraderPlugin.getDataStore().add(data);
       updateView();
     }
   }
@@ -393,6 +387,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       data.setMinimumQuantity(dlg.getMinimumQuantity());
       data.setQuantity(dlg.getQuantity());
       data.setPaid(dlg.getPaid());
+      TraderPlugin.getDataStore().update(index, data);
       updateView();
     }
   }
@@ -404,11 +399,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     if (index == -1 || index >= max)
       return;
 
-    Vector v = new Vector(Arrays.asList(TraderPlugin.getData()));
-    v.removeElementAt(index);
-    IExtendedData[] dataArray = new IExtendedData[v.size()];
-    v.toArray(dataArray);
-    TraderPlugin.getDataStore().update(dataArray);
+    TraderPlugin.getDataStore().remove(TraderPlugin.getData()[index]);
     updateView();
   }
 
