@@ -33,6 +33,9 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
   private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy h:mma");
   private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   private Streamer streamer = Streamer.getInstance();
+  protected int symbolField = 0;
+  protected boolean useMapping = true;
+  protected String defaultExtension = "";
   
   /**
    * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
@@ -46,12 +49,26 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
    */
   public void startStreaming()
   {
+    IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
+    symbolField = ps.getInt("yahoo.field");
+    useMapping = ps.getBoolean("yahoo.mapping");
+    defaultExtension = ps.getString("yahoo.suffix");
+
     data = TraderPlugin.getData();
     for (int i = 0; i < data.length; i++)
-      streamer.addSymbol(SymbolMapper.getYahooSymbol(data[i].getTicker()));
+    {
+      String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
+      if (useMapping == true)
+      {
+        symbol = SymbolMapper.getYahooSymbol(symbol);
+        if (symbol.indexOf(".") == -1)
+          symbol += defaultExtension;
+      }
+      streamer.addSymbol(symbol);
+    }
 
     // Listen to changes to plugin settings
-    YahooPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+    ps.addPropertyChangeListener(this);
     
     streamer.addListener(this);
     streamer.start();
@@ -70,7 +87,16 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
 
     data = TraderPlugin.getData();
     for (int i = 0; i < data.length; i++)
-      streamer.removeSymbol(SymbolMapper.getYahooSymbol(data[i].getTicker()));
+    {
+      String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
+      if (useMapping == true)
+      {
+        symbol = SymbolMapper.getYahooSymbol(symbol);
+        if (symbol.indexOf(".") == -1)
+          symbol += defaultExtension;
+      }
+      streamer.removeSymbol(symbol);
+    }
 
     super.stopStreaming();
   }
@@ -118,10 +144,10 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
 
       // Sets the new mapping preferences
       IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
-      if (property.equalsIgnoreCase("yahoo.mapping") == true)
-        SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
-      else if (property.equalsIgnoreCase("yahoo.suffix") == true)
-        SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
+//      if (property.equalsIgnoreCase("yahoo.mapping") == true)
+//        SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
+//      else if (property.equalsIgnoreCase("yahoo.suffix") == true)
+//        SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
 
       // Add the new-mapped symbols to the streamer
       for (int i = 0; i < data.length; i++)

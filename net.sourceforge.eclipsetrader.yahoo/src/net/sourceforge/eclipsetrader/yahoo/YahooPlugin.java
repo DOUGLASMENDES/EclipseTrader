@@ -13,8 +13,6 @@ package net.sourceforge.eclipsetrader.yahoo;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -61,8 +59,8 @@ public class YahooPlugin extends AbstractUIPlugin implements IPropertyChangeList
     ps.setDefault("NEW_CHART_YEARS", "1");
     ps.addPropertyChangeListener(this);
     
-    SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
-    SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
+//    SymbolMapper.setDoMapping(ps.getBoolean("yahoo.mapping"));
+//    SymbolMapper.setDefaultSuffix(ps.getString("yahoo.suffix"));
     
 /*    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
       public void run() {

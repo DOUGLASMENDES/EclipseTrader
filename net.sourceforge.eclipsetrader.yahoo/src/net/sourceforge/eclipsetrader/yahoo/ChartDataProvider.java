@@ -23,6 +23,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Vector;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
@@ -39,6 +41,9 @@ public class ChartDataProvider implements IChartDataProvider
   protected SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
   protected NumberFormat nf = NumberFormat.getInstance(Locale.US);
   protected NumberFormat pf = NumberFormat.getInstance(Locale.US);
+  protected int symbolField = 1;
+  protected boolean useMapping = false;
+  protected String defaultExtension = "";
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IChartDataProvider#getData(net.sourceforge.eclipsetrader.IBasicData)
@@ -54,6 +59,11 @@ public class ChartDataProvider implements IChartDataProvider
   public IChartData[] update(IBasicData data, IChartData[] chartData)
   {
     String months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    
+    IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
+    symbolField = ps.getInt("yahoo.charts.field");
+    useMapping = ps.getBoolean("yahoo.charts.mapping");
+    defaultExtension = ps.getString("yahoo.suffix");
 
     Vector v = new Vector();
     if (chartData != null)
@@ -69,7 +79,7 @@ public class ChartDataProvider implements IChartDataProvider
     // If no data is avalable, start from one year back.
     if (v.size() == 0)
     {
-      String value = YahooPlugin.getDefault().getPreferenceStore().getString("NEW_CHART_YEARS");
+      String value = ps.getString("NEW_CHART_YEARS");
       from.add(Calendar.YEAR, -Integer.parseInt(value));
       to.setTime(from.getTime());
       to.add(Calendar.DATE, 200);
@@ -85,12 +95,23 @@ public class ChartDataProvider implements IChartDataProvider
         to.setTime(from.getTime());
         to.add(Calendar.DATE, 200);
       }
-  
+
+      String s = ps.getString("yahoo.charts.url") + "?s=";
+      String symbol = (symbolField == 0) ? data.getSymbol() : data.getTicker();
+      if (useMapping == true)
+      {
+        symbol = SymbolMapper.getYahooSymbol(symbol);
+        if (symbol.indexOf(".") == -1)
+          symbol += defaultExtension;
+      }
+      s += symbol + "&a=" + from.get(GregorianCalendar.MONTH) + "&b=" + from.get(GregorianCalendar.DAY_OF_MONTH) + "&c=" + from.get(GregorianCalendar.YEAR) + "&d=" + to.get(GregorianCalendar.MONTH) + "&e=" + to.get(GregorianCalendar.DAY_OF_MONTH) + "&f=" + to.get(GregorianCalendar.YEAR) + "&g=d&q=q&y=0&z=&x=.csv"; 
+      
       try {
-        URL url = new URL(YahooPlugin.getDefault().getPreferenceStore().getString("yahoo.charts.url") + "?s=" + SymbolMapper.getYahooSymbol(data.getTicker()) + "&a=" + from.get(GregorianCalendar.MONTH) + "&b=" + from.get(GregorianCalendar.DAY_OF_MONTH) + "&c=" + from.get(GregorianCalendar.YEAR) + "&d=" + to.get(GregorianCalendar.MONTH) + "&e=" + to.get(GregorianCalendar.DAY_OF_MONTH) + "&f=" + to.get(GregorianCalendar.YEAR) + "&g=d&q=q&y=0&z=&x=.csv");
+        URL url = new URL(s);
         System.out.println(getClass() + " " + df.format(from.getTime()) + "->" + df.format(to.getTime()) + " " + url);
   
         HttpURLConnection con = (HttpURLConnection)url.openConnection();
+        con.setInstanceFollowRedirects(true);
         String proxyHost = (String)System.getProperties().get("http.proxyHost");
         String proxyUser = (String)System.getProperties().get("http.proxyUser");
         String proxyPassword = (String)System.getProperties().get("http.proxyPassword");
@@ -125,10 +146,10 @@ public class ChartDataProvider implements IChartDataProvider
           
           IChartData cd = new ChartData();
           cd.setDate(day.getTime());
-          cd.setOpenPrice(Double.parseDouble(item[1]));
-          cd.setMaxPrice(Double.parseDouble(item[2]));
-          cd.setMinPrice(Double.parseDouble(item[3]));
-          cd.setClosePrice(Double.parseDouble(item[4]));
+          cd.setOpenPrice(Double.parseDouble(item[1].replace(',', '.')));
+          cd.setMaxPrice(Double.parseDouble(item[2].replace(',', '.')));
+          cd.setMinPrice(Double.parseDouble(item[3].replace(',', '.')));
+          cd.setClosePrice(Double.parseDouble(item[4].replace(',', '.')));
           cd.setVolume((int)(Integer.parseInt(item[5])));
           v.add(cd);
         }
@@ -146,6 +167,8 @@ public class ChartDataProvider implements IChartDataProvider
             to.setTime(today.getTime());
             to.add(Calendar.DATE, -1);
           }
+          if (from.after(to) == true)
+            break;
         }
       } catch(Exception e) {
         e.printStackTrace(); 
