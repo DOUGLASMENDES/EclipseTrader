@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.ui.views.portfolio;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.jface.preference.PreferencePage;
@@ -42,9 +43,9 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
   private List displayColumns;
   // Set column descriptions
   public static String[] columnDescriptions = {
-      "Codice", "Ticker", "Descrizione", "Ultimo Prezzo", "Variazione %", "Denaro", "Q.tà Denaro",
-      "Lettera", "Q.ta Lettera", "Volume", "Quantità minima", "Valore di Mercato", "Q.tà Posseduta",
-      "Pagato", "Valore Posseduto", "Ricavo", "Prezzo Apertura", "Prezzo Massimo", "Prezzo Minimo", "Chiusura Prec.", "Orario"
+      Messages.getString("PortfolioView.Code"), Messages.getString("PortfolioView.Ticker"), Messages.getString("PortfolioView.Description"), Messages.getString("PortfolioView.Price"), Messages.getString("PortfolioView.Variance"), Messages.getString("PortfolioView.Bid"), Messages.getString("PortfolioView.BidQty"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+      Messages.getString("PortfolioView.Ask"), Messages.getString("PortfolioView.AskQty"), Messages.getString("PortfolioView.Volume"), Messages.getString("PortfolioView.MinQty"), Messages.getString("PortfolioView.Value"), Messages.getString("PortfolioView.OwnedQty"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+      Messages.getString("PortfolioView.PaidPrice"), Messages.getString("PortfolioView.OwnedValue"), Messages.getString("PortfolioView.Gain"), Messages.getString("PortfolioView.Open"), Messages.getString("PortfolioView.Maximum"), Messages.getString("PortfolioView.Minimum"), Messages.getString("PortfolioView.Close"), Messages.getString("PortfolioView.Time") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
       };
   
   public void init(IWorkbench workbench) {
@@ -68,13 +69,13 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     
     // Crea il gruppo per la definizione delle colonne
     Group columns = new Group(entryTable, SWT.NONE);
-    columns.setText("Columns");
+    columns.setText(Messages.getString("GeneralPreferencePage.columns")); //$NON-NLS-1$
     columns.setLayoutData(data);
     layout = new GridLayout();
     layout.numColumns = 3;
     columns.setLayout(layout);
     
-    String[] visibleItems = getPreferenceStore().getString("portfolio.display").split(",");
+    String[] visibleItems = getPreferenceStore().getString("portfolio.display").split(","); //$NON-NLS-1$ //$NON-NLS-2$
     Vector v = new Vector();
     for (int i = 0; i < columnDescriptions.length; i++)
     {
@@ -85,7 +86,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     v.toArray(availableItems);
 
     availableColumns = new List(columns, SWT.BORDER);
-    availableColumns.setToolTipText("Available columns");
+    availableColumns.setToolTipText(Messages.getString("GeneralPreferencePage.availableColumns")); //$NON-NLS-1$
     availableColumns.setItems(availableItems);
     availableColumns.setLayoutData(new GridData(GridData.FILL_BOTH));
     
@@ -93,14 +94,14 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     RowLayout rowLayout = new RowLayout(SWT.VERTICAL);
     rowLayout.fill = true;
     buttonTable.setLayout(rowLayout);
-    createButton(buttonTable, "->", "add").addSelectionListener(this);
-    createButton(buttonTable, "<-", "remove").addSelectionListener(this);
-    createButton(buttonTable, "Up", "up").addSelectionListener(this);
-    createButton(buttonTable, "Down", "down").addSelectionListener(this);
+    createButton(buttonTable, Messages.getString("GeneralPreferencePage.add"), "add").addSelectionListener(this); //$NON-NLS-1$ //$NON-NLS-2$
+    createButton(buttonTable, Messages.getString("GeneralPreferencePage.remove"), "remove").addSelectionListener(this); //$NON-NLS-1$ //$NON-NLS-2$
+    createButton(buttonTable, Messages.getString("GeneralPreferencePage.up"), "up").addSelectionListener(this); //$NON-NLS-1$ //$NON-NLS-2$
+    createButton(buttonTable, Messages.getString("GeneralPreferencePage.down"), "down").addSelectionListener(this); //$NON-NLS-1$ //$NON-NLS-2$
     
     displayColumns = new List(columns, SWT.BORDER);
-    displayColumns.setToolTipText("Display columns");
-    displayColumns.setItems(convert(getPreferenceStore().getString("portfolio.display")));
+    displayColumns.setToolTipText(Messages.getString("GeneralPreferencePage.displayColumns")); //$NON-NLS-1$
+    displayColumns.setItems(convert(getPreferenceStore().getString("portfolio.display"))); //$NON-NLS-1$
     displayColumns.setLayoutData(new GridData(GridData.FILL_BOTH));
 
     return entryTable;
@@ -129,18 +130,18 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     {
       Button b = (Button)e.getSource();
       String action = (String)b.getData();
-      if (action.equalsIgnoreCase("add") == true && availableColumns.getSelectionIndex() >= 0)
+      if (action.equalsIgnoreCase("add") == true && availableColumns.getSelectionIndex() >= 0) //$NON-NLS-1$
       {
         String item = availableColumns.getItem(availableColumns.getSelectionIndex());
         displayColumns.add(item);
         availableColumns.remove(availableColumns.getSelectionIndex());
       }
-      else if (action.equalsIgnoreCase("remove") == true && displayColumns.getSelectionIndex() >= 0)
+      else if (action.equalsIgnoreCase("remove") == true && displayColumns.getSelectionIndex() >= 0) //$NON-NLS-1$
       {
         displayColumns.remove(displayColumns.getSelectionIndex());
         setAvailableItems();
       }
-      else if (action.equalsIgnoreCase("up") == true && displayColumns.getSelectionIndex() >= 1)
+      else if (action.equalsIgnoreCase("up") == true && displayColumns.getSelectionIndex() >= 1) //$NON-NLS-1$
       {
         int index = displayColumns.getSelectionIndex();
         String item = displayColumns.getItem(index);
@@ -148,7 +149,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         displayColumns.add(item, index - 1);
         displayColumns.setSelection(index - 1);
       }
-      else if (action.equalsIgnoreCase("down") == true && displayColumns.getSelectionIndex() >= 0 && displayColumns.getSelectionIndex() < (displayColumns.getItemCount() - 1))
+      else if (action.equalsIgnoreCase("down") == true && displayColumns.getSelectionIndex() >= 0 && displayColumns.getSelectionIndex() < (displayColumns.getItemCount() - 1)) //$NON-NLS-1$
       {
         int index = displayColumns.getSelectionIndex();
         String item = displayColumns.getItem(index);
@@ -170,7 +171,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
    */
   private String[] convert(String preferenceValue) 
   {
-    StringTokenizer tokenizer = new StringTokenizer(preferenceValue, ",");
+    StringTokenizer tokenizer = new StringTokenizer(preferenceValue, ","); //$NON-NLS-1$
     int tokenCount = tokenizer.countTokens();
     String[] elements = new String[tokenCount];
 
@@ -231,9 +232,9 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         }
       }
       buffer.append(elements[i]);
-      buffer.append(",");
+      buffer.append(","); //$NON-NLS-1$
     }
-    getPreferenceStore().setValue("portfolio.display", buffer.toString());
+    getPreferenceStore().setValue("portfolio.display", buffer.toString()); //$NON-NLS-1$
     
     return super.performOk();
   }

@@ -349,6 +349,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   
   public void addItem()
   {
+    // TODO: Allow multiple inserts.
     PortfolioDialog dlg = new PortfolioDialog();
     if (dlg.open() == PortfolioDialog.OK)
     {
@@ -685,7 +686,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     asyncUpdateView();
   }
 
-  public void dataUpdated(IBasicDataProvider dataProvider, IBasicData data)
+  public void dataUpdated(IBasicDataProvider dataProvider, final IBasicData data)
   {
   }
 

@@ -22,6 +22,7 @@ import net.sourceforge.eclipsetrader.IBookDataProvider;
 import net.sourceforge.eclipsetrader.IBookUpdateListener;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -77,7 +78,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
-  private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+  private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
   private long lastUpdate = System.currentTimeMillis();
   private Timer timerDaemon;
   private int dragColumn = -1;
@@ -117,18 +118,18 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     
     // Read the preferences
     IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
-    groupPrices = pref.getBoolean("book.group_prices");
-    foreground = new Color(null, PreferenceConverter.getColor(pref, "book.text_color"));
-    background = new Color(null, PreferenceConverter.getColor(pref, "book.background"));
-    negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "book.negative_value_color"));
-    positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "book.positive_value_color"));
-    levelColor[0] = new Color(null, PreferenceConverter.getColor(pref, "book.level1_color"));
-    levelColor[1] = new Color(null, PreferenceConverter.getColor(pref, "book.level2_color"));
-    levelColor[2] = new Color(null, PreferenceConverter.getColor(pref, "book.level3_color"));
-    levelColor[3] = new Color(null, PreferenceConverter.getColor(pref, "book.level4_color"));
-    levelColor[4] = new Color(null, PreferenceConverter.getColor(pref, "book.level5_color"));
-    hilightVariations = pref.getBoolean("book.hilight_variations");
-    colorizeLevels = pref.getBoolean("book.colorize_levels");
+    groupPrices = pref.getBoolean("book.group_prices"); //$NON-NLS-1$
+    foreground = new Color(null, PreferenceConverter.getColor(pref, "book.text_color")); //$NON-NLS-1$
+    background = new Color(null, PreferenceConverter.getColor(pref, "book.background")); //$NON-NLS-1$
+    negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "book.negative_value_color")); //$NON-NLS-1$
+    positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "book.positive_value_color")); //$NON-NLS-1$
+    levelColor[0] = new Color(null, PreferenceConverter.getColor(pref, "book.level1_color")); //$NON-NLS-1$
+    levelColor[1] = new Color(null, PreferenceConverter.getColor(pref, "book.level2_color")); //$NON-NLS-1$
+    levelColor[2] = new Color(null, PreferenceConverter.getColor(pref, "book.level3_color")); //$NON-NLS-1$
+    levelColor[3] = new Color(null, PreferenceConverter.getColor(pref, "book.level4_color")); //$NON-NLS-1$
+    levelColor[4] = new Color(null, PreferenceConverter.getColor(pref, "book.level5_color")); //$NON-NLS-1$
+    hilightVariations = pref.getBoolean("book.hilight_variations"); //$NON-NLS-1$
+    colorizeLevels = pref.getBoolean("book.colorize_levels"); //$NON-NLS-1$
     pref.addPropertyChangeListener(this);
 
     Composite entryTable = new Composite(parent, SWT.NULL);
@@ -163,9 +164,9 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
       }
       public void drop(DropTargetEvent event) 
       {
-        String[] item = ((String)event.data).split(";");
+        String[] item = ((String)event.data).split(";"); //$NON-NLS-1$
         String id = getViewSite().getSecondaryId();
-        ViewsPlugin.getDefault().getPreferenceStore().setValue("book." + id, item[1]);
+        ViewsPlugin.getDefault().getPreferenceStore().setValue("book." + id, item[1]); //$NON-NLS-1$
         setData();
       }
     });
@@ -189,40 +190,40 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
       }
     });
     Label label = new Label(info, SWT.NONE);
-    label.setText("Time:");
+    label.setText(Messages.getString("Book.time")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     label1 = new Label(info, SWT.RIGHT);
-    label1.setText("00:00:00");
+    label1.setText("00:00:00"); //$NON-NLS-1$
     label1.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL|GridData.GRAB_HORIZONTAL));
     label = new Label(info, SWT.NONE);
-    label.setText("Vol:");
+    label.setText(Messages.getString("Book.volume")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     label2 = new Label(info, SWT.RIGHT);
-    label2.setText("0");
+    label2.setText("0"); //$NON-NLS-1$
     label2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL|GridData.GRAB_HORIZONTAL));
     label = new Label(info, SWT.NONE);
-    label.setText("Last:");
+    label.setText(Messages.getString("Book.last")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     label3 = new Label(info, SWT.RIGHT);
-    label3.setText("0,0000");
+    label3.setText("0,0000"); //$NON-NLS-1$
     label3.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     label = new Label(info, SWT.NONE);
-    label.setText("High:");
+    label.setText(Messages.getString("Book.high")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     label4 = new Label(info, SWT.RIGHT);
-    label4.setText("0,0000");
+    label4.setText("0,0000"); //$NON-NLS-1$
     label4.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     label = new Label(info, SWT.NONE);
-    label.setText("Chng:");
+    label.setText(Messages.getString("Book.change")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     label5 = new Label(info, SWT.RIGHT);
-    label5.setText("0,00%");
+    label5.setText("0,00%"); //$NON-NLS-1$
     label5.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     label = new Label(info, SWT.NONE);
-    label.setText("Low:");
+    label.setText(Messages.getString("Book.low")); //$NON-NLS-1$
     label.setLayoutData(new GridData());
     label6 = new Label(info, SWT.RIGHT);
-    label6.setText("0,0000");
+    label6.setText("0,0000"); //$NON-NLS-1$
     label6.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
     // Trendbar
@@ -244,22 +245,22 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     column.setWidth(0);
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 1);
-    column.setText("#");
+    column.setText(Messages.getString("Book.bidNumber")); //$NON-NLS-1$
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 2);
-    column.setText("Q.ty");
+    column.setText(Messages.getString("Book.bidQuantity")); //$NON-NLS-1$
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 3);
-    column.setText("Bid");
+    column.setText(Messages.getString("Book.bid")); //$NON-NLS-1$
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 4);
-    column.setText("Ask");
+    column.setText(Messages.getString("Book.ask")); //$NON-NLS-1$
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 5);
-    column.setText("Q.ty");
+    column.setText(Messages.getString("Book.askQuantity")); //$NON-NLS-1$
     column.setResizable(false);
     column = new TableColumn(table, SWT.CENTER, 6);
-    column.setText("#");
+    column.setText(Messages.getString("Book.askNumber")); //$NON-NLS-1$
     column.setResizable(false);
 
     // Listener per determinare la colonna in cui si e' premuto il 
@@ -301,12 +302,12 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
           if (dragColumn > 3)
           {
             IBookData bd = (IBookData)ask[table.getSelectionIndex()];
-            event.data = "S;" + data.getSymbol() + ";" + data.getTicker() + ";" + ed.getMinimumQuantity() + ";" + bd.getPrice();
+            event.data = "S;" + data.getSymbol() + ";" + data.getTicker() + ";" + ed.getMinimumQuantity() + ";" + bd.getPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
           }
           else
           {
             IBookData bd = (IBookData)bid[table.getSelectionIndex()];
-            event.data = "B;" + data.getSymbol() + ";" + data.getTicker() + ";" + ed.getMinimumQuantity() + ";" + bd.getPrice();
+            event.data = "B;" + data.getSymbol() + ";" + data.getTicker() + ";" + ed.getMinimumQuantity() + ";" + bd.getPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
           }
         }
       }
@@ -318,7 +319,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     TraderPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
     
     restoreData();
-    System.out.println(this.getClass() + ": createPartControl");
+    System.out.println(this.getClass() + ": createPartControl"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -354,7 +355,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
   private void restoreData()
   {
     String id = getViewSite().getSecondaryId();
-    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("book." + id);
+    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("book." + id); //$NON-NLS-1$
 
     IBasicData[] _tpData = TraderPlugin.getData();
     for (int i = 0; i < _tpData.length; i++)
@@ -368,7 +369,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     
     if (data != null)
     {
-      setPartName(data.getTicker() + " - Book");
+      setPartName(data.getTicker() + Messages.getString("Book.title")); //$NON-NLS-1$
 
       if (TraderPlugin.getBookDataProvider() != null)
       {
@@ -384,7 +385,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
   public void setData()
   {
     String id = getViewSite().getSecondaryId();
-    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("book." + id);
+    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("book." + id); //$NON-NLS-1$
 
     if (data != null && TraderPlugin.getBookDataProvider() != null)
     {
@@ -406,7 +407,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     {
       getViewSite().getShell().getDisplay().asyncExec(new Runnable() {
         public void run() {
-          setPartName(data.getTicker() + " - Book");
+          setPartName(data.getTicker() + Messages.getString("Book.title")); //$NON-NLS-1$
         }
       });
       if (TraderPlugin.getBookDataProvider() != null)
@@ -519,11 +520,11 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
       if (gain > 0)
       {
         label5.setForeground(positiveForeground);
-        label5.setText("+" + pcf.format(gain) + "%");
+        label5.setText("+" + pcf.format(gain) + "%"); //$NON-NLS-1$ //$NON-NLS-2$
       }
       else
       {
-        label5.setText(pcf.format(gain) + "%");
+        label5.setText(pcf.format(gain) + "%"); //$NON-NLS-1$
         if (gain < 0)
           label5.setForeground(negativeForeground);
         else
@@ -712,7 +713,7 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     String property = event.getProperty();
 
     // Property changed for the Trader plugin
-    if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
+    if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true) //$NON-NLS-1$
     {
       if (TraderPlugin.getBookDataProvider() != null)
       {
@@ -721,22 +722,22 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
         _dp.startBook(data);
       }
     }
-    else if (property.startsWith("book.") == true)
+    else if (property.startsWith("book.") == true) //$NON-NLS-1$
     {
       IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
-      groupPrices = pref.getBoolean("book.group_prices");
-      foreground = new Color(null, PreferenceConverter.getColor(pref, "book.text_color"));
-      background = new Color(null, PreferenceConverter.getColor(pref, "book.background"));
-      negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "book.negative_value_color"));
-      positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "book.positive_value_color"));
-      levelColor[0] = new Color(null, PreferenceConverter.getColor(pref, "book.level1_color"));
-      levelColor[1] = new Color(null, PreferenceConverter.getColor(pref, "book.level2_color"));
-      levelColor[2] = new Color(null, PreferenceConverter.getColor(pref, "book.level3_color"));
-      levelColor[3] = new Color(null, PreferenceConverter.getColor(pref, "book.level4_color"));
-      levelColor[4] = new Color(null, PreferenceConverter.getColor(pref, "book.level5_color"));
-      hilightVariations = pref.getBoolean("book.hilight_variations");
-      colorizeLevels = pref.getBoolean("book.colorize_levels");
-      if (property.startsWith("book.level") == true)
+      groupPrices = pref.getBoolean("book.group_prices"); //$NON-NLS-1$
+      foreground = new Color(null, PreferenceConverter.getColor(pref, "book.text_color")); //$NON-NLS-1$
+      background = new Color(null, PreferenceConverter.getColor(pref, "book.background")); //$NON-NLS-1$
+      negativeForeground = new Color(null, PreferenceConverter.getColor(pref, "book.negative_value_color")); //$NON-NLS-1$
+      positiveForeground = new Color(null, PreferenceConverter.getColor(pref, "book.positive_value_color")); //$NON-NLS-1$
+      levelColor[0] = new Color(null, PreferenceConverter.getColor(pref, "book.level1_color")); //$NON-NLS-1$
+      levelColor[1] = new Color(null, PreferenceConverter.getColor(pref, "book.level2_color")); //$NON-NLS-1$
+      levelColor[2] = new Color(null, PreferenceConverter.getColor(pref, "book.level3_color")); //$NON-NLS-1$
+      levelColor[3] = new Color(null, PreferenceConverter.getColor(pref, "book.level4_color")); //$NON-NLS-1$
+      levelColor[4] = new Color(null, PreferenceConverter.getColor(pref, "book.level5_color")); //$NON-NLS-1$
+      hilightVariations = pref.getBoolean("book.hilight_variations"); //$NON-NLS-1$
+      colorizeLevels = pref.getBoolean("book.colorize_levels"); //$NON-NLS-1$
+      if (property.startsWith("book.level") == true) //$NON-NLS-1$
         trendBar.reloadPreferences();
       updateView();
     }

@@ -824,6 +824,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       mouseGC.setForeground(background);
       mouseMove(e);
     }
+    // TODO: Hilight the selected zone with the red separator line.
     for (int i = 0; i < chart.size(); i++)
     {
       ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);

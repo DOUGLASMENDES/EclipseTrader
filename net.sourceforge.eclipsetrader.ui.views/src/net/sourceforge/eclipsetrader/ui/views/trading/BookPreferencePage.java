@@ -12,6 +12,7 @@ package net.sourceforge.eclipsetrader.ui.views.trading;
 
 import java.util.Vector;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -58,21 +59,21 @@ public class BookPreferencePage extends PreferencePage implements IWorkbenchPref
     entryTable.setLayout(new GridLayout(2, false));
     entryTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-    _v.add(new BooleanFieldEditor("book.group_prices", "Group Prices", entryTable));
+    _v.add(new BooleanFieldEditor("book.group_prices", Messages.getString("BookPreferencePage.groupPrices"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
     ((BooleanFieldEditor)_v.elementAt(_v.size() - 1)).fillIntoGrid(entryTable, 2);
-    _v.add(new ColorFieldEditor("book.text_color", "Text Color", entryTable));        
-    _v.add(new ColorFieldEditor("book.background", "Row Background", entryTable));        
-    _v.add(new BooleanFieldEditor("book.hilight_variations", "Hilight Price Variations", entryTable));
+    _v.add(new ColorFieldEditor("book.text_color", Messages.getString("BookPreferencePage.textColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("book.background", Messages.getString("BookPreferencePage.rowBackground"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new BooleanFieldEditor("book.hilight_variations", Messages.getString("BookPreferencePage.hilightPriceVariations"), entryTable)); //$NON-NLS-1$ //$NON-NLS-2$
     ((BooleanFieldEditor)_v.elementAt(_v.size() - 1)).fillIntoGrid(entryTable, 2);
-    _v.add(new ColorFieldEditor("book.positive_value_color", "Positive Value Color", entryTable));        
-    _v.add(new ColorFieldEditor("book.negative_value_color", "Negative Value Color", entryTable));        
-    _v.add(new BooleanFieldEditor("book.colorize_levels", "Colorize Price Levels", entryTable));        
+    _v.add(new ColorFieldEditor("book.positive_value_color", Messages.getString("BookPreferencePage.positiveValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("book.negative_value_color", Messages.getString("BookPreferencePage.negativeValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new BooleanFieldEditor("book.colorize_levels", Messages.getString("BookPreferencePage.colorizePriceLevels"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
     ((BooleanFieldEditor)_v.elementAt(_v.size() - 1)).fillIntoGrid(entryTable, 2);
-    _v.add(new ColorFieldEditor("book.level1_color", "Price Level 1 Color", entryTable));        
-    _v.add(new ColorFieldEditor("book.level2_color", "Price Level 2 Color", entryTable));        
-    _v.add(new ColorFieldEditor("book.level3_color", "Price Level 3 Color", entryTable));        
-    _v.add(new ColorFieldEditor("book.level4_color", "Price Level 4 Color", entryTable));        
-    _v.add(new ColorFieldEditor("book.level5_color", "Price Level 5 Color", entryTable));        
+    _v.add(new ColorFieldEditor("book.level1_color", Messages.getString("BookPreferencePage.level1"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("book.level2_color", Messages.getString("BookPreferencePage.level2"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("book.level3_color", Messages.getString("BookPreferencePage.level3"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("book.level4_color", Messages.getString("BookPreferencePage.level4"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("book.level5_color", Messages.getString("BookPreferencePage.level5"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
 
     // Perform operations common to all field editors
     editor = new FieldEditor[_v.size()];

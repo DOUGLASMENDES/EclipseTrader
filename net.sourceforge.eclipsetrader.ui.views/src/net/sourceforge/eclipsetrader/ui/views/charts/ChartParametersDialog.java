@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
@@ -56,7 +58,7 @@ public class ChartParametersDialog extends TitleAreaDialog
    */
   protected void configureShell(Shell newShell) {
     super.configureShell(newShell);
-    newShell.setText("Parameters " + chartConfigurer.getName());
+    newShell.setText(Messages.getString("ChartParametersDialog.title") + chartConfigurer.getName()); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -69,15 +71,15 @@ public class ChartParametersDialog extends TitleAreaDialog
     composite.setLayout(new GridLayout(1, false));
     
     paramGroup = new Group(composite, SWT.NONE);
-    paramGroup.setText("Parameters definition");
+    paramGroup.setText(Messages.getString("ChartParametersDialog.description")); //$NON-NLS-1$
     paramGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
     paramGroup.setLayout(new GridLayout(2, false));
     
     Label label = new Label(paramGroup, SWT.NONE);
-    label.setText("Name");
+    label.setText(Messages.getString("ChartParametersDialog.name")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(paramGroup, SWT.BORDER);
-    text.setData("name");
+    text.setData("name"); //$NON-NLS-1$
     text.setText(chartConfigurer.getName());
     GridData gridData = new GridData();
     gridData.widthHint = 175;
@@ -88,11 +90,11 @@ public class ChartParametersDialog extends TitleAreaDialog
       chartConfigurer.createContents(paramGroup);
     
     label = new Label(paramGroup, SWT.NONE);
-    label.setText("Color");
+    label.setText(Messages.getString("ChartParametersDialog.color")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     colorSelector = new ColorSelector(paramGroup);
-    colorSelector.getButton().setData("color");
-    colorSelector.setColorValue(chartConfigurer.getColorParameter("color"));
+    colorSelector.getButton().setData("color"); //$NON-NLS-1$
+    colorSelector.setColorValue(chartConfigurer.getColorParameter("color")); //$NON-NLS-1$
     
 /*    group = new Group(composite, SWT.NONE);
     group.setText("Parametri grafico");
@@ -116,15 +118,15 @@ public class ChartParametersDialog extends TitleAreaDialog
     if (type == NEW_CHART)
     {
       Group group = new Group(composite, SWT.NONE);
-      group.setText("Insert indicator");
+      group.setText(Messages.getString("ChartParametersDialog.insertIndicator")); //$NON-NLS-1$
       group.setLayoutData(new GridData(GridData.FILL_BOTH));
       group.setLayout(new GridLayout(1, false));
       
       selectedZone = new Button(group, SWT.RADIO);
-      selectedZone.setText("On the selected zone");
+      selectedZone.setText(Messages.getString("ChartParametersDialog.selectedZone")); //$NON-NLS-1$
       selectedZone.setSelection(true);
       newZone = new Button(group, SWT.RADIO);
-      newZone.setText("On a new zone");
+      newZone.setText(Messages.getString("ChartParametersDialog.newZone")); //$NON-NLS-1$
     }
 
     return super.createDialogArea(parent);
@@ -145,7 +147,7 @@ public class ChartParametersDialog extends TitleAreaDialog
     create();
 
     setTitle(chartConfigurer.getName());
-    setMessage("Set parameters for " + chartConfigurer.getName());
+    setMessage(Messages.getString("ChartParametersDialog.message") + chartConfigurer.getName()); //$NON-NLS-1$
     
     return super.open();
   }
@@ -174,7 +176,7 @@ public class ChartParametersDialog extends TitleAreaDialog
     }
 
     RGB rgb = colorSelector.getColorValue(); 
-    chartConfigurer.setParameter("color", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
+    chartConfigurer.setParameter("color", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     
     Control[] c = paramGroup.getChildren();
     for (int i = 0; i < c.length; i++)

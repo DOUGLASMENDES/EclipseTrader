@@ -28,6 +28,7 @@ import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.internal.ChartData;
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,8 +43,8 @@ import org.w3c.dom.NodeList;
 
 public class HistoryChartView extends ChartView
 {
-  private File folder = new File(Platform.getLocation().toFile(), "charts");
-  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+  private File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
+  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
   private NumberFormat nf = NumberFormat.getInstance(Locale.US);
   private NumberFormat pf = NumberFormat.getInstance(Locale.US);
   private IChartData[] chartData;
@@ -57,8 +58,8 @@ public class HistoryChartView extends ChartView
 
     // Restore del grafico precedente
     String id = getViewSite().getSecondaryId();
-    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id);
-    if (!symbol.equals(""))
+    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id); //$NON-NLS-1$
+    if (!symbol.equals("")) //$NON-NLS-1$
     {
       IBasicData bd = TraderPlugin.getData(symbol);
       if (bd == null)
@@ -74,19 +75,19 @@ public class HistoryChartView extends ChartView
   
   public void reloadPreferences()
   {
-    File folder = new File(Platform.getLocation().toFile(), "charts");
+    File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
     reloadPreferences(folder);
   }
 
   public void savePreferences()
   {
-    File folder = new File(Platform.getLocation().toFile(), "charts");
+    File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
     savePreferences(folder);
   }
 
   public void setData(final IBasicData d)
   {
-    setData(d, d.getTicker() + " - Chart", "chart.");
+    setData(d, d.getTicker() + " - " + Messages.getString("HistoryChartView.title"), "chart."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
   
   public IChartData[] getChartData(IBasicData data)
@@ -127,7 +128,7 @@ public class HistoryChartView extends ChartView
   
   public void updateChart()
   {
-    Job job = new Job("Update Chart") {
+    Job job = new Job(Messages.getString("HistoryChartView.updateChart")) { //$NON-NLS-1$
       public IStatus run(IProgressMonitor monitor)
       {
         dataProvider = TraderPlugin.getChartDataProvider();
@@ -137,7 +138,7 @@ public class HistoryChartView extends ChartView
             chartData = dataProvider.update(basicData, chartData);
             store(basicData);
           } catch(Exception e) {
-            return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause()); 
+            return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause());  //$NON-NLS-1$ //$NON-NLS-2$
           };
           container.getDisplay().asyncExec(new Runnable() {
             public void run() {
@@ -145,7 +146,7 @@ public class HistoryChartView extends ChartView
             }
           });
         }
-        return new Status(0, "plugin.id", 0, "OK", null); 
+        return new Status(0, "plugin.id", 0, "OK", null);  //$NON-NLS-1$ //$NON-NLS-2$
       }
     };
     job.setUser(true);
@@ -195,7 +196,7 @@ public class HistoryChartView extends ChartView
   {
     Vector v = new Vector();
     
-    File f = new File(folder, data.getSymbol().toLowerCase() + ".xml");
+    File f = new File(folder, data.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
     if (f.exists() == true)
       try {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -207,7 +208,7 @@ public class HistoryChartView extends ChartView
         for (int i = 0; i < firstChild.getLength(); i++)
         {
           Node n = firstChild.item(i);
-          if (n.getNodeName().equalsIgnoreCase("data"))
+          if (n.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
             v.add(decodeData(n.getChildNodes()));
         }
       } catch (Exception ex) {
@@ -248,17 +249,17 @@ public class HistoryChartView extends ChartView
       Node value = n.getFirstChild();
       if (value != null)
       {
-        if (n.getNodeName().equalsIgnoreCase("open_price") == true)
+        if (n.getNodeName().equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
           cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("max_price") == true)
+        else if (n.getNodeName().equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
           cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("min_price") == true)
+        else if (n.getNodeName().equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
           cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("close_price") == true)
+        else if (n.getNodeName().equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
           cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("volume") == true)
+        else if (n.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
           cd.setVolume(Integer.parseInt(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("date") == true)
+        else if (n.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
         {
           try {
             cd.setDate(df.parse(value.getNodeValue()));
@@ -278,24 +279,24 @@ public class HistoryChartView extends ChartView
     if (chartData != null)
       try {
         folder.mkdirs();
-        BufferedWriter xmlout = new BufferedWriter(new FileWriter(new File(folder, data.getSymbol().toLowerCase() + ".xml")));
+        BufferedWriter xmlout = new BufferedWriter(new FileWriter(new File(folder, data.getSymbol().toLowerCase() + ".xml"))); //$NON-NLS-1$
 
-        xmlout.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\r\n");
-        xmlout.write("<chart>\r\n");
-        xmlout.write("    <symbol>" + data.getTicker() + "</symbol>\r\n");
+        xmlout.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\r\n"); //$NON-NLS-1$
+        xmlout.write("<chart>\r\n"); //$NON-NLS-1$
+        xmlout.write("    <symbol>" + data.getTicker() + "</symbol>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
         for (int i = 0; i < chartData.length; i++)
         {
           IChartData cd = (IChartData)chartData[i];
-          xmlout.write("    <data>\r\n");
-          xmlout.write("        <date>" + df.format(cd.getDate()) + "</date>\r\n");
-          xmlout.write("        <open_price>" + pf.format(cd.getOpenPrice()) + "</open_price>\r\n");
-          xmlout.write("        <max_price>" + pf.format(cd.getMaxPrice()) + "</max_price>\r\n");
-          xmlout.write("        <min_price>" + pf.format(cd.getMinPrice()) + "</min_price>\r\n");
-          xmlout.write("        <close_price>" + pf.format(cd.getClosePrice()) + "</close_price>\r\n");
-          xmlout.write("        <volume>" + cd.getVolume() + "</volume>\r\n");
-          xmlout.write("    </data>\r\n");
+          xmlout.write("    <data>\r\n"); //$NON-NLS-1$
+          xmlout.write("        <date>" + df.format(cd.getDate()) + "</date>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+          xmlout.write("        <open_price>" + pf.format(cd.getOpenPrice()) + "</open_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+          xmlout.write("        <max_price>" + pf.format(cd.getMaxPrice()) + "</max_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+          xmlout.write("        <min_price>" + pf.format(cd.getMinPrice()) + "</min_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+          xmlout.write("        <close_price>" + pf.format(cd.getClosePrice()) + "</close_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+          xmlout.write("        <volume>" + cd.getVolume() + "</volume>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+          xmlout.write("    </data>\r\n"); //$NON-NLS-1$
         }
-        xmlout.write("</chart>\r\n");
+        xmlout.write("</chart>\r\n"); //$NON-NLS-1$
         xmlout.flush();
         xmlout.close();
       } catch (Exception ex) {};

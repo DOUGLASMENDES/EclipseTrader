@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -24,12 +26,12 @@ import org.eclipse.swt.widgets.Control;
  */
 public class AccumulationDistributionChart extends ChartPlotter implements IChartConfigurer
 {
-  public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.accumulationDistribution";
+  public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.accumulationDistribution"; //$NON-NLS-1$
   private Color gridColor = new Color(null, 192, 192, 192);
   
   public AccumulationDistributionChart()
   {
-    name = "Accumulation/Distribution";
+    name = Messages.getString("AccumulationDistributionChart.label"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)

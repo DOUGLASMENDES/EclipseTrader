@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
@@ -23,13 +25,13 @@ import org.eclipse.swt.widgets.Text;
  */
 public class BollingerBandsChart extends ChartPlotter implements IChartConfigurer
 {
-  private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.bollinger";
+  private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.bollinger"; //$NON-NLS-1$
   private int period = 15;
   private int deviations = 2;
   
   public BollingerBandsChart()
   {
-    name = "Bollinger Bands";
+    name = Messages.getString("BollingerBandsChart.label"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -45,7 +47,7 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
    */
   public String getDescription()
   {
-    return name + " (" + period + "," + deviations + ")";
+    return name + " (" + period + "," + deviations + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
   
   /* (non-Javadoc)
@@ -116,9 +118,9 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
    */
   public void setParameter(String name, String value)
   {
-    if (name.equalsIgnoreCase("period") == true)
+    if (name.equalsIgnoreCase("period") == true) //$NON-NLS-1$
       period = Integer.parseInt(value);
-    else if (name.equalsIgnoreCase("deviations") == true)
+    else if (name.equalsIgnoreCase("deviations") == true) //$NON-NLS-1$
       deviations = Integer.parseInt(value);
     super.setParameter(name, value);
   }
@@ -130,20 +132,20 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
   public Control createContents(Composite parent)
   {
     Label label = new Label(parent, SWT.NONE);
-    label.setText("Selected Periods");
+    label.setText(Messages.getString("BollingerBandsChart.periods")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(parent, SWT.BORDER);
-    text.setData("period");
+    text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
     GridData gridData = new GridData();
     gridData.widthHint = 25;
     text.setLayoutData(gridData);
     
     label = new Label(parent, SWT.NONE);
-    label.setText("Deviazioni standard");
+    label.setText(Messages.getString("BollingerBandsChart.deviations")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     text = new Text(parent, SWT.BORDER);
-    text.setData("deviations");
+    text.setData("deviations"); //$NON-NLS-1$
     text.setText(String.valueOf(deviations));
     gridData = new GridData();
     gridData.widthHint = 25;

@@ -12,6 +12,7 @@ package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
 import java.util.Vector;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.jface.preference.ColorFieldEditor;
@@ -55,12 +56,12 @@ public class ColorsPreferencePage extends PreferencePage implements IWorkbenchPr
     gridLayout.marginHeight = 0;
     entryTable.setLayout(gridLayout);
 
-    _v.add(new ColorFieldEditor("portfolio.text_color", "Text Color", entryTable));        
-    _v.add(new ColorFieldEditor("portfolio.even_row_background", "Even Row Background", entryTable));        
-    _v.add(new ColorFieldEditor("portfolio.odd_row_background", "Odd Row Background", entryTable));        
-    _v.add(new ColorFieldEditor("portfolio.positive_value_color", "Positive Value Color", entryTable));        
-    _v.add(new ColorFieldEditor("portfolio.negative_value_color", "Negative Value Color", entryTable));        
-    _v.add(new ColorFieldEditor("portfolio.total_row_background", "Total Row Background", entryTable));        
+    _v.add(new ColorFieldEditor("portfolio.text_color", Messages.getString("ColorsPreferencePage.textColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("portfolio.even_row_background", Messages.getString("ColorsPreferencePage.evenRowBackground"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("portfolio.odd_row_background", Messages.getString("ColorsPreferencePage.oddRowBackground"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("portfolio.positive_value_color", Messages.getString("ColorsPreferencePage.positiveValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("portfolio.negative_value_color", Messages.getString("ColorsPreferencePage.negativeValueColor"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
+    _v.add(new ColorFieldEditor("portfolio.total_row_background", Messages.getString("ColorsPreferencePage.totalBackground"), entryTable));         //$NON-NLS-1$ //$NON-NLS-2$
 
     // Perform operations common to all field editors
     editor = new FieldEditor[_v.size()];

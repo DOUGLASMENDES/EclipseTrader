@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -27,14 +29,14 @@ import org.eclipse.swt.widgets.Text;
  */
 public class StochasticChart extends ChartPlotter implements IChartConfigurer
 {
-  private static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.stochastic";
+  private static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.stochastic"; //$NON-NLS-1$
   private int period = 14;
   private int subperiod = 3;
   private Color gridColor = new Color(null, 192, 192, 192);
   
   public StochasticChart()
   {
-    name = "Stochastic";
+    name = Messages.getString("StochasticChart.label"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -50,7 +52,7 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return name + " (" + period + ", " + subperiod + ")";
+    return name + " (" + period + ", " + subperiod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
   
   /* (non-Javadoc)
@@ -130,9 +132,9 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
    */
   public void setParameter(String name, String value)
   {
-    if (name.equalsIgnoreCase("period") == true)
+    if (name.equalsIgnoreCase("period") == true) //$NON-NLS-1$
       period = Integer.parseInt(value);
-    if (name.equalsIgnoreCase("subperiod") == true)
+    if (name.equalsIgnoreCase("subperiod") == true) //$NON-NLS-1$
       subperiod = Integer.parseInt(value);
     super.setParameter(name, value);
   }
@@ -144,20 +146,20 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
   public Control createContents(Composite parent)
   {
     Label label = new Label(parent, SWT.NONE);
-    label.setText("Selected Periods");
+    label.setText(Messages.getString("StochasticChart.periods")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(parent, SWT.BORDER);
-    text.setData("period");
+    text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
     GridData gridData = new GridData();
     gridData.widthHint = 25;
     text.setLayoutData(gridData);
 
     label = new Label(parent, SWT.NONE);
-    label.setText("Moving Average Periods");
+    label.setText(Messages.getString("StochasticChart.averagePeriods")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     text = new Text(parent, SWT.BORDER);
-    text.setData("subperiod");
+    text.setData("subperiod"); //$NON-NLS-1$
     text.setText(String.valueOf(subperiod));
     gridData = new GridData();
     gridData.widthHint = 25;

@@ -33,6 +33,7 @@ import net.sourceforge.eclipsetrader.IRealtimeChartListener;
 import net.sourceforge.eclipsetrader.IRealtimeChartProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.internal.ChartData;
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.core.runtime.Platform;
@@ -58,7 +59,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
    */
   public void createPartControl(Composite parent)
   {
-    df = new SimpleDateFormat("HH:mm");
+    df = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
     super.createPartControl(parent);
     
     // Drag and drop support
@@ -69,8 +70,8 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
 
     // Restore del grafico precedente
     String id = getViewSite().getSecondaryId();
-    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id);
-    if (!symbol.equals(""))
+    String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("rtchart." + id); //$NON-NLS-1$
+    if (!symbol.equals("")) //$NON-NLS-1$
     {
       IBasicData bd = TraderPlugin.getData(symbol);
       if (bd == null)
@@ -99,7 +100,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
 
   public void reloadPreferences()
   {
-    File folder = new File(Platform.getLocation().toFile(), "rtcharts");
+    File folder = new File(Platform.getLocation().toFile(), "rtcharts"); //$NON-NLS-1$
     reloadPreferences(folder);
     setMargin(1);
     setWidth(3);
@@ -107,7 +108,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
 
   public void savePreferences()
   {
-    File folder = new File(Platform.getLocation().toFile(), "rtcharts");
+    File folder = new File(Platform.getLocation().toFile(), "rtcharts"); //$NON-NLS-1$
     savePreferences(folder);
   }
 
@@ -118,7 +119,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
       rtp.removeRealtimeChartListener(basicData, this);
     }
-    setData(d, d.getTicker() + " - Intraday", "rtchart.");
+    setData(d, d.getTicker() + " - " + Messages.getString("RealtimeChartView.title"), "rtchart."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
@@ -165,7 +166,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
       {
         int lastValue = -1;
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
         
         gc.setClipping(0, 0, bottombar.getClientArea().width - scaleWidth, bottombar.getClientArea().height);
 
@@ -251,11 +252,11 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
    */
   public void drop(DropTargetEvent event)
   {
-    String[] item = ((String)event.data).split(";");
+    String[] item = ((String)event.data).split(";"); //$NON-NLS-1$
     String id = getViewSite().getSecondaryId();
     String symbol = item[1];
-    ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + id, item[1]);
-    if (!symbol.equals(""))
+    ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + id, item[1]); //$NON-NLS-1$
+    if (!symbol.equals("")) //$NON-NLS-1$
     {
       IBasicData bd = TraderPlugin.getData(symbol);
       if (bd == null)
@@ -283,8 +284,8 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
   private IChartData[] load()
   {
     Vector _data = new Vector();
-    File folder = new File(Platform.getLocation().toFile(), "rtcharts");
-    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+    File folder = new File(Platform.getLocation().toFile(), "rtcharts"); //$NON-NLS-1$
+    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss"); //$NON-NLS-1$
     NumberFormat nf = NumberFormat.getInstance();
     
     nf.setGroupingUsed(true);
@@ -292,7 +293,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     nf.setMinimumFractionDigits(4);
     nf.setMinimumIntegerDigits(1);
     
-    File file = new File(folder, basicData.getSymbol().toLowerCase() + ".xml");
+    File file = new File(folder, basicData.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
     if (file.exists() == true)
       try {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -302,7 +303,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int c = 0; c < firstChild.getLength(); c++)
         {
-          if (firstChild.item(c).getNodeName().equalsIgnoreCase("data"))
+          if (firstChild.item(c).getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
           {
             NodeList parent = firstChild.item(c).getChildNodes();
             IChartData cd = new ChartData();
@@ -312,17 +313,17 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
               Node value = n.getFirstChild();
               if (value != null)
               {
-                if (n.getNodeName().equalsIgnoreCase("open") == true)
+                if (n.getNodeName().equalsIgnoreCase("open") == true) //$NON-NLS-1$
                   cd.setOpenPrice(nf.parse(value.getNodeValue()).doubleValue());
-                else if (n.getNodeName().equalsIgnoreCase("max") == true)
+                else if (n.getNodeName().equalsIgnoreCase("max") == true) //$NON-NLS-1$
                   cd.setMaxPrice(nf.parse(value.getNodeValue()).doubleValue());
-                else if (n.getNodeName().equalsIgnoreCase("min") == true)
+                else if (n.getNodeName().equalsIgnoreCase("min") == true) //$NON-NLS-1$
                   cd.setMinPrice(nf.parse(value.getNodeValue()).doubleValue());
-                else if (n.getNodeName().equalsIgnoreCase("close") == true)
+                else if (n.getNodeName().equalsIgnoreCase("close") == true) //$NON-NLS-1$
                   cd.setClosePrice(nf.parse(value.getNodeValue()).doubleValue());
-                else if (n.getNodeName().equalsIgnoreCase("volume") == true)
+                else if (n.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
                   cd.setVolume(Integer.parseInt(value.getNodeValue()));
-                else if (n.getNodeName().equalsIgnoreCase("date") == true)
+                else if (n.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
                 {
                   try {
                     cd.setDate(df.parse(value.getNodeValue()));
@@ -349,7 +350,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
    */
   private void store()
   {
-    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss"); //$NON-NLS-1$
     NumberFormat nf = NumberFormat.getInstance();
     
     nf.setGroupingUsed(true);
@@ -360,42 +361,42 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
-      Document document = builder.getDOMImplementation().createDocument("", "chart", null);
+      Document document = builder.getDOMImplementation().createDocument("", "chart", null); //$NON-NLS-1$ //$NON-NLS-2$
 
       for (int i = 0; i < data.length; i++)
       {
-        Element element = document.createElement("data");
+        Element element = document.createElement("data"); //$NON-NLS-1$
         document.getDocumentElement().appendChild(element);
 
-        Node node = document.createElement("date");
+        Node node = document.createElement("date"); //$NON-NLS-1$
         element.appendChild(node);
         node.appendChild(document.createTextNode(df.format(data[i].getDate())));
-        node = document.createElement("open");
+        node = document.createElement("open"); //$NON-NLS-1$
         element.appendChild(node);
         node.appendChild(document.createTextNode(nf.format(data[i].getOpenPrice())));
-        node = document.createElement("close");
+        node = document.createElement("close"); //$NON-NLS-1$
         element.appendChild(node);
         node.appendChild(document.createTextNode(nf.format(data[i].getClosePrice())));
-        node = document.createElement("max");
+        node = document.createElement("max"); //$NON-NLS-1$
         element.appendChild(node);
         node.appendChild(document.createTextNode(nf.format(data[i].getMaxPrice())));
-        node = document.createElement("min");
+        node = document.createElement("min"); //$NON-NLS-1$
         element.appendChild(node);
         node.appendChild(document.createTextNode(nf.format(data[i].getMinPrice())));
-        node = document.createElement("volume");
+        node = document.createElement("volume"); //$NON-NLS-1$
         element.appendChild(node);
-        node.appendChild(document.createTextNode("" + data[i].getVolume()));
+        node.appendChild(document.createTextNode("" + data[i].getVolume())); //$NON-NLS-1$
       }
 
-      File folder = new File(Platform.getLocation().toFile(), "rtcharts");
+      File folder = new File(Platform.getLocation().toFile(), "rtcharts"); //$NON-NLS-1$
       folder.mkdirs();
 
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-      transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1"); //$NON-NLS-1$
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+      transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
       DOMSource source = new DOMSource(document);
-      BufferedWriter out = new BufferedWriter(new FileWriter(new File(folder, basicData.getSymbol().toLowerCase() + ".xml")));
+      BufferedWriter out = new BufferedWriter(new FileWriter(new File(folder, basicData.getSymbol().toLowerCase() + ".xml"))); //$NON-NLS-1$
       StreamResult result = new StreamResult(out);
       transformer.transform(source, result);
       out.flush();

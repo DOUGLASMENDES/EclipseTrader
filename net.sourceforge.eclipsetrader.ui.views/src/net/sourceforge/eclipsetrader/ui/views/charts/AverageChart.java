@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
@@ -29,13 +31,13 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
 {
   public static final int SIMPLE = 0;
   public static final int EXPONENTIAL = 1;
-  public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.average";
+  public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.average"; //$NON-NLS-1$
   private int period = 7;
   private int type = SIMPLE;
   
   public AverageChart()
   {
-    name = "Moving Average";
+    name = Messages.getString("AverageChart.label"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -51,7 +53,7 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return name + " (" + period + ")";
+    return name + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
   }
   
   /* (non-Javadoc)
@@ -104,9 +106,9 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
    */
   public void setParameter(String name, String value)
   {
-    if (name.equalsIgnoreCase("period") == true)
+    if (name.equalsIgnoreCase("period") == true) //$NON-NLS-1$
       period = Integer.parseInt(value);
-    else if (name.equalsIgnoreCase("type") == true)
+    else if (name.equalsIgnoreCase("type") == true) //$NON-NLS-1$
       type = Integer.parseInt(value);
     super.setParameter(name, value);
   }
@@ -118,22 +120,22 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
   public Control createContents(Composite parent)
   {
     Label label = new Label(parent, SWT.NONE);
-    label.setText("Selected Periods");
+    label.setText(Messages.getString("AverageChart.periods")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(parent, SWT.BORDER);
-    text.setData("period");
+    text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
     GridData gridData = new GridData();
     gridData.widthHint = 25;
     text.setLayoutData(gridData);
 
     label = new Label(parent, SWT.NONE);
-    label.setText("Type");
+    label.setText(Messages.getString("AverageChart.type")); //$NON-NLS-1$
     label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Combo combo = new Combo(parent, SWT.READ_ONLY);
-    combo.setData("type");
-    combo.add("SIMPLE");
-    combo.add("EXPONENTIAL");
+    combo.setData("type"); //$NON-NLS-1$
+    combo.add(Messages.getString("AverageChart.simple")); //$NON-NLS-1$
+    combo.add(Messages.getString("AverageChart.exponential")); //$NON-NLS-1$
     combo.setText(combo.getItem(type));
     combo.setLayoutData(new GridData());
 

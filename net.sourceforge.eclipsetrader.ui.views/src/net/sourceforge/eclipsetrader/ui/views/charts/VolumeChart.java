@@ -11,6 +11,7 @@
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import net.sourceforge.eclipsetrader.IChartData;
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -30,7 +31,7 @@ public class VolumeChart extends ChartPlotter
    */
   public String getDescription()
   {
-    return "Volume";
+    return Messages.getString("VolumeChart.label"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)

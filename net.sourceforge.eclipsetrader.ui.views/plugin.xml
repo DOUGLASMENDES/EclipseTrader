@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.9.0"
+   version="0.9.1"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -26,39 +26,39 @@
             icon="icons/stock_watch.gif"
             class="net.sourceforge.eclipsetrader.ui.views.portfolio.PortfolioView"
             category="trader"
-            name="Stock Watch"
+            name="%stockwatch.title"
             id="net.sourceforge.eclipsetrader.ui.views.Portfolio">
       </view>
       <view
             class="net.sourceforge.eclipsetrader.ui.views.news.NewsView"
             icon="icons/macrodef_obj.gif"
             category="trader"
-            name="News List"
+            name="%news.title"
             id="net.sourceforge.eclipsetrader.ui.views.News"/>
       <view
             class="net.sourceforge.eclipsetrader.ui.views.news.NewsBrowser"
             icon="icons/news_tab.gif"
             category="trader"
-            name="News Browser"
+            name="%news.browser"
             id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
       <view
             allowMultiple="true"
             icon="icons/chart_persp.gif"
             class="net.sourceforge.eclipsetrader.ui.views.charts.HistoryChartView"
             category="trader"
-            name="Chart"
+            name="%chart.title1"
             id="net.sourceforge.eclipsetrader.ui.views.ChartView"/>
       <view
             allowMultiple="true"
             icon="icons/sample.gif"
             class="net.sourceforge.eclipsetrader.ui.views.trading.Book"
-            name="Book"
+            name="%book.title"
             id="net.sourceforge.eclipsetrader.ui.views.Book"/>
       <view
             allowMultiple="true"
             icon="icons/chart_persp.gif"
             class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartView"
-            name="RTChart"
+            name="%chart.title2"
             id="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"/>
       <category
             name="Trader"
@@ -115,22 +115,22 @@
       <page
             class="net.sourceforge.eclipsetrader.ui.views.portfolio.GeneralPreferencePage"
             category="eclipsetrader"
-            name="Stock Watch"
+            name="%stockwatch.title"
             id="eclipsetrader.portfolio"/>
       <page
             class="net.sourceforge.eclipsetrader.ui.views.portfolio.ColorsPreferencePage"
             category="eclipsetrader.portfolio"
-            name="Colors"
+            name="%stockwatch.colors"
             id="eclipsetrader.portfolio.colors"/>
       <page
             class="net.sourceforge.eclipsetrader.ui.views.news.ColorsPreferencePage"
             category="eclipsetrader"
-            name="News"
+            name="%news.title"
             id="eclipsetrader.news"/>
       <page
             class="net.sourceforge.eclipsetrader.ui.views.trading.BookPreferencePage"
             category="eclipsetrader"
-            name="Level II Book"
+            name="%book.title"
             id="eclipsetrader.book"/>
    </extension>
 
@@ -245,56 +245,56 @@
             id="net.sourceforge.eclipsetrader.chartActions">
          <action
                toolbarPath="additions"
-               label="Next"
-               tooltip="Next"
+               label="%actions.next"
+               tooltip="%actions.next"
                icon="icons/forward.gif"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                id="chart.next"/>
          <action
                toolbarPath="additions"
-               label="Previous"
-               tooltip="Previous"
+               label="%actions.previous"
+               tooltip="%actions.previous"
                icon="icons/back.gif"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                id="chart.previous"/>
          <action
                toolbarPath="additions"
-               label="Aggiorna"
-               tooltip="Aggiorna"
+               label="%actions.update"
+               tooltip="%actions.update"
                icon="icons/refresh.gif"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                id="chart.refresh"/>
          <menu
-               label="View All"
+               label="%actions.viewAll"
                path="all"
                id="chart.menu1"/>
          <menu
-               label="View Period"
+               label="%actions.viewPeriod"
                path="period"
                id="chart.menu2"/>
          <action
-               label="View last 2 years"
+               label="%actions.viewLast2Years"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                menubarPath="period"
                id="view.last2year"/>
          <action
-               label="View last year"
+               label="%actions.viewLastYear"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                menubarPath="period"
                id="view.last1year"/>
          <action
-               label="View last 6 months"
+               label="%actions.viewLast6Months"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                menubarPath="period"
                id="view.last6months"/>
          <action
-               label="View all"
+               label="%actions.viewAll"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                menubarPath="all"
@@ -305,8 +305,8 @@
             id="net.sourceforge.eclipsetrader.realtimeChartActions">
          <action
                toolbarPath="additions"
-               label="Backfill"
-               tooltip="Backfill"
+               label="%actions.backfill"
+               tooltip="%actions.backfill"
                icon="icons/refresh.gif"
                class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
                style="push"
@@ -317,16 +317,16 @@
             id="net.sourceforge.eclipsetrader.browserActions">
          <action
                toolbarPath="additions"
-               label="Next"
-               tooltip="Next"
+               label="%actions.next"
+               tooltip="%actions.next"
                icon="icons/next_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
                style="push"
                id="news.next"/>
          <action
                toolbarPath="additions"
-               label="Previous"
-               tooltip="Previous"
+               label="%actions.previous"
+               tooltip="%actions.previous"
                icon="icons/prev_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
                style="push"
@@ -337,8 +337,8 @@
             id="net.sourceforge.eclipsetrader.newsActions">
          <action
                toolbarPath="additions"
-               label="Aggiorna"
-               tooltip="Aggiorna"
+               label="%actions.update"
+               tooltip="%actions.update"
                icon="icons/refresh.gif"
                class="net.sourceforge.eclipsetrader.ui.views.news.NewsAction"
                style="push"
@@ -349,24 +349,24 @@
             id="net.sourceforge.eclipsetrader.portfolioActions">
          <action
                toolbarPath="additions"
-               label="Down"
-               tooltip="Sposta in Basso"
+               label="%actions.moveDown"
+               tooltip="%actions.moveDown"
                icon="icons/next_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                style="push"
                id="portfolio.movedown"/>
          <action
                toolbarPath="additions"
-               label="Up"
-               tooltip="Sposta in Alto"
+               label="%actions.moveUp"
+               tooltip="%actions.moveUp"
                icon="icons/prev_nav.gif"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                style="push"
                id="portfolio.moveup"/>
          <action
                toolbarPath="additions"
-               label="Add Item"
-               tooltip="Aggiungi Titolo"
+               label="%stockwatch.add"
+               tooltip="%stockwatch.add"
                icon="icons/add_exc.gif"
                class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
                style="push"
@@ -376,27 +376,27 @@
    <extension
          point="net.sourceforge.eclipsetrader.chartPlotter">
       <plotter
-            label="Accumulation/Distribution"
+            label="%AccumulationDistributionChart.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.AccumulationDistributionChart"
             id="net.sourceforge.eclipsetrader.charts.accumulationDistribution"/>
       <plotter
-            label="Bollinger Bands"
+            label="%BollingerBandsChart.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.BollingerBandsChart"
             id="net.sourceforge.eclipsetrader.charts.bollinger"/>
       <plotter
-            label="Moving Average"
+            label="%AverageChart.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.AverageChart"
             id="net.sourceforge.eclipsetrader.charts.average"/>
       <plotter
-            label="R.S.I."
+            label="%RSIChart.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.RSIChart"
             id="net.sourceforge.eclipsetrader.charts.rsi"/>
       <plotter
-            label="Stochastic Oscillator"
+            label="%StochasticChart.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.StochasticChart"
             id="net.sourceforge.eclipsetrader.charts.stochastic"/>
       <plotter
-            label="Trend"
+            label="%TrendChart.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.TrendChart"
             id="net.sourceforge.eclipsetrader.charts.trend"/>
    </extension>
@@ -407,13 +407,13 @@
             visible="true"
             id="net.sourceforge.eclipsetrader.views.actionSet">
          <action
-               label="Show StockWatch"
+               label="%actions.showStockwatch"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
                style="push"
                menubarPath="window/additions"
                id="net.sourceforge.eclipsetrader.actions.showStockwatch"/>
          <action
-               label="Show News"
+               label="%actions.showNews"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
                style="push"
                menubarPath="window/additions"
