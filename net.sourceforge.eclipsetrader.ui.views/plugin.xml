@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.4.0"
+   version="0.5.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -168,10 +168,20 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
             id="net.sourceforge.eclipsetrader.ui.views.ChartView.contextMenu">
          <action
-               label="Oscillatori"
+               label="Rimuovi"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                menubarPath="group3"
-               id="chart.oscillator"/>
+               id="chart.remove"/>
+         <action
+               label="Modifica"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="group3"
+               id="chart.edit"/>
+         <action
+               label="Aggiungi"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               menubarPath="group3"
+               id="chart.add"/>
       </viewerContribution>
    </extension>
    <extension
@@ -264,6 +274,13 @@
                style="push"
                id="portfolio.add"/>
       </viewContribution>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.chartPlotter">
+      <plotter
+            label="Media Mobile"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.AverageChart"
+            id="net.sourceforge.eclipsetrader.charts.average"/>
    </extension>
 
 </plugin>
