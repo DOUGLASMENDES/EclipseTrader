@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Vector;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
@@ -36,7 +38,7 @@ import sun.misc.BASE64Encoder;
  * Yahoo chart data provider.
  * <p></p>
  */
-public class ChartDataProvider implements IChartDataProvider
+public class ChartDataProvider implements IChartDataProvider, IPropertyChangeListener
 {
   protected SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
   protected NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -44,6 +46,15 @@ public class ChartDataProvider implements IChartDataProvider
   protected int symbolField = 1;
   protected boolean useMapping = false;
   protected String defaultExtension = "";
+  
+  public ChartDataProvider()
+  {
+    IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
+    symbolField = ps.getInt("yahoo.charts.field");
+    useMapping = ps.getBoolean("yahoo.charts.mapping");
+    defaultExtension = ps.getString("yahoo.suffix");
+    ps.addPropertyChangeListener(this);
+  }
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IChartDataProvider#getData(net.sourceforge.eclipsetrader.IBasicData)
@@ -59,11 +70,7 @@ public class ChartDataProvider implements IChartDataProvider
   public IChartData[] update(IBasicData data, IChartData[] chartData)
   {
     String months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-    
     IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
-    symbolField = ps.getInt("yahoo.charts.field");
-    useMapping = ps.getBoolean("yahoo.charts.mapping");
-    defaultExtension = ps.getString("yahoo.suffix");
 
     Vector v = new Vector();
     if (chartData != null)
@@ -200,5 +207,21 @@ public class ChartDataProvider implements IChartDataProvider
         return 0;
       }
     });
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+   */
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    String id = event.getProperty();
+    IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
+    
+    if (id.equalsIgnoreCase("yahoo.charts.field") == true)
+      symbolField = ps.getInt(id);
+    if (id.equalsIgnoreCase("yahoo.charts.mapping") == true)
+      useMapping = ps.getBoolean(id);
+    if (id.equalsIgnoreCase("yahoo.suffix") == true)
+      defaultExtension = ps.getString(id);
   }
 }

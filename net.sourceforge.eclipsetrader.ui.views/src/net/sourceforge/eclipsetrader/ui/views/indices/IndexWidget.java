@@ -218,11 +218,14 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
   {
     super.setData(data);
     this.data = data;
-
+    
+    String prefix = "";
     double chg = data.getLastPrice() - data.getClosePrice();
+    if (chg > 0)
+      prefix = "+";
     name.setText(data.getDescription());
     value.setText(pf.format(data.getLastPrice()));
-    change.setText(pf.format(chg) + " (" + pcf.format(chg / data.getClosePrice() * 100) + ")");
+    change.setText(prefix + pf.format(chg) + " (" + prefix + pcf.format(chg / data.getClosePrice() * 100) + "%)");
     if (change.getText().indexOf("-") != -1)
       change.setForeground(negativeForeground);
     else

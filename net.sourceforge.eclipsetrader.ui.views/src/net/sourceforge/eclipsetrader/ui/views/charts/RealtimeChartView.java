@@ -30,6 +30,7 @@ import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBackfillDataProvider;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
+import net.sourceforge.eclipsetrader.IIndexDataProvider;
 import net.sourceforge.eclipsetrader.IRealtimeChartListener;
 import net.sourceforge.eclipsetrader.IRealtimeChartProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
@@ -54,6 +55,7 @@ import org.w3c.dom.NodeList;
 
 public class RealtimeChartView extends ChartView implements IRealtimeChartListener, DropTargetListener
 {
+  private IRealtimeChartProvider chartProvider;
   
   /* (non-Javadoc)
    * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -115,22 +117,36 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
 
   public void setData(final IBasicData d)
   {
-    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    if (basicData != null && chartProvider != null)
+      chartProvider.removeRealtimeChartListener(basicData, this);
+    chartProvider = null;
+
+    if (isIndex(d) == true)
     {
-      IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-      rtp.removeRealtimeChartListener(basicData, this);
+      IIndexDataProvider ip = getIndexProvider(d);
+      if (ip instanceof IRealtimeChartProvider)
+        chartProvider = (IRealtimeChartProvider)ip;
+      updateIndexData(d);
+      setData(d, d.getTicker() + " - " + Messages.getString("RealtimeChartView.title"), "rtchart."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
-    setData(d, d.getTicker() + " - " + Messages.getString("RealtimeChartView.title"), "rtchart."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    else
     {
-      IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-      rtp.addRealtimeChartListener(basicData, this);
+      if (TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+        chartProvider = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+      setData(d, d.getTicker() + " - " + Messages.getString("RealtimeChartView.title"), "rtchart."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
+
+    if (basicData != null && chartProvider != null)
+      chartProvider.addRealtimeChartListener(basicData, this);
   }
   
   public IChartData[] getChartData(IBasicData data)
   {
-    IChartData[] c = null;
+    IChartData[] c = chartProvider.getHistoryData(basicData);
+    if (c == null)
+      c = load();
+    return c;
+/*    IChartData[] c = null;
     if (TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
     {
       IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
@@ -138,20 +154,31 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
     }
     if (c == null)
       c = load();
-    return c;
+    return c;*/
   }
   
   public void refreshChart()
   {
-    if (basicData != null && TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+    if (basicData != null)
     {
-      IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
-      IBackfillDataProvider backfill = TraderPlugin.getBackfillDataProvider(); 
-      if (backfill != null)
-        rtp.setHistoryData(basicData, backfill.getIntradayData(basicData));
-      else
-        rtp.backfill(basicData);
-      realtimeChartUpdated(rtp);
+      if (isIndex(basicData) == true)
+      {
+        if (chartProvider instanceof IBackfillDataProvider)
+          chartProvider.setHistoryData(basicData, ((IBackfillDataProvider)chartProvider).getIntradayData(basicData));
+        else
+          chartProvider.backfill(basicData);
+        realtimeChartUpdated(chartProvider);
+      }
+      else if (TraderPlugin.getDataProvider() instanceof IRealtimeChartProvider)
+      {
+        IRealtimeChartProvider rtp = (IRealtimeChartProvider)TraderPlugin.getDataProvider();
+        IBackfillDataProvider backfill = TraderPlugin.getBackfillDataProvider(); 
+        if (backfill != null)
+          rtp.setHistoryData(basicData, backfill.getIntradayData(basicData));
+        else
+          rtp.backfill(basicData);
+        realtimeChartUpdated(rtp);
+      }
     }
   }
   

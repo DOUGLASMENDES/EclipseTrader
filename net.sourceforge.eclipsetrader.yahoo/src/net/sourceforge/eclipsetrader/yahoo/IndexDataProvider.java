@@ -48,11 +48,17 @@ public class IndexDataProvider extends ChartDataProvider implements IIndexDataPr
   public IndexDataProvider()
   {
     TraderPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
-    
-    // Sets the default parameters for retrieving the indices data
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IChartDataProvider#update(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartData[])
+   */
+  public IChartData[] update(IBasicData data, IChartData[] chartData)
+  {
     symbolField = 0;
     useMapping = false;
     defaultExtension = "";
+    return super.update(data, chartData);
   }
   
   public void dispose()

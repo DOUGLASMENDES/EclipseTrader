@@ -26,6 +26,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
+import net.sourceforge.eclipsetrader.IChartDataProvider;
+import net.sourceforge.eclipsetrader.IIndexDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
@@ -87,6 +89,8 @@ public class HistoryChartView extends ChartView
 
   public void setData(final IBasicData d)
   {
+    if (isIndex(d) == true)
+      updateIndexData(d);
     setData(d, d.getTicker() + " - " + Messages.getString("HistoryChartView.title"), "chart."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   }
   
@@ -131,7 +135,14 @@ public class HistoryChartView extends ChartView
     Job job = new Job(Messages.getString("HistoryChartView.updateChart")) { //$NON-NLS-1$
       public IStatus run(IProgressMonitor monitor)
       {
-        dataProvider = TraderPlugin.getChartDataProvider();
+        if (isIndex(basicData) == true)
+        {
+          IIndexDataProvider ip = getIndexProvider(basicData);
+          if (ip instanceof IChartDataProvider)
+            dataProvider = (IChartDataProvider)ip;
+        }
+        else
+          dataProvider = TraderPlugin.getChartDataProvider();
         if (dataProvider != null)
         {
           try {

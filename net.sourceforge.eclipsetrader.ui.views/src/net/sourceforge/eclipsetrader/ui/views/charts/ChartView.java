@@ -31,6 +31,8 @@ import javax.xml.transform.stream.StreamResult;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
+import net.sourceforge.eclipsetrader.IIndexDataProvider;
+import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -475,6 +477,131 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       });
       for (int i = 0; i < chart.size(); i++)
         ((ChartCanvas)chart.elementAt(i)).setData(data);
+    }
+  }
+  
+  public boolean isIndex(IBasicData d)
+  {
+    IExtensionRegistry registry = Platform.getExtensionRegistry();
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.indexProvider"); //$NON-NLS-1$
+    if (extensionPoint != null)
+    {
+      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+      for (int i = 0; i < members.length; i++)
+      {
+        IConfigurationElement[] children = members[i].getChildren();
+        for (int ii = 0; ii < children.length; ii++)
+        {
+          if (children[ii].getName().equalsIgnoreCase("category") == true) //$NON-NLS-1$
+          {
+            IConfigurationElement[] items = children[ii].getChildren();
+            for (int iii = 0; iii < items.length; iii++)
+            {
+              String symbol = items[iii].getAttribute("symbol"); //$NON-NLS-1$
+              if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+                return true;
+            }
+          }
+          else if (children[ii].getName().equalsIgnoreCase("index") == true) //$NON-NLS-1$
+          {
+            String symbol = children[ii].getAttribute("symbol"); //$NON-NLS-1$
+            if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+              return true;
+          }
+        }
+      }
+    }
+    
+    return false;
+  }
+  
+  public IIndexDataProvider getIndexProvider(IBasicData d)
+  {
+    String EXTENSION_POINT_ID = "net.sourceforge.eclipsetrader.indexProvider";
+
+    IExtensionRegistry registry = Platform.getExtensionRegistry();
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.indexProvider"); //$NON-NLS-1$
+    if (extensionPoint != null)
+    {
+      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+      for (int i = 0; i < members.length; i++)
+      {
+        IConfigurationElement[] children = members[i].getChildren();
+        for (int ii = 0; ii < children.length; ii++)
+        {
+          if (children[ii].getName().equalsIgnoreCase("category") == true) //$NON-NLS-1$
+          {
+            IConfigurationElement[] items = children[ii].getChildren();
+            for (int iii = 0; iii < items.length; iii++)
+            {
+              String symbol = items[iii].getAttribute("symbol"); //$NON-NLS-1$
+              if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+              {
+                IIndexDataProvider ip = (IIndexDataProvider)TraderPlugin.getExtensionInstance(EXTENSION_POINT_ID, members[i].getAttribute("id"));
+                return ip;
+              }
+            }
+          }
+          else if (children[ii].getName().equalsIgnoreCase("index") == true) //$NON-NLS-1$
+          {
+            String symbol = children[ii].getAttribute("symbol"); //$NON-NLS-1$
+            if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+            {
+              IIndexDataProvider ip = (IIndexDataProvider)TraderPlugin.getExtensionInstance(EXTENSION_POINT_ID, members[i].getAttribute("id"));
+              return ip;
+            }
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  public void updateIndexData(IBasicData d)
+  {
+    IExtensionRegistry registry = Platform.getExtensionRegistry();
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.indexProvider"); //$NON-NLS-1$
+    if (extensionPoint != null)
+    {
+      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+      for (int i = 0; i < members.length; i++)
+      {
+        IConfigurationElement[] children = members[i].getChildren();
+        for (int ii = 0; ii < children.length; ii++)
+        {
+          if (children[ii].getName().equalsIgnoreCase("category") == true) //$NON-NLS-1$
+          {
+            IConfigurationElement[] items = children[ii].getChildren();
+            for (int iii = 0; iii < items.length; iii++)
+            {
+              String symbol = items[iii].getAttribute("symbol"); //$NON-NLS-1$
+              String ticker = items[iii].getAttribute("ticker"); //$NON-NLS-1$
+              String label = items[iii].getAttribute("label"); //$NON-NLS-1$
+              if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+              {
+                if (ticker.length() != 0)
+                  d.setTicker(ticker);
+                d.setDescription(label);
+                return;
+              }
+            }
+          }
+          else if (children[ii].getName().equalsIgnoreCase("index") == true) //$NON-NLS-1$
+          {
+            String symbol = children[ii].getAttribute("symbol"); //$NON-NLS-1$
+            String ticker = children[ii].getAttribute("ticker"); //$NON-NLS-1$
+            String label = children[ii].getAttribute("label"); //$NON-NLS-1$
+            if (d.getSymbol().equalsIgnoreCase(symbol) == true)
+            {
+              if (ticker.length() != 0)
+                d.setTicker(ticker);
+              d.setDescription(label);
+              return;
+            }
+          }
+        }
+      }
     }
   }
   
