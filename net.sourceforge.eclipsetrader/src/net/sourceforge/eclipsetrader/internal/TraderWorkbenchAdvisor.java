@@ -10,12 +10,17 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.internal;
 
+import net.sourceforge.eclipsetrader.TraderPlugin;
+
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -46,6 +51,35 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor
     PlatformUI.getPreferenceStore().setDefault(IWorkbenchPreferenceConstants.DOCK_PERSPECTIVE_BAR, IWorkbenchPreferenceConstants.TOP_RIGHT);
     // Show the curvy view tabs
     PlatformUI.getPreferenceStore().setValue(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS, false);
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.ui.application.WorkbenchAdvisor#preWindowShellClose(org.eclipse.ui.application.IWorkbenchWindowConfigurer)
+   */
+  public boolean preWindowShellClose(IWorkbenchWindowConfigurer configurer)
+  {
+    IPreferenceStore store = TraderPlugin.getDefault().getPreferenceStore();
+    boolean promptOnExit = store.getBoolean("net.sourceforge.eclipsetrader.promptOnExit");
+
+    if (promptOnExit) 
+    {
+      MessageDialogWithToggle dlg = MessageDialogWithToggle.openOkCancelConfirm(
+        configurer.getWindow().getShell(),
+          "Confirm Exit",
+          "Exit Eclipse Trader ?",
+          "Always exit without prompt",
+          false,
+          null,
+          null);
+      if (dlg.getReturnCode() != IDialogConstants.OK_ID)
+        return false;
+      if (dlg.getToggleState()) 
+      {
+        store.setValue("net.sourceforge.eclipsetrader.promptOnExit", false);
+        TraderPlugin.getDefault().savePluginPreferences();
+      } 
+    }
+    return super.preWindowShellClose(configurer);
   }
 
   public String getInitialWindowPerspectiveId() 

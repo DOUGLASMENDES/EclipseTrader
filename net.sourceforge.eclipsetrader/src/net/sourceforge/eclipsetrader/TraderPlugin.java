@@ -67,6 +67,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     IPreferenceStore ps = getPreferenceStore();
     ps.setDefault("net.sourceforge.eclipsetrader.dataStore", "net.sourceforge.eclipsetrader.xml_data_store");
     ps.setDefault("net.sourceforge.eclipsetrader.dataProvider", "");
+    ps.setDefault("net.sourceforge.eclipsetrader.promptOnExit", true);
 
     // Sets the one and only avalable plugin as selected
     if (ps.getString("net.sourceforge.eclipsetrader.dataProvider").length() == 0)

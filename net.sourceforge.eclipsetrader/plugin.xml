@@ -74,6 +74,11 @@
             class="net.sourceforge.eclipsetrader.preferences.GeneralPreferencePage"
             name="Eclipse Trader"
             id="eclipsetrader"/>
+      <page
+            class="net.sourceforge.eclipsetrader.preferences.StartupPreferencePage"
+            name="Startup and Shutdown"
+            category="eclipsetrader"
+            id="eclipsetrader.startup"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
