@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import sun.misc.BASE64Encoder;
+
 import net.sourceforge.eclipsetrader.DataProvider;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
@@ -126,6 +128,15 @@ public class SnapshotDataProvider extends DataProvider
 //System.out.println(web);
       HttpURLConnection.setFollowRedirects(false);
       HttpURLConnection con = (HttpURLConnection)web.openConnection();
+      String proxyHost = (String)System.getProperties().get("http.proxyHost");
+      String proxyUser = (String)System.getProperties().get("http.proxyUser");
+      String proxyPassword = (String)System.getProperties().get("http.proxyPassword");
+      if (proxyHost != null && proxyHost.length() != 0 && proxyUser != null && proxyUser.length() != 0 && proxyPassword != null)
+      {
+        String login = proxyUser + ":" + proxyPassword;
+        String encodedLogin = new BASE64Encoder().encodeBuffer(login.getBytes());
+        con.setRequestProperty("Proxy-Authorization", "Basic " + encodedLogin.trim());
+      }
       con.setAllowUserInteraction(true);
       con.setRequestMethod("GET");
       con.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows 98; QuoteTracker-DirectaWorld)");
@@ -200,6 +211,15 @@ public class SnapshotDataProvider extends DataProvider
       URL web = new URL(request);
       HttpURLConnection.setFollowRedirects(false);
       HttpURLConnection con = (HttpURLConnection)web.openConnection();
+      String proxyHost = (String)System.getProperties().get("http.proxyHost");
+      String proxyUser = (String)System.getProperties().get("http.proxyUser");
+      String proxyPassword = (String)System.getProperties().get("http.proxyPassword");
+      if (proxyHost != null && proxyHost.length() != 0 && proxyUser != null && proxyUser.length() != 0 && proxyPassword != null)
+      {
+        String login = proxyUser + ":" + proxyPassword;
+        String encodedLogin = new BASE64Encoder().encodeBuffer(login.getBytes());
+        con.setRequestProperty("Proxy-Authorization", "Basic " + encodedLogin.trim());
+      }
       con.setAllowUserInteraction(true);
       con.setRequestMethod("GET");
       con.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows 98; QuoteTracker-DirectaWorld)");

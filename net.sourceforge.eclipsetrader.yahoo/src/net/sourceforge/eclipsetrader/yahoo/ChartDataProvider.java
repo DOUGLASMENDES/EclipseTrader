@@ -38,6 +38,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import sun.misc.BASE64Encoder;
+
 /**
  * @author Marco
  *
@@ -196,10 +198,19 @@ public class ChartDataProvider implements IChartDataProvider
       URL url = new URL("http://table.finance.yahoo.com/table.csv?s=" + SymbolMapper.getYahooSymbol(data.getTicker()) + "&a=" + from.get(GregorianCalendar.MONTH) + "&b=" + from.get(GregorianCalendar.DAY_OF_MONTH) + "&c=" + from.get(GregorianCalendar.YEAR) + "&d=" + to.get(GregorianCalendar.MONTH) + "&e=" + to.get(GregorianCalendar.DAY_OF_MONTH) + "&f=" + to.get(GregorianCalendar.YEAR) + "&g=d&q=q&y=0&z=&x=.csv");
       System.out.println(getClass() + " " + url);
 
-      HttpURLConnection.setFollowRedirects(true);
       HttpURLConnection con = (HttpURLConnection)url.openConnection();
+      String proxyHost = (String)System.getProperties().get("http.proxyHost");
+      String proxyUser = (String)System.getProperties().get("http.proxyUser");
+      String proxyPassword = (String)System.getProperties().get("http.proxyPassword");
+      if (proxyHost != null && proxyHost.length() != 0 && proxyUser != null && proxyUser.length() != 0 && proxyPassword != null)
+      {
+        String login = proxyUser + ":" + proxyPassword;
+        String encodedLogin = new BASE64Encoder().encodeBuffer(login.getBytes());
+        con.setRequestProperty("Proxy-Authorization", "Basic " + encodedLogin.trim());
+      }
       con.setAllowUserInteraction(true);
       con.setRequestMethod("GET");
+      con.setInstanceFollowRedirects(true);
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       String inputLine = in.readLine();
       while ((inputLine = in.readLine()) != null) 

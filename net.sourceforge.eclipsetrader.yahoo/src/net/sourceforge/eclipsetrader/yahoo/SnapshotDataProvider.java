@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.yahoo;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,6 +26,8 @@ import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+
+import sun.misc.BASE64Encoder;
 
 /**
  * @author Marco
@@ -130,7 +133,20 @@ public class SnapshotDataProvider extends DataProvider
     // Legge la pagina contenente gli ultimi prezzi
     try {
       String line;
-      BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
+      HttpURLConnection con = (HttpURLConnection)new URL(url).openConnection();
+      String proxyHost = (String)System.getProperties().get("http.proxyHost");
+      String proxyUser = (String)System.getProperties().get("http.proxyUser");
+      String proxyPassword = (String)System.getProperties().get("http.proxyPassword");
+      if (proxyHost != null && proxyHost.length() != 0 && proxyUser != null && proxyUser.length() != 0 && proxyPassword != null)
+      {
+        String login = proxyUser + ":" + proxyPassword;
+        String encodedLogin = new BASE64Encoder().encodeBuffer(login.getBytes());
+        con.setRequestProperty("Proxy-Authorization", "Basic " + encodedLogin.trim());
+      }
+      con.setAllowUserInteraction(true);
+      con.setRequestMethod("GET");
+      con.setInstanceFollowRedirects(true);
+      BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       while ((line = in.readLine()) != null) 
       {
         double value;
