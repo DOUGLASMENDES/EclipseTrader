@@ -32,6 +32,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -153,20 +154,33 @@ public class NewsProvider
     _data.toArray(nd);
     return nd;
   }
-  
-  public void update()
+
+  public void update(IProgressMonitor monitor)
   {
-    _data.removeAllElements();
     try {
-      updateNews(new URL("http://it.biz.yahoo.com/finance_top_business.html"));
-      updateNews(new URL("http://it.biz.yahoo.com/researchalerts.html"));
-      updateNews(new URL("http://it.biz.yahoo.com/attualita/ratings.html"));
-      updateNews(new URL("http://it.biz.yahoo.com/attualita/companyres.html"));
-      updateNews(new URL("http://it.biz.yahoo.com/attualita/aumenticap.html"));
-      updateNews(new URL("http://it.biz.yahoo.com/attualita/agenda.html"));
-      updateNews(new URL("http://it.biz.yahoo.com/attualita/cda.html"));
-      updateNews(new URL("http://it.biz.yahoo.com/attualita/comunicati.html"));
+      URL url[] = {
+        new URL("http://it.biz.yahoo.com/finance_top_business.html"),
+        new URL("http://it.biz.yahoo.com/researchalerts.html"),
+        new URL("http://it.biz.yahoo.com/attualita/ratings.html"),
+        new URL("http://it.biz.yahoo.com/attualita/companyres.html"),
+        new URL("http://it.biz.yahoo.com/attualita/aumenticap.html"),
+        new URL("http://it.biz.yahoo.com/attualita/agenda.html"),
+        new URL("http://it.biz.yahoo.com/attualita/cda.html"),
+        new URL("http://it.biz.yahoo.com/attualita/comunicati.html")
+      };
+      
+      monitor.beginTask("News Update", url.length);
+      _data.removeAllElements();
+      for (int i = 0; i < url.length; i++)
+      {
+        monitor.subTask(url[i].toString());
+        updateNews(url[i]);
+        monitor.worked(1);
+        if (monitor.isCanceled() == true)
+          break;
+      }
     } catch(Exception x) {};
+    monitor.done();
 
     java.util.Collections.sort(_data, new Comparator() {
       public int compare(Object o1, Object o2) 
@@ -180,7 +194,6 @@ public class NewsProvider
         return 0;
       }
     });
-    
     store();
   }
 

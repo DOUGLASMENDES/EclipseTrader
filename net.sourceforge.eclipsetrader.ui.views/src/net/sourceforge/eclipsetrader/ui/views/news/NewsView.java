@@ -187,7 +187,7 @@ public class NewsView extends ViewPart implements IDataUpdateListener
     Job job = new Job("Update News") {
       public IStatus run(IProgressMonitor monitor)
       {
-        newsProvider.update();
+        newsProvider.update(monitor);
         table.getDisplay().asyncExec(new Runnable() {
           public void run() {
             update();
