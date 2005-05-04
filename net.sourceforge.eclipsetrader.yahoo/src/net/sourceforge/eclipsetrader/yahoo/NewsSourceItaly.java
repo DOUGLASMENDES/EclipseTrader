@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -33,13 +33,12 @@ public class NewsSourceItaly extends NewsSource
     try {
       URL url[] = {
         new URL("http://it.biz.yahoo.com/finance_top_business.html"),
-        new URL("http://it.biz.yahoo.com/researchalerts.html"),
-        new URL("http://it.biz.yahoo.com/attualita/ratings.html"),
-        new URL("http://it.biz.yahoo.com/attualita/companyres.html"),
-        new URL("http://it.biz.yahoo.com/attualita/aumenticap.html"),
-        new URL("http://it.biz.yahoo.com/attualita/agenda.html"),
-        new URL("http://it.biz.yahoo.com/attualita/cda.html"),
-        new URL("http://it.biz.yahoo.com/attualita/comunicati.html")
+        new URL("http://it.biz.yahoo.com/attualita/mib30/index.html"),
+        new URL("http://it.biz.yahoo.com/attualita/nasdaq.html"),
+        new URL("http://it.biz.yahoo.com/francoforte.html"),
+        new URL("http://it.biz.yahoo.com/londra.html"),
+        new URL("http://it.biz.yahoo.com/parigi.html"),
+        new URL("http://it.biz.yahoo.com/attualita/giappone.html"),
       };
       this.url = url;
     } catch(Exception x) {};
@@ -71,81 +70,79 @@ public class NewsSourceItaly extends NewsSource
     try {
       while ((inputLine = in.readLine()) != null) 
       {
-        if (inputLine.startsWith("<b><font face=arial><a href=http://") == true || inputLine.startsWith("<b><font face=arial><a href=/") == true || inputLine.startsWith("<b><a href=http://") == true || inputLine.startsWith("<b><a href=/") == true || inputLine.startsWith("<a href=http://") == true || inputLine.startsWith("<a href=/") == true) 
-        {
-          if (inputLine.indexOf("it.yahoo.com") != -1)
-            continue;
-          // La prima riga contiene il titolo e l'url della notizia
-          int s = inputLine.indexOf("href=");
-          s += 5;
-          int e = inputLine.indexOf(">", s);
-          String url = inputLine.substring(s, e);
-          if (url.startsWith("/") == true)
-            url = "http://it.biz.yahoo.com" + url;
+        if (inputLine.startsWith("<b><font face=arial><a href=/") == true) 
+          try {
+            // La prima riga contiene il titolo e l'url della notizia
+            int s = inputLine.indexOf("href=");
+            s += 5;
+            int e = inputLine.indexOf(">", s);
+            String url = inputLine.substring(s, e);
+            if (url.startsWith("/") == true)
+              url = "http://it.biz.yahoo.com" + url;
 
-          s = e + 1;
-          if ((e = inputLine.indexOf("<", s)) == -1)
-            e = inputLine.length();
-          String title = inputLine.substring(s, e);
-          title = replaceHtml(title);
+            s = e + 1;
+            if ((e = inputLine.indexOf("<", s)) == -1)
+              e = inputLine.length();
+            String title = inputLine.substring(s, e);
+            title = replaceHtml(title);
 
-          // La seconda riga contiene l'agenzia stampa
-          if ((inputLine = in.readLine()) == null)
-            break;
-          if (inputLine.indexOf("(") == -1 || inputLine.indexOf(")") == -1)
-            inputLine += in.readLine();
-          if (inputLine.indexOf("(") == -1 || inputLine.indexOf(")") == -1)
-            inputLine += in.readLine();
-
-          if ((s = inputLine.indexOf("(")) == -1) {
+            // La seconda riga contiene l'agenzia stampa
             if ((inputLine = in.readLine()) == null)
               break;
-            s = inputLine.indexOf("(");
-          }
-          s += 1;
-          if ((e = inputLine.indexOf(")", s)) == -1) {
-            inputLine += in.readLine();
-            e = inputLine.indexOf(")", s);
-          }
-          String source = inputLine.substring(s, e);
+            if (inputLine.indexOf("(") == -1 || inputLine.indexOf(")") == -1)
+              inputLine += in.readLine();
+            if (inputLine.indexOf("(") == -1 || inputLine.indexOf(")") == -1)
+              inputLine += in.readLine();
 
-          // La terza riga contiene la data e l'ora
-          if ((inputLine = in.readLine()) == null)
-            break;
-          s = inputLine.indexOf("ll>") + 3;
-          e = inputLine.indexOf("<", s);
-          String date = inputLine.substring(s, e);
-          Calendar gc = GregorianCalendar.getInstance(Locale.ITALY);
-          StringTokenizer st = new StringTokenizer(date, " ,:");
-          st.nextToken();
-          Integer vint = new Integer(st.nextToken());
-          gc.set(Calendar.DAY_OF_MONTH, vint.intValue());
-          gc.set(Calendar.MONTH, getMonth(st.nextToken()) - 1);
-          vint = new Integer(st.nextToken());
-          gc.set(Calendar.YEAR, vint.intValue());
-          vint = new Integer(st.nextToken());
-          gc.set(Calendar.HOUR_OF_DAY, vint.intValue());
-          vint = new Integer(st.nextToken());
-          gc.set(Calendar.MINUTE, vint.intValue());
-          gc.set(Calendar.SECOND, 0);
+            if ((s = inputLine.indexOf("(")) == -1) {
+              if ((inputLine = in.readLine()) == null)
+                break;
+              s = inputLine.indexOf("(");
+            }
+            s += 1;
+            if ((e = inputLine.indexOf(")", s)) == -1) {
+              inputLine += in.readLine();
+              e = inputLine.indexOf(")", s);
+            }
+            String source = inputLine.substring(s, e);
 
-          // Toglie gli spazi in testa e in coda
-          while (title.startsWith(" ") == true)
-            title = title.substring(1);
-          while (title.endsWith(" ") == true)
-            title = title.substring(0, title.length() - 1);
-          // Inserisce la notizia nell'elenco
-          if (isNewsPresent(title) == false) {
-            if (gc.get(Calendar.YEAR) == cal.get(Calendar.YEAR)) {
-              int dd2 = gc.get(Calendar.DAY_OF_YEAR) * 24 + gc.get(Calendar.HOUR_OF_DAY);
-              if ((dd1 - dd2) <= 24)
-              {
-                INewsData nd = new NewsData(title, url, source, gc.getTime());
-                _data.addElement(nd);
+            // La terza riga contiene la data e l'ora
+            if ((inputLine = in.readLine()) == null)
+              break;
+            s = inputLine.indexOf("ll>") + 3;
+            e = inputLine.indexOf("<", s);
+            String date = inputLine.substring(s, e);
+            Calendar gc = GregorianCalendar.getInstance(Locale.ITALY);
+            StringTokenizer st = new StringTokenizer(date, " ,:");
+            st.nextToken();
+            Integer vint = new Integer(st.nextToken());
+            gc.set(Calendar.DAY_OF_MONTH, vint.intValue());
+            gc.set(Calendar.MONTH, getMonth(st.nextToken()) - 1);
+            vint = new Integer(st.nextToken());
+            gc.set(Calendar.YEAR, vint.intValue());
+            vint = new Integer(st.nextToken());
+            gc.set(Calendar.HOUR_OF_DAY, vint.intValue());
+            vint = new Integer(st.nextToken());
+            gc.set(Calendar.MINUTE, vint.intValue());
+            gc.set(Calendar.SECOND, 0);
+
+            // Toglie gli spazi in testa e in coda
+            while (title.startsWith(" ") == true)
+              title = title.substring(1);
+            while (title.endsWith(" ") == true)
+              title = title.substring(0, title.length() - 1);
+            // Inserisce la notizia nell'elenco
+            if (isNewsPresent(title) == false) {
+              if (gc.get(Calendar.YEAR) == cal.get(Calendar.YEAR)) {
+                int dd2 = gc.get(Calendar.DAY_OF_YEAR) * 24 + gc.get(Calendar.HOUR_OF_DAY);
+                if ((dd1 - dd2) <= 24)
+                {
+                  INewsData nd = new NewsData(title, url, source, gc.getTime());
+                  _data.addElement(nd);
+                }
               }
             }
-          }
-        }
+          } catch (Exception ex) {};
       }
     } catch (Exception ex) {};
   }
