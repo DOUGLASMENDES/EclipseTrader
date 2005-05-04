@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Finance"
-   version="0.13.1"
+   version="0.13.2"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
