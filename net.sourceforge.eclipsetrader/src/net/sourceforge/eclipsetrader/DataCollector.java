@@ -15,10 +15,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -116,7 +117,7 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
     fireRealtimeChartUpdate();
   }
   
-  public void setData(String symbol, Vector values)
+  public void setData(String symbol, List values)
   {
     chartMap.put(symbol, values);
     store();
@@ -127,15 +128,14 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
    */
   public void addRealtimeChartListener(IBasicData data, IRealtimeChartListener listener)
   {
-    Vector _v = (Vector)_rtListener.get(data.getSymbol());
+    List _v = (ArrayList)_rtListener.get(data.getSymbol());
     if (_v == null)
     {
-      _v = new Vector();
+      _v = new ArrayList();
       _rtListener.put(data.getSymbol(), _v);
     }
     if (_v.indexOf(listener) < 0)
-      _v.addElement(listener);
-    System.out.println("Add RT listener for " + data.getSymbol());
+      _v.add(listener);
   }
 
   /* (non-Javadoc)
@@ -143,12 +143,11 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
    */
   public void removeRealtimeChartListener(IBasicData data, IRealtimeChartListener listener)
   {
-    Vector _v = (Vector)_rtListener.get(data.getSymbol());
+    List _v = (ArrayList)_rtListener.get(data.getSymbol());
     if (_v != null)
     {
-      _v.removeElement(listener);
+      _v.remove(listener);
     }
-    System.out.println("Remove RT listener for " + data.getSymbol());
   }
 
   /* (non-Javadoc)
@@ -163,9 +162,9 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
    */
   public IChartData[] getHistoryData(IBasicData data)
   {
-    Vector values = (Vector)chartMap.get(data.getSymbol());
+    List values = (ArrayList)chartMap.get(data.getSymbol());
     if (values == null)
-      values = new Vector();
+      values = new ArrayList();
     IChartData[] chartData = new IChartData[values.size()];
     values.toArray(chartData);
     return chartData;
@@ -176,7 +175,7 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
    */
   public void setHistoryData(IBasicData data, IChartData[] chartData)
   {
-    Vector values = new Vector();
+    List values = new ArrayList();
     for (int i = 0; i < chartData.length; i++)
       values.add(chartData[i]);
     chartMap.put(data.getSymbol(), values);
@@ -189,10 +188,10 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
     Iterator e = _rtListener.values().iterator();
     while(e.hasNext() == true)
     {
-      Vector _v = (Vector)e.next();
+      List _v = (ArrayList)e.next();
       for (int i = 0; i < _v.size(); i++)
       {
-        IRealtimeChartListener listener = (IRealtimeChartListener)_v.elementAt(i);
+        IRealtimeChartListener listener = (IRealtimeChartListener)_v.get(i);
         listener.realtimeChartUpdated(this);
       }
     }
@@ -200,12 +199,12 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
   
   private void fireRealtimeChartUpdate(IBasicData data)
   {
-    Vector _v = (Vector)_rtListener.get(data.getSymbol());
+    List _v = (ArrayList)_rtListener.get(data.getSymbol());
     if (_v != null)
     {
       for (int i = 0; i < _v.size(); i++)
       {
-        IRealtimeChartListener listener = (IRealtimeChartListener)_v.elementAt(i);
+        IRealtimeChartListener listener = (IRealtimeChartListener)_v.get(i);
         listener.realtimeChartUpdated(this);
       }
     }
@@ -231,10 +230,10 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
       last.setTime(chartData.getDate());
       if ((current.getTimeInMillis() - last.getTimeInMillis()) / 1000 >= period)
       {
-        Vector values = (Vector)chartMap.get(data.getSymbol());
+        List values = (ArrayList)chartMap.get(data.getSymbol());
         if (values == null)
         {
-          values = new Vector();
+          values = new ArrayList();
           chartMap.put(data.getSymbol(), values);
         }
 
@@ -245,7 +244,7 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
           // Check if the existing data is obsolete
           if (values.size() != 0)
           {
-            last.setTime(((ChartData)values.lastElement()).getDate());
+            last.setTime(((ChartData)values.get(values.size() - 1)).getDate());
             if (current.get(Calendar.DAY_OF_YEAR) != last.get(Calendar.DAY_OF_YEAR))
               values.clear();
           }
@@ -255,7 +254,7 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
           chartData.setDate(current.getTime());
 
           // Add the collected data to the values array
-          values.addElement(chartData);
+          values.add(chartData);
           needSaving = true;
 
           // Notify all listeners of the chart update
@@ -320,7 +319,7 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
             NodeList element = node.getChildNodes();
             String symbol = node.getAttributes().getNamedItem("symbol").getNodeValue();
             String date = node.getAttributes().getNamedItem("date").getNodeValue();
-            Vector values = new Vector();
+            List values = new ArrayList();
             chartMap.put(symbol, values);
 
             for (int ii = 0; ii < element.getLength(); ii++)
@@ -335,7 +334,7 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
               chartData.setClosePrice(pf.parse(item.getAttributes().getNamedItem("close").getNodeValue()).doubleValue());
               chartData.setVolume(nf.parse(item.getAttributes().getNamedItem("volume").getNodeValue()).intValue());
               chartData.setDate(dtf.parse(date + " " + item.getAttributes().getNamedItem("time").getNodeValue()));
-              values.addElement(chartData);
+              values.add(chartData);
             }
           }
         }
@@ -358,13 +357,13 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
         while(key.hasNext() == true)
         {
           String symbol = (String)key.next();
-          Vector v = (Vector)chartMap.get(symbol);
+          List v = (ArrayList)chartMap.get(symbol);
           if (v == null || v.size() == 0)
             continue;
   
           Element element = document.createElement("data"); //$NON-NLS-1$
           element.setAttribute("symbol", symbol);
-          element.setAttribute("date", df.format(((IChartData)v.elementAt(0)).getDate()));
+          element.setAttribute("date", df.format(((IChartData)v.get(0)).getDate()));
           document.getDocumentElement().appendChild(element);
           
           Iterator values = v.iterator();

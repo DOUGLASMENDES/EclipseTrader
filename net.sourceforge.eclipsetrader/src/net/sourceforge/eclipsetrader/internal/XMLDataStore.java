@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -16,8 +16,9 @@ import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,7 +61,7 @@ public class XMLDataStore implements IDataStore
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
   private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-  private Vector data = new Vector();
+  private List data = new ArrayList();
   private IExtendedData[] dataArray;
 
   public XMLDataStore()
@@ -120,7 +121,7 @@ public class XMLDataStore implements IDataStore
    */
   public void store()
   {
-    data = new Vector(Arrays.asList(dataArray));
+    data = Arrays.asList(dataArray);
     
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -129,7 +130,7 @@ public class XMLDataStore implements IDataStore
 
       for (int i = 0; i < data.size(); i++)
       {
-        IExtendedData item = (IExtendedData)data.elementAt(i);
+        IExtendedData item = (IExtendedData)data.get(i);
 
         Element element = document.createElement("stock");
         element.setAttribute("symbol", item.getSymbol());
@@ -331,7 +332,7 @@ public class XMLDataStore implements IDataStore
   
   public void add(IExtendedData data)
   {
-    Vector v = new Vector(Arrays.asList(dataArray));
+    List v = Arrays.asList(dataArray);
     v.add(data);
     IExtendedData[] da = new IExtendedData[v.size()];
     v.toArray(da);
@@ -343,7 +344,7 @@ public class XMLDataStore implements IDataStore
   
   public void remove(IExtendedData data)
   {
-    Vector v = new Vector(Arrays.asList(dataArray));
+    List v = Arrays.asList(dataArray);
     v.remove(data);
     IExtendedData[] da = new IExtendedData[v.size()];
     v.toArray(da);
@@ -438,7 +439,7 @@ public class XMLDataStore implements IDataStore
    */
   public IChartData[] loadHistoryChart(IBasicData data)
   {
-    Vector v = new Vector();
+    List v = new ArrayList();
     
     File f = new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
     if (f.exists() == true)
@@ -552,7 +553,7 @@ public class XMLDataStore implements IDataStore
 
   public IExtendedData[] loadIndexData()
   {
-    Vector v = new Vector();
+    List v = new ArrayList();
     
     File f = new File(Platform.getLocation().toFile(), INDICES_FILE_NAME);
     if (f.exists() == true)

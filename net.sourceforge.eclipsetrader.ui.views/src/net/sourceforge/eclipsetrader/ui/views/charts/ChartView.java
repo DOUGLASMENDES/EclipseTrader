@@ -15,10 +15,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -103,7 +104,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   protected IChartDataProvider dataProvider;
   protected IBasicData basicData;
   protected IChartData[] data = new IChartData[0];
-  protected Vector chart = new Vector();
+  protected List chart = new ArrayList();
   protected NumberFormat nf = NumberFormat.getInstance();
   protected NumberFormat pf = NumberFormat.getInstance();
   protected NumberFormat pcf = NumberFormat.getInstance();
@@ -111,7 +112,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   protected int selectedZone = 0;
   private IChartPlotter selectedChart = null;
   private ChartPlotterSelection selection = new ChartPlotterSelection();
-  private Vector selectionListeners = new Vector();
+  private List selectionListeners = new ArrayList();
   
   public ChartView()
   {
@@ -275,25 +276,25 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   public void setSelection(ISelection selection)
   {
     for (int i = 0; i < selectionListeners.size(); i++)
-      ((ISelectionChangedListener)selectionListeners.elementAt(i)).selectionChanged(new SelectionChangedEvent(this, selection));
+      ((ISelectionChangedListener)selectionListeners.get(i)).selectionChanged(new SelectionChangedEvent(this, selection));
   }
 
   public abstract void reloadPreferences();
   
   public void reloadPreferences(File folder)
   {
-    Vector sectionHeights = new Vector();
+    List sectionHeights = new ArrayList();
 
     // Remove all charts
     for (int i = 0; i < chart.size(); i++)
     {
-      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      ChartCanvas canvas = (ChartCanvas)chart.get(i);
       canvas.removeMouseListener(this);
       canvas.removeSelectionChangedListener(this);
       canvas.selectChart(null);
       canvas.dispose();
     }
-    chart.removeAllElements();
+    chart.clear();
     limitPeriod = 12;
     selectedZone = 0;
     selectedChart = null;
@@ -334,7 +335,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
             canvas.addSelectionChangedListener(this);
             if (chart.size() == selectedZone)
               canvas.setHilight(true);
-            chart.addElement(canvas);
+            chart.add(canvas);
 
             // Standard attributes
             Node attr = n.getAttributes().getNamedItem("price"); //$NON-NLS-1$
@@ -344,7 +345,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
             if (attr != null && attr.getNodeValue().equalsIgnoreCase("true") == true) //$NON-NLS-1$
               canvas.addPainter(new VolumeChart());
             String height = n.getAttributes().getNamedItem("height").getNodeValue(); //$NON-NLS-1$
-            sectionHeights.addElement(new Integer(height));
+            sectionHeights.add(new Integer(height));
 
             // Charts
             NodeList parent = n.getChildNodes();
@@ -391,7 +392,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
 
       int[] weights = new int[sectionHeights.size()];
       for (int i = 0; i < weights.length; i++)
-        weights[i] = ((Integer)sectionHeights.elementAt(i)).intValue();
+        weights[i] = ((Integer)sectionHeights.get(i)).intValue();
       form.setWeights(weights);
     }
     else
@@ -402,12 +403,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       canvas.addSelectionChangedListener(this);
       if (chart.size() == selectedZone)
         canvas.setHilight(true);
-      chart.addElement(canvas);
+      chart.add(canvas);
       canvas.addPainter(new PriceChart());
       
       canvas = new ChartCanvas(form);
       canvas.createContextMenu(this);
-      chart.addElement(canvas);
+      chart.add(canvas);
       canvas.addMouseListener(this);
       canvas.addSelectionChangedListener(this);
       canvas.addPainter(new VolumeChart());
@@ -461,7 +462,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       {
         element = document.createElement("section"); //$NON-NLS-1$
         element.setAttribute("height", String.valueOf(weights[i])); //$NON-NLS-1$
-        ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+        ChartCanvas canvas = (ChartCanvas)chart.get(i);
         for (int ii = 0; ii < canvas.getPainterCount(); ii++)
         {
 //          if (canvas.getPainter(ii) instanceof PriceChart)
@@ -555,7 +556,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         }
       });
       for (int i = 0; i < chart.size(); i++)
-        ((ChartCanvas)chart.elementAt(i)).setData(data);
+        ((ChartCanvas)chart.get(i)).setData(data);
     }
   }
   
@@ -687,7 +688,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   public void updateView()
   {
     for (int i = 0; i < chart.size(); i++)
-      ((ChartCanvas)chart.elementAt(i)).setData(data);
+      ((ChartCanvas)chart.get(i)).setData(data);
   }
   
   public void addOscillator(String id)
@@ -710,7 +711,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
               if (pdlg.open() == ChartParametersDialog.OK)
               {
                 if (pdlg.getPosition() == ChartParametersDialog.SELECTED_ZONE)
-                  ((ChartCanvas)chart.elementAt(selectedZone)).addPainter(chartPlotter);
+                  ((ChartCanvas)chart.get(selectedZone)).addPainter(chartPlotter);
                 else
                 {
                   int[] w = form.getWeights();
@@ -718,7 +719,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
                   Control[] children = form.getChildren();
                   children[children.length - 1].moveBelow(children[0]);
                   canvas.createContextMenu(this);
-                  chart.insertElementAt(canvas, 1);
+                  chart.add(1, canvas);
                   canvas.addPainter(chartPlotter);
                   int[] weights = new int[chart.size()];
                   for (int i = 0; i < w.length; i++)
@@ -772,7 +773,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       {
         for (int i = chart.size() - 1; i >= 0; i--)
         {
-          ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+          ChartCanvas canvas = (ChartCanvas)chart.get(i);
           for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
           {
             if (canvas.getPainter(ii) == selectedChart)
@@ -782,7 +783,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
               {
                 canvas.removeMouseListener(this);
                 canvas.dispose();
-                chart.removeElementAt(i);
+                chart.remove(i);
                 form.layout();
               }
               break;
@@ -831,7 +832,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   {
     for (int i = chart.size() - 1; i >= 0; i--)
     {
-      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      ChartCanvas canvas = (ChartCanvas)chart.get(i);
       for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
       {
         if (canvas.getPainter(ii) instanceof PriceChart)
@@ -849,7 +850,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   {
     for (int i = chart.size() - 1; i >= 0; i--)
     {
-      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      ChartCanvas canvas = (ChartCanvas)chart.get(i);
       for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
       {
         if (canvas.getPainter(ii) instanceof PriceChart)
@@ -918,21 +919,21 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   {
     this.width = width;
     for (int i = 0; i < chart.size(); i++)
-      ((ChartCanvas)chart.elementAt(i)).setColumnWidth(width);
+      ((ChartCanvas)chart.get(i)).setColumnWidth(width);
   }
   
   protected void setMargin(int margin)
   {
     this.margin = margin;
     for (int i = 0; i < chart.size(); i++)
-      ((ChartCanvas)chart.elementAt(i)).setMargin(margin);
+      ((ChartCanvas)chart.get(i)).setMargin(margin);
   }
   
   public void setScaleWidth(int scaleWidth)
   {
     this.scaleWidth = scaleWidth;
     for (int i = 0; i < chart.size(); i++)
-      ((ChartCanvas)chart.elementAt(i)).setScaleWidth(scaleWidth);
+      ((ChartCanvas)chart.get(i)).setScaleWidth(scaleWidth);
   }
 
   /**
@@ -1031,13 +1032,13 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         sb.setVisible(true);
         sb.setEnabled(true);
         for (int i = 0; i < chart.size(); i++)
-          ((ChartCanvas)chart.elementAt(i)).setChartOrigin(0 - sb.getSelection());
+          ((ChartCanvas)chart.get(i)).setChartOrigin(0 - sb.getSelection());
       }
       else
       {
         sb.setVisible(false);
         for (int i = 0; i < chart.size(); i++)
-          ((ChartCanvas)chart.elementAt(i)).setChartOrigin(0);
+          ((ChartCanvas)chart.get(i)).setChartOrigin(0);
       }
     }
   }
@@ -1058,7 +1059,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     {
       ScrollBar sb = (ScrollBar)e.getSource();
       for (int i = 0; i < chart.size(); i++)
-        ((ChartCanvas)chart.elementAt(i)).setChartOrigin(0 - sb.getSelection());
+        ((ChartCanvas)chart.get(i)).setChartOrigin(0 - sb.getSelection());
       bottombar.redraw();
     }
   }
@@ -1084,13 +1085,13 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     
     for (int i = 0; i < chart.size(); i++)
     {
-      ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
+      ChartCanvas canvas = (ChartCanvas)chart.get(i);
       if (e.getSource() == canvas.getChart())
       {
         if (selectedZone != i)
         {
-          ((ChartCanvas)chart.elementAt(selectedZone)).setHilight(false);
-          ((ChartCanvas)chart.elementAt(selectedZone)).selectChart(null);
+          ((ChartCanvas)chart.get(selectedZone)).setHilight(false);
+          ((ChartCanvas)chart.get(selectedZone)).selectChart(null);
           selectedZone = i;
           canvas.setHilight(true);
         }

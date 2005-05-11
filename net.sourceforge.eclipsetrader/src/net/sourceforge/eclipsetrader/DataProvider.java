@@ -10,8 +10,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import net.sourceforge.eclipsetrader.internal.StreamingControl;
 
@@ -32,7 +33,7 @@ import org.osgi.framework.BundleContext;
 public class DataProvider extends Plugin implements IBasicDataProvider, IExecutableExtension
 {
   private static DataProvider instance;
-  private Vector _listeners = new Vector();
+  private List _listeners = new ArrayList();
   private HashMap _dataListeners = new HashMap();
   private Thread thread;
   private boolean streaming = false;
@@ -94,10 +95,10 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
    */
   public void addDataListener(IBasicData data, IDataUpdateListener listener)
   {
-    Vector _v = (Vector)_dataListeners.get(data.getSymbol());
+    List _v = (ArrayList)_dataListeners.get(data.getSymbol());
     if (_v == null)
     {
-      _v = new Vector();
+      _v = new ArrayList();
       _dataListeners.put(data.getSymbol(), _v);
     }
     _v.add(listener);
@@ -112,7 +113,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
   {
     for (int i = 0; i < _listeners.size(); i++)
     {
-      IDataUpdateListener l = (IDataUpdateListener)_listeners.elementAt(i);
+      IDataUpdateListener l = (IDataUpdateListener)_listeners.get(i);
       l.dataUpdated(this);
     }
   }
@@ -123,12 +124,12 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
   public void fireDataUpdated(IBasicData data)
   {
     // Notify the specific listeners
-    Vector _v = (Vector)_dataListeners.get(data.getSymbol());
+    List _v = (ArrayList)_dataListeners.get(data.getSymbol());
     if (_v != null)
     {
       for (int i = 0; i < _v.size(); i++)
       { 
-        IDataUpdateListener l = (IDataUpdateListener)_v.elementAt(i);
+        IDataUpdateListener l = (IDataUpdateListener)_v.get(i);
         l.dataUpdated(this, data);
       }
     }
@@ -137,7 +138,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
     // Avoids updating the same listener twice.
     for (int i = 0; i < _listeners.size(); i++)
     {
-      IDataUpdateListener l = (IDataUpdateListener)_listeners.elementAt(i);
+      IDataUpdateListener l = (IDataUpdateListener)_listeners.get(i);
       if (_v == null || _v.contains(l) == false)
         l.dataUpdated(this, data);
     }
@@ -167,7 +168,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
    */
   public void removeDataListener(IBasicData data, IDataUpdateListener listener)
   {
-    Vector _v = (Vector)_dataListeners.get(data.getSymbol());
+    List _v = (ArrayList)_dataListeners.get(data.getSymbol());
     if (_v != null)
     {
       _v.remove(listener);
@@ -186,7 +187,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
   public void dispose()
   {
     stopStreaming();
-    _listeners.removeAllElements();
+    _listeners.clear();
     _dataListeners.clear();
   }
 
