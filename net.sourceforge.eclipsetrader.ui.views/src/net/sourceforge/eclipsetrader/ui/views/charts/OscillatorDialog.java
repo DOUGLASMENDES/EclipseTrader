@@ -10,6 +10,10 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -70,6 +74,28 @@ public class OscillatorDialog extends TitleAreaDialog implements SelectionListen
     if (extensionPoint != null)
     {
       IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+
+      // Creates an arraylist from the members array 
+      ArrayList m = new ArrayList();
+      for (int i = 0; i < members.length; i++)
+        m.add(members[i]);
+      
+      // Sorts the list
+      Collections.sort(m, new Comparator() {
+        public int compare(Object arg0, Object arg1)
+        {
+          if ((arg0 instanceof IConfigurationElement) && (arg1 instanceof IConfigurationElement))
+          {
+            String s0 = ((IConfigurationElement)arg0).getAttribute("label");
+            String s1 = ((IConfigurationElement)arg1).getAttribute("label");
+            return s0.compareTo(s1);
+          }
+          return 0;
+        }
+      });
+      m.toArray(members);
+
+      // Adds the sorted members to the list widget
       for (int i = 0; i < members.length; i++)
       {
         list.add(members[i].getAttribute("label"), i);
