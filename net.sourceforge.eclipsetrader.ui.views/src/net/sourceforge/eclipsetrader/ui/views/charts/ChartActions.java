@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import net.sourceforge.eclipsetrader.ui.views.charts.wizards.NewIndicatorWizard;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
@@ -72,9 +74,9 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
 
       if (action.getId().equalsIgnoreCase("chart.add") == true)
       {
-        OscillatorDialog dlg = new OscillatorDialog();
-        if (dlg.open() == OscillatorDialog.OK)
-          view.addOscillator(dlg.getId());
+        NewIndicatorWizard wizard = new NewIndicatorWizard();
+        wizard.setChartView(view);
+        wizard.open();
       }
       else if (action.getId().equalsIgnoreCase("chart.edit") == true)
         view.editOscillator();

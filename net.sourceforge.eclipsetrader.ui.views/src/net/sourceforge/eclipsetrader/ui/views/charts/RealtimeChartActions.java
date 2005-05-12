@@ -1,14 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
+
+import net.sourceforge.eclipsetrader.ui.views.charts.wizards.NewIndicatorWizard;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -41,9 +43,9 @@ public class RealtimeChartActions implements IViewActionDelegate
 
       if (action.getId().equalsIgnoreCase("chart.add") == true)
       {
-        OscillatorDialog dlg = new OscillatorDialog();
-        if (dlg.open() == OscillatorDialog.OK)
-          view.addOscillator(dlg.getId());
+        NewIndicatorWizard wizard = new NewIndicatorWizard();
+        wizard.setChartView(view);
+        wizard.open();
       }
       else if (action.getId().equalsIgnoreCase("chart.edit") == true)
         view.editOscillator();
