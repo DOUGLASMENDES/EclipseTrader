@@ -11,6 +11,7 @@
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.util.HashMap;
+import java.util.List;
 
 import net.sourceforge.eclipsetrader.IChartData;
 
@@ -183,7 +184,7 @@ public class ChartPlotter implements IChartPlotter
   {
     if (name.equalsIgnoreCase("name") == true)
       name = value;
-    else
+    else if (value != null)
     {
       if (name.equalsIgnoreCase("color") == true)
       {
@@ -264,6 +265,49 @@ public class ChartPlotter implements IChartPlotter
     {
       pointArray[pa++] = x;
       int y = (int)((value[i] - min) * pixelRatio);
+      pointArray[pa++] = height - y;
+    }
+    gc.drawPolyline(pointArray);
+    
+    if (isSelected() == true)
+      drawSelectionMarkers(pointArray, gc);
+  }
+
+  /**
+   * Draw a line based on the given list of double values.
+   * <p></p>
+   */
+  public void drawLine(List value, GC gc, int height)
+  {
+    double pixelRatio = height / (max - min);
+    int[] pointArray = new int[value.size() * 2];
+    int x = columnWidth / 2;
+    for (int i = 0, pa = 0; i < value.size(); i++, x += columnWidth)
+    {
+      pointArray[pa++] = x;
+      int y = (int)((((Double)value.get(i)).doubleValue() - min) * pixelRatio);
+      pointArray[pa++] = height - y;
+    }
+    gc.drawPolyline(pointArray);
+    
+    if (isSelected() == true)
+      drawSelectionMarkers(pointArray, gc);
+  }
+  
+  /**
+   * Draw a line based on the given value array and starting at the give offset
+   * on the chart.
+   * <p></p>
+   */
+  public void drawLine(List value, GC gc, int height, int ofs)
+  {
+    double pixelRatio = height / (max - min);
+    int[] pointArray = new int[value.size() * 2];
+    int x = chartMargin + columnWidth / 2 + ofs * columnWidth;
+    for (int i = 0, pa = 0; i < value.size(); i++, x += columnWidth)
+    {
+      pointArray[pa++] = x;
+      int y = (int)((((Double)value.get(i)).doubleValue() - min) * pixelRatio);
       pointArray[pa++] = height - y;
     }
     gc.drawPolyline(pointArray);
