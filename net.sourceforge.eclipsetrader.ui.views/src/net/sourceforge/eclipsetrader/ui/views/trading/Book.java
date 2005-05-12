@@ -319,7 +319,6 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     TraderPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
     
     restoreData();
-    System.out.println(this.getClass() + ": createPartControl"); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
