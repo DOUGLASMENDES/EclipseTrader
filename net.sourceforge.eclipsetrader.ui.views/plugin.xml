@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.ui.views"
    name="Views"
-   version="0.13.0"
+   version="0.14.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
 
@@ -485,6 +485,22 @@
             label="%TrendChart.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.TrendChart"
             id="net.sourceforge.eclipsetrader.charts.trend"/>
+      <plotter
+            label="%DirectionalMovementIndex.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.DirectionalMovementIndex"
+            id="net.sourceforge.eclipsetrader.charts.directionalMovement"/>
+      <plotter
+            label="%AverageTrueRange.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.AverageTrueRange"
+            id="net.sourceforge.eclipsetrader.charts.atr"/>
+      <plotter
+            label="%CommodityChannelIndex.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.CommodityChannelIndex"
+            id="net.sourceforge.eclipsetrader.charts.cci"/>
+      <plotter
+            label="%DetrendedPriceOscillator.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.DetrendedPriceOscillator"
+            id="net.sourceforge.eclipsetrader.charts.dpo"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
