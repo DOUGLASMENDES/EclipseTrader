@@ -49,7 +49,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
  * 
  * @since 1.0
  */
-public class ChartCanvas implements ControlListener, PaintListener, ISelectionProvider
+public class ChartCanvas extends Composite implements ControlListener, PaintListener, ISelectionProvider
 {
   private boolean hilight = false;
   private Composite container;
@@ -74,9 +74,11 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
    */
   public ChartCanvas(Composite parent)
   {
+    super(parent, SWT.NONE);
+
     // Main container with a GridLayout of 2 columns to accomodate for the chart
     // and the scale
-    container = new Composite(parent, SWT.NONE);
+    container = this; // new Composite(parent, SWT.NONE);
     GridLayout gridLayout = new GridLayout(2, false);
     gridLayout.marginWidth = 0;
     gridLayout.marginHeight = 0;
@@ -114,9 +116,10 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     scale.dispose();
     chart.dispose();
     chartContainer.dispose();
-    container.dispose();
     if (chartImage != null)
       chartImage.dispose();
+    
+    super.dispose();
   }
   
   public void createContextMenu(IViewPart part) 
@@ -185,20 +188,36 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
       ((ISelectionChangedListener)selectionChangedListeners.elementAt(i)).selectionChanged(new SelectionChangedEvent(this, selection));
   }
 
-  public void addMouseListener(Object listener)
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.widgets.Control#addMouseListener(org.eclipse.swt.events.MouseListener)
+   */
+  public void addMouseListener(MouseListener listener)
   {
-    if (listener instanceof MouseMoveListener)
-      chart.addMouseMoveListener((MouseMoveListener)listener);
-    if (listener instanceof MouseListener)
-      chart.addMouseListener((MouseListener)listener);
+    chart.addMouseListener(listener);
   }
-  
-  public void removeMouseListener(Object listener)
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.widgets.Control#addMouseMoveListener(org.eclipse.swt.events.MouseMoveListener)
+   */
+  public void addMouseMoveListener(MouseMoveListener listener)
   {
-    if (listener instanceof MouseMoveListener)
-      chart.removeMouseMoveListener((MouseMoveListener)listener);
-    if (listener instanceof MouseListener)
-      chart.removeMouseListener((MouseListener)listener);
+    chart.addMouseMoveListener(listener);
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.widgets.Control#removeMouseListener(org.eclipse.swt.events.MouseListener)
+   */
+  public void removeMouseListener(MouseListener listener)
+  {
+    chart.removeMouseListener(listener);
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.widgets.Control#removeMouseMoveListener(org.eclipse.swt.events.MouseMoveListener)
+   */
+  public void removeMouseMoveListener(MouseMoveListener listener)
+  {
+    chart.removeMouseMoveListener(listener);
   }
 
   /**
@@ -254,21 +273,12 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
     chartContainer.getDisplay().asyncExec(new Runnable() {
       public void run()  
       {
-        if (data != null)
-        {
-          int w = data.length * columnWidth + margin * 2;
-          if (w > chartContainer.getClientArea().width)
-            chart.setSize(w, chartContainer.getClientArea().height);
-          else
-            chart.setSize(chartContainer.getClientArea().width, chartContainer.getClientArea().height);
-        }
-        else
-          chart.setSize(chartContainer.getClientArea().width, chartContainer.getClientArea().height);
+        setControlSize();
+        chart.redraw();
         GridData gridData = (GridData)scale.getLayoutData();
         gridData.widthHint = scaleWidth;
-        container.layout();
-        chart.redraw();
         scale.redraw();
+        container.layout();
       }
     });
   }
@@ -429,6 +439,11 @@ public class ChartCanvas implements ControlListener, PaintListener, ISelectionPr
    * @see org.eclipse.swt.events.ControlListener#controlResized(org.eclipse.swt.events.ControlEvent)
    */
   public void controlResized(ControlEvent e)
+  {
+    setControlSize();
+  }
+  
+  private void setControlSize()
   {
     if (data != null)
     {
