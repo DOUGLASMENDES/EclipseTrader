@@ -1,14 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
@@ -24,14 +27,16 @@ import org.eclipse.swt.widgets.Text;
 /**
  * Stochastic indicator
  * <p></p>
- * 
- * @author Marco Maccaferri
  */
 public class StochasticChart extends ChartPlotter implements IChartConfigurer
 {
   private static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.stochastic"; //$NON-NLS-1$
   private int period = 14;
-  private int subperiod = 3;
+  private int dperiod = 3;
+  private int kperiod = 3;
+  private int type = AverageChart.EXPONENTIAL;
+  private int buyLine = 20;
+  private int sellLine = 80;
   private Color gridColor = new Color(null, 192, 192, 192);
   
   public StochasticChart()
@@ -52,7 +57,7 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return getName() + " (" + period + ", " + subperiod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return getName() + " (" + period + ", " + dperiod + ", " + kperiod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
   }
   
   /* (non-Javadoc)
@@ -65,52 +70,60 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
     if (chartData != null && getMax() > getMin())
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      setMinMax(-5, 105);
+      setMinMax(-2, 102);
       double pixelRatio = (height) / (getMax() - getMin());
-
+      
       gc.setForeground(gridColor);
       gc.setLineStyle(SWT.LINE_DOT);
-      int y1 = (int)((70 - getMin()) * pixelRatio);
+      int y1 = height - (int)((buyLine - getMin()) * pixelRatio);
       gc.drawLine(0, y1, width, y1);
-      y1 = (int)((30 - getMin()) * pixelRatio);
+      y1 = height - (int)((sellLine - getMin()) * pixelRatio);
       gc.drawLine(0, y1, width, y1);
 
-      // Computa i punti
-      if (chartData.length >= period)
+      List k = new ArrayList();
+      for (int loop = period; loop < chartData.length; loop++)
       {
-        // Indicatore stocastico
-        double[] value = new double[chartData.length - period];
-        for (int i = 0; i < value.length; i++)
+        int loop2;
+        double l;
+        double h;
+        for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
         {
-          double high = 0, low = 0, recent = 0;
-          for (int m = 0; m < period; m++)
-          {
-            recent = chartData[i + m].getClosePrice();
-            if (recent > high)
-              high = recent;
-            if (recent < low || low == 0)
-              low = recent;
-          }
-          value[i] = 100 * ((recent - low) / (high - low));
+          double high = chartData[loop - loop2].getMaxPrice();
+          double low = chartData[loop - loop2].getMinPrice();
+
+          double t = high;
+          if (t > h)
+            h = t;
+
+          t = low;
+          if (t < l)
+            l = t;
         }
-        gc.setLineStyle(SWT.LINE_SOLID);
+
+        double close = chartData[loop].getClosePrice();
+        double t = ((close - l) / (h - l)) * 100;
+        if (t > 100)
+          t = 100;
+        if (t < 0)
+          t = 0;
+
+        k.add(new Double(t));
+      }
+
+      if (kperiod > 1)
+        k = AverageChart.getMA(k, type, kperiod);
+
+      gc.setLineStyle(SWT.LINE_SOLID);
+      gc.setForeground(getColor());
+      drawLine(k, gc, height, chartData.length - k.size());
+
+      if (dperiod > 1)
+      {
+        List d = AverageChart.getMA(k, type, dperiod);;
+
+        gc.setLineStyle(SWT.LINE_DOT);
         gc.setForeground(getColor());
-        drawLine(value, gc, height, period);
-        
-        // Media mobile dell'indicatore
-        if (subperiod != 0)
-        {
-          double[] average = new double[value.length - subperiod];
-          for (int i = 0; i < average.length; i++)
-          {
-            for (int m = 0; m < subperiod; m++)
-              average[i] += value[i + m];
-            average[i] /= subperiod;
-          }
-          gc.setLineStyle(SWT.LINE_DOT);
-          gc.setForeground(getColor());
-          drawLine(average, gc, height, period);
-        }
+        drawLine(d, gc, height, chartData.length - d.size());
       }
     }
 
@@ -133,8 +146,16 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
   {
     if (name.equalsIgnoreCase("period") == true) //$NON-NLS-1$
       period = Integer.parseInt(value);
-    if (name.equalsIgnoreCase("subperiod") == true) //$NON-NLS-1$
-      subperiod = Integer.parseInt(value);
+    else if (name.equalsIgnoreCase("kperiod") == true) //$NON-NLS-1$
+      kperiod = Integer.parseInt(value);
+    else if (name.equalsIgnoreCase("dperiod") == true) //$NON-NLS-1$
+      dperiod = Integer.parseInt(value);
+    else if (name.equalsIgnoreCase("type") == true) //$NON-NLS-1$
+      type = Integer.parseInt(value);
+    else if (name.equalsIgnoreCase("buyLine") == true) //$NON-NLS-1$
+      buyLine = Integer.parseInt(value);
+    else if (name.equalsIgnoreCase("sellLine") == true) //$NON-NLS-1$
+      sellLine = Integer.parseInt(value);
     super.setParameter(name, value);
   }
 
@@ -146,23 +167,40 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
   {
     Label label = new Label(parent, SWT.NONE);
     label.setText(Messages.getString("StochasticChart.periods")); //$NON-NLS-1$
-    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(parent, SWT.BORDER);
     text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
-    GridData gridData = new GridData();
-    gridData.widthHint = 25;
-    text.setLayoutData(gridData);
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
 
     label = new Label(parent, SWT.NONE);
-    label.setText(Messages.getString("StochasticChart.averagePeriods")); //$NON-NLS-1$
-    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    label.setText(Messages.getString("StochasticChart.kSmoothingPeriod")); //$NON-NLS-1$
     text = new Text(parent, SWT.BORDER);
-    text.setData("subperiod"); //$NON-NLS-1$
-    text.setText(String.valueOf(subperiod));
-    gridData = new GridData();
-    gridData.widthHint = 25;
-    text.setLayoutData(gridData);
+    text.setData("kperiod"); //$NON-NLS-1$
+    text.setText(String.valueOf(kperiod));
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
+
+    label = new Label(parent, SWT.NONE);
+    label.setText(Messages.getString("StochasticChart.dSmoothingPeriod")); //$NON-NLS-1$
+    text = new Text(parent, SWT.BORDER);
+    text.setData("dperiod"); //$NON-NLS-1$
+    text.setText(String.valueOf(dperiod));
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
+
+    AverageChart.addParameters(parent, Messages.getString("StochasticChart.smoothingType"), "type", type); //$NON-NLS-1$ //$NON-NLS-2$
+
+    label = new Label(parent, SWT.NONE);
+    label.setText(Messages.getString("StochasticChart.buySignal")); //$NON-NLS-1$
+    text = new Text(parent, SWT.BORDER);
+    text.setData("buyLine"); //$NON-NLS-1$
+    text.setText(String.valueOf(buyLine));
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
+
+    label = new Label(parent, SWT.NONE);
+    label.setText(Messages.getString("StochasticChart.sellSignal")); //$NON-NLS-1$
+    text = new Text(parent, SWT.BORDER);
+    text.setData("sellLine"); //$NON-NLS-1$
+    text.setText(String.valueOf(sellLine));
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
 
     return parent;
   }

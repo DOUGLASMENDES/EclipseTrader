@@ -1,14 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
+ *     Stefan S. Stratigakos - Original Qtstalker code
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
@@ -26,8 +30,9 @@ import org.eclipse.swt.widgets.Text;
 public class BollingerBandsChart extends ChartPlotter implements IChartConfigurer
 {
   private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.bollinger"; //$NON-NLS-1$
-  private int period = 15;
+  private int period = 20;
   private int deviations = 2;
+  private int type = AverageChart.EXPONENTIAL;
   
   public BollingerBandsChart()
   {
@@ -56,52 +61,40 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
   public void paintChart(GC gc, int width, int height)
   {
     super.paintChart(gc, width, height);
-    if (chartData != null && getMax() > getMin())
+    if (chartData != null)
     {
-      // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = height / (getMax() - getMin());
+      List sma = AverageChart.getMA(chartData, type, period); 
+      int smaLoop = sma.size() - 1;
 
-      // Colore della linea
-      gc.setForeground(getColor());
-
-      // Computa i punti
-      if (chartData.length >= period)
+      if (sma.size() >= period * 2)
       {
-        // Calcola la media mobile
-        double[] average = new double[chartData.length - period];
-        for (int i = 0; i < average.length; i++)
-        {
-          for (int m = 0; m < period; m++)
-            average[i] += chartData[i + m].getClosePrice();
-          average[i] /= period;
-        }
-        
-        // Calcola la deviazione standard
-        double[] deviation = new double[chartData.length - period];
-        for (int i = 0; i < deviation.length; i++)
-        {
-          for (int m = 0; m < period; m++)
-            deviation[i] += Math.pow(chartData[i + m].getClosePrice() - average[i], 2);
-          deviation[i] /= period;
-          deviation[i] = Math.sqrt(deviation[i]);
-        }
-        
-        // Calcola la banda superiore
-        double[] value = new double[chartData.length - period];
-        for (int i = 0; i < value.length; i++)
-          value[i] = average[i] + deviation[i] * deviations;
-        gc.setLineStyle(SWT.LINE_SOLID);
-        this.drawLine(value, gc, height, period);
+        List bbu = new ArrayList();
+        List bbl = new ArrayList();
 
-        // Banda intermedia (media mobile)
-        gc.setLineStyle(SWT.LINE_DOT);
-        this.drawLine(average, gc, height, period);
-        
-        // Calcola la banda inferiore
-        for (int i = 0; i < value.length; i++)
-          value[i] = average[i] - deviation[i] * deviations;
+        int inputLoop = chartData.length - 1;
+        while (inputLoop >= period && smaLoop >= period)
+        {
+          int count;
+          double t2 = 0;
+          for (count = 0, t2 = 0; count < period; count++)
+          {
+            double t = chartData[inputLoop - count].getClosePrice() - ((Double)sma.get(smaLoop)).doubleValue();
+            t2 = t2 + (t * t);
+          }
+
+          double t = Math.sqrt(t2 / period);
+
+          bbu.add(0, new Double( ((Double)sma.get(smaLoop)).doubleValue() + (deviations * t) )); // upper band
+          bbl.add(0, new Double( ((Double)sma.get(smaLoop)).doubleValue() - (deviations * t) )); // lower band
+
+          inputLoop--;
+          smaLoop--;
+        }
+
         gc.setLineStyle(SWT.LINE_SOLID);
-        this.drawLine(value, gc, height, period);
+        gc.setForeground(getColor());
+        drawLine(bbu, gc, height, chartData.length - bbu.size());
+        drawLine(bbl, gc, height, chartData.length - bbl.size());
       }
     }
   }
@@ -122,6 +115,8 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
       period = Integer.parseInt(value);
     else if (name.equalsIgnoreCase("deviations") == true) //$NON-NLS-1$
       deviations = Integer.parseInt(value);
+    else if (name.equalsIgnoreCase("type") == true) //$NON-NLS-1$
+      type = Integer.parseInt(value);
     super.setParameter(name, value);
   }
 
@@ -133,23 +128,19 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
   {
     Label label = new Label(parent, SWT.NONE);
     label.setText(Messages.getString("BollingerBandsChart.periods")); //$NON-NLS-1$
-    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(parent, SWT.BORDER);
     text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
-    GridData gridData = new GridData();
-    gridData.widthHint = 25;
-    text.setLayoutData(gridData);
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
     
     label = new Label(parent, SWT.NONE);
     label.setText(Messages.getString("BollingerBandsChart.deviations")); //$NON-NLS-1$
-    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     text = new Text(parent, SWT.BORDER);
     text.setData("deviations"); //$NON-NLS-1$
     text.setText(String.valueOf(deviations));
-    gridData = new GridData();
-    gridData.widthHint = 25;
-    text.setLayoutData(gridData);
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
+
+    AverageChart.addParameters(parent, Messages.getString("BollingerBandsChart.smoothingType"), "type", type); //$NON-NLS-1$ //$NON-NLS-2$
 
     return parent;
   }
