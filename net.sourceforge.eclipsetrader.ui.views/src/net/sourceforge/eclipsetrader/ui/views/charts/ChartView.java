@@ -491,9 +491,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
           while (keys.hasNext())
           {
             String key = (String)keys.next();
-            Element p = document.createElement("params"); //$NON-NLS-1$
-            p.setAttribute(key, (String)params.get(key));
-            node.appendChild(p);
+            if (params.get(key) != null)
+            {
+              Element p = document.createElement("params"); //$NON-NLS-1$
+              p.setAttribute(key, (String)params.get(key));
+              node.appendChild(p);
+            }
           }
           
           element.appendChild(node);
@@ -690,70 +693,47 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     for (int i = 0; i < chart.size(); i++)
       ((ChartCanvas)chart.get(i)).setData(data);
   }
-  
-  public void addOscillator(String id)
+
+  public void addOscillator(IChartPlotter chartPlotter, int position)
   {
-    IExtensionRegistry registry = Platform.getExtensionRegistry();
-    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter"); //$NON-NLS-1$
-    if (extensionPoint != null)
+    if (position == ChartParametersDialog.SELECTED_ZONE)
+      ((ChartCanvas)chart.get(selectedZone)).addPainter(chartPlotter);
+    else
     {
-      IConfigurationElement[] members = extensionPoint.getConfigurationElements();
-      for (int m = 0; m < members.length; m++)
+      int[] w = form.getWeights();
+      ChartCanvas canvas = new ChartCanvas(form);
+      canvas.createContextMenu(this);
+      canvas.addMouseListener(this);
+      canvas.addSelectionChangedListener(this);
+      canvas.addPainter(chartPlotter);
+      int[] weights = new int[chart.size()];
+      for (int i = 0; i < w.length; i++)
+        weights[i] = w[i];
+      if (container.getHorizontalBar() != null)
+        canvas.setChartOrigin(0 - container.getHorizontalBar().getSelection());
+
+      if (position == ChartParametersDialog.BELOW_SELECTED_ZONE)
       {
-        IConfigurationElement member = members[m];
-        if (id.equalsIgnoreCase(member.getAttribute("id"))) //$NON-NLS-1$
-          try {
-            Object obj = member.createExecutableExtension("class"); //$NON-NLS-1$
-            if (obj instanceof IChartPlotter)
-            {
-              IChartPlotter chartPlotter = (IChartPlotter)obj;
-              ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)chartPlotter);
-              if (pdlg.open() == ChartParametersDialog.OK)
-              {
-                if (pdlg.getPosition() == ChartParametersDialog.SELECTED_ZONE)
-                  ((ChartCanvas)chart.get(selectedZone)).addPainter(chartPlotter);
-                else
-                {
-                  int[] w = form.getWeights();
-                  ChartCanvas canvas = new ChartCanvas(form);
-                  Control[] children = form.getChildren();
-                  children[children.length - 1].moveBelow(children[0]);
-                  canvas.createContextMenu(this);
-                  chart.add(1, canvas);
-                  canvas.addPainter(chartPlotter);
-                  int[] weights = new int[chart.size()];
-                  for (int i = 0; i < w.length; i++)
-                    weights[i] = w[i];
-                  weights[0] -= 150;
-                  weights[weights.length - 1] = 150;
-                  form.layout();
-                }
-                updateView();
-                savePreferences();
-              }
-            }
-          } catch(Exception x) { x.printStackTrace(); };
+        canvas.moveBelow((Control)chart.get(selectedZone));
+        chart.add(selectedZone + 1, canvas);
+        weights[selectedZone + 1] = 140;
       }
+      else
+      {
+        canvas.moveAbove((Control)chart.get(selectedZone));
+        chart.add(selectedZone, canvas);
+        weights[selectedZone] = 140;
+        selectedZone++;
+      }
+      
+      form.layout();
     }
+    updateView();
+    savePreferences();
   }
   
   public void editOscillator()
   {
-/*    ChartDialog dlg = new ChartDialog();
-    dlg.setChart(chart);
-    if (dlg.open() == ChartDialog.OK)
-    {
-      IChartPlotter chartPlotter = dlg.getObject();
-      if (chartPlotter != null)
-      {
-        ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)chartPlotter);
-        if (pdlg.openEdit() == ChartParametersDialog.OK)
-        {
-          updateView();
-          savePreferences();
-        }
-      }
-    }*/
     if (selectedChart != null && selectedChart instanceof IChartConfigurer)
     {
       ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)selectedChart);
@@ -794,38 +774,6 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         savePreferences();
       }
     }
-/*
-    ChartDialog dlg = new ChartDialog();
-    dlg.setChart(chart);
-    if (dlg.open() == ChartDialog.OK)
-    {
-      IChartPlotter obj = dlg.getObject();
-      if (obj != null)
-      {
-        for (int i = chart.size() - 1; i >= 0; i--)
-        {
-          ChartCanvas canvas = (ChartCanvas)chart.elementAt(i);
-          for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
-          {
-            if (canvas.getPainter(ii) == obj)
-            {
-              canvas.removePainter(obj);
-              if (canvas.getPainterCount() == 0)
-              {
-                canvas.removeMouseListener(this);
-                canvas.dispose();
-                chart.removeElementAt(i);
-                form.layout();
-              }
-              break;
-            }
-          }
-        }
-        updateView();
-        savePreferences();
-      }
-    }
-*/
   }
   
   public int getChartType()
