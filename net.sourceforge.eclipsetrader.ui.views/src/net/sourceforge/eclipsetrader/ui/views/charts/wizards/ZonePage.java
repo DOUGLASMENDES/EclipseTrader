@@ -36,15 +36,9 @@ public class ZonePage extends WizardPage
 
   public ZonePage()
   {
-    super("New Indicator");
-    setTitle("Indicator zone");
-    setDescription("Select the zone where the indicator should be placed");
-  }
-
-  public ZonePage(IChartConfigurer configurer)
-  {
-    super("Parametri Indicatore");
-    this.configurer = configurer;
+    super(Messages.getString("NewIndicatorWizard.title")); //$NON-NLS-1$
+    setTitle(Messages.getString("ZonePage.title")); //$NON-NLS-1$
+    setDescription(Messages.getString("ZonePage.description")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.views.charts.IChartConfigurer;
 import net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter;
 
@@ -40,9 +41,9 @@ public class OscillatorPage extends WizardPage implements SelectionListener
 
   public OscillatorPage()
   {
-    super("New Indicator");
-    setTitle("Select an indicator");
-    setDescription("Create a new indicator chart");
+    super(Messages.getString("NewIndicatorWizard.title")); //$NON-NLS-1$
+    setTitle(Messages.getString("OscillatorPage.title")); //$NON-NLS-1$
+    setDescription(Messages.getString("OscillatorPage.description")); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -61,7 +62,7 @@ public class OscillatorPage extends WizardPage implements SelectionListener
     
     // Add the plugin names to the listbox
     IExtensionRegistry registry = Platform.getExtensionRegistry();
-    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter");
+    IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter"); //$NON-NLS-1$
     if (extensionPoint != null)
     {
       IConfigurationElement[] members = extensionPoint.getConfigurationElements();
@@ -77,8 +78,8 @@ public class OscillatorPage extends WizardPage implements SelectionListener
         {
           if ((arg0 instanceof IConfigurationElement) && (arg1 instanceof IConfigurationElement))
           {
-            String s0 = ((IConfigurationElement)arg0).getAttribute("label");
-            String s1 = ((IConfigurationElement)arg1).getAttribute("label");
+            String s0 = ((IConfigurationElement)arg0).getAttribute("label"); //$NON-NLS-1$
+            String s1 = ((IConfigurationElement)arg1).getAttribute("label"); //$NON-NLS-1$
             return s0.compareTo(s1);
           }
           return 0;
@@ -89,7 +90,7 @@ public class OscillatorPage extends WizardPage implements SelectionListener
       // Adds the sorted members to the list widget
       for (int i = 0; i < members.length; i++)
       {
-        list.add(members[i].getAttribute("label"), i);
+        list.add(members[i].getAttribute("label"), i); //$NON-NLS-1$
         list.setData(String.valueOf(i), members[i]);
       }
     }

@@ -32,23 +32,23 @@ public class ParametersPage extends WizardPage
   public final static int NEW_ZONE = 2;
   public static final int NEW_CHART = 1;
   public static final int EDIT_CHART = 2;
-  private String indicatorDescription = "";
+  private String indicatorDescription = ""; //$NON-NLS-1$
   private Text text;
   private ColorSelector colorSelector;
   private IChartConfigurer configurer;
 
   public ParametersPage()
   {
-    super("New Indicator");
-    setTitle("Indicator parameters");
-    setDescription("Set the parameters for the indicator");
+    super(Messages.getString("NewIndicatorWizard.title")); //$NON-NLS-1$
+    setTitle(Messages.getString("ParametersPage.title")); //$NON-NLS-1$
+    setDescription(Messages.getString("ParametersPage.description")); //$NON-NLS-1$
   }
 
   public ParametersPage(IChartConfigurer configurer)
   {
-    super("New Indicator");
-    setTitle("Indicator parameters");
-    setDescription("Set the parameters for the indicator");
+    super(Messages.getString("NewIndicatorWizard.title")); //$NON-NLS-1$
+    setTitle(Messages.getString("ParametersPage.title")); //$NON-NLS-1$
+    setDescription(Messages.getString("ParametersPage.description")); //$NON-NLS-1$
     this.configurer = configurer;
   }
 

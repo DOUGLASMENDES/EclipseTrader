@@ -10,6 +10,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts.wizards;
 
+import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.views.charts.ChartView;
 import net.sourceforge.eclipsetrader.ui.views.charts.IChartConfigurer;
 import net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter;
@@ -36,7 +37,7 @@ public class NewIndicatorWizard extends Wizard
   public NewIndicatorWizard()
   {
     addPage(new OscillatorPage());
-    setWindowTitle("Aggiunta Indicatore");
+    setWindowTitle(Messages.getString("NewIndicatorWizard.title")); //$NON-NLS-1$
     setForcePreviousAndNextButtons(true);
   }
 
