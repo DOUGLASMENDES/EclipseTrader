@@ -186,23 +186,17 @@ public class TrendChart extends ChartPlotter implements IChartConfigurer
   {
     Label label = new Label(parent, SWT.NONE);
     label.setText(Messages.getString("TrendChart.periods")); //$NON-NLS-1$
-    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     Text text = new Text(parent, SWT.BORDER);
     text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
-    GridData gridData = new GridData();
-    gridData.widthHint = 25;
-    text.setLayoutData(gridData);
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
     
     label = new Label(parent, SWT.NONE);
     label.setText(Messages.getString("TrendChart.deviations")); //$NON-NLS-1$
-    label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     text = new Text(parent, SWT.BORDER);
     text.setData("deviations"); //$NON-NLS-1$
     text.setText(String.valueOf(deviations));
-    gridData = new GridData();
-    gridData.widthHint = 25;
-    text.setLayoutData(gridData);
+    text.setLayoutData(new GridData(25, SWT.DEFAULT));
 
     return parent;
   }
