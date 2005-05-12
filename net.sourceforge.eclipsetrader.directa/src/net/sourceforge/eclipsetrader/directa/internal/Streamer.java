@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004-2005 Marco Maccaferri and others.
- * All rights reserved. This program and the accompanying materials 
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
  *******************************************************************************/
@@ -22,15 +22,14 @@ import java.net.Socket;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.Inflater;
-
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
@@ -39,6 +38,9 @@ import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.directa.BookDataProvider;
 import net.sourceforge.eclipsetrader.directa.DirectaPlugin;
 import net.sourceforge.eclipsetrader.internal.ChartData;
+
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import traderlink.small.PushClass1_3.Convert;
 import traderlink.small.PushClass1_3.CreaMsg;
 import traderlink.small.PushClass1_3.Read_DATA_MSG;
@@ -87,10 +89,10 @@ public class Streamer implements Runnable
   private double dispDer = 0;
   private double liqDer = 0;
   private double valDer = 0;
-  private Vector monitorSymbol = new Vector();
+  private List monitorSymbol = new ArrayList();
   private OrderData[] orderData = new OrderData[0];
-  private Vector eventReceivers = new Vector();
-  
+  private List eventReceivers = new ArrayList();
+
   private Streamer()
   {
     streamer = this;
@@ -99,7 +101,7 @@ public class Streamer implements Runnable
     streamingServer = ps.getString("streaming.server");
     backfillServer = ps.getString("backfill.server");
   }
-  
+
   public static Streamer getInstance()
   {
     if (streamer == null)
@@ -111,7 +113,7 @@ public class Streamer implements Runnable
   {
     return user;
   }
-  
+
   /**
    * Return the user-code for the realtime server.
    * <p></p>
@@ -121,7 +123,7 @@ public class Streamer implements Runnable
   {
     return urt;
   }
-  
+
   /**
    * Return the password for the realtime server.
    * <p></p>
@@ -131,37 +133,37 @@ public class Streamer implements Runnable
   {
     return prt;
   }
-  
+
   public void addEventReceiver(IStreamerEventReceiver eventReceiver)
   {
     if (eventReceivers.contains(eventReceiver) == false)
       eventReceivers.add(eventReceiver);
   }
-  
+
   public void removeEventReceiver(IStreamerEventReceiver eventReceiver)
   {
     eventReceivers.remove(eventReceiver);
   }
-  
+
   private void fireDataUpdated()
   {
-    Enumeration e = eventReceivers.elements();
-    while(e.hasMoreElements() == true)
-      ((IStreamerEventReceiver)e.nextElement()).dataUpdated();
+    Iterator e = eventReceivers.iterator();
+    while(e.hasNext() == true)
+      ((IStreamerEventReceiver)e.next()).dataUpdated();
   }
-  
+
   private void fireDataUpdated(IBasicData data)
   {
-    Enumeration e = eventReceivers.elements();
-    while(e.hasMoreElements() == true)
-      ((IStreamerEventReceiver)e.nextElement()).dataUpdated(data);
+    Iterator e = eventReceivers.iterator();
+    while(e.hasNext() == true)
+      ((IStreamerEventReceiver)e.next()).dataUpdated(data);
   }
-  
+
   private void fireOrderStatusChanged()
   {
-    Enumeration e = eventReceivers.elements();
-    while(e.hasMoreElements() == true)
-      ((IStreamerEventReceiver)e.nextElement()).orderStatusChanged();
+    Iterator e = eventReceivers.iterator();
+    while(e.hasNext() == true)
+      ((IStreamerEventReceiver)e.next()).orderStatusChanged();
   }
 
   public boolean login(String userName, String password)
@@ -171,7 +173,7 @@ public class Streamer implements Runnable
 
     this.userName = userName;
     this.password = password;
-    
+
     loggedIn = false;
     cookie = "";
 
@@ -180,21 +182,21 @@ public class Streamer implements Runnable
       URL url = new URL(connectMethod + "://" + transactServer + "/trading/collegc_3?USER=" + userName + "&PASSW=" + password + "&PAG=VT4.4.0.0&TAPPO=X");
       HttpURLConnection con = (HttpURLConnection)url.openConnection();
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-      while ((inputLine = in.readLine()) != null) 
+      while ((inputLine = in.readLine()) != null)
       {
-        if (inputLine.indexOf("<!--USER") != -1) 
+        if (inputLine.indexOf("<!--USER") != -1)
         {
           s = inputLine.indexOf("USER") + 4;
           e = inputLine.indexOf("-", s);
           user = inputLine.substring(s, e);
         }
-        else if (inputLine.indexOf("<!--URT") != -1) 
+        else if (inputLine.indexOf("<!--URT") != -1)
         {
           s = inputLine.indexOf("URT") + 3;
           e = inputLine.indexOf("-", s);
           urt = inputLine.substring(s, e);
         }
-        else if (inputLine.indexOf("<!--PRT") != -1) 
+        else if (inputLine.indexOf("<!--PRT") != -1)
         {
           s = inputLine.indexOf("PRT") + 3;
           e = inputLine.indexOf("-", s);
@@ -204,7 +206,7 @@ public class Streamer implements Runnable
       in.close();
 
       int i = 0;
-      while ((inputLine = con.getHeaderField(i)) != null) 
+      while ((inputLine = con.getHeaderField(i)) != null)
       {
         if (inputLine.startsWith("IP_") == true)
           cookie = inputLine;
@@ -217,24 +219,24 @@ public class Streamer implements Runnable
     System.out.println("USER: " + user);
     System.out.println("URT: " + urt);
     System.out.println("PRT: " + prt);
-    
+
     if (urt.length() != 0 && prt.length() != 0)
     {
       loggedIn = true;
       updateValues();
       updateOrderStatus();
     }
-    
+
     return loggedIn;
   }
-  
+
   public boolean isLoggedIn()
   {
     return loggedIn;
   }
 
   // Si connette al server delle quotazioni
-  public boolean connect() 
+  public boolean connect()
   {
     System.out.println(getClass().getName() + ": Connessione");
     runThread = false;
@@ -256,14 +258,14 @@ public class Streamer implements Runnable
       int n = 0;
       n = is.read(bHeaderLogin);
       int lenMsg = Convert.getLEN_MSG(bHeaderLogin, 2);
-      if ((char)bHeaderLogin[0] != '#' && n != -1) 
+      if ((char)bHeaderLogin[0] != '#' && n != -1)
       {
         System.out.println(getClass().getName() + ": Errore di login");
         return false;
       }
       byte msgResp[] = new byte[lenMsg];
       is.read(msgResp);
-      if (Convert.bytetoInt(bHeaderLogin[1]) == 8) 
+      if (Convert.bytetoInt(bHeaderLogin[1]) == 8)
       {
         _ERROR_MSG err = new _ERROR_MSG(msgResp);
         System.out.println(getClass().getName() + ": Errore " + err.nTipeError + " - " + err.sMessageError);
@@ -280,7 +282,7 @@ public class Streamer implements Runnable
     IExtendedData[] data = TraderPlugin.getData();
     String sTit[] = new String[data.length];
     int flag[] = new int[data.length];
-    for (int i = 0; i < data.length; i++) 
+    for (int i = 0; i < data.length; i++)
     {
       sTit[i] = data[i].getTicker();
       flag[i] = 1;
@@ -297,7 +299,7 @@ public class Streamer implements Runnable
     return true;
   }
 
-  public void run() 
+  public void run()
   {
     byte bHeader[] = new byte[4];
     int n = 0, i;
@@ -311,7 +313,7 @@ public class Streamer implements Runnable
     nf.setMaximumFractionDigits(2);
 
     // Loop di aggiornamento dei dati
-    while (runThread == true) 
+    while (runThread == true)
     {
       // Legge l'header di un messaggio (se c'e')
       try {
@@ -352,7 +354,7 @@ public class Streamer implements Runnable
             continue;
 
           IExtendedData[] data = TraderPlugin.getData();
-          for (i = 0; i < data.length; i++) 
+          for (i = 0; i < data.length; i++)
           {
             if (data[i].getTicker().equalsIgnoreCase(obj.head.key) == true) {
               switch (obj.head.tipo) {
@@ -428,7 +430,7 @@ public class Streamer implements Runnable
             System.out.println("Not present: " + obj.head.key);
 
           // Propaga l'aggiornamento ai listeners.
-          if ((System.currentTimeMillis() - lastUpdate) >= 1000) 
+          if ((System.currentTimeMillis() - lastUpdate) >= 1000)
           {
             fireDataUpdated();
             lastUpdate = System.currentTimeMillis();
@@ -437,7 +439,7 @@ public class Streamer implements Runnable
       }
     }
   }
-  
+
   public void disconnect()
   {
     runThread = false;
@@ -464,7 +466,7 @@ public class Streamer implements Runnable
     IExtendedData[] data = TraderPlugin.getData();
     String sTit[] = new String[data.length];
     int flag[] = new int[data.length];
-    for (int i = 0; i < data.length; i++) 
+    for (int i = 0; i < data.length; i++)
     {
       sTit[i] = data[i].getTicker();
       flag[i] = 1;
@@ -477,7 +479,7 @@ public class Streamer implements Runnable
       Hashtable hashFixedValue = new Hashtable();
       hashFixedValue = Load.LoadMpushData(web, hashFixedValue, true);
 
-      for (int i = 0; i < data.length; i++) 
+      for (int i = 0; i < data.length; i++)
       {
         String sVal[] = (String[])hashFixedValue.get(data[i].getTicker());
         if (sVal == null)
@@ -518,7 +520,7 @@ public class Streamer implements Runnable
         if (pb != null)
         {
           int k = ConstMpush.INZIO_BOOK;
-          for (int x = 0; x < 5; x++) 
+          for (int x = 0; x < 5; x++)
           {
             pb.bid[x].setNumber(Integer.parseInt(sVal[k++]));
             pb.bid[x].setQuantity(Integer.parseInt(sVal[k++]));
@@ -568,7 +570,7 @@ public class Streamer implements Runnable
             if (pb != null)
             {
               int k = ConstMpush.INZIO_BOOK;
-              for (int x = 0; x < 5; x++) 
+              for (int x = 0; x < 5; x++)
               {
                 pb.bid[x].setNumber(Integer.parseInt(sVal[k++]));
                 pb.bid[x].setQuantity(Integer.parseInt(sVal[k++]));
@@ -588,10 +590,10 @@ public class Streamer implements Runnable
   /**
    * Backfill dei dati per il grafico intraday.
    */
-  public Vector backfill(IBasicData data, int period)
+  public List backfill(IBasicData data, int period)
   {
-    Vector _v = new Vector();
-    
+    List _v = new ArrayList();
+
     if (loggedIn == true)
       try {
         String uncompressLen = "", compressLen = "";
@@ -643,13 +645,13 @@ public class Streamer implements Runnable
               len = in.read(input, readed, input.length - readed);
               readed += len;
             } while(len > 0 && readed < input.length);
-  
+
             Inflater infl = new Inflater();
             infl.setInput(input, 0, readed);
             byte[] output = new byte[Integer.parseInt(uncompressLen)];
             int outlength = infl.inflate(output);
             infl.end();
-            
+
             for (int i = 0; i < outlength; i += 24)
             {
               IChartData cd = new ChartData();
@@ -659,7 +661,7 @@ public class Streamer implements Runnable
               cd.setMaxPrice(getFloat(output, i + 8));
               cd.setMinPrice(getFloat(output, i + 4));
               cd.setVolume((int)getFloat(output, i + 16));
-              _v.addElement(cd);
+              _v.add(cd);
             }
           }
         }
@@ -672,7 +674,7 @@ public class Streamer implements Runnable
   /**
    * Aggiorna i valori di liquidità e disponibilità del conto.
    */
-  public void updateValues() 
+  public void updateValues()
   {
     double dispAz = 0;
     double liqAz = 0;
@@ -691,9 +693,9 @@ public class Streamer implements Runnable
       con.connect();
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-      while ((inputLine = in.readLine()) != null) 
+      while ((inputLine = in.readLine()) != null)
       {
-        if (inputLine.indexOf(">totale EU<") != -1) 
+        if (inputLine.indexOf(">totale EU<") != -1)
         {
           if ((inputLine = in.readLine()) == null)
             break;
@@ -706,7 +708,7 @@ public class Streamer implements Runnable
             valAz += Double.parseDouble(value.replace(',', '.'));
           } catch (Exception ex) {};
         }
-        else if (inputLine.indexOf(">azioni<") != -1) 
+        else if (inputLine.indexOf(">azioni<") != -1)
         {
           if ((inputLine = in.readLine()) == null)
             break;
@@ -732,7 +734,7 @@ public class Streamer implements Runnable
       }
       in.close();
     } catch (Exception ex) {};
-    
+
     if (this.dispAz != dispAz || this.liqAz != liqAz || this.valAz != valAz)
     {
       this.dispAz = dispAz;
@@ -749,7 +751,7 @@ public class Streamer implements Runnable
   {
     return liqAz;
   }
-  
+
   /**
    * Ritorna la disponibilità per il mercato azionario.
    */
@@ -757,7 +759,7 @@ public class Streamer implements Runnable
   {
     return dispAz;
   }
-  
+
   /**
    * Ritorna il valore delle azioni possedute.
    */
@@ -765,7 +767,7 @@ public class Streamer implements Runnable
   {
     return valAz;
   }
-  
+
   /**
    * Ritorna la disponibilità liquida per il mercato dei derivati.
    */
@@ -773,7 +775,7 @@ public class Streamer implements Runnable
   {
     return liqDer;
   }
-  
+
   /**
    * Ritorna la disponibilità per il mercato dei derivati.
    */
@@ -781,7 +783,7 @@ public class Streamer implements Runnable
   {
     return dispDer;
   }
-  
+
   /**
    * Ritorna il valore dei derivati posseduti.
    */
@@ -789,7 +791,7 @@ public class Streamer implements Runnable
   {
     return valDer;
   }
-  
+
   /**
    * Ritorna la disponibilità totale.
    */
@@ -839,7 +841,7 @@ public class Streamer implements Runnable
     boolean ok = false;
     boolean noconfirm = false;
     String inputLine;
-    
+
     if (loggedIn == false)
       return false;
 
@@ -847,10 +849,10 @@ public class Streamer implements Runnable
     // VALID=M - 30 giorni
     // FAS5= 1=immed, 2=MTA, 4=clos-MTA, 5=AfterHours
     try {
-      String s = connectMethod + "://" + transactServer + "/trading/ordimm5c?ACQAZ=" + buy + "&VENAZ=" + sell + "&PRZACQ=" + price + "&SCTLX=immetti+Borsa+Ita&USER=" + user + "&GEST=AZIONARIO&TITO=" + ticker + "&MODO=C&QPAR=";
+      String s = connectMethod + "://" + transactServer + "/trading/ordimm5c?ACQAZ=" + buy + "&VENAZ=" + sell + "&PRZACQ=" + price + "&SCTLX=immetti+Borsa&USER=" + user + "&GEST=AZIONARIO&TITO=" + ticker + "&MODO=C&QPAR=";
       if (valid30 == true)
         s += "&VALID=M";
-      s += "&FAS5=" + market; 
+      s += "&FAS5=" + market;
       URL url = new URL(s);
 System.out.println(url);
       HttpURLConnection con = (HttpURLConnection)url.openConnection();
@@ -890,9 +892,9 @@ System.out.println(inputLine);
         in.close();
       } catch (Exception ex) {};
     }
-    
+
     System.out.println("Directa: sendOrder=" + ok);
-    
+
     if (ok == true)
     {
       addToMonitorSymbol(ticker);
@@ -909,11 +911,11 @@ System.out.println(inputLine);
    * @param id The order-id to cancel.<br>
    * @return true if the cancellation was accepted by the server.
    */
-  public boolean cancelOrder(String id) 
+  public boolean cancelOrder(String id)
   {
     boolean ok = false;
     String inputLine, cancelUrl = "";
-    
+
     for (int i = 0; i < orderData.length; i++)
     {
       if (orderData[i].id.equalsIgnoreCase(id) == true)
@@ -942,9 +944,9 @@ System.out.println(inputLine);
       in.close();
       out.close();
     } catch (Exception ex) {};
-    
+
     System.out.println("Directa: cancelOrder=" + ok);
-    
+
     if (ok == true)
     {
       updateOrderStatus();
@@ -957,17 +959,17 @@ System.out.println(inputLine);
   /**
    * Ritorna l'elenco degli ordini inseriti.
    */
-  public void updateOrderStatus() 
+  public void updateOrderStatus()
   {
     String line;
     NumberFormat nf = NumberFormat.getInstance();
-    Vector vdata = new Vector();
+    List vdata = new ArrayList();
     IExtendedData[] data = TraderPlugin.getData();
 
     nf.setMinimumFractionDigits(4);
     nf.setMaximumFractionDigits(4);
 
-    if (loggedIn == true) 
+    if (loggedIn == true)
     {
       try {
         String request = "http://194.185.126.186/jscript/ordinij?DSUSER=" + user + "&DSTITO=&DSFUNZ=2&PAG=VT4.4.0.6&TAPPO=X";
@@ -997,7 +999,7 @@ System.out.println(inputLine);
 
       for (int i = 0; i < monitorSymbol.size(); i++)
         try {
-          String request = "http://194.185.126.186/jscript/ordinij?DSUSER=" + user + "&DSTITO=" + (String)monitorSymbol.elementAt(i) + "&DSFUNZ=2&PAG=VT4.4.0.6&TAPPO=X";
+          String request = "http://194.185.126.186/jscript/ordinij?DSUSER=" + user + "&DSTITO=" + (String)monitorSymbol.get(i) + "&DSFUNZ=2&PAG=VT4.4.0.6&TAPPO=X";
           URL web = new URL(request);
           HttpURLConnection con = (HttpURLConnection)web.openConnection();
           con.setAllowUserInteraction(true);
@@ -1044,7 +1046,7 @@ System.out.println(inputLine);
                 od.status = "Accodato";
               else
                 od.status = item[2];
-              vdata.addElement(od);
+              vdata.add(od);
             }
           }
           in.close();
@@ -1117,15 +1119,15 @@ System.out.println(inputLine);
         }
       }
     }
-    
+
     if (orderData == null || orderData.length != newOrderData.length)
       fireUpdate = true;
     orderData = newOrderData;
-    
+
     if (fireUpdate == true)
       fireOrderStatusChanged();
   }
-  
+
   public OrderData[] getOrderData()
   {
     return orderData;
@@ -1133,18 +1135,18 @@ System.out.println(inputLine);
 
   /**
    * Aggiunge un ticker all'elenco dei simboli monitorati per lo stato degli ordini.
-   * 
+   *
    * @param ticker - Simbolo da aggiungere all'elenco.
    */
   private void addToMonitorSymbol(String ticker)
   {
-    for (int i = 0; i < monitorSymbol.size(); i++) 
+    for (int i = 0; i < monitorSymbol.size(); i++)
     {
-      if (ticker.equalsIgnoreCase((String)monitorSymbol.elementAt(i)) == true)
+      if (ticker.equalsIgnoreCase((String)monitorSymbol.get(i)) == true)
         return;
     }
-    
-    monitorSymbol.addElement(ticker);
+
+    monitorSymbol.add(ticker);
   }
 
   private Date getDataOra(byte abyte0[], int i)
