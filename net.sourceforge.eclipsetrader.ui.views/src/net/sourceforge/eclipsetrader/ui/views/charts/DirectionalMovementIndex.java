@@ -250,12 +250,12 @@ public class DirectionalMovementIndex extends ChartPlotter implements IChartConf
       smoothing = Integer.parseInt(value);
     else if (name.equalsIgnoreCase("type") == true) //$NON-NLS-1$
       type = Integer.parseInt(value);
-    else if (name.equalsIgnoreCase("positiveColor") == true)
+    else if (name.equalsIgnoreCase("positiveColor") == true) //$NON-NLS-1$
     {
       if (positiveColorSelector != null)
         positiveColor = new Color(null, positiveColorSelector.getColorValue());
     }
-    else if (name.equalsIgnoreCase("negativeColor") == true)
+    else if (name.equalsIgnoreCase("negativeColor") == true) //$NON-NLS-1$
     {
       if (negativeColorSelector != null)
         negativeColor = new Color(null, negativeColorSelector.getColorValue());
@@ -270,29 +270,29 @@ public class DirectionalMovementIndex extends ChartPlotter implements IChartConf
   public Control createContents(Composite parent)
   {
     Label label = new Label(parent, SWT.NONE);
-    label.setText("Period");
+    label.setText(Messages.getString("DirectionalMovementIndex.period")); //$NON-NLS-1$
     Text text = new Text(parent, SWT.BORDER);
     text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
     text.setLayoutData(new GridData(25, SWT.DEFAULT));
 
     label = new Label(parent, SWT.NONE);
-    label.setText("Smoothing Period");
+    label.setText(Messages.getString("DirectionalMovementIndex.smoothingPeriod")); //$NON-NLS-1$
     text = new Text(parent, SWT.BORDER);
     text.setData("smoothing"); //$NON-NLS-1$
     text.setText(String.valueOf(smoothing));
     text.setLayoutData(new GridData(25, SWT.DEFAULT));
 
-    AverageChart.addParameters(parent, "Smoothing Average Type", "type", type);
+    AverageChart.addParameters(parent, Messages.getString("DirectionalMovementIndex.smoothingType"), "type", type); //$NON-NLS-1$ //$NON-NLS-2$
     
     label = new Label(parent, SWT.NONE);
-    label.setText("Positive Line Color");
+    label.setText(Messages.getString("DirectionalMovementIndex.positiveColor")); //$NON-NLS-1$
     positiveColorSelector = new ColorSelector(parent);
     positiveColorSelector.setColorValue(positiveColor.getRGB());
     positiveColorSelector.getButton().setData("positiveColor"); //$NON-NLS-1$
     
     label = new Label(parent, SWT.NONE);
-    label.setText("Negative Line Color");
+    label.setText(Messages.getString("DirectionalMovementIndex.negativeColor")); //$NON-NLS-1$
     negativeColorSelector = new ColorSelector(parent);
     negativeColorSelector.setColorValue(negativeColor.getRGB());
     negativeColorSelector.getButton().setData("negativeColor"); //$NON-NLS-1$

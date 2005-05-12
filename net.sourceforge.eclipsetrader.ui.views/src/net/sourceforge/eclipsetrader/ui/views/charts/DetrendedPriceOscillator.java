@@ -134,13 +134,13 @@ public class DetrendedPriceOscillator extends ChartPlotter implements IChartConf
   public Control createContents(Composite parent)
   {
     Label label = new Label(parent, SWT.NONE);
-    label.setText("Period");
+    label.setText(Messages.getString("DetrendedPriceOscillator.period")); //$NON-NLS-1$
     Text text = new Text(parent, SWT.BORDER);
     text.setData("period"); //$NON-NLS-1$
     text.setText(String.valueOf(period));
     text.setLayoutData(new GridData(25, SWT.DEFAULT));
 
-    AverageChart.addParameters(parent, "Smoothing Average Type", "type", type);
+    AverageChart.addParameters(parent, Messages.getString("DetrendedPriceOscillator.smoothingPeriod"), "type", type); //$NON-NLS-1$ //$NON-NLS-2$
 
     return parent;
   }
