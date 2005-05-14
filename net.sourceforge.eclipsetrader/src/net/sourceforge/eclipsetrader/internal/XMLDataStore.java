@@ -18,7 +18,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -52,15 +54,16 @@ import org.w3c.dom.NodeList;
  */
 public class XMLDataStore implements IDataStore
 {
-  private static String PORTFOLIO_FILE_NAME = "portfolio.xml";
-  private static String STOCKWATCH_FILE_NAME = "stockwatch.xml";
-  private static String INDICES_FILE_NAME = "indices.xml";
+  private static String PORTFOLIO_FILE_NAME = "portfolio.xml"; //$NON-NLS-1$
+  private static String STOCKWATCH_FILE_NAME = "stockwatch.xml"; //$NON-NLS-1$
+  private static String INDICES_FILE_NAME = "indices.xml"; //$NON-NLS-1$
   private static File HISTORY_CHART_FOLDER = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
   private Document document = null;
   private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-  private NumberFormat nf = NumberFormat.getInstance();
-  private NumberFormat pf = NumberFormat.getInstance();
-  private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+  private NumberFormat nf = NumberFormat.getInstance(Locale.US);
+  private NumberFormat pf = NumberFormat.getInstance(Locale.US);
+  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
+  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
   private List data = new ArrayList();
   private IExtendedData[] dataArray;
 
@@ -177,7 +180,7 @@ public class XMLDataStore implements IDataStore
         node.appendChild(document.createTextNode(pf.format(item.getClosePrice())));
         node = document.createElement("time");
         element.appendChild(node);
-        node.appendChild(document.createTextNode(df.format(item.getDate())));
+        node.appendChild(document.createTextNode(tf.format(item.getDate())));
         node = document.createElement("quantity");
         element.appendChild(node);
         node.appendChild(document.createTextNode(nf.format(item.getQuantity())));
@@ -311,7 +314,7 @@ public class XMLDataStore implements IDataStore
         else if (n.getNodeName().equalsIgnoreCase("paid") == true)
           pd.setPaid(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("time") == true)
-          pd.setDate(df.parse(value.getNodeValue()));
+          pd.setDate(tf.parse(value.getNodeValue()));
         else if (n.getNodeName().equalsIgnoreCase("open_price") == true)
           pd.setOpenPrice(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("high_price") == true)
@@ -344,7 +347,7 @@ public class XMLDataStore implements IDataStore
   
   public void remove(IExtendedData data)
   {
-    List v = Arrays.asList(dataArray);
+    List v = new ArrayList(Arrays.asList(dataArray));
     v.remove(data);
     IExtendedData[] da = new IExtendedData[v.size()];
     v.toArray(da);
@@ -431,13 +434,10 @@ public class XMLDataStore implements IDataStore
     });*/
   }
 
-  /**
-   * Load the historycal chart data for the given stock item.
-   * 
-   * @param data - The stock item.
-   * @return An array of IChartData items.
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#loadHistoryData(net.sourceforge.eclipsetrader.IBasicData)
    */
-  public IChartData[] loadHistoryChart(IBasicData data)
+  public IChartData[] loadHistoryData(IBasicData data)
   {
     List v = new ArrayList();
     
@@ -477,27 +477,38 @@ public class XMLDataStore implements IDataStore
                 {
                   try {
                     cd.setDate(df.parse(value.getNodeValue()));
+                    v.add(cd);
                   } catch(Exception e) {};
                 }
               }
             }
-            v.add(cd);
           }
         }
       } catch (Exception ex) {
         ex.printStackTrace();
       }
 
+    // Sorts the array by date
+    java.util.Collections.sort(v, new Comparator() {
+      public int compare(Object o1, Object o2) 
+      {
+        IChartData d1 = (IChartData)o1;
+        IChartData d2 = (IChartData)o2;
+        if (d1.getDate().after(d2.getDate()) == true)
+          return 1;
+        else if (d1.getDate().before(d2.getDate()) == true)
+          return -1;
+        return 0;
+      }
+    });
+
     IChartData[] chartData = new IChartData[v.size()];
     v.toArray(chartData);
     return chartData;
   }
 
-  /**
-   * Stores the historical chart data for the given stock item.
-   * 
-   * @param data - The stock item.
-   * @param chartData - The array of IChartData items to store. 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#storeHistoryData(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartData[])
    */
   public void storeHistoryData(IBasicData data, IChartData[] chartData)
   {
@@ -596,7 +607,7 @@ public class XMLDataStore implements IDataStore
                 else if (item.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
                 {
                   try {
-                    ed.setDate(df.parse(value.getNodeValue()));
+                    ed.setDate(tf.parse(value.getNodeValue()));
                   } catch(Exception e) {};
                 }
               }
@@ -629,7 +640,7 @@ public class XMLDataStore implements IDataStore
           document.getDocumentElement().appendChild(element);
 
           Node node = document.createElement("date");
-          node.appendChild(document.createTextNode(df.format(data[i].getDate())));
+          node.appendChild(document.createTextNode(tf.format(data[i].getDate())));
           element.appendChild(node);
           node = document.createElement("price");
           node.appendChild(document.createTextNode(pf.format(data[i].getLastPrice())));
