@@ -42,6 +42,7 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
   public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.average"; //$NON-NLS-1$
   private int period = 7;
   private int type = SIMPLE;
+  private List list = new ArrayList();
   
   public AverageChart()
   {
@@ -65,24 +66,21 @@ public class AverageChart extends ChartPlotter implements IChartConfigurer
   }
   
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
+   */
+  public void setData(IChartData[] data)
+  {
+    super.setData(data);
+    list = getMA(data, type, period);
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
    */
   public void paintChart(GC gc, int width, int height)
   {
     super.paintChart(gc, width, height);
-    if (chartData != null && getMax() > getMin())
-    {
-      // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = height / (getMax() - getMin());
-
-      // Tipo di line e colore
-      gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(getColor());
-      
-      List list = getMA(chartData, type, period);
-      if (list != null)
-        drawLine(list, gc, height, chartData.length - list.size());
-    }
+    drawLine(list, gc, height);
   }
   
   public static List getSMA(IChartData[] data, int period)
