@@ -68,4 +68,20 @@ public interface IDataStore
 
   public IExtendedData[] loadIndexData();
   public void storeIndexData(IExtendedData[] data);
+
+  /**
+   * Load the historical chart data for the given stock item.
+   * 
+   * @param data - The stock item.
+   * @return An array of IChartData items.
+   */
+  public IChartData[] loadHistoryData(IBasicData data);
+
+  /**
+   * Stores the historical chart data for the given stock item.
+   * 
+   * @param data - The stock item.
+   * @param chartData - The array of IChartData items to store. 
+   */
+  public void storeHistoryData(IBasicData data, IChartData[] chartData);
 }
