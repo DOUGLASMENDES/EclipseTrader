@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader"
    name="%pluginName"
-   version="0.13.0"
+   version="0.14.0"
    provider-name="%providerName"
    class="net.sourceforge.eclipsetrader.TraderPlugin">
 
@@ -61,7 +61,7 @@
             name="News"
             id="net.sourceforge.eclipsetrader.NewsPerspective"/>
       <perspective
-            icon="icons/chart.gif"
+            icon="icons/eview16/charts_persp.gif"
             class="net.sourceforge.eclipsetrader.internal.ChartsPerspective"
             name="Charts"
             id="net.sourceforge.eclipsetrader.ChartsPerspective"/>
