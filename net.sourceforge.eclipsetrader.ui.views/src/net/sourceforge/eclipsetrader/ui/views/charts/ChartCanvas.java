@@ -36,9 +36,12 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -54,6 +57,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   private boolean hilight = false;
   private Composite container;
   private Composite chartContainer;
+  private Composite labels;
   private Canvas chart;
   private Canvas scale;
   private Image chartImage;
@@ -91,6 +95,15 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     chartContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
     chartContainer.addControlListener(this);
     
+    labels = new Composite(chartContainer, SWT.NONE);
+    RowLayout rowLayout = new RowLayout();
+    rowLayout.type = SWT.HORIZONTAL;
+    rowLayout.pack = true;
+    rowLayout.wrap = true;
+    labels.setLayout(rowLayout);
+    labels.setBackground(chartBackground);
+    labels.setBounds(0, 0, 0, 0);
+    
     // Chart canvas
     chart = new Canvas(chartContainer, SWT.NONE);
     chart.setBackground(chartBackground);
@@ -103,6 +116,8 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     gridData.widthHint = scaleWidth;
     scale.setLayoutData(gridData);
     scale.addPaintListener(this);
+    
+    updateLabels();
   }
   
   public void dispose()
@@ -229,6 +244,12 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   {
     painters.addElement(plotter);
     plotter.setCanvas(this);
+    updateLabels();
+  }
+  
+  public void updatePainter(IChartPlotter plotter)
+  {
+    updateLabels();
   }
   
   /**
@@ -238,6 +259,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   public void removePainter(IChartPlotter plotter)
   {
     painters.removeElement(plotter);
+    updateLabels();
   }
   
   /**
@@ -396,17 +418,6 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
           if (obj instanceof IChartPlotter)
             ((IChartPlotter)obj).paintChart(gc, chart.getClientArea().width, chart.getClientArea().height);
         }
-        int y = 0;
-        for (int i = 0; i < painters.size(); i++)
-        {
-          IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
-          if (plotter.getDescription() != null)
-          {
-            gc.setForeground(plotter.getColor());
-            gc.drawString(((IChartPlotter)painters.elementAt(i)).getDescription(), 2, y);
-            y += gc.getFontMetrics().getHeight();
-          }
-        }
         gc.dispose();
         e.gc.drawImage(chartImage, 0, 0);
       }
@@ -458,7 +469,8 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     
     if (chartImage != null)
       chartImage.dispose();
-    chartImage = new Image(chart.getDisplay(), chart.getSize().x, chart.getSize().y);
+    if (chart.getSize().x != 0 && chart.getSize().y != 0)
+      chartImage = new Image(chart.getDisplay(), chart.getSize().x, chart.getSize().y);
   }
   
   public void selectChart(IChartPlotter plotter)
@@ -491,11 +503,37 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
         for (int i = 0; i < painters.size(); i++)
         {
           IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
-          if (plotter.getColor().getRGB().equals(rgb) == true && !(plotter instanceof PriceChart))
+          if (plotter.getColor().getRGB().equals(rgb) == true && !(plotter instanceof PriceChart) && !(plotter instanceof VolumeChart))
             return plotter;
         }
       }
     }
     return null;
+  }
+  
+  private void updateLabels()
+  {
+    Control[] children = labels.getChildren();
+    for (int i = 0; i < children.length; i++)
+      children[i].dispose();
+    
+    if (painters.size() != 0)
+    {
+      for (int i = 0; i < painters.size(); i++)
+      {
+        IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
+        if (plotter.getDescription() != null)
+        {
+          Label label = new Label(labels, SWT.NONE);
+          label.setText(((IChartPlotter)painters.elementAt(i)).getDescription());
+          label.setForeground(plotter.getColor());
+          label.setBackground(labels.getBackground());
+        }
+      }
+      labels.pack();
+      labels.layout();
+    }
+    else
+      labels.setBounds(0, 0, 0, 0);
   }
 }
