@@ -24,9 +24,6 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Default implementation of the IChartPlotter interface.
- * <p></p>
- * 
- * @author Marco Maccaferri
  */
 public class ChartPlotter implements IChartPlotter
 {
@@ -233,28 +230,23 @@ public class ChartPlotter implements IChartPlotter
   /**
    * Draw a line based on the given value array.
    * <p></p>
+   * @param value - the array of values to draw
+   * @param gc - the graphics context
+   * @param height - the chart's height
    */
   public void drawLine(double[] value, GC gc, int height)
   {
-    double pixelRatio = height / (max - min);
-    int[] pointArray = new int[value.length * 2];
-    int x = columnWidth / 2;
-    for (int i = 0, pa = 0; i < value.length; i++, x += columnWidth)
-    {
-      pointArray[pa++] = x;
-      int y = (int)((value[i] - min) * pixelRatio);
-      pointArray[pa++] = height - y;
-    }
-    gc.drawPolyline(pointArray);
-    
-    if (isSelected() == true)
-      drawSelectionMarkers(pointArray, gc);
+    drawLine(value, gc, height, chartData.length - value.length);
   }
   
   /**
    * Draw a line based on the given value array and starting at the give offset
    * on the chart.
-   * <p></p>
+   *
+   * @param value - the array of values to draw
+   * @param gc - the graphics context
+   * @param height - the chart's height
+   * @param ofs - the offset to start drawing at
    */
   public void drawLine(double[] value, GC gc, int height, int ofs)
   {
@@ -275,29 +267,24 @@ public class ChartPlotter implements IChartPlotter
 
   /**
    * Draw a line based on the given list of double values.
-   * <p></p>
+   *
+   * @param value - the list of values to draw
+   * @param gc - the graphics context
+   * @param height - the chart's height
    */
   public void drawLine(List value, GC gc, int height)
   {
-    double pixelRatio = height / (max - min);
-    int[] pointArray = new int[value.size() * 2];
-    int x = columnWidth / 2;
-    for (int i = 0, pa = 0; i < value.size(); i++, x += columnWidth)
-    {
-      pointArray[pa++] = x;
-      int y = (int)((((Double)value.get(i)).doubleValue() - min) * pixelRatio);
-      pointArray[pa++] = height - y;
-    }
-    gc.drawPolyline(pointArray);
-    
-    if (isSelected() == true)
-      drawSelectionMarkers(pointArray, gc);
+    drawLine(value, gc, height, chartData.length - value.size());
   }
   
   /**
-   * Draw a line based on the given value array and starting at the give offset
+   * Draw a line based on the given value list and starting at the give offset
    * on the chart.
-   * <p></p>
+   *
+   * @param value - the list of values to draw
+   * @param gc - the graphics context
+   * @param height - the chart's height
+   * @param ofs - the offset to start drawing at
    */
   public void drawLine(List value, GC gc, int height, int ofs)
   {
@@ -314,6 +301,40 @@ public class ChartPlotter implements IChartPlotter
     
     if (isSelected() == true)
       drawSelectionMarkers(pointArray, gc);
+  }
+  
+  /**
+   * Draw an istogram chart based on the given value list and placed at the 
+   * rightmost position on the chart.
+   *
+   * @param value - the list of values to draw
+   * @param gc - the graphics context
+   * @param height - the chart's height
+   */
+  public void drawIstogram(List value, GC gc, int height)
+  {
+    drawIstogram(value, gc, height, chartData.length - value.size());
+  }
+  
+  /**
+   * Draw an istogram chart based on the given value list and starting at 
+   * the give offset on the chart.
+   *
+   * @param value - the list of values to draw
+   * @param gc - the graphics context
+   * @param height - the chart's height
+   * @param ofs - the offset to start drawing at
+   */
+  public void drawIstogram(List value, GC gc, int height, int ofs)
+  {
+    double pixelRatio = height / (getMax() - getMin());
+    int x = chartMargin + columnWidth / 2 + ofs * columnWidth;
+    for (int i = 0; i < value.size(); i++, x += columnWidth)
+    {
+      int y1 = height - (int)((((Double)value.get(i)).doubleValue() - min) * pixelRatio);
+      int y2 = height;
+      gc.drawLine(x, y1, x, y2);
+    }
   }
 
   /**
@@ -340,6 +361,90 @@ public class ChartPlotter implements IChartPlotter
     }
     gc.fillRectangle(pointArray[pointArray.length - 2] - 1, pointArray[pointArray.length - 1] - 1, 5, 5);
     gc.setBackground(oldBackground);
+  }
+
+  /**
+   * Scales the chart based on the lower and upper range of values of the
+   * given values array.
+   *
+   * @param value - the array of values
+   */
+  public void setMinMax(double[] value)
+  {
+    min = 0; max = 0;
+    for (int i = 0; i < value.length; i++)
+    {
+      if (min == 0 || value[i] < min)
+        min = value[i];
+      if (value[i] > max)
+        max = value[i];
+    }
+    double margin = (max - min) / 100 * 2; 
+    max += margin;
+    min -= margin;
+  }
+  
+  /**
+   * Updates the chart scale based on the lower and upper range of values of the
+   * given values array.
+   *
+   * @param value - the array of values
+   */
+  public void updateMinMax(double[] value)
+  {
+    for (int i = 0; i < value.length; i++)
+    {
+      if (min == 0 || value[i] < min)
+        min = value[i];
+      if (value[i] > max)
+        max = value[i];
+    }
+    double margin = (max - min) / 100 * 2; 
+    max += margin;
+    min -= margin;
+  }
+  
+  /**
+   * Scales the chart based on the lower and upper range of values of the
+   * given values list.
+   *
+   * @param value - the list of values
+   */
+  public void setMinMax(List value)
+  {
+    min = 0; max = 0;
+    for (int i = 0; i < value.size(); i++)
+    {
+      double t = ((Double)value.get(i)).doubleValue();
+      if (min == 0 || t < min)
+        min = t;
+      if (t > max)
+        max = t;
+    }
+    double margin = (max - min) / 100 * 2; 
+    max += margin;
+    min -= margin;
+  }
+  
+  /**
+   * Updates the chart scale based on the lower and upper range of values of the
+   * given values list.
+   *
+   * @param value - the list of values
+   */
+  public void updateMinMax(List value)
+  {
+    for (int i = 0; i < value.size(); i++)
+    {
+      double t = ((Double)value.get(i)).doubleValue();
+      if (min == 0 || t < min)
+        min = t;
+      if (t > max)
+        max = t;
+    }
+    double margin = (max - min) / 100 * 2; 
+    max += margin;
+    min -= margin;
   }
 
   /**
