@@ -10,18 +10,11 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Locale;
-import java.util.Vector;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBasicData;
@@ -29,8 +22,8 @@ import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
 import net.sourceforge.eclipsetrader.IIndexDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
+import net.sourceforge.eclipsetrader.ui.internal.views.StockList;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,18 +31,21 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-public class HistoryChartView extends ChartView
+public class HistoryChartView extends ChartView implements DropTargetListener
 {
   private File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
   private NumberFormat nf = NumberFormat.getInstance(Locale.US);
   private NumberFormat pf = NumberFormat.getInstance(Locale.US);
-  private IChartData[] chartData;
+  protected IChartData[] chartData;
   
   /* (non-Javadoc)
    * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -57,6 +53,12 @@ public class HistoryChartView extends ChartView
   public void createPartControl(Composite parent)
   {
     super.createPartControl(parent);
+    
+    // Drag and drop support
+    DropTarget target = new DropTarget(parent, DND.DROP_COPY);
+    Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
+    target.setTransfer(types);
+    target.addDropListener(this);
 
     // Restore del grafico precedente
     String id = getViewSite().getSecondaryId();
@@ -64,6 +66,11 @@ public class HistoryChartView extends ChartView
     if (!symbol.equals("")) //$NON-NLS-1$
     {
       IBasicData bd = TraderPlugin.getData(symbol);
+      if (bd == null)
+      {
+        StockList sl = new StockList();
+        bd = sl.getData(symbol);
+      }
       if (bd == null)
       {
         bd = new BasicData();
@@ -99,7 +106,7 @@ public class HistoryChartView extends ChartView
   public IChartData[] getChartData(IBasicData data)
   {
     if (chartData == null)
-      load(basicData);
+      chartData = TraderPlugin.getDataStore().loadHistoryData(data);
     
     // Check if the user has selected a subperiod to display
     if (chartData != null && chartData.length > 0 && limitPeriod != 0)
@@ -149,7 +156,7 @@ public class HistoryChartView extends ChartView
         {
           try {
             chartData = dataProvider.update(basicData, chartData);
-            store(basicData);
+            TraderPlugin.getDataStore().storeHistoryData(basicData, chartData);
           } catch(Exception e) {
             return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause());  //$NON-NLS-1$ //$NON-NLS-2$
           };
@@ -200,118 +207,69 @@ public class HistoryChartView extends ChartView
     }
   }
 
-  /**
-   * Method to load the chart data.<br>
-   *
-   * @param symbol The symbol of the data to load.
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.dnd.DropTargetListener#dragEnter(org.eclipse.swt.dnd.DropTargetEvent)
    */
-  private void load(IBasicData data)
+  public void dragEnter(DropTargetEvent event)
   {
-    Vector v = new Vector();
-    
-    File f = new File(folder, data.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
-    if (f.exists() == true)
-      try {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(f);
-
-        int index = 0;
-        NodeList firstChild = document.getFirstChild().getChildNodes();
-        for (int i = 0; i < firstChild.getLength(); i++)
-        {
-          Node n = firstChild.item(i);
-          if (n.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
-            v.add(decodeData(n.getChildNodes()));
-        }
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-
-    sort(v);
-
-    chartData = new IChartData[v.size()];
-    v.toArray(chartData);
-  }
-
-  /**
-   * Order by date.
-   */
-  private void sort(Vector v)
-  {
-    java.util.Collections.sort(v, new Comparator() {
-      public int compare(Object o1, Object o2) 
-      {
-        IChartData d1 = (IChartData)o1;
-        IChartData d2 = (IChartData)o2;
-        if (d1.getDate().after(d2.getDate()) == true)
-          return 1;
-        else if (d1.getDate().before(d2.getDate()) == true)
-          return -1;
-        return 0;
-      }
-    });
+    event.detail = DND.DROP_COPY;
   }
   
-  private IChartData decodeData(NodeList parent)
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.dnd.DropTargetListener#dragLeave(org.eclipse.swt.dnd.DropTargetEvent)
+   */
+  public void dragLeave(DropTargetEvent event)
   {
-    IChartData cd = new ChartData();
-    for (int i = 0; i < parent.getLength(); i++)
+  }
+  
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.dnd.DropTargetListener#dragOperationChanged(org.eclipse.swt.dnd.DropTargetEvent)
+   */
+  public void dragOperationChanged(DropTargetEvent event)
+  {
+  }
+  
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.dnd.DropTargetListener#dragOver(org.eclipse.swt.dnd.DropTargetEvent)
+   */
+  public void dragOver(DropTargetEvent event)
+  {
+    event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.dnd.DropTargetListener#drop(org.eclipse.swt.dnd.DropTargetEvent)
+   */
+  public void drop(DropTargetEvent event)
+  {
+    String[] item = ((String)event.data).split(";"); //$NON-NLS-1$
+    String id = getViewSite().getSecondaryId();
+    String symbol = item[1];
+    ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + id, item[1]); //$NON-NLS-1$
+    if (!symbol.equals("")) //$NON-NLS-1$
     {
-      Node n = parent.item(i);
-      Node value = n.getFirstChild();
-      if (value != null)
+      IBasicData bd = TraderPlugin.getData(symbol);
+      if (bd == null)
       {
-        if (n.getNodeName().equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
-          cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
-          cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
-          cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
-          cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
-          cd.setVolume(Integer.parseInt(value.getNodeValue()));
-        else if (n.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
-        {
-          try {
-            cd.setDate(df.parse(value.getNodeValue()));
-          } catch(Exception e) {};
-        }
+        StockList sl = new StockList();
+        bd = sl.getData(symbol);
       }
+      if (bd == null)
+      {
+        bd = new BasicData();
+        bd.setSymbol(symbol);
+        bd.setTicker(symbol);
+        bd.setDescription(symbol);
+      }
+      chartData = null;
+      setData(bd);
     }
-    return cd;
   }
 
-  /**
-   * Method to store the chart data.<br>
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.dnd.DropTargetListener#dropAccept(org.eclipse.swt.dnd.DropTargetEvent)
    */
-  private void store(IBasicData data)
+  public void dropAccept(DropTargetEvent event)
   {
-    
-    if (chartData != null)
-      try {
-        folder.mkdirs();
-        BufferedWriter xmlout = new BufferedWriter(new FileWriter(new File(folder, data.getSymbol().toLowerCase() + ".xml"))); //$NON-NLS-1$
-
-        xmlout.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\r\n"); //$NON-NLS-1$
-        xmlout.write("<chart>\r\n"); //$NON-NLS-1$
-        xmlout.write("    <symbol>" + data.getTicker() + "</symbol>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-        for (int i = 0; i < chartData.length; i++)
-        {
-          IChartData cd = (IChartData)chartData[i];
-          xmlout.write("    <data>\r\n"); //$NON-NLS-1$
-          xmlout.write("        <date>" + df.format(cd.getDate()) + "</date>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-          xmlout.write("        <open_price>" + pf.format(cd.getOpenPrice()) + "</open_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-          xmlout.write("        <max_price>" + pf.format(cd.getMaxPrice()) + "</max_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-          xmlout.write("        <min_price>" + pf.format(cd.getMinPrice()) + "</min_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-          xmlout.write("        <close_price>" + pf.format(cd.getClosePrice()) + "</close_price>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-          xmlout.write("        <volume>" + cd.getVolume() + "</volume>\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-          xmlout.write("    </data>\r\n"); //$NON-NLS-1$
-        }
-        xmlout.write("</chart>\r\n"); //$NON-NLS-1$
-        xmlout.flush();
-        xmlout.close();
-      } catch (Exception ex) {};
   }
 }
