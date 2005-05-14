@@ -241,6 +241,5 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
     streaming = false;
     StreamingControl.actionStart.setEnabled(true);
     StreamingControl.actionStop.setEnabled(false);
-    System.out.println(this.getClass() + ": stopStreaming");
   }
 }
