@@ -10,6 +10,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +28,10 @@ import org.eclipse.swt.widgets.Control;
  */
 public class ChartPlotter implements IChartPlotter
 {
+  public final static int CLOSE = 0;
+  public final static int OPEN = 1;
+  public final static int MAX = 2;
+  public final static int MIN = 3;
   private String name;
   private ChartCanvas chartCanvas;
   private int columnWidth = 5;
@@ -126,6 +131,33 @@ public class ChartPlotter implements IChartPlotter
           min = data[i].getMinPrice();
       }
     }
+  }
+  
+  public List getValues(IChartData[] data, int type)
+  {
+    List list = new ArrayList();
+    
+    switch(type)
+    {
+      case CLOSE:
+        for (int i = 0; i < data.length; i++)
+          list.add(new Double(data[i].getClosePrice()));
+        break;
+      case OPEN:
+        for (int i = 0; i < data.length; i++)
+          list.add(new Double(data[i].getOpenPrice()));
+        break;
+      case MAX:
+        for (int i = 0; i < data.length; i++)
+          list.add(new Double(data[i].getMaxPrice()));
+        break;
+      case MIN:
+        for (int i = 0; i < data.length; i++)
+          list.add(new Double(data[i].getMinPrice()));
+        break;
+    }
+    
+    return list;
   }
   
   public void setMinMax(double min, double max)
@@ -327,12 +359,24 @@ public class ChartPlotter implements IChartPlotter
    */
   public void drawIstogram(List value, GC gc, int height, int ofs)
   {
+    // Adjust the upper and lower values so that the value 0 is centered
+    // on the chart (only for charts that have negative minimum value)
+    if (min < 0 && max > 0)
+    {
+      max = Math.abs(max);
+      min = Math.abs(min);
+      if (min > max)
+        max = min;
+      min = -max;
+    }
+
+    // Draw the istogram chart
     double pixelRatio = height / (getMax() - getMin());
     int x = chartMargin + columnWidth / 2 + ofs * columnWidth;
+    int y2 = height - (int)((0 - min) * pixelRatio);
     for (int i = 0; i < value.size(); i++, x += columnWidth)
     {
       int y1 = height - (int)((((Double)value.get(i)).doubleValue() - min) * pixelRatio);
-      int y2 = height;
       gc.drawLine(x, y1, x, y2);
     }
   }
