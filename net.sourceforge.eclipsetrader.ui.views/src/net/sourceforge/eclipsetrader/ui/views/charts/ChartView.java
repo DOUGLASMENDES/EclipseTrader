@@ -290,6 +290,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     {
       ChartCanvas canvas = (ChartCanvas)chart.get(i);
       canvas.removeMouseListener(this);
+      canvas.removeMouseMoveListener(this);
       canvas.removeSelectionChangedListener(this);
       canvas.selectChart(null);
       canvas.dispose();
@@ -332,6 +333,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
             ChartCanvas canvas = new ChartCanvas(form);
             canvas.createContextMenu(this);
             canvas.addMouseListener(this);
+            canvas.addMouseMoveListener(this);
             canvas.addSelectionChangedListener(this);
             if (chart.size() == selectedZone)
               canvas.setHilight(true);
@@ -400,6 +402,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       ChartCanvas canvas = new ChartCanvas(form);
       canvas.createContextMenu(this);
       canvas.addMouseListener(this);
+      canvas.addMouseMoveListener(this);
       canvas.addSelectionChangedListener(this);
       if (chart.size() == selectedZone)
         canvas.setHilight(true);
@@ -410,6 +413,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       canvas.createContextMenu(this);
       chart.add(canvas);
       canvas.addMouseListener(this);
+      canvas.addMouseMoveListener(this);
       canvas.addSelectionChangedListener(this);
       canvas.addPainter(new VolumeChart());
 
@@ -704,6 +708,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       ChartCanvas canvas = new ChartCanvas(form);
       canvas.createContextMenu(this);
       canvas.addMouseListener(this);
+      canvas.addMouseMoveListener(this);
       canvas.addSelectionChangedListener(this);
       canvas.addPainter(chartPlotter);
       int[] weights = new int[chart.size()];
@@ -739,6 +744,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)selectedChart);
       if (pdlg.openEdit() == ChartParametersDialog.OK)
       {
+        ((ChartCanvas)chart.get(selectedZone)).updatePainter(selectedChart);
         updateView();
         savePreferences();
       }
@@ -762,6 +768,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
               if (canvas.getPainterCount() == 0)
               {
                 canvas.removeMouseListener(this);
+                canvas.removeMouseMoveListener(this);
                 canvas.dispose();
                 chart.remove(i);
                 form.layout();
