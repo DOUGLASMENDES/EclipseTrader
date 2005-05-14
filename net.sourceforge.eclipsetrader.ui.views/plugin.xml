@@ -21,6 +21,9 @@
 
    <extension
          point="org.eclipse.ui.views">
+      <category
+            name="Trader"
+            id="trader"/>
       <view
             allowMultiple="false"
             icon="icons/eview16/stockwatch.gif"
@@ -66,9 +69,13 @@
             icon="icons/sample.gif"
             name="%indices.title"
             id="net.sourceforge.eclipsetrader.ui.views.indices"/>
-      <category
-            name="Trader"
-            id="trader"/>
+      <view
+            icon="icons/eview16/stockwatch.gif"
+            class="net.sourceforge.eclipsetrader.ui.views.portfolio.StockListView"
+            category="trader"
+            name="Stock List"
+            id="net.sourceforge.eclipsetrader.ui.views.stockList">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -102,6 +109,18 @@
          <actionSet id="net.sourceforge.eclipsetrader.ui.portfolio"/>
          <actionSet id="net.sourceforge.eclipsetrader.views.chartActionSet"/>
       </perspectiveExtension>
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.ChartsPerspective">
+         <view
+               ratio="0.20"
+               relative="org.eclipse.ui.editorss"
+               relationship="left"
+               id="net.sourceforge.eclipsetrader.ui.views.stockList"/>
+         <view
+               visible="false"
+               id="net.sourceforge.eclipsetrader.ui.views.ChartView:*"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"/>
+      </perspectiveExtension>
       <perspectiveExtension targetID="net.sourceforge.eclipsetrader.NewsPerspective">
          <view
                relationship="stack"
@@ -112,7 +131,6 @@
                relationship="bottom"
                relative="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"
                id="net.sourceforge.eclipsetrader.ui.views.News"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.ChartView"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.News"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
@@ -289,6 +307,18 @@
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
+      <viewContribution
+            targetID="net.sourceforge.eclipsetrader.ui.views.stockList"
+            id="net.sourceforge.eclipsetrader.stocklistActions">
+         <action
+               toolbarPath="additions"
+               label="%actions.update"
+               tooltip="%actions.update"
+               icon="icons/refresh.gif"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.StocklistAction"
+               style="push"
+               id="stockList.updateAll"/>
+      </viewContribution>
       <viewContribution
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
             id="net.sourceforge.eclipsetrader.chartActions">
@@ -501,6 +531,34 @@
             label="%DetrendedPriceOscillator.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.DetrendedPriceOscillator"
             id="net.sourceforge.eclipsetrader.charts.dpo"/>
+      <plotter
+            label="%MACD.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.MACDChart"
+            id="net.sourceforge.eclipsetrader.charts.macd"/>
+      <plotter
+            label="%MAOSC.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.MAOSCChart"
+            id="net.sourceforge.eclipsetrader.charts.maosc"/>
+      <plotter
+            label="%MarketThermometerChart.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.MarketThermometerChart"
+            id="net.sourceforge.eclipsetrader.charts.therm"/>
+      <plotter
+            label="%SafezoneStop.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.SafezoneStop"
+            id="net.sourceforge.eclipsetrader.charts.sz"/>
+      <plotter
+            label="%ForceIndex.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.ForceIndex"
+            id="net.sourceforge.eclipsetrader.charts.fi"/>
+      <plotter
+            label="%StockChart.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.StockChart"
+            id="net.sourceforge.eclipsetrader.charts.stock"/>
+      <plotter
+            label="%VolumeTrends.label"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.VolumeTrends"
+            id="net.sourceforge.eclipsetrader.charts.vt"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
