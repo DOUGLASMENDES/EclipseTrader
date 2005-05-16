@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
@@ -39,6 +40,7 @@ public class DetrendedPriceOscillator extends ChartPlotter implements IChartConf
   private int period = 21;
   private int type = EXPONENTIAL;
   private Color gridColor = new Color(null, 192, 192, 192);
+  private List dpo = new ArrayList();
   
   public DetrendedPriceOscillator()
   {
@@ -58,30 +60,21 @@ public class DetrendedPriceOscillator extends ChartPlotter implements IChartConf
    */
   public String getDescription()
   {
-    return getName() + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+    return getName();
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
-  public void paintChart(GC gc, int width, int height)
+  public void setData(IChartData[] data)
   {
-    super.paintChart(gc, width, height);
-    if (chartData != null && getMax() > getMin())
+    super.setData(data);
+    
+    dpo = new ArrayList();
+    if (data != null && data.length != 0)
     {
-      // Grid line
-      gc.setForeground(gridColor);
-      gc.setLineStyle(SWT.LINE_DOT);
-      gc.drawLine(0, height / 2, width, height / 2);
-
-      // Line type and color
-      gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(getColor());
-
       List ma = AverageChart.getMA(chartData, type, period);
 
-      double min = 0, max = 0;
-      List dpo = new ArrayList();
       int maLoop = ma.size() - 1;
       int closeLoop = chartData.length - 1;
       int t = (int) ((period / 2) + 1);
@@ -92,20 +85,19 @@ public class DetrendedPriceOscillator extends ChartPlotter implements IChartConf
         dpo.add(0, new Double(value));
         closeLoop--;
         maLoop--;
-
-        if (min == 0 || value < min)
-          min = value;
-        if (value > max)
-          max = value;
       }
 
-      double margin = (max - min) / 100 * 2; 
-      max += margin;
-      min -= margin;
-      setMinMax(min, max);
-
-      drawLine(dpo, gc, height, chartData.length - dpo.size());
+      setMinMax(dpo);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    super.paintChart(gc, width, height);
+    drawLine(dpo, gc, height, chartData.length - dpo.size());
   }
 
   /* (non-Javadoc)

@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
@@ -33,6 +34,8 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
   private int period = 20;
   private int deviations = 2;
   private int type = AverageChart.EXPONENTIAL;
+  private List bbu = new ArrayList();
+  private List bbl = new ArrayList();
   
   public BollingerBandsChart()
   {
@@ -52,33 +55,34 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
    */
   public String getDescription()
   {
-    return getName() + " (" + period + "," + deviations + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return getName();
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
-  public void paintChart(GC gc, int width, int height)
+  public void setData(IChartData[] data)
   {
-    super.paintChart(gc, width, height);
-    if (chartData != null)
+    super.setData(data);
+    
+    bbu = new ArrayList();
+    bbl = new ArrayList();
+
+    if (data != null && data.length != 0)
     {
-      List sma = AverageChart.getMA(chartData, type, period); 
+      List sma = AverageChart.getMA(data, type, period); 
       int smaLoop = sma.size() - 1;
 
       if (sma.size() >= period * 2)
       {
-        List bbu = new ArrayList();
-        List bbl = new ArrayList();
-
-        int inputLoop = chartData.length - 1;
+        int inputLoop = data.length - 1;
         while (inputLoop >= period && smaLoop >= period)
         {
           int count;
           double t2 = 0;
           for (count = 0, t2 = 0; count < period; count++)
           {
-            double t = chartData[inputLoop - count].getClosePrice() - ((Double)sma.get(smaLoop)).doubleValue();
+            double t = data[inputLoop - count].getClosePrice() - ((Double)sma.get(smaLoop)).doubleValue();
             t2 = t2 + (t * t);
           }
 
@@ -90,13 +94,21 @@ public class BollingerBandsChart extends ChartPlotter implements IChartConfigure
           inputLoop--;
           smaLoop--;
         }
-
-        gc.setLineStyle(SWT.LINE_SOLID);
-        gc.setForeground(getColor());
-        drawLine(bbu, gc, height, chartData.length - bbu.size());
-        drawLine(bbl, gc, height, chartData.length - bbl.size());
       }
+      
+      updateMinMax(bbu);
+      updateMinMax(bbl);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    super.paintChart(gc, width, height);
+    drawLine(bbu, gc, height, chartData.length - bbu.size());
+    drawLine(bbl, gc, height, chartData.length - bbl.size());
   }
 
   /* (non-Javadoc)

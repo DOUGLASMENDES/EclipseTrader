@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
@@ -40,6 +41,7 @@ public class CommodityChannelIndex extends ChartPlotter implements IChartConfigu
   private int smoothing = 3;
   private int type = EXPONENTIAL;
   private Color gridColor = new Color(null, 192, 192, 192);
+  private List cci = new ArrayList();
   
   public CommodityChannelIndex()
   {
@@ -59,26 +61,19 @@ public class CommodityChannelIndex extends ChartPlotter implements IChartConfigu
    */
   public String getDescription()
   {
-    return getName() + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+    return getName();
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
-  public void paintChart(GC gc, int width, int height)
+  public void setData(IChartData[] data)
   {
-    super.paintChart(gc, width, height);
-    if (chartData != null && getMax() > getMin())
-    {
-      // Grid line
-      gc.setForeground(gridColor);
-      gc.setLineStyle(SWT.LINE_DOT);
-      gc.drawLine(0, height / 2, width, height / 2);
+    super.setData(data);
 
-      // Line type and color
-      gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(getColor());
-      
+    cci = new ArrayList();
+    if (data != null && data.length != 0)
+    {
       List tp = new ArrayList();
       int loop;
       for (loop = 0; loop < chartData.length; loop++)
@@ -88,8 +83,6 @@ public class CommodityChannelIndex extends ChartPlotter implements IChartConfigu
       List sma = AverageChart.getMA(tp, type, period);
       int smaLoop = sma.size() - 1;
       
-      double min = 0, max = 0;
-      List cci = new ArrayList();
       while (tpLoop >= period && smaLoop >= period)
       {
         double md = 0;
@@ -100,11 +93,6 @@ public class CommodityChannelIndex extends ChartPlotter implements IChartConfigu
         double t = (((Double)tp.get(tpLoop)).doubleValue() - ((Double)sma.get(smaLoop)).doubleValue()) / (0.015 * md);
         cci.add(0, new Double(t));
 
-        if (min == 0 || t < min)
-          min = t;
-        if (t > max)
-          max = t;
-
         tpLoop--;
         smaLoop--;
       }
@@ -112,13 +100,17 @@ public class CommodityChannelIndex extends ChartPlotter implements IChartConfigu
       if (smoothing > 1)
         cci = AverageChart.getMA(cci, type, smoothing);
 
-      double margin = (max - min) / 100 * 2; 
-      max += margin;
-      min -= margin;
-      setMinMax(min, max);
-
-      drawLine(cci, gc, height, chartData.length - cci.size());
+      setMinMax(cci);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    super.paintChart(gc, width, height);
+    drawLine(cci, gc, height);
   }
 
   /* (non-Javadoc)
