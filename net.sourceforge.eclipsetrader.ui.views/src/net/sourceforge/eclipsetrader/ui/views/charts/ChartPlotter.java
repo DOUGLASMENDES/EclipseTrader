@@ -10,6 +10,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,15 @@ public class ChartPlotter implements IChartPlotter
   private double max;
   protected HashMap params = new HashMap();
   private boolean selected = false;
+  private NumberFormat pf = NumberFormat.getInstance();
+  
+  public ChartPlotter()
+  {
+    pf.setGroupingUsed(true);
+    pf.setMinimumIntegerDigits(1);
+    pf.setMinimumFractionDigits(4);
+    pf.setMaximumFractionDigits(4);
+  }
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getId()
@@ -207,12 +217,22 @@ public class ChartPlotter implements IChartPlotter
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintGrid(org.eclipse.swt.graphics.GC, int, int)
+   */
+  public void paintGrid(GC gc, int width, int height)
+  {
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameter(java.lang.String, java.lang.String)
    */
   public void setParameter(String name, String value)
   {
     if (name.equalsIgnoreCase("name") == true)
-      name = value;
+    {
+      this.name = value;
+      params.put(name, value);
+    }
     else if (value != null)
     {
       if (name.equalsIgnoreCase("color") == true)
@@ -359,17 +379,6 @@ public class ChartPlotter implements IChartPlotter
    */
   public void drawIstogram(List value, GC gc, int height, int ofs)
   {
-    // Adjust the upper and lower values so that the value 0 is centered
-    // on the chart (only for charts that have negative minimum value)
-    if (min < 0 && max > 0)
-    {
-      max = Math.abs(max);
-      min = Math.abs(min);
-      if (min > max)
-        max = min;
-      min = -max;
-    }
-
     // Draw the istogram chart
     double pixelRatio = height / (getMax() - getMin());
     int x = chartMargin + columnWidth / 2 + ofs * columnWidth;
@@ -426,6 +435,17 @@ public class ChartPlotter implements IChartPlotter
     double margin = (max - min) / 100 * 2; 
     max += margin;
     min -= margin;
+
+    // Adjust the upper and lower values so that the value 0 is centered
+    // on the chart (only for charts that have negative minimum value)
+    if (min < 0 && max > 0)
+    {
+      max = Math.abs(max);
+      min = Math.abs(min);
+      if (min > max)
+        max = min;
+      min = -max;
+    }
   }
   
   /**
@@ -446,6 +466,17 @@ public class ChartPlotter implements IChartPlotter
     double margin = (max - min) / 100 * 2; 
     max += margin;
     min -= margin;
+
+    // Adjust the upper and lower values so that the value 0 is centered
+    // on the chart (only for charts that have negative minimum value)
+    if (min < 0 && max > 0)
+    {
+      max = Math.abs(max);
+      min = Math.abs(min);
+      if (min > max)
+        max = min;
+      min = -max;
+    }
   }
   
   /**
@@ -468,6 +499,17 @@ public class ChartPlotter implements IChartPlotter
     double margin = (max - min) / 100 * 2; 
     max += margin;
     min -= margin;
+
+    // Adjust the upper and lower values so that the value 0 is centered
+    // on the chart (only for charts that have negative minimum value)
+    if (min < 0 && max > 0)
+    {
+      max = Math.abs(max);
+      min = Math.abs(min);
+      if (min > max)
+        max = min;
+      min = -max;
+    }
   }
   
   /**
@@ -489,6 +531,17 @@ public class ChartPlotter implements IChartPlotter
     double margin = (max - min) / 100 * 2; 
     max += margin;
     min -= margin;
+
+    // Adjust the upper and lower values so that the value 0 is centered
+    // on the chart (only for charts that have negative minimum value)
+    if (min < 0 && max > 0)
+    {
+      max = Math.abs(max);
+      min = Math.abs(min);
+      if (min > max)
+        max = min;
+      min = -max;
+    }
   }
 
   /**
@@ -500,5 +553,31 @@ public class ChartPlotter implements IChartPlotter
   {
     columnWidth = chartCanvas.getColumnWidth();
     return columnWidth;
+  }
+  
+  public double getValue(int y, int height)
+  {
+    double pixelRatio = height / (max - min);
+    return (height - y) / pixelRatio + min;
+  }
+  
+  public String getFormattedValue(int y, int height)
+  {
+    if (max >= 1000)
+    {
+      pf.setMinimumFractionDigits(0);
+      pf.setMaximumFractionDigits(0);
+    }
+    else if (max >= 10)
+    {
+      pf.setMinimumFractionDigits(2);
+      pf.setMaximumFractionDigits(2);
+    }
+    else
+    {
+      pf.setMinimumFractionDigits(4);
+      pf.setMaximumFractionDigits(4);
+    }
+    return pf.format(getValue(y, height));
   }
 }
