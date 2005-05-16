@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.eclipsetrader.IChartData;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
@@ -41,6 +40,7 @@ public class AverageTrueRange extends ChartPlotter implements IChartConfigurer
   private int period = 7;
   private int type = SIMPLE;
   private Color gridColor = new Color(null, 192, 192, 192);
+  private List list = new ArrayList();
   
   public AverageTrueRange()
   {
@@ -60,40 +60,27 @@ public class AverageTrueRange extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return getName() + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+    return getName();
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
-  public void paintChart(GC gc, int width, int height)
+  public void setData(IChartData[] data)
   {
-    super.paintChart(gc, width, height);
-    if (chartData != null && getMax() > getMin())
+    super.setData(data);
+    
+    list = new ArrayList();
+    if (data != null && data.length != 0)
     {
-      // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      double pixelRatio = height / (getMax() - getMin());
-
-      // Grid line
-      gc.setForeground(gridColor);
-      gc.setLineStyle(SWT.LINE_DOT);
-      gc.drawLine(0, height / 2, width, height / 2);
-
-      // Line type and color
-      gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(getColor());
-      
-      double min = 0, max = 0;
-      List list = new ArrayList();
-
       int loop;
-      for (loop = 0; loop < chartData.length; loop++)
+      for (loop = 0; loop < data.length; loop++)
       {
-        double high = chartData[loop].getMaxPrice();
-        double low = chartData[loop].getMinPrice();
+        double high = data[loop].getMaxPrice();
+        double low = data[loop].getMinPrice();
         double close;
         if (loop > 0)
-          close = chartData[loop - 1].getClosePrice();
+          close = data[loop - 1].getClosePrice();
         else
           close = high;
 
@@ -108,32 +95,22 @@ public class AverageTrueRange extends ChartPlotter implements IChartConfigurer
           t = t2;
 
         list.add(new Double(t));
-
-        if (min == 0 || t < min)
-          min = t;
-        if (t > max)
-          max = t;
       }
       
       if (period > 1)
-      {
-        IChartData values[] = new IChartData[list.size()];
-        for (int i = 0; i < values.length; i++)
-        {
-          values[i] = new ChartData();
-          values[i].setClosePrice(((Double)list.get(i)).doubleValue());
-        }
-        
-        list = AverageChart.getMA(values, type, period);
-      }
+        list = AverageChart.getMA(list, type, period);
 
-      double margin = (max - min) / 100 * 2; 
-      max += margin;
-      min -= margin;
-      setMinMax(min, max);
-
-      drawLine(list, gc, height, chartData.length - list.size());
+      setMinMax(list);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    super.paintChart(gc, width, height);
+    drawLine(list, gc, height);
   }
 
   /* (non-Javadoc)
