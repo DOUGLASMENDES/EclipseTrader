@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
@@ -34,6 +35,7 @@ public class MAOSCChart extends ChartPlotter implements IChartConfigurer
   private int slowPeriod = 18;
   private int fastType = AverageChart.EXPONENTIAL;
   private int slowType = AverageChart.EXPONENTIAL;
+  private List macd = new ArrayList();
   
   public MAOSCChart()
   {
@@ -53,16 +55,19 @@ public class MAOSCChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return getName() + " (" + fastPeriod + ", " + slowPeriod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return getName();
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
-  public void paintChart(GC gc, int width, int height)
+  public void setData(IChartData[] data)
   {
-    super.paintChart(gc, width, height);
-    if (chartData != null)
+    super.setData(data);
+    
+    macd = new ArrayList();
+
+    if (data != null && data.length != 0)
     {
       List fma = AverageChart.getMA(chartData, fastType, fastPeriod);
       int fmaLoop = fma.size() - 1;
@@ -70,31 +75,29 @@ public class MAOSCChart extends ChartPlotter implements IChartConfigurer
       List sma = AverageChart.getMA(chartData, slowType, slowPeriod);
       int smaLoop = sma.size() - 1;
       
-      double min = 0, max = 0;
-      List macd = new ArrayList();
       while (fmaLoop > -1 && smaLoop > -1)
       {
         double t = ((Double)fma.get(fmaLoop)).doubleValue() - ((Double)sma.get(smaLoop)).doubleValue();
         macd.add(0, new Double(t));
         fmaLoop--;
         smaLoop--;
-        if (min == 0 || t < min)
-          min = t;
-        if (t > max)
-          max = t;
       }
 
-      double margin = (max - min) / 100 * 2; 
-      max += margin;
-      min -= margin;
-      setMinMax(min, max);
-
-      gc.setForeground(getColor());
-      gc.setBackground(getColor());
-      drawOscillatorLine(macd, gc, height, chartData.length - macd.size());
+      setMinMax(macd);
     }
+  }
 
-    // Tipo di linea e colore
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    super.paintChart(gc, width, height);
+
+    gc.setForeground(getColor());
+    gc.setBackground(getColor());
+    drawOscillatorLine(macd, gc, height, chartData.length - macd.size());
+
     gc.setLineStyle(SWT.LINE_SOLID);
     gc.setForeground(getColor());
   }
@@ -105,6 +108,7 @@ public class MAOSCChart extends ChartPlotter implements IChartConfigurer
   public void paintScale(GC gc, int width, int height)
   {
   }
+
   public void drawOscillatorLine(List value, GC gc, int height, int ofs)
   {
     double pixelRatio = height / (getMax() - getMin());

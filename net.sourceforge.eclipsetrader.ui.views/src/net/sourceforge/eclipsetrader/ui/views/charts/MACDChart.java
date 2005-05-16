@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.jface.preference.ColorSelector;
@@ -40,6 +41,9 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
   private Color oscColor = new Color(null, 192, 0, 0);
   private ColorSelector trigColorSelector;
   private ColorSelector oscColorSelector;
+  private List macd = new ArrayList();
+  private List osc = new ArrayList();
+  private List signal = new ArrayList();
   
   public MACDChart()
   {
@@ -59,16 +63,21 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return getName() + " (" + fastPeriod + ", " + slowPeriod + ", " + trigPeriod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    return getName();
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
-  public void paintChart(GC gc, int width, int height)
+  public void setData(IChartData[] data)
   {
-    super.paintChart(gc, width, height);
-    if (chartData != null)
+    super.setData(data);
+    
+    macd = new ArrayList();
+    osc = new ArrayList();
+    signal = new ArrayList();
+
+    if (data != null && data.length != 0)
     {
       List fma = AverageChart.getMA(chartData, type, fastPeriod);
       int fmaLoop = fma.size() - 1;
@@ -77,7 +86,6 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
       int smaLoop = sma.size() - 1;
       
       double min = 0, max = 0;
-      List macd = new ArrayList();
       while (fmaLoop > -1 && smaLoop > -1)
       {
         double t = ((Double)fma.get(fmaLoop)).doubleValue() - ((Double)sma.get(smaLoop)).doubleValue();
@@ -89,11 +97,12 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
         if (t > max)
           max = t;
       }
+      setMinMax(macd);
 
-      List signal = AverageChart.getMA(macd, type, trigPeriod);
+      signal = AverageChart.getMA(macd, type, trigPeriod);
+      updateMinMax(signal);
 
       double omin = 0, omax = 0;
-      List osc = new ArrayList();
       int floop = macd.size() - 1;
       int sloop = signal.size() - 1;
       while (floop > -1 && sloop > -1)
@@ -107,31 +116,26 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
         if (t > omax)
           omax = t;
       }
-
-      double margin = (omax - omin) / 100 * 2; 
-      omax += margin;
-      omin -= margin;
-      setMinMax(omin, omax);
-
-      gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(oscColor);
-      gc.setBackground(oscColor);
-      drawOscillatorLine(osc, gc, height, chartData.length - osc.size());
-
-      margin = (max - min) / 100 * 2; 
-      max += margin;
-      min -= margin;
-      setMinMax(min, max);
-
-      gc.setForeground(getColor());
-      drawLine(macd, gc, height, chartData.length - macd.size());
-      gc.setForeground(trigColor);
-      drawLine(signal, gc, height, chartData.length - signal.size());
+      updateMinMax(osc);
     }
+  }
 
-    // Tipo di linea e colore
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    super.paintChart(gc, width, height);
+
     gc.setLineStyle(SWT.LINE_SOLID);
+    gc.setForeground(oscColor);
+    gc.setBackground(oscColor);
+    drawOscillatorLine(osc, gc, height, chartData.length - osc.size());
+    
     gc.setForeground(getColor());
+    drawLine(macd, gc, height, chartData.length - macd.size());
+    gc.setForeground(trigColor);
+    drawLine(signal, gc, height, chartData.length - signal.size());
   }
 
   /* (non-Javadoc)
@@ -140,6 +144,7 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
   public void paintScale(GC gc, int width, int height)
   {
   }
+
   public void drawOscillatorLine(List value, GC gc, int height, int ofs)
   {
     double pixelRatio = height / (getMax() - getMin());
