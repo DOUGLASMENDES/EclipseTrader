@@ -51,7 +51,6 @@ public class StockList
     
     // Attempt to read a locale-specific file from the workspace
     File f = new File(Platform.getLocation().toFile(), FILE_NAME + "_" + Locale.getDefault().getCountry().toLowerCase() + FILE_EXT);
-    System.out.println(f);
     if (f.exists() == true)
     {
       try {
@@ -136,5 +135,19 @@ public class StockList
   public IBasicData[] getData()
   {
     return data;
+  }
+  
+  public IBasicData getData(String symbol)
+  {
+    if (data == null)
+      load();
+    
+    for (int i = 0; i < data.length; i++)
+    {
+      if (symbol.equals(data[i].getSymbol()) == true)
+        return data[i];
+    }
+    
+    return null;
   }
 }
