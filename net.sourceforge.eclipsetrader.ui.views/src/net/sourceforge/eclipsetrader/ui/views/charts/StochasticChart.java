@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
@@ -38,6 +39,8 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
   private int buyLine = 20;
   private int sellLine = 80;
   private Color gridColor = new Color(null, 192, 192, 192);
+  private List k = new ArrayList();
+  private List d = new ArrayList();
   
   public StochasticChart()
   {
@@ -57,30 +60,24 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return getName() + " (" + period + ", " + dperiod + ", " + kperiod + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    return getName();
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setData(net.sourceforge.eclipsetrader.IChartData[])
    */
-  public void paintChart(GC gc, int width, int height)
+  public void setData(IChartData[] data)
   {
-    // Grafico
-    super.paintChart(gc, width, height);
-    if (chartData != null && getMax() > getMin())
-    {
-      // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
-      setMinMax(-2, 102);
-      double pixelRatio = (height) / (getMax() - getMin());
-      
-      gc.setForeground(gridColor);
-      gc.setLineStyle(SWT.LINE_DOT);
-      int y1 = height - (int)((buyLine - getMin()) * pixelRatio);
-      gc.drawLine(0, y1, width, y1);
-      y1 = height - (int)((sellLine - getMin()) * pixelRatio);
-      gc.drawLine(0, y1, width, y1);
+    super.setData(data);
 
-      List k = new ArrayList();
+    k = new ArrayList();
+    d = new ArrayList();
+
+    if (data != null && data.length != 0)
+    {
+      setMinMax(-2, 102);
+
+      k = new ArrayList();
       for (int loop = period; loop < chartData.length; loop++)
       {
         int loop2;
@@ -113,18 +110,38 @@ public class StochasticChart extends ChartPlotter implements IChartConfigurer
       if (kperiod > 1)
         k = AverageChart.getMA(k, type, kperiod);
 
+      if (dperiod > 1)
+        d = AverageChart.getMA(k, type, dperiod);;
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintChart(GC gc, int width, int height)
+   */
+  public void paintChart(GC gc, int width, int height)
+  {
+    // Grafico
+    super.paintChart(gc, width, height);
+    if (chartData != null && getMax() > getMin())
+    {
+      // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
+      setMinMax(-2, 102);
+      double pixelRatio = (height) / (getMax() - getMin());
+      
+      gc.setForeground(gridColor);
+      gc.setLineStyle(SWT.LINE_DOT);
+      int y1 = height - (int)((buyLine - getMin()) * pixelRatio);
+      gc.drawLine(0, y1, width, y1);
+      y1 = height - (int)((sellLine - getMin()) * pixelRatio);
+      gc.drawLine(0, y1, width, y1);
+
       gc.setLineStyle(SWT.LINE_SOLID);
       gc.setForeground(getColor());
-      drawLine(k, gc, height, chartData.length - k.size());
+      drawLine(k, gc, height);
 
-      if (dperiod > 1)
-      {
-        List d = AverageChart.getMA(k, type, dperiod);;
-
-        gc.setLineStyle(SWT.LINE_DOT);
-        gc.setForeground(getColor());
-        drawLine(d, gc, height, chartData.length - d.size());
-      }
+      gc.setLineStyle(SWT.LINE_DOT);
+      gc.setForeground(getColor());
+      drawLine(d, gc, height);
     }
 
     // Tipo di linea e colore
