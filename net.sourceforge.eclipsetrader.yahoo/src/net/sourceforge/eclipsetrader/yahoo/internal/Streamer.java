@@ -11,17 +11,20 @@
 package net.sourceforge.eclipsetrader.yahoo.internal;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
@@ -36,11 +39,11 @@ public class Streamer
 {
   private static Streamer instance;
   private Timer timer;
-  private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-  private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy h:mma");
-  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+  private SimpleDateFormat dtf = new SimpleDateFormat("MM/dd/yyyy h:mma");
+  private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+  private SimpleDateFormat tf = new SimpleDateFormat("h:mma");
   private HashMap data = new HashMap();
-  private Vector listeners = new Vector();
+  private List listeners = new ArrayList();
   
   private Streamer()
   {
@@ -93,19 +96,18 @@ public class Streamer
 
   private void update()
   {
-    // Compone l'url per la lettura degli ultimi prezzi rimappando i codici usati da Yahoo
-    StringBuffer url = new StringBuffer(YahooPlugin.getDefault().getPreferenceStore().getString("yahoo.url") + "?s=");
+    // Builds the url for quotes download
+    StringBuffer url = new StringBuffer(YahooPlugin.getDefault().getPreferenceStore().getString("yahoo.quote") + "?symbols=");
     Iterator iterator = data.keySet().iterator();
     while(iterator.hasNext() == true)
       url = url.append((String)iterator.next() + "+");
     if (url.charAt(url.length() - 1) == '+')
       url.deleteCharAt(url.length() - 1);
-    url.append("&f=sl1d1t1c1ohgvbap&e=.csv");
-//    System.out.println(url.toString());
+    url.append("&format=sl1d1t1c1ohgvbap");
     
     // Read the last prices
+    String line = "";
     try {
-      String line;
       HttpURLConnection con = (HttpURLConnection)new URL(url.toString()).openConnection();
       String proxyHost = (String)System.getProperties().get("http.proxyHost");
       String proxyUser = (String)System.getProperties().get("http.proxyUser");
@@ -127,7 +129,6 @@ public class Streamer
           item = line.split(";");
         else
           item = line.split(",");
-//        System.out.println(line);
 
         // 0 = Code
         IExtendedData pd = (IExtendedData)data.get(stripQuotes(item[0].toUpperCase()));
@@ -137,12 +138,22 @@ public class Streamer
         // 2 = Date
         // 3 = Time
         try {
-          if (item[3].indexOf("am") != -1 || item[3].indexOf("pm") != -1)
-            pd.setDate(df_us.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3])));
-          else
-            pd.setDate(df.parse(stripQuotes(item[2]) + " " + stripQuotes(item[3].replace('.', ':')) + ":00"));
+          GregorianCalendar c = new GregorianCalendar(TimeZone.getTimeZone("EST"), Locale.US);
+          df.setTimeZone(c.getTimeZone());
+          tf.setTimeZone(c.getTimeZone());
+          dtf.setTimeZone(c.getTimeZone());
+
+          String date = stripQuotes(item[2]);
+          if (date.indexOf("N/A") != -1)
+            date = df.format(Calendar.getInstance().getTime());
+          String time = stripQuotes(item[3]);
+          if (time.indexOf("N/A") != -1)
+            time = tf.format(Calendar.getInstance().getTime());
+          c.setTime(dtf.parse(date + " " + time));
+          c.setTimeZone(TimeZone.getDefault());
+          pd.setDate(c.getTime());
         } catch(Exception x) {
-          System.out.println(x.getMessage());
+          System.out.println(x.getMessage() + ": " + line);
           continue;
         };
 
@@ -151,39 +162,37 @@ public class Streamer
           pd.setLastPrice(Double.parseDouble(item[1].replace(',', '.')));
         
         // 4 = Change
-          // 5 = Open
-          if (item[5].equalsIgnoreCase("N/A") == false)
-            pd.setOpenPrice(Double.parseDouble(item[5].replace(',', '.')));
-          // 6 = Maximum
-          if (item[6].equalsIgnoreCase("N/A") == false)
-            pd.setHighPrice(Double.parseDouble(item[6].replace(',', '.')));
-          // 7 = Minimum
-          if (item[7].equalsIgnoreCase("N/A") == false)
-            pd.setLowPrice(Double.parseDouble(item[7].replace(',', '.')));
-          // 8 = Volume
-          if (item[8].equalsIgnoreCase("N/A") == false)
-            pd.setVolume(Integer.parseInt(item[8]));
-          // 9 = Bid Price
-          if (item[9].equalsIgnoreCase("N/A") == false)
-            pd.setBidPrice(Double.parseDouble(item[9].replace(',', '.')));
-          // 10 = Ask Price
-          if (item[10].equalsIgnoreCase("N/A") == false)
-            pd.setAskPrice(Double.parseDouble(item[10].replace(',', '.')));
-          // 11 = Close Price
-          if (item[11].equalsIgnoreCase("N/A") == false)
-            pd.setClosePrice(Double.parseDouble(item[11].replace(',', '.')));
-          
-          // Data not available from Yahoo
-          pd.setBidSize(0);
-          pd.setAskSize(0);
+        // 5 = Open
+        if (item[5].equalsIgnoreCase("N/A") == false)
+          pd.setOpenPrice(Double.parseDouble(item[5].replace(',', '.')));
+        // 6 = Maximum
+        if (item[6].equalsIgnoreCase("N/A") == false)
+          pd.setHighPrice(Double.parseDouble(item[6].replace(',', '.')));
+        // 7 = Minimum
+        if (item[7].equalsIgnoreCase("N/A") == false)
+          pd.setLowPrice(Double.parseDouble(item[7].replace(',', '.')));
+        // 8 = Volume
+        if (item[8].equalsIgnoreCase("N/A") == false)
+          pd.setVolume(Integer.parseInt(item[8]));
+        // 9 = Bid Price
+        if (item[9].equalsIgnoreCase("N/A") == false)
+          pd.setBidPrice(Double.parseDouble(item[9].replace(',', '.')));
+        // 10 = Ask Price
+        if (item[10].equalsIgnoreCase("N/A") == false)
+          pd.setAskPrice(Double.parseDouble(item[10].replace(',', '.')));
+        // 11 = Close Price
+        if (item[11].equalsIgnoreCase("N/A") == false)
+          pd.setClosePrice(Double.parseDouble(item[11].replace(',', '.')));
       }
       in.close();
-    } catch(IOException x) {};
+    } catch(Exception x) {
+      System.out.println(x.getMessage() + ": " + line);
+    };
     
-    Enumeration enumeration = listeners.elements();
-    while(enumeration.hasMoreElements() == true)
+    iterator = listeners.iterator();
+    while(iterator.hasNext() == true)
     {
-      Object obj = enumeration.nextElement();
+      Object obj = iterator.next();
       if (obj instanceof SnapshotDataProvider)
         ((SnapshotDataProvider)obj).update();
       if (obj instanceof IndexDataProvider)

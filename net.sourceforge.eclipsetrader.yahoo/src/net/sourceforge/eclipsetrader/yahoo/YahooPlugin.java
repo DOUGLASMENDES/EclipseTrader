@@ -57,6 +57,7 @@ public class YahooPlugin extends AbstractUIPlugin implements IPropertyChangeList
       ps.setDefault("yahoo.url", "http://finance.yahoo.com/d/quotes.csv");
     else
       ps.setDefault("yahoo.url", "http://" + locale + ".finance.yahoo.com/d/quotes.csv");
+    ps.setDefault("yahoo.quote", "http://quote.yahoo.com/download/javasoft.beans");
     ps.setDefault("yahoo.charts.url", "http://table.finance.yahoo.com/table.csv");
     if (locale.equalsIgnoreCase("it"))
     {

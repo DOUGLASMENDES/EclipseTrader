@@ -63,7 +63,7 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     
     _v.add(new StringFieldEditor("yahoo.refresh", "Auto Refresh Interval", 3, group));
-    _v.add(new StringFieldEditor("yahoo.url", "CSV Download URL", group));
+    _v.add(new StringFieldEditor("yahoo.quote", "Quotes Download URL", group));
     Label label = new Label(group, SWT.NONE);
     label.setText("Use Field");
     label.setLayoutData(new GridData());
