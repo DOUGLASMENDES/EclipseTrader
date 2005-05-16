@@ -1021,7 +1021,8 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
 
   private boolean mouseDown = false;
   private int mousePreviousX = -1;
-  private GC mouseGC;
+  private int mousePreviousY = -1;
+  private GC[] mouseGC;
 
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
@@ -1037,7 +1038,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     IChartPlotter newSelection = null;
     if (selectedChart != null)
       ((ChartPlotter)selectedChart).setSelected(false);
-    
+
     for (int i = 0; i < chart.size(); i++)
     {
       ChartCanvas canvas = (ChartCanvas)chart.get(i);
@@ -1063,9 +1064,13 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
           else
           {
             mouseDown = true;
-            mouseGC = new GC((Canvas)e.getSource());
-            mouseGC.setXORMode(true);
-            mouseGC.setForeground(background);
+            mouseGC = new GC[chart.size()];
+            for (int g = 0; g < mouseGC.length; g++)
+            {
+              mouseGC[g] = new GC(((ChartCanvas)chart.get(g)).getChart());
+              mouseGC[g].setXORMode(true);
+              mouseGC[g].setForeground(background);
+            }
             mouseMove(e);
           }
         }
@@ -1078,28 +1083,6 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
             canvas.selectChart(selectedChart);
           }
         }
-/*        
-        if (newSelection != selectedChart)
-        {
-          selectedChart = newSelection;
-          if (selectedChart == null)
-            canvas.redraw();
-        }
-        else if (e.button == 1 && selectedZone == i)
-        {
-          mouseDown = true;
-          mouseGC = new GC((Canvas)e.getSource());
-          mouseGC.setXORMode(true);
-          mouseGC.setForeground(background);
-          mouseMove(e);
-        }
-        else
-        {
-          ((ChartCanvas)chart.elementAt(selectedZone)).setHilight(false);
-          selectedZone = i;
-          canvas.setHilight(true);
-        }
-*/
       }
     }
   }
@@ -1114,9 +1097,18 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       updateLabels();
       if (mousePreviousX != -1)
       {
-        mouseGC.drawLine(mousePreviousX, 0, mousePreviousX, ((Canvas)e.getSource()).getClientArea().height);
+        for (int g = 0; g < mouseGC.length; g++)
+        {
+          Canvas cc = ((ChartCanvas)chart.get(g)).getChart();
+          mouseGC[g].drawLine(mousePreviousX, 0, mousePreviousX, cc.getClientArea().height);
+        }
+        Canvas cc = ((ChartCanvas)chart.get(selectedZone)).getChart();
+        mouseGC[selectedZone].drawLine(0, mousePreviousY, cc.getClientArea().width, mousePreviousY);
+        ((ChartCanvas)chart.get(selectedZone)).updateScaleLabel(-1);
         mousePreviousX = -1;
-        mouseGC.dispose();
+        mousePreviousY = -1;
+        for (int g = 0; g < mouseGC.length; g++)
+          mouseGC[g].dispose();
       }
     }
   }
@@ -1128,20 +1120,29 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     if (mouseDown == true)
     {
       int index = (e.x - margin) / width;
+
       if (index >= 0 && index < data.length)
-      {
         updateLabels(index);
-        if (mousePreviousX != -1)
-          mouseGC.drawLine(mousePreviousX, 0, mousePreviousX, ((Canvas)e.getSource()).getClientArea().height);
-        mouseGC.drawLine(e.x, 0, e.x, ((Canvas)e.getSource()).getClientArea().height);
-        mousePreviousX = e.x;
-      }
       else
-      {
         updateLabels();
-        mouseGC.drawLine(mousePreviousX, 0, mousePreviousX, ((Canvas)e.getSource()).getClientArea().height);
-        mousePreviousX = -1;
+      
+      for (int g = 0; g < mouseGC.length; g++)
+      {
+        Canvas cc = ((ChartCanvas)chart.get(g)).getChart();
+        if (mousePreviousX != -1)
+          mouseGC[g].drawLine(mousePreviousX, 0, mousePreviousX, cc.getClientArea().height);
+        mouseGC[g].drawLine(e.x, 0, e.x, cc.getClientArea().height);
       }
+
+      Canvas cc = ((ChartCanvas)chart.get(selectedZone)).getChart();
+      if (mousePreviousY != -1)
+        mouseGC[selectedZone].drawLine(0, mousePreviousY, cc.getClientArea().width, mousePreviousY);
+      mouseGC[selectedZone].drawLine(0, e.y, cc.getClientArea().width, e.y);
+
+      ((ChartCanvas)chart.get(selectedZone)).updateScaleLabel(e.y);
+
+      mousePreviousX = e.x;
+      mousePreviousY = e.y;
     }
   }
 
