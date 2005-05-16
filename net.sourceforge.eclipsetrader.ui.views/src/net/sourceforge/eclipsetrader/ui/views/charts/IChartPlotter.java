@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -19,9 +19,6 @@ import org.eclipse.swt.graphics.GC;
 
 /**
  * Interface for chart plotters.
- * <p></p>
- * 
- * @author Marco Maccaferri
  */
 public interface IChartPlotter
 {
@@ -66,13 +63,13 @@ public interface IChartPlotter
 
   /**
    * Set the data used by this plotter to calculate the drawing.
-   * <p></p>
+   * 
+   * @param data - the data to use
    */
   public void setData(IChartData[] data);
   
   /**
-   * Get the main drawing color.
-   * <p></p>
+   * Get the default drawing color.
    * 
    * @return Color object
    */
@@ -80,25 +77,63 @@ public interface IChartPlotter
   
   /**
    * Paint the chart section.
-   * <p></p>
+   * 
+   * @param gc - the graphics context to draw on
+   * @param width - the width the canvas
+   * @param height - the height of the canvas
    */
   public void paintChart(GC gc, int width, int height);
   
   /**
    * Paint the scale section.
-   * <p></p>
+   * 
+   * @param gc - the graphics context to draw on
+   * @param width - the width the canvas
+   * @param height - the height of the canvas
    */
   public void paintScale(GC gc, int width, int height);
+  
+  /**
+   * Paint the chart grid.
+   * 
+   * @param gc - the graphics context to draw on
+   * @param width - the width the canvas
+   * @param height - the height of the canvas
+   */
+  public void paintGrid(GC gc, int width, int height);
 
   /**
    * Set a parameter value.
-   * <p></p>
+   * 
+   * @param name - the name of the parameter
+   * @param value - the value to set
    */
   public void setParameter(String name, String value);
   
   /**
    * Return the parameters map for the plotter.
-   * <p></p>
+   * 
+   * @return the parameters map
    */
   public HashMap getParameters();
+
+  /**
+   * Return the value at the given vertical position.
+   * 
+   * @param y - vertical position
+   * @param height - height of the containing canvas
+   * @return the value at the given position
+   */
+  public double getValue(int y, int height);
+
+  /**
+   * Return a string with the value at the given vertical position
+   * formatted accordingly with the plotter's range of values and
+   * presentation parameters.
+   * 
+   * @param y - vertical position
+   * @param height - height of the containing canvas
+   * @return the formatted value
+   */
+  public String getFormattedValue(int y, int height);
 }
