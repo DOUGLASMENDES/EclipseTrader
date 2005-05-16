@@ -11,6 +11,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +39,16 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
   private int smoothing = 10;
   private int type = AverageChart.EXPONENTIAL;
   private Color gridColor = new Color(null, 192, 192, 192);
+  private int[] gridValues = { 80, 50, 20 };
+  private NumberFormat nf = NumberFormat.getInstance();
   
   public RSIChart()
   {
     setName(Messages.getString("RSIChart.label")); //$NON-NLS-1$
+    nf.setGroupingUsed(false);
+    nf.setMinimumIntegerDigits(1);
+    nf.setMinimumFractionDigits(0);
+    nf.setMaximumFractionDigits(0);
   }
 
   /* (non-Javadoc)
@@ -57,7 +64,7 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
    */
   public String getDescription()
   {
-    return getName() + " (" + period + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+    return getName();
   }
   
   /* (non-Javadoc)
@@ -70,14 +77,6 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
     {
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
       setMinMax(-2, 102);
-      double pixelRatio = (height) / (getMax() - getMin());
-
-      gc.setForeground(gridColor);
-      gc.setLineStyle(SWT.LINE_DOT);
-      int y1 = (int)((70 - getMin()) * pixelRatio);
-      gc.drawLine(0, y1, width, y1);
-      y1 = (int)((30 - getMin()) * pixelRatio);
-      gc.drawLine(0, y1, width, y1);
       
       List rsi = new ArrayList();
 
@@ -126,6 +125,55 @@ public class RSIChart extends ChartPlotter implements IChartConfigurer
    */
   public void paintScale(GC gc, int width, int height)
   {
+    double pixelRatio = (height) / (getMax() - getMin());
+    Color textColor = new Color(null, 0, 0, 0);
+
+    gc.setForeground(textColor);
+    gc.setLineStyle(SWT.LINE_DOT);
+
+    for (int i = 0; i < gridValues.length; i++)
+    {
+      int y1 = height - (int)((gridValues[i] - getMin()) * pixelRatio);
+      gc.drawLine(1, y1, 5, y1);
+      String s = String.valueOf(gridValues[i]);
+      gc.drawString(s, 10, y1 - gc.stringExtent(s).y / 2 - 1);
+    }
+    
+    textColor.dispose();
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintGrid(org.eclipse.swt.graphics.GC, int, int)
+   */
+  public void paintGrid(GC gc, int width, int height)
+  {
+    double pixelRatio = (height) / (getMax() - getMin());
+
+    gc.setForeground(gridColor);
+    gc.setLineStyle(SWT.LINE_DOT);
+
+    for (int i = 0; i < gridValues.length; i++)
+    {
+      int y1 = height - (int)((gridValues[i] - getMin()) * pixelRatio);
+      gc.drawLine(0, y1, width, y1);
+    }    
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getValue(int, int)
+   */
+  public double getValue(int y, int height)
+  {
+    double pixelRatio = height / (getMax() - getMin());
+    return Math.floor((height - y) / pixelRatio + getMin() + 0.5);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getFormattedValue(int, int)
+   */
+  public String getFormattedValue(int y, int height)
+  {
+    return nf.format(getValue(y, height));
   }
 
   /* (non-Javadoc)
