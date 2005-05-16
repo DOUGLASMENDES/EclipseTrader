@@ -70,25 +70,6 @@ public class PriceChart extends ChartPlotter
       // Determina il rapporto tra l'altezza del canvas e l'intervallo min-max
       double pixelRatio = height / (getMax() - getMin());
 
-      gc.setForeground(gridColor);
-      gc.setLineStyle(SWT.LINE_DOT);
-      
-      double midPrice = roundToTick((getMax() - getMin()) / 2 + getMin());
-      int y1 = height - (int)((midPrice - getMin()) * pixelRatio);
-      gc.drawLine(0, y1, width, y1);
-      
-//      double step = roundToTick(midPrice + (max - min) / 5) - midPrice;
-      double step = getPriceTick(midPrice) * 2;
-      while((getMax() - getMin()) / step > 5)
-        step += getPriceTick(midPrice);
-      for (int i = 1; i <= 2; i++)
-      {
-        y1 = height - (int)((midPrice + step * i - getMin()) * pixelRatio);
-        gc.drawLine(0, y1, width, y1);
-        y1 = height - (int)((midPrice - step * i - getMin()) * pixelRatio);
-        gc.drawLine(0, y1, width, y1);
-      }
-
       // Tipo di linea
       gc.setLineStyle(SWT.LINE_SOLID);
 
@@ -127,7 +108,7 @@ public class PriceChart extends ChartPlotter
         int x = getColumnWidth() / 2;
         for (int i = 0, pa = 0; i < chartData.length; i++, x += getColumnWidth())
         {
-          y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
+          int y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
           int y2 = height - (int)((chartData[i].getMinPrice() - getMin()) * pixelRatio);
           gc.drawLine(x, y1, x, y2);
           
@@ -154,7 +135,7 @@ public class PriceChart extends ChartPlotter
         int x = getColumnWidth() / 2;
         for (int i = 0, pa = 0; i < chartData.length; i++, x += getColumnWidth())
         {
-          y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
+          int y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
           int y2 = height - (int)((chartData[i].getMinPrice() - getMin()) * pixelRatio);
           if (i > 0 && chartData[i].getOpenPrice() < chartData[i - 1].getClosePrice())
             gc.setForeground(neutralColor);
@@ -205,9 +186,6 @@ public class PriceChart extends ChartPlotter
       double step = getPriceTick(midPrice) * 2;
       while((getMax() - getMin()) / step > 5)
         step += getPriceTick(midPrice);
-//      double step = roundToTick(midPrice + (max - min) / 5) - midPrice;
-//      if (step < getPriceTick(midPrice))
-//        step = getPriceTick(midPrice) * 2;
       for (int i = 1; i <= 2; i++)
       {
         y1 = height - (int)((midPrice + step * i - getMin()) * pixelRatio);
@@ -226,6 +204,32 @@ public class PriceChart extends ChartPlotter
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintGrid(org.eclipse.swt.graphics.GC, int, int)
+   */
+  public void paintGrid(GC gc, int width, int height)
+  {
+    double pixelRatio = height / (getMax() - getMin());
+
+    gc.setForeground(gridColor);
+    gc.setLineStyle(SWT.LINE_DOT);
+    
+    double midPrice = roundToTick((getMax() - getMin()) / 2 + getMin());
+    int y1 = height - (int)((midPrice - getMin()) * pixelRatio);
+    gc.drawLine(0, y1, width, y1);
+    
+    double step = getPriceTick(midPrice) * 2;
+    while((getMax() - getMin()) / step > 5)
+      step += getPriceTick(midPrice);
+    for (int i = 1; i <= 2; i++)
+    {
+      y1 = height - (int)((midPrice + step * i - getMin()) * pixelRatio);
+      gc.drawLine(0, y1, width, y1);
+      y1 = height - (int)((midPrice - step * i - getMin()) * pixelRatio);
+      gc.drawLine(0, y1, width, y1);
+    }
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#setParameter(String name, String value)
    */
   public void setParameter(String name, String value)
@@ -235,16 +239,24 @@ public class PriceChart extends ChartPlotter
     super.setParameter(name, value);
   }
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#getValue(int, int)
+   */
+  public double getValue(int y, int height)
+  {
+    return roundToTick(super.getValue(y, height));
+  }
+
   /**
    * Rounds the given price to the nearest tick.<br>
    * 
    * @param price The price value
    * @return The rounded price
    */
-  public double roundToTick(double price)
+  public static double roundToTick(double price)
   {
     double tick = getPriceTick(price);
-    return ((int)(price / tick)) * tick;
+    return ((int)((price + tick / 2) / tick)) * tick;
   }
   
   /**
@@ -253,7 +265,7 @@ public class PriceChart extends ChartPlotter
    * @param price The price value
    * @return The price tick 
    */
-  public double getPriceTick(double price) 
+  public static double getPriceTick(double price) 
   {
     if (price <= 0.3)
       return 0.0005;
