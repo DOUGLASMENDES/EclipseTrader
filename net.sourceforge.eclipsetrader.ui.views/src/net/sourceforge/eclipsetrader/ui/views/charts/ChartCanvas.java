@@ -58,15 +58,20 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   private Composite container;
   private Composite chartContainer;
   private Composite labels;
+  private Composite scaleContainer;
   private Canvas chart;
   private Canvas scale;
   private Image chartImage;
+  private Label scaleLabel;
   private Color chartBackground = new Color(Display.getCurrent(), 255, 255, 240);
-  private Color scaleBackground = new Color(Display.getCurrent(), 255, 255, 240);
-  private Color separatorColor = new Color(null, 255, 0, 0);
+  private Color scaleBackground = new Color(Display.getCurrent(), 255, 255, 255);
+  private Color separatorColor = new Color(null, 0, 0, 0);
+  private Color hilightColor = new Color(null, 255, 0, 0);
+  private Color textColor = new Color(null, 0, 0, 0);
+  private Color scaleLabelColor = new Color(null, 255, 255, 0);
   private int columnWidth = 5;
   private int margin = 2;
-  private int scaleWidth = 60;
+  private int scaleWidth = 50;
   private Vector painters = new Vector();
   private IChartData[] data;
   private ChartPlotterSelection selection = new ChartPlotterSelection();
@@ -108,13 +113,22 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     chart = new Canvas(chartContainer, SWT.NONE);
     chart.setBackground(chartBackground);
     chart.addPaintListener(this);
-    
-    // Scale canvas
-    scale = new Canvas(container, SWT.NONE);
-    scale.setBackground(scaleBackground);
+
+    // Container for the scale canvas
+    scaleContainer = new Composite(container, SWT.NONE);
     GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL|GridData.VERTICAL_ALIGN_FILL);
     gridData.widthHint = scaleWidth;
-    scale.setLayoutData(gridData);
+    scaleContainer.setLayoutData(gridData);
+    scaleContainer.addControlListener(this);
+    
+    // Label that overlays the scale
+    scaleLabel = new Label(scaleContainer, SWT.NONE);
+    scaleLabel.setBackground(scaleLabelColor);
+    scaleLabel.setBounds(0, 0, 0, 0);
+
+    // Scale canvas
+    scale = new Canvas(scaleContainer, SWT.NONE);
+    scale.setBackground(scaleBackground);
     scale.addPaintListener(this);
     
     updateLabels();
@@ -162,12 +176,12 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     return container;
   }
   
-  public Composite getChart()
+  public Canvas getChart()
   {
     return chart;
   }
   
-  public Composite getScale()
+  public Canvas getScale()
   {
     return scale;
   }
@@ -297,8 +311,6 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
       {
         setControlSize();
         chart.redraw();
-        GridData gridData = (GridData)scale.getLayoutData();
-        gridData.widthHint = scaleWidth;
         scale.redraw();
         container.layout();
       }
@@ -416,25 +428,33 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
         {
           Object obj = painters.elementAt(i);
           if (obj instanceof IChartPlotter)
+          {
+            // Draw the grid lines only for the first plotter
+            if (i == 0)
+              ((IChartPlotter)obj).paintGrid(gc, chart.getClientArea().width, chart.getClientArea().height);
+            // Draw the charts
             ((IChartPlotter)obj).paintChart(gc, chart.getClientArea().width, chart.getClientArea().height);
+          }
         }
         gc.dispose();
         e.gc.drawImage(chartImage, 0, 0);
       }
       else if (e.getSource() == scale)
       {
-        for (int i = 0; i < painters.size(); i++)
+        if (painters.size() != 0)
         {
-          Object obj = painters.elementAt(i);
+          // The first plotter draws the scale
+          Object obj = painters.elementAt(0);
           if (obj instanceof IChartPlotter)
-            ((IChartPlotter)painters.elementAt(i)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
+            ((IChartPlotter)painters.elementAt(0)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
         }
   
+        e.gc.setLineStyle(SWT.LINE_SOLID);
         if (isHilight() == true)
-        {
+          e.gc.setForeground(hilightColor);
+        else
           e.gc.setForeground(separatorColor);
-          e.gc.drawLine(0, 0, 0, scale.getClientArea().height);
-        }
+        e.gc.drawLine(0, 0, 0, scale.getClientArea().height);
       }
     }
   }
@@ -451,7 +471,10 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
    */
   public void controlResized(ControlEvent e)
   {
-    setControlSize();
+    if (e.getSource() == chartContainer)
+      setControlSize();
+    else if (e.getSource() == scaleContainer)
+      scale.setSize(scaleWidth, scaleContainer.getClientArea().height);
   }
   
   private void setControlSize()
@@ -535,5 +558,17 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     }
     else
       labels.setBounds(0, 0, 0, 0);
+  }
+  
+  public void updateScaleLabel(int y)
+  {
+    if (painters.size() != 0 && y != -1)
+    {
+      ChartPlotter plotter = (ChartPlotter)painters.elementAt(0);
+      scaleLabel.setText("  " + plotter.getFormattedValue(y, scale.getClientArea().height));
+      scaleLabel.setBounds(1, y - 7, scale.getSize().x, 14);
+    }
+    else
+      scaleLabel.setBounds(0, 0, 0, 0);
   }
 }
