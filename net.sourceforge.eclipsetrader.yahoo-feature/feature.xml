@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsetrader.yahoo"
       label="%featureName"
-      version="0.13.2"
+      version="0.14.0"
       provider-name="%providerName">
 
    <install-handler/>
@@ -32,6 +32,6 @@
          id="net.sourceforge.eclipsetrader.yahoo"
          download-size="0"
          install-size="0"
-         version="0.13.2"/>
+         version="0.14.0"/>
 
 </feature>

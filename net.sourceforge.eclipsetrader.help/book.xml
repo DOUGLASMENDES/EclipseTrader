@@ -5,6 +5,7 @@
     <topic label="Reference">
         <topic label="API Reference">
             <topic label="net.sourceforge.eclipsetrader" href="reference/api/net/sourceforge/eclipsetrader/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.ui.views.charts" href="reference/api/net/sourceforge/eclipsetrader/ui/views/charts/package-summary.html"/>
         </topic>
         <topic label="Extension Points Reference" href="reference/extension-points/index.html">
             <topic label="net.sourceforge.eclipsetrader.dataProvider" href="reference/extension-points/net_sourceforge_eclipsetrader_dataProvider.html"/>

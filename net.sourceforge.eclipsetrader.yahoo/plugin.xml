@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.yahoo"
    name="Yahoo Finance"
-   version="0.13.2"
+   version="0.14.0"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
 
@@ -118,7 +118,7 @@
             <index
                   ticker="TSTAR"
                   label="TechStar"
-                  symbol="^TSTAR"/>
+                  symbol="I950.MI"/>
             <index
                   ticker="STAR"
                   label="Star"
