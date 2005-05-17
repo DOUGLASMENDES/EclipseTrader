@@ -427,7 +427,7 @@ public class ChartPlotter implements IChartPlotter
     min = 0; max = 0;
     for (int i = 0; i < value.length; i++)
     {
-      if (min == 0 || value[i] < min)
+      if (i == 0 || value[i] < min)
         min = value[i];
       if (value[i] > max)
         max = value[i];
@@ -458,7 +458,7 @@ public class ChartPlotter implements IChartPlotter
   {
     for (int i = 0; i < value.length; i++)
     {
-      if (min == 0 || value[i] < min)
+      if (i == 0 || value[i] < min)
         min = value[i];
       if (value[i] > max)
         max = value[i];
@@ -491,7 +491,7 @@ public class ChartPlotter implements IChartPlotter
     for (int i = 0; i < value.size(); i++)
     {
       double t = ((Double)value.get(i)).doubleValue();
-      if (min == 0 || t < min)
+      if (i == 0 || t < min)
         min = t;
       if (t > max)
         max = t;
@@ -523,7 +523,7 @@ public class ChartPlotter implements IChartPlotter
     for (int i = 0; i < value.size(); i++)
     {
       double t = ((Double)value.get(i)).doubleValue();
-      if (min == 0 || t < min)
+      if (i == 0 || t < min)
         min = t;
       if (t > max)
         max = t;
