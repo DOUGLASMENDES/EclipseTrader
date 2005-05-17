@@ -108,6 +108,8 @@
          <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.indices"/>
          <actionSet id="net.sourceforge.eclipsetrader.ui.portfolio"/>
          <actionSet id="net.sourceforge.eclipsetrader.views.chartActionSet"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.ChartsPerspective"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.NewsPerspective"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="net.sourceforge.eclipsetrader.ChartsPerspective">
          <view
@@ -120,6 +122,9 @@
                id="net.sourceforge.eclipsetrader.ui.views.ChartView:*"
                relationship="stack"
                relative="org.eclipse.ui.editorss"/>
+         <actionSet id="net.sourceforge.eclipsetrader.views.chartActionSet"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.NewsPerspective"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.TraderPerspective"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="net.sourceforge.eclipsetrader.NewsPerspective">
          <view
@@ -134,6 +139,7 @@
          <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.News"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.NewsBrowser"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.ui.views.Portfolio"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.ChartsPerspective"/>
          <perspectiveShortcut id="net.sourceforge.eclipsetrader.TraderPerspective"/>
       </perspectiveExtension>
    </extension>
@@ -567,6 +573,13 @@
             visible="true"
             id="net.sourceforge.eclipsetrader.views.actionSet">
          <action
+               label="%actions.showStockList"
+               tooltip="%actions.showStockList"
+               class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
+               style="push"
+               menubarPath="window/showView"
+               id="net.sourceforge.eclipsetrader.actions.showStockList"/>
+         <action
                label="%actions.showNews"
                tooltip="%actions.showNews"
                class="net.sourceforge.eclipsetrader.ui.internal.views.WorkbenchActions"
@@ -763,7 +776,7 @@
             </enablement>
          </action>
          <menu
-               label="Indicatori"
+               label="%chart.indicators"
                path="chart/group2"
                id="indicators">
             <separator name="group.top"/>
@@ -806,7 +819,7 @@
             </enablement>
          </action>
          <menu
-               label="Mostra"
+               label="%chart.show"
                path="chart/group2"
                id="show">
             <separator name="group.top"/>
@@ -959,6 +972,5 @@
             keySequence="Command+Arrow_Left"
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    </extension>
-
 
 </plugin>
