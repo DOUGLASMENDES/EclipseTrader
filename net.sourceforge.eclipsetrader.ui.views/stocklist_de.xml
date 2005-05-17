@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stocklist description="XETRA DAX" suffix=".DE">
+    <data symbol="500340" ticker="ADSG">
+        <description>ADIDAS SALOMON</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="840400" ticker="ALVG">
+        <description>ALLIANZ AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="760080" ticker="ALTG">
+        <description>ALTANA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="515100" ticker="BASF">
+        <description>BASF AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="575200" ticker="BAYG">
+        <description>BAYER AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="519000" ticker="BMWG">
+        <description>BAY MOT WERKE</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="803200" ticker="CBKG">
+        <description>COMMERZBANK AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="543900" ticker="CONG">
+        <description>CONTINENTAL AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="710000" ticker="DCXGn">
+        <description>DAIMLERCHRYSLER</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="514000" ticker="DBKGn">
+        <description>DEUTSCHE BANK N</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="555200" ticker="DPWGn">
+        <description>DEUTSCHE POST NA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="581005" ticker="DB1Gn">
+        <description>DT BOERSE N</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="823212" ticker="LHAG">
+        <description>DT LUFTHANSA AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="555750" ticker="DTEGn">
+        <description>DT TELEKOM N</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="761440" ticker="EONG">
+        <description>E.ON AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="578580" ticker="FMEG">
+        <description>FRESENIUS MEDI</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="604843" ticker="HNKG_p">
+        <description>HENKEL KGAA VZ</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="802200" ticker="HVMG">
+        <description>HYPOVEREINSBANK</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="623100" ticker="IFXGn">
+        <description>INFINEON TECH N</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="648300" ticker="LING">
+        <description>LINDE</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="593700" ticker="MANG">
+        <description>MAN AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="725750" ticker="MEOG">
+        <description>METRO AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="843002" ticker="MUVGn">
+        <description>MUENCH. RUECK N</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="703712" ticker="RWEG">
+        <description>RWE ST A</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="716460" ticker="SAPG">
+        <description>SAP AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="717200" ticker="SCHG">
+        <description>SCHERING AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="723610" ticker="SIEGn">
+        <description>SIEMENS N</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="750000" ticker="TKAG">
+        <description>THYSSEN KRUPP</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="695200" ticker="TUIG">
+        <description>TUI AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="766400" ticker="VOWG">
+        <description>VOLKSWAGEN AG</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+</stocklist>

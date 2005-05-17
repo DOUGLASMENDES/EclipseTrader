@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stocklist description="OSE ALL SHARE GI" suffix="OL">
+    <data symbol="AAV" ticker="AAV">
+        <description>ADRESSEAVISEN</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ACTA" ticker="ACTA">
+        <description>ACTA HOLDING</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ACTIVE" ticker="ACTIVE">
+        <description>ACTIVE 24</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="AFG" ticker="AFG">
+        <description>AF GRUPPEN A</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="AFK" ticker="AFK">
+        <description>ARENDALS F.KOMP</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="AIK" ticker="AIK">
+        <description>AKTIV KAPITAL</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="AKER" ticker="AKER">
+        <description>AKER ASA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="AKVER" ticker="AKVER">
+        <description>AKER KVAERNER</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="AKY" ticker="AKY">
+        <description>AKER YARDS</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ALX" ticker="ALX">
+        <description>ALTINEX</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="APP" ticker="APP">
+        <description>APPTIX</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ASC" ticker="ASC">
+        <description>ABG SUND COLLIER</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ASD" ticker="ASD">
+        <description>AXIS SHIELD</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="AXX" ticker="AXX">
+        <description>AXXESSIT</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="BEL" ticker="BEL">
+        <description>BELSHIPS</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="BIRD" ticker="BIRD">
+        <description>BIRD</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="BJORGE" ticker="BJORGE">
+        <description>BJORGE ASA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="BLO" ticker="BLO">
+        <description>BLOM</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="BMA" ticker="BMA">
+        <description>BYGGMA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="BON" ticker="BON">
+        <description>BONHEUR</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="BOR" ticker="BOR">
+        <description>BORGESTAD A</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CATCH" ticker="CATCH">
+        <description>CATCH</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CECO" ticker="CECO">
+        <description>CAMILLO EITZEN</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CHS" ticker="CHS">
+        <description>CHOICE HOTEL</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CNR" ticker="CNR">
+        <description>CANARGO ENERGY</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CNS" ticker="CNS">
+        <description>CONSEPTOR</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="COGR" ticker="COGR">
+        <description>CONSORTE GRP ASA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="COR" ticker="COR">
+        <description>CORROCEAN</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="COV" ticker="COV">
+        <description>CONTEXT VISION</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CRU" ticker="CRU">
+        <description>CREW GOLD CORP</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="CTG" ticker="CTG">
+        <description>C TYBRING-GJEDDE</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="DAT" ticker="DAT">
+        <description>DATA RESPONS</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="DIAG" ticker="DIAG">
+        <description>DIAGENIC</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="DNBNOR" ticker="DNBNOR">
+        <description>DNBNOR</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="DNO" ticker="DNO">
+        <description>DNO</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="DOF" ticker="DOF">
+        <description>DISTRICT OFFSHOR</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="DOM" ticker="DOM">
+        <description>DOMSTEIN</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="DYNA" ticker="DYNA">
+        <description>DYNAPEL SYSTM</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ECU" ticker="ECU">
+        <description>ECUANOR</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="EDBASA" ticker="EDBASA">
+        <description>EDB BUSINES PART</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="EID" ticker="EID">
+        <description>EIDSIVA REDERI</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="EKO" ticker="EKO">
+        <description>EKORNES</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ELK" ticker="ELK">
+        <description>ELKEM A</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="ELT" ticker="ELT">
+        <description>ELTEK</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="EME" ticker="EME">
+        <description>EMENTOR</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="EXE" ticker="EXE">
+        <description>EXENSE</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="EXPERT" ticker="EXPERT">
+        <description>EXPERT</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="FAR" ticker="FAR">
+        <description>FARSTAD SHIPPING</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="FAST" ticker="FAST">
+        <description>FAST S&amp;T ASA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="FIND" ticker="FIND">
+        <description>FINDEXA</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="FJO" ticker="FJO">
+        <description>FJORD SEAFOOD</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+    <data symbol="STO" ticker="STO">
+        <description>STATOIL</description>
+        <minimum_quantity>1</minimum_quantity>
+    </data>
+</stocklist>
