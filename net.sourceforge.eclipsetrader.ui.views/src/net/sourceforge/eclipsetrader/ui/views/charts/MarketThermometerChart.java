@@ -89,7 +89,6 @@ public class MarketThermometerChart extends ChartPlotter implements IChartConfig
         therm.add(0, new Double(thermometer));
       }
       setMinMax(therm);
-
       if (smoothing > 1)
         therm = AverageChart.getMA(therm, smoothType, smoothing);
       
@@ -133,7 +132,7 @@ public class MarketThermometerChart extends ChartPlotter implements IChartConfig
         gc.setForeground(downColor);
 
       int y1 = height - (int)((thrm - getMin()) * pixelRatio);
-      int y2 = height;
+      int y2 = height - (int)((0 - getMin()) * pixelRatio);
       gc.drawLine(x, y1, x, y2);
 
       thermLoop--;
