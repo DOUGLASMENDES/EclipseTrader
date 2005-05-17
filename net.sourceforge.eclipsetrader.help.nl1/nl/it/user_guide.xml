@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Guida Utente">
+    <topic label="Per Iniziare">
+        <topic label="Primo Avvio" href="guide/first_run.html"/>
+    </topic>
+    <topic label="Componenti">
+        <topic label="Tabellone Prezzi" href="guide/stockwatch.html"/>
+        <topic label="Grafici Intraday" href="guide/intraday_chart.html"/>
+        <topic label="Grafici Storici" href="guide/history_chart.html"/>
+        <topic label="Indicatori Analisi Tecnica" href="guide/indicators.html"/>
+        <topic label="Book Multilivello" href="guide/level2.html"/>
+        <topic label="Notizie" href="guide/news.html"/>
+        <topic label="Indici" href="guide/indices.html"/>
+    </topic>
+    <topic label="Indicatori" href="guide/indicators/index.html">
+        <topic label="Accumulation Distribution - AD" href="guide/indicators/ad.html"/>
+        <topic label="Average True Range - ATR" href="guide/indicators/atr.html"/>
+        <topic label="Bollinger Bands - BB" href="guide/indicators/bb.html"/>
+        <topic label="Commodity Channel Index - CCI" href="guide/indicators/cci.html"/>
+        <topic label="Detrended Price Oscillator - DPO" href="guide/indicators/dpo.html"/>
+        <topic label="Directional Movement Index - DMI" href="guide/indicators/dmi.html"/>
+        <topic label="Elder's Market Thermometer - THERM" href="guide/indicators/therm.html"/>
+        <topic label="Elder's Safezone Stop - SZ" href="guide/indicators/sz.html"/>
+        <topic label="Force Index - FI" href="guide/indicators/fi.html"/>
+        <topic label="Moving Average - MA" href="guide/indicators/ma.html"/>
+        <topic label="Moving Average Convergence Divergence - MACD" href="guide/indicators/macd.html"/>
+        <topic label="Moving Avergate Oscillator - MAOSC" href="guide/indicators/maosc.html"/>
+        <topic label="Relative Strength Index - RSI" href="guide/indicators/rsi.html"/>
+        <topic label="Stochastic - STOCH" href="guide/indicators/stoch.html"/>
+        <topic label="Symbol - SYMBOL" href="guide/indicators/symbol.html"/>
+        <topic label="Trend - TREND" href="guide/indicators/trend.html"/>
+        <topic label="Volume Trends - VT" href="guide/indicators/vt.html"/>
+    </topic>
+    <!-- install update topics -->
+    <topic label="Aggiornamento con il Gestore aggiornamenti" href="tasks/tasks-36.htm" >
+        <topic label="Esame della configurazione corrente" href="tasks/tasks-33.htm" />
+        <topic label="Ripristino di una configurazione salvata" href="tasks/tasks-38.htm" />
+        <topic label="Installazione di nuove funzioni con il Gestore aggiornamenti" href="tasks/tasks-34.htm" />
+        <topic label="Abilitazione, disabilitazione e disinstallazione di una funzione" href="tasks/tasks-35.htm" />
+        <topic label="Criteri di aggiornamento" href="tasks/tasks-37.htm" />
+        <topic label="Programma di pianificazione aggiornamenti automatici" href="tasks/tasks-37a.htm" />
+    </topic>
+    <topic label="Aspetti Legali" href="guide/notices.html"/>
+</toc>

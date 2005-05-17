@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- default platform documentation stylesheets -->
+<style>@import url("../guide/book.css");</style>
+<!-- default schema documentation stylesheets -->
+<style>@import url("../guide/schema.css");</style>
+</HEAD>
+<BODY>
+<h1>Programma di pianificazione aggiornamenti automatici</h1>
+<p>La funzione Aggiornamento di Eclipse è in grado di cercare gli aggiornamenti delle funzioni installate
+su base periodica senza l'assistenza dell'utente. L'utente può configurare come deve essere eseguita la ricerca
+utilizzando la pagina delle preferenze. Potranno essere configurate le opzioni di pianificazione e di
+scaricamento.</p>
+<h3>Opzioni di pianificazione</h3>
+<p>Ogni volta che viene avviato un prodotto basato su Eclipse, il plugin del programma di pianificazione degli
+aggiornamenti verrà attivato in base alla pianificazione scelta. Gli utenti spotranno scegliere fra:</p>
+<ul>
+  <li>Nessuna ricerca automatica</li>
+  <li>All'avvio (impostazione predefinita)</li>
+  <li>Ogni giorno ad un'ora specifica (ad esempio alle 15:00) *</li>
+  <li>In un giorno specifico della settimana ad un'ora specifica (ad esempio Lunedì alle 8:00) *</li>
+</ul>
+<p>* presumendo che l'applicazione sia attiva. Se l'applicazione non è attiva all'ora pianificata e la
+ricerca è scaduta, verrà iniziata immediatamente al successivo avvio.</p>
+<h3>Opzioni di scaricamento</h3>
+<p>Le opzioni di pianificazione definiscono la frequenza della ricerca automatica ma non
+cosa succede realmente al momento della ricerca. Le opzioni di scaricamento
+controllano questa fase (questo insieme di opzioni viene disabilitato se viene disattivata la
+ricerca automatica). Gli utenti possono scegliere fra:</p>
+<ul>
+  <li>Ricerca gli aggiornamenti e invia una notifica quando sono disponibili (impostazione predefinita)</li>
+  <li>Scarica nuovi aggiornamenti automaticamente e invia una notifica quando sono pronti per l'installazione</li>
+</ul>
+<p>In entrambi i casi, al momento stabilito dalle opzioni di pianificazione, il programma di pianificazione
+aggiornamenti creerà ed avvierà un lavoro di ricerca che verrà eseguito in background. Se non vengono
+rilevati aggiornamenti non verranno visualizzati messaggi. Se ci sono aggiornamenti, la procedura proseguirà
+in base all'opzione di scaricamento scelta.</p>
+<h4>Ricerca e notifica</h4>
+<p>Se viene selezionata solo la ricerca, verrà visualizzata una finestra di messaggio, che informa l'utente
+che sono stati individuati degli aggiornamenti:</p>
+<p><font color="#0000FF">Sono stati rilevati dei nuovi aggiornamenti per questo prodotto. Si desidera
+scaricarli?</font></p>
+<p><font color="#0000FF">[Sì] [No] </font></p>
+<p>Se viene selezionato 'Si', verrà visualizzato un aggiornamento guidato, con l'elenco degli aggiornamenti rilevati. La stessa
+procedura guidata viene utilizzata quando viene avviata una ricerca manuale di aggiornamenti tramite
+Guida&gt;Aggiornamenti software&gt;Trova e installa. </p>
+<p>Se viene selezionato 'No', la finestra di dialogo verrà chiusa e gli aggiornamenti ignorati.</p>
+<h4>Scaricamento di nuovi aggiornamenti</h4>
+<p>Se è stata selezionata la seconda opzione (Scarica aggiornamenti automaticamente), il lavoro
+di ricerca sarà pianificato come prima, ma quando vengono rilevati degli aggiornamenti lo scaricamento
+inizierà immediatamente. Quando tutte le funzioni saranno state correttamente scaricate nello spazio
+temporaneo, verrà visualizzata una finestra di messaggio diversa:</p>
+<p><font color="#0000FF">Sono stati trovati e scaricati dei nuovi aggiornamenti. Si desidera installarli?</font></p>
+<p><font color="#0000FF">[Sì] [No] </font></p>
+<p>Se viene selezionato 'No', la finestra di dialogo verrà chiusa e tutti i dati dello spazio temporaneo
+verranno cancellati. Se viene selezionato 'Sì', inizierà l'installazione (verrà visualizzato solo
+un controllo dell'avanzamento, nessuna procedura guidata). </p>
+<p>Se si sceglie di non installare le funzioni scaricate, ed in un successivo momento si avvia
+un Trova ed installa per gli aggiornamenti, i file scaricati verranno riutilizzati
+(sono nella cache), a meno che non siano disponibili delle versioni più recenti sul server o sia stato riavviato Eclipse. </p>
+
+<br>
+<p><img src="cpy_ibm.gif"></p>
+<p></p>
+
+</p>
+</BODY>
+</HTML>
