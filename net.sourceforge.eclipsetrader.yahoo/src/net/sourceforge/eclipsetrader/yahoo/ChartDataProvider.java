@@ -178,7 +178,8 @@ public class ChartDataProvider implements IChartDataProvider, IPropertyChangeLis
             break;
         }
       } catch(Exception e) {
-        e.printStackTrace(); 
+        e.printStackTrace();
+        break;
       };
     } while(to.before(today));
 
