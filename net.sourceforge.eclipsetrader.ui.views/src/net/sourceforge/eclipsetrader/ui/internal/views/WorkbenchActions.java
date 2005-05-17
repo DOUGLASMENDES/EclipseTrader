@@ -67,6 +67,13 @@ public class WorkbenchActions implements IWorkbenchWindowActionDelegate
         page.showView("net.sourceforge.eclipsetrader.ui.views.indices");
       } catch (PartInitException e) {}
     }
+    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.actions.showStockList") == true)
+    {
+      IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+      try {
+        page.showView("net.sourceforge.eclipsetrader.ui.views.stockList");
+      } catch (PartInitException e) {}
+    }
   }
 
   /* (non-Javadoc)
