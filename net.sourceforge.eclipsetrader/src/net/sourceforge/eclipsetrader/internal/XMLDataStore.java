@@ -335,7 +335,7 @@ public class XMLDataStore implements IDataStore
   
   public void add(IExtendedData data)
   {
-    List v = Arrays.asList(dataArray);
+    List v = new ArrayList(Arrays.asList(dataArray));
     v.add(data);
     IExtendedData[] da = new IExtendedData[v.size()];
     v.toArray(da);
