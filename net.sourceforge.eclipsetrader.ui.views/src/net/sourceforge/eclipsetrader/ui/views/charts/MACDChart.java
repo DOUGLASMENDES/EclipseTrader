@@ -11,6 +11,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,19 +36,26 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
   private static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.macd"; //$NON-NLS-1$
   private int fastPeriod = 12;
   private int slowPeriod = 26;
-  private int type = AverageChart.EXPONENTIAL;
   private int trigPeriod = 9;
+  private int type = AverageChart.SIMPLE;
   private Color trigColor = new Color(null, 192, 192, 0);
   private Color oscColor = new Color(null, 192, 0, 0);
   private ColorSelector trigColorSelector;
   private ColorSelector oscColorSelector;
+  private Color gridColor = new Color(null, 192, 192, 192);
   private List macd = new ArrayList();
   private List osc = new ArrayList();
   private List signal = new ArrayList();
+  private double[] gridValues = { 1, 0.5, 0, -0.5, -1 };
+  private NumberFormat nf = NumberFormat.getInstance();
   
   public MACDChart()
   {
     setName(Messages.getString("MACDChart.label")); //$NON-NLS-1$
+    nf.setGroupingUsed(false);
+    nf.setMinimumIntegerDigits(1);
+    nf.setMinimumFractionDigits(2);
+    nf.setMaximumFractionDigits(2);
   }
 
   /* (non-Javadoc)
@@ -85,24 +93,18 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
       List sma = AverageChart.getMA(chartData, type, slowPeriod);
       int smaLoop = sma.size() - 1;
       
-      double min = 0, max = 0;
       while (fmaLoop > -1 && smaLoop > -1)
       {
         double t = ((Double)fma.get(fmaLoop)).doubleValue() - ((Double)sma.get(smaLoop)).doubleValue();
         macd.add(0, new Double(t));
         fmaLoop--;
         smaLoop--;
-        if (min == 0 || t < min)
-          min = t;
-        if (t > max)
-          max = t;
       }
       setMinMax(macd);
 
       signal = AverageChart.getMA(macd, type, trigPeriod);
       updateMinMax(signal);
 
-      double omin = 0, omax = 0;
       int floop = macd.size() - 1;
       int sloop = signal.size() - 1;
       while (floop > -1 && sloop > -1)
@@ -111,10 +113,6 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
         osc.add(0, new Double(t));
         floop--;
         sloop--;
-        if (omin == 0 || t < omin)
-          omin = t;
-        if (t > omax)
-          omax = t;
       }
       updateMinMax(osc);
     }
@@ -139,10 +137,42 @@ public class MACDChart extends ChartPlotter implements IChartConfigurer
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintGrid(org.eclipse.swt.graphics.GC, int, int)
+   */
+  public void paintGrid(GC gc, int width, int height)
+  {
+    double pixelRatio = (height) / (getMax() - getMin());
+
+    gc.setForeground(gridColor);
+    gc.setLineStyle(SWT.LINE_DOT);
+
+    for (int i = 0; i < gridValues.length; i++)
+    {
+      int y1 = height - (int)((gridValues[i] - getMin()) * pixelRatio);
+      gc.drawLine(0, y1, width, y1);
+    }    
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter#paintScale(GC gc, int width, int height)
    */
   public void paintScale(GC gc, int width, int height)
   {
+    double pixelRatio = (height) / (getMax() - getMin());
+    Color textColor = new Color(null, 0, 0, 0);
+
+    gc.setForeground(textColor);
+    gc.setLineStyle(SWT.LINE_DOT);
+
+    for (int i = 0; i < gridValues.length; i++)
+    {
+      int y1 = height - (int)((gridValues[i] - getMin()) * pixelRatio);
+      gc.drawLine(1, y1, 5, y1);
+      String s = String.valueOf(gridValues[i]);
+      gc.drawString(s, 10, y1 - gc.stringExtent(s).y / 2 - 1);
+    }
+    
+    textColor.dispose();
   }
 
   public void drawOscillatorLine(List value, GC gc, int height, int ofs)
