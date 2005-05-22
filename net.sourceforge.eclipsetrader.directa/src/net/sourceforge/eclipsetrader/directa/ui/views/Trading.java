@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004-2005 Marco Maccaferri and others.
- * All rights reserved. This program and the accompanying materials 
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
  *******************************************************************************/
@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 
-public class Trading extends ViewPart implements SelectionListener, IStreamerEventReceiver, IPropertyChangeListener 
+public class Trading extends ViewPart implements SelectionListener, IStreamerEventReceiver, IPropertyChangeListener
 {
   private Composite entryTable;
   private Text symbol;
@@ -82,30 +82,30 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     entryTable = new Composite(parent, SWT.NULL);
     entryTable.setLayoutData(new GridData(GridData.FILL_VERTICAL));
     entryTable.setLayout(new GridLayout(8, false));
-    
+
     DropTarget target = new DropTarget(entryTable, DND.DROP_COPY);
     final TextTransfer textTransfer = TextTransfer.getInstance();
     Transfer[] types = new Transfer[] { textTransfer };
     target.setTransfer(types);
     target.addDropListener(new DropTargetListener() {
-      public void dragEnter(DropTargetEvent event) 
+      public void dragEnter(DropTargetEvent event)
       {
         event.detail = DND.DROP_COPY;
       }
-      public void dragOver(DropTargetEvent event) 
+      public void dragOver(DropTargetEvent event)
       {
         event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
       }
-      public void dragOperationChanged(DropTargetEvent event) 
+      public void dragOperationChanged(DropTargetEvent event)
       {
       }
-      public void dragLeave(DropTargetEvent event) 
+      public void dragLeave(DropTargetEvent event)
       {
       }
-      public void dropAccept(DropTargetEvent event) 
+      public void dropAccept(DropTargetEvent event)
       {
       }
-      public void drop(DropTargetEvent event) 
+      public void drop(DropTargetEvent event)
       {
         String[] item = ((String)event.data).split(";");
         symbol.setText(item[2]);
@@ -156,10 +156,11 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     marketPhase.add("MTA");
     marketPhase.add("clos-MTA");
     marketPhase.add("After Hours");
+    marketPhase.add("open//");
     marketPhase.setText(marketPhase.getItem(0));
     marketPhase.setLayoutData(new GridData());
     // Prima riga
-    
+
     // Seconda riga
     label = new Label(entryTable, SWT.NONE);
     label.setText("");
@@ -174,7 +175,7 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     gridData = new GridData();
     gridData.widthHint = 50;
     sell.setLayoutData(gridData);
-    
+
     label = new Label(entryTable, SWT.NONE);
     label.setText("Prezzo");
     label.setLayoutData(new GridData());
@@ -221,7 +222,7 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     gridData.horizontalSpan = 2;
     button.setLayoutData(gridData);
     // Seconda riga
-    
+
     Composite info = new Composite(entryTable, SWT.NONE);
     gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
     gridData.horizontalSpan = 8;
@@ -283,24 +284,24 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     DropTarget dropSell = new DropTarget(sell, DND.DROP_COPY);
     dropSell.setTransfer(types);
     dropSell.addDropListener(new DropTargetListener() {
-      public void dragEnter(DropTargetEvent event) 
+      public void dragEnter(DropTargetEvent event)
       {
         event.detail = DND.DROP_COPY;
       }
-      public void dragOver(DropTargetEvent event) 
+      public void dragOver(DropTargetEvent event)
       {
         event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
       }
-      public void dragOperationChanged(DropTargetEvent event) 
+      public void dragOperationChanged(DropTargetEvent event)
       {
       }
-      public void dragLeave(DropTargetEvent event) 
+      public void dragLeave(DropTargetEvent event)
       {
       }
-      public void dropAccept(DropTargetEvent event) 
+      public void dropAccept(DropTargetEvent event)
       {
       }
-      public void drop(DropTargetEvent event) 
+      public void drop(DropTargetEvent event)
       {
         String[] item = ((String)event.data).split(";");
         symbol.setText(item[2]);
@@ -309,28 +310,28 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
         price.setText(pf.format(Double.parseDouble(item[4])));
       }
     });
-    
+
     DropTarget dropBuy = new DropTarget(buy, DND.DROP_COPY);
     dropBuy.setTransfer(types);
     dropBuy.addDropListener(new DropTargetListener() {
-      public void dragEnter(DropTargetEvent event) 
+      public void dragEnter(DropTargetEvent event)
       {
         event.detail = DND.DROP_COPY;
       }
-      public void dragOver(DropTargetEvent event) 
+      public void dragOver(DropTargetEvent event)
       {
         event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
       }
-      public void dragOperationChanged(DropTargetEvent event) 
+      public void dragOperationChanged(DropTargetEvent event)
       {
       }
-      public void dragLeave(DropTargetEvent event) 
+      public void dragLeave(DropTargetEvent event)
       {
       }
-      public void dropAccept(DropTargetEvent event) 
+      public void dropAccept(DropTargetEvent event)
       {
       }
-      public void drop(DropTargetEvent event) 
+      public void drop(DropTargetEvent event)
       {
         String[] item = ((String)event.data).split(";");
         symbol.setText(item[2]);
@@ -339,7 +340,7 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
         price.setText(pf.format(Double.parseDouble(item[4])));
       }
     });
-    
+
     changeBackground(entryTable);
     changeForeground(entryTable);
     label1.setForeground(valForeground);
@@ -353,7 +354,7 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     orderStatusChanged();
     Streamer.getInstance().addEventReceiver(this);
   }
-  
+
   /* (non-Javadoc)
    * @see org.eclipse.ui.IWorkbenchPart#dispose()
    */
@@ -361,9 +362,9 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
   {
     IPreferenceStore pref = DirectaPlugin.getDefault().getPreferenceStore();
     pref.removePropertyChangeListener(this);
-    
+
     Streamer.getInstance().removeEventReceiver(this);
-    
+
     super.dispose();
   }
 
@@ -381,14 +382,14 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
   public void dataUpdated()
   {
   }
-  
+
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.directa.internal.IStreamerEventReceiver#dataUpdated(net.sourceforge.eclipsetrader.IBasicData)
    */
   public void dataUpdated(IBasicData data)
   {
   }
-  
+
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.directa.internal.IStreamerEventReceiver#orderStatusChanged()
    */
@@ -400,7 +401,7 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     nf.setMinimumIntegerDigits(1);
     nf.setMaximumFractionDigits(0);
     nf.setMinimumFractionDigits(0);
-    
+
     Streamer streamer = Streamer.getInstance();
     label1.setText(nf.format(streamer.getDisponibile()) + " (Lit. " + nf.format(streamer.getDisponibile() * 1936.27) + ")");
     label2.setText(nf.format(streamer.getLiquiditaAzioni()));
@@ -408,14 +409,14 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
     label4.setText(nf.format(streamer.getDisponibileAzioni()));
     label1.getParent().layout();
   }
-  
+
   public void widgetSelected(SelectionEvent e)
   {
     if (e.getSource() instanceof Button)
     {
       Button b = (Button)e.getSource();
       String action = (String)b.getData();
-      
+
       if (action.equalsIgnoreCase("sendOrder") == true)
       {
         boolean valid = valid30Days.getSelection();
@@ -434,6 +435,9 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
           case 3: // After-hours
             phase = "5";
             break;
+          case 4: // open
+            phase = "7";
+            break;
         }
         Streamer streamer = Streamer.getInstance();
         if (streamer.isLoggedIn() == false)
@@ -445,12 +449,12 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
       }
     }
   }
-  
+
   public void widgetDefaultSelected(SelectionEvent e)
   {
   }
 
-  private double getPriceTick(double price) 
+  private double getPriceTick(double price)
   {
     if (price <= 0.25)
       return 0.0001;
@@ -495,7 +499,7 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
       changeBackground(entryTable);
     }
   }
-  
+
   private void changeBackground(Composite composite)
   {
     composite.setBackground(background);
@@ -509,7 +513,7 @@ public class Trading extends ViewPart implements SelectionListener, IStreamerEve
         changeBackground((Composite)controls[i]);
     }
   }
-  
+
   private void changeForeground(Composite composite)
   {
     composite.setForeground(foreground);
