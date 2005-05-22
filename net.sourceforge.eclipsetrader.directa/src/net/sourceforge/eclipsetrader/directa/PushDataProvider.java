@@ -10,10 +10,11 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.directa;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Timer;
-import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.DataCollector;
 import net.sourceforge.eclipsetrader.DataProvider;
@@ -117,10 +118,10 @@ public class PushDataProvider extends DataProvider implements IStreamerEventRece
     Iterator e = _rtListener.values().iterator();
     while(e.hasNext() == true)
     {
-      Vector _v = (Vector)e.next();
+      List _v = (ArrayList)e.next();
       for (int i = 0; i < _v.size(); i++)
       {
-        IRealtimeChartListener listener = (IRealtimeChartListener)_v.elementAt(i);
+        IRealtimeChartListener listener = (IRealtimeChartListener)_v.get(i);
         listener.realtimeChartUpdated(this);
       }
     }
@@ -161,7 +162,7 @@ public class PushDataProvider extends DataProvider implements IStreamerEventRece
         return;
     }
     int period = DirectaPlugin.getDefault().getPreferenceStore().getInt("rtcharts.update");
-    Vector values = streamer.backfill(data, period);
+    List values = streamer.backfill(data, period);
     dataCollector.setData(data.getSymbol(), values);
   }
 
