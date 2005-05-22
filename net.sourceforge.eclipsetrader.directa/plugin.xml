@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipsetrader.directa"
    name="Directa Italy"
-   version="0.12.1"
+   version="0.12.2"
    provider-name="Sourceforge.net"
    class="net.sourceforge.eclipsetrader.directa.DirectaPlugin">
 
@@ -271,6 +271,12 @@
                style="push"
                menubarPath="directa/group.info2"
                id="directa.browsePage.12"/>
+         <action
+               label="Agenda"
+               class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info3"
+               id="directa.browsePage.20"/>
          <action
                label="News Affari Italiani"
                class="net.sourceforge.eclipsetrader.directa.internal.BrowserActionReceiver"

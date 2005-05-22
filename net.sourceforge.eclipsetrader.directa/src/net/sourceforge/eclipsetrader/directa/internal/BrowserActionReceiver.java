@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004-2005 Marco Maccaferri and others.
- * All rights reserved. This program and the accompanying materials 
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
  *******************************************************************************/
@@ -52,6 +52,7 @@ public class BrowserActionReceiver implements IWorkbenchWindowActionDelegate, IV
     "http://directatrading.com/trading/db2www/Sitprest/report",
     "http://notizie.directatrading.com/notizie/asca-ansa.php",
     "http://www.affaritaliani.it/directa_oraperora.htm",
+    "http://www.tradingweek.net/index.php?c=dati_macro",
   };
   protected SimpleDateFormat df = new SimpleDateFormat("ddMMyyyy");
 
@@ -75,7 +76,7 @@ public class BrowserActionReceiver implements IWorkbenchWindowActionDelegate, IV
   public void init(IViewPart view)
   {
   }
-  
+
   /* (non-Javadoc)
    * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
    */
