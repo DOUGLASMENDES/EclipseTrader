@@ -49,8 +49,6 @@ import org.w3c.dom.NodeList;
 /**
  * Default implementation of the IPortfolioDataStore interface.<br>
  * Provides an XML storage for the portfolio data.<br>
- * 
- * @author Marco Maccaferri - 11/08/2004
  */
 public class XMLDataStore implements IDataStore
 {
@@ -58,6 +56,7 @@ public class XMLDataStore implements IDataStore
   private static String STOCKWATCH_FILE_NAME = "stockwatch.xml"; //$NON-NLS-1$
   private static String INDICES_FILE_NAME = "indices.xml"; //$NON-NLS-1$
   private static File HISTORY_CHART_FOLDER = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
+  private static File INTRADAY_CHART_FOLDER = new File(Platform.getLocation().toFile(), "rtcharts"); //$NON-NLS-1$
   private Document document = null;
   private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
   private NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -78,6 +77,9 @@ public class XMLDataStore implements IDataStore
     pf.setMaximumFractionDigits(4);
     pf.setMinimumFractionDigits(4);
     pf.setMinimumIntegerDigits(1);
+
+    HISTORY_CHART_FOLDER.mkdirs();
+    INTRADAY_CHART_FOLDER.mkdirs();
   }
 
   /**
