@@ -12,7 +12,6 @@ package net.sourceforge.eclipsetrader.directa.internal;
 
 import net.sourceforge.eclipsetrader.directa.DirectaPlugin;
 import net.sourceforge.eclipsetrader.directa.ui.views.Orders;
-import net.sourceforge.eclipsetrader.directa.ui.views.Trading;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -30,7 +29,6 @@ import org.eclipse.ui.PlatformUI;
 public class ActionReceiver implements IWorkbenchWindowActionDelegate, IViewActionDelegate
 {
   private static Orders ordersView;
-  private static Trading tradingView;
   private static WebBrowser browserView;
   
   /* (non-Javadoc)
@@ -54,8 +52,6 @@ public class ActionReceiver implements IWorkbenchWindowActionDelegate, IViewActi
   {
     if (view instanceof Orders)
       ordersView = (Orders)view;
-    if (view instanceof Trading)
-      tradingView = (Trading)view;
     if (view instanceof WebBrowser)
       browserView = (WebBrowser)view;
   }

@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.eclipsetrader"
-   name="%pluginName"
-   version="0.14.0"
-   provider-name="%providerName"
-   class="net.sourceforge.eclipsetrader.TraderPlugin">
+<plugin>
 
-   <runtime>
-      <library name="eclipsetrader.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.update.ui"/>
-   </requires>
-   <extension-point id="dataStore" name="Data Store" schema="schema/portfolioData.exsd"/>
+     <extension-point id="dataStore" name="Data Store" schema="schema/portfolioData.exsd"/>
    <extension-point id="chartDataProvider" name="Chart Data Provider" schema="schema/chartDataProvider.exsd"/>
    <extension-point id="chartProvider" name="Chart Provider" schema="schema/chartProvider.exsd"/>
    <extension-point id="chartPlotter" name="Chart Plotter" schema="schema/chartPlotter.exsd"/>
@@ -32,11 +16,17 @@
          id="Product"
          point="org.eclipse.core.runtime.products">
       <product
-            name="%productName"
-            application="net.sourceforge.eclipsetrader.application">
-            <property name="windowImages" value="eclipse.gif,eclipse32.gif"/>
-            <property name="aboutImage" value="eclipse_lg.gif"/>
-            <property name="aboutText" value="%productBlurb"/>
+            application="net.sourceforge.eclipsetrader.application"
+            name="%productName">
+         <property
+               name="windowImages"
+               value="eclipse.gif,eclipse32.gif"/>
+         <property
+               name="aboutImage"
+               value="eclipse_lg.gif"/>
+         <property
+               name="aboutText"
+               value="%productBlurb"/>
       </product>
    </extension>
    <extension
@@ -180,29 +170,18 @@
             categoryId="net.sourceforge.eclipsetrader.commands"
             name="Start"
             id="net.sourceforge.eclipsetrader.commands.start"/>
-      <command
-            description="Stop Streaming"
-            categoryId="net.sourceforge.eclipsetrader.commands"
-            name="Stop"
-            id="net.sourceforge.eclipsetrader.commands.stop"/>
-      <keyBinding
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
             commandId="net.sourceforge.eclipsetrader.commands.start"
-            keySequence="Ctrl+F5"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
-            commandId="net.sourceforge.eclipsetrader.commands.stop"
-            keySequence="Ctrl+F10"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+F5"/>
+      <key
             platform="carbon"
             commandId="net.sourceforge.eclipsetrader.commands.start"
-            keySequence="Command+F5"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
-            platform="carbon"
-            commandId="net.sourceforge.eclipsetrader.commands.stop"
-            keySequence="Command+F10"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Command+F5"/>
    </extension>
 
 </plugin>

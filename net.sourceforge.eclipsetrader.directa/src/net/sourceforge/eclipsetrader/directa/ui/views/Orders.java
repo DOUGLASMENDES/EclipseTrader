@@ -10,8 +10,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.directa.ui.views;
 
-import java.util.Timer;
-
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.directa.DirectaPlugin;
 import net.sourceforge.eclipsetrader.directa.internal.IStreamerEventReceiver;
@@ -38,7 +36,6 @@ public class Orders extends ViewPart implements IStreamerEventReceiver, IPropert
   private Table table;
   private Color background = new Color(null, 255, 255, 255);
   private Color foreground = new Color(null, 0, 0, 0);
-  private Timer timer;
 
   public Orders()
   {

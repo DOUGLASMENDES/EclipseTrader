@@ -19,41 +19,40 @@ import net.sourceforge.eclipsetrader.directa.internal.Streamer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class DirectaPlugin extends AbstractUIPlugin 
+public class DirectaPlugin extends AbstractUIPlugin
 {
-	private static DirectaPlugin plugin;
-	private ResourceBundle resourceBundle;
-  private boolean viewComunic = false;
-	
-	/**
-	 * The constructor.
-	 */
-	public DirectaPlugin() 
-  {
-		super();
-		plugin = this;
-		try {
-			resourceBundle = ResourceBundle.getBundle("net.sourceforge.eclipsetrader.directa.resources");
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
-	}
+  private static DirectaPlugin plugin;
 
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(BundleContext context) throws Exception 
+  private ResourceBundle resourceBundle;
+
+  /**
+   * The constructor.
+   */
+  public DirectaPlugin()
   {
-		super.start(context);
+    super();
+    plugin = this;
+    try
+    {
+      resourceBundle = ResourceBundle.getBundle("net.sourceforge.eclipsetrader.directa.resources");
+    } catch (MissingResourceException x)
+    {
+      resourceBundle = null;
+    }
+  }
+
+  /**
+   * This method is called upon plug-in activation
+   */
+  public void start(BundleContext context) throws Exception
+  {
+    super.start(context);
     System.out.println(this.getClass() + ": start");
 
     // Default preferences
@@ -70,45 +69,47 @@ public class DirectaPlugin extends AbstractUIPlugin
     PreferenceConverter.setDefault(ps, "trading.values_color", new RGB(192, 0, 0));
     PreferenceConverter.setDefault(ps, "orders.background_color", new RGB(255, 255, 255));
     PreferenceConverter.setDefault(ps, "orders.text_color", new RGB(0, 0, 0));
-	}
+  }
 
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(BundleContext context) throws Exception 
+  /**
+   * This method is called when the plug-in is stopped
+   */
+  public void stop(BundleContext context) throws Exception
   {
-		super.stop(context);
-	}
+    super.stop(context);
+  }
 
-	/**
-	 * Returns the shared instance.
-	 */
-	public static DirectaPlugin getDefault() 
+  /**
+   * Returns the shared instance.
+   */
+  public static DirectaPlugin getDefault()
   {
-		return plugin;
-	}
+    return plugin;
+  }
 
-	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
-	 */
-	public static String getResourceString(String key) 
+  /**
+   * Returns the string from the plugin's resource bundle, or 'key' if not
+   * found.
+   */
+  public static String getResourceString(String key)
   {
-		ResourceBundle bundle = DirectaPlugin.getDefault().getResourceBundle();
-		try {
-			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
-			return key;
-		}
-	}
+    ResourceBundle bundle = DirectaPlugin.getDefault().getResourceBundle();
+    try
+    {
+      return (bundle != null) ? bundle.getString(key) : key;
+    } catch (MissingResourceException e)
+    {
+      return key;
+    }
+  }
 
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() 
+  /**
+   * Returns the plugin's resource bundle,
+   */
+  public ResourceBundle getResourceBundle()
   {
-		return resourceBundle;
-	}
+    return resourceBundle;
+  }
 
   public static boolean connectServer()
   {
@@ -119,16 +120,15 @@ public class DirectaPlugin extends AbstractUIPlugin
     if (streamer.login(userName, password) == true)
       return true;
 
-    Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
     LoginDialog dlg = new LoginDialog();
-    for(;;)
+    for (;;)
     {
       if (dlg.open() != LoginDialog.OK)
         break;
       if (streamer.login(dlg.getUserName(), dlg.getPassword()) == true)
         return true;
     }
-    
+
     return false;
   }
 

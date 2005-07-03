@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.eclipsetrader.directa"
-   name="Directa Italy"
-   version="0.12.2"
-   provider-name="Sourceforge.net"
-   class="net.sourceforge.eclipsetrader.directa.DirectaPlugin">
+<plugin>
 
-   <runtime>
-      <library name="directa.jar">
-         <export name="*"/>
-      </library>
-      <library name="push.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="net.sourceforge.eclipsetrader"/>
-   </requires>
-   <extension
+     <extension
          point="net.sourceforge.eclipsetrader.dataProvider">
       <provider
             label="Directa Italy (realtime, cust. only)"

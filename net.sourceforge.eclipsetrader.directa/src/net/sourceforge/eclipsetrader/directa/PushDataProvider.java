@@ -10,11 +10,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.directa;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
 
 import net.sourceforge.eclipsetrader.DataCollector;
 import net.sourceforge.eclipsetrader.DataProvider;
@@ -31,8 +27,6 @@ import net.sourceforge.eclipsetrader.directa.internal.Streamer;
  */
 public class PushDataProvider extends DataProvider implements IStreamerEventReceiver, IRealtimeChartProvider
 {
-  private HashMap _rtListener = new HashMap();
-  private Timer _rtChartTimer;
   private DataCollector dataCollector = DataCollector.getInstance();
 
 
@@ -111,20 +105,6 @@ public class PushDataProvider extends DataProvider implements IStreamerEventRece
    */
   public void orderStatusChanged()
   {
-  }
-  
-  private void fireRealtimeChartUpdate()
-  {
-    Iterator e = _rtListener.values().iterator();
-    while(e.hasNext() == true)
-    {
-      List _v = (ArrayList)e.next();
-      for (int i = 0; i < _v.size(); i++)
-      {
-        IRealtimeChartListener listener = (IRealtimeChartListener)_v.get(i);
-        listener.realtimeChartUpdated(this);
-      }
-    }
   }
   
   /* (non-Javadoc)

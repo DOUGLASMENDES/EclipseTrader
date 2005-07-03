@@ -63,8 +63,6 @@ import traderlink.small.bookclass.Load;
 public class Streamer implements Runnable
 {
   private static Streamer streamer;
-  private String userName = "";
-  private String password = "";
   private boolean loggedIn = false;
   private static String prt = "";
   private static String urt = "";
@@ -169,10 +167,7 @@ public class Streamer implements Runnable
   public boolean login(String userName, String password)
   {
     int s, e;
-    String inputLine, traderLink = "";
-
-    this.userName = userName;
-    this.password = password;
+    String inputLine;
 
     loggedIn = false;
     cookie = "";
@@ -304,8 +299,6 @@ public class Streamer implements Runnable
     byte bHeader[] = new byte[4];
     int n = 0, i;
     long lastUpdate = System.currentTimeMillis();
-    long lastActivity = System.currentTimeMillis();
-    SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
     NumberFormat nf = NumberFormat.getInstance();
     Calendar transaction = Calendar.getInstance();
 
@@ -323,7 +316,6 @@ public class Streamer implements Runnable
           int r = is.read(bHeader, n, 4 - n);
           n += r;
         }
-        lastActivity = System.currentTimeMillis();
       } catch(Exception e) {
         break;
       };
@@ -554,7 +546,6 @@ public class Streamer implements Runnable
       public void run()
       {
         String sTit[] = { data.getTicker() };
-        int flag[] = { 1 };
 
         try {
           // Legge la pagina contenente gli ultimi prezzi
@@ -837,7 +828,6 @@ public class Streamer implements Runnable
    */
   public boolean sendOrder(String ticker, String buy, String sell, String price, boolean valid30, String market)
   {
-    int i;
     boolean ok = false;
     boolean noconfirm = false;
     String inputLine;
@@ -1163,8 +1153,6 @@ System.out.println(inputLine);
     int k1 = k - (j1 << 20);
     k1 /= 12;
     int l1 = k1 / 3600;
-    int i2 = (k1 - l1 * 3600) / 60;
-    int j2 = k1 - i2 * 60 - l1 * 3600;
     GregorianCalendar gregoriancalendar = new GregorianCalendar(2000, 0, 1, 0, 0, 0);
     long l2 = gregoriancalendar.getTime().getTime();
     long l3 = (long)j1 * (long)3600 * (long)24 * (long)1000 + (long)(k1 * 1000);

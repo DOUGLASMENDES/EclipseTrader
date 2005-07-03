@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.application.WorkbenchAdvisor;
 
 /**
  * The main application class
@@ -23,23 +22,14 @@ import org.eclipse.ui.application.WorkbenchAdvisor;
 public class Application implements IPlatformRunnable
 {
 
-  /**
-   * The application entry point
+  /* (non-Javadoc)
+   * @see org.eclipse.core.runtime.IPlatformRunnable#run(java.lang.Object)
    */
   public Object run(Object args) throws CoreException
   {
-/*    IChartDataProvider cdp = new ChartDataProvider();
-    cdp.load("CPTA.MI");
-    cdp.update();
-    cdp.store();
-    
-    return IPlatformRunnable.EXIT_OK;*/
-    
-    // Application launching
-    WorkbenchAdvisor workbenchAdvisor = new TraderWorkbenchAdvisor();
     Display display = PlatformUI.createDisplay();
     try {
-      int returnCode = PlatformUI.createAndRunWorkbench(display, workbenchAdvisor);
+      int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
       
       if (returnCode == PlatformUI.RETURN_RESTART)
         return IPlatformRunnable.EXIT_RESTART;
