@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Yahoo Finance
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.yahoo; singleton:=true
+Bundle-Version: 0.14.0
+Bundle-ClassPath: yahoo.jar
+Bundle-Activator: net.sourceforge.eclipsetrader.yahoo.YahooPlugin
+Bundle-Vendor: Sourceforge.net
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.swt,
+ net.sourceforge.eclipsetrader,
+ org.eclipse.jface
+Eclipse-AutoStart: true

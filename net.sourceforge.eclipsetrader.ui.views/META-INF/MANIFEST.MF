@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Views
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.ui.views; singleton:=true
+Bundle-Version: 0.15.0
+Bundle-ClassPath: views.jar
+Bundle-Activator: net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin
+Bundle-Vendor: Sourceforge.net
+Bundle-Localization: plugin
+Export-Package: net.sourceforge.eclipsetrader.ui.internal.views
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.sourceforge.eclipsetrader
+Eclipse-AutoStart: true
