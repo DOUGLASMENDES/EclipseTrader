@@ -1,26 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.eclipsetrader.yahoo"
-   name="Yahoo Finance"
-   version="0.14.0"
-   provider-name="Sourceforge.net"
-   class="net.sourceforge.eclipsetrader.yahoo.YahooPlugin">
+<plugin>
 
-   <runtime>
-      <library name="yahoo.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.swt"/>
-      <import plugin="net.sourceforge.eclipsetrader"/>
-      <import plugin="org.eclipse.jface"/>
-   </requires>
-   <extension-point id="newsSource" name="News Source" schema="schema/newsSource.exsd"/>
+     <extension-point id="newsSource" name="News Source" schema="schema/newsSource.exsd"/>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -66,6 +48,10 @@
             label="Yahoo U.S."
             class="net.sourceforge.eclipsetrader.yahoo.NewsSourceUS"
             id="yahoo.news.us"/>
+      <source
+            label="Yahoo U.K."
+            class="net.sourceforge.eclipsetrader.yahoo.NewsSourceUK"
+            id="yahoo.news.uk"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.newsProvider">

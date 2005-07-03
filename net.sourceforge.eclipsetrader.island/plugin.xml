@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.eclipsetrader.island"
-   name="Island Level II"
-   version="0.9.0"
-   provider-name="Sourceforge.net"
-   class="net.sourceforge.eclipsetrader.island.IslandPlugin">
+<plugin>
 
-   <runtime>
-      <library name="island.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="net.sourceforge.eclipsetrader"/>
-   </requires>
-   <extension
+     <extension
          point="net.sourceforge.eclipsetrader.bookDataProvider">
       <provider
             label="Island Level II Streaming"

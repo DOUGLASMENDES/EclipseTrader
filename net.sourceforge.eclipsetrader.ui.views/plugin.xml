@@ -1,25 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.eclipsetrader.ui.views"
-   name="Views"
-   version="0.14.0"
-   provider-name="Sourceforge.net"
-   class="net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin">
+<plugin>
 
-   <runtime>
-      <library name="views.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="net.sourceforge.eclipsetrader"/>
-   </requires>
-
-   <extension
+     <extension
          point="org.eclipse.ui.views">
       <category
             name="Trader"
@@ -329,6 +312,30 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
             id="net.sourceforge.eclipsetrader.chartActions">
          <action
+               toolbarPath="additions/style"
+               label="%chart.bar"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               icon="icons/bar.gif"
+               tooltip="%chart.bar"
+               style="radio"
+               id="chart.bar"/>
+         <action
+               toolbarPath="additions/style"
+               label="%chart.candle"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               icon="icons/candle.gif"
+               tooltip="%chart.candle"
+               style="radio"
+               id="chart.candle"/>
+         <action
+               toolbarPath="additions/style"
+               label="%chart.line"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               icon="icons/line.gif"
+               tooltip="%chart.line"
+               style="radio"
+               id="chart.line"/>
+         <action
                toolbarPath="additions"
                label="%actions.next"
                tooltip="%actions.next"
@@ -352,30 +359,6 @@
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
                style="push"
                id="chart.refresh"/>
-         <action
-               toolbarPath="additions"
-               label="%chart.bar"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               icon="icons/bar.gif"
-               tooltip="%chart.bar"
-               style="radio"
-               id="chart.bar"/>
-         <action
-               toolbarPath="additions"
-               label="%chart.candle"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               icon="icons/candle.gif"
-               tooltip="%chart.candle"
-               style="radio"
-               id="chart.candle"/>
-         <action
-               toolbarPath="additions"
-               label="%chart.line"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               icon="icons/line.gif"
-               tooltip="%chart.line"
-               style="radio"
-               id="chart.line"/>
          <menu
                label="%actions.viewPeriod"
                path="period"
@@ -937,40 +920,43 @@
             categoryId="net.sourceforge.eclipsetrader.commands"
             name="Add"
             id="net.sourceforge.eclipsetrader.commands.add"/>
-      <keyBinding
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
             commandId="net.sourceforge.eclipsetrader.commands.next"
-            keySequence="Ctrl+Arrow_Right"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+Arrow_Right"/>
+      <key
             commandId="net.sourceforge.eclipsetrader.commands.previous"
-            keySequence="Ctrl+Arrow_Left"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+Arrow_Left"/>
+      <key
             commandId="net.sourceforge.eclipsetrader.commands.line"
-            keySequence="L"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="L"/>
+      <key
             commandId="net.sourceforge.eclipsetrader.commands.bar"
-            keySequence="B"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="B"/>
+      <key
             commandId="net.sourceforge.eclipsetrader.commands.candle"
-            keySequence="C"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="C"/>
+      <key
             commandId="net.sourceforge.eclipsetrader.commands.add"
-            keySequence="INSERT"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="INSERT"/>
+      <key
             platform="carbon"
             commandId="net.sourceforge.eclipsetrader.commands.next"
-            keySequence="Command+Arrow_Right"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <keyBinding
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Command+Arrow_Right"/>
+      <key
             platform="carbon"
             commandId="net.sourceforge.eclipsetrader.commands.previous"
-            keySequence="Command+Arrow_Left"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Command+Arrow_Left"/>
    </extension>
 
 </plugin>
