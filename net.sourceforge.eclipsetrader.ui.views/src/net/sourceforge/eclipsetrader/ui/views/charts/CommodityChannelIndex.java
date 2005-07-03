@@ -18,7 +18,6 @@ import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -40,7 +39,6 @@ public class CommodityChannelIndex extends ChartPlotter implements IChartConfigu
   private int period = 20;
   private int smoothing = 3;
   private int type = EXPONENTIAL;
-  private Color gridColor = new Color(null, 192, 192, 192);
   private List cci = new ArrayList();
   
   public CommodityChannelIndex()

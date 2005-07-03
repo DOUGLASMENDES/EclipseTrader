@@ -10,8 +10,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.yahoo;
 
-import java.text.SimpleDateFormat;
-
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.RealtimeChartDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
@@ -29,9 +27,6 @@ import org.eclipse.jface.util.PropertyChangeEvent;
  */
 public class SnapshotDataProvider extends RealtimeChartDataProvider implements IPropertyChangeListener
 {
-  private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-  private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy h:mma");
-  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   private Streamer streamer = Streamer.getInstance();
   protected int symbolField = 0;
   protected boolean useMapping = true;

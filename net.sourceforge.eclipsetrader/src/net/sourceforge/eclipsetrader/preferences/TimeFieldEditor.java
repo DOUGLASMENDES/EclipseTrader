@@ -10,8 +10,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.preferences;
 
-import java.awt.event.KeyEvent;
-
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -32,8 +30,6 @@ import org.eclipse.swt.widgets.Text;
  * <p></p>
  * 
  * TODO: Better implementation (with up/down arrows, am/pm indication, etc.)
- * 
- * @author Marco Maccaferri
  */
 public class TimeFieldEditor extends FieldEditor
 {
@@ -149,7 +145,7 @@ public class TimeFieldEditor extends FieldEditor
       hourField = new Text(textField, SWT.SINGLE | SWT.BORDER | SWT.RIGHT);
       hourField.setFont(parent.getFont());
       hourField.addKeyListener(new KeyAdapter() {
-        public void keyReleased(KeyEvent e) 
+        public void keyReleased(org.eclipse.swt.events.KeyEvent e)
         {
           int value = Integer.parseInt(hourField.getText());
           if (value > 23) hourField.setText("23");
@@ -174,17 +170,14 @@ public class TimeFieldEditor extends FieldEditor
       minuteField = new Text(textField, SWT.SINGLE | SWT.BORDER);
       minuteField.setFont(parent.getFont());
       minuteField.addKeyListener(new KeyAdapter() {
-        public void keyReleased(KeyEvent e) 
+        public void keyReleased(org.eclipse.swt.events.KeyEvent e)
         {
           int value = Integer.parseInt(minuteField.getText());
-          if (value > 59) minuteField.setText("23");
+          if (value > 59) minuteField.setText("59");
           else if (value < 0) minuteField.setText("00");
         }
       });
       textField.addFocusListener(new FocusAdapter() {
-        public void focusGained(FocusEvent e) 
-        {
-        }
         public void focusLost(FocusEvent e) 
         {
           int value = Integer.parseInt(minuteField.getText());

@@ -61,7 +61,6 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
-  private IExtendedData data;
 
   public IndexWidget(Composite parent, int style)
   {
@@ -217,7 +216,6 @@ public class IndexWidget extends Composite implements PaintListener, IPropertyCh
   public void setData(IExtendedData data)
   {
     super.setData(data);
-    this.data = data;
     
     String prefix = "";
     double chg = data.getLastPrice() - data.getClosePrice();

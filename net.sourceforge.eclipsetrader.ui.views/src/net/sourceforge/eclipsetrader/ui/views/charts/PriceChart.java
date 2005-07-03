@@ -106,7 +106,7 @@ public class PriceChart extends ChartPlotter
         gc.setForeground(textColor);
 
         int x = getColumnWidth() / 2;
-        for (int i = 0, pa = 0; i < chartData.length; i++, x += getColumnWidth())
+        for (int i = 0; i < chartData.length; i++, x += getColumnWidth())
         {
           int y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
           int y2 = height - (int)((chartData[i].getMinPrice() - getMin()) * pixelRatio);
@@ -133,7 +133,7 @@ public class PriceChart extends ChartPlotter
       else if (type == BAR)
       {
         int x = getColumnWidth() / 2;
-        for (int i = 0, pa = 0; i < chartData.length; i++, x += getColumnWidth())
+        for (int i = 0; i < chartData.length; i++, x += getColumnWidth())
         {
           int y1 = height - (int)((chartData[i].getMaxPrice() - getMin()) * pixelRatio);
           int y2 = height - (int)((chartData[i].getMinPrice() - getMin()) * pixelRatio);

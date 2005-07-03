@@ -67,7 +67,6 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   private Color scaleBackground = new Color(Display.getCurrent(), 255, 255, 255);
   private Color separatorColor = new Color(null, 0, 0, 0);
   private Color hilightColor = new Color(null, 255, 0, 0);
-  private Color textColor = new Color(null, 0, 0, 0);
   private Color scaleLabelColor = new Color(null, 255, 255, 0);
   private int columnWidth = 5;
   private int margin = 2;

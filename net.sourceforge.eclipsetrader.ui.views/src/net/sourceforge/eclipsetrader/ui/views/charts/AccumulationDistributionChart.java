@@ -18,7 +18,6 @@ import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -34,7 +33,6 @@ public class AccumulationDistributionChart extends ChartPlotter implements IChar
   public static final int STANDARD = 0;
   public static final int WILLIAM = 1;
   public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.accumulationDistribution"; //$NON-NLS-1$
-  private Color gridColor = new Color(null, 192, 192, 192);
   private int type = STANDARD;
   private List list = new ArrayList();
   

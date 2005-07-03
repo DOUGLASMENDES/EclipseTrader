@@ -10,9 +10,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import java.io.File;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +20,6 @@ import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.StockList;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -30,7 +27,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 /**
@@ -49,12 +45,9 @@ public class StockChart extends ChartPlotter implements IChartConfigurer
   public final static int CANDLE = 1;
   public final static int BAR = 2;
   public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.stock"; //$NON-NLS-1$
-  private File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
-  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
   private NumberFormat nf = NumberFormat.getInstance();
   private String symbol = "";
   private int dataSource = CLOSE;
-  private int type = LINE;
   private IBasicData stockItem;
   private IChartData[] stockChartData;
   protected Color gridColor = new Color(null, 192, 192, 192);
@@ -63,7 +56,6 @@ public class StockChart extends ChartPlotter implements IChartConfigurer
   protected Color positiveColor = new Color(null, 0, 192, 0);
   protected Color negativeColor = new Color(null, 192, 0, 0);
   protected Color neutralColor = new Color(null, 128, 128, 128);
-  private Color chartBackground = new Color(Display.getCurrent(), 255, 255, 240);
   private List list = new ArrayList();
   
   public StockChart()
@@ -149,9 +141,7 @@ public class StockChart extends ChartPlotter implements IChartConfigurer
    */
   public void setParameter(String name, String value)
   {
-    if (name.equalsIgnoreCase("type") == true)
-      type = Integer.parseInt(value);
-    else if (name.equalsIgnoreCase("dataSource") == true)
+    if (name.equalsIgnoreCase("dataSource") == true)
       dataSource = Integer.parseInt(value);
     else if (name.equalsIgnoreCase("stockItem") == true)
     {

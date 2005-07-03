@@ -12,7 +12,6 @@ package net.sourceforge.eclipsetrader.internal;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -27,7 +26,6 @@ import org.eclipse.update.ui.UpdateManagerUI;
 public class ConfigurationManagerAction implements IWorkbenchWindowActionDelegate
 {
   private IWorkbenchWindow window;
-  private ApplicationWindow applicationWindow;
   
   /**
    * The constructor.

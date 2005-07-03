@@ -29,12 +29,6 @@ public class PriceBook implements Runnable
   public IBookData[] sell = new BookData[0];
   public Vector listeners = new Vector();
   public boolean runThread = false;
-  private long buyCount;
-  private long sellCount;
-  private long totalOrderCount;
-  private long volume;
-  private long lastTradePrice;
-  private long lastTradeTime;
   private InputStream inputStream;
   
   public PriceBook()
@@ -91,12 +85,12 @@ public class PriceBook implements Runnable
   
   private void readStockData() throws IOException
   {
-    buyCount = readNum(inputStream, 2);
-    sellCount = readNum(inputStream, 2);
-    totalOrderCount = readNum(inputStream, 3);
-    volume = readNum(inputStream, 4);
-    lastTradePrice = readNum(inputStream, 3);
-    lastTradeTime = readNum(inputStream, 3);
+    readNum(inputStream, 2); // buyCount = 
+    readNum(inputStream, 2); // sellCount = 
+    readNum(inputStream, 3); // totalOrderCount = 
+    readNum(inputStream, 4); // volume = 
+    readNum(inputStream, 3); // lastTradePrice = 
+    readNum(inputStream, 3); // lastTradeTime = 
     
     int i = inputStream.read();
     int j = i >> 4;
@@ -137,14 +131,6 @@ public class PriceBook implements Runnable
       ((IBookUpdateListener)listeners.elementAt(i2)).bookUpdated(data, buy, sell);
   }
   
-  private IBookData readBookData(int sharesSize, int priceSize, long priceBase) throws IOException
-  {
-    IBookData bookData = new BookData();
-    bookData.setQuantity((int)readNum(inputStream, sharesSize));
-    bookData.setPrice(Math.abs(readNum(inputStream, priceSize) + priceBase));
-    return bookData;
-  }
-
   private long readNum(InputStream inputStream, int size) throws IOException
   {
     long num = 0L;

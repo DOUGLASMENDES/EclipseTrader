@@ -383,7 +383,6 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(is);
 
-        int index = 0;
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int i = 0; i < firstChild.getLength(); i++)
         {
@@ -447,7 +446,6 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(is);
 
-        int index = 0;
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int i = 0; i < firstChild.getLength(); i++)
         {

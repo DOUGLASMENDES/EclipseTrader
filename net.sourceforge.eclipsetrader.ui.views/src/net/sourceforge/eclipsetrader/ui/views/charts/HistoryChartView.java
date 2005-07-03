@@ -11,10 +11,7 @@
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.io.File;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBasicData;
@@ -41,10 +38,6 @@ import org.eclipse.swt.widgets.Composite;
 
 public class HistoryChartView extends ChartView implements DropTargetListener
 {
-  private File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
-  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
-  private NumberFormat nf = NumberFormat.getInstance(Locale.US);
-  private NumberFormat pf = NumberFormat.getInstance(Locale.US);
   protected IChartData[] chartData;
   
   /* (non-Javadoc)

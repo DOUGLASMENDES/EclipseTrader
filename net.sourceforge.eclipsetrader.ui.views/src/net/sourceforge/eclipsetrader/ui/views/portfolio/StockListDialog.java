@@ -29,15 +29,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -46,13 +43,9 @@ import org.w3c.dom.NodeList;
 
 /**
  */
-public class StockListDialog extends TitleAreaDialog implements ModifyListener
+public class StockListDialog extends TitleAreaDialog
 {
   private static String FILE_NAME = "stocklist.xml";
-  private String userName = "";
-  private String password = "";
-  private Text text1;
-  private Text text2;
   
   public StockListDialog()
   {
@@ -98,17 +91,6 @@ public class StockListDialog extends TitleAreaDialog implements ModifyListener
     return super.open();
   }
   
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
-   */
-  public void modifyText(ModifyEvent e)
-  {
-    if (e.getSource() == text1)
-      userName = text1.getText();
-    else if (e.getSource() == text2)
-      password = text2.getText();
-  }
-
   private void loadStocklist(Table table)
   {
     Vector v = new Vector();
@@ -137,7 +119,6 @@ public class StockListDialog extends TitleAreaDialog implements ModifyListener
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(is);
 
-        int index = 0;
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int i = 0; i < firstChild.getLength(); i++)
         {

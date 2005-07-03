@@ -10,7 +10,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.yahoo;
 
-import java.text.SimpleDateFormat;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.DataCollector;
@@ -35,15 +34,11 @@ import org.eclipse.jface.util.PropertyChangeEvent;
  */
 public class IndexDataProvider extends ChartDataProvider implements IIndexDataProvider, IRealtimeChartProvider, IPropertyChangeListener
 {
-  private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-  private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy h:mma");
-  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   private Vector listeners = new Vector();
   private String[] symbols = new String[0];
   private IExtendedData[] data = new IExtendedData[0];
   private Streamer streamer = Streamer.getInstance();
   private DataCollector dataCollector = DataCollector.getInstance();
-  private ChartDataProvider chartDataProvider = new ChartDataProvider();
   
   public IndexDataProvider()
   {

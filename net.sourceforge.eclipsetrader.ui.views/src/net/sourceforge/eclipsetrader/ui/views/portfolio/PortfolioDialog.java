@@ -36,12 +36,9 @@ import org.eclipse.ui.PlatformUI;
 /**
  * Dialog for selection of the stock item to add or edit.
  * <p></p>
- * 
- * @author Marco Maccaferri
  */
 public class PortfolioDialog extends TitleAreaDialog implements ModifyListener
 {
-  private static String FILE_NAME = "stocklist.xml"; //$NON-NLS-1$
   private String symbol = ""; //$NON-NLS-1$
   private String ticker = ""; //$NON-NLS-1$
   private String description = ""; //$NON-NLS-1$

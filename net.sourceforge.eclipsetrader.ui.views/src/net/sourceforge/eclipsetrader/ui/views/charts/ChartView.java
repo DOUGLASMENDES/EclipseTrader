@@ -317,7 +317,6 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(f);
 
-        int index = 0;
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int i = 0; i < firstChild.getLength(); i++)
         {

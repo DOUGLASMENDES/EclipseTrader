@@ -12,27 +12,21 @@ package net.sourceforge.eclipsetrader.ui.views.charts.wizards;
 
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.views.charts.ChartParametersDialog;
-import net.sourceforge.eclipsetrader.ui.views.charts.IChartConfigurer;
 
-import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 
 /**
  */
 public class ZonePage extends WizardPage
 {
   private int position = ChartParametersDialog.BELOW_SELECTED_ZONE;
-  private Group paramGroup;
   private Button selectedZone;
   private Button newZone;
   private Button aboveSelectedZone;
-  private ColorSelector colorSelector;
-  private IChartConfigurer configurer;
 
   public ZonePage()
   {

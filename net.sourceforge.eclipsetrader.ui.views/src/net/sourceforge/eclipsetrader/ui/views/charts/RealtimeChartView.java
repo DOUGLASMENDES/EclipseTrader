@@ -204,7 +204,6 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
 
       if (basicData != null)
       {
-        boolean drawValue = false;
         Calendar current = Calendar.getInstance();
         Calendar last = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
@@ -228,7 +227,6 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
               last.add(Calendar.MINUTE, -last.get(Calendar.MINUTE));
             else
               last.add(Calendar.MINUTE, -(last.get(Calendar.MINUTE) - 30));
-            drawValue = false;
           }
         }
 /*

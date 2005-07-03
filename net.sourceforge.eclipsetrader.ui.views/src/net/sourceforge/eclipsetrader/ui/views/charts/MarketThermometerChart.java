@@ -105,7 +105,6 @@ public class MarketThermometerChart extends ChartPlotter implements IChartConfig
     super.paintChart(gc, width, height);
 
     // Draw the thermometer bar chart
-    int ofs = chartData.length - therm.size();
     double pixelRatio = height / (getMax() - getMin());
     int x = chartMargin + getColumnWidth() / 2 + chartData.length * getColumnWidth();
 

@@ -20,7 +20,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -163,13 +162,5 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     ps.setValue("yahoo.charts.mapping", button6.getSelection());
 
     return super.performOk();
-  }
-  
-  private String getComboValue(Combo combo)
-  {
-    String value = "";
-    if (combo.getSelectionIndex() != -1)
-      value = (String)combo.getData(String.valueOf(combo.getSelectionIndex()));
-    return value;
   }
 }

@@ -15,7 +15,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
-import java.util.Timer;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -70,7 +69,6 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
   private Color background = new Color(null, 255, 255, 224);
   private Color foreground = new Color(null, 0, 0, 0);
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm"); //$NON-NLS-1$
-  private Timer timer;
   private INewsData[] data;
   private int columnWidth[] = { 105, 435, 145 };
 
@@ -278,7 +276,6 @@ public class NewsView extends ViewPart implements IDataUpdateListener, ControlLi
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(file);
 
-        int index = 0;
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int i = 0; i < firstChild.getLength(); i++)
         {

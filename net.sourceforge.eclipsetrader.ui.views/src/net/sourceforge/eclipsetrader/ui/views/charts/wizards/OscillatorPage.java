@@ -56,7 +56,7 @@ public class OscillatorPage extends WizardPage implements SelectionListener
     composite.forceFocus();
     setControl(composite);
     
-    list = new List(composite, SWT.SINGLE|SWT.BORDER);
+    list = new List(composite, SWT.SINGLE|SWT.BORDER|SWT.V_SCROLL);
     list.setLayoutData(new GridData(GridData.GRAB_VERTICAL|GridData.VERTICAL_ALIGN_FILL|GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
     list.addSelectionListener(this);
     

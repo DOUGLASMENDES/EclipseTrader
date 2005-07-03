@@ -18,7 +18,6 @@ import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +38,6 @@ public class DetrendedPriceOscillator extends ChartPlotter implements IChartConf
   public static String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts.dpo"; //$NON-NLS-1$
   private int period = 21;
   private int type = EXPONENTIAL;
-  private Color gridColor = new Color(null, 192, 192, 192);
   private List dpo = new ArrayList();
   
   public DetrendedPriceOscillator()

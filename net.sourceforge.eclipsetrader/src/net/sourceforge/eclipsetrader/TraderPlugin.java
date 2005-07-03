@@ -31,14 +31,15 @@ import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
- * <p></p>
+ * <p>
+ * </p>
  * 
  * @since 1.0
  */
-public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeListener 
+public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeListener
 {
-	private static TraderPlugin plugin;
-	private ResourceBundle resourceBundle;
+  private static TraderPlugin plugin;
+  private ResourceBundle resourceBundle;
   private IDataStore dataStore;
   private IBasicDataProvider dataProvider;
   private IChartDataProvider chartDataProvider;
@@ -46,100 +47,118 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   private static IBookDataProvider bookDataProvider;
   private Object newsProvider;
   private static HashMap pluginMap = new HashMap();
-	
-	/**
-	 * The constructor.
-	 */
-	public TraderPlugin() 
+
+  /**
+   * The constructor.
+   */
+  public TraderPlugin()
   {
-		super();
-		plugin = this;
-		try {
-			resourceBundle = ResourceBundle.getBundle("net.sourceforge.eclipsetrader.PluginResources");
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
-	}
+    super();
+    plugin = this;
+    try
+    {
+      resourceBundle = ResourceBundle.getBundle("net.sourceforge.eclipsetrader.PluginResources");
+    } catch (MissingResourceException x)
+    {
+      resourceBundle = null;
+    }
+  }
 
   // Static methods that returns application-wide objects
-  public static IExtendedData[] getData() {
+  public static IExtendedData[] getData()
+  {
     if (plugin == null || plugin.dataStore == null)
       return null;
     return plugin.dataStore.getData();
   }
-  public static IExtendedData getData(String symbol) 
-  { 
+
+  public static IExtendedData getData(String symbol)
+  {
+    if (plugin == null || plugin.dataStore == null)
+      return null;
     IExtendedData[] _data = plugin.dataStore.getData();
     for (int i = 0; i < _data.length; i++)
     {
       if (_data[i].getSymbol().equalsIgnoreCase(symbol) == true)
         return _data[i];
     }
-    return null; 
+    return null;
   }
-  public static IDataStore getDataStore() { return plugin.dataStore; }
-  public static void setDataStore(IDataStore store) { plugin.dataStore = store; };
+
+  public static IDataStore getDataStore()
+  {
+    return plugin.dataStore;
+  }
+
+  public static void setDataStore(IDataStore store)
+  {
+    plugin.dataStore = store;
+  };
 
   public static IBasicDataProvider getDataProvider()
   {
     if (plugin.dataProvider == null)
     {
       // Load the data provider plugin
-      plugin.dataProvider = (IBasicDataProvider)plugin.activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
+      plugin.dataProvider = (IBasicDataProvider) plugin.activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
       if (plugin.dataProvider != null)
         plugin.dataProvider.setData(plugin.dataStore.getData());
     }
-    
+
     return plugin.dataProvider;
   }
 
   /**
    * Return the selected Book / Level II data provider.
-   * <p></p>
+   * <p>
+   * </p>
+   * 
    * @return Instance of the book data provider plugin.
    */
   public static IBookDataProvider getBookDataProvider()
   {
     if (bookDataProvider == null)
-      bookDataProvider = (IBookDataProvider)plugin.activatePlugin("net.sourceforge.eclipsetrader.bookDataProvider");
-    
+      bookDataProvider = (IBookDataProvider) plugin.activatePlugin("net.sourceforge.eclipsetrader.bookDataProvider");
+
     return bookDataProvider;
   }
 
-  public static IChartDataProvider getChartDataProvider() 
-  { 
+  public static IChartDataProvider getChartDataProvider()
+  {
     if (plugin.chartDataProvider == null)
     {
       // Load the chart data provider plugin
-      plugin.chartDataProvider = (IChartDataProvider)plugin.activatePlugin("net.sourceforge.eclipsetrader.chartDataProvider");
+      plugin.chartDataProvider = (IChartDataProvider) plugin.activatePlugin("net.sourceforge.eclipsetrader.chartDataProvider");
     }
 
-    return plugin.chartDataProvider; 
+    return plugin.chartDataProvider;
   }
 
-  public static IBackfillDataProvider getBackfillDataProvider() 
-  { 
+  public static IBackfillDataProvider getBackfillDataProvider()
+  {
     if (plugin.backfillDataProvider == null)
     {
       // Load the chart data provider plugin
-      plugin.backfillDataProvider = (IBackfillDataProvider)plugin.activatePlugin("net.sourceforge.eclipsetrader.backfillDataProvider");
+      plugin.backfillDataProvider = (IBackfillDataProvider) plugin.activatePlugin("net.sourceforge.eclipsetrader.backfillDataProvider");
     }
 
-    return plugin.backfillDataProvider; 
+    return plugin.backfillDataProvider;
   }
 
-  public static Object getNewsProvider() 
-  { 
+  public static Object getNewsProvider()
+  {
     if (plugin.newsProvider == null)
     {
       // Load the news provider plugin
-      plugin.newsProvider = (Object)plugin.activatePlugin("net.sourceforge.eclipsetrader.newsProvider");
+      plugin.newsProvider = (Object) plugin.activatePlugin("net.sourceforge.eclipsetrader.newsProvider");
     }
 
-    return plugin.newsProvider; 
+    return plugin.newsProvider;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
    */
   public void propertyChange(PropertyChangeEvent event)
@@ -149,21 +168,19 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     {
       if (dataProvider != null)
         dataProvider.dispose();
-      dataProvider = (IBasicDataProvider)activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
+      dataProvider = (IBasicDataProvider) activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
       if (dataProvider != null)
         dataProvider.setData(dataStore.getData());
-    }
-    else if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
+    } else if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
     {
       if (bookDataProvider != null)
         bookDataProvider.dispose();
-      bookDataProvider = (IBookDataProvider)activatePlugin("net.sourceforge.eclipsetrader.bookDataProvider");
-    }
-    else if (property.equalsIgnoreCase("PROXY_ENABLED") == true)
+      bookDataProvider = (IBookDataProvider) activatePlugin("net.sourceforge.eclipsetrader.bookDataProvider");
+    } else if (property.equalsIgnoreCase("PROXY_ENABLED") == true)
     {
       IPreferenceStore ps = getPreferenceStore();
       Properties prop = System.getProperties();
-      Integer newValue = (Integer)event.getNewValue();
+      Integer newValue = (Integer) event.getNewValue();
       if (newValue.intValue() == 0)
       {
         prop.remove("http.proxyHost");
@@ -178,7 +195,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
         prop.remove("socksProxyPort");
         prop.remove("java.net.socks.username");
         prop.remove("java.net.socks.password");
-      }
+      } 
       else
       {
         if (ps.getString("HTTP_PROXY_HOST").length() != 0)
@@ -198,88 +215,23 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
         prop.setProperty("java.net.socks.password", ps.getString("PROXY_PASSWORD"));
       }
     }
-/*
-    else if (property.equalsIgnoreCase("HTTP_PROXY_HOST") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      if (newValue.length() == 0)
-        System.getProperties().remove("http.proxyHost");
-      else
-        System.getProperties().setProperty("http.proxyHost", newValue);
-    }
-    else if (property.equalsIgnoreCase("HTTP_PROXY_PORT") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      if (newValue.length() == 0)
-        System.getProperties().remove("http.proxyPort");
-      else
-        System.getProperties().setProperty("http.proxyPort", newValue);
-    }
-    else if (property.equalsIgnoreCase("HTTPS_PROXY_HOST") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      if (newValue.length() == 0)
-        System.getProperties().remove("https.proxyHost");
-      else
-        System.getProperties().setProperty("https.proxyHost", newValue);
-    }
-    else if (property.equalsIgnoreCase("HTTPS_PROXY_PORT") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      if (newValue.length() == 0)
-        System.getProperties().remove("https.proxyPort");
-      else
-        System.getProperties().setProperty("https.proxyPort", newValue);
-    }
-    else if (property.equalsIgnoreCase("SOCKS_PROXY_HOST") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      if (newValue.length() == 0)
-        System.getProperties().remove("socksProxyHost");
-      else
-        System.getProperties().setProperty("socksProxyHost", newValue);
-    }
-    else if (property.equalsIgnoreCase("SOCKS_PROXY_PORT") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      if (newValue.length() == 0)
-        System.getProperties().remove("socksProxyPort");
-      else
-        System.getProperties().setProperty("socksProxyPort", newValue);
-    }
-    else if (property.equalsIgnoreCase("PROXY_USER_NAME") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      Properties prop = System.getProperties();
-      prop.setProperty("http.proxyUser", newValue);
-      prop.setProperty("https.proxyUser", newValue);
-      prop.setProperty("java.net.socks.username", newValue);
-    }
-    else if (property.equalsIgnoreCase("PROXY_PASSWORD") == true)
-    {
-      String newValue = (String)event.getNewValue();
-      Properties prop = System.getProperties();
-      prop.setProperty("http.proxyPassword", newValue);
-      prop.setProperty("https.proxyPassword", newValue);
-      prop.setProperty("java.net.socks.password", newValue);
-    }
-*/
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
    */
   public void start(BundleContext context) throws Exception
   {
     super.start(context);
-    
-    // TODO: Initializing preferences here is causing problems with RCP 3.1.0M5a
-    //       See https://bugs.eclipse.org/bugs/show_bug.cgi?id=86750
-    PreferenceInitializer initializer = new PreferenceInitializer();
-    initializer.initializeDefaultPreferences();
+    getStateLocation();
+    new PreferenceInitializer().initializeDefaultPreferences();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
    */
   public void stop(BundleContext context) throws Exception
@@ -290,37 +242,45 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       dataStore.store();
 
     super.stop(context);
-	}
+  }
 
-	/**
-	 * Returns the shared instance.
-	 */
-	public static TraderPlugin getDefault() { return plugin; }
-
-	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
-	 */
-	public static String getResourceString(String key) 
+  /**
+   * Returns the shared instance.
+   */
+  public static TraderPlugin getDefault()
   {
-		ResourceBundle bundle = TraderPlugin.getDefault().getResourceBundle();
-		try {
-			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
-			return key;
-		}
-	}
+    return plugin;
+  }
 
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() { return resourceBundle; }
+  /**
+   * Returns the string from the plugin's resource bundle, or 'key' if not
+   * found.
+   */
+  public static String getResourceString(String key)
+  {
+    ResourceBundle bundle = TraderPlugin.getDefault().getResourceBundle();
+    try
+    {
+      return (bundle != null) ? bundle.getString(key) : key;
+    } catch (MissingResourceException e)
+    {
+      return key;
+    }
+  }
+
+  /**
+   * Returns the plugin's resource bundle,
+   */
+  public ResourceBundle getResourceBundle()
+  {
+    return resourceBundle;
+  }
 
   /**
    * Load the specified plugin id from the given extension point.<br>
    * 
    * @return plugin Object or null if plugin cannot be instantiated or no
-   * plugins are present.
+   *         plugins are present.
    */
   public Object activatePlugin(String ep)
   {
@@ -328,25 +288,30 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     IExtensionPoint extensionPoint = registry.getExtensionPoint(ep);
     if (extensionPoint == null)
       return null;
-    
+
     String id = getPreferenceStore().getString(ep);
     if (id.length() == 0)
       return null;
-    
+
     IConfigurationElement[] members = extensionPoint.getConfigurationElements();
     for (int m = 0; m < members.length; m++)
     {
       IConfigurationElement member = members[m];
       if (id.equalsIgnoreCase(member.getAttribute("id")))
-        try {
+        try
+        {
           return member.createExecutableExtension("class");
-        } catch(Exception x) { x.printStackTrace(); };
+        } catch (Exception x)
+        {
+          x.printStackTrace();
+        }
+      ;
     }
-    
+
     // If we are here, then the configured plugin is no more available, so
     // reset the preference to avoid future problems.
     getPreferenceStore().setValue(ep, "");
-    
+
     return null;
   }
 
@@ -357,7 +322,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   {
     return new BasicData();
   }
-  
+
   /**
    * Creates an object that implements the IExtendedData interface.
    */
@@ -365,7 +330,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   {
     return new ExtendedData();
   }
-  
+
   /**
    * Return the singleton instance of the given extension.
    */
@@ -378,22 +343,27 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       IExtensionPoint extensionPoint = registry.getExtensionPoint(extensionPointId);
       if (extensionPoint == null)
         return null;
-      
+
       IConfigurationElement[] members = extensionPoint.getConfigurationElements();
       for (int m = 0; m < members.length; m++)
       {
         IConfigurationElement member = members[m];
         if (id.equalsIgnoreCase(member.getAttribute("id")))
-          try {
+          try
+          {
             obj = member.createExecutableExtension("class");
             pluginMap.put(extensionPointId + ":" + id, obj);
-          } catch(Exception x) { x.printStackTrace(); };
+          } catch (Exception x)
+          {
+            x.printStackTrace();
+          }
+        ;
       }
     }
-    
+
     return obj;
   }
-  
+
   /**
    * Returns the status of the data streaming.
    * 
@@ -413,7 +383,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   {
     plugin.getLog().log(new Status(Status.INFO, "eclipsetrader", 0, message, null));
   }
-  
+
   /**
    * Log a message in the system log with the default given severity status.
    * 

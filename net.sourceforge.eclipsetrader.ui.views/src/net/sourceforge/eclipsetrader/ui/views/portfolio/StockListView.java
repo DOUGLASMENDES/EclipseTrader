@@ -29,16 +29,12 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -47,7 +43,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  */
-public class StockListView extends ViewPart implements ControlListener
+public class StockListView extends ViewPart
 {
   private Table table;
   private StockList stockList = new StockList();
@@ -61,7 +57,6 @@ public class StockListView extends ViewPart implements ControlListener
     table.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_HORIZONTAL));
     table.setHeaderVisible(false);
     table.setLinesVisible(false);
-    TableColumn column = new TableColumn(table, SWT.LEFT);
     
     DragSource dragSource = new DragSource(table, DND.DROP_COPY);
     Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
@@ -82,7 +77,7 @@ public class StockListView extends ViewPart implements ControlListener
       }
     });    
 
-    table.addMouseListener(new MouseListener() {
+    table.addMouseListener(new MouseAdapter() {
       public void mouseDoubleClick(MouseEvent e) 
       {
         String CHART_ID = "net.sourceforge.eclipsetrader.ui.views.ChartView"; //$NON-NLS-1$
@@ -94,23 +89,15 @@ public class StockListView extends ViewPart implements ControlListener
           IViewReference ref = page.findViewReference(CHART_ID, "B" + String.valueOf(i));
           if (ref == null)
           {
+            ViewsPlugin.getDefault().getPreferenceStore().setValue("chart.B" + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
             try {
-              ViewsPlugin.getDefault().getPreferenceStore().setValue("chart.B" + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
-              IViewPart view = page.showView(CHART_ID, "B" + String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
+              page.showView(CHART_ID, "B" + String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
             } catch (PartInitException ex) {}
             break;
           }
         }
       }
-      public void mouseDown(MouseEvent e) 
-      {
-      }
-      public void mouseUp(MouseEvent e) 
-      {
-      }
     });
-
-    table.addControlListener(this);
     
     updateView();
   }
@@ -190,20 +177,5 @@ public class StockListView extends ViewPart implements ControlListener
       table.setItemCount(0);
     
     table.setRedraw(true);
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.events.ControlListener#controlMoved(org.eclipse.swt.events.ControlEvent)
-   */
-  public void controlMoved(ControlEvent e)
-  {
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.events.ControlListener#controlResized(org.eclipse.swt.events.ControlEvent)
-   */
-  public void controlResized(ControlEvent e)
-  {
-    table.getColumn(0).setWidth(table.getClientArea().width);
   }
 }

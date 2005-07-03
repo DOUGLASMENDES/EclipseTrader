@@ -32,7 +32,6 @@ public class ParametersPage extends WizardPage
   public final static int NEW_ZONE = 2;
   public static final int NEW_CHART = 1;
   public static final int EDIT_CHART = 2;
-  private String indicatorDescription = ""; //$NON-NLS-1$
   private Text text;
   private ColorSelector colorSelector;
   private IChartConfigurer configurer;

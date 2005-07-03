@@ -149,7 +149,6 @@ public class ChartDataProvider implements IChartDataProvider, IPropertyChangeLis
               break;
           }
           Calendar day = new GregorianCalendar(yr, mm, Integer.parseInt(dateItem[0]));
-          double adjustRatio = Double.parseDouble(item[6]) / Double.parseDouble(item[4]);
           
           IChartData cd = new ChartData();
           cd.setDate(day.getTime());

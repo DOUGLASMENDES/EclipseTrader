@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
+ * Copyright (c) 2004-2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
@@ -13,7 +13,9 @@ package net.sourceforge.eclipsetrader.yahoo;
 import java.io.BufferedReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.INewsData;
@@ -89,7 +91,13 @@ public class NewsSourceUS extends NewsSource
           
           if (isNewsPresent(title) == false) 
           {
-            INewsData nd = new NewsData(title, url, source, df.parse(day + " " + ar[0]));
+            // Adjust the date/time with the local timezone
+            GregorianCalendar c = new GregorianCalendar(TimeZone.getTimeZone("EST"), Locale.US);
+            df.setTimeZone(c.getTimeZone());
+            c.setTime(df.parse(day + " " + ar[0]));
+            c.setTimeZone(TimeZone.getDefault());
+
+            INewsData nd = new NewsData(title, url, source, c.getTime());
             _data.addElement(nd);
           }
         }

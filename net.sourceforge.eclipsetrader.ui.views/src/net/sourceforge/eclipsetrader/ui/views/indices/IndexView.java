@@ -11,7 +11,6 @@
 package net.sourceforge.eclipsetrader.ui.views.indices;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
@@ -44,7 +43,6 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -57,16 +55,12 @@ import org.eclipse.ui.part.ViewPart;
 public class IndexView extends ViewPart implements IPropertyChangeListener, IIndexUpdateListener, ISelectionProvider
 {
   private static String EXTENSION_POINT_ID = "net.sourceforge.eclipsetrader.indexProvider";
-  private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-  private SimpleDateFormat df_us = new SimpleDateFormat("MM/dd/yyyy h:mma");
-  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
   private Composite parent, composite;
   private Image up = Images.ICON_UP.createImage();
   private Image down = Images.ICON_DOWN.createImage();
-  private Image equal = Images.ICON_EQUAL.createImage();
   private Vector widgets = new Vector();
   private HashMap map = new HashMap();
   private String selectedSymbol = "";
@@ -155,7 +149,6 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
     String[] providers = pref.getString("index.providers").split(",");
     for (int i = 0; i < providers.length; i++)
     {
-      String[] symbols = pref.getString("index." + providers[i]).split(",");
       IIndexDataProvider ip = (IIndexDataProvider)TraderPlugin.getExtensionInstance(EXTENSION_POINT_ID, providers[i]);
       if (ip != null)
         ip.removeUpdateListener(this);
@@ -417,9 +410,9 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
           IViewReference ref = page.findViewReference(CHART_ID, String.valueOf(i));
           if (ref == null)
           {
+            ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol());
             try {
-              ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol());
-              IViewPart view = page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
+              page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
             } catch (PartInitException e) {}
             break;
           }
@@ -445,7 +438,7 @@ public class IndexView extends ViewPart implements IPropertyChangeListener, IInd
           {
             ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
             try {
-              IViewPart view = page.showView("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
+              page.showView("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
             } catch (PartInitException e) {}
             break;
           }

@@ -84,4 +84,7 @@ public interface IDataStore
    * @param chartData - The array of IChartData items to store. 
    */
   public void storeHistoryData(IBasicData data, IChartData[] chartData);
+  
+  public void addHistoryDataListener(IBasicData data, IChartDataListener listener);
+  public void removeHistoryDataListener(IBasicData data, IChartDataListener listener);
 }

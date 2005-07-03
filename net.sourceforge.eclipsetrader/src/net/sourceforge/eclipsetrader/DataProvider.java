@@ -27,15 +27,12 @@ import org.osgi.framework.BundleContext;
  * <p>Plugin developers may extend this class instead of implementing the interface and
  * override the startStreaming and stopStreaming methods only.</p>
  * <p></p>
- * 
- * @author Marco Maccaferri - 10/08/2004
  */
 public class DataProvider extends Plugin implements IBasicDataProvider, IExecutableExtension
 {
   private static DataProvider instance;
   private List _listeners = new ArrayList();
   private HashMap _dataListeners = new HashMap();
-  private Thread thread;
   private boolean streaming = false;
   protected IExtendedData[] data;
   

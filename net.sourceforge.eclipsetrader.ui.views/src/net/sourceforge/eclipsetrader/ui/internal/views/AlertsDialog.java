@@ -24,6 +24,7 @@ import net.sourceforge.eclipsetrader.IExtendedData;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.RGB;
@@ -301,11 +302,7 @@ public class AlertsDialog extends TitleAreaDialog implements SelectionListener
     
     Button button = new Button(comp, SWT.PUSH);
     button.setText("...");
-    button.addSelectionListener(new SelectionListener() {
-      AudioClip clip = null;
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-      }
+    button.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e)
       {
         FileDialog dlg = new FileDialog(((Button)e.widget).getShell(), SWT.OPEN);
@@ -317,11 +314,8 @@ public class AlertsDialog extends TitleAreaDialog implements SelectionListener
     
     button = new Button(comp, SWT.PUSH);
     button.setText("Play");
-    button.addSelectionListener(new SelectionListener() {
+    button.addSelectionListener(new SelectionAdapter() {
       AudioClip clip = null;
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-      }
       public void widgetSelected(SelectionEvent e)
       {
         if (clip != null)

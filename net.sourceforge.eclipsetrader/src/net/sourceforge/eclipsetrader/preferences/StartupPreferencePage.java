@@ -21,7 +21,6 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
@@ -30,14 +29,10 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 /**
  * Preference page for startup and shutdown preferences.
  * <p></p>
- * 
- * @author Marco Maccaferri
  */
 public class StartupPreferencePage extends PreferencePage implements IWorkbenchPreferencePage
 {
   private FieldEditor[] editor;
-  private Combo dataProvider;
-  private Combo chartProvider;
   
   public void init(IWorkbench workbench) 
   {
@@ -93,13 +88,5 @@ public class StartupPreferencePage extends PreferencePage implements IWorkbenchP
     for (int i = 0; i < editor.length; i++)
       editor[i].store();
     return super.performOk();
-  }
-  
-  private String getComboValue(Combo combo)
-  {
-    String value = ""; //$NON-NLS-1$
-    if (combo.getSelectionIndex() != -1)
-      value = (String)combo.getData(String.valueOf(combo.getSelectionIndex()));
-    return value;
   }
 }

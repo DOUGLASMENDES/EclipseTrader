@@ -64,7 +64,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -92,7 +91,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   private long lastUpdate = System.currentTimeMillis();
   private Timer timerDaemon = new Timer();
   private int dragColumn = -1;
-  private Composite parent;
   private Vector selectionListeners = new Vector();
   private PortfolioSelection selection = new PortfolioSelection();
 
@@ -139,7 +137,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
    */
   public void createPartControl(Composite parent)
   {
-    this.parent = parent;
     IPreferenceStore pref = ViewsPlugin.getDefault().getPreferenceStore();
 
     // Colors
@@ -297,9 +294,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       IViewReference ref = page.findViewReference(CHART_ID, String.valueOf(i));
       if (ref == null)
       {
+        ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
         try {
-          ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
-          IViewPart view = page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
+          page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
 //          ((ChartView)view).setData(data);
         } catch (PartInitException e) {}
         break;
@@ -318,7 +315,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       {
         ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
         try {
-          IViewPart view = page.showView("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
+          page.showView("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
         } catch (PartInitException e) {}
         break;
       }
@@ -336,7 +333,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       {
         ViewsPlugin.getDefault().getPreferenceStore().setValue("book." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
         try {
-          IViewPart view = page.showView("net.sourceforge.eclipsetrader.ui.views.Book", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
+          page.showView("net.sourceforge.eclipsetrader.ui.views.Book", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
         } catch (PartInitException e) {}
         break;
       }
