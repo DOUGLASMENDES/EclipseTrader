@@ -40,7 +40,7 @@ public class BackfillDataProvider implements IBackfillDataProvider
   {
     Vector v = new Vector();
     try {
-      URL url = new URL("http://grafici.borsaitalia.it/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=&codneb=" + data.getSymbol() + "&period=2MIN&req_type=GRAF_DS&ascii=1");
+      URL url = new URL("http://194.185.192.223/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=" + data.getTicker() + "&codneb=" + data.getSymbol() + "&period=1MIN&req_type=GRAF_DS&ascii=1&form_id=");
       System.out.println(getClass() + " " + url);
 
       HttpURLConnection con = (HttpURLConnection)url.openConnection();
@@ -55,6 +55,7 @@ public class BackfillDataProvider implements IBackfillDataProvider
       }
       con.setAllowUserInteraction(true);
       con.setRequestMethod("GET");
+      con.setRequestProperty("User-Agent", "Mozilla/4.0 (Windows XP 5.1) Java/1.4.1_02");
       con.setInstanceFollowRedirects(true);
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       String inputLine = in.readLine();

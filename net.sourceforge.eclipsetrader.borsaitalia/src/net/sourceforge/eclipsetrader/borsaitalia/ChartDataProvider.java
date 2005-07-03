@@ -57,7 +57,6 @@ public class ChartDataProvider implements IChartDataProvider
         v.add(chartData[i]);
     }
     
-    Calendar today = Calendar.getInstance();
     Calendar from = Calendar.getInstance();
 
     // If no data is avalable, start from one year back.
