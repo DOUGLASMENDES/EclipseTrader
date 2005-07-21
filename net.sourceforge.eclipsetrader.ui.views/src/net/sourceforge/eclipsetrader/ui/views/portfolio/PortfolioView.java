@@ -11,16 +11,14 @@
 package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.IAlertData;
 import net.sourceforge.eclipsetrader.IAlertSource;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IBasicDataProvider;
+import net.sourceforge.eclipsetrader.ICollectionObserver;
 import net.sourceforge.eclipsetrader.IDataUpdateListener;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
@@ -33,15 +31,10 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -51,10 +44,10 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -64,35 +57,41 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * @author Marco Maccaferri
  */
-public class PortfolioView extends ViewPart implements ControlListener, IDataUpdateListener, IPropertyChangeListener, ISelectionProvider 
+public class PortfolioView extends ViewPart implements ControlListener, IDataUpdateListener, IPropertyChangeListener, ICollectionObserver 
 {
-  private static Table table;
+  public static final String VIEW_ID = "net.sourceforge.eclipsetrader.ui.views.Portfolio";
+  private Table table;
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
   private NumberFormat bpf = NumberFormat.getInstance();
   private NumberFormat pcf = NumberFormat.getInstance();
-  private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
   private Color evenBackground;
   private Color oddBackground;
   private Color totalBackground;
   private Color negativeForeground;
   private Color positiveForeground;
   private Color textForeground;
-  private long lastUpdate = System.currentTimeMillis();
-  private Timer timerDaemon = new Timer();
   private int dragColumn = -1;
-  private Vector selectionListeners = new Vector();
-  private PortfolioSelection selection = new PortfolioSelection();
+  private TableItem totalsTableItem;
+  private Runnable itemHilighter = new Runnable() {
+    public void run()
+    {
+      if (!table.isDisposed())
+      {
+        for (int i = 0; i < table.getItemCount() - 1; i++)
+        {
+          PortfolioTableItem item = (PortfolioTableItem)table.getItem(i).getData();
+          item.resetHilight();
+        }
+        table.getDisplay().timerExec(1000, itemHilighter);
+      }
+    }
+  };
 
   // Set column names
   public static String[] columnNames = new String[] {
@@ -158,18 +157,14 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
     table.setBackground(parent.getBackground());
-    table.addSelectionListener(new SelectionListener() {
+    table.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e)
       {
         TableItem[] items = table.getItems();
         if (e.item.equals(items[items.length - 1]) == false)
-          selection.item = e.item;
+          getSite().getSelectionProvider().setSelection(new PortfolioSelection(((PortfolioTableItem)e.item.getData()).getData()));
         else
-          selection.item = null;
-        setSelection(selection);
-      }
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
+          getSite().getSelectionProvider().setSelection(new PortfolioSelection());
       }
     });
     
@@ -195,14 +190,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       }
     });    
 
-    table.addMouseListener(new MouseListener() {
-      public void mouseDoubleClick(MouseEvent e) {
-      }
+    table.addMouseListener(new MouseAdapter() {
       public void mouseDown(MouseEvent e) {
         dragColumn = getColumn(e.x);
-      }
-      public void mouseUp(MouseEvent e) {
-        dragColumn = -1;
       }
     });
 
@@ -214,7 +204,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     for (int i = 0; i < tokenCount; i++)
     {
       elements[i] = tokenizer.nextToken();
-      TableColumn column = new TableColumn(table, SWT.RIGHT, i);
+      TableColumn column = new TableColumn(table, (getColumnDataIndex(elements[i]) <= 2) ? SWT.LEFT : SWT.RIGHT, i);
       for (int m = 0; m < columnNames.length; m++)
       {
         if (elements[i].equalsIgnoreCase(columnNames[m]) == true)
@@ -225,31 +215,34 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
         }
       }
       column.setData(elements[i]);
-      if (getColumnDataIndex(i) <= 2)
-        column.setAlignment(SWT.LEFT);
       column.addControlListener(this);
     }
     
     createContextMenu();
     
-    if (TraderPlugin.getDataProvider() != null)
-      TraderPlugin.getDataProvider().addDataListener(this);
-    ViewsPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
-    TraderPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
-    
-    // Schedula un timer ogni secondo per aggiornare la tabella anche in assenza
-    // di dati dal data provider.
-    timerDaemon.schedule(new TimerTask() {
-      public void run()
-      {
-        if ((System.currentTimeMillis() - lastUpdate) >= 15000)
-          asyncUpdateView();
-      }
-    }, 2000, 1000);
-    
     // Initial update
-    asyncUpdateView();
-    getSite().setSelectionProvider(this);
+    for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
+    {
+      IExtendedData obj = (IExtendedData)iter.next();
+      PortfolioTableItem item = new PortfolioTableItem(this, table, SWT.NONE);
+      item.setNegativeForeground(negativeForeground);
+      item.setPositiveForeground(positiveForeground);
+      item.setData((IExtendedData)obj);
+    }
+    for (int i = 0; i < table.getItemCount(); i++)
+      table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+    // Totals tow
+    totalsTableItem = new TableItem(table, SWT.NONE);
+    totalsTableItem.setBackground(totalBackground);
+    updateTotals();
+    
+    // Item hilighter
+    table.getDisplay().timerExec(1000, itemHilighter);
+    
+    // Add the property change listeners
+    TraderPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+    ViewsPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+    TraderPlugin.getDataStore().getStockwatchData().addObserver(this);
   }
 
   /* (non-Javadoc)
@@ -257,8 +250,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
    */
   public void setFocus()
   {
-    table.forceFocus();
-    setSelection(selection);
+    table.setFocus();
   }
 
   /* (non-Javadoc)
@@ -266,10 +258,8 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
    */
   public void dispose()
   {
-    if (TraderPlugin.getDataProvider() != null)
-      TraderPlugin.getDataProvider().removeDataListener(this);
-
     // Remove the property change listeners
+    TraderPlugin.getDataStore().getStockwatchData().removeObserver(this);
     ViewsPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
     TraderPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 
@@ -282,62 +272,29 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     
     super.dispose();
   }
-  
-  public void openHistoryChart() 
-  {
-    String CHART_ID = "net.sourceforge.eclipsetrader.ui.views.ChartView"; //$NON-NLS-1$
 
-    IBasicData data = TraderPlugin.getData()[table.getSelectionIndex()];
-    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-    for (int i = 1;; i++)
+  /**
+   * Get the selected item in the portfolio table.
+   * 
+   * @return the selected item
+   */
+  public IExtendedData getSelectedItem()
+  {
+    if (table.getSelectionCount() != 0)
     {
-      IViewReference ref = page.findViewReference(CHART_ID, String.valueOf(i));
-      if (ref == null)
+      if (table.getSelection()[0].getData() instanceof PortfolioTableItem)
       {
-        ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
-        try {
-          page.showView(CHART_ID, String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE);
-//          ((ChartView)view).setData(data);
-        } catch (PartInitException e) {}
-        break;
+        PortfolioTableItem item = (PortfolioTableItem)table.getSelection()[0].getData();
+        return item.getData();
       }
     }
+        
+    return null;
   }
   
-  public void openRealtimeChart()
+  public Table getTable()
   {
-    IExtendedData data = TraderPlugin.getData()[table.getSelectionIndex()];
-    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-    for (int i = 1;; i++)
-    {
-      IViewReference ref = page.findViewReference("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i)); //$NON-NLS-1$
-      if (ref == null)
-      {
-        ViewsPlugin.getDefault().getPreferenceStore().setValue("rtchart." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
-        try {
-          page.showView("net.sourceforge.eclipsetrader.ui.views.RealtimeChart", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
-        } catch (PartInitException e) {}
-        break;
-      }
-    }
-  }
-  
-  public void openPriceBook()
-  {
-    IExtendedData data = TraderPlugin.getData()[table.getSelectionIndex()];
-    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-    for (int i = 1;; i++)
-    {
-      IViewReference ref = page.findViewReference("net.sourceforge.eclipsetrader.ui.views.Book", String.valueOf(i)); //$NON-NLS-1$
-      if (ref == null)
-      {
-        ViewsPlugin.getDefault().getPreferenceStore().setValue("book." + String.valueOf(i), data.getSymbol()); //$NON-NLS-1$
-        try {
-          page.showView("net.sourceforge.eclipsetrader.ui.views.Book", String.valueOf(i), IWorkbenchPage.VIEW_ACTIVATE); //$NON-NLS-1$
-        } catch (PartInitException e) {}
-        break;
-      }
-    }
+    return table;
   }
   
   public void moveUp()
@@ -371,23 +328,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     table.setSelection(index + 1);
   }
   
-  public void addItem()
-  {
-    PortfolioDialog dlg = new PortfolioDialog();
-    while (dlg.open() == PortfolioDialog.OK)
-    {
-      IExtendedData data = TraderPlugin.createExtendedData();
-      data.setSymbol(dlg.getSymbol());
-      data.setTicker(dlg.getTicker());
-      data.setDescription(dlg.getDescription());
-      data.setMinimumQuantity(dlg.getMinimumQuantity());
-      data.setQuantity(dlg.getQuantity());
-      data.setPaid(dlg.getPaid());
-      TraderPlugin.getDataStore().add(data);
-      updateView();
-    }
-  }
-  
   public void editAlerts()
   {
     int max = table.getItemCount() - 1;
@@ -400,7 +340,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     AlertsDialog dlg = new AlertsDialog();
     dlg.setData(data);
     if (dlg.open() == Dialog.OK)
-      TraderPlugin.getDataStore().update(index, data);
+      TraderPlugin.getDataStore().getStockwatchData().set(index, data);
   }
   
   public void clearAlerts()
@@ -418,49 +358,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     asyncUpdateView();
   }
   
-  public void editItem()
-  {
-    int max = table.getItemCount() - 1;
-    int index = table.getSelectionIndex();
-    if (index == -1 || index >= max)
-      return;
-
-    IExtendedData data = TraderPlugin.getData()[index];
-    
-    PortfolioDialog dlg = new PortfolioDialog();
-    dlg.setSymbol(data.getSymbol());
-    dlg.setTicker(data.getTicker());
-    dlg.setDescription(data.getDescription());
-    dlg.setMinimumQuantity(data.getMinimumQuantity());
-    dlg.setQuantity(data.getQuantity());
-    dlg.setPaid(data.getPaid());
-    if (dlg.open() == PortfolioDialog.OK)
-    {
-      data.setSymbol(dlg.getSymbol());
-      data.setTicker(dlg.getTicker());
-      data.setDescription(dlg.getDescription());
-      data.setMinimumQuantity(dlg.getMinimumQuantity());
-      data.setQuantity(dlg.getQuantity());
-      data.setPaid(dlg.getPaid());
-      TraderPlugin.getDataStore().update(index, data);
-      updateView();
-    }
-  }
-  
-  public void deleteItem()
-  {
-    int max = table.getItemCount() - 1;
-    int index = table.getSelectionIndex();
-    if (index == -1 || index >= max)
-      return;
-
-    if (MessageDialog.openConfirm(table.getShell(), Messages.getString("PortfolioView.ConfirmDeleteTitle"), Messages.getString("PortfolioView.ConfirmDeleteMessage")) == true) //$NON-NLS-1$ //$NON-NLS-2$
-    {
-      TraderPlugin.getDataStore().remove(TraderPlugin.getData()[index]);
-      updateView();
-    }
-  }
-
   /**
    * Thread-safe view update.
    */
@@ -482,7 +379,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
    */
   public void updateView()
   {
-    int totalStock = 0;
+/*    int totalStock = 0;
     double totalPaid = 0, totalSell = 0;
     IExtendedData[] data = TraderPlugin.getData();
     if (data == null)
@@ -533,7 +430,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     if (columnData != -1)
       item.setText(columnData, bpf.format(totalPaid));
 
-    table.setRedraw(true);
+    table.setRedraw(true);*/
   }
   
   /**
@@ -545,15 +442,15 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     if (table.isDisposed() == true)
       return;
 
-    TableItem item = table.getItem(row);
-    Color color = item.getBackground();
+    TableItem tableItem = table.getItem(row);
+    Color color = tableItem.getBackground();
     if (color != null && color != oddBackground && color != evenBackground)
       color.dispose();
     
     if ((row & 1) == 1)
-      item.setBackground(oddBackground);
+      tableItem.setBackground(oddBackground);
     else
-      item.setBackground(evenBackground);
+      tableItem.setBackground(evenBackground);
     
     if (data instanceof IAlertSource)
     {
@@ -563,167 +460,11 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
         if (alerts[i].isTrigger() == true && alerts[i].isAcknowledge() == false)
         {
           if (alerts[i].isHilight())
-            item.setBackground(new Color(null, alerts[i].getHilightColor()));
+            tableItem.setBackground(new Color(null, alerts[i].getHilightColor()));
         }
       }
     }
     
-    PortfolioTableData tableData = (PortfolioTableData)item.getData();
-    if (tableData == null)
-    {
-      tableData = new PortfolioTableData();
-      item.setData(tableData);
-    }
-    for (int column = 0; column < table.getColumnCount(); column++)
-    {
-      item.setForeground(column, textForeground);
-      int columnData = getColumnDataIndex(column);
-      switch(columnData)
-      {
-        case 0:
-          item.setText(column, data.getSymbol());
-          break;
-        case 1:
-          item.setText(column, data.getTicker());
-          break;
-        case 2:
-          item.setText(column, data.getDescription());
-          break;
-        case 3:
-          tableData.setLastPrice(data.getLastPrice());
-          if (tableData.getLastPriceVariance() < 0)
-            item.setForeground(column, negativeForeground);
-          else if (tableData.getLastPriceVariance() > 0)
-            item.setForeground(column, positiveForeground);
-          if (data.getLastPrice() > 200)
-            item.setText(column, nf.format(data.getLastPrice()));
-          else
-            item.setText(column, pf.format(data.getLastPrice()));
-          break;
-        case 4:
-          if (data.getLastPrice() != 0 && data.getClosePrice() != 0)
-          {
-            double gain = (data.getLastPrice() - data.getClosePrice()) / data.getClosePrice() * 100;
-            data.setChange(pcf.format(gain) + "%"); //$NON-NLS-1$
-            if (gain < 0)
-              item.setForeground(column, negativeForeground);
-            else if (gain > 0)
-              item.setForeground(column, positiveForeground);
-          }
-          item.setText(column, data.getChange());
-          break;
-        case 5:
-          tableData.setBidPrice(data.getBidPrice());
-          if (tableData.getBidPriceVariance() < 0)
-            item.setForeground(column, negativeForeground);
-          else if (tableData.getBidPriceVariance() > 0)
-            item.setForeground(column, positiveForeground);
-          if (data.getBidPrice() > 200)
-            item.setText(column, nf.format(data.getBidPrice()));
-          else
-            item.setText(column, pf.format(data.getBidPrice()));
-          break;
-        case 6:
-          tableData.setBidSize(data.getBidSize());
-          if (tableData.getBidSizeVariance() < 0)
-            item.setForeground(column, negativeForeground);
-          else if (tableData.getBidSizeVariance() > 0)
-            item.setForeground(column, positiveForeground);
-          item.setText(column, nf.format(data.getBidSize()));
-          break;
-        case 7:
-          tableData.setAskPrice(data.getAskPrice());
-          if (tableData.getAskPriceVariance() < 0)
-            item.setForeground(column, negativeForeground);
-          else if (tableData.getAskPriceVariance() > 0)
-            item.setForeground(column, positiveForeground);
-          if (data.getAskPrice() > 200)
-            item.setText(column, nf.format(data.getAskPrice()));
-          else
-            item.setText(column, pf.format(data.getAskPrice()));
-          break;
-        case 8:
-          tableData.setAskSize(data.getAskSize());
-          if (tableData.getAskSizeVariance() < 0)
-            item.setForeground(column, negativeForeground);
-          else if (tableData.getAskSizeVariance() > 0)
-            item.setForeground(column, positiveForeground);
-          item.setText(column, nf.format(data.getAskSize()));
-          break;
-        case 9:
-          item.setText(column, nf.format(data.getVolume()));
-          break;
-        case 10:
-          item.setText(column, nf.format(data.getMinimumQuantity()));
-          break;
-        case 11:
-          data.setMarketValue(data.getMinimumQuantity() * data.getLastPrice());
-          if (data.getMarketValue() > 2000)
-            item.setText(column, nf.format(data.getMarketValue()));
-          else
-            item.setText(column, bpf.format(data.getMarketValue()));
-          break;
-        case 12:
-          if (data.getQuantity() == 0)
-            item.setText(column, ""); //$NON-NLS-1$
-          else
-            item.setText(column, nf.format(data.getQuantity()));
-          break;
-        case 13:
-          if (data.getPaid() == 0)
-            item.setText(column, ""); //$NON-NLS-1$
-          else
-            item.setText(column, pf.format(data.getPaid()));
-          break;
-        case 14:
-          data.setValuePaid(data.getPaid() * data.getQuantity());
-          if (data.getPaid() != 0 && data.getQuantity() != 0)
-            item.setText(column, bpf.format(data.getValuePaid()));
-          else
-            item.setText(column, ""); //$NON-NLS-1$
-          break;
-        case 15:
-          if (data.getPaid() != 0 && data.getQuantity() != 0)
-          {
-            data.setGain((data.getLastPrice() - data.getPaid()) / data.getPaid() * 100);
-            if (data.getGain() < 0)
-              item.setForeground(column, negativeForeground);
-            else if (data.getGain() > 0)
-              item.setForeground(column, positiveForeground);
-            item.setText(column, bpf.format((data.getLastPrice() * data.getQuantity()) - (data.getPaid() * data.getQuantity())) + " (" + pcf.format(data.getGain()) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
-          }
-          else
-            item.setText(column, ""); //$NON-NLS-1$
-          break;
-        case 16:
-          if (data.getOpenPrice() > 200)
-            item.setText(column, nf.format(data.getOpenPrice()));
-          else
-            item.setText(column, pf.format(data.getOpenPrice()));
-          break;
-        case 17:
-          if (data.getHighPrice() > 200)
-            item.setText(column, nf.format(data.getHighPrice()));
-          else
-            item.setText(column, pf.format(data.getHighPrice()));
-          break;
-        case 18:
-          if (data.getLowPrice() > 200)
-            item.setText(column, nf.format(data.getLowPrice()));
-          else
-            item.setText(column, pf.format(data.getLowPrice()));
-          break;
-        case 19:
-          if (data.getClosePrice() > 200)
-            item.setText(column, nf.format(data.getClosePrice()));
-          else
-            item.setText(column, pf.format(data.getClosePrice()));
-          break;
-        case 20:
-          item.setText(column, tf.format(data.getDate()));
-          break;
-      }
-    }
   }
  
   private void createContextMenu() 
@@ -741,42 +482,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     Menu menu = menuMgr.createContextMenu(table);
     table.setMenu(menu);
     
-    // Register menu for extension.
-    getSite().registerContextMenu(menuMgr, this);
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-   */
-  public void addSelectionChangedListener(ISelectionChangedListener listener)
-  {
-    if (selectionListeners.contains(listener) == false)
-      selectionListeners.add(listener);
-  }
-  
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
-   */
-  public ISelection getSelection()
-  {
-    return selection;
-  }
-  
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-   */
-  public void removeSelectionChangedListener(ISelectionChangedListener listener)
-  {
-    selectionListeners.remove(listener);
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
-   */
-  public void setSelection(ISelection selection)
-  {
-    for (int i = 0; i < selectionListeners.size(); i++)
-      ((ISelectionChangedListener)selectionListeners.elementAt(i)).selectionChanged(new SelectionChangedEvent(this, selection));
+    // Register the selection provider and context menu
+    getSite().setSelectionProvider(new PortfolioSelectionProvider());
+    getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
   }
 
   /* (non-Javadoc)
@@ -803,7 +511,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     });
   }
 
-  private int getColumnDataIndex(int index)
+  public int getColumnDataIndex(int index)
   {
     String data = (String)table.getColumn(index).getData();
     for (int i = 0; i < columnNames.length; i++)
@@ -814,7 +522,17 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     return -1;
   }
 
-  private int getDataColumnIndex(int index)
+  public int getColumnDataIndex(String data)
+  {
+    for (int i = 0; i < columnNames.length; i++)
+    {
+      if (data.equalsIgnoreCase(columnNames[i]) == true)
+        return i;
+    }
+    return -1;
+  }
+
+  public int getDataColumnIndex(int index)
   {
     TableColumn[] column = table.getColumns();
     for (int i = 0; i < column.length; i++)
@@ -853,8 +571,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       negativeForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.negative_value_color")); //$NON-NLS-1$
     else if (property.equalsIgnoreCase("portfolio.positive_value_color") == true) //$NON-NLS-1$
       positiveForeground = new Color(Display.getCurrent(), PreferenceConverter.getColor(ViewsPlugin.getDefault().getPreferenceStore(), "portfolio.positive_value_color")); //$NON-NLS-1$
-    else if (property.equalsIgnoreCase("portfolio") == true) //$NON-NLS-1$
-      updateView();
     else if (property.equalsIgnoreCase("portfolio.display") == true) //$NON-NLS-1$
     {
       table.setRedraw(false);
@@ -882,9 +598,14 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
         if (getColumnDataIndex(i) <= 2)
           column.setAlignment(SWT.LEFT);
       }
+      for (int i = 0; i < table.getItemCount(); i++)
+      {
+        PortfolioTableItem tableItem = (PortfolioTableItem)table.getItem(i).getData();
+        tableItem.update();
+      }
       table.setRedraw(true);
     }
-    if (property.startsWith("portfolio.") == true) //$NON-NLS-1$
+    if (property.equalsIgnoreCase("portfolio") == true || property.startsWith("portfolio.") == true) //$NON-NLS-1$
       updateView();
   }
   
@@ -931,5 +652,96 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
         }
       }
     }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ICollectionObserver#itemAdded(java.lang.Object)
+   */
+  public void itemAdded(Object obj)
+  {
+    if (obj instanceof IExtendedData)
+    {
+      int index = TraderPlugin.getDataStore().getStockwatchData().indexOf(obj);
+      PortfolioTableItem item = new PortfolioTableItem(this, table, SWT.NONE, index);
+      item.setNegativeForeground(negativeForeground);
+      item.setPositiveForeground(positiveForeground);
+      item.setData((IExtendedData)obj);
+
+      for (int i = 0; i < table.getItemCount() - 1; i++)
+        table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+      
+      updateTotals();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ICollectionObserver#itemRemoved(java.lang.Object)
+   */
+  public void itemRemoved(Object obj)
+  {
+    for (int i = 0; i < table.getItemCount() - 1; i++)
+    {
+      PortfolioTableItem item = (PortfolioTableItem)table.getItem(i).getData();
+      if (item.getData() == obj)
+      {
+        table.getItem(i).dispose();
+        if (i > 0)
+          table.select(i - 1);
+        break;
+      }
+    }
+    for (int i = 0; i < table.getItemCount() - 1; i++)
+      table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+    updateTotals();
+  }
+  
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ICollectionObserver#itemReplaced(java.lang.Object, java.lang.Object)
+   */
+  public void itemReplaced(Object newObj, Object oldObj)
+  {
+    if (newObj instanceof IExtendedData)
+    {
+      int index = TraderPlugin.getDataStore().getStockwatchData().indexOf(newObj);
+      PortfolioTableItem item = (PortfolioTableItem)table.getItem(index).getData();
+      item.setData((IExtendedData)newObj);
+      updateTotals();
+    }
+  }
+
+  private void updateTotals()
+  {
+    int totalStock = 0;
+    double totalPaid = 0, totalSell = 0;
+    for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
+    {
+      IExtendedData obj = (IExtendedData)iter.next();
+      totalStock += obj.getQuantity();
+      totalPaid += obj.getQuantity() * obj.getPaid();
+      totalSell += obj.getQuantity() * obj.getLastPrice();
+    }
+
+    int columnData = getDataColumnIndex(2);
+    if (columnData != -1)
+      totalsTableItem.setText(columnData, Messages.getString("PortfolioView.Total")); //$NON-NLS-1$
+    columnData = getDataColumnIndex(12);
+    if (columnData != -1)
+      totalsTableItem.setText(columnData, nf.format(totalStock));
+    columnData = getDataColumnIndex(15);
+    if (columnData != -1)
+    {
+      double totalGain = totalSell - totalPaid;
+      if (totalGain < 0)
+        totalsTableItem.setForeground(columnData, negativeForeground);
+      else if (totalGain > 0)
+        totalsTableItem.setForeground(columnData, positiveForeground);
+      else
+        totalsTableItem.setForeground(columnData, textForeground);
+      totalsTableItem.setText(columnData, bpf.format(totalGain) + " (" + pcf.format(totalGain / totalPaid * 100) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    columnData = getDataColumnIndex(14);
+    if (columnData != -1)
+      totalsTableItem.setText(columnData, bpf.format(totalPaid));
   }
 }
