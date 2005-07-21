@@ -68,22 +68,10 @@ public class ContextAction implements IWorkbenchWindowActionDelegate, IViewActio
       };
     }
     
-    if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.views.openChart") == true)
-      view.openHistoryChart();
-    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.views.openRealtimeChart") == true)
-      view.openRealtimeChart();
-    else if (action.getId().equalsIgnoreCase("net.sourceforge.eclipsetrader.views.openPriceBook") == true)
-      view.openPriceBook();
-    else if (action.getId().equalsIgnoreCase("portfolio.moveup") == true)
+    if (action.getId().equalsIgnoreCase("portfolio.moveup") == true)
       view.moveUp();
     else if (action.getId().equalsIgnoreCase("portfolio.movedown") == true)
       view.moveDown();
-    else if (action.getId().equalsIgnoreCase("portfolio.add") == true)
-      view.addItem();
-    else if (action.getId().equalsIgnoreCase("portfolio.edit") == true)
-      view.editItem();
-    else if (action.getId().equalsIgnoreCase("portfolio.remove") == true)
-      view.deleteItem();
     else if (action.getId().equalsIgnoreCase("portfolio.editAlerts") == true)
       view.editAlerts();
     else if (action.getId().equalsIgnoreCase("portfolio.clearAlerts") == true)
