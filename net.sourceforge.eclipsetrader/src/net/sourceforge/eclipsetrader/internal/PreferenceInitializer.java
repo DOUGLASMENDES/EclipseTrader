@@ -82,7 +82,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
     // Load the data store plugin and reads the stored data
     IDataStore dataStore = (IDataStore)TraderPlugin.getDefault().activatePlugin("net.sourceforge.eclipsetrader.dataStore");
     if (dataStore != null)
-      dataStore.load();
+      dataStore.initialize();
     TraderPlugin.setDataStore(dataStore);
   }
 
