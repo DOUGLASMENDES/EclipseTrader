@@ -69,14 +69,16 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   {
     if (plugin == null || plugin.dataStore == null)
       return null;
-    return plugin.dataStore.getData();
+    IExtendedData[] dataArray = new IExtendedData[plugin.dataStore.getStockwatchData().size()];
+    plugin.dataStore.getStockwatchData().toArray(dataArray);
+    return dataArray;
   }
 
   public static IExtendedData getData(String symbol)
   {
     if (plugin == null || plugin.dataStore == null)
       return null;
-    IExtendedData[] _data = plugin.dataStore.getData();
+    IExtendedData[] _data = getData();
     for (int i = 0; i < _data.length; i++)
     {
       if (_data[i].getSymbol().equalsIgnoreCase(symbol) == true)
@@ -102,7 +104,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       // Load the data provider plugin
       plugin.dataProvider = (IBasicDataProvider) plugin.activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
       if (plugin.dataProvider != null)
-        plugin.dataProvider.setData(plugin.dataStore.getData());
+        plugin.dataProvider.setData(getData());
     }
 
     return plugin.dataProvider;
@@ -170,7 +172,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
         dataProvider.dispose();
       dataProvider = (IBasicDataProvider) activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
       if (dataProvider != null)
-        dataProvider.setData(dataStore.getData());
+        dataProvider.setData(getData());
     } else if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
     {
       if (bookDataProvider != null)
@@ -239,7 +241,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     if (dataProvider != null)
       dataProvider.stopStreaming();
     if (dataStore != null)
-      dataStore.store();
+      dataStore.terminate();
 
     super.stop(context);
   }

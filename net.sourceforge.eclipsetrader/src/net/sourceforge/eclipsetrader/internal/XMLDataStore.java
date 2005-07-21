@@ -17,10 +17,11 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,8 +36,10 @@ import net.sourceforge.eclipsetrader.IAlertData;
 import net.sourceforge.eclipsetrader.IAlertSource;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
+import net.sourceforge.eclipsetrader.IChartDataListener;
 import net.sourceforge.eclipsetrader.IDataStore;
 import net.sourceforge.eclipsetrader.IExtendedData;
+import net.sourceforge.eclipsetrader.ObservableCollection;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 
 import org.eclipse.core.runtime.Platform;
@@ -52,7 +55,6 @@ import org.w3c.dom.NodeList;
  */
 public class XMLDataStore implements IDataStore
 {
-  private static String PORTFOLIO_FILE_NAME = "portfolio.xml"; //$NON-NLS-1$
   private static String STOCKWATCH_FILE_NAME = "stockwatch.xml"; //$NON-NLS-1$
   private static String INDICES_FILE_NAME = "indices.xml"; //$NON-NLS-1$
   private static File HISTORY_CHART_FOLDER = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
@@ -63,8 +65,8 @@ public class XMLDataStore implements IDataStore
   private NumberFormat pf = NumberFormat.getInstance(Locale.US);
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
   private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
-  private List data = new ArrayList();
-  private IExtendedData[] dataArray;
+  private ObservableCollection stockwatchData;
+  private Map historicalData = new HashMap();
 
   public XMLDataStore()
   {
@@ -82,60 +84,27 @@ public class XMLDataStore implements IDataStore
     INTRADAY_CHART_FOLDER.mkdirs();
   }
 
-  /**
-   * Returns the portfolio data.<br>
-   * 
-   * @return The data array.
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#initialize()
    */
-  public IExtendedData[] getData()
+  public void initialize()
   {
-    return dataArray;
   }
-  
-  /**
-   * Read the portfolio data from an XML resource.<br>
-   */
-  public void load()
-  {
-    File file = new File(Platform.getLocation().toFile(), STOCKWATCH_FILE_NAME);
-    if (file.exists() == true)
-    {
-      try {
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        document = builder.parse(file);
 
-        int index = 0;
-        NodeList firstChild = document.getFirstChild().getChildNodes();
-        for (int i = 0; i < firstChild.getLength(); i++)
-        {
-          Node n = firstChild.item(i);
-          if (n.getNodeName().equalsIgnoreCase("stock"))
-            data.add(decodeData(index++, n.getChildNodes()));
-        }
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-    }
-
-    dataArray = new IExtendedData[data.size()];
-    data.toArray(dataArray);
-  }
-  
-  /**
-   * Writes the portfolio data to an XML resource.<br>
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#terminate()
    */
-  public void store()
+  public void terminate()
   {
-    data = Arrays.asList(dataArray);
-    
+    // Save the stockwatch data
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.getDOMImplementation().createDocument("", "stockwatch", null);
 
-      for (int i = 0; i < data.size(); i++)
+      for (int i = 0; i < stockwatchData.size(); i++)
       {
-        IExtendedData item = (IExtendedData)data.get(i);
+        IExtendedData item = (IExtendedData)stockwatchData.get(i);
 
         Element element = document.createElement("stock");
         element.setAttribute("symbol", item.getSymbol());
@@ -190,6 +159,7 @@ public class XMLDataStore implements IDataStore
         element.appendChild(node);
         node.appendChild(document.createTextNode(pf.format(item.getPaid())));
 
+        // Save the alerts data
         if (item instanceof IAlertSource)
         {
           IAlertData[] alerts = ((IAlertSource)item).getAlerts();
@@ -237,7 +207,39 @@ public class XMLDataStore implements IDataStore
       out.close();
     } catch (Exception ex) { ex.printStackTrace(); };
   }
-  
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#getData()
+   */
+  public ObservableCollection getStockwatchData()
+  {
+    if (stockwatchData == null)
+    {
+      stockwatchData = new ObservableCollection();
+
+      File file = new File(Platform.getLocation().toFile(), STOCKWATCH_FILE_NAME);
+      if (file.exists() == true)
+      {
+        try {
+          DocumentBuilder builder = factory.newDocumentBuilder();
+          document = builder.parse(file);
+
+          int index = 0;
+          NodeList firstChild = document.getFirstChild().getChildNodes();
+          for (int i = 0; i < firstChild.getLength(); i++)
+          {
+            Node n = firstChild.item(i);
+            if (n.getNodeName().equalsIgnoreCase("stock"))
+              stockwatchData.add(decodeData(index++, n.getChildNodes()));
+          }
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
+    }
+    return stockwatchData;
+  }
+
   private void decodeAlerts(IAlertSource source, NodeList parent)
   {
     IAlertData data = new AlertData();
@@ -335,38 +337,6 @@ public class XMLDataStore implements IDataStore
     return pd;
   }
   
-  public void add(IExtendedData data)
-  {
-    List v = new ArrayList(Arrays.asList(dataArray));
-    v.add(data);
-    IExtendedData[] da = new IExtendedData[v.size()];
-    v.toArray(da);
-    dataArray = da;
-    store();
-    if (TraderPlugin.getDataProvider() != null)
-      TraderPlugin.getDataProvider().setData(dataArray);
-  }
-  
-  public void remove(IExtendedData data)
-  {
-    List v = new ArrayList(Arrays.asList(dataArray));
-    v.remove(data);
-    IExtendedData[] da = new IExtendedData[v.size()];
-    v.toArray(da);
-    dataArray = da;
-    store();
-    if (TraderPlugin.getDataProvider() != null)
-      TraderPlugin.getDataProvider().setData(dataArray);
-  }
-  
-  public void update(int index, IExtendedData data)
-  {
-    dataArray[index] = data;
-    store();
-    if (TraderPlugin.getDataProvider() != null)
-      TraderPlugin.getDataProvider().setData(dataArray);
-  }
-
   /**
    * Updates the portfolio data with the given data array, adding, removing
    * or updating data as needed.<br>
@@ -375,138 +345,83 @@ public class XMLDataStore implements IDataStore
    */
   public void update(IExtendedData[] newData)
   {
-    // Set the new data to the data provider
-    if (newData.length != dataArray.length)
-    {
-      if (TraderPlugin.getDataProvider() != null)
-        TraderPlugin.getDataProvider().setData(newData);
-    }
-
-    // Update the current data array
-    dataArray = newData;
-    
-    // Store the data on file
-    store();
-
-/*    int m;
-
-    // Remove items from the data vector not in the new array
-    for (int i = data.size() - 1; i >= 0; i--)
-    {
-      ExtendedData pd = (ExtendedData)data.elementAt(i);
-      for (m = 0; m < newData.length; m++)
-      {
-        if (pd.symbol.equalsIgnoreCase(newData[m].symbol) == true)
-        {
-          pd.ticker = newData[m].ticker;
-          pd.description = newData[m].description;
-          pd.quantity = newData[m].quantity;
-          pd.paid = newData[m].paid;
-          pd.minimumQuantity = newData[m].minimumQuantity;
-          break;
-        }
-      }
-      if (m >= newData.length)
-        data.removeElementAt(i);
-    }
-    
-    // Add new items
-    for (int i = 0; i < newData.length; i++)
-    {
-      for (m = 0; m < data.size(); m++)
-      {
-        ExtendedData pd = (ExtendedData)data.elementAt(m);
-        if (pd.symbol.equalsIgnoreCase(newData[i].symbol) == true)
-          break;
-      }
-      if (m >= data.size())
-        data.add(newData[i]);
-    }
-
-    dataArray = new ExtendedData[data.size()];
-    data.toArray(dataArray);*/
-    
-/*    // Sort the items
-    java.util.Collections.sort(data, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        ExtendedData d1 = (ExtendedData)o1;
-        ExtendedData d2 = (ExtendedData)o2;
-        return d1.description.compareTo(d2.description);
-      }
-    });*/
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IDataStore#loadHistoryData(net.sourceforge.eclipsetrader.IBasicData)
+   * @see net.sourceforge.eclipsetrader.IDataStore#getHistoricalData(net.sourceforge.eclipsetrader.IBasicData)
    */
-  public IChartData[] loadHistoryData(IBasicData data)
+  public ObservableCollection getHistoricalData(IBasicData data)
   {
-    List v = new ArrayList();
+    ObservableCollection list = (ObservableCollection)historicalData.get(data);
     
-    File f = new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
-    if (f.exists() == true)
-      try {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(f);
+    if (list == null)
+    {
+      list = new ObservableCollection();
 
-        int index = 0;
-        NodeList firstChild = document.getFirstChild().getChildNodes();
-        for (int i = 0; i < firstChild.getLength(); i++)
-        {
-          Node node = firstChild.item(i);
-          if (node.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
+      File f = new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
+      if (f.exists() == true)
+        try {
+          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+          DocumentBuilder builder = factory.newDocumentBuilder();
+          Document document = builder.parse(f);
+
+          NodeList firstChild = document.getFirstChild().getChildNodes();
+          for (int i = 0; i < firstChild.getLength(); i++)
           {
-            IChartData cd = new ChartData();
-            NodeList parent = node.getChildNodes();
-            for (int ii = 0; ii < parent.getLength(); ii++)
+            Node node = firstChild.item(i);
+            if (node.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
             {
-              Node item = parent.item(ii);
-              Node value = item.getFirstChild();
-              if (value != null)
+              IChartData cd = new ChartData();
+              NodeList parent = node.getChildNodes();
+              for (int ii = 0; ii < parent.getLength(); ii++)
               {
-                if (item.getNodeName().equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
-                  cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
-                else if (item.getNodeName().equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
-                  cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
-                else if (item.getNodeName().equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
-                  cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
-                else if (item.getNodeName().equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
-                  cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
-                else if (item.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
-                  cd.setVolume(Integer.parseInt(value.getNodeValue()));
-                else if (item.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
+                Node item = parent.item(ii);
+                Node value = item.getFirstChild();
+                if (value != null)
                 {
-                  try {
-                    cd.setDate(df.parse(value.getNodeValue()));
-                    v.add(cd);
-                  } catch(Exception e) {};
+                  if (item.getNodeName().equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
+                    cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
+                  else if (item.getNodeName().equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
+                    cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
+                  else if (item.getNodeName().equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
+                    cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
+                  else if (item.getNodeName().equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
+                    cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
+                  else if (item.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
+                    cd.setVolume(Integer.parseInt(value.getNodeValue()));
+                  else if (item.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
+                  {
+                    try {
+                      cd.setDate(df.parse(value.getNodeValue()));
+                      list.add(cd);
+                    } catch(Exception e) {};
+                  }
                 }
               }
             }
           }
+        } catch (Exception ex) {
+          ex.printStackTrace();
         }
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
 
-    // Sorts the array by date
-    java.util.Collections.sort(v, new Comparator() {
-      public int compare(Object o1, Object o2) 
-      {
-        IChartData d1 = (IChartData)o1;
-        IChartData d2 = (IChartData)o2;
-        if (d1.getDate().after(d2.getDate()) == true)
-          return 1;
-        else if (d1.getDate().before(d2.getDate()) == true)
-          return -1;
-        return 0;
-      }
-    });
+      // Sorts the array by date
+      java.util.Collections.sort(list, new Comparator() {
+        public int compare(Object o1, Object o2) 
+        {
+          IChartData d1 = (IChartData)o1;
+          IChartData d2 = (IChartData)o2;
+          if (d1.getDate().after(d2.getDate()) == true)
+            return 1;
+          else if (d1.getDate().before(d2.getDate()) == true)
+            return -1;
+          return 0;
+        }
+      });
 
-    IChartData[] chartData = new IChartData[v.size()];
-    v.toArray(chartData);
-    return chartData;
+      historicalData.put(data, list);
+    }
+    
+    return list;
   }
 
   /* (non-Javadoc)
@@ -564,6 +479,20 @@ public class XMLDataStore implements IDataStore
       } catch (Exception ex) { ex.printStackTrace(); };
   }
 
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#addHistoryDataListener(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartDataListener)
+   */
+  public void addHistoryDataListener(IBasicData data, IChartDataListener listener)
+  {
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#removeHistoryDataListener(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartDataListener)
+   */
+  public void removeHistoryDataListener(IBasicData data, IChartDataListener listener)
+  {
+  }
+
   public IExtendedData[] loadIndexData()
   {
     List v = new ArrayList();
@@ -575,7 +504,6 @@ public class XMLDataStore implements IDataStore
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(f);
 
-        int index = 0;
         NodeList firstChild = document.getFirstChild().getChildNodes();
         for (int i = 0; i < firstChild.getLength(); i++)
         {

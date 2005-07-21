@@ -44,14 +44,14 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
     instance = this;
   }
   
-  /**
+  /* (non-Javadoc)
    * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
    */
   public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException
   {
   }
 
-  /**
+  /* (non-Javadoc)
    * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
    */
   public void start(BundleContext context) throws Exception
@@ -59,7 +59,7 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
     super.start(context);
   }
   
-  /**
+  /* (non-Javadoc)
    * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
    */
   public void stop(BundleContext context) throws Exception
@@ -130,6 +130,8 @@ public class DataProvider extends Plugin implements IBasicDataProvider, IExecuta
         l.dataUpdated(this, data);
       }
     }
+    if (data instanceof ObservableObject)
+      ((ObservableObject)data).fireItemUpdated();
     
     // Notify generic listeners using the data-specific update notification method.
     // Avoids updating the same listener twice.
