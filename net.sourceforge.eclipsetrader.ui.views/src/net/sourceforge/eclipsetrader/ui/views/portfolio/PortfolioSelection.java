@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
+import net.sourceforge.eclipsetrader.IExtendedData;
+
 import org.eclipse.jface.viewers.ISelection;
 
 /**
@@ -18,14 +20,27 @@ import org.eclipse.jface.viewers.ISelection;
  */
 public class PortfolioSelection implements ISelection
 {
-  public Object item;
+  private IExtendedData data;
+  
+  public PortfolioSelection()
+  {
+  }
+  
+  public PortfolioSelection(IExtendedData data)
+  {
+    this.data = data;
+  }
 
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelection#isEmpty()
    */
   public boolean isEmpty()
   {
-    return (item == null);
+    return (data == null);
   }
 
+  public IExtendedData getData()
+  {
+    return data;
+  }
 }
