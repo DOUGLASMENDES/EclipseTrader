@@ -7,7 +7,13 @@ Bundle-ClassPath: views.jar
 Bundle-Activator: net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin
 Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
-Export-Package: net.sourceforge.eclipsetrader.ui.internal.views
+Export-Package: net.sourceforge.eclipsetrader.ui.internal.views,
+ net.sourceforge.eclipsetrader.ui.views.charts,
+ net.sourceforge.eclipsetrader.ui.views.charts.wizards,
+ net.sourceforge.eclipsetrader.ui.views.indices,
+ net.sourceforge.eclipsetrader.ui.views.news,
+ net.sourceforge.eclipsetrader.ui.views.portfolio,
+ net.sourceforge.eclipsetrader.ui.views.trading
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.sourceforge.eclipsetrader
