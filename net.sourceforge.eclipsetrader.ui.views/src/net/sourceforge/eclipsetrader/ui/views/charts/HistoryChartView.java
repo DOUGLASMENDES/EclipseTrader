@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class HistoryChartView extends ChartView implements DropTargetListener
 {
+  public static final String VIEW_ID = "net.sourceforge.eclipsetrader.ui.views.ChartView"; //$NON-NLS-1$
   protected IChartData[] chartData;
   
   /* (non-Javadoc)
@@ -99,7 +100,10 @@ public class HistoryChartView extends ChartView implements DropTargetListener
   public IChartData[] getChartData(IBasicData data)
   {
     if (chartData == null)
-      chartData = TraderPlugin.getDataStore().loadHistoryData(data);
+    {
+      chartData = new IChartData[TraderPlugin.getDataStore().getHistoricalData(data).size()];
+      TraderPlugin.getDataStore().getHistoricalData(data).toArray(chartData);
+    }
     
     // Check if the user has selected a subperiod to display
     if (chartData != null && chartData.length > 0 && limitPeriod != 0)

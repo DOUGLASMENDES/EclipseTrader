@@ -163,7 +163,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     gridLayout.verticalSpacing = 0;
     composite.setLayout(gridLayout);
     GridData gridData = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_FILL);
-    gridData.heightHint = 16;
+    gridData.heightHint = 18;
     composite.setLayoutData(gridData);
     composite.addPaintListener(this);
     title = new Label(composite, SWT.NONE);

@@ -55,6 +55,7 @@ import org.w3c.dom.NodeList;
 
 public class RealtimeChartView extends ChartView implements IRealtimeChartListener, DropTargetListener
 {
+  public static final String VIEW_ID = "net.sourceforge.eclipsetrader.ui.views.RealtimeChart";
   private IRealtimeChartProvider chartProvider;
   
   /* (non-Javadoc)
