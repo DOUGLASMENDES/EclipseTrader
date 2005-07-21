@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.eclipsetrader.directaworld"
-   name="DirectaWorld Italy"
-   version="0.10.0"
-   provider-name="Sourceforge.net"
-   class="net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin">
+<plugin>
 
-   <runtime>
-      <library name="directaworld.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="net.sourceforge.eclipsetrader"/>
-   </requires>
-   <extension
+     <extension
          point="net.sourceforge.eclipsetrader.dataProvider">
       <provider
             label="DirectaWorld Italy (realtime, free w/registration)"
