@@ -150,7 +150,8 @@ public class StockChart extends ChartPlotter implements IChartConfigurer
       IBasicData[] data = sl.getData();
       stockItem = data[Integer.parseInt(value)];
       symbol = stockItem.getSymbol();
-      stockChartData = TraderPlugin.getDataStore().loadHistoryData(stockItem);
+      stockChartData = new IChartData[TraderPlugin.getDataStore().getHistoricalData(stockItem).size()];
+      TraderPlugin.getDataStore().getHistoricalData(stockItem).toArray(stockChartData);
       super.setParameter("symbol", symbol);
       return;
     }
@@ -160,7 +161,8 @@ public class StockChart extends ChartPlotter implements IChartConfigurer
       StockList sl = new StockList();
       stockItem = sl.getData(value);
       symbol = stockItem.getSymbol();
-      stockChartData = TraderPlugin.getDataStore().loadHistoryData(stockItem);
+      stockChartData = new IChartData[TraderPlugin.getDataStore().getHistoricalData(stockItem).size()];
+      TraderPlugin.getDataStore().getHistoricalData(stockItem).toArray(stockChartData);
     }
     super.setParameter(name, value);
   }
