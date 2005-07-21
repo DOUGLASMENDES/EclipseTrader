@@ -132,7 +132,6 @@
                disabledIcon="icons/dtool16/stop.gif"
                toolbarPath="additions"
                label="%Actions.stopStreaming"
-               definitionId="net.sourceforge.eclipsetrader.commands.stop"
                tooltip="%Actions.stopStreaming"
                icon="icons/etool16/stop.gif"
                class="net.sourceforge.eclipsetrader.internal.StreamingControl"
