@@ -30,8 +30,6 @@ public class TraderPerspective implements IPerspectiveFactory
 
     IPlaceholderFolderLayout folder = layout.createPlaceholderFolder("strips", IPageLayout.TOP, 0.11f, IPageLayout.ID_EDITOR_AREA);
 
-    folder = layout.createPlaceholderFolder("trading", IPageLayout.TOP, 0.17f, IPageLayout.ID_EDITOR_AREA);
-
     folder = layout.createPlaceholderFolder("book", IPageLayout.LEFT, 0.30f, IPageLayout.ID_EDITOR_AREA);
     folder.addPlaceholder("net.sourceforge.eclipsetrader.ui.views.Book:*");
 

@@ -94,16 +94,6 @@
             targetID="net.sourceforge.eclipsetrader.TraderPerspective">
          <view
                visible="false"
-               id="net.sourceforge.eclipsetrader.directa.views.trading"
-               relative="trading"
-               relationship="stack"/>
-         <view
-               visible="false"
-               id="net.sourceforge.eclipsetrader.directa.views.orders"
-               relative="trading"
-               relationship="stack"/>
-         <view
-               visible="false"
                id="net.sourceforge.eclipsetrader.directa.views.browser"
                relative="org.eclipse.ui.editorss"
                relationship="stack"/>
