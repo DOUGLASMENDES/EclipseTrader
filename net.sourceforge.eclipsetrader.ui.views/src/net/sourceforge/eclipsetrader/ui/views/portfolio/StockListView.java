@@ -136,7 +136,8 @@ public class StockListView extends ViewPart
         {
           try {
             monitor.subTask(data[i].getDescription());
-            IChartData[] chartData = TraderPlugin.getDataStore().loadHistoryData(data[i]);
+            IChartData[] chartData = new IChartData[TraderPlugin.getDataStore().getHistoricalData(data[i]).size()];
+            TraderPlugin.getDataStore().getHistoricalData(data[i]).toArray(chartData);
             chartData = dataProvider.update(data[i], chartData);
             TraderPlugin.getDataStore().storeHistoryData(data[i], chartData);
             monitor.worked(1);

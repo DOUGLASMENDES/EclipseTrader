@@ -161,32 +161,32 @@
             id="net.sourceforge.eclipsetrader.ui.views.Portfolio.contextMenu">
          <action
                label="%stockwatch.openChart"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.OpenHistoryChartAction"
                menubarPath="group1"
                id="net.sourceforge.eclipsetrader.views.openChart"/>
          <action
                label="%stockwatch.openRealtimeChart"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.OpenIntradayChartAction"
                menubarPath="group2"
                id="net.sourceforge.eclipsetrader.views.openRealtimeChart"/>
          <action
                label="%stockwatch.openPriceBook"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.OpenLevel2Action"
                menubarPath="group2"
                id="net.sourceforge.eclipsetrader.views.openPriceBook"/>
          <action
                label="%stockwatch.remove"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.DeleteAction"
                menubarPath="group3"
                id="portfolio.remove"/>
          <action
                label="%stockwatch.edit"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.EditAction"
                menubarPath="group3"
                id="portfolio.edit"/>
          <action
                label="%stockwatch.add"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.AddAction"
                menubarPath="group3"
                id="portfolio.add"/>
          <action
@@ -443,7 +443,7 @@
                toolbarPath="additions"
                label="%actions.delete"
                tooltip="%actions.delete"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.DeleteAction"
                icon="icons/elcl16/rem_co.gif"
                style="push"
                id="portfolio.remove"/>
@@ -471,7 +471,7 @@
                disabledIcon="icons/dlcl16/addtsk_tsk.gif"
                toolbarPath="additions"
                label="%stockwatch.add"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.AddAction"
                icon="icons/elcl16/addtsk_tsk.gif"
                tooltip="%stockwatch.add"
                style="push"
@@ -627,7 +627,7 @@
          <action
                enablesFor="1"
                label="%stockwatch.openChart"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.OpenHistoryChartAction"
                menubarPath="stockwatch/group1"
                id="net.sourceforge.eclipsetrader.views.openChart">
             <enablement>
@@ -637,7 +637,7 @@
          <action
                enablesFor="1"
                label="%stockwatch.openRealtimeChart"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.OpenIntradayChartAction"
                menubarPath="stockwatch/group2"
                id="net.sourceforge.eclipsetrader.views.openRealtimeChart">
             <enablement>
@@ -647,7 +647,7 @@
          <action
                enablesFor="1"
                label="%stockwatch.openPriceBook"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.OpenLevel2Action"
                menubarPath="stockwatch/group2"
                id="net.sourceforge.eclipsetrader.views.openPriceBook">
             <enablement>
@@ -658,7 +658,7 @@
                enablesFor="1"
                label="%stockwatch.remove"
                definitionId="org.eclipse.ui.edit.delete"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.DeleteAction"
                menubarPath="stockwatch/group3"
                id="portfolio.remove">
             <enablement>
@@ -668,7 +668,7 @@
          <action
                enablesFor="1"
                label="%stockwatch.edit"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.EditAction"
                menubarPath="stockwatch/group3"
                id="portfolio.edit">
             <enablement>
@@ -678,7 +678,7 @@
          <action
                label="%stockwatch.add"
                definitionId="net.sourceforge.eclipsetrader.commands.add"
-               class="net.sourceforge.eclipsetrader.ui.views.portfolio.ContextAction"
+               class="net.sourceforge.eclipsetrader.ui.views.portfolio.AddAction"
                menubarPath="stockwatch/group3"
                id="portfolio.add">
             <enablement>
