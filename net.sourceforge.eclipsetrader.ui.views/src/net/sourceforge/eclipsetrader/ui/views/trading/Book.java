@@ -62,6 +62,7 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class Book extends ViewPart implements IBookUpdateListener, ControlListener, IPropertyChangeListener 
 {
+  public static final String VIEW_ID = "net.sourceforge.eclipsetrader.ui.views.Book";
   private Table table;
   private TrendBar trendBar;
   private Color background;
