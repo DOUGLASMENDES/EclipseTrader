@@ -100,8 +100,13 @@ public class PortfolioDialog extends TitleAreaDialog implements ModifyListener
     text1 = new Text(group, SWT.BORDER);
     text1.addModifyListener(this);
     text1.setText(symbol);
+    if (symbol.length() != 0)
+    {
+      text1.setEditable(false);
+      text1.setEnabled(false);
+    }
     gridData = new GridData();
-    gridData.widthHint = 75;
+    gridData.widthHint = 100;
     text1.setLayoutData(gridData);
 
     label = new Label(group, SWT.NONE);
@@ -109,9 +114,14 @@ public class PortfolioDialog extends TitleAreaDialog implements ModifyListener
     label.setLayoutData(new GridData());
     text2 = new Text(group, SWT.BORDER);
     text2.setText(ticker);
+    if (ticker.length() != 0)
+    {
+      text2.setEditable(false);
+      text2.setEnabled(false);
+    }
     text2.addModifyListener(this);
     gridData = new GridData();
-    gridData.widthHint = 75;
+    gridData.widthHint = 100;
     text2.setLayoutData(gridData);
 
     label = new Label(group, SWT.NONE);
