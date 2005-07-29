@@ -29,11 +29,4 @@ public class CollectionObserverAdapter implements ICollectionObserver
   public void itemRemoved(Object obj)
   {
   }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ICollectionObserver#itemReplacted(java.lang.Object, java.lang.Object)
-   */
-  public void itemReplaced(Object newObj, Object oldObj)
-  {
-  }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004-2005 Marco Maccaferri and others.
+ * Copyright (c) 2005 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -86,13 +86,5 @@ public class ObservableCollection extends ArrayList
         ((ICollectionObserver)iter.next()).itemRemoved(arg0);
     }
     return value;
-  }
-  
-  public Object set(int index, Object obj)
-  {
-    Object previous = super.set(index, obj);
-    for (Iterator iter = observers.iterator(); iter.hasNext(); )
-      ((ICollectionObserver)iter.next()).itemReplaced(obj, previous);
-    return previous;
   }
 }

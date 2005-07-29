@@ -30,13 +30,4 @@ public interface ICollectionObserver
    * @param obj - the removed object
    */
   public void itemRemoved(Object obj);
-
-  /**
-   * Invoked when an item is replaced in the observed collection.
-   * 
-   * @param newObj - the new object
-   * @param oldObj - the old replaced object
-   */
-  public void itemReplaced(Object newObj, Object oldObj);
-
 }
