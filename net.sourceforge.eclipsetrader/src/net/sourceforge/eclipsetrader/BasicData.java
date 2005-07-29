@@ -10,10 +10,12 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader;
 
+import java.util.Observable;
+
 /**
  * Implementation of the IBasicData interface.
  */
-public class BasicData extends ObservableObject implements IBasicData 
+public class BasicData extends Observable implements IBasicData 
 {
   public String symbol = "";
   public String ticker = "";
@@ -50,77 +52,70 @@ public class BasicData extends ObservableObject implements IBasicData
     this.ticker = data.getTicker();
     this.description = data.getDescription();
   }
-  
-  /**
-   * Method to return the description field.<br>
-   *
-   * @return Returns the description.
-   */
-  public String getDescription()
-  {
-    return description;
-  }
-  /**
-   * Method to set the description field.<br>
-   * 
-   * @param description The description to set.
-   */
-  public void setDescription(String description)
-  {
-    this.description = description;
-  }
-  /**
-   * Method to return the symbol field.<br>
-   *
-   * @return Returns the symbol.
-   */
+
   public String getSymbol()
   {
     return symbol;
   }
-  /**
-   * Method to set the symbol field.<br>
-   * 
-   * @param symbol The symbol to set.
-   */
+
   public void setSymbol(String symbol)
   {
+    if (!this.symbol.equals(symbol))
+      setChanged();
     this.symbol = symbol;
   }
-  /**
-   * Method to return the ticker field.<br>
-   *
-   * @return Returns the ticker.
-   */
+
   public String getTicker()
   {
     return ticker;
   }
-  /**
-   * Method to set the ticker field.<br>
-   * 
-   * @param ticker The ticker to set.
-   */
+
   public void setTicker(String ticker)
   {
+    if (!this.ticker.equals(ticker))
+      setChanged();
     this.ticker = ticker;
   }
-  /**
-   * Method to return the minimumQuantity field.<br>
-   *
-   * @return Returns the minimumQuantity.
-   */
+  
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public void setDescription(String description)
+  {
+    if (!this.description.equals(description))
+      setChanged();
+    this.description = description;
+  }
+
   public int getMinimumQuantity()
   {
     return minimumQuantity;
   }
-  /**
-   * Method to set the minimumQuantity field.<br>
-   * 
-   * @param minimumQuantity The minimumQuantity to set.
-   */
+
   public void setMinimumQuantity(int minimumQuantity)
   {
+    if (this.minimumQuantity != minimumQuantity)
+      setChanged();
     this.minimumQuantity = minimumQuantity;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  public boolean equals(Object obj)
+  {
+    if (obj instanceof BasicData)
+      return getSymbol().equals(((BasicData)obj).getSymbol());
+    return false;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  public int hashCode()
+  {
+    return getSymbol().hashCode();
   }
 }
