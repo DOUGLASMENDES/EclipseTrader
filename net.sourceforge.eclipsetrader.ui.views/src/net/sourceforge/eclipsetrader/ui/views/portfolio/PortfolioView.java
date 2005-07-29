@@ -180,8 +180,8 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       public void dragSetData(DragSourceEvent event) 
       {
         IExtendedData data = TraderPlugin.getData()[table.getSelectionIndex()];
-        if ((dragColumn == 12 || dragColumn == 13 || dragColumn == 15) && data.getQuantity() != 0)
-          event.data = "S;" + data.getSymbol() + ";" + data.getTicker() + ";" + data.getQuantity() + ";" + data.getLastPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        if ((dragColumn == 12 || dragColumn == 13 || dragColumn == 15) && data.getOwnedQuantity() != 0)
+          event.data = "S;" + data.getSymbol() + ";" + data.getTicker() + ";" + data.getOwnedQuantity() + ";" + data.getLastPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         else
           event.data = "B;" + data.getSymbol() + ";" + data.getTicker() + ";" + data.getMinimumQuantity() + ";" + data.getLastPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
       }
@@ -702,9 +702,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
     {
       IExtendedData obj = (IExtendedData)iter.next();
-      totalStock += obj.getQuantity();
-      totalPaid += obj.getQuantity() * obj.getPaid();
-      totalSell += obj.getQuantity() * obj.getLastPrice();
+      totalStock += obj.getOwnedQuantity();
+      totalPaid += obj.getOwnedQuantity() * obj.getPaid();
+      totalSell += obj.getOwnedQuantity() * obj.getLastPrice();
     }
 
     int columnData = getDataColumnIndex(2);

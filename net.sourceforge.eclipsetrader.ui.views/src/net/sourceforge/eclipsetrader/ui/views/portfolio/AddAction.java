@@ -58,7 +58,7 @@ public class AddAction implements IWorkbenchWindowActionDelegate, IViewActionDel
       data.setTicker(dlg.getTicker());
       data.setDescription(dlg.getDescription());
       data.setMinimumQuantity(dlg.getMinimumQuantity());
-      data.setQuantity(dlg.getQuantity());
+      data.setOwnedQuantity(dlg.getQuantity());
       data.setPaid(dlg.getPaid());
       TraderPlugin.getDataStore().getStockwatchData().add(data);
     }

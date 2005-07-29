@@ -154,7 +154,7 @@ public class XMLDataStore implements IDataStore
         node.appendChild(document.createTextNode(tf.format(item.getDate())));
         node = document.createElement("quantity");
         element.appendChild(node);
-        node.appendChild(document.createTextNode(nf.format(item.getQuantity())));
+        node.appendChild(document.createTextNode(nf.format(item.getOwnedQuantity())));
         node = document.createElement("paid");
         element.appendChild(node);
         node.appendChild(document.createTextNode(pf.format(item.getPaid())));
@@ -314,7 +314,7 @@ public class XMLDataStore implements IDataStore
         else if (n.getNodeName().equalsIgnoreCase("minimum_quantity") == true)
           pd.setMinimumQuantity(nf.parse(value.getNodeValue()).intValue());
         else if (n.getNodeName().equalsIgnoreCase("quantity") == true)
-          pd.setQuantity(Integer.parseInt(value.getNodeValue()));
+          pd.setOwnedQuantity(Integer.parseInt(value.getNodeValue()));
         else if (n.getNodeName().equalsIgnoreCase("paid") == true)
           pd.setPaid(pf.parse(value.getNodeValue()).doubleValue());
         else if (n.getNodeName().equalsIgnoreCase("time") == true)

@@ -242,10 +242,10 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
           item.setText(column, nf.format(pd.getMinimumQuantity()));
         break;
       case 4:
-        if (pd.getQuantity() == 0)
+        if (pd.getOwnedQuantity() == 0)
           item.setText(column, "");
         else
-          item.setText(column, nf.format(pd.getQuantity()));
+          item.setText(column, nf.format(pd.getOwnedQuantity()));
         break;
       case 5:
         if (pd.getPaid() == 0)
@@ -330,7 +330,7 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
         pd.setMinimumQuantity(nf.parse(table.getItem(row).getText(3)).intValue());
       } catch (Exception e) {}
       try {
-        pd.setQuantity(nf.parse(table.getItem(row).getText(4)).intValue());
+        pd.setOwnedQuantity(nf.parse(table.getItem(row).getText(4)).intValue());
       } catch (Exception e) {}
       try {
         pd.setPaid(pf.parse(table.getItem(row).getText(5)).doubleValue());

@@ -184,17 +184,16 @@ public class PortfolioTableItem implements DisposeListener, Observer
           setText(column, nf.format(data.getMinimumQuantity()));
           break;
         case 11:
-          data.setMarketValue(data.getMinimumQuantity() * data.getLastPrice());
-          if (data.getMarketValue() > 2000)
-            setText(column, nf.format(data.getMarketValue()));
-          else
-            setText(column, bpf.format(data.getMarketValue()));
+        {
+          double marketValue = data.getMinimumQuantity() * data.getLastPrice();
+          setText(column, bpf.format(marketValue));
           break;
+        }
         case 12:
-          if (data.getQuantity() == 0)
+          if (data.getOwnedQuantity() == 0)
             setText(column, ""); //$NON-NLS-1$
           else
-            setText(column, nf.format(data.getQuantity()));
+            setText(column, nf.format(data.getOwnedQuantity()));
           break;
         case 13:
           if (data.getPaid() == 0)
@@ -203,21 +202,27 @@ public class PortfolioTableItem implements DisposeListener, Observer
             setText(column, pf.format(data.getPaid()));
           break;
         case 14:
-          data.setValuePaid(data.getPaid() * data.getQuantity());
-          if (data.getPaid() != 0 && data.getQuantity() != 0)
-            setText(column, bpf.format(data.getValuePaid()));
+          if (data.getPaid() != 0 && data.getOwnedQuantity() != 0)
+          {
+            double valuePaid = data.getPaid() * data.getOwnedQuantity();
+            setText(column, bpf.format(valuePaid));
+          }
           else
             setText(column, ""); //$NON-NLS-1$
           break;
         case 15:
-          if (data.getPaid() != 0 && data.getQuantity() != 0)
+          if (data.getPaid() != 0 && data.getOwnedQuantity() != 0)
           {
-            setText(column, bpf.format((data.getLastPrice() * data.getQuantity()) - (data.getPaid() * data.getQuantity())) + " (" + pcf.format(data.getGain()) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
-            data.setGain((data.getLastPrice() - data.getPaid()) / data.getPaid() * 100);
-            if (data.getGain() < 0)
+            double gain = (data.getLastPrice() * data.getOwnedQuantity()) - (data.getPaid() * data.getOwnedQuantity());
+            double gainPercentage = (data.getLastPrice() - data.getPaid()) / data.getPaid() * 100; 
+            
+            setText(column, bpf.format(gain) + " (" + pcf.format(gainPercentage) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
+            if (gain < 0)
               tableItem.setForeground(column, negativeForeground);
-            else if (data.getGain() > 0)
+            else if (gain > 0)
               tableItem.setForeground(column, positiveForeground);
+            else
+              tableItem.setForeground(column, null);
           }
           else
             setText(column, ""); //$NON-NLS-1$

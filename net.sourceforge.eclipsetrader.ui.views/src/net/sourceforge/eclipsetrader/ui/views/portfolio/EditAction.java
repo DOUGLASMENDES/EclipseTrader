@@ -63,7 +63,7 @@ public class EditAction implements IWorkbenchWindowActionDelegate, IViewActionDe
       dlg.setTicker(data.getTicker());
       dlg.setDescription(data.getDescription());
       dlg.setMinimumQuantity(data.getMinimumQuantity());
-      dlg.setQuantity(data.getQuantity());
+      dlg.setQuantity(data.getOwnedQuantity());
       dlg.setPaid(data.getPaid());
       if (dlg.open() == PortfolioDialog.OK)
       {
@@ -71,7 +71,7 @@ public class EditAction implements IWorkbenchWindowActionDelegate, IViewActionDe
         data.setTicker(dlg.getTicker());
         data.setDescription(dlg.getDescription());
         data.setMinimumQuantity(dlg.getMinimumQuantity());
-        data.setQuantity(dlg.getQuantity());
+        data.setOwnedQuantity(dlg.getQuantity());
         data.setPaid(dlg.getPaid());
         if (data instanceof Observable)
           ((Observable)data).notifyObservers();
