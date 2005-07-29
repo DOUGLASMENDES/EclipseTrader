@@ -4,7 +4,6 @@
       label="%featureName"
       version="0.14.0"
       provider-name="%providerName">
-
    <install-handler/>
 
    <description>
@@ -23,24 +22,6 @@
       <update label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
       <discovery label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
    </url>
-
-   <plugin
-         id="net.sourceforge.eclipsetrader"
-         download-size="0"
-         install-size="0"
-         version="0.14.0"/>
-
-   <plugin
-         id="net.sourceforge.eclipsetrader.help"
-         download-size="0"
-         install-size="0"
-         version="0.14.0"/>
-
-   <plugin
-         id="net.sourceforge.eclipsetrader.ui.views"
-         download-size="0"
-         install-size="0"
-         version="0.14.0"/>
 
    <plugin
          id="org.apache.ant"
@@ -114,5 +95,23 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.help"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.ui.views"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>
