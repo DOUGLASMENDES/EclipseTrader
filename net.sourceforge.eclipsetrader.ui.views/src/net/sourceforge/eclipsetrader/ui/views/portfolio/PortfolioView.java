@@ -303,28 +303,41 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     if (index == -1 || index == 0)
       return;
 
-    IExtendedData[] dataArray = TraderPlugin.getData();
-    IExtendedData data = dataArray[index];
-    dataArray[index] = dataArray[index - 1];
-    dataArray[index - 1] = data;
-    TraderPlugin.getDataStore().update(dataArray);
-    updateView();
+    PortfolioTableItem item = (PortfolioTableItem)table.getItem(index - 1).getData();
+    IExtendedData data = item.getData();
+    table.getItem(index - 1).dispose();
+
+    item = new PortfolioTableItem(this, table, SWT.NONE, index);
+    item.setData(data);
+    
+    TraderPlugin.getDataStore().getStockwatchData().set(index - 1, TraderPlugin.getDataStore().getStockwatchData().get(index));
+    TraderPlugin.getDataStore().getStockwatchData().set(index, data);
+
+    for (int i = 0; i < table.getItemCount() - 1; i++)
+      table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+
     table.setSelection(index - 1);
   }
   
   public void moveDown()
   {
-    int max = table.getItemCount() - 1;
     int index = table.getSelectionIndex();
-    if (index == -1 || index >= max - 1)
+    if (index == -1 || index >= (table.getItemCount() - 2))
       return;
 
-    IExtendedData[] dataArray = TraderPlugin.getData();
-    IExtendedData data = dataArray[index];
-    dataArray[index] = dataArray[index + 1];
-    dataArray[index + 1] = data;
-    TraderPlugin.getDataStore().update(dataArray);
-    updateView();
+    PortfolioTableItem item = (PortfolioTableItem)table.getItem(index + 1).getData();
+    IExtendedData data = item.getData();
+    table.getItem(index + 1).dispose();
+
+    item = new PortfolioTableItem(this, table, SWT.NONE, index);
+    item.setData(data);
+    
+    TraderPlugin.getDataStore().getStockwatchData().set(index + 1, TraderPlugin.getDataStore().getStockwatchData().get(index));
+    TraderPlugin.getDataStore().getStockwatchData().set(index, data);
+
+    for (int i = 0; i < table.getItemCount() - 1; i++)
+      table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+
     table.setSelection(index + 1);
   }
   
@@ -576,7 +589,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       table.setRedraw(false);
       for (int column = table.getColumnCount() - 1; column >= 0; column--)
         table.getColumn(column).dispose();
-      
+
       String preferenceValue = ViewsPlugin.getDefault().getPreferenceStore().getString("portfolio.display"); //$NON-NLS-1$
       StringTokenizer tokenizer = new StringTokenizer(preferenceValue, ","); //$NON-NLS-1$
       int tokenCount = tokenizer.countTokens();
@@ -584,7 +597,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       for (int i = 0; i < tokenCount; i++)
       {
         elements[i] = tokenizer.nextToken();
-        TableColumn column = new TableColumn(table, SWT.RIGHT, i);
+        TableColumn column = new TableColumn(table, (getColumnDataIndex(elements[i]) <= 2) ? SWT.LEFT : SWT.RIGHT, i);
         for (int m = 0; m < columnNames.length; m++)
         {
           if (elements[i].equalsIgnoreCase(columnNames[m]) == true)
@@ -595,13 +608,14 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
           }
         }
         column.setData(elements[i]);
-        if (getColumnDataIndex(i) <= 2)
-          column.setAlignment(SWT.LEFT);
+        column.addControlListener(this);
       }
-      for (int i = 0; i < table.getItemCount(); i++)
+      
+      for (int i = 0; i < table.getItemCount() - 1; i++)
       {
         PortfolioTableItem tableItem = (PortfolioTableItem)table.getItem(i).getData();
-        tableItem.update();
+        if (tableItem != null)
+          tableItem.update();
       }
       table.setRedraw(true);
     }
