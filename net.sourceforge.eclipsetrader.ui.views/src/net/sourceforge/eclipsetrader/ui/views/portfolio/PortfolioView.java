@@ -694,21 +694,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
     updateTotals();
   }
-  
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ICollectionObserver#itemReplaced(java.lang.Object, java.lang.Object)
-   */
-  public void itemReplaced(Object newObj, Object oldObj)
-  {
-    if (newObj instanceof IExtendedData)
-    {
-      int index = TraderPlugin.getDataStore().getStockwatchData().indexOf(newObj);
-      PortfolioTableItem item = (PortfolioTableItem)table.getItem(index).getData();
-      item.setData((IExtendedData)newObj);
-      updateTotals();
-    }
-  }
 
   private void updateTotals()
   {
