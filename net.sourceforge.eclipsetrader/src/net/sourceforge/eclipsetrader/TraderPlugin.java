@@ -15,7 +15,6 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import net.sourceforge.eclipsetrader.internal.ExtendedData;
 import net.sourceforge.eclipsetrader.internal.PreferenceInitializer;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -315,22 +314,6 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     getPreferenceStore().setValue(ep, "");
 
     return null;
-  }
-
-  /**
-   * Creates an object that implements the IBasicData interface.
-   */
-  public static IBasicData createBasicData()
-  {
-    return new BasicData();
-  }
-
-  /**
-   * Creates an object that implements the IExtendedData interface.
-   */
-  public static IExtendedData createExtendedData()
-  {
-    return new ExtendedData();
   }
 
   /**
