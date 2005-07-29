@@ -24,6 +24,7 @@ import java.util.TimerTask;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.DataCollector;
+import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IBackfillDataProvider;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
@@ -94,7 +95,7 @@ public class IndexDataProvider extends ChartDataProvider implements IIndexDataPr
     data = new IExtendedData[symbols.length];
     for (int i = 0; i < symbols.length; i++)
     {
-      data[i] = TraderPlugin.createExtendedData();
+      data[i] = new ExtendedData();
       setDescription(symbols[i], data[i]);
     }
   }
