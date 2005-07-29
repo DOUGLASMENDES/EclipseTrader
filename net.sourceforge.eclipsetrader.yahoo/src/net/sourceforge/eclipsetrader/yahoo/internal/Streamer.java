@@ -26,8 +26,8 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IExtendedData;
-import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.yahoo.IndexDataProvider;
 import net.sourceforge.eclipsetrader.yahoo.SnapshotDataProvider;
 import net.sourceforge.eclipsetrader.yahoo.YahooPlugin;
@@ -81,7 +81,7 @@ public class Streamer
   public void addSymbol(String symbol)
   {
     if (data.get(symbol) == null)
-      data.put(symbol.toUpperCase(), TraderPlugin.createExtendedData());
+      data.put(symbol.toUpperCase(), new ExtendedData());
   }
   
   public void removeSymbol(String symbol)

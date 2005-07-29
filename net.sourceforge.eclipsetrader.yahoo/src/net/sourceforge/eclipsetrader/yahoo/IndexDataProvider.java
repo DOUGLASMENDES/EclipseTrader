@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.yahoo;
 import java.util.Vector;
 
 import net.sourceforge.eclipsetrader.DataCollector;
+import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IExtendedData;
@@ -96,7 +97,7 @@ public class IndexDataProvider extends ChartDataProvider implements IIndexDataPr
     data = new IExtendedData[symbols.length];
     for (int i = 0; i < symbols.length; i++)
     {
-      data[i] = TraderPlugin.createExtendedData();
+      data[i] = new ExtendedData();
       setDescription(symbols[i], data[i]);
       streamer.addSymbol(symbols[i]);
     }
