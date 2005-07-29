@@ -32,15 +32,10 @@ public class ExtendedData extends BasicData implements IExtendedData, IAlertSour
   private double highPrice = 0;
   private double lowPrice = 0;
   private double closePrice = 0;
-  private double valuePaid = 0;
+  private double valueChange = 0;
   private int volume = 0;
-
-  private double marketValue = 0;
-  private String time = "";
   private int quantity = 0;
   private double paid = 0;
-  private double gain = 0;
-  private double valueChange = 0;
   private Date date = Calendar.getInstance().getTime();
   private Vector alerts = new Vector();
   private Vector alertsListeners = new Vector();
@@ -225,29 +220,6 @@ public class ExtendedData extends BasicData implements IExtendedData, IAlertSour
     this.volume = volume;
   }
 
-  
-  
-  
-  public double getGain()
-  {
-    return gain;
-  }
-
-  public void setGain(double gain)
-  {
-    this.gain = gain;
-  }
-
-  public double getMarketValue()
-  {
-    return marketValue;
-  }
-
-  public void setMarketValue(double marketValue)
-  {
-    this.marketValue = marketValue;
-  }
-
   public double getPaid()
   {
     return paid;
@@ -258,34 +230,14 @@ public class ExtendedData extends BasicData implements IExtendedData, IAlertSour
     this.paid = paid;
   }
 
-  public int getQuantity()
+  public int getOwnedQuantity()
   {
     return quantity;
   }
 
-  public void setQuantity(int quantity)
+  public void setOwnedQuantity(int quantity)
   {
     this.quantity = quantity;
-  }
-
-  public String getTime()
-  {
-    return time;
-  }
-
-  public void setTime(String time)
-  {
-    this.time = time;
-  }
-
-  public double getValuePaid()
-  {
-    return valuePaid;
-  }
-
-  public void setValuePaid(double valuePaid)
-  {
-    this.valuePaid = valuePaid;
   }
 
   public Date getDate()
