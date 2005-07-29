@@ -43,7 +43,6 @@ public class PushDataProvider extends DataProvider implements IStreamerEventRece
     }
 
     streamer.addEventReceiver(this);
-    streamer.readInitialData();
     if (streamer.connect() == true)
     {
       new Thread(streamer).start();

@@ -29,6 +29,7 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observable;
 import java.util.zip.Inflater;
 
 import net.sourceforge.eclipsetrader.IBasicData;
@@ -143,20 +144,6 @@ public class Streamer implements Runnable
     eventReceivers.remove(eventReceiver);
   }
 
-  private void fireDataUpdated()
-  {
-    Iterator e = eventReceivers.iterator();
-    while(e.hasNext() == true)
-      ((IStreamerEventReceiver)e.next()).dataUpdated();
-  }
-
-  private void fireDataUpdated(IBasicData data)
-  {
-    Iterator e = eventReceivers.iterator();
-    while(e.hasNext() == true)
-      ((IStreamerEventReceiver)e.next()).dataUpdated(data);
-  }
-
   private void fireOrderStatusChanged()
   {
     Iterator e = eventReceivers.iterator();
@@ -207,7 +194,7 @@ public class Streamer implements Runnable
           cookie = inputLine;
         i++;
       }
-    } catch (Exception ex) { return false; };
+    } catch (Exception ex) {};
     if (cookie.length() > 0)
       cookie = cookie.substring(0, cookie.indexOf("; "));
 
@@ -274,12 +261,12 @@ public class Streamer implements Runnable
     System.out.println(getClass().getName() + ": Login effettuato");
     runThread = true;
 
-    IExtendedData[] data = TraderPlugin.getData();
-    String sTit[] = new String[data.length];
-    int flag[] = new int[data.length];
-    for (int i = 0; i < data.length; i++)
+    List list = TraderPlugin.getDataStore().getStockwatchData();
+    String sTit[] = new String[list.size()];
+    int flag[] = new int[list.size()];
+    for (int i = 0; i < list.size(); i++)
     {
-      sTit[i] = data[i].getTicker();
+      sTit[i] = ((IBasicData)list.get(i)).getTicker();
       flag[i] = 1;
     }
 
@@ -304,6 +291,8 @@ public class Streamer implements Runnable
 
     nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2);
+
+    streamer.readInitialData();
 
     // Loop di aggiornamento dei dati
     while (runThread == true)
@@ -348,10 +337,14 @@ public class Streamer implements Runnable
           IExtendedData[] data = TraderPlugin.getData();
           for (i = 0; i < data.length; i++)
           {
-            if (data[i].getTicker().equalsIgnoreCase(obj.head.key) == true) {
-              switch (obj.head.tipo) {
-                case TipiRecord.TIP_PRICE: {
+            if (data[i].getTicker().equalsIgnoreCase(obj.head.key) == true) 
+            {
+              switch (obj.head.tipo) 
+              {
+                case TipiRecord.TIP_PRICE: 
+                {
                   _PRICE pm = (_PRICE)obj;
+                  
                   data[i].setVolume((int)pm.qta_prgs);
                   data[i].setLowPrice(pm.min);
                   data[i].setHighPrice(pm.max);
@@ -361,15 +354,18 @@ public class Streamer implements Runnable
                   today.set(Calendar.MINUTE, transaction.get(Calendar.MINUTE));
                   today.set(Calendar.SECOND, transaction.get(Calendar.SECOND));
                   data[i].setDate(today.getTime());
-                  fireDataUpdated(data[i]);
+                  if (data[i] instanceof Observable)
+                    ((Observable)data[i]).notifyObservers();
                   break;
                 }
-                case TipiRecord.TIP_BOOK: {
+                case TipiRecord.TIP_BOOK: 
+                {
                   _BOOK bm = (_BOOK)obj;
                   PriceBook pb = (PriceBook)BookDataProvider.getDefault().bookData.get(data[i].getTicker());
                   if (pb != null)
                   {
-                    for (int m = 0; m < 5; m++) {
+                    for (int m = 0; m < 5; m++) 
+                    {
                       pb.bid[m].setNumber(bm.n_pdn_c[m]);
                       pb.bid[m].setQuantity((int)bm.q_pdn_c[m]);
                       pb.bid[m].setPrice(bm.val_c[m]);
@@ -379,36 +375,44 @@ public class Streamer implements Runnable
                     }
                     pb.fireBookUpdated(data[i]);
                   }
-                  if (data[i].getTicker().equalsIgnoreCase("FIB") == true) {
+                  if (data[i].getTicker().equalsIgnoreCase("FIB") == true) 
+                  {
                     data[i].setBidSize((int)bm.q_pdn_c[0]);
                     data[i].setBidPrice(bm.val_c[0]);
                     data[i].setAskSize((int)bm.q_pdn_v[0]);
                     data[i].setAskPrice(bm.val_v[0]);
-                    fireDataUpdated(data[i]);
+                    if (data[i] instanceof Observable)
+                      ((Observable)data[i]).notifyObservers();
                   }
                   break;
                 }
-                case TipiRecord.TIP_BIDASK: {
+                case TipiRecord.TIP_BIDASK: 
+                {
                   _BIDASK bam = (_BIDASK)obj;
                   data[i].setBidSize((int)bam.qmpc);
                   data[i].setBidPrice(bam.pmpc);
                   data[i].setAskSize((int)bam.qmpv);
                   data[i].setAskPrice(bam.pmpv);
-                  fireDataUpdated(data[i]);
+                  if (data[i] instanceof Observable)
+                    ((Observable)data[i]).notifyObservers();
                   break;
                 }
-                case TipiRecord.TIP_ASTA: {
+                case TipiRecord.TIP_ASTA: 
+                {
                   _ASTA ap = (_ASTA)obj;
                   data[i].setLastPrice(ap.val_aper);
                   data[i].setOpenPrice(ap.val_aper);
                   data[i].setVolume((int)ap.qta_aper);
-                  fireDataUpdated(data[i]);
+                  if (data[i] instanceof Observable)
+                    ((Observable)data[i]).notifyObservers();
                   break;
                 }
-                case TipiRecord.TIP_ASTACHIUSURA: {
+                case TipiRecord.TIP_ASTACHIUSURA: 
+                {
                   _ASTACHIUSURA ac = (_ASTACHIUSURA)obj;
                   data[i].setLastPrice(ac.val_chiu);
-                  fireDataUpdated(data[i]);
+                  if (data[i] instanceof Observable)
+                    ((Observable)data[i]).notifyObservers();
                   break;
                 }
                 default:
@@ -424,7 +428,9 @@ public class Streamer implements Runnable
           // Propaga l'aggiornamento ai listeners.
           if ((System.currentTimeMillis() - lastUpdate) >= 1000)
           {
-            fireDataUpdated();
+/*            fireDataUpdated();
+            TraderPlugin.getDataStore().getStockwatchData().setNotifyObservers(false);
+            TraderPlugin.getDataStore().getStockwatchData().setNotifyObservers(true);*/
             lastUpdate = System.currentTimeMillis();
           }
         }
@@ -455,15 +461,16 @@ public class Streamer implements Runnable
    */
   public void readInitialData()
   {
-    IExtendedData[] data = TraderPlugin.getData();
-    String sTit[] = new String[data.length];
-    int flag[] = new int[data.length];
-    for (int i = 0; i < data.length; i++)
+    List list = TraderPlugin.getDataStore().getStockwatchData();
+    
+    String sTit[] = new String[list.size()];
+    int flag[] = new int[list.size()];
+    for (int i = 0; i < list.size(); i++)
     {
-      sTit[i] = data[i].getTicker();
+      sTit[i] = ((IBasicData)list.get(i)).getTicker();
       flag[i] = 1;
     }
-
+    
     System.out.println(getClass().getName() + ": Lettura dati iniziali");
     try {
       // Legge la pagina contenente gli ultimi prezzi
@@ -471,44 +478,46 @@ public class Streamer implements Runnable
       Hashtable hashFixedValue = new Hashtable();
       hashFixedValue = Load.LoadMpushData(web, hashFixedValue, true);
 
-      for (int i = 0; i < data.length; i++)
+      for (int i = 0; i < list.size(); i++)
       {
-        String sVal[] = (String[])hashFixedValue.get(data[i].getTicker());
+        IExtendedData data = (IExtendedData)list.get(i);
+        String sVal[] = (String[])hashFixedValue.get(data.getTicker());
         if (sVal == null)
           continue;
-        data[i].setLastPrice(Double.parseDouble(sVal[ConstMpush.PREZZO]));
-        data[i].setOpenPrice(Double.parseDouble(sVal[ConstMpush.APERTURA]));
-        data[i].setHighPrice(Double.parseDouble(sVal[ConstMpush.MASSIMO]));
-        data[i].setLowPrice(Double.parseDouble(sVal[ConstMpush.MINIMO]));
-        data[i].setClosePrice(Double.parseDouble(sVal[ConstMpush.PRECEDENTE]));
-        data[i].setVolume(Integer.parseInt(sVal[ConstMpush.VOLUME]));
+
+        data.setLastPrice(Double.parseDouble(sVal[ConstMpush.PREZZO]));
+        data.setOpenPrice(Double.parseDouble(sVal[ConstMpush.APERTURA]));
+        data.setHighPrice(Double.parseDouble(sVal[ConstMpush.MASSIMO]));
+        data.setLowPrice(Double.parseDouble(sVal[ConstMpush.MINIMO]));
+        data.setClosePrice(Double.parseDouble(sVal[ConstMpush.PRECEDENTE]));
+        data.setVolume(Integer.parseInt(sVal[ConstMpush.VOLUME]));
         try {
           if (sVal[ConstMpush.DATA].equalsIgnoreCase("0") == true)
-            data[i].setDate(tf.parse(sVal[ConstMpush.ORA]));
+            data.setDate(tf.parse(sVal[ConstMpush.ORA]));
           else
-            data[i].setDate(df.parse(sVal[ConstMpush.DATA] + " " + sVal[ConstMpush.ORA]));
+            data.setDate(df.parse(sVal[ConstMpush.DATA] + " " + sVal[ConstMpush.ORA]));
         } catch(Exception e) {
           System.out.println(e.getMessage());
           System.out.println(sVal[ConstMpush.DATA] + " " + sVal[ConstMpush.ORA]);
         };
 
-        if (data[i].getTicker().equalsIgnoreCase("FIB") == true) {
+        if (data.getTicker().equalsIgnoreCase("FIB") == true) {
           int k = ConstMpush.INZIO_BOOK;
           k++;
-          data[i].setBidSize(Integer.parseInt(sVal[k++]));
-          data[i].setBidPrice(Double.parseDouble(sVal[k++]));
+          data.setBidSize(Integer.parseInt(sVal[k++]));
+          data.setBidPrice(Double.parseDouble(sVal[k++]));
           k++;
-          data[i].setAskSize(Integer.parseInt(sVal[k++]));
-          data[i].setAskPrice(Double.parseDouble(sVal[k++]));
+          data.setAskSize(Integer.parseInt(sVal[k++]));
+          data.setAskPrice(Double.parseDouble(sVal[k++]));
         }
         else {
-          data[i].setBidPrice(Double.parseDouble(sVal[ConstMpush.BID_PREZZO]));
-          data[i].setBidSize(Integer.parseInt(sVal[ConstMpush.BID_QUANTITA]));
-          data[i].setAskPrice(Double.parseDouble(sVal[ConstMpush.ASK_PREZZO]));
-          data[i].setAskSize(Integer.parseInt(sVal[ConstMpush.ASK_QUANTITA]));
+          data.setBidPrice(Double.parseDouble(sVal[ConstMpush.BID_PREZZO]));
+          data.setBidSize(Integer.parseInt(sVal[ConstMpush.BID_QUANTITA]));
+          data.setAskPrice(Double.parseDouble(sVal[ConstMpush.ASK_PREZZO]));
+          data.setAskSize(Integer.parseInt(sVal[ConstMpush.ASK_QUANTITA]));
         }
 
-        PriceBook pb = (PriceBook)BookDataProvider.getDefault().bookData.get(data[i].getTicker());
+        PriceBook pb = (PriceBook)BookDataProvider.getDefault().bookData.get(data.getTicker());
         if (pb != null)
         {
           int k = ConstMpush.INZIO_BOOK;
@@ -525,13 +534,11 @@ public class Streamer implements Runnable
       }
     } catch (Exception ex) { ex.printStackTrace(); };
 
-    // Notify listeners of the data update
-    fireDataUpdated();
-    for (int i = 0; i < data.length; i++)
+    for (int i = 0; i < list.size(); i++)
     {
-      PriceBook pb = (PriceBook)BookDataProvider.getDefault().bookData.get(data[i].getTicker());
-      if (pb != null)
-        pb.fireBookUpdated(data[i]);
+      IExtendedData data = (IExtendedData)list.get(i);
+      if (data instanceof Observable)
+        ((Observable)data).notifyObservers();
     }
   }
 
@@ -663,7 +670,7 @@ public class Streamer implements Runnable
   }
 
   /**
-   * Aggiorna i valori di liquidità e disponibilità del conto.
+   * Aggiorna i valori di liquiditï¿½ e disponibilitï¿½ del conto.
    */
   public void updateValues()
   {
@@ -736,7 +743,7 @@ public class Streamer implements Runnable
   }
 
   /**
-   * Ritorna la disponibilità liquida per il mercato azionario.
+   * Ritorna la disponibilitï¿½ liquida per il mercato azionario.
    */
   public double getLiquiditaAzioni()
   {
@@ -744,7 +751,7 @@ public class Streamer implements Runnable
   }
 
   /**
-   * Ritorna la disponibilità per il mercato azionario.
+   * Ritorna la disponibilitï¿½ per il mercato azionario.
    */
   public double getDisponibileAzioni()
   {
@@ -760,7 +767,7 @@ public class Streamer implements Runnable
   }
 
   /**
-   * Ritorna la disponibilità liquida per il mercato dei derivati.
+   * Ritorna la disponibilitï¿½ liquida per il mercato dei derivati.
    */
   public double getLiquiditaDerivati()
   {
@@ -768,7 +775,7 @@ public class Streamer implements Runnable
   }
 
   /**
-   * Ritorna la disponibilità per il mercato dei derivati.
+   * Ritorna la disponibilitï¿½ per il mercato dei derivati.
    */
   public double getDisponibileDerivati()
   {
@@ -784,7 +791,7 @@ public class Streamer implements Runnable
   }
 
   /**
-   * Ritorna la disponibilità totale.
+   * Ritorna la disponibilitï¿½ totale.
    */
   public double getDisponibile()
   {
@@ -1089,19 +1096,19 @@ System.out.println(inputLine);
             {
               if (odNew.type.equalsIgnoreCase("Vendita") == true)
               {
-                data[x].setQuantity(data[x].getQuantity() - Integer.parseInt(odNew.executedQuantity));
-                if (data[x].getQuantity() == 0)
+                data[x].setOwnedQuantity(data[x].getOwnedQuantity() - Integer.parseInt(odNew.executedQuantity));
+                if (data[x].getOwnedQuantity() == 0)
                   data[x].setPaid(0);
               }
               else
               {
                 double paid = Integer.parseInt(odNew.executedQuantity) * Double.parseDouble(odNew.executedPrice);
-                paid += data[x].getQuantity() * data[x].getPaid();
-                data[x].setQuantity(data[x].getQuantity() + Integer.parseInt(odNew.executedQuantity));
-                if (data[x].getQuantity() == 0)
+                paid += data[x].getOwnedQuantity() * data[x].getPaid();
+                data[x].setOwnedQuantity(data[x].getOwnedQuantity() + Integer.parseInt(odNew.executedQuantity));
+                if (data[x].getOwnedQuantity() == 0)
                   data[x].setPaid(0);
                 else
-                  data[x].setPaid(paid / data[x].getQuantity());
+                  data[x].setPaid(paid / data[x].getOwnedQuantity());
               }
               break;
             }
