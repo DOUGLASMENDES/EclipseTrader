@@ -10,8 +10,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
+import java.util.Observable;
+
 import net.sourceforge.eclipsetrader.IExtendedData;
-import net.sourceforge.eclipsetrader.TraderPlugin;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -56,7 +57,6 @@ public class EditAction implements IWorkbenchWindowActionDelegate, IViewActionDe
     {
       PortfolioView view = (PortfolioView)pg.getActivePart();
       IExtendedData data = view.getSelectedItem();
-      int index = TraderPlugin.getDataStore().getStockwatchData().indexOf(data);
       
       PortfolioDialog dlg = new PortfolioDialog();
       dlg.setSymbol(data.getSymbol());
@@ -73,7 +73,8 @@ public class EditAction implements IWorkbenchWindowActionDelegate, IViewActionDe
         data.setMinimumQuantity(dlg.getMinimumQuantity());
         data.setQuantity(dlg.getQuantity());
         data.setPaid(dlg.getPaid());
-        TraderPlugin.getDataStore().getStockwatchData().set(index, data);
+        if (data instanceof Observable)
+          ((Observable)data).notifyObservers();
       }
     }
   }
