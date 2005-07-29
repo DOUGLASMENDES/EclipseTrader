@@ -32,6 +32,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.AlertData;
+import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IAlertData;
 import net.sourceforge.eclipsetrader.IAlertSource;
 import net.sourceforge.eclipsetrader.IBasicData;
@@ -40,7 +41,6 @@ import net.sourceforge.eclipsetrader.IChartDataListener;
 import net.sourceforge.eclipsetrader.IDataStore;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.ObservableCollection;
-import net.sourceforge.eclipsetrader.TraderPlugin;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.graphics.RGB;
@@ -283,7 +283,7 @@ public class XMLDataStore implements IDataStore
 
   private IExtendedData decodeData(int index, NodeList parent) throws ParseException
   {
-    IExtendedData pd = TraderPlugin.createExtendedData();
+    IExtendedData pd = new ExtendedData();
     
     pd.setSymbol(((Node)parent).getAttributes().getNamedItem("symbol").getNodeValue());
 
@@ -510,7 +510,7 @@ public class XMLDataStore implements IDataStore
           Node node = firstChild.item(i);
           if (node.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
           {
-            IExtendedData ed = TraderPlugin.createExtendedData();
+            IExtendedData ed = new ExtendedData();
             ed.setSymbol(node.getAttributes().getNamedItem("symbol").getNodeValue());
             ed.setTicker(node.getAttributes().getNamedItem("ticker").getNodeValue());
             ed.setDescription(node.getAttributes().getNamedItem("description").getNodeValue());

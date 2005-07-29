@@ -22,6 +22,7 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
@@ -120,7 +121,7 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
     column.setText("Min.");
     column.setWidth(48);
     column = new TableColumn(table, SWT.RIGHT, 4);
-    column.setText("Q.tà");
+    column.setText("Q.tï¿½");
     column.setWidth(48);
     column = new TableColumn(table, SWT.RIGHT, 5);
     column.setText("Prezzo");
@@ -321,7 +322,7 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
     Vector v = new Vector();
     for (int row = 0; row < table.getItemCount(); row++)
     {
-      IExtendedData pd = TraderPlugin.createExtendedData();
+      IExtendedData pd = new ExtendedData();
       pd.setSymbol(table.getItem(row).getText(0));
       pd.setTicker(table.getItem(row).getText(1));
       pd.setDescription(table.getItem(row).getText(2));

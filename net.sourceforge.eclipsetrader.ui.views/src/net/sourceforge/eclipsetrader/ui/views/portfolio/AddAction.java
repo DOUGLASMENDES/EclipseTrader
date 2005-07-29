@@ -10,6 +10,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
+import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 
@@ -52,7 +53,7 @@ public class AddAction implements IWorkbenchWindowActionDelegate, IViewActionDel
     PortfolioDialog dlg = new PortfolioDialog();
     while (dlg.open() == PortfolioDialog.OK)
     {
-      IExtendedData data = TraderPlugin.createExtendedData();
+      IExtendedData data = new ExtendedData();
       data.setSymbol(dlg.getSymbol());
       data.setTicker(dlg.getTicker());
       data.setDescription(dlg.getDescription());
