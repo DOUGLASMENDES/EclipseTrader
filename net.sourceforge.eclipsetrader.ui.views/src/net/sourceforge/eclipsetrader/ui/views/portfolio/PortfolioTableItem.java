@@ -12,10 +12,10 @@ package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Observable;
+import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.IExtendedData;
-import net.sourceforge.eclipsetrader.IObjectObserver;
-import net.sourceforge.eclipsetrader.ObservableObject;
 
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-public class PortfolioTableItem implements DisposeListener, IObjectObserver
+public class PortfolioTableItem implements DisposeListener, Observer
 {
   private PortfolioView parent;
   private TableItem tableItem;
@@ -42,6 +42,7 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
   {
     tableItem = new TableItem(parent, style);
     tableItem.setData(this);
+    tableItem.addDisposeListener(this);
     this.parent = view;
     initialize();
   }
@@ -50,6 +51,7 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
   {
     tableItem = new TableItem(parent, style, index);
     tableItem.setData(this);
+    tableItem.addDisposeListener(this);
     this.parent = view;
     initialize();
   }
@@ -89,19 +91,13 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
    */
   public void setData(IExtendedData data)
   {
-    if (this.data != null && this.data instanceof ObservableObject) 
-    {
-      ((ObservableObject)this.data).removeObserver(this);
-      tableItem.removeDisposeListener(this);
-    }
+    if (this.data != null && this.data instanceof Observable) 
+      ((Observable)this.data).deleteObserver(this);
 
     this.data = data;
     
-    if (data instanceof ObservableObject)
-    {
-      ((ObservableObject)this.data).addObserver(this);
-      tableItem.addDisposeListener(this);
-    }
+    if (this.data != null && this.data instanceof Observable) 
+      ((Observable)this.data).addObserver(this);
 
     update();
   }
@@ -116,7 +112,7 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
   {
     if (tableData == null)
       tableData = new PortfolioTableData();
-
+    
     Table table = tableItem.getParent();
     for (int column = 0; column < table.getColumnCount(); column++)
     {
@@ -133,10 +129,7 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
           setText(column, data.getDescription());
           break;
         case 3:
-          if (data.getLastPrice() > 200)
-            setText(column, nf.format(data.getLastPrice()));
-          else
-            setText(column, pf.format(data.getLastPrice()));
+          setText(column, pf.format(data.getLastPrice()));
           tableData.setLastPrice(data.getLastPrice());
           if (tableData.getLastPriceVariance() < 0)
             tableItem.setForeground(column, negativeForeground);
@@ -144,22 +137,16 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
             tableItem.setForeground(column, positiveForeground);
           break;
         case 4:
-          setText(column, data.getChange());
-          if (data.getLastPrice() != 0 && data.getClosePrice() != 0)
-          {
-            double gain = (data.getLastPrice() - data.getClosePrice()) / data.getClosePrice() * 100;
-            data.setChange(pcf.format(gain) + "%"); //$NON-NLS-1$
-            if (gain < 0)
-              tableItem.setForeground(column, negativeForeground);
-            else if (gain > 0)
-              tableItem.setForeground(column, positiveForeground);
-          }
+          setText(column, pcf.format(data.getChange()) + "%"); //$NON-NLS-1$
+          if (data.getChange() < 0)
+            tableItem.setForeground(column, negativeForeground);
+          else if (data.getChange() > 0)
+            tableItem.setForeground(column, positiveForeground);
+          else
+            tableItem.setForeground(column, null);
           break;
         case 5:
-          if (data.getBidPrice() > 200)
-            setText(column, nf.format(data.getBidPrice()));
-          else
-            setText(column, pf.format(data.getBidPrice()));
+          setText(column, pf.format(data.getBidPrice()));
           tableData.setBidPrice(data.getBidPrice());
           if (tableData.getBidPriceVariance() < 0)
             tableItem.setForeground(column, negativeForeground);
@@ -175,10 +162,7 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
             tableItem.setForeground(column, positiveForeground);
           break;
         case 7:
-          if (data.getAskPrice() > 200)
-            setText(column, nf.format(data.getAskPrice()));
-          else
-            setText(column, pf.format(data.getAskPrice()));
+          setText(column, pf.format(data.getAskPrice()));
           tableData.setAskPrice(data.getAskPrice());
           if (tableData.getAskPriceVariance() < 0)
             tableItem.setForeground(column, negativeForeground);
@@ -270,9 +254,9 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
   }
   
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IObjectObserver#itemUpdated()
+   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
    */
-  public synchronized void objectUpdated()
+  public void update(Observable o, Object arg)
   {
     if (scheduled == true)
       return;
@@ -286,7 +270,7 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
       }
     });
   }
-  
+
   public void resetHilight()
   {
     if (tableData != null && tableItem.isDisposed() == false)
@@ -342,6 +326,7 @@ public class PortfolioTableItem implements DisposeListener, IObjectObserver
    */
   public void widgetDisposed(DisposeEvent e)
   {
-    ((ObservableObject)data).removeObserver(this);
+    if (this.data != null && this.data instanceof Observable) 
+      ((Observable)this.data).deleteObserver(this);
   }
 }
