@@ -11,11 +11,8 @@
 package net.sourceforge.eclipsetrader.directaworld;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -24,7 +21,6 @@ import java.util.TimerTask;
 
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.RealtimeChartDataProvider;
-import net.sourceforge.eclipsetrader.TraderPlugin;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -34,9 +30,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
   private Timer timer;
   private String userName = "";
   private String password = "";
-  private Socket socket;
-  private OutputStream os;
-  private DataInputStream is;
   
   public SnapshotDataProvider()
   {
@@ -64,7 +57,16 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
   
   private boolean connectServer()
   {
-    if (checkLogin() == false)
+    if (userName.length() == 0 || password.length() == 0)
+    {
+      LoginDialog dlg = new LoginDialog();
+      if (dlg.open() != LoginDialog.OK)
+        return false;
+      userName = dlg.getUserName();
+      password = dlg.getPassword();
+    }
+    
+/*    if (userName.length() == 0 || password.length() == 0 || checkLogin() == false)
     {
       LoginDialog dlg = new LoginDialog();
       for(;;)
@@ -76,7 +78,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
         if (checkLogin() == true)
           break;
       }
-    }
+    }*/
     
     return true;
   }
@@ -102,7 +104,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     NumberFormat nf = NumberFormat.getInstance();
     NumberFormat pf = NumberFormat.getInstance();
     SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
 
     nf.setGroupingUsed(true);
     nf.setMinimumFractionDigits(0);
@@ -112,19 +113,17 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     pf.setMinimumFractionDigits(4);
     pf.setMaximumFractionDigits(4);
 
-    data = TraderPlugin.getData();
-
     // http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n&id1=IT0001182671&id2=IT0000078193&u=00021898&p=2990b9
     try {
       // Legge la pagina contenente gli ultimi prezzi
       String request = "http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n";
-      for (i = 0; i < data.length; i++)
-        request += "&id" + (i + 1) + "=" + data[i].getTicker();
+      for (i = 0; i < getData().length; i++)
+        request += "&id" + (i + 1) + "=" + getData()[i].getTicker();
       for (; i < 30; i++)
         request += "&id" + (i + 1) + "=";
       request += "&u=" + userName + "&p=" + password;
       URL web = new URL(request);
-//System.out.println(web);
+System.out.println(web.toExternalForm());
       HttpURLConnection.setFollowRedirects(false);
       HttpURLConnection con = (HttpURLConnection)web.openConnection();
       String proxyHost = (String)System.getProperties().get("http.proxyHost");
@@ -143,35 +142,34 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       while ((inputLine = in.readLine()) != null) 
       {
+System.out.println(inputLine);
         if (inputLine.indexOf("<!--QT START HERE-->") != -1) 
         {
           while ((inputLine = in.readLine()) != null) 
           {
             if (inputLine.indexOf("<!--QT STOP HERE-->") != -1)
               break;
-//System.out.println(inputLine);
             String[] item = inputLine.split(";");
-            for (i = 0; i < data.length; i++)
+            
+            IExtendedData data = getTicker(item[0]);
+            if (data != null)
             {
-              if (data[i].getTicker().equalsIgnoreCase(item[0]) == true) 
-              {
-                // item[1] - Nome
-                data[i].setLastPrice(pf.parse(item[2]).doubleValue());
-                // item[3] - Variazione
-                data[i].setVolume(nf.parse(item[4]).intValue());
-                try {
-                  data[i].setDate(df.parse(item[6] + " " + item[5]));
-                } catch(Exception e) {};
-                data[i].setBidPrice(pf.parse(item[7]).doubleValue());
-                data[i].setBidSize(nf.parse(item[8]).intValue());
-                data[i].setAskPrice(pf.parse(item[9]).doubleValue());
-                data[i].setAskSize(nf.parse(item[10]).intValue());
-                // item[11] - ???
-                data[i].setOpenPrice(pf.parse(item[12]).doubleValue());
-                data[i].setClosePrice(pf.parse(item[13]).doubleValue());
-                data[i].setLowPrice(pf.parse(item[14]).doubleValue());
-                data[i].setHighPrice(pf.parse(item[15]).doubleValue());
-              }
+              // item[1] - Nome
+              data.setLastPrice(pf.parse(item[2]).doubleValue());
+              // item[3] - Variazione
+              data.setVolume(nf.parse(item[4]).intValue());
+              try {
+                data.setDate(df.parse(item[6] + " " + item[5]));
+              } catch(Exception e) {};
+              data.setBidPrice(pf.parse(item[7]).doubleValue());
+              data.setBidSize(nf.parse(item[8]).intValue());
+              data.setAskPrice(pf.parse(item[9]).doubleValue());
+              data.setAskSize(nf.parse(item[10]).intValue());
+              // item[11] - ???
+              data.setOpenPrice(pf.parse(item[12]).doubleValue());
+              data.setClosePrice(pf.parse(item[13]).doubleValue());
+              data.setLowPrice(pf.parse(item[14]).doubleValue());
+              data.setHighPrice(pf.parse(item[15]).doubleValue());
             }
           }
         }
@@ -206,6 +204,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
       String request = "http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n&id1=STM";
       request += "&u=" + userName + "&p=" + password;
       URL web = new URL(request);
+System.out.println(web.toExternalForm());
       HttpURLConnection.setFollowRedirects(false);
       HttpURLConnection con = (HttpURLConnection)web.openConnection();
       String proxyHost = (String)System.getProperties().get("http.proxyHost");
@@ -224,7 +223,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       while ((inputLine = in.readLine()) != null) 
       {
-//System.out.println(inputLine);
+System.out.println(inputLine);
         if (inputLine.indexOf("<!--QT START HERE-->") != -1)
           ret = true;
       }
@@ -232,17 +231,5 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     } catch (Exception ex) { ex.printStackTrace(); };
     
     return ret;
-  }
-
-  private IExtendedData findData(String symbol)
-  {
-    for (int i = 0; i < data.length; i++) {
-      if (symbol.equalsIgnoreCase(data[i].getSymbol()))
-      {
-        if (data[i] instanceof IExtendedData)
-          return (IExtendedData)data[i];
-      }
-    }
-    return null;
   }
 }
