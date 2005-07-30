@@ -12,6 +12,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.List;
 
 import net.sourceforge.eclipsetrader.BasicData;
 import net.sourceforge.eclipsetrader.IBasicData;
@@ -173,15 +174,17 @@ public class HistoryChartView extends ChartView implements DropTargetListener
   public void showNext()
   {
     chartData = null;
-    IBasicData[] _tpData = TraderPlugin.getData();
-    for (int i = 0; i < _tpData.length; i++)
+    
+    List list = TraderPlugin.getDataStore().getStockwatchData();
+    for (int i = 0; i < list.size(); i++)
     {
-      if (_tpData[i].getSymbol().equalsIgnoreCase(basicData.getSymbol()) == true)
+      IBasicData _tpData = (IBasicData)list.get(i);
+      if (_tpData.getSymbol().equalsIgnoreCase(basicData.getSymbol()) == true)
       {
-        if (i < _tpData.length - 1)
-          setData(_tpData[i + 1]);
+        if (i < list.size() - 1)
+          setData((IBasicData)list.get(i + 1));
         else
-          setData(_tpData[0]);
+          setData((IBasicData)list.get(0));
         break;
       }
     }
@@ -190,15 +193,17 @@ public class HistoryChartView extends ChartView implements DropTargetListener
   public void showPrevious()
   {
     chartData = null;
-    IBasicData[] _tpData = TraderPlugin.getData();
-    for (int i = 0; i < _tpData.length; i++)
+    
+    List list = TraderPlugin.getDataStore().getStockwatchData();
+    for (int i = 0; i < list.size(); i++)
     {
-      if (_tpData[i].getSymbol().equalsIgnoreCase(basicData.getSymbol()) == true)
+      IBasicData _tpData = (IBasicData)list.get(i);
+      if (_tpData.getSymbol().equalsIgnoreCase(basicData.getSymbol()) == true)
       {
         if (i > 0)
-          setData(_tpData[i - 1]);
+          setData((IBasicData)list.get(i - 1));
         else
-          setData(_tpData[_tpData.length - 1]);
+          setData((IBasicData)list.get(list.size() - 1));
         break;
       }
     }

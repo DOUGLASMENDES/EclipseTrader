@@ -12,6 +12,7 @@ package net.sourceforge.eclipsetrader.ui.views.trading;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -357,12 +358,12 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
     String id = getViewSite().getSecondaryId();
     String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("book." + id); //$NON-NLS-1$
 
-    IBasicData[] _tpData = TraderPlugin.getData();
-    for (int i = 0; i < _tpData.length; i++)
+    for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
     {
-      if (_tpData[i].getSymbol().equalsIgnoreCase(symbol) == true)
+      IBasicData _tpData = (IBasicData)iter.next();
+      if (_tpData.getSymbol().equals(symbol) == true)
       {
-        data = _tpData[i];
+        data = _tpData;
         break;
       }
     }
@@ -393,12 +394,12 @@ public class Book extends ViewPart implements IBookUpdateListener, ControlListen
       _dp.removeBookListener(data, this);
     }
 
-    IBasicData[] _tpData = TraderPlugin.getData();
-    for (int i = 0; i < _tpData.length; i++)
+    for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
     {
-      if (_tpData[i].getSymbol().equalsIgnoreCase(symbol) == true)
+      IBasicData _tpData = (IBasicData)iter.next();
+      if (_tpData.getSymbol().equals(symbol) == true)
       {
-        data = _tpData[i];
+        data = _tpData;
         break;
       }
     }

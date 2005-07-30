@@ -204,21 +204,7 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
     btn.setLayoutData(new GridData(GridData.FILL_BOTH));
     btn.addSelectionListener(this);
 
-    update();
-
     return entryTable;
-  }
-  
-  public void update()
-  {
-    table.setItemCount(TraderPlugin.getData().length);
-    for (int row = 0; row < TraderPlugin.getData().length; row++)
-    {
-      TableItem item = table.getItem(row);
-      IExtendedData pd = TraderPlugin.getData()[row];
-      for (int col = 0; col < table.getColumnCount(); col++)
-        setTableText(pd, item, row, col);
-    }
   }
   
   public void setTableText(IExtendedData pd, TableItem item, int row, int column)
@@ -340,7 +326,7 @@ public class PortfolioPreferencePage extends PreferencePage implements IWorkbenc
     IExtendedData[] arr = new IExtendedData[v.size()];
     v.toArray(arr);
     TraderPlugin.getDataStore().update(arr);
-    update();
+
     ViewsPlugin.getDefault().getPreferenceStore().firePropertyChangeEvent("portfolio", null, null);
     
     return super.performOk();

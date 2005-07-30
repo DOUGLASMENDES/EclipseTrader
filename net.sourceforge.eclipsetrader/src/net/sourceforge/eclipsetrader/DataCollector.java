@@ -291,10 +291,10 @@ public class DataCollector implements IRealtimeChartProvider, IPropertyChangeLis
    */
   public void dataUpdated(IBasicDataProvider dataProvider)
   {
-    IExtendedData[] data = TraderPlugin.getData();
+/*    IExtendedData[] data = TraderPlugin.getData();
     for (int i = 0; i < data.length; i++)
       dataUpdated(data[i]);
-    store();
+    store();*/
   }
 
   public void load()

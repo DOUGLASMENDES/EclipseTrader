@@ -43,6 +43,7 @@ public class PushDataProvider extends DataProvider implements IStreamerEventRece
     }
 
     streamer.addEventReceiver(this);
+    streamer.readInitialData();
     if (streamer.connect() == true)
     {
       new Thread(streamer).start();
@@ -61,25 +62,6 @@ public class PushDataProvider extends DataProvider implements IStreamerEventRece
     super.stopStreaming();
   }
 
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IBasicDataProvider#setData(net.sourceforge.eclipsetrader.IExtendedData[])
-   */
-  public void setData(IExtendedData[] data)
-  {
-    super.setData(data);
-    if (this.isStreaming() == true)
-    {
-      Streamer streamer = Streamer.getInstance();
-      streamer.disconnect();
-      streamer.readInitialData();
-      if (streamer.connect() == true)
-      {
-        new Thread(streamer).start();
-        super.startStreaming();
-      }
-    }
-  }
-  
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.directa.internal.IStreamerEventReceiver#dataUpdated()
    */

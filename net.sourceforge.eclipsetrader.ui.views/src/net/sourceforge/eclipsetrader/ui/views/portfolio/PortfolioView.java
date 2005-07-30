@@ -16,10 +16,7 @@ import java.util.StringTokenizer;
 
 import net.sourceforge.eclipsetrader.IAlertData;
 import net.sourceforge.eclipsetrader.IAlertSource;
-import net.sourceforge.eclipsetrader.IBasicData;
-import net.sourceforge.eclipsetrader.IBasicDataProvider;
 import net.sourceforge.eclipsetrader.ICollectionObserver;
-import net.sourceforge.eclipsetrader.IDataUpdateListener;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.AlertsDialog;
@@ -62,7 +59,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  */
-public class PortfolioView extends ViewPart implements ControlListener, IDataUpdateListener, IPropertyChangeListener, ICollectionObserver 
+public class PortfolioView extends ViewPart implements ControlListener, IPropertyChangeListener, ICollectionObserver 
 {
   public static final String VIEW_ID = "net.sourceforge.eclipsetrader.ui.views.Portfolio";
   private Table table;
@@ -157,6 +154,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     table.setHeaderVisible(true);
     table.setLinesVisible(true);
     table.setBackground(parent.getBackground());
+    table.setForeground(textForeground);
     table.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e)
       {
@@ -179,7 +177,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       }
       public void dragSetData(DragSourceEvent event) 
       {
-        IExtendedData data = TraderPlugin.getData()[table.getSelectionIndex()];
+        IExtendedData data = (IExtendedData)TraderPlugin.getDataStore().getStockwatchData().get(table.getSelectionIndex());
         if ((dragColumn == 12 || dragColumn == 13 || dragColumn == 15) && data.getOwnedQuantity() != 0)
           event.data = "S;" + data.getSymbol() + ";" + data.getTicker() + ";" + data.getOwnedQuantity() + ";" + data.getLastPrice(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         else
@@ -348,7 +346,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     if (index == -1 || index >= max)
       return;
 
-    IExtendedData data = TraderPlugin.getData()[index];
+    IExtendedData data = (IExtendedData)TraderPlugin.getDataStore().getStockwatchData().get(index);
     
     AlertsDialog dlg = new AlertsDialog();
     dlg.setData(data);
@@ -358,128 +356,18 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   
   public void clearAlerts()
   {
-    IExtendedData[] data = TraderPlugin.getData();
-    for (int i = 0; i < data.length; i++)
+    for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
     {
-      IAlertData[] ad = ((IAlertSource)data[i]).getAlerts();
+      IExtendedData data = (IExtendedData)iter.next();
+      IAlertData[] ad = ((IAlertSource)data).getAlerts();
       for (int n = 0; n < ad.length; n++)
       {
         if (ad[n].isTrigger() == true)
           ad[n].setAcknowledge(true);
       }
     }
-    asyncUpdateView();
   }
   
-  /**
-   * Thread-safe view update.
-   */
-  public void asyncUpdateView()
-  {
-    if (table.isDisposed() == true)
-      return;
-    table.getDisplay().asyncExec(new Runnable() {
-      public void run()  {
-        updateView();
-      }
-    });
-  }
-  
-  /**
-   * Updates the view contents.
-   * <p>This call is not thread-safe. Use asyncUpdateView if updating from a
-   * thread or timer runnable.</p>
-   */
-  public void updateView()
-  {
-/*    int totalStock = 0;
-    double totalPaid = 0, totalSell = 0;
-    IExtendedData[] data = TraderPlugin.getData();
-    if (data == null)
-      return;
-
-    lastUpdate = System.currentTimeMillis();
-    if (table.isDisposed() == true)
-      return;
-    table.setRedraw(false);
-
-    if (table.getItemCount() != (data.length + 1))
-      table.setItemCount(data.length + 1);
-    
-    int row;
-    for (row = 0; row < data.length; row++)
-    {
-      updateRow(row, data[row]);
-      totalStock += data[row].getQuantity();
-      totalPaid += data[row].getQuantity() * data[row].getPaid();
-      totalSell += data[row].getQuantity() * data[row].getLastPrice();
-    }
-
-    // Riga contenente i totali
-    double totalGain = totalSell - totalPaid;
-    TableItem item = table.getItem(row);
-    item.setBackground(totalBackground);
-    for (int column = 0; column < table.getColumnCount(); column++)
-      item.setText(column, ""); //$NON-NLS-1$
-
-    int columnData = getDataColumnIndex(2);
-    if (columnData != -1)
-      item.setText(columnData, Messages.getString("PortfolioView.Total")); //$NON-NLS-1$
-    columnData = getDataColumnIndex(12);
-    if (columnData != -1)
-      item.setText(columnData, nf.format(totalStock));
-    columnData = getDataColumnIndex(15);
-    if (columnData != -1)
-    {
-      if (totalGain < 0)
-        item.setForeground(columnData, negativeForeground);
-      else if (totalGain > 0)
-        item.setForeground(columnData, positiveForeground);
-      else
-        item.setForeground(columnData, textForeground);
-      item.setText(columnData, bpf.format(totalGain) + " (" + pcf.format(totalGain / totalPaid * 100) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-    columnData = getDataColumnIndex(14);
-    if (columnData != -1)
-      item.setText(columnData, bpf.format(totalPaid));
-
-    table.setRedraw(true);*/
-  }
-  
-  /**
-   * Updates the contents of a single row.
-   * <p>This call is not thread-safe.</p>
-   */
-  private void updateRow(int row, IExtendedData data)
-  {
-    if (table.isDisposed() == true)
-      return;
-
-    TableItem tableItem = table.getItem(row);
-    Color color = tableItem.getBackground();
-    if (color != null && color != oddBackground && color != evenBackground)
-      color.dispose();
-    
-    if ((row & 1) == 1)
-      tableItem.setBackground(oddBackground);
-    else
-      tableItem.setBackground(evenBackground);
-    
-    if (data instanceof IAlertSource)
-    {
-      IAlertData[] alerts = ((IAlertSource)data).getAlerts();
-      for (int i = 0; i < alerts.length; i++)
-      {
-        if (alerts[i].isTrigger() == true && alerts[i].isAcknowledge() == false)
-        {
-          if (alerts[i].isHilight())
-            tableItem.setBackground(new Color(null, alerts[i].getHilightColor()));
-        }
-      }
-    }
-    
-  }
- 
   private void createContextMenu() 
   {
     // Create menu manager.
@@ -498,30 +386,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     // Register the selection provider and context menu
     getSite().setSelectionProvider(new PortfolioSelectionProvider());
     getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IDataUpdateListener#dataUpdated(net.sourceforge.eclipsetrader.IDataStreamer)
-   */
-  public void dataUpdated(IBasicDataProvider ds)
-  {
-    asyncUpdateView();
-  }
-
-  public void dataUpdated(IBasicDataProvider dataProvider, final IBasicData data)
-  {
-    if (table.isDisposed() == true)
-      return;
-    table.getDisplay().asyncExec(new Runnable() {
-      public void run()  {
-        IExtendedData[] d = TraderPlugin.getData();
-        for (int i = 0; i < d.length; i++)
-        {
-          if (d[i].getSymbol().equalsIgnoreCase(data.getSymbol()) == true)
-            updateRow(i, d[i]);
-        }
-      }
-    });
   }
 
   public int getColumnDataIndex(int index)
@@ -563,13 +427,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
   public void propertyChange(PropertyChangeEvent event)
   {
     String property = event.getProperty();
-
-    // Property changed for the Trader plugin
-    if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.dataProvider") == true) //$NON-NLS-1$
-    {
-      if (TraderPlugin.getDataProvider() != null)
-        TraderPlugin.getDataProvider().addDataListener(this);
-    }
 
     // Property changed for the Views plugin
     if (property.equalsIgnoreCase("portfolio.text_color") == true) //$NON-NLS-1$
@@ -619,8 +476,6 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       }
       table.setRedraw(true);
     }
-    if (property.equalsIgnoreCase("portfolio") == true || property.startsWith("portfolio.") == true) //$NON-NLS-1$
-      updateView();
   }
   
   private int getColumn(int x)
@@ -709,13 +564,15 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
     updateTotals();
   }
 
-  private void updateTotals()
+  public void updateTotals()
   {
     int totalStock = 0;
     double totalPaid = 0, totalSell = 0;
-    for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
+
+    for (int i = 0; i < table.getItemCount() - 1; i++)
     {
-      IExtendedData obj = (IExtendedData)iter.next();
+      PortfolioTableItem item = (PortfolioTableItem)table.getItem(i).getData();
+      IExtendedData obj = item.getData();
       totalStock += obj.getOwnedQuantity();
       totalPaid += obj.getOwnedQuantity() * obj.getPaid();
       totalSell += obj.getOwnedQuantity() * obj.getLastPrice();
@@ -736,7 +593,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IDataUpd
       else if (totalGain > 0)
         totalsTableItem.setForeground(columnData, positiveForeground);
       else
-        totalsTableItem.setForeground(columnData, textForeground);
+        totalsTableItem.setForeground(columnData, null);
       totalsTableItem.setText(columnData, bpf.format(totalGain) + " (" + pcf.format(totalGain / totalPaid * 100) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
     }
     columnData = getDataColumnIndex(14);

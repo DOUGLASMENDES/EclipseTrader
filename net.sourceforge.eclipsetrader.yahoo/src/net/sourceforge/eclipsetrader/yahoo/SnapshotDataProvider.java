@@ -12,7 +12,6 @@ package net.sourceforge.eclipsetrader.yahoo;
 
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.RealtimeChartDataProvider;
-import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.yahoo.internal.Streamer;
 import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 
@@ -49,7 +48,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
     useMapping = ps.getBoolean("yahoo.mapping");
     defaultExtension = ps.getString("yahoo.suffix");
 
-    data = TraderPlugin.getData();
+    IExtendedData[] data = getData();
     for (int i = 0; i < data.length; i++)
     {
       String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
@@ -71,48 +70,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IBasicDataProvider#setData(net.sourceforge.eclipsetrader.IExtendedData[])
-   */
-  public void setData(IExtendedData[] newData)
-  {
-    IPreferenceStore ps = YahooPlugin.getDefault().getPreferenceStore();
-    symbolField = ps.getInt("yahoo.field");
-    useMapping = ps.getBoolean("yahoo.mapping");
-    defaultExtension = ps.getString("yahoo.suffix");
-
-    IExtendedData[] data = getData();
-    if (data != null)
-    {
-      for (int i = 0; i < data.length; i++)
-      {
-        String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
-        if (useMapping == true)
-        {
-          symbol = SymbolMapper.getYahooSymbol(symbol);
-          if (symbol.indexOf(".") == -1)
-            symbol += defaultExtension;
-        }
-        streamer.removeSymbol(symbol);
-      }
-    }
-    
-    data = newData;
-    for (int i = 0; i < data.length; i++)
-    {
-      String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
-      if (useMapping == true)
-      {
-        symbol = SymbolMapper.getYahooSymbol(symbol);
-        if (symbol.indexOf(".") == -1)
-          symbol += defaultExtension;
-      }
-      streamer.addSymbol(symbol);
-    }
-
-    super.setData(newData);
-  }
-
-  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IDataStreamer#stopStreaming()
    */
   public void stopStreaming()
@@ -122,7 +79,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
 
     YahooPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 
-    data = TraderPlugin.getData();
+    IExtendedData[] data = getData();
     for (int i = 0; i < data.length; i++)
     {
       String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
@@ -140,7 +97,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
   
   public void update()
   {
-    data = TraderPlugin.getData();
+    IExtendedData[] data = getData();
     for (int i = 0; i < data.length; i++) 
     {
       String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
@@ -172,6 +129,46 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.DataProvider#itemAdded(java.lang.Object)
+   */
+  public void itemAdded(Object obj)
+  {
+    if (obj instanceof IExtendedData)
+    {
+      IExtendedData data = (IExtendedData)obj;
+      String symbol = (symbolField == 0) ? data.getSymbol() : data.getTicker();
+      if (useMapping == true)
+      {
+        symbol = SymbolMapper.getYahooSymbol(symbol);
+        if (symbol.indexOf(".") == -1)
+          symbol += defaultExtension;
+      }
+      streamer.addSymbol(symbol);
+    }
+    super.itemAdded(obj);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.DataProvider#itemRemoved(java.lang.Object)
+   */
+  public void itemRemoved(Object obj)
+  {
+    if (obj instanceof IExtendedData)
+    {
+      IExtendedData data = (IExtendedData)obj;
+      String symbol = (symbolField == 0) ? data.getSymbol() : data.getTicker();
+      if (useMapping == true)
+      {
+        symbol = SymbolMapper.getYahooSymbol(symbol);
+        if (symbol.indexOf(".") == -1)
+          symbol += defaultExtension;
+      }
+      streamer.removeSymbol(symbol);
+    }
+    super.itemRemoved(obj);
+  }
+
+  /* (non-Javadoc)
    * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
    */
   public void propertyChange(PropertyChangeEvent event)
@@ -182,7 +179,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider implements I
     if (property.equalsIgnoreCase("yahoo.mapping") == true || property.equalsIgnoreCase("yahoo.suffix") == true || property.equalsIgnoreCase("yahoo.field") == true)
     {
       // Remove the old-mapping symbols from the streamer 
-      IExtendedData[] data = TraderPlugin.getData();
+      IExtendedData[] data = getData();
       for (int i = 0; i < data.length; i++)
       {
         String symbol = (symbolField == 0) ? data[i].getSymbol() : data[i].getTicker();
