@@ -34,7 +34,7 @@ public class ExtendedData extends BasicData implements IExtendedData, IAlertSour
   private double closePrice = 0;
   private double valueChange = 0;
   private int volume = 0;
-  private int quantity = 0;
+  private int ownedQuantity = 0;
   private double paid = 0;
   private Date date = Calendar.getInstance().getTime();
   private Vector alerts = new Vector();
@@ -227,17 +227,21 @@ public class ExtendedData extends BasicData implements IExtendedData, IAlertSour
 
   public void setPaid(double paid)
   {
+    if (this.paid != paid)
+      setChanged();
     this.paid = paid;
   }
 
   public int getOwnedQuantity()
   {
-    return quantity;
+    return ownedQuantity;
   }
 
-  public void setOwnedQuantity(int quantity)
+  public void setOwnedQuantity(int ownedQuantity)
   {
-    this.quantity = quantity;
+    if (this.ownedQuantity != ownedQuantity)
+      setChanged();
+    this.ownedQuantity = ownedQuantity;
   }
 
   public Date getDate()
@@ -247,6 +251,8 @@ public class ExtendedData extends BasicData implements IExtendedData, IAlertSour
 
   public void setDate(Date date)
   {
+    if (!this.date.equals(date))
+      setChanged();
     this.date = date;
   }
   
