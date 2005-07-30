@@ -46,7 +46,7 @@ public class DirectaWorldPlugin extends AbstractUIPlugin
 
     // Sets the default preferences
     IPreferenceStore ps = getPreferenceStore();
-    ps.setDefault("refresh", "5");
+    ps.setDefault("refresh", "15");
 	}
 
 	/**
