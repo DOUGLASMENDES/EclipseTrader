@@ -12,8 +12,6 @@ package net.sourceforge.eclipsetrader.directaworld;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -26,7 +24,7 @@ import org.eclipse.ui.PlatformUI;
 
 /**
  */
-public class LoginDialog extends TitleAreaDialog implements ModifyListener
+public class LoginDialog extends TitleAreaDialog
 {
   private String userName = "";
   private String password = "";
@@ -59,7 +57,6 @@ public class LoginDialog extends TitleAreaDialog implements ModifyListener
     label.setText("Codice Utente:");
     label.setLayoutData(new GridData());
     text1 = new Text(composite, SWT.BORDER);
-    text1.addModifyListener(this);
     text1.setText(userName);
     GridData gridData = new GridData();
     gridData.widthHint = 200;
@@ -70,7 +67,6 @@ public class LoginDialog extends TitleAreaDialog implements ModifyListener
     label.setLayoutData(new GridData());
     text2 = new Text(composite, SWT.BORDER);
     text2.setEchoChar('*');
-    text2.addModifyListener(this);
     gridData = new GridData();
     gridData.widthHint = 200;
     text2.setLayoutData(gridData);
@@ -88,16 +84,16 @@ public class LoginDialog extends TitleAreaDialog implements ModifyListener
     
     return super.open();
   }
-  
+
   /* (non-Javadoc)
-   * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
+   * @see org.eclipse.jface.dialogs.Dialog#okPressed()
    */
-  public void modifyText(ModifyEvent e)
+  protected void okPressed()
   {
-    if (e.getSource() == text1)
-      userName = text1.getText();
-    else if (e.getSource() == text2)
-      password = text2.getText();
+    userName = text1.getText();
+    password = text2.getText();
+    
+    super.okPressed();
   }
 
   public String getUserName()
