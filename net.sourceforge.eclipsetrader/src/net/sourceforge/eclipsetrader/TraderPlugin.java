@@ -11,6 +11,7 @@
 package net.sourceforge.eclipsetrader;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -63,26 +64,18 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
     }
   }
 
-  // Static methods that returns application-wide objects
-  public static IExtendedData[] getData()
-  {
-    if (plugin == null || plugin.dataStore == null)
-      return null;
-    IExtendedData[] dataArray = new IExtendedData[plugin.dataStore.getStockwatchData().size()];
-    plugin.dataStore.getStockwatchData().toArray(dataArray);
-    return dataArray;
-  }
-
   public static IExtendedData getData(String symbol)
   {
     if (plugin == null || plugin.dataStore == null)
       return null;
-    IExtendedData[] _data = getData();
-    for (int i = 0; i < _data.length; i++)
+    
+    for (Iterator iter = plugin.dataStore.getStockwatchData().iterator(); iter.hasNext(); )
     {
-      if (_data[i].getSymbol().equalsIgnoreCase(symbol) == true)
-        return _data[i];
+      IExtendedData data = (IExtendedData)iter.next();
+      if (data.getSymbol().equals(symbol) == true)
+        return data;
     }
+
     return null;
   }
 
@@ -99,12 +92,7 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
   public static IBasicDataProvider getDataProvider()
   {
     if (plugin.dataProvider == null)
-    {
-      // Load the data provider plugin
       plugin.dataProvider = (IBasicDataProvider) plugin.activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
-      if (plugin.dataProvider != null)
-        plugin.dataProvider.setData(getData());
-    }
 
     return plugin.dataProvider;
   }
@@ -170,14 +158,14 @@ public class TraderPlugin extends AbstractUIPlugin implements IPropertyChangeLis
       if (dataProvider != null)
         dataProvider.dispose();
       dataProvider = (IBasicDataProvider) activatePlugin("net.sourceforge.eclipsetrader.dataProvider");
-      if (dataProvider != null)
-        dataProvider.setData(getData());
-    } else if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
+    } 
+    else if (property.equalsIgnoreCase("net.sourceforge.eclipsetrader.bookDataProvider") == true)
     {
       if (bookDataProvider != null)
         bookDataProvider.dispose();
       bookDataProvider = (IBookDataProvider) activatePlugin("net.sourceforge.eclipsetrader.bookDataProvider");
-    } else if (property.equalsIgnoreCase("PROXY_ENABLED") == true)
+    } 
+    else if (property.equalsIgnoreCase("PROXY_ENABLED") == true)
     {
       IPreferenceStore ps = getPreferenceStore();
       Properties prop = System.getProperties();

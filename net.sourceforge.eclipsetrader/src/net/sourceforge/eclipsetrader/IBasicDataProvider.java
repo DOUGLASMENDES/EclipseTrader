@@ -25,13 +25,6 @@ public interface IBasicDataProvider
 {
  
   /**
-   * Set the portfolio data for which the streaming is required.<br>
-   * 
-   * @param data The data array.
-   */
-  public void setData(IExtendedData[] data);
-
-  /**
    * Return an array with the data items for which the streaming is required.<br>
    * 
    * @return The data array.
