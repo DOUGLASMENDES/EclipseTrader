@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.dukascopy;
 
+import java.util.Iterator;
+
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.RealtimeChartDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
@@ -25,33 +27,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
   private FeederConnector feed;
 
   private int quoteId = 1;
-
-  public synchronized void setData(IExtendedData[] data)
-  {
-    IExtendedData[] previousData = getData();
-    super.setData(data);
-    if (isStreaming())
-    {
-      subscribe(data);
-      for (int i = 0; i < previousData.length; i++)
-      {
-        IExtendedData d = null;
-        for (int j = 0; j < data.length; j++)
-        {
-          if (data[j].getSymbol().equals(previousData[i].getSymbol()))
-          {
-            d = data[j];
-            break;
-          }
-        }
-        // Previous data item was not found, so it must have been removed.
-        if (d == null)
-        {
-          feed.unsubscribe(previousData[i].getSymbol());
-        }
-      }
-    }
-  }
 
   public synchronized void startStreaming()
   {
@@ -82,9 +57,16 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
       }
     });
     feed.connect();
-    if (TraderPlugin.getData() != null)
+
+    for (Iterator iter = TraderPlugin.getDataStore().getStockwatchData().iterator(); iter.hasNext(); )
     {
-      subscribe(TraderPlugin.getData());
+      IExtendedData data = (IExtendedData)iter.next();
+      String symbol = data.getSymbol();
+      if (!feed.isSubscribed(symbol))
+      {
+        feed.subscribe(quoteId++, symbol);
+        DukascopyPlugin.getDefault().log(Messages.getString("SnapshotDataProvider.subscribed") + " " + quoteId + " " + symbol); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      }
     }
   }
 
@@ -93,18 +75,5 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     DukascopyPlugin.getDefault().log(Messages.getString("SnapshotDataProvider.streamingStopped")); //$NON-NLS-1$
     super.stopStreaming();
     feed.disconnect();
-  }
-
-  private void subscribe(IExtendedData[] data)
-  {
-    for (int i = 0; i < data.length; i++)
-    {
-      String symbol = data[i].getSymbol();
-      if (!feed.isSubscribed(symbol))
-      {
-        feed.subscribe(quoteId++, symbol);
-        DukascopyPlugin.getDefault().log(Messages.getString("SnapshotDataProvider.subscribed") + " " + quoteId + " " + symbol); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      }
-    }
   }
 }
