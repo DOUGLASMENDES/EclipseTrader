@@ -10,16 +10,14 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.archipelago;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
-
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 
 import net.sourceforge.eclipsetrader.BookData;
 import net.sourceforge.eclipsetrader.IBasicData;
@@ -27,6 +25,9 @@ import net.sourceforge.eclipsetrader.IBookData;
 import net.sourceforge.eclipsetrader.IBookDataProvider;
 import net.sourceforge.eclipsetrader.IBookUpdateListener;
 import net.sourceforge.eclipsetrader.TraderPlugin;
+
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 /**
  */
@@ -36,7 +37,7 @@ public class BookDataProvider implements Runnable, IBookDataProvider, IPropertyC
   private HashMap bookData = new HashMap();
   private Socket socket = null;
   private DataOutputStream os = null;
-  private DataInputStream is = null;
+  private BufferedReader is = null;
   
   public BookDataProvider()
   {
@@ -111,7 +112,7 @@ public class BookDataProvider implements Runnable, IBookDataProvider, IPropertyC
     {
       try {
         socket = new Socket("datasvr.tradearca.com", 8092);
-        is = new DataInputStream(socket.getInputStream());
+        is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         os = new DataOutputStream(socket.getOutputStream());
         Iterator iterator = bookData.values().iterator();
         while(iterator.hasNext() == true)
@@ -184,7 +185,7 @@ public class BookDataProvider implements Runnable, IBookDataProvider, IPropertyC
         {
           try {
             socket = new Socket("datasvr.tradearca.com", 8092);
-            is = new DataInputStream(socket.getInputStream());
+            is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             os = new DataOutputStream(socket.getOutputStream());
             Iterator iterator = bookData.values().iterator();
             while(iterator.hasNext() == true)
