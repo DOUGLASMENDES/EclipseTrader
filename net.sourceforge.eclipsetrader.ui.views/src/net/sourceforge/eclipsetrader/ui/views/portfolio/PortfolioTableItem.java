@@ -13,7 +13,6 @@ package net.sourceforge.eclipsetrader.ui.views.portfolio;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Observable;
-import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.IExtendedData;
 
@@ -23,7 +22,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-public class PortfolioTableItem implements DisposeListener, Observer
+public class PortfolioTableItem implements DisposeListener
 {
   private PortfolioView parent;
   private TableItem tableItem;
@@ -91,14 +90,7 @@ public class PortfolioTableItem implements DisposeListener, Observer
    */
   public void setData(IExtendedData data)
   {
-    if (this.data != null && this.data instanceof Observable) 
-      ((Observable)this.data).deleteObserver(this);
-
     this.data = data;
-    
-    if (this.data != null && this.data instanceof Observable) 
-      ((Observable)this.data).addObserver(this);
-
     update();
   }
   
@@ -331,7 +323,5 @@ public class PortfolioTableItem implements DisposeListener, Observer
    */
   public void widgetDisposed(DisposeEvent e)
   {
-    if (this.data != null && this.data instanceof Observable) 
-      ((Observable)this.data).deleteObserver(this);
   }
 }

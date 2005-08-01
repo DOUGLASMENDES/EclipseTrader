@@ -12,6 +12,8 @@ package net.sourceforge.eclipsetrader.ui.views.portfolio;
 
 import java.text.NumberFormat;
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.StringTokenizer;
 
 import net.sourceforge.eclipsetrader.IAlertData;
@@ -59,7 +61,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  */
-public class PortfolioView extends ViewPart implements ControlListener, IPropertyChangeListener, ICollectionObserver 
+public class PortfolioView extends ViewPart implements ControlListener, IPropertyChangeListener, ICollectionObserver, Observer 
 {
   public static final String VIEW_ID = "net.sourceforge.eclipsetrader.ui.views.Portfolio";
   private Table table;
@@ -75,6 +77,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IPropert
   private Color textForeground;
   private int dragColumn = -1;
   private TableItem totalsTableItem;
+  private boolean scheduled = false;
   private Runnable itemHilighter = new Runnable() {
     public void run()
     {
@@ -226,6 +229,8 @@ public class PortfolioView extends ViewPart implements ControlListener, IPropert
       item.setNegativeForeground(negativeForeground);
       item.setPositiveForeground(positiveForeground);
       item.setData((IExtendedData)obj);
+      if (obj instanceof Observable)
+        ((Observable)obj).addObserver(this);
     }
     for (int i = 0; i < table.getItemCount(); i++)
       table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
@@ -540,6 +545,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IPropert
         table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
       
       updateTotals();
+
+      if (obj instanceof Observable)
+        ((Observable)obj).addObserver(this);
     }
   }
 
@@ -548,6 +556,9 @@ public class PortfolioView extends ViewPart implements ControlListener, IPropert
    */
   public void itemRemoved(Object obj)
   {
+    if (obj instanceof Observable)
+      ((Observable)obj).deleteObserver(this);
+
     for (int i = 0; i < table.getItemCount() - 1; i++)
     {
       PortfolioTableItem item = (PortfolioTableItem)table.getItem(i).getData();
@@ -594,10 +605,39 @@ public class PortfolioView extends ViewPart implements ControlListener, IPropert
         totalsTableItem.setForeground(columnData, positiveForeground);
       else
         totalsTableItem.setForeground(columnData, null);
+      if (totalPaid == 0)
+        totalPaid = 1;
       totalsTableItem.setText(columnData, bpf.format(totalGain) + " (" + pcf.format(totalGain / totalPaid * 100) + "%)"); //$NON-NLS-1$ //$NON-NLS-2$
     }
     columnData = getDataColumnIndex(14);
     if (columnData != -1)
       totalsTableItem.setText(columnData, bpf.format(totalPaid));
+  }
+  
+  /* (non-Javadoc)
+   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+   */
+  public void update(Observable o, Object arg)
+  {
+    if (scheduled == true)
+      return;
+    scheduled = true;
+    table.getDisplay().asyncExec(new Runnable() {
+      public void run()
+      {
+        scheduled = false;
+        if (!table.isDisposed())
+        {
+          table.setRedraw(false);
+          for (int i = 0; i < table.getItemCount() - 1; i++)
+          {
+            PortfolioTableItem item = (PortfolioTableItem)table.getItem(i).getData();
+            item.update();
+          }
+          updateTotals();
+          table.setRedraw(true);
+        }
+      }
+    });
   }
 }
