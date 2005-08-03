@@ -61,7 +61,7 @@ public class NewsSourceItaly extends NewsSource
     return _data;
   }
 
-  protected void parseNewsPage(BufferedReader in) 
+  public void parseNewsPage(BufferedReader in) 
   {
     String inputLine;
     Calendar cal = GregorianCalendar.getInstance(Locale.ITALY);
@@ -70,7 +70,7 @@ public class NewsSourceItaly extends NewsSource
     try {
       while ((inputLine = in.readLine()) != null) 
       {
-        if (inputLine.startsWith("<b><font face=arial><a href=/") == true) 
+        if (inputLine.startsWith("<b><font face=arial><a href=/") || inputLine.startsWith("<a href=/")) 
           try {
             // La prima riga contiene il titolo e l'url della notizia
             int s = inputLine.indexOf("href=");
@@ -142,7 +142,9 @@ public class NewsSourceItaly extends NewsSource
                 }
               }
             }
-          } catch (Exception ex) {};
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          };
       }
     } catch (Exception ex) {};
   }
