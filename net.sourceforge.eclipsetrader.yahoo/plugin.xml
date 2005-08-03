@@ -41,17 +41,21 @@
             class="net.sourceforge.eclipsetrader.yahoo.NewsSourceGermany"
             id="yahoo.news.de"/>
       <source
+            class="net.sourceforge.eclipsetrader.yahoo.NewsSourceFrance"
+            id="yahoo.news.fr"
+            label="Yahoo France"/>
+      <source
             label="Yahoo Italia"
             class="net.sourceforge.eclipsetrader.yahoo.NewsSourceItaly"
             id="yahoo.news.it"/>
       <source
-            label="Yahoo U.S."
-            class="net.sourceforge.eclipsetrader.yahoo.NewsSourceUS"
-            id="yahoo.news.us"/>
-      <source
             label="Yahoo U.K."
             class="net.sourceforge.eclipsetrader.yahoo.NewsSourceUK"
             id="yahoo.news.uk"/>
+      <source
+            label="Yahoo U.S."
+            class="net.sourceforge.eclipsetrader.yahoo.NewsSourceUS"
+            id="yahoo.news.us"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.newsProvider">
