@@ -10,7 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.eclipsetrader.IChartData;
 
@@ -71,10 +72,10 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   private int columnWidth = 5;
   private int margin = 2;
   private int scaleWidth = 50;
-  private Vector painters = new Vector();
+  private List painters = new ArrayList();
   private IChartData[] data;
   private ChartPlotterSelection selection = new ChartPlotterSelection();
-  private Vector selectionChangedListeners = new Vector();
+  private List selectionChangedListeners = new ArrayList();
 
   /**
    * Standard SWT widget constructor.
@@ -139,7 +140,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     chartContainer.removeControlListener(this);
     chart.removePaintListener(this);
     
-    painters.removeAllElements();
+    painters.clear();
 
     scale.dispose();
     chart.dispose();
@@ -213,7 +214,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   public void setSelection(ISelection selection)
   {
     for (int i = 0; i < selectionChangedListeners.size(); i++)
-      ((ISelectionChangedListener)selectionChangedListeners.elementAt(i)).selectionChanged(new SelectionChangedEvent(this, selection));
+      ((ISelectionChangedListener)selectionChangedListeners.get(i)).selectionChanged(new SelectionChangedEvent(this, selection));
   }
 
   /* (non-Javadoc)
@@ -255,7 +256,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
    */
   public void addPainter(IChartPlotter plotter)
   {
-    painters.addElement(plotter);
+    painters.add(plotter);
     plotter.setCanvas(this);
     updateLabels();
   }
@@ -271,7 +272,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
    */
   public void removePainter(IChartPlotter plotter)
   {
-    painters.removeElement(plotter);
+    painters.remove(plotter);
     updateLabels();
   }
   
@@ -290,7 +291,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
    */
   public IChartPlotter getPainter(int index)
   {
-    return (IChartPlotter)painters.elementAt(index);
+    return (IChartPlotter)painters.get(index);
   }
   
   /**
@@ -301,7 +302,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   {
     data = chartData;
     for (int i = 0; i < painters.size(); i++)
-      ((IChartPlotter)painters.elementAt(i)).setData(data);
+      ((IChartPlotter)painters.get(i)).setData(data);
     
     if (chartContainer.isDisposed() == true)
       return;
@@ -425,7 +426,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
         gc.fillRectangle(chartImage.getBounds());
         for (int i = 0; i < painters.size(); i++)
         {
-          Object obj = painters.elementAt(i);
+          Object obj = painters.get(i);
           if (obj instanceof IChartPlotter)
           {
             // Draw the grid lines only for the first plotter
@@ -443,9 +444,9 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
         if (painters.size() != 0)
         {
           // The first plotter draws the scale
-          Object obj = painters.elementAt(0);
+          Object obj = painters.get(0);
           if (obj instanceof IChartPlotter)
-            ((IChartPlotter)painters.elementAt(0)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
+            ((IChartPlotter)painters.get(0)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
         }
   
         e.gc.setLineStyle(SWT.LINE_SOLID);
@@ -524,7 +525,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
         RGB rgb = imageData.palette.getRGB(pixel);
         for (int i = 0; i < painters.size(); i++)
         {
-          IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
+          IChartPlotter plotter = (IChartPlotter)painters.get(i);
           if (plotter.getColor().getRGB().equals(rgb) == true && !(plotter instanceof PriceChart) && !(plotter instanceof VolumeChart))
             return plotter;
         }
@@ -543,11 +544,11 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     {
       for (int i = 0; i < painters.size(); i++)
       {
-        IChartPlotter plotter = (IChartPlotter)painters.elementAt(i);
+        IChartPlotter plotter = (IChartPlotter)painters.get(i);
         if (plotter.getDescription() != null)
         {
           Label label = new Label(labels, SWT.NONE);
-          label.setText(((IChartPlotter)painters.elementAt(i)).getDescription());
+          label.setText(((IChartPlotter)painters.get(i)).getDescription());
           label.setForeground(plotter.getColor());
           label.setBackground(labels.getBackground());
         }
@@ -563,7 +564,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   {
     if (painters.size() != 0 && y != -1)
     {
-      ChartPlotter plotter = (ChartPlotter)painters.elementAt(0);
+      ChartPlotter plotter = (ChartPlotter)painters.get(0);
       scaleLabel.setText("  " + plotter.getFormattedValue(y, scale.getClientArea().height));
       scaleLabel.setBounds(1, y - 7, scale.getSize().x, 14);
     }
