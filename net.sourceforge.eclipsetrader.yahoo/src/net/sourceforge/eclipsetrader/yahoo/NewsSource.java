@@ -56,7 +56,7 @@ public class NewsSource implements INewsSource
 
   protected boolean isNewsPresent(String title) 
   {
-    // Verifica se il titolo è già presente
+    // Verifica se il titolo ï¿½ giï¿½ presente
     for (int i = 0; i < _data.size(); i++) {
       NewsData d = (NewsData)_data.elementAt(i);
       if (title.equalsIgnoreCase(d.title) == true)
@@ -64,6 +64,11 @@ public class NewsSource implements INewsSource
     }
 
     return false;
+  }
+  
+  public Vector getNews()
+  {
+    return _data;
   }
 
   protected String replaceHtml(String text) 
@@ -109,17 +114,17 @@ public class NewsSource implements INewsSource
 
     // Sostituisce le codifiche dei caratteri accentati e speciali
     while ((s = text.toLowerCase().indexOf("&agrave;")) != -1)
-      text = text.substring(0, s) + "à" + text.substring(s + 8);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 8);
     while ((s = text.toLowerCase().indexOf("&egrave;")) != -1)
-      text = text.substring(0, s) + "è" + text.substring(s + 8);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 8);
     while ((s = text.toLowerCase().indexOf("&eacute;")) != -1)
-      text = text.substring(0, s) + "é" + text.substring(s + 8);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 8);
     while ((s = text.toLowerCase().indexOf("&igrave;")) != -1)
-      text = text.substring(0, s) + "ì" + text.substring(s + 8);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 8);
     while ((s = text.toLowerCase().indexOf("&ograve;")) != -1)
-      text = text.substring(0, s) + "ò" + text.substring(s + 8);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 8);
     while ((s = text.toLowerCase().indexOf("&ugrave;")) != -1)
-      text = text.substring(0, s) + "ù" + text.substring(s + 8);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 8);
     while ((s = text.toLowerCase().indexOf("&quot;")) != -1)
       text = text.substring(0, s) + "\"" + text.substring(s + 6);
     while ((s = text.toLowerCase().indexOf("&amp;")) != -1)
@@ -129,17 +134,17 @@ public class NewsSource implements INewsSource
     while ((s = text.indexOf("&#39;")) != -1)
       text = text.substring(0, s) + "'" + text.substring(s + 5);
     while ((s = text.indexOf("&#224;")) != -1)
-      text = text.substring(0, s) + "à" + text.substring(s + 6);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 6);
     while ((s = text.indexOf("&#232;")) != -1)
-      text = text.substring(0, s) + "è" + text.substring(s + 6);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 6);
     while ((s = text.indexOf("&#233;")) != -1)
-      text = text.substring(0, s) + "é" + text.substring(s + 6);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 6);
     while ((s = text.indexOf("&#236;")) != -1)
-      text = text.substring(0, s) + "ì" + text.substring(s + 6);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 6);
     while ((s = text.indexOf("&#242;")) != -1)
-      text = text.substring(0, s) + "ò" + text.substring(s + 6);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 6);
     while ((s = text.indexOf("&#249;")) != -1)
-      text = text.substring(0, s) + "ù" + text.substring(s + 6);
+      text = text.substring(0, s) + "ï¿½" + text.substring(s + 6);
     while ((s = text.indexOf("&lt;")) != -1)
       text = text.substring(0, s) + "<" + text.substring(s + 4);
     while ((s = text.indexOf("&gt;")) != -1)
