@@ -8,7 +8,8 @@ Bundle-Activator: net.sourceforge.eclipsetrader.TraderPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: net.sourceforge.eclipsetrader,
- net.sourceforge.eclipsetrader.internal
+ net.sourceforge.eclipsetrader.internal;x-friends:="net.sourceforge.eclipsetrader.tests",
+ net.sourceforge.eclipsetrader.monitors;x-friends:="net.sourceforge.eclipsetrader.tests"
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.update.ui,

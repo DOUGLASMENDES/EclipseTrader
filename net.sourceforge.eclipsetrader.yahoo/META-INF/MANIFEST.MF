@@ -13,3 +13,5 @@ Require-Bundle: org.eclipse.core.runtime,
  net.sourceforge.eclipsetrader,
  org.eclipse.jface
 Eclipse-AutoStart: true
+Export-Package: net.sourceforge.eclipsetrader.yahoo;x-friends:="net.sourceforge.eclipsetrader.tests",
+ net.sourceforge.eclipsetrader.yahoo.internal;x-friends:="net.sourceforge.eclipsetrader.tests"
