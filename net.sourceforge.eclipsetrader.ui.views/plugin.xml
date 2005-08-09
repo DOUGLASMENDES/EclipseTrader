@@ -204,17 +204,19 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
             id="net.sourceforge.eclipsetrader.ui.views.ChartView.contextMenu">
          <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               definitionId="net.sourceforge.eclipsetrader.commands.bar"
+               id="chart.bar"
                label="%chart.bar"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               style="radio"
                menubarPath="group1"
-               id="chart.bar"/>
+               style="radio"/>
          <action
-               label="%chart.candle"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               style="radio"
+               definitionId="net.sourceforge.eclipsetrader.commands.candle"
+               id="chart.candle"
+               label="%chart.candle"
                menubarPath="group1"
-               id="chart.candle"/>
+               style="radio"/>
          <action
                label="%chart.line"
                class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
@@ -335,6 +337,14 @@
                tooltip="%chart.line"
                style="radio"
                id="chart.line"/>
+         <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.tools.LineAction"
+               icon="icons/elcl16/line.gif"
+               id="chart.tools.line"
+               label="Line"
+               style="toggle"
+               toolbarPath="additions/tools"
+               tooltip="Line"/>
          <action
                toolbarPath="additions"
                label="%actions.next"
