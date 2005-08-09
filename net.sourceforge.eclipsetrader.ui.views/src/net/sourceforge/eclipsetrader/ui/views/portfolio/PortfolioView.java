@@ -619,7 +619,7 @@ public class PortfolioView extends ViewPart implements ControlListener, IPropert
    */
   public void update(Observable o, Object arg)
   {
-    if (scheduled == true)
+    if (scheduled == true || table.isDisposed())
       return;
     scheduled = true;
     table.getDisplay().asyncExec(new Runnable() {
@@ -628,14 +628,12 @@ public class PortfolioView extends ViewPart implements ControlListener, IPropert
         scheduled = false;
         if (!table.isDisposed())
         {
-          table.setRedraw(false);
           for (int i = 0; i < table.getItemCount() - 1; i++)
           {
             PortfolioTableItem item = (PortfolioTableItem)table.getItem(i).getData();
             item.update();
           }
           updateTotals();
-          table.setRedraw(true);
         }
       }
     });
