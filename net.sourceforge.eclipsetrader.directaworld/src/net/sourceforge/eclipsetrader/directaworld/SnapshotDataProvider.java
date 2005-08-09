@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,6 +31,9 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
   private Timer timer;
   private String userName = "";
   private String password = "";
+  private NumberFormat nf = NumberFormat.getInstance();
+  private NumberFormat pf = NumberFormat.getInstance();
+  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
   
   public SnapshotDataProvider()
   {
@@ -66,20 +70,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
       password = dlg.getPassword();
     }
     
-/*    if (userName.length() == 0 || password.length() == 0 || checkLogin() == false)
-    {
-      LoginDialog dlg = new LoginDialog();
-      for(;;)
-      {
-        if (dlg.open() != LoginDialog.OK)
-          return false;
-        userName = dlg.getUserName();
-        password = dlg.getPassword();
-        if (checkLogin() == true)
-          break;
-      }
-    }*/
-    
     return true;
   }
 
@@ -101,9 +91,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
   {
     int i;
     String inputLine;
-    NumberFormat nf = NumberFormat.getInstance();
-    NumberFormat pf = NumberFormat.getInstance();
-    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     nf.setGroupingUsed(true);
     nf.setMinimumFractionDigits(0);
@@ -113,7 +100,6 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
     pf.setMinimumFractionDigits(4);
     pf.setMaximumFractionDigits(4);
 
-    // http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n&id1=IT0001182671&id2=IT0000078193&u=00021898&p=2990b9
     try {
       // Legge la pagina contenente gli ultimi prezzi
       String request = "http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n";
@@ -123,7 +109,7 @@ public class SnapshotDataProvider extends RealtimeChartDataProvider
         request += "&id" + (i + 1) + "=";
       request += "&u=" + userName + "&p=" + password;
       URL web = new URL(request);
-System.out.println(web.toExternalForm());
+
       HttpURLConnection.setFollowRedirects(false);
       HttpURLConnection con = (HttpURLConnection)web.openConnection();
       String proxyHost = (String)System.getProperties().get("http.proxyHost");
@@ -142,35 +128,13 @@ System.out.println(web.toExternalForm());
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       while ((inputLine = in.readLine()) != null) 
       {
-System.out.println(inputLine);
         if (inputLine.indexOf("<!--QT START HERE-->") != -1) 
         {
           while ((inputLine = in.readLine()) != null) 
           {
             if (inputLine.indexOf("<!--QT STOP HERE-->") != -1)
               break;
-            String[] item = inputLine.split(";");
-            
-            IExtendedData data = getTicker(item[0]);
-            if (data != null)
-            {
-              // item[1] - Nome
-              data.setLastPrice(pf.parse(item[2]).doubleValue());
-              // item[3] - Variazione
-              data.setVolume(nf.parse(item[4]).intValue());
-              try {
-                data.setDate(df.parse(item[6] + " " + item[5]));
-              } catch(Exception e) {};
-              data.setBidPrice(pf.parse(item[7]).doubleValue());
-              data.setBidSize(nf.parse(item[8]).intValue());
-              data.setAskPrice(pf.parse(item[9]).doubleValue());
-              data.setAskSize(nf.parse(item[10]).intValue());
-              // item[11] - ???
-              data.setOpenPrice(pf.parse(item[12]).doubleValue());
-              data.setClosePrice(pf.parse(item[13]).doubleValue());
-              data.setLowPrice(pf.parse(item[14]).doubleValue());
-              data.setHighPrice(pf.parse(item[15]).doubleValue());
-            }
+            parseLine(inputLine);
           }
         }
       }
@@ -193,6 +157,32 @@ System.out.println(inputLine);
       }
     } catch(IllegalStateException e) {};
   }
+  
+  public void parseLine(String line) throws ParseException
+  {
+    String[] item = line.split(";");
+    
+    IExtendedData data = getTicker(item[0]);
+    if (data != null)
+    {
+      // item[1] - Nome
+      data.setLastPrice(pf.parse(item[2]).doubleValue());
+      // item[3] - Variazione
+      data.setVolume(nf.parse(item[4]).intValue());
+      try {
+        data.setDate(df.parse(item[6] + " " + item[5]));
+      } catch(Exception e) {};
+      data.setBidPrice(pf.parse(item[7]).doubleValue());
+      data.setBidSize(nf.parse(item[8]).intValue());
+      data.setAskPrice(pf.parse(item[9]).doubleValue());
+      data.setAskSize(nf.parse(item[10]).intValue());
+      // item[11] - ???
+      data.setOpenPrice(pf.parse(item[12]).doubleValue());
+      data.setClosePrice(pf.parse(item[13]).doubleValue());
+      data.setLowPrice(pf.parse(item[14]).doubleValue());
+      data.setHighPrice(pf.parse(item[15]).doubleValue());
+    }
+  }
 
   public boolean checkLogin() 
   {
@@ -204,7 +194,7 @@ System.out.println(inputLine);
       String request = "http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n&id1=STM";
       request += "&u=" + userName + "&p=" + password;
       URL web = new URL(request);
-System.out.println(web.toExternalForm());
+
       HttpURLConnection.setFollowRedirects(false);
       HttpURLConnection con = (HttpURLConnection)web.openConnection();
       String proxyHost = (String)System.getProperties().get("http.proxyHost");
@@ -223,7 +213,6 @@ System.out.println(web.toExternalForm());
       BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
       while ((inputLine = in.readLine()) != null) 
       {
-System.out.println(inputLine);
         if (inputLine.indexOf("<!--QT START HERE-->") != -1)
           ret = true;
       }
