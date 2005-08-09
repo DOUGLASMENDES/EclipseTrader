@@ -12,8 +12,11 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.IChartData;
+import net.sourceforge.eclipsetrader.ICollectionObserver;
 
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
@@ -26,11 +29,13 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -41,19 +46,15 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPartSite;
 
 /**
  * Define a canvas over which a IChartPlotter object can draw.
- * <p></p>
- * 
- * @since 1.0
  */
-public class ChartCanvas extends Composite implements ControlListener, PaintListener, ISelectionProvider
+public class ChartCanvas extends Composite implements ControlListener, MouseListener, MouseMoveListener, Observer, PaintListener, ISelectionProvider
 {
   private boolean hilight = false;
   private Composite container;
@@ -64,26 +65,28 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   private Canvas scale;
   private Image chartImage;
   private Label scaleLabel;
-  private Color chartBackground = new Color(Display.getCurrent(), 255, 255, 240);
-  private Color scaleBackground = new Color(Display.getCurrent(), 255, 255, 255);
+  private Color chartBackground = new Color(null, 255, 255, 240);
+  private Color scaleBackground = new Color(null, 255, 255, 255);
   private Color separatorColor = new Color(null, 0, 0, 0);
   private Color hilightColor = new Color(null, 255, 0, 0);
   private Color scaleLabelColor = new Color(null, 255, 255, 0);
   private int columnWidth = 5;
   private int margin = 2;
   private int scaleWidth = 50;
-  private List painters = new ArrayList();
+  private IndicatorsCollection indicators = new IndicatorsCollection();
+  private ToolsCollection tools = new ToolsCollection();
   private IChartData[] data;
   private ChartPlotterSelection selection = new ChartPlotterSelection();
   private List selectionChangedListeners = new ArrayList();
+  private Scaler scaler = new Scaler();
 
   /**
    * Standard SWT widget constructor.
-   * <p>The style refers to the same styles available for the Canvas widget.</p>
+   * <p>The style refers to the same styles available for the Composite widget.</p>
    */
-  public ChartCanvas(Composite parent)
+  public ChartCanvas(Composite parent, int style)
   {
-    super(parent, SWT.NONE);
+    super(parent, style);
 
     // Main container with a GridLayout of 2 columns to accomodate for the chart
     // and the scale
@@ -113,6 +116,8 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     chart = new Canvas(chartContainer, SWT.NONE);
     chart.setBackground(chartBackground);
     chart.addPaintListener(this);
+    chart.addMouseListener(this);
+    chart.addMouseMoveListener(this);
 
     // Container for the scale canvas
     scaleContainer = new Composite(container, SWT.NONE);
@@ -131,16 +136,70 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     scale.setBackground(scaleBackground);
     scale.addPaintListener(this);
     
+    // Add the indicators collection observer
+    indicators.addObserver(new ICollectionObserver() {
+      public void itemAdded(Object obj)
+      {
+        ((IChartPlotter)obj).setCanvas(ChartCanvas.this);
+        if (data != null)
+        {
+          ((IChartPlotter)obj).setData(data);
+          redraw();
+          updateLabels();
+        }
+        
+        if (obj instanceof Observable)
+          ((Observable)obj).addObserver(ChartCanvas.this);
+      }
+      public void itemRemoved(Object obj)
+      {
+        redraw();
+        updateLabels();
+        if (obj instanceof Observable)
+          ((Observable)obj).deleteObserver(ChartCanvas.this);
+      }
+    });
+    
+    // Add the tools collection observer
+    tools.addObserver(new ICollectionObserver() {
+      public void itemAdded(Object obj)
+      {
+        ((ToolPlugin)obj).setCanvas(chart);
+        ((ToolPlugin)obj).setScaler(scaler);
+        if (data != null)
+        {
+          redraw();
+          updateLabels();
+        }
+        
+        if (obj instanceof Observable)
+          ((Observable)obj).addObserver(ChartCanvas.this);
+      }
+      public void itemRemoved(Object obj)
+      {
+        redraw();
+        updateLabels();
+        if (obj instanceof Observable)
+          ((Observable)obj).deleteObserver(ChartCanvas.this);
+      }
+    });
+    
     updateLabels();
   }
   
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.widgets.Widget#dispose()
+   */
   public void dispose()
   {
     scale.removePaintListener(this);
     chartContainer.removeControlListener(this);
     chart.removePaintListener(this);
+    chart.removeMouseListener(this);
+    chart.removeMouseMoveListener(this);
     
-    painters.clear();
+    indicators.clear();
+    tools.clear();
 
     scale.dispose();
     chart.dispose();
@@ -151,7 +210,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     super.dispose();
   }
   
-  public void createContextMenu(IViewPart part) 
+  public void registerContextMenu(IWorkbenchPartSite site) 
   {
     // Create menu manager.
     MenuManager menuMgr = new MenuManager("#popupMenu", "contextMenu"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -168,22 +227,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     chart.setMenu(menu);
     
     // Register menu for extension.
-    part.getSite().registerContextMenu(menuMgr, this);
-  }
-  
-  public Composite getContainer()
-  {
-    return container;
-  }
-  
-  public Canvas getChart()
-  {
-    return chart;
-  }
-  
-  public Canvas getScale()
-  {
-    return scale;
+    site.registerContextMenu(menuMgr, this);
   }
 
   /* (non-Javadoc)
@@ -194,6 +238,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     if (selectionChangedListeners.contains(listener) == false)
       selectionChangedListeners.add(listener);
   }
+
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
    */
@@ -201,6 +246,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   {
     return selection;
   }
+
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
    */
@@ -208,6 +254,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   {
     selectionChangedListeners.remove(listener);
   }
+
   /* (non-Javadoc)
    * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
    */
@@ -215,6 +262,105 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   {
     for (int i = 0; i < selectionChangedListeners.size(); i++)
       ((ISelectionChangedListener)selectionChangedListeners.get(i)).selectionChanged(new SelectionChangedEvent(this, selection));
+  }
+  
+  /**
+   * Get the canvas used to draw the chart.
+   * 
+   * @return the chart canvas
+   */
+  public Canvas getChart()
+  {
+    return chart;
+  }
+  
+  /**
+   * Get the canvas used to draw the chart scale.
+   * 
+   * @return the scale canvas
+   */
+  public Canvas getScale()
+  {
+    return scale;
+  }
+  
+  /**
+   * Get the hilight status of the receiver.
+   *
+   * @return true if hilighted, false otherwise
+   */
+  public boolean isHilight()
+  {
+    return hilight;
+  }
+
+  /**
+   * Set the hilight status of the receiver.
+   * 
+   * @param hilight - the hilight status
+   */
+  public void setHilight(boolean hilight)
+  {
+    this.hilight = hilight;
+    redraw();
+  }
+
+
+  // ********************* UNVERIFIED ****************************
+  private Cursor crossCursor = new Cursor(null, SWT.CURSOR_CROSS);
+  private Cursor arrowCursor = new Cursor(null, SWT.CURSOR_ARROW);
+  private ToolPlugin selectedTool = null;
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
+   */
+  public void mouseMove(MouseEvent e)
+  {
+    for (int i = 0; i < tools.size(); i++)
+    {
+      if (tools.get(i).containsPoint(e.x, e.y))
+      {
+        if (selectedTool != tools.get(i))
+        {
+          setCursor(crossCursor);
+          selectedTool = tools.get(i);
+        }
+        if (selectedTool != null)
+          selectedTool.mouseDragged(e);
+        return;
+      }
+    }
+    
+    if (selectedTool != null)
+    {
+      setCursor(arrowCursor);
+      selectedTool = null;
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
+   */
+  public void mouseDoubleClick(MouseEvent e)
+  {
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
+   */
+  public void mouseDown(MouseEvent e)
+  {
+    if (selectedTool != null)
+      selectedTool.mousePressed(e);
+  }
+
+  /* (non-Javadoc)
+   * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
+   */
+  public void mouseUp(MouseEvent e)
+  {
+    if (selectedTool != null)
+      selectedTool.mouseReleased(e);
   }
 
   /* (non-Javadoc)
@@ -249,40 +395,17 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     chart.removeMouseMoveListener(listener);
   }
 
-  /**
-   * Add a painter object to this canvas.
-   * <p></p>
-   * <p><b>Note:</b><br>The charts are painted in the same order as they are added.</p>
-   */
-  public void addPainter(IChartPlotter plotter)
-  {
-    painters.add(plotter);
-    plotter.setCanvas(this);
-    updateLabels();
-  }
-  
   public void updatePainter(IChartPlotter plotter)
   {
     updateLabels();
   }
   
   /**
-   * Remove a painter object from this canvas.
-   * <p></p>
-   */
-  public void removePainter(IChartPlotter plotter)
-  {
-    painters.remove(plotter);
-    updateLabels();
-  }
-  
-  /**
    * Return the number of painter objects in this canvas.
-   * <p></p>
    */
   public int getPainterCount()
   {
-    return painters.size();
+    return indicators.size();
   }
   
   /**
@@ -291,9 +414,9 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
    */
   public IChartPlotter getPainter(int index)
   {
-    return (IChartPlotter)painters.get(index);
+    return (IChartPlotter)indicators.get(index);
   }
-  
+
   /**
    * Set the chart data to all registered painter objects.
    * <p></p>
@@ -301,8 +424,10 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   public void setData(IChartData[] chartData)
   {
     data = chartData;
-    for (int i = 0; i < painters.size(); i++)
-      ((IChartPlotter)painters.get(i)).setData(data);
+    for (int i = 0; i < indicators.size(); i++)
+      ((IChartPlotter)indicators.get(i)).setData(data);
+    for (int i = 0; i < tools.size(); i++)
+      ((IChartTool)tools.get(i)).setData(data);
     
     if (chartContainer.isDisposed() == true)
       return;
@@ -386,30 +511,42 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     return scaleWidth;
   }
   
-  /**
-   * Method to return the hilight field.<br>
-   *
-   * @return Returns the hilight.
-   */
-  public boolean isHilight()
-  {
-    return hilight;
-  }
-
-  /**
-   * Method to set the hilight field.<br>
-   * 
-   * @param hilight The hilight to set.
-   */
-  public void setHilight(boolean hilight)
-  {
-    this.hilight = hilight;
-    scale.redraw();
-  }
-  
   public void redraw()
   {
-    chart.redraw();
+    if (chartImage != null)
+    {
+      GC gc = new GC(chartImage);
+      gc.setBackground(chartBackground);
+      gc.fillRectangle(chartImage.getBounds());
+      
+      if (data != null)
+      {
+        for (int i = 0; i < indicators.size(); i++)
+        {
+          Object obj = indicators.get(i);
+          if (obj instanceof IChartPlotter)
+          {
+            // Draw the grid lines only for the first plotter
+            if (i == 0)
+              ((IChartPlotter)obj).paintGrid(gc, chart.getClientArea().width, chart.getClientArea().height);
+            // Draw the charts
+            ((IChartPlotter)obj).paintChart(gc, chart.getClientArea().width, chart.getClientArea().height);
+          }
+        }
+        for (int i = 0; i < tools.size(); i++)
+        {
+          Object obj = tools.get(i);
+          if (obj instanceof IChartTool)
+            ((IChartTool)obj).paintTool(gc, chart.getClientArea().width, chart.getClientArea().height);
+        }
+      }
+      gc.dispose();
+    }
+
+    if (chart != null)
+      chart.redraw();
+    if (scale != null)
+      scale.redraw();
   }
   
   /* (non-Javadoc)
@@ -420,33 +557,19 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     if (data != null)
     {
       if (e.getSource() == chart)
-      { 
-        GC gc = new GC(chartImage);
-        gc.setBackground(chartBackground);
-        gc.fillRectangle(chartImage.getBounds());
-        for (int i = 0; i < painters.size(); i++)
-        {
-          Object obj = painters.get(i);
-          if (obj instanceof IChartPlotter)
-          {
-            // Draw the grid lines only for the first plotter
-            if (i == 0)
-              ((IChartPlotter)obj).paintGrid(gc, chart.getClientArea().width, chart.getClientArea().height);
-            // Draw the charts
-            ((IChartPlotter)obj).paintChart(gc, chart.getClientArea().width, chart.getClientArea().height);
-          }
-        }
-        gc.dispose();
-        e.gc.drawImage(chartImage, 0, 0);
+      {
+        e.gc.drawImage(chartImage, e.x, e.y, e.width, e.height, e.x, e.y, e.width, e.height);
+        for(int i = 0; i < tools.size(); i++)
+          tools.get(i).paintTool(e.gc);
       }
       else if (e.getSource() == scale)
       {
-        if (painters.size() != 0)
+        if (indicators.size() != 0)
         {
           // The first plotter draws the scale
-          Object obj = painters.get(0);
+          Object obj = indicators.get(0);
           if (obj instanceof IChartPlotter)
-            ((IChartPlotter)painters.get(0)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
+            ((IChartPlotter)indicators.get(0)).paintScale(e.gc, scale.getClientArea().width, scale.getClientArea().height);
         }
   
         e.gc.setLineStyle(SWT.LINE_SOLID);
@@ -494,6 +617,11 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
       chartImage.dispose();
     if (chart.getSize().x != 0 && chart.getSize().y != 0)
       chartImage = new Image(chart.getDisplay(), chart.getSize().x, chart.getSize().y);
+    
+    ChartPlotter plotter = (ChartPlotter)indicators.get(0);
+    scaler.set(chart.getSize().y, plotter.getMax(), plotter.getMin(), 0, 0, false);
+
+    redraw();
   }
   
   public void selectChart(IChartPlotter plotter)
@@ -509,7 +637,7 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
       if (plotter != null && ((ChartPlotter)plotter).isSelected() == false)
         ((ChartPlotter)plotter).setSelected(true);
   
-      chart.redraw();
+      redraw();
     }
   }
   
@@ -523,14 +651,25 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
       {
         int pixel = imageData.getPixel(x1, y1);
         RGB rgb = imageData.palette.getRGB(pixel);
-        for (int i = 0; i < painters.size(); i++)
+        for (int i = 0; i < indicators.size(); i++)
         {
-          IChartPlotter plotter = (IChartPlotter)painters.get(i);
+          IChartPlotter plotter = (IChartPlotter)indicators.get(i);
           if (plotter.getColor().getRGB().equals(rgb) == true && !(plotter instanceof PriceChart) && !(plotter instanceof VolumeChart))
             return plotter;
         }
       }
     }
+    return null;
+  }
+  
+  public ToolPlugin getSelectedTool(int x, int y)
+  {
+    for (int i = 0; i < tools.size(); i++)
+    {
+      if (tools.get(i).containsPoint(x, y))
+        return tools.get(i);
+    }
+    
     return null;
   }
   
@@ -540,15 +679,15 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
     for (int i = 0; i < children.length; i++)
       children[i].dispose();
     
-    if (painters.size() != 0)
+    if (indicators.size() != 0)
     {
-      for (int i = 0; i < painters.size(); i++)
+      for (int i = 0; i < indicators.size(); i++)
       {
-        IChartPlotter plotter = (IChartPlotter)painters.get(i);
+        IChartPlotter plotter = (IChartPlotter)indicators.get(i);
         if (plotter.getDescription() != null)
         {
           Label label = new Label(labels, SWT.NONE);
-          label.setText(((IChartPlotter)painters.get(i)).getDescription());
+          label.setText(((IChartPlotter)indicators.get(i)).getDescription());
           label.setForeground(plotter.getColor());
           label.setBackground(labels.getBackground());
         }
@@ -562,13 +701,33 @@ public class ChartCanvas extends Composite implements ControlListener, PaintList
   
   public void updateScaleLabel(int y)
   {
-    if (painters.size() != 0 && y != -1)
+    if (indicators.size() != 0 && y != -1)
     {
-      ChartPlotter plotter = (ChartPlotter)painters.get(0);
+      ChartPlotter plotter = (ChartPlotter)indicators.get(0);
       scaleLabel.setText("  " + plotter.getFormattedValue(y, scale.getClientArea().height));
       scaleLabel.setBounds(1, y - 7, scale.getSize().x, 14);
     }
     else
       scaleLabel.setBounds(0, 0, 0, 0);
   }
+  
+  public IndicatorsCollection getIndicators()
+  {
+    return indicators;
+  }
+  
+  public ToolsCollection getTools()
+  {
+    return tools;
+  }
+
+  /* (non-Javadoc)
+   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+   */
+  public void update(Observable o, Object arg)
+  {
+    if (o instanceof IChartPlotter)
+      updateLabels();
+  }
+
 }
