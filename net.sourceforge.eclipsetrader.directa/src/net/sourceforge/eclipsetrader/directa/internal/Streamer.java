@@ -31,13 +31,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.Inflater;
 
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.directa.BookDataProvider;
 import net.sourceforge.eclipsetrader.directa.DirectaPlugin;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -486,6 +486,11 @@ public class Streamer implements Runnable
         data[i].setClosePrice(Double.parseDouble(sVal[ConstMpush.PRECEDENTE]));
         data[i].setVolume(Integer.parseInt(sVal[ConstMpush.VOLUME]));
         try {
+          if (sVal[ConstMpush.ORA].indexOf(':') == -1)
+          {
+            String s = sVal[ConstMpush.ORA];
+            sVal[ConstMpush.ORA] = s.substring(0, s.length() - 4) + ":" + s.substring(s.length() - 4, s.length() - 2) + ":" + s.substring(s.length() - 2, s.length());
+          }
           if (sVal[ConstMpush.DATA].equalsIgnoreCase("0") == true)
             data[i].setDate(tf.parse(sVal[ConstMpush.ORA]));
           else
@@ -1099,13 +1104,17 @@ System.out.println(inputLine);
               }
               else
               {
-                double paid = Integer.parseInt(odNew.executedQuantity) * Double.parseDouble(odNew.executedPrice);
-                paid += data[x].getOwnedQuantity() * data[x].getPaid();
-                data[x].setOwnedQuantity(data[x].getOwnedQuantity() + Integer.parseInt(odNew.executedQuantity));
-                if (data[x].getOwnedQuantity() == 0)
-                  data[x].setPaid(0);
-                else
-                  data[x].setPaid(paid / data[x].getOwnedQuantity());
+                try {
+                  double paid = Integer.parseInt(odNew.executedQuantity) * nf.parse(odNew.executedPrice).doubleValue();
+                  paid += data[x].getOwnedQuantity() * data[x].getPaid();
+                  data[x].setOwnedQuantity(data[x].getOwnedQuantity() + Integer.parseInt(odNew.executedQuantity));
+                  if (data[x].getOwnedQuantity() == 0)
+                    data[x].setPaid(0);
+                  else
+                    data[x].setPaid(paid / data[x].getOwnedQuantity());
+                } catch(Exception e) {
+                  e.printStackTrace();
+                }
               }
               break;
             }

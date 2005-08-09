@@ -23,6 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.DataCollector;
 import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IBackfillDataProvider;
@@ -34,7 +35,6 @@ import net.sourceforge.eclipsetrader.IIndexUpdateListener;
 import net.sourceforge.eclipsetrader.IRealtimeChartListener;
 import net.sourceforge.eclipsetrader.IRealtimeChartProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;

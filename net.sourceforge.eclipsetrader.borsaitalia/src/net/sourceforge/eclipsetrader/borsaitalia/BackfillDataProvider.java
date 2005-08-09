@@ -20,10 +20,10 @@ import java.util.Locale;
 import java.util.Vector;
 
 import sun.misc.BASE64Encoder;
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.IBackfillDataProvider;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 
 /**
  */

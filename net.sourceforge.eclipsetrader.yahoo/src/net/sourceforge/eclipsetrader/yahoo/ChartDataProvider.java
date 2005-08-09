@@ -27,10 +27,10 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.yahoo.internal.SymbolMapper;
 import sun.misc.BASE64Encoder;
 

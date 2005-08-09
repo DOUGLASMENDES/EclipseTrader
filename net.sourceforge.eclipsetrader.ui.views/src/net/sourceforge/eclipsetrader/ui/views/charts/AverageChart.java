@@ -14,8 +14,8 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.IChartData;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 
 import org.eclipse.swt.SWT;

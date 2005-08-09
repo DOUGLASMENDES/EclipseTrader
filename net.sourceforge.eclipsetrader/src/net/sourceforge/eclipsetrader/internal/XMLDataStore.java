@@ -32,6 +32,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.AlertData;
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.ExtendedData;
 import net.sourceforge.eclipsetrader.IAlertData;
 import net.sourceforge.eclipsetrader.IAlertSource;

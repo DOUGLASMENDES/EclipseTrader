@@ -8,12 +8,10 @@
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
  *******************************************************************************/
-package net.sourceforge.eclipsetrader.internal;
+package net.sourceforge.eclipsetrader;
 
 import java.util.Date;
 
-import net.sourceforge.eclipsetrader.IChartData;
-import net.sourceforge.eclipsetrader.IExtendedData;
 
 
 /**

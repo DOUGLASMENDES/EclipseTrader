@@ -21,10 +21,10 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.Vector;
 
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 import sun.misc.BASE64Encoder;
 
 /**

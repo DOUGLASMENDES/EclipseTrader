@@ -27,6 +27,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.BasicData;
+import net.sourceforge.eclipsetrader.ChartData;
 import net.sourceforge.eclipsetrader.IBackfillDataProvider;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
@@ -34,7 +35,6 @@ import net.sourceforge.eclipsetrader.IIndexDataProvider;
 import net.sourceforge.eclipsetrader.IRealtimeChartListener;
 import net.sourceforge.eclipsetrader.IRealtimeChartProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
-import net.sourceforge.eclipsetrader.internal.ChartData;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 
