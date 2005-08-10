@@ -957,7 +957,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         }
       }
     }
-    else
+    else if (e.getSource() instanceof Composite)
     {
       gc.setForeground(textColor);
       Composite c = (Composite)e.getSource();
@@ -1140,12 +1140,18 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         Canvas cc = ((ChartCanvas)chart.get(g)).getChart();
         if (mousePreviousX != -1 && mousePreviousX != e.x)
           cc.redraw(mousePreviousX, 0, 1, cc.getClientArea().height, true);
-        mouseGC[g].drawLine(e.x, 0, e.x, cc.getClientArea().height);
       }
 
       Canvas cc = ((ChartCanvas)chart.get(selectedZone)).getChart();
       if (mousePreviousY != -1 && mousePreviousY != e.y)
         cc.redraw(0, mousePreviousY, cc.getClientArea().width, 1, true);
+
+      for (int g = 0; g < mouseGC.length; g++)
+      {
+        cc = ((ChartCanvas)chart.get(g)).getChart();
+        cc.update();
+        mouseGC[g].drawLine(e.x, 0, e.x, cc.getClientArea().height);
+      }
       mouseGC[selectedZone].drawLine(0, e.y, cc.getClientArea().width, e.y);
 
       ((ChartCanvas)chart.get(selectedZone)).updateScaleLabel(e.y);
