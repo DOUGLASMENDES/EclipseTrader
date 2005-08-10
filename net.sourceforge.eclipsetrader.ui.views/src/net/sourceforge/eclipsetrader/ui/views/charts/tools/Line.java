@@ -76,7 +76,7 @@ public class Line extends ToolPlugin
   {
     if (selected != null)
     {
-      getCanvas().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y), true);
+      getCanvas().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x) + 1, Math.abs(p1.y - p2.y) + 1, true);
       selected.x = me.x;
       selected.y = me.y;
     }
