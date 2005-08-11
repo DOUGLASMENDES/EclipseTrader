@@ -536,12 +536,6 @@ public class ChartCanvas extends Composite implements ControlListener, MouseList
             ((IChartPlotter)obj).paintChart(gc, chart.getClientArea().width, chart.getClientArea().height);
           }
         }
-        for (int i = 0; i < tools.size(); i++)
-        {
-          Object obj = tools.get(i);
-          if (obj instanceof IChartTool)
-            ((IChartTool)obj).paintTool(gc, chart.getClientArea().width, chart.getClientArea().height);
-        }
       }
       gc.dispose();
     }
