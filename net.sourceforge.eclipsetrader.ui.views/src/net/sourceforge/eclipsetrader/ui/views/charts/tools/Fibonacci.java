@@ -119,6 +119,15 @@ public class Fibonacci extends ToolPlugin
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#scalerUpdate()
+   */
+  public void scalerUpdate()
+  {
+    p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
+    p2.y = getScaler().convertToY(Double.parseDouble(getParameter("y2")));
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#paintTool(org.eclipse.swt.graphics.GC)
    */
   public void paintTool(GC gc)
@@ -158,12 +167,35 @@ public class Fibonacci extends ToolPlugin
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#scalerUpdate()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String, java.lang.String)
    */
-  public void scalerUpdate()
+  public void setParameter(String name, String value)
   {
-    p1.y = getScaler().convertToY(value1);
-    p2.y = getScaler().convertToY(value2);
+    if (name.equals("x1"))
+    {
+      if (p1 == null)
+        p1 = new Point(0, 0);
+      p1.x = Integer.parseInt(value);
+    }
+    else if (name.equals("y1"))
+    {
+      if (p1 == null)
+        p1 = new Point(0, 0);
+      p1.y = getScaler().convertToY(Double.parseDouble(value));
+    }
+    else if (name.equals("x2"))
+    {
+      if (p2 == null)
+        p2 = new Point(0, 0);
+      p2.x = Integer.parseInt(value);
+    }
+    else if (name.equals("y2"))
+    {
+      if (p2 == null)
+        p2 = new Point(0, 0);
+      p2.y = getScaler().convertToY(Double.parseDouble(value));
+    }
+    super.setParameter(name, value);
   }
 
   /* (non-Javadoc)

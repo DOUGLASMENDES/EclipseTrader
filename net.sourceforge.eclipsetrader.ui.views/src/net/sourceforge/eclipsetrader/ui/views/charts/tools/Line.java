@@ -90,13 +90,13 @@ public class Line extends ToolPlugin
     super.mouseReleased(me);
     selected = null;
     
-    setParameter("x1", String.valueOf(p1.x));
+    super.setParameter("x1", String.valueOf(p1.x));
     value1 = getScaler().convertToVal(p1.y);
-    setParameter("y1", String.valueOf(value1));
+    super.setParameter("y1", String.valueOf(value1));
     
-    setParameter("x2", String.valueOf(p2.x));
+    super.setParameter("x2", String.valueOf(p2.x));
     value2 = getScaler().convertToVal(p2.y);
-    setParameter("y2", String.valueOf(value2));
+    super.setParameter("y2", String.valueOf(value2));
   }
 
   /* (non-Javadoc)
@@ -116,8 +116,40 @@ public class Line extends ToolPlugin
    */
   public void scalerUpdate()
   {
-    p1.y = getScaler().convertToY(value1);
-    p2.y = getScaler().convertToY(value2);
+    p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
+    p2.y = getScaler().convertToY(Double.parseDouble(getParameter("y2")));
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String, java.lang.String)
+   */
+  public void setParameter(String name, String value)
+  {
+    if (name.equals("x1"))
+    {
+      if (p1 == null)
+        p1 = new Point(0, 0);
+      p1.x = Integer.parseInt(value);
+    }
+    else if (name.equals("y1"))
+    {
+      if (p1 == null)
+        p1 = new Point(0, 0);
+      p1.y = getScaler().convertToY(Double.parseDouble(value));
+    }
+    else if (name.equals("x2"))
+    {
+      if (p2 == null)
+        p2 = new Point(0, 0);
+      p2.x = Integer.parseInt(value);
+    }
+    else if (name.equals("y2"))
+    {
+      if (p2 == null)
+        p2 = new Point(0, 0);
+      p2.y = getScaler().convertToY(Double.parseDouble(value));
+    }
+    super.setParameter(name, value);
   }
 
   /* (non-Javadoc)
