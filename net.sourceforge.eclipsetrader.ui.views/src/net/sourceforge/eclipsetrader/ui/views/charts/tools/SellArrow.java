@@ -75,6 +75,8 @@ public class SellArrow extends ToolPlugin
       if (Math.abs(me.x - (p1.x - imageData.width / 2)) <= imageData.width && Math.abs(me.y - (p1.y - imageData.height)) <= imageData.height)
         selected = p1;
     }
+    
+    mouseDragged(me);
   }
 
   /* (non-Javadoc)

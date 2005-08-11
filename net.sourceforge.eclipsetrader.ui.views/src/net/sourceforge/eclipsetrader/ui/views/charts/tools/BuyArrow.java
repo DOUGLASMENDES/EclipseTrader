@@ -75,6 +75,8 @@ public class BuyArrow extends ToolPlugin
       if (Math.abs(me.x - (p1.x - image.getImageData().width / 2)) <= image.getImageData().width && Math.abs(me.y - p1.y) <= image.getImageData().height)
         selected = p1;
     }
+    
+    mouseDragged(me);
   }
 
   /* (non-Javadoc)
