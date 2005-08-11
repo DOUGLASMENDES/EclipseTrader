@@ -338,6 +338,30 @@
                style="radio"
                id="chart.line"/>
          <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.tools.SellArrowAction"
+               icon="icons/elcl16/sellarrow.gif"
+               id="chart.tools.sellarrow"
+               label="Sell Arrow"
+               style="toggle"
+               toolbarPath="additions/tools"
+               tooltip="Sell Arrow"/>
+         <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.tools.BuyArrowAction"
+               icon="icons/elcl16/buyarrow.gif"
+               id="chart.tools.buyarrow"
+               label="Buy Arrow"
+               style="toggle"
+               toolbarPath="additions/tools"
+               tooltip="Buy Arrow"/>
+         <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.tools.FibonacciAction"
+               icon="icons/elcl16/fibonacci.gif"
+               id="chart.tools.line"
+               label="Fibonacci"
+               style="toggle"
+               toolbarPath="additions/tools"
+               tooltip="Fibonacci Retrace"/>
+         <action
                class="net.sourceforge.eclipsetrader.ui.views.charts.tools.LineAction"
                icon="icons/elcl16/line.gif"
                id="chart.tools.line"
