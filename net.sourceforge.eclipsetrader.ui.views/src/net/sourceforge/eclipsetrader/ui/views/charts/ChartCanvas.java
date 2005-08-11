@@ -426,8 +426,6 @@ public class ChartCanvas extends Composite implements ControlListener, MouseList
     data = chartData;
     for (int i = 0; i < indicators.size(); i++)
       ((IChartPlotter)indicators.get(i)).setData(data);
-    for (int i = 0; i < tools.size(); i++)
-      ((IChartTool)tools.get(i)).setData(data);
     
     if (chartContainer.isDisposed() == true)
       return;
