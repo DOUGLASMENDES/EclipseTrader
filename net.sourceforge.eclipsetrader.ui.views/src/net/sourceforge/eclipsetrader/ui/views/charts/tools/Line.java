@@ -10,6 +10,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts.tools;
 
+import net.sourceforge.eclipsetrader.ui.views.charts.PixelTools;
 import net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin;
 
 import org.eclipse.swt.SWT;
@@ -30,6 +31,7 @@ public class Line extends ToolPlugin
   private Point selected = null;
   private Color color = new Color(null, 0, 0, 0);
   private double value1 = 0, value2 = 0;
+  private int lastX = -1, lastY = -1;
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#containsPoint(int, int)
@@ -38,12 +40,23 @@ public class Line extends ToolPlugin
   {
     if (p1 == null || p2 == null || isMousePressed() == true)
       return true;
+
+    return PixelTools.isPointOnLine(x, y, p1.x, p1.y, p2.x, p2.y);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#isOnHandle(int, int)
+   */
+  public boolean isOnHandle(int x, int y)
+  {
+    if (p1 == null || p2 == null || isMousePressed() == true)
+      return true;
     
     if (Math.abs(x - p1.x) <= 2 && Math.abs(y - p1.y) <= 2)
       return true;
     else if (Math.abs(x - p2.x) <= 2 && Math.abs(y - p2.y) <= 2)
       return true;
-    
+
     return false;
   }
 
@@ -53,7 +66,7 @@ public class Line extends ToolPlugin
   public void mousePressed(MouseEvent me)
   {
     super.mousePressed(me);
-    
+
     if (p1 == null && p2 == null)
     {
       p1 = new Point(me.x, me.y);
@@ -66,6 +79,11 @@ public class Line extends ToolPlugin
         selected = p1;
       else if (Math.abs(me.x - p2.x) <= 2 && Math.abs(me.y - p2.y) <= 2)
         selected = p2;
+      else
+      {
+        lastX = me.x;
+        lastY = me.y;
+      }
     }
   }
 
@@ -80,6 +98,16 @@ public class Line extends ToolPlugin
       selected.x = me.x;
       selected.y = me.y;
     }
+    else if (isMousePressed())
+    {
+      getCanvas().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x) + 1, Math.abs(p1.y - p2.y) + 1, true);
+      p1.x += me.x - lastX;
+      p2.x += me.x - lastX;
+      p1.y += me.y - lastY;
+      p2.y += me.y - lastY;
+      lastX = me.x;
+      lastY = me.y;
+    }
   }
 
   /* (non-Javadoc)
@@ -88,12 +116,15 @@ public class Line extends ToolPlugin
   public void mouseReleased(MouseEvent me)
   {
     super.mouseReleased(me);
+
     selected = null;
-    
+    lastX = -1;
+    lastY = -1;
+
     super.setParameter("x1", String.valueOf(p1.x));
     value1 = getScaler().convertToVal(p1.y);
     super.setParameter("y1", String.valueOf(value1));
-    
+
     super.setParameter("x2", String.valueOf(p2.x));
     value2 = getScaler().convertToVal(p2.y);
     super.setParameter("y2", String.valueOf(value2));
@@ -121,7 +152,7 @@ public class Line extends ToolPlugin
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String, java.lang.String)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String,java.lang.String)
    */
   public void setParameter(String name, String value)
   {
@@ -167,7 +198,7 @@ public class Line extends ToolPlugin
         color.dispose();
       color = new Color(null, newColor);
     }
-    
+
     return (newColor != null);
   }
 }
