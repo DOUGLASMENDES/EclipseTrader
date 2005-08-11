@@ -116,8 +116,8 @@ public class ChartCanvas extends Composite implements ControlListener, MouseList
     chart = new Canvas(chartContainer, SWT.NONE);
     chart.setBackground(chartBackground);
     chart.addPaintListener(this);
-    chart.addMouseListener(this);
-    chart.addMouseMoveListener(this);
+//    chart.addMouseListener(this);
+//    chart.addMouseMoveListener(this);
 
     // Container for the scale canvas
     scaleContainer = new Composite(container, SWT.NONE);
@@ -318,7 +318,7 @@ public class ChartCanvas extends Composite implements ControlListener, MouseList
   {
     for (int i = 0; i < tools.size(); i++)
     {
-      if (tools.get(i).containsPoint(e.x, e.y))
+      if (tools.get(i).isOnHandle(e.x, e.y))
       {
         if (selectedTool != tools.get(i))
         {
@@ -326,7 +326,12 @@ public class ChartCanvas extends Composite implements ControlListener, MouseList
           selectedTool = tools.get(i);
         }
         if (selectedTool != null)
-          selectedTool.mouseDragged(e);
+        {
+          if (selectedTool.isMousePressed())
+            selectedTool.mouseDragged(e);
+          else
+            selectedTool.mouseMoved(e);
+        }
         return;
       }
     }
@@ -622,31 +627,86 @@ public class ChartCanvas extends Composite implements ControlListener, MouseList
     redraw();
   }
   
-  public void selectChart(IChartPlotter plotter)
+  public void deselectAll()
   {
-    if (plotter != selection.getPlotter())
+    if (selection.isEmpty() == false)
     {
-      if (selection.isEmpty() == false)
-        ((ChartPlotter)selection.getPlotter()).setSelected(false);
-      
-      selection.setPlotter(plotter);
+      ((ChartPlotter)selection.getPlotter()).setSelected(false);
+      selection.setPlotter(null);
       setSelection(selection);
-  
-      if (plotter != null && ((ChartPlotter)plotter).isSelected() == false)
-        ((ChartPlotter)plotter).setSelected(true);
-  
       redraw();
     }
   }
   
-  public IChartPlotter getSelectedChart(int x, int y)
+  /**
+   * Sets the receiver's selection to be the given item. The current selection is cleared
+   * before the new items are selected.
+   * 
+   * @param obj - the item to select
+   */
+  public void select(Object obj)
   {
+    if (obj instanceof IChartPlotter)
+    {
+      IChartPlotter plotter = (IChartPlotter)obj;
+      if (plotter != selection.getPlotter())
+      {
+        if (selection.isEmpty() == false)
+          ((ChartPlotter)selection.getPlotter()).setSelected(false);
+        
+        selection.setPlotter(plotter);
+        setSelection(selection);
+    
+        if (plotter != null && ((ChartPlotter)plotter).isSelected() == false)
+          ((ChartPlotter)plotter).setSelected(true);
 
+        redraw();
+      }
+    }
+    else
+    {
+      if (selection.isEmpty() == false)
+      {
+        ((ChartPlotter)selection.getPlotter()).setSelected(false);
+        selection.setPlotter(null);
+        setSelection(selection);
+        redraw();
+      }
+    }
+
+    if (obj instanceof ToolPlugin)
+      selectedTool = (ToolPlugin)obj;
+    else
+      selectedTool = null;
+  }
+  
+  public Object getSelectedItem()
+  {
+    if (selection.isEmpty() == false)
+      return selection.getPlotter();
+    if (selectedTool != null)
+      return selectedTool;
+    return null;
+  }
+  
+  /**
+   * Return the item at the given point in the receiver or null if no such item exists.
+   * 
+   * @param x - the point x coordinate
+   * @param y - the point y coordinate
+   * @return the item at the given point
+   */
+  public Object getItemAt(int x, int y)
+  {
     ImageData imageData = chartImage.getImageData(); 
     for (int y1 = y - 1; y1 <= y + 1; y1++)
     {
+      if (y1 < 0 || y1 >= imageData.height)
+        continue;
       for (int x1 = x - 1; x1 <= x + 1; x1++)
       {
+        if (x1 < 0 || x1 >= imageData.width)
+          continue;
         int pixel = imageData.getPixel(x1, y1);
         RGB rgb = imageData.palette.getRGB(pixel);
         for (int i = 0; i < indicators.size(); i++)
@@ -657,11 +717,8 @@ public class ChartCanvas extends Composite implements ControlListener, MouseList
         }
       }
     }
-    return null;
-  }
-  
-  public ToolPlugin getSelectedTool(int x, int y)
-  {
+
+    // Attempt to select one of the tools
     for (int i = 0; i < tools.size(); i++)
     {
       if (tools.get(i).containsPoint(x, y))

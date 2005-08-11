@@ -43,11 +43,6 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
@@ -62,12 +57,12 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.IActionBars;
@@ -78,7 +73,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public abstract class ChartView extends ViewPart implements ControlListener, MouseListener, MouseMoveListener, PaintListener, SelectionListener, ISelectionProvider, ISelectionChangedListener
+public abstract class ChartView extends ViewPart implements ControlListener, MouseListener, MouseMoveListener, PaintListener, SelectionListener
 {
   protected Color background = new Color(null, 255, 255, 255);
   protected Color lineColor = new Color(null, 0, 0, 255);
@@ -110,10 +105,6 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   protected NumberFormat pf = NumberFormat.getInstance();
   protected NumberFormat pcf = NumberFormat.getInstance();
   protected SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
-  protected int selectedZone = 0;
-  private IChartPlotter selectedChart = null;
-  private ChartPlotterSelection selection = new ChartPlotterSelection();
-  private List selectionListeners = new ArrayList();
   
   public ChartView()
   {
@@ -246,40 +237,6 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     container.forceFocus();
   }
 
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-   */
-  public void addSelectionChangedListener(ISelectionChangedListener listener)
-  {
-    if (selectionListeners.contains(listener) == false)
-      selectionListeners.add(listener);
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-   */
-  public void removeSelectionChangedListener(ISelectionChangedListener listener)
-  {
-    selectionListeners.remove(listener);
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
-   */
-  public ISelection getSelection()
-  {
-    return selection;
-  }
-  
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
-   */
-  public void setSelection(ISelection selection)
-  {
-    for (int i = 0; i < selectionListeners.size(); i++)
-      ((ISelectionChangedListener)selectionListeners.get(i)).selectionChanged(new SelectionChangedEvent(this, selection));
-  }
-
   public abstract void reloadPreferences();
   
   public void reloadPreferences(File folder)
@@ -292,14 +249,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       ChartCanvas canvas = (ChartCanvas)chart.get(i);
       canvas.removeMouseListener(this);
       canvas.removeMouseMoveListener(this);
-      canvas.removeSelectionChangedListener(this);
-      canvas.selectChart(null);
+//      canvas.removeSelectionChangedListener(this);
+      canvas.select(null);
       canvas.dispose();
     }
     chart.clear();
     limitPeriod = 12;
-    selectedZone = 0;
-    selectedChart = null;
     
     IActionBars actionBars = getViewSite().getActionBars();
     if (actionBars != null)
@@ -334,8 +289,8 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
             canvas.registerContextMenu(getSite());
             canvas.addMouseListener(this);
             canvas.addMouseMoveListener(this);
-            canvas.addSelectionChangedListener(this);
-            if (chart.size() == selectedZone)
+//            canvas.addSelectionChangedListener(this);
+            if (chart.size() == 0)
               canvas.setHilight(true);
             chart.add(canvas);
 
@@ -422,9 +377,8 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       canvas.registerContextMenu(getSite());
       canvas.addMouseListener(this);
       canvas.addMouseMoveListener(this);
-      canvas.addSelectionChangedListener(this);
-      if (chart.size() == selectedZone)
-        canvas.setHilight(true);
+//      canvas.addSelectionChangedListener(this);
+      canvas.setHilight(true);
       chart.add(canvas);
       canvas.getIndicators().add(new PriceChart());
       
@@ -433,15 +387,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       chart.add(canvas);
       canvas.addMouseListener(this);
       canvas.addMouseMoveListener(this);
-      canvas.addSelectionChangedListener(this);
+//      canvas.addSelectionChangedListener(this);
       canvas.getIndicators().add(new VolumeChart());
 
       int[] weights = { 85, 15 };
       form.setWeights(weights);
     }
-
-    selection.setPlotter(null);
-    setSelection(selection);
   }
   
   private void setPlotterParameters(NodeList parent, IChartPlotter obj)
@@ -762,7 +713,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
 
   public void addOscillator(IChartPlotter chartPlotter, int position)
   {
-    if (position == ChartParametersDialog.SELECTED_ZONE)
+/*    if (position == ChartParametersDialog.SELECTED_ZONE)
       ((ChartCanvas)chart.get(selectedZone)).getIndicators().add(chartPlotter);
     else
     {
@@ -796,12 +747,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       form.layout();
     }
     updateView();
-    savePreferences();
+    savePreferences();*/
   }
   
   public void editOscillator()
   {
-    if (selectedChart != null && selectedChart instanceof IChartConfigurer)
+/*    if (selectedChart != null && selectedChart instanceof IChartConfigurer)
     {
       ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)selectedChart);
       if (pdlg.openEdit() == ChartParametersDialog.OK)
@@ -810,12 +761,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         updateView();
         savePreferences();
       }
-    }
+    }*/
   }
   
   public void removeOscillator()
   {
-    if (selectedChart != null)
+/*    if (selectedChart != null)
     {
       if (MessageDialog.openConfirm(container.getShell(), Messages.getString("ChartView.ConfirmDeleteTitle"), Messages.getString("ChartView.ConfirmDeleteMessage")) == true) //$NON-NLS-1$ //$NON-NLS-2$
       {
@@ -842,12 +793,12 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         updateView();
         savePreferences();
       }
-    }
+    }*/
   }
   
   public ToolsCollection getTools()
   {
-    return ((ChartCanvas)chart.get(selectedZone)).getTools();
+    return ((ChartCanvas)chart.get(0)).getTools();
   }
   
   public int getChartType()
@@ -1085,12 +1036,28 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       bottombar.redraw();
     }
   }
+  
+  public ChartCanvas getSelectedZone()
+  {
+    for (int i = 0; i < chart.size(); i++)
+    {
+      ChartCanvas canvas = (ChartCanvas)chart.get(i);
+      if (canvas.isHilight())
+        return canvas;
+    }
+    
+    return null;
+  }
 
   private boolean mouseDown = false;
   private int mousePreviousX = -1;
   private int mousePreviousY = -1;
   private GC[] mouseGC;
-
+  private Cursor crossCursor = new Cursor(null, SWT.CURSOR_CROSS);
+  private Cursor handCursor = new Cursor(null, SWT.CURSOR_HAND);
+  private Cursor arrowCursor = new Cursor(null, SWT.CURSOR_ARROW);
+  private Cursor lastSetCursor = arrowCursor;
+  
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
    */
@@ -1103,59 +1070,54 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
    */
   public void mouseDown(MouseEvent e)
   {
-    IChartPlotter newSelection = null;
-    if (selectedChart != null)
-      ((ChartPlotter)selectedChart).setSelected(false);
+    ChartCanvas selectedZone = getSelectedZone();
 
+    // Check if the mouse was clicked on a zone different than the currently selected one
     for (int i = 0; i < chart.size(); i++)
     {
       ChartCanvas canvas = (ChartCanvas)chart.get(i);
       if (e.getSource() == canvas.getChart())
       {
-        if (selectedZone != i)
+        if (selectedZone != canvas)
         {
-          ((ChartCanvas)chart.get(selectedZone)).setHilight(false);
-          ((ChartCanvas)chart.get(selectedZone)).selectChart(null);
-          selectedZone = i;
+          selectedZone.deselectAll();
+          selectedZone.setHilight(false);
           canvas.setHilight(true);
-          selectedChart = null;
-          canvas.selectChart(selectedChart);
           return;
         }
-        newSelection = canvas.getSelectedChart(e.x, e.y);
-        
-        if (e.button == 1)
+        break;
+      }
+    }
+
+    // Get the chart object at the mouse position
+    IChartPlotter newSelection = null;
+    Object obj = selectedZone.getItemAt(e.x, e.y);
+    if (obj instanceof IChartPlotter)
+      newSelection = (IChartPlotter)obj;
+    selectedZone.select(obj);
+    
+    if (e.button == 1)
+    {
+      // The cross bars are drawn only if no chart object is selected
+      if (newSelection == null)
+      {
+        mouseDown = true;
+        mouseGC = new GC[chart.size()];
+        for (int i = 0; i < mouseGC.length; i++)
         {
-          // Left mouse button
-          if (newSelection != selectedChart)
-          {
-            selectedChart = newSelection;
-            canvas.selectChart(selectedChart);
-          }
-          else
-          {
-            mouseDown = true;
-            mouseGC = new GC[chart.size()];
-            for (int g = 0; g < mouseGC.length; g++)
-            {
-              mouseGC[g] = new GC(((ChartCanvas)chart.get(g)).getChart());
-              mouseGC[g].setForeground(new Color(null, 0, 0, 0));
-            }
-            mouseMove(e);
-          }
+          mouseGC[i] = new GC(((ChartCanvas)chart.get(i)).getChart());
+          mouseGC[i].setForeground(new Color(null, 0, 0, 0));
         }
-        else if (e.button == 3)
-        {
-          // Right mouse button
-          if (newSelection != null)
-          {
-            selectedChart = newSelection;
-            canvas.selectChart(selectedChart);
-          }
-        }
+        mousePreviousX = -1;
+        mousePreviousY = -1;
+        mouseMove(e);
+
+        if (obj instanceof ToolPlugin)
+          ((ToolPlugin)obj).mousePressed(e);
       }
     }
   }
+
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
    */
@@ -1164,31 +1126,46 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     if (e.button == 1)
     {
       mouseDown = false;
-      updateLabels();
       if (mousePreviousX != -1)
       {
-        for (int g = 0; g < mouseGC.length; g++)
+        Object obj = getSelectedZone().getSelectedItem();
+        if (obj instanceof ToolPlugin)
         {
-          Canvas cc = ((ChartCanvas)chart.get(g)).getChart();
-          if (mousePreviousX != -1)
-            cc.redraw(mousePreviousX, 0, 1, cc.getClientArea().height, true);
+          ((ToolPlugin)obj).mouseReleased(e);
+          savePreferences();
         }
-        Canvas cc = ((ChartCanvas)chart.get(selectedZone)).getChart();
-        if (mousePreviousY != -1)
-          cc.redraw(0, mousePreviousY, cc.getClientArea().width, 1, true);
-        ((ChartCanvas)chart.get(selectedZone)).updateScaleLabel(-1);
+
+        for (int i = 0; i < mouseGC.length; i++)
+        {
+          ChartCanvas chartCanvas = (ChartCanvas)chart.get(i); 
+          Canvas canvas = chartCanvas.getChart();
+          if (mousePreviousX != -1)
+            canvas.redraw(mousePreviousX, 0, 1, canvas.getClientArea().height, true);
+          if (chartCanvas.isHilight() && mousePreviousY != -1)
+          {
+            canvas.redraw(0, mousePreviousY, canvas.getClientArea().width, 1, true);
+            chartCanvas.updateScaleLabel(-1);
+          }
+        }
         mousePreviousX = -1;
         mousePreviousY = -1;
-        for (int g = 0; g < mouseGC.length; g++)
-          mouseGC[g].dispose();
+        for (int i = 0; i < mouseGC.length; i++)
+          mouseGC[i].dispose();
       }
+      updateLabels();
     }
   }
+
   /* (non-Javadoc)
    * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
    */
   public void mouseMove(MouseEvent e)
   {
+    ChartCanvas selectedZone = getSelectedZone();
+    Object obj = selectedZone.getSelectedItem();
+    if (obj == null)
+      obj = selectedZone.getItemAt(e.x, e.y);
+
     if (mouseDown == true)
     {
       int index = (e.x - margin) / width;
@@ -1198,41 +1175,64 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       else
         updateLabels();
       
-      for (int g = 0; g < mouseGC.length; g++)
+      if (obj instanceof ToolPlugin)
+        ((ToolPlugin)obj).mouseDragged(e);
+      
+      for (int i = 0; i < mouseGC.length; i++)
       {
-        Canvas cc = ((ChartCanvas)chart.get(g)).getChart();
+        ChartCanvas chartCanvas = (ChartCanvas)chart.get(i); 
+        Canvas cc = chartCanvas.getChart();
         if (mousePreviousX != -1 && mousePreviousX != e.x)
           cc.redraw(mousePreviousX, 0, 1, cc.getClientArea().height, true);
-      }
+        if (chartCanvas.isHilight() && mousePreviousY != -1 && mousePreviousY != e.y)
+          cc.redraw(0, mousePreviousY, cc.getClientArea().width, 1, true);
 
-      Canvas cc = ((ChartCanvas)chart.get(selectedZone)).getChart();
-      if (mousePreviousY != -1 && mousePreviousY != e.y)
-        cc.redraw(0, mousePreviousY, cc.getClientArea().width, 1, true);
-
-      for (int g = 0; g < mouseGC.length; g++)
-      {
-        cc = ((ChartCanvas)chart.get(g)).getChart();
         cc.update();
-        mouseGC[g].drawLine(e.x, 0, e.x, cc.getClientArea().height);
+        
+        mouseGC[i].drawLine(e.x, 0, e.x, cc.getClientArea().height);
+        if (chartCanvas.isHilight())
+          mouseGC[i].drawLine(0, e.y, cc.getClientArea().width, e.y);
       }
-      mouseGC[selectedZone].drawLine(0, e.y, cc.getClientArea().width, e.y);
 
-      ((ChartCanvas)chart.get(selectedZone)).updateScaleLabel(e.y);
+      selectedZone.updateScaleLabel(e.y);
 
       mousePreviousX = e.x;
       mousePreviousY = e.y;
     }
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent)
-   */
-  public void selectionChanged(SelectionChangedEvent event)
-  {
-    if (event.getSelection() instanceof ChartPlotterSelection)
+    else
     {
-      selection.setPlotter(((ChartPlotterSelection)event.getSelection()).getPlotter());
-      setSelection(selection);
+      if (obj == null)
+      {
+        if (lastSetCursor != arrowCursor)
+        {
+          selectedZone.getChart().setCursor(arrowCursor);
+          lastSetCursor = arrowCursor;
+        }
+      }
+      if (obj instanceof ToolPlugin)
+      {
+        if (((ToolPlugin)obj).isOnHandle(e.x, e.y))
+        {
+          if (lastSetCursor != crossCursor)
+          {
+            selectedZone.getChart().setCursor(crossCursor);
+            lastSetCursor = crossCursor;
+          }
+        }
+        else if (((ToolPlugin)obj).containsPoint(e.x, e.y))
+        {
+          if (lastSetCursor != handCursor)
+          {
+            selectedZone.getChart().setCursor(handCursor);
+            lastSetCursor = handCursor;
+          }
+        }
+        else if (lastSetCursor != arrowCursor)
+        {
+          selectedZone.getChart().setCursor(arrowCursor);
+          lastSetCursor = arrowCursor;
+        }
+      }
     }
   }
 }

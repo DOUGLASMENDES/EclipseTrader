@@ -76,7 +76,7 @@ public class HistoryChartView extends ChartView implements DropTargetListener
       setData(bd);
     }
 
-    getSite().setSelectionProvider(this);
+//    getSite().setSelectionProvider(this);
   }
   
   public void reloadPreferences()

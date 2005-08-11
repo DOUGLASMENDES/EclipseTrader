@@ -90,7 +90,7 @@ public class RealtimeChartView extends ChartView implements IRealtimeChartListen
       setData(bd);
     }
 
-    getSite().setSelectionProvider(this);
+//    getSite().setSelectionProvider(this);
   }
   
   /* (non-Javadoc)
