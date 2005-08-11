@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -383,6 +384,25 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
                     ((IChartPlotter)obj).setName(item.getAttributes().getNamedItem("name").getNodeValue()); //$NON-NLS-1$
                   canvas.getIndicators().add((IChartPlotter)obj);
                 }
+                else
+                  TraderPlugin.log("Class " + obj.getClass().getName() + " is not an instanceof " + IChartPlotter.class.getName());
+              }
+              else if (item.getNodeName().equalsIgnoreCase("tool") == true) //$NON-NLS-1$
+              {
+                String clazz = item.getAttributes().getNamedItem("class").getNodeValue(); //$NON-NLS-1$
+                try {
+                  Object obj = Class.forName(clazz).newInstance();
+                  if (obj instanceof ToolPlugin)
+                  {
+                    ToolPlugin tool = (ToolPlugin)obj;
+                    canvas.getTools().add(tool);
+                    setToolParameters((NodeList)item, tool);
+                  }
+                  else
+                    TraderPlugin.log("Class " + obj.getClass().getName() + " is not an instanceof " + ToolPlugin.class.getName());
+                } catch(Exception e) {
+                  e.printStackTrace();
+                }
               }
             }
           }
@@ -425,6 +445,25 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   }
   
   private void setPlotterParameters(NodeList parent, IChartPlotter obj)
+  {
+    for (int i = 0; i < parent.getLength(); i++)
+    {
+      Node node = parent.item(i);
+      if (node.getNodeName().equalsIgnoreCase("params") == true) //$NON-NLS-1$
+      {
+        NamedNodeMap map = node.getAttributes();
+        for (int ii = 0; ii < map.getLength(); ii++)
+        {
+          String name = map.item(ii).getNodeName();
+          String value = map.item(ii).getNodeValue();
+          if (name != null && value != null)
+            obj.setParameter(name, value);
+        }
+      }
+    }
+  }
+  
+  private void setToolParameters(NodeList parent, ToolPlugin obj)
   {
     for (int i = 0; i < parent.getLength(); i++)
     {
@@ -490,6 +529,30 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
           
           // Append the parameters map
           HashMap params = painter.getParameters();
+          Iterator keys = params.keySet().iterator();
+          while (keys.hasNext())
+          {
+            String key = (String)keys.next();
+            if (params.get(key) != null)
+            {
+              Element p = document.createElement("params"); //$NON-NLS-1$
+              p.setAttribute(key, (String)params.get(key));
+              node.appendChild(p);
+            }
+          }
+          
+          element.appendChild(node);
+        }
+        
+        // Save the tools configuration
+        for (int ii = 0; ii < canvas.getTools().size(); ii++)
+        {
+          ToolPlugin tool = canvas.getTools().get(ii);
+          
+          Element node = document.createElement("tool"); //$NON-NLS-1$
+          node.setAttribute("class", tool.getClass().getName()); //$NON-NLS-1$
+
+          Map params = tool.getParameters();
           Iterator keys = params.keySet().iterator();
           while (keys.hasNext())
           {
