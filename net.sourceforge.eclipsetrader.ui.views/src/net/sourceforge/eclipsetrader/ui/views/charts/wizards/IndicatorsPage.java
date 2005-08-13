@@ -15,14 +15,12 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
-import net.sourceforge.eclipsetrader.ui.views.charts.IChartConfigurer;
-import net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter;
+import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorPlugin;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -34,12 +32,11 @@ import org.eclipse.swt.widgets.List;
 
 /**
  */
-public class OscillatorPage extends WizardPage implements SelectionListener
+public class IndicatorsPage extends WizardPage implements SelectionListener
 {
   private List list;
-  private ParametersPage parameters;
 
-  public OscillatorPage()
+  public IndicatorsPage()
   {
     super(Messages.getString("NewIndicatorWizard.title")); //$NON-NLS-1$
     setTitle(Messages.getString("OscillatorPage.title")); //$NON-NLS-1$
@@ -57,7 +54,9 @@ public class OscillatorPage extends WizardPage implements SelectionListener
     setControl(composite);
     
     list = new List(composite, SWT.SINGLE|SWT.BORDER|SWT.V_SCROLL);
-    list.setLayoutData(new GridData(GridData.GRAB_VERTICAL|GridData.VERTICAL_ALIGN_FILL|GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
+    GridData gridData = new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL);
+    gridData.heightHint = list.getItemHeight() * 15;
+    list.setLayoutData(gridData);
     list.addSelectionListener(this);
     
     // Add the plugin names to the listbox
@@ -99,15 +98,6 @@ public class OscillatorPage extends WizardPage implements SelectionListener
   }
 
   /* (non-Javadoc)
-   * @see org.eclipse.jface.wizard.IWizardPage#getNextPage()
-   */
-  public IWizardPage getNextPage()
-  {
-    parameters.setWizard(getWizard());
-    return parameters;
-  }
-
-  /* (non-Javadoc)
    * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
    */
   public void widgetDefaultSelected(SelectionEvent e)
@@ -121,25 +111,16 @@ public class OscillatorPage extends WizardPage implements SelectionListener
   {
     int index = list.getSelectionIndex();
 
-    if (parameters != null)
-      parameters.dispose();
-    
     if (index != -1)
     {
       IConfigurationElement member = (IConfigurationElement)list.getData(String.valueOf(index));
       try {
         Object obj = member.createExecutableExtension("class"); //$NON-NLS-1$
-        if (obj instanceof IChartPlotter)
-        {
-          ((NewIndicatorWizard)getWizard()).setChartPlotter((IChartPlotter)obj);
-          if (obj instanceof IChartConfigurer)
-            parameters = new ParametersPage((IChartConfigurer)obj);
-        }
+        if (obj instanceof IndicatorPlugin)
+          ((NewIndicatorWizard)getWizard()).setIndicator((IndicatorPlugin)obj);
       } catch(Exception x) { x.printStackTrace(); };
     }
 
-    ((NewIndicatorWizard)getWizard()).setParametersPage(parameters);
-
-    setPageComplete((index != -1));
+    setPageComplete(index != -1);
   }
 }
