@@ -75,7 +75,7 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
       if (action.getId().equalsIgnoreCase("chart.add") == true)
       {
         NewIndicatorWizard wizard = new NewIndicatorWizard();
-        wizard.setChartView(view);
+//        wizard.setChartView(view);
         wizard.open();
       }
       else if (action.getId().equalsIgnoreCase("chart.edit") == true)
@@ -104,7 +104,21 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
    */
   public void selectionChanged(IAction action, ISelection selection)
   {
-    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    if (selection instanceof ChartSelection)
+    {
+      action.setEnabled(true);
+      if (((ChartSelection)selection).getChartCanvas() != null)
+      {
+        if (action.getId().equals("chart.edit") || action.getId().equals("chart.remove"))
+          action.setEnabled(((ChartSelection)selection).getChartCanvas().getSelectedItem() instanceof PlotLine);
+      }
+      else
+        action.setEnabled(false);
+    }
+    else
+      action.setEnabled(false);
+
+/*    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
     if (page != null && page.getActivePart() instanceof HistoryChartView)
     {
       HistoryChartView view = (HistoryChartView)page.getActivePart();
@@ -164,6 +178,6 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
         action.setChecked(false);
         action.setEnabled(false);
       }
-    }
+    }*/
   }
 }

@@ -204,40 +204,41 @@
             targetID="net.sourceforge.eclipsetrader.ui.views.ChartView"
             id="net.sourceforge.eclipsetrader.ui.views.ChartView.contextMenu">
          <action
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceBars"
                definitionId="net.sourceforge.eclipsetrader.commands.bar"
                id="chart.bar"
                label="%chart.bar"
                menubarPath="group1"
                style="radio"/>
          <action
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceCandle"
                definitionId="net.sourceforge.eclipsetrader.commands.candle"
                id="chart.candle"
                label="%chart.candle"
                menubarPath="group1"
                style="radio"/>
          <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceLine"
+               definitionId="net.sourceforge.eclipsetrader.commands.line"
+               id="chart.line"
                label="%chart.line"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               style="radio"
                menubarPath="group1"
-               id="chart.line"/>
+               style="radio"/>
          <action
-               enablesFor="1"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.DeleteIndicator"
+               id="chart.remove"
                label="%chart.remove"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               menubarPath="group3"
-               id="chart.remove"/>
+               menubarPath="group3">
+         </action>
          <action
-               enablesFor="1"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.EditIndicator"
+               id="chart.edit"
                label="%chart.edit"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
-               menubarPath="group3"
-               id="chart.edit"/>
+               menubarPath="group3">
+         </action>
          <action
                label="%chart.add"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.AddIndicator"
                menubarPath="group3"
                id="chart.add"/>
       </viewerContribution>
@@ -246,38 +247,38 @@
             id="net.sourceforge.eclipsetrader.ui.views.RealtimeChart.contextMenu">
          <action
                label="%chart.bar"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceBars"
                style="radio"
                menubarPath="group1"
                id="chart.bar"/>
          <action
                label="%chart.candle"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceCandle"
                style="radio"
                menubarPath="group1"
                id="chart.candle"/>
          <action
                label="%chart.line"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceLine"
                style="radio"
                menubarPath="group1"
                id="chart.line"/>
          <action
                enablesFor="1"
                label="%chart.remove"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.DeleteIndicator"
                menubarPath="group3"
                id="chart.remove"/>
          <action
                enablesFor="1"
                label="%chart.edit"
                overrideActionId="1"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.EditIndicator"
                menubarPath="group3"
                id="chart.edit"/>
          <action
                label="%chart.add"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.RealtimeChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.AddIndicator"
                menubarPath="group3"
                id="chart.add"/>
       </viewerContribution>
@@ -316,7 +317,7 @@
          <action
                toolbarPath="additions/style"
                label="%chart.bar"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceBars"
                icon="icons/bar.gif"
                tooltip="%chart.bar"
                style="radio"
@@ -324,7 +325,7 @@
          <action
                toolbarPath="additions/style"
                label="%chart.candle"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceCandle"
                icon="icons/candle.gif"
                tooltip="%chart.candle"
                style="radio"
@@ -332,7 +333,7 @@
          <action
                toolbarPath="additions/style"
                label="%chart.line"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceLine"
                icon="icons/line.gif"
                tooltip="%chart.line"
                style="radio"
@@ -421,6 +422,12 @@
                style="radio"
                menubarPath="all"
                id="view.all"/>
+         <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.ToggleLogScaleAction"
+               id="chart.toggleLogScale"
+               label="Log Scale"
+               menubarPath="additions"
+               style="toggle"/>
       </viewContribution>
       <viewContribution
             targetID="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"
@@ -524,7 +531,7 @@
             id="net.sourceforge.eclipsetrader.charts.bollinger"/>
       <plotter
             label="%AverageChart.label"
-            class="net.sourceforge.eclipsetrader.ui.views.charts.AverageChart"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.indicators.MA"
             id="net.sourceforge.eclipsetrader.charts.average"/>
       <plotter
             label="%RSIChart.label"
@@ -544,7 +551,7 @@
             id="net.sourceforge.eclipsetrader.charts.directionalMovement"/>
       <plotter
             label="%AverageTrueRange.label"
-            class="net.sourceforge.eclipsetrader.ui.views.charts.AverageTrueRange"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.indicators.ATR"
             id="net.sourceforge.eclipsetrader.charts.atr"/>
       <plotter
             label="%CommodityChannelIndex.label"
@@ -556,7 +563,7 @@
             id="net.sourceforge.eclipsetrader.charts.dpo"/>
       <plotter
             label="%MACD.label"
-            class="net.sourceforge.eclipsetrader.ui.views.charts.MACDChart"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.indicators.MACD"
             id="net.sourceforge.eclipsetrader.charts.macd"/>
       <plotter
             label="%MAOSC.label"
@@ -759,38 +766,45 @@
          <action
                label="%chart.bar"
                definitionId="net.sourceforge.eclipsetrader.commands.bar"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceBars"
                style="radio"
                menubarPath="chart/group1"
                state="false"
                id="chart.bar">
             <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection"/>
             </enablement>
          </action>
          <action
                label="%chart.candle"
                definitionId="net.sourceforge.eclipsetrader.commands.candle"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceCandle"
                style="radio"
                menubarPath="chart/group1"
                state="false"
                id="chart.candle">
             <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection"/>
             </enablement>
          </action>
          <action
                label="%chart.line"
                definitionId="net.sourceforge.eclipsetrader.commands.line"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPriceLine"
                style="radio"
                menubarPath="chart/group1"
                state="false"
                id="chart.line">
             <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
+               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection"/>
             </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.ToggleLogScaleAction"
+               id="chart.toggleLogScale"
+               label="Log Scale"
+               menubarPath="chart/group2"
+               style="toggle">
          </action>
          <menu
                label="%chart.indicators"
@@ -805,35 +819,24 @@
             <separator name="group.bottom"/>
          </menu>
          <action
-               enablesFor="1"
                label="%chart.remove"
                definitionId="org.eclipse.ui.edit.delete"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.DeleteIndicator"
                menubarPath="chart/indicators/group2"
                id="chart.remove">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
-               enablesFor="1"
                label="%chart.edit"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.EditIndicator"
                menubarPath="chart/indicators/group1"
                id="chart.edit">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
                label="%chart.add"
                definitionId="net.sourceforge.eclipsetrader.commands.add"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.AddIndicator"
                menubarPath="chart/indicators/group1"
                id="chart.add">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <menu
                label="%chart.show"

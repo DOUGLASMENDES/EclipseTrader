@@ -11,34 +11,31 @@
 package net.sourceforge.eclipsetrader.ui.views.charts.wizards;
 
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
-import net.sourceforge.eclipsetrader.ui.views.charts.ChartView;
-import net.sourceforge.eclipsetrader.ui.views.charts.IChartConfigurer;
-import net.sourceforge.eclipsetrader.ui.views.charts.IChartPlotter;
+import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorPlugin;
 
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 /**
  */
 public class NewIndicatorWizard extends Wizard
 {
-  private IChartPlotter plotter;
-  private ParametersPage parameters = new ParametersPage();
-  private ZonePage zone = new ZonePage();
-  private ChartView view;
+  public final static int SELECTED_ZONE = 1;
+  public final static int BELOW_SELECTED_ZONE = 2;
+  public final static int ABOVE_SELECTED_ZONE = 3;
+  private IndicatorPlugin indicator;
+  private IndicatorsPage indicatorsPage = new IndicatorsPage();
+  private ParametersPage parametersPage;
+  private ZonePage zonePage = new ZonePage();
   
   public NewIndicatorWizard()
   {
-    addPage(new OscillatorPage());
+    addPage(indicatorsPage);
     setWindowTitle(Messages.getString("NewIndicatorWizard.title")); //$NON-NLS-1$
     setForcePreviousAndNextButtons(true);
+    zonePage.setWizard(this);
   }
 
   /* (non-Javadoc)
@@ -46,57 +43,59 @@ public class NewIndicatorWizard extends Wizard
    */
   public boolean performFinish()
   {
-    IChartConfigurer chartConfigurer = (IChartConfigurer)plotter;
-
-    RGB rgb = parameters.getColor(); 
-    chartConfigurer.setParameter("color", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    chartConfigurer.setParameter("name", parameters.getPlotterName()); //$NON-NLS-1$
-
-    if (parameters.getControl() != null)
-    {
-      Control[] c = ((Composite)parameters.getControl()).getChildren();
-      for (int i = 0; i < c.length; i++)
-      {
-        if (c[i].getData() == null || !(c[i].getData() instanceof String))
-          continue;
-        if (c[i] instanceof Text)
-          chartConfigurer.setParameter((String)c[i].getData(), ((Text)c[i]).getText());
-        else if (c[i] instanceof Combo)
-          chartConfigurer.setParameter((String)c[i].getData(), String.valueOf(((Combo)c[i]).getSelectionIndex()));
-        else if (c[i] instanceof Button)
-          chartConfigurer.setParameter((String)c[i].getData(), null);
-      }
-    }
-    
-    if (view != null)
-      view.addOscillator(plotter, zone.getZone());
-    
+    parametersPage.performFinish();
     return true;
   }
 
-  public void open()
+  /* (non-Javadoc)
+   * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
+   */
+  public IWizardPage getNextPage(IWizardPage page)
+  {
+    if (page == indicatorsPage)
+      return parametersPage;
+    if (page == parametersPage)
+      return zonePage;
+    return null;
+  }
+
+  public boolean open()
   {
     WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);
-    dlg.open();
+    return dlg.open() == WizardDialog.OK;
+  }
+
+  /**
+   * Returns the new indicator instance.
+   * 
+   * @return - the new indicator
+   */
+  public IndicatorPlugin getIndicator()
+  {
+    return indicator;
   }
   
-  public void setChartPlotter(IChartPlotter plotter)
+  /**
+   * Set the indicator instance.
+   * 
+   * @param indicator - the indicator instance
+   */
+  public void setIndicator(IndicatorPlugin indicator)
   {
-    this.plotter = plotter;
+    this.indicator = indicator;
+    if (parametersPage != null)
+      parametersPage.dispose();
+    parametersPage = new ParametersPage(this.indicator.getParametersPage());
+    parametersPage.setWizard(this);
   }
-  
-  public void setParametersPage(ParametersPage parameters)
+
+  /**
+   * Returns the chart zone where the new indicator must be placed.
+   * 
+   * @return - the zone
+   */
+  public int getZone()
   {
-    this.parameters = parameters;
-  }
-  
-  public ZonePage getZonePage()
-  {
-    return zone;
-  }
-  
-  public void setChartView(ChartView view)
-  {
-    this.view = view;
+    return zonePage.getZone();
   }
 }

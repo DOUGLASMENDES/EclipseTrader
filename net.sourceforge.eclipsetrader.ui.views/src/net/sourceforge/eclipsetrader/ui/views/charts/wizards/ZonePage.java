@@ -11,7 +11,6 @@
 package net.sourceforge.eclipsetrader.ui.views.charts.wizards;
 
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
-import net.sourceforge.eclipsetrader.ui.views.charts.ChartParametersDialog;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -23,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class ZonePage extends WizardPage
 {
-  private int position = ChartParametersDialog.BELOW_SELECTED_ZONE;
+  private int position = NewIndicatorWizard.BELOW_SELECTED_ZONE;
   private Button selectedZone;
   private Button newZone;
   private Button aboveSelectedZone;
@@ -56,9 +55,9 @@ public class ZonePage extends WizardPage
   public int getZone()
   {
     if (selectedZone != null && selectedZone.getSelection() == true)
-      position = ChartParametersDialog.SELECTED_ZONE;
+      position = NewIndicatorWizard.SELECTED_ZONE;
     if (aboveSelectedZone != null && aboveSelectedZone.getSelection() == true)
-      position = ChartParametersDialog.ABOVE_SELECTED_ZONE;
+      position = NewIndicatorWizard.ABOVE_SELECTED_ZONE;
 
     return position;
   }

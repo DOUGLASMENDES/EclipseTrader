@@ -44,7 +44,7 @@ public class RealtimeChartActions implements IViewActionDelegate
       if (action.getId().equalsIgnoreCase("chart.add") == true)
       {
         NewIndicatorWizard wizard = new NewIndicatorWizard();
-        wizard.setChartView(view);
+//        wizard.setChartView(view);
         wizard.open();
       }
       else if (action.getId().equalsIgnoreCase("chart.edit") == true)

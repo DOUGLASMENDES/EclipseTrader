@@ -38,6 +38,21 @@ public class IndicatorsCollection
     return value;
   }
 
+  public boolean add(IndicatorPlugin obj)
+  {
+    if (objects.indexOf(obj) != -1)
+      return false;
+    
+    boolean value = objects.add(obj);
+    if (value)
+    {
+      for (Iterator iter = observers.iterator(); iter.hasNext(); )
+        ((ICollectionObserver)iter.next()).itemAdded(obj);
+    }
+    
+    return value;
+  }
+
   public boolean remove(IChartPlotter arg0)
   {
     boolean value = objects.remove(arg0);
@@ -48,10 +63,21 @@ public class IndicatorsCollection
     }
     return value;
   }
-  
-  public IChartPlotter get(int index)
+
+  public boolean remove(IndicatorPlugin arg0)
   {
-    return (IChartPlotter)objects.get(index);
+    boolean value = objects.remove(arg0);
+    if (value && arg0 != null)
+    {
+      for (Iterator iter = observers.iterator(); iter.hasNext(); )
+        ((ICollectionObserver)iter.next()).itemRemoved(arg0);
+    }
+    return value;
+  }
+  
+  public Object get(int index)
+  {
+    return objects.get(index);
   }
   
   public int size()
@@ -64,7 +90,7 @@ public class IndicatorsCollection
     return objects.iterator();
   }
   
-  public int indexOf(IChartPlotter obj)
+  public int indexOf(Object obj)
   {
     return objects.indexOf(obj);
   }
