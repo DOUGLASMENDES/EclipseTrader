@@ -16,6 +16,24 @@ public class PixelTools
 {
 
   /**
+   * Determine if the point (x,y) lies on the polyline defined by the given pointArray parameter.
+   * 
+   * @param x - the reference point x position
+   * @param y - the reference point y position
+   * @param pointArray - the polyline array of (x,y) values
+   * @return true if the reference point is on the line, false otherwise
+   */
+  public static boolean isPointOnLine(int x, int y, int[] pointArray)
+  {
+    for (int i = 3; i < pointArray.length; i += 2)
+    {
+      if (isPointOnLine(x, y, pointArray[i - 3], pointArray[i - 2], pointArray[i - 1], pointArray[i]))
+        return true;
+    }
+    return false;
+  }
+
+  /**
    * Determine if the point (x,y) lies on the line (x1,y1)-(x2,y2).
    * <p>This is the Bresenham's Algorithm for approximating lines, modified to compare the calculated point
    * against the reference point instead of drawing. This may not be the most efficent way for doing this
