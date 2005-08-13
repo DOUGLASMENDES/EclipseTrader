@@ -211,4 +211,48 @@ public class Scaler extends Observable
     
     return scaleArray;
   }
+
+  /**
+   * Rounds the given price to the nearest tick.<br>
+   * 
+   * @param price The price value
+   * @return The rounded price
+   */
+  public static double roundToTick(Double price)
+  {
+    double tick = getPriceTick(price.doubleValue());
+    return ((int)((price.doubleValue() + tick / 2) / tick)) * tick;
+  }
+
+  /**
+   * Rounds the given price to the nearest tick.<br>
+   * 
+   * @param price The price value
+   * @return The rounded price
+   */
+  public static double roundToTick(double price)
+  {
+    double tick = getPriceTick(price);
+    return ((int)((price + tick / 2) / tick)) * tick;
+  }
+  
+  /**
+   * Get the price tick related to the passed as argument.<br>
+   * 
+   * @param price The price value
+   * @return The price tick 
+   */
+  public static double getPriceTick(double price) 
+  {
+    if (price <= 0.3)
+      return 0.0005;
+    else if (price <= 1.5)
+      return 0.001;
+    else if (price <= 3)
+      return 0.005;
+    else if (price <= 30)
+      return 0.01;
+    else
+      return 0.05;
+  }
 }
