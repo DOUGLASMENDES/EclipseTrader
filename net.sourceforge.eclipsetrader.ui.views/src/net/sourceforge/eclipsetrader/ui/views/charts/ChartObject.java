@@ -29,7 +29,7 @@ public abstract class ChartObject implements Observer
   private Scaler scaler;
   private boolean pressed = false;
   private boolean selected = false;
-  protected HashMap parameters = new HashMap();
+  private Map parameters = new HashMap();
 
   public Canvas getCanvas()
   {
@@ -78,6 +78,11 @@ public abstract class ChartObject implements Observer
   public Map getParameters()
   {
     return parameters;
+  }
+  
+  public void setParameters(Map parameters)
+  {
+    this.parameters = parameters;
   }
   
   /**
