@@ -12,8 +12,10 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -71,6 +73,11 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
   private Color scaleLabelColor = new Color(null, 255, 255, 0);
   private Color gridColor = new Color(null, 192, 192, 192);
   private Color lineColor = new Color(null, 0, 0, 255);
+  private Color candleForeground = new Color(null, 0, 0, 0);
+  private Color candleBackground = new Color(null, 255, 255, 255);
+  private Color barUpColor = new Color(null, 0, 208, 0);
+  private Color barDownColor = new Color(null, 255, 0, 0);
+  private Color barNeutralColor = new Color(null, 192, 192, 192);
   private int columnWidth = 5;
   private int margin = 2;
   private int scaleWidth = 50;
@@ -83,6 +90,7 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
   private Cursor crossCursor = new Cursor(null, SWT.CURSOR_CROSS);
   private Cursor arrowCursor = new Cursor(null, SWT.CURSOR_ARROW);
   private ToolPlugin selectedTool = null;
+  private Map plotlineCache = new HashMap();
 
   /**
    * Standard SWT widget constructor.
@@ -480,6 +488,9 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
     
     // Set the scaler values
     scaler.set(chart.getSize().y, scaleHigh, scaleLow, logScaleHigh, logRange, logScale);
+    
+    // Empty the cache
+    plotlineCache.clear();
 
     // Draw the chart
     if (chartImage != null)
@@ -504,15 +515,107 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
         // Draw the main price line
         if (isMainChart())
         {
-          int[] pointArray = new int[barData.size() * 2];
-          int x = getMargin() + columnWidth / 2;
-          for (int i = 0, pa = 0; i < barData.size(); i++, x += columnWidth)
+          if (style == LINE)
           {
-            pointArray[pa++] = x;
-            pointArray[pa++] = scaler.convertToY(barData.getClose(i));
+            int[] pointArray = new int[barData.size() * 2];
+            int x = getMargin() + columnWidth / 2;
+            for (int i = 0, pa = 0; i < barData.size(); i++, x += columnWidth)
+            {
+              pointArray[pa++] = x;
+              pointArray[pa++] = scaler.convertToY(barData.getClose(i));
+            }
+            gc.setForeground(lineColor);
+            gc.drawPolyline(pointArray);
           }
-          gc.setForeground(lineColor);
-          gc.drawPolyline(pointArray);
+          else if (style == CANDLES)
+          {
+            boolean expandCandles = true;
+            gc.setForeground(candleForeground);
+
+            int w = (1 + getColumnWidth()) / 2 - 1 ; // width of 1/2 candle
+            if (expandCandles)
+            {
+              if (getColumnWidth() < 5) 
+                w = 1;
+            }
+
+            int x = getMargin() + columnWidth / 2;
+            for (int i = 0; i < barData.size(); i++, x += getColumnWidth())
+            {
+              int h = scaler.convertToY(barData.getHigh(i));
+              int l = scaler.convertToY(barData.getLow(i));
+              int c = scaler.convertToY(barData.getClose(i));
+              int o = scaler.convertToY(barData.getOpen(i));
+              
+              if (c < o)
+              {
+                gc.setBackground(candleForeground);
+                if (expandCandles)
+                  gc.fillRectangle(x - w, c, 1 + 2 * w, o - c);
+                else
+                  gc.fillRectangle(x - 2, c, 5, o - c);
+          
+                gc.drawLine (x, h, x, c);
+                gc.drawLine (x, o, x, l);
+              }
+              else
+              {
+                gc.drawLine (x, h, x, l);
+              
+                if (c == o)
+                {
+                  if (expandCandles)
+                    gc.drawLine (x - w, o, x + w, o);
+                  else
+                    gc.drawLine (x - 2, o, x + 2, o);
+                }
+                else
+                {
+                  gc.setBackground(candleBackground);
+                  if (expandCandles)
+                  {
+                    gc.fillRectangle(x - w, o, 1 + 2 * w, c - o);
+                    gc.drawRectangle(x - w, o, 1 + 2 * w, c - o);
+                  }
+                  else
+                  {
+                    gc.fillRectangle(x - 2, o, 5, c - o);
+                    gc.drawRectangle(x - 2, o, 5, c - o);
+                  }
+                }
+              }
+            }
+          }
+          else if (style == BARS)
+          {
+            int x = getMargin() + columnWidth / 2;
+            for (int i = 0; i < barData.size(); i++, x += getColumnWidth())
+            {
+              if (i > 0)
+              {
+                if (barData.getClose(i) > barData.getClose(i - 1))
+                  gc.setForeground(barUpColor);
+                else
+                {
+                  if (barData.getClose(i) < barData.getClose(i - 1))
+                    gc.setForeground(barDownColor);
+                  else
+                    gc.setForeground(barNeutralColor);
+                }
+              }
+              else
+                gc.setForeground(barNeutralColor);
+
+              int y = scaler.convertToY(barData.getOpen(i));
+              gc.drawLine(x - 2, y, x, y);
+              y = scaler.convertToY(barData.getClose(i));
+              gc.drawLine(x, y, x + 2, y);
+              
+              int y1 = scaler.convertToY(barData.getHigh(i));
+              int y2 = scaler.convertToY(barData.getLow(i));
+              gc.drawLine(x, y1, x, y2);
+            }
+          }
         }
         
         for(Iterator iter = output.iterator(); iter.hasNext(); )
@@ -618,6 +721,7 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
       gc.setLineStyle(SWT.LINE_SOLID);
 
     gc.drawPolyline(pointArray);
+    plotlineCache.put(plotLine, pointArray);
 
     // Draw the selection marks
     if (plotLine.isSelected() && pointArray.length > 0)
@@ -845,16 +949,20 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
         for(Iterator iter = ((IndicatorPlugin)obj).getOutput().iterator(); iter.hasNext(); )
         {
           PlotLine plotLine = (PlotLine)iter.next();
-          int ofs = barData.size() - plotLine.getSize();
+          int[] pointArray = (int[])plotlineCache.get(plotLine);
+          if (pointArray != null)
+          {
+            if (PixelTools.isPointOnLine(x, y, pointArray))
+              return obj;
+          }
+/*          int ofs = barData.size() - plotLine.getSize();
           int[] pointArray = new int[plotLine.getSize() * 2];
           int px = getMargin() + columnWidth / 2 + ofs * columnWidth;
           for (int pi = 0, pa = 0; pi < plotLine.getSize(); pi++, px += columnWidth)
           {
             pointArray[pa++] = px;
             pointArray[pa++] = scaler.convertToY(plotLine.getData(pi));
-          }
-          if (PixelTools.isPointOnLine(x, y, pointArray))
-            return obj;
+          }*/
         }
       }
     }
