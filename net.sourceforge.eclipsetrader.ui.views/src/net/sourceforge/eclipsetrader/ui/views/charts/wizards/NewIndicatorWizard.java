@@ -29,6 +29,7 @@ public class NewIndicatorWizard extends Wizard
   private IndicatorsPage indicatorsPage = new IndicatorsPage();
   private ParametersPage parametersPage;
   private ZonePage zonePage = new ZonePage();
+  private int position = NewIndicatorWizard.BELOW_SELECTED_ZONE;
   
   public NewIndicatorWizard()
   {
@@ -44,6 +45,7 @@ public class NewIndicatorWizard extends Wizard
   public boolean performFinish()
   {
     parametersPage.performFinish();
+    position = zonePage.getZone();
     return true;
   }
 
@@ -96,6 +98,6 @@ public class NewIndicatorWizard extends Wizard
    */
   public int getZone()
   {
-    return zonePage.getZone();
+    return position;
   }
 }

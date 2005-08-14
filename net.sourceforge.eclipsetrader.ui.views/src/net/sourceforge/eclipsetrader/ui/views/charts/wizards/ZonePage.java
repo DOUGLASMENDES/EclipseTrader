@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class ZonePage extends WizardPage
 {
-  private int position = NewIndicatorWizard.BELOW_SELECTED_ZONE;
   private Button selectedZone;
   private Button newZone;
   private Button aboveSelectedZone;
@@ -55,10 +54,10 @@ public class ZonePage extends WizardPage
   public int getZone()
   {
     if (selectedZone != null && selectedZone.getSelection() == true)
-      position = NewIndicatorWizard.SELECTED_ZONE;
+      return NewIndicatorWizard.SELECTED_ZONE;
     if (aboveSelectedZone != null && aboveSelectedZone.getSelection() == true)
-      position = NewIndicatorWizard.ABOVE_SELECTED_ZONE;
+      return NewIndicatorWizard.ABOVE_SELECTED_ZONE;
 
-    return position;
+    return NewIndicatorWizard.BELOW_SELECTED_ZONE;
   }
 }
