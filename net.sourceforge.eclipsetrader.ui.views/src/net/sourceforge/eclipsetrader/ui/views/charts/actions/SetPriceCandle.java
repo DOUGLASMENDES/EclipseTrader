@@ -68,6 +68,7 @@ public class SetPriceCandle implements IViewActionDelegate, IWorkbenchWindowActi
       view.getMainChart().setStyle(ChartCanvas.CANDLES);
       view.getSite().getSelectionProvider().setSelection(new ChartSelection(view.getSelectedZone()));
       view.getSelectedZone().redraw();
+      view.savePreferences();
     }
   }
 

@@ -68,6 +68,7 @@ public class SetPriceLine implements IViewActionDelegate, IWorkbenchWindowAction
       view.getMainChart().setStyle(ChartCanvas.LINE);
       view.getSite().getSelectionProvider().setSelection(new ChartSelection(view.getSelectedZone()));
       view.getSelectedZone().redraw();
+      view.savePreferences();
     }
   }
 

@@ -68,6 +68,7 @@ public class SetPriceBars implements IViewActionDelegate, IWorkbenchWindowAction
       view.getMainChart().setStyle(ChartCanvas.BARS);
       view.getSite().getSelectionProvider().setSelection(new ChartSelection(view.getSelectedZone()));
       view.getSelectedZone().redraw();
+      view.savePreferences();
     }
   }
 
