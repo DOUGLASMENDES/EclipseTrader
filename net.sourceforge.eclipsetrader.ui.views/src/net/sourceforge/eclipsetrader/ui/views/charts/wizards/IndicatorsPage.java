@@ -23,8 +23,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.List;
 
 /**
  */
-public class IndicatorsPage extends WizardPage implements SelectionListener
+public class IndicatorsPage extends WizardPage
 {
   private List list;
 
@@ -54,10 +54,15 @@ public class IndicatorsPage extends WizardPage implements SelectionListener
     setControl(composite);
     
     list = new List(composite, SWT.SINGLE|SWT.BORDER|SWT.V_SCROLL);
-    GridData gridData = new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL);
+    GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.heightHint = list.getItemHeight() * 15;
     list.setLayoutData(gridData);
-    list.addSelectionListener(this);
+    list.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e)
+      {
+        selectItem(list.getSelectionIndex());
+      }
+    });
     
     // Add the plugin names to the listbox
     IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -97,20 +102,8 @@ public class IndicatorsPage extends WizardPage implements SelectionListener
     setPageComplete(false);
   }
 
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
-   */
-  public void widgetDefaultSelected(SelectionEvent e)
+  public void selectItem(int index)
   {
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-   */
-  public void widgetSelected(SelectionEvent e)
-  {
-    int index = list.getSelectionIndex();
-
     if (index != -1)
     {
       IConfigurationElement member = (IConfigurationElement)list.getData(String.valueOf(index));
