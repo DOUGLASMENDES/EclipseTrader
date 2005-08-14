@@ -9,6 +9,9 @@ Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
 Export-Package: net.sourceforge.eclipsetrader.ui.internal.views,
  net.sourceforge.eclipsetrader.ui.views.charts,
+ net.sourceforge.eclipsetrader.ui.views.charts.actions,
+ net.sourceforge.eclipsetrader.ui.views.charts.indicators,
+ net.sourceforge.eclipsetrader.ui.views.charts.tools,
  net.sourceforge.eclipsetrader.ui.views.charts.wizards,
  net.sourceforge.eclipsetrader.ui.views.indices,
  net.sourceforge.eclipsetrader.ui.views.news,
