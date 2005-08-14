@@ -11,6 +11,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts.indicators;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorParametersPage;
 import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorPlugin;
@@ -19,6 +22,7 @@ import net.sourceforge.eclipsetrader.ui.views.charts.PlotLine;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -32,6 +36,7 @@ import org.eclipse.swt.widgets.Text;
 public class ATR extends IndicatorPlugin
 {
   private Color color = new Color(null, 0, 0, 255);
+  private String label = "ATR";
   private int lineType = PlotLine.LINE;
   private int smoothing = 14;
   private int maType = MA.SMA;
@@ -79,16 +84,38 @@ public class ATR extends IndicatorPlugin
       PlotLine ma = MA.getMA(tr, maType, smoothing);
       ma.setColor(color);
       ma.setType(lineType);
-      ma.setLabel("ATR");
+      ma.setLabel(label);
       getOutput().add(ma);
     }
     else
     {
       tr.setColor(color);
       tr.setType(lineType);
-      tr.setLabel("ATR");
+      tr.setLabel(label);
       getOutput().add(tr);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ChartObject#setParameter(java.lang.String, java.lang.String)
+   */
+  public void setParameter(String name, String value)
+  {
+    if (name.equals("label"))
+      label = value;
+    else if (name.equalsIgnoreCase("color") == true)
+    {
+      String[] values = value.split(",");
+      color = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+    }
+    else if (name.equals("lineType"))
+      lineType = Integer.parseInt(value);
+    else if (name.equals("maType"))
+      maType = Integer.parseInt(value);
+    else if (name.equals("smoothing"))
+      smoothing = Integer.parseInt(value);
+
+    super.setParameter(name, value);
   }
 
   /* (non-Javadoc)
@@ -98,10 +125,11 @@ public class ATR extends IndicatorPlugin
   {
     return new IndicatorParametersPage() {
       private Composite composite;
+      private Text label;
       private ColorSelector colorSelector;
       private Combo lineType;
-      private Text period;
-      private Combo type;
+      private Text smoothing;
+      private Combo maType;
 
       /* (non-Javadoc)
        * @see net.sourceforge.eclipsetrader.ui.views.charts.IndicatorParametersPage#createControl(org.eclipse.swt.widgets.Composite)
@@ -111,16 +139,16 @@ public class ATR extends IndicatorPlugin
         composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
         composite.setLayout(new GridLayout(2, false));
+
+        Label _label = new Label(composite, SWT.NONE);
+        _label.setText("Label");
+        _label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        label = new Text(composite, SWT.BORDER);
+        label.setText(String.valueOf(ATR.this.label));
+        label.setLayoutData(new GridData(150, SWT.DEFAULT));
         
-        Label label = new Label(composite, SWT.NONE);
-        label.setText(Messages.getString("ChartParametersDialog.name")); //$NON-NLS-1$
-        label.setLayoutData(new GridData(125, SWT.DEFAULT));
-        Text text = new Text(composite, SWT.BORDER);
-        text.setText(getPluginName());
-        text.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
-        
-        label = new Label(composite, SWT.NONE);
-        label.setText(Messages.getString("ChartParametersDialog.color")); //$NON-NLS-1$
+        _label = new Label(composite, SWT.NONE);
+        _label.setText(Messages.getString("ChartParametersDialog.color")); //$NON-NLS-1$
         colorSelector = new ColorSelector(composite);
         colorSelector.getButton().setData("color"); //$NON-NLS-1$
         colorSelector.setColorValue(ATR.this.color.getRGB()); //$NON-NLS-1$
@@ -128,14 +156,14 @@ public class ATR extends IndicatorPlugin
         lineType = IndicatorPlugin.getLineTypeControl(composite);
         lineType.setText(lineType.getItem(ATR.this.lineType));
 
-        label = new Label(composite, SWT.NONE);
-        label.setText("Smoothing Period");
-        period = new Text(composite, SWT.BORDER);
-        period.setText(String.valueOf(ATR.this.smoothing));
-        period.setLayoutData(new GridData(25, SWT.DEFAULT));
+        _label = new Label(composite, SWT.NONE);
+        _label.setText("Smoothing Period");
+        smoothing = new Text(composite, SWT.BORDER);
+        smoothing.setText(String.valueOf(ATR.this.smoothing));
+        smoothing.setLayoutData(new GridData(25, SWT.DEFAULT));
 
-        type = MA.getAverageTypeControl(composite);
-        type.setText(type.getItem(ATR.this.maType));
+        maType = MA.getAverageTypeControl(composite);
+        maType.setText(maType.getItem(ATR.this.maType));
         
         return composite;
       }
@@ -154,11 +182,23 @@ public class ATR extends IndicatorPlugin
        */
       public void performFinish()
       {
-        ATR.this.color.dispose();
-        ATR.this.color = new Color(null, colorSelector.getColorValue());
-        ATR.this.lineType = lineType.getSelectionIndex();
-        ATR.this.maType = type.getSelectionIndex();
-        ATR.this.smoothing = Integer.parseInt(period.getText());
+        if (composite != null)
+        {
+          ATR.this.color.dispose();
+          ATR.this.color = new Color(null, colorSelector.getColorValue());
+          ATR.this.lineType = lineType.getSelectionIndex();
+          ATR.this.maType = maType.getSelectionIndex();
+          ATR.this.smoothing = Integer.parseInt(smoothing.getText());
+          
+          Map map = new HashMap();
+          map.put("label", ATR.this.label);
+          RGB rgb = ATR.this.color.getRGB(); 
+          map.put("color", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
+          map.put("lineType", String.valueOf(ATR.this.lineType));
+          map.put("maType", String.valueOf(ATR.this.maType));
+          map.put("smoothing", String.valueOf(ATR.this.smoothing));
+          setParameters(map);
+        }
       }
     };
   }

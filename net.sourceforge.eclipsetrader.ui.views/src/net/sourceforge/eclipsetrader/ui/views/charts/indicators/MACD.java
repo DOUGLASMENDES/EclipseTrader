@@ -11,6 +11,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts.indicators;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sourceforge.eclipsetrader.ui.views.charts.BarData;
 import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorParametersPage;
 import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorPlugin;
@@ -19,6 +22,7 @@ import net.sourceforge.eclipsetrader.ui.views.charts.PlotLine;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -107,6 +111,50 @@ public class MACD extends IndicatorPlugin
   }
 
   /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ChartObject#setParameter(java.lang.String, java.lang.String)
+   */
+  public void setParameter(String name, String value)
+  {
+    if (name.equals("macdMAType"))
+      macdMAType = Integer.parseInt(value);
+    else if (name.equals("fastPeriod"))
+      fastPeriod = Integer.parseInt(value);
+    else if (name.equals("slowPeriod"))
+      slowPeriod = Integer.parseInt(value);
+    else if (name.equals("trigPeriod"))
+      trigPeriod = Integer.parseInt(value);
+    else if (name.equalsIgnoreCase("macdColor") == true)
+    {
+      String[] values = value.split(",");
+      macdColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+    }
+    else if (name.equalsIgnoreCase("trigColor") == true)
+    {
+      String[] values = value.split(",");
+      trigColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+    }
+    else if (name.equalsIgnoreCase("oscColor") == true)
+    {
+      String[] values = value.split(",");
+      oscColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+    }
+    else if (name.equals("macdLabel"))
+      macdLabel = value;
+    else if (name.equals("trigLabel"))
+      trigLabel = value;
+    else if (name.equals("oscLabel"))
+      oscLabel = value;
+    else if (name.equals("macdLineType"))
+      macdLineType = Integer.parseInt(value);
+    else if (name.equals("trigLineType"))
+      trigLineType = Integer.parseInt(value);
+    else if (name.equals("oscLineType"))
+      oscLineType = Integer.parseInt(value);
+
+    super.setParameter(name, value);
+  }
+
+  /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IndicatorPlugin#getParametersPage()
    */
   public IndicatorParametersPage getParametersPage()
@@ -138,6 +186,7 @@ public class MACD extends IndicatorPlugin
         
         Label label = new Label(composite, SWT.NONE);
         label.setText("MACD Color");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
         macdColor = new ColorSelector(composite);
         macdColor.setColorValue(MACD.this.macdColor.getRGB()); //$NON-NLS-1$
 
@@ -216,22 +265,44 @@ public class MACD extends IndicatorPlugin
        */
       public void performFinish()
       {
-        MACD.this.macdColor.dispose();
-        MACD.this.macdColor = new Color(null, macdColor.getColorValue());
-        MACD.this.fastPeriod = Integer.parseInt(fastPeriod.getText());
-        MACD.this.slowPeriod = Integer.parseInt(slowPeriod.getText());
-        MACD.this.macdLabel = macdLabel.getText();
-        MACD.this.macdLineType = macdLineType.getSelectionIndex();
-        MACD.this.macdMAType = macdMAType.getSelectionIndex();
-        MACD.this.trigColor.dispose();
-        MACD.this.trigColor = new Color(null, trigColor.getColorValue());
-        MACD.this.trigPeriod = Integer.parseInt(trigPeriod.getText());
-        MACD.this.trigLabel = trigLabel.getText();
-        MACD.this.trigLineType = trigLineType.getSelectionIndex();
-        MACD.this.oscColor.dispose();
-        MACD.this.oscColor = new Color(null, oscColor.getColorValue());
-        MACD.this.oscLabel = oscLabel.getText();
-        MACD.this.oscLineType = oscLineType.getSelectionIndex();
+        if (composite != null)
+        {
+          MACD.this.macdColor.dispose();
+          MACD.this.macdColor = new Color(null, macdColor.getColorValue());
+          MACD.this.fastPeriod = Integer.parseInt(fastPeriod.getText());
+          MACD.this.slowPeriod = Integer.parseInt(slowPeriod.getText());
+          MACD.this.macdLabel = macdLabel.getText();
+          MACD.this.macdLineType = macdLineType.getSelectionIndex();
+          MACD.this.macdMAType = macdMAType.getSelectionIndex();
+          MACD.this.trigColor.dispose();
+          MACD.this.trigColor = new Color(null, trigColor.getColorValue());
+          MACD.this.trigPeriod = Integer.parseInt(trigPeriod.getText());
+          MACD.this.trigLabel = trigLabel.getText();
+          MACD.this.trigLineType = trigLineType.getSelectionIndex();
+          MACD.this.oscColor.dispose();
+          MACD.this.oscColor = new Color(null, oscColor.getColorValue());
+          MACD.this.oscLabel = oscLabel.getText();
+          MACD.this.oscLineType = oscLineType.getSelectionIndex();
+
+          Map map = new HashMap();
+          RGB rgb = MACD.this.macdColor.getRGB(); 
+          map.put("macdColor", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
+          map.put("fastPeriod", String.valueOf(MACD.this.fastPeriod));
+          map.put("slowPeriod", String.valueOf(MACD.this.slowPeriod));
+          map.put("macdLabel", MACD.this.macdLabel);
+          map.put("macdLineType", String.valueOf(MACD.this.macdLineType));
+          map.put("macdMAType", String.valueOf(MACD.this.macdMAType));
+          rgb = MACD.this.trigColor.getRGB(); 
+          map.put("trigColor", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
+          map.put("trigPeriod", String.valueOf(MACD.this.trigPeriod));
+          map.put("trigLabel", MACD.this.trigLabel);
+          map.put("trigLineType", String.valueOf(MACD.this.trigLineType));
+          rgb = MACD.this.oscColor.getRGB(); 
+          map.put("oscColor", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
+          map.put("oscLabel", MACD.this.oscLabel);
+          map.put("oscLineType", String.valueOf(MACD.this.oscLineType));
+          setParameters(map);
+        }
       }
     };
   }

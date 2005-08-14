@@ -11,6 +11,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts.indicators;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.views.charts.BarData;
 import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorParametersPage;
@@ -20,6 +23,7 @@ import net.sourceforge.eclipsetrader.ui.views.charts.PlotLine;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -37,9 +41,9 @@ public class MA extends IndicatorPlugin
   public static final int WMA = 2;
   public static final int Wilder = 3;
   private int lineType = PlotLine.LINE;
-  private int maType = SMA;
+  private int type = SMA;
   private int period = 7;
-  private Color maColor = new Color(null, 0, 0, 0);
+  private Color color = new Color(null, 0, 0, 0);
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.IndicatorPlugin#getName()
@@ -54,9 +58,9 @@ public class MA extends IndicatorPlugin
    */
   public void calculate()
   {
-    PlotLine ma = getMA(getData().getInput(BarData.CLOSE), maType, period);
+    PlotLine ma = getMA(getData().getInput(BarData.CLOSE), type, period);
     ma.setType(lineType);
-    ma.setColor(maColor);
+    ma.setColor(color);
     getOutput().add(ma);
   }
 
@@ -65,15 +69,18 @@ public class MA extends IndicatorPlugin
    */
   public void setParameter(String name, String value)
   {
-    if (name.equals("maType"))
-      maType = Integer.parseInt(value);
-    else if (name.equals("period"))
-      period = Integer.parseInt(value);
+    if (name.equals("lineType"))
+      lineType = Integer.parseInt(value);
     else if (name.equalsIgnoreCase("color") == true)
     {
       String[] values = value.split(",");
-      maColor = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+      color = new Color(null, Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]));
     }
+    else if (name.equals("period"))
+      period = Integer.parseInt(value);
+    else if (name.equals("type"))
+      type = Integer.parseInt(value);
+
     super.setParameter(name, value);
   }
 
@@ -263,20 +270,14 @@ public class MA extends IndicatorPlugin
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
         composite.setLayout(new GridLayout(2, false));
         
-        Label label = new Label(composite, SWT.NONE);
-        label.setText(Messages.getString("ChartParametersDialog.name")); //$NON-NLS-1$
-        label.setLayoutData(new GridData(125, SWT.DEFAULT));
-        Text text = new Text(composite, SWT.BORDER);
-        text.setText(getPluginName());
-        text.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_FILL));
-
         lineType = IndicatorPlugin.getLineTypeControl(composite);
         lineType.setText(lineType.getItem(MA.this.lineType));
         
-        label = new Label(composite, SWT.NONE);
+        Label label = new Label(composite, SWT.NONE);
         label.setText(Messages.getString("ChartParametersDialog.color")); //$NON-NLS-1$
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
         colorSelector = new ColorSelector(composite);
-        colorSelector.setColorValue(MA.this.maColor.getRGB()); //$NON-NLS-1$
+        colorSelector.setColorValue(MA.this.color.getRGB()); //$NON-NLS-1$
 
         label = new Label(composite, SWT.NONE);
         label.setText(Messages.getString("AverageChart.periods")); //$NON-NLS-1$
@@ -285,7 +286,7 @@ public class MA extends IndicatorPlugin
         period.setLayoutData(new GridData(25, SWT.DEFAULT));
 
         type = getAverageTypeControl(composite);
-        type.setText(type.getItem(MA.this.maType));
+        type.setText(type.getItem(MA.this.type));
         
         return composite;
       }
@@ -304,11 +305,22 @@ public class MA extends IndicatorPlugin
        */
       public void performFinish()
       {
-        MA.this.lineType = lineType.getSelectionIndex();
-        MA.this.maColor.dispose();
-        MA.this.maColor = new Color(null, colorSelector.getColorValue());
-        MA.this.maType = type.getSelectionIndex();
-        MA.this.period = Integer.parseInt(period.getText());
+        if (composite != null)
+        {
+          MA.this.lineType = lineType.getSelectionIndex();
+          MA.this.color.dispose();
+          MA.this.color = new Color(null, colorSelector.getColorValue());
+          MA.this.type = type.getSelectionIndex();
+          MA.this.period = Integer.parseInt(period.getText());
+          
+          Map map = new HashMap();
+          map.put("lineType", String.valueOf(MA.this.lineType));
+          map.put("type", String.valueOf(MA.this.type));
+          map.put("period", String.valueOf(MA.this.period));
+          RGB rgb = MA.this.color.getRGB(); 
+          map.put("color", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
+          setParameters(map);
+        }
       }
     };
   }

@@ -17,7 +17,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,14 +37,12 @@ import net.sourceforge.eclipsetrader.TraderPlugin;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 import net.sourceforge.eclipsetrader.ui.views.charts.indicators.MA;
-import net.sourceforge.eclipsetrader.ui.views.charts.indicators.MACD;
 import net.sourceforge.eclipsetrader.ui.views.charts.indicators.VOL;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
@@ -68,7 +65,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -254,22 +250,13 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       ChartCanvas canvas = (ChartCanvas)chart.get(i);
       canvas.getChart().removeMouseListener(this);
       canvas.getChart().removeMouseMoveListener(this);
-//      canvas.removeSelectionChangedListener(this);
       canvas.select(null);
       canvas.dispose();
     }
     chart.clear();
     limitPeriod = 12;
-    
-    IActionBars actionBars = getViewSite().getActionBars();
-    if (actionBars != null)
-    {
-      IAction action = actionBars.getGlobalActionHandler("chart.line"); //$NON-NLS-1$
-      if (action != null)
-        action.setChecked(true);
-    }
 
-/*    // Read the preferences files for the new chart
+    // Read the preferences files for the new chart
     File f = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs"); //$NON-NLS-1$
     if (f.exists() == true)
     {
@@ -292,60 +279,44 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
           {
             ChartCanvas canvas = new ChartCanvas(form, SWT.NONE);
             canvas.registerContextMenu(getSite());
-            canvas.addMouseListener(this);
-            canvas.addMouseMoveListener(this);
-//            canvas.addSelectionChangedListener(this);
+            canvas.getChart().addMouseListener(this);
+            canvas.getChart().addMouseMoveListener(this);
             if (chart.size() == 0)
               canvas.setHilight(true);
             chart.add(canvas);
 
             // Standard attributes
-            Node attr = n.getAttributes().getNamedItem("price"); //$NON-NLS-1$
+            Node attr = n.getAttributes().getNamedItem("main"); //$NON-NLS-1$
             if (attr != null && attr.getNodeValue().equalsIgnoreCase("true") == true) //$NON-NLS-1$
-              canvas.getIndicators().add(new PriceChart());
-            attr = n.getAttributes().getNamedItem("volume"); //$NON-NLS-1$
-            if (attr != null && attr.getNodeValue().equalsIgnoreCase("true") == true) //$NON-NLS-1$
-              canvas.getIndicators().add(new VolumeChart());
+            {
+              canvas.setMainChart(true);
+              attr = n.getAttributes().getNamedItem("style"); //$NON-NLS-1$
+              canvas.setStyle(Integer.parseInt(attr.getNodeValue()));
+            }
             String height = n.getAttributes().getNamedItem("height").getNodeValue(); //$NON-NLS-1$
             sectionHeights.add(new Integer(height));
 
-            // Charts
+            // Indicators
             NodeList parent = n.getChildNodes();
             for (int ii = 0; ii < parent.getLength(); ii++)
             {
               Node item = parent.item(ii);
-              if (item.getNodeName().equalsIgnoreCase("chart") == true) //$NON-NLS-1$
+              if (item.getNodeName().equalsIgnoreCase("indicator") == true) //$NON-NLS-1$
               {
-                Object obj = null;
-                String id = item.getAttributes().getNamedItem("id").getNodeValue(); //$NON-NLS-1$
-                if (id.equalsIgnoreCase("price") == true) //$NON-NLS-1$
-                  obj = new PriceChart();
-                else
-                {
-                  IExtensionRegistry registry = Platform.getExtensionRegistry();
-                  IExtensionPoint extensionPoint = registry.getExtensionPoint("net.sourceforge.eclipsetrader.chartPlotter"); //$NON-NLS-1$
-                  if (extensionPoint != null)
+                String clazz = item.getAttributes().getNamedItem("class").getNodeValue(); //$NON-NLS-1$
+                try {
+                  Object obj = Class.forName(clazz).newInstance();
+                  if (obj instanceof IndicatorPlugin)
                   {
-                    IConfigurationElement[] members = extensionPoint.getConfigurationElements();
-                    for (int m = 0; m < members.length; m++)
-                    {
-                      IConfigurationElement member = members[m];
-                      if (id.equalsIgnoreCase(member.getAttribute("id"))) //$NON-NLS-1$
-                        try {
-                          obj = member.createExecutableExtension("class"); //$NON-NLS-1$
-                        } catch(Exception x) { x.printStackTrace(); };
-                    }
+                    IndicatorPlugin indicator = (IndicatorPlugin)obj;
+                    canvas.getIndicators().add(indicator);
+                    setObjectParameters((NodeList)item, indicator);
                   }
+                  else
+                    TraderPlugin.log("Class " + obj.getClass().getName() + " is not an instanceof " + IndicatorPlugin.class.getName());
+                } catch(Exception e) {
+                  e.printStackTrace();
                 }
-                if (obj != null && obj instanceof IChartPlotter)
-                {
-                  setPlotterParameters((NodeList)item, (IChartPlotter)obj);
-                  if (item.getAttributes().getNamedItem("name") != null) //$NON-NLS-1$
-                    ((IChartPlotter)obj).setName(item.getAttributes().getNamedItem("name").getNodeValue()); //$NON-NLS-1$
-                  canvas.getIndicators().add((IChartPlotter)obj);
-                }
-                else
-                  TraderPlugin.log("Class " + obj.getClass().getName() + " is not an instanceof " + IChartPlotter.class.getName());
               }
               else if (item.getNodeName().equalsIgnoreCase("tool") == true) //$NON-NLS-1$
               {
@@ -356,7 +327,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
                   {
                     ToolPlugin tool = (ToolPlugin)obj;
                     canvas.getTools().add(tool);
-                    setToolParameters((NodeList)item, tool);
+                    setObjectParameters((NodeList)item, tool);
                   }
                   else
                     TraderPlugin.log("Class " + obj.getClass().getName() + " is not an instanceof " + ToolPlugin.class.getName());
@@ -377,7 +348,7 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       form.setWeights(weights);
     }
     else
-    {*/
+    {
       ChartCanvas canvas = new ChartCanvas(form, SWT.NONE);
       canvas.registerContextMenu(getSite());
       canvas.getChart().addMouseListener(this);
@@ -399,43 +370,17 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       chart.add(canvas);
       canvas.getChart().addMouseListener(this);
       canvas.getChart().addMouseMoveListener(this);
-      canvas.getIndicators().add(new MACD());
-      
-      canvas = new ChartCanvas(form, SWT.NONE);
-      canvas.registerContextMenu(getSite());
-      chart.add(canvas);
-      canvas.getChart().addMouseListener(this);
-      canvas.getChart().addMouseMoveListener(this);
       canvas.getIndicators().add(new VOL());
 
-      int[] weights = { 85, 15, 15 };
+      int[] weights = { 85, 15 };
       form.setWeights(weights);
-/*    }*/
+    }
 
     updateLabels();
     getSite().getSelectionProvider().setSelection(new ChartSelection(getSelectedZone()));
   }
   
-  private void setPlotterParameters(NodeList parent, IChartPlotter obj)
-  {
-    for (int i = 0; i < parent.getLength(); i++)
-    {
-      Node node = parent.item(i);
-      if (node.getNodeName().equalsIgnoreCase("params") == true) //$NON-NLS-1$
-      {
-        NamedNodeMap map = node.getAttributes();
-        for (int ii = 0; ii < map.getLength(); ii++)
-        {
-          String name = map.item(ii).getNodeName();
-          String value = map.item(ii).getNodeValue();
-          if (name != null && value != null)
-            obj.setParameter(name, value);
-        }
-      }
-    }
-  }
-  
-  private void setToolParameters(NodeList parent, ToolPlugin obj)
+  private void setObjectParameters(NodeList parent, ChartObject obj)
   {
     for (int i = 0; i < parent.getLength(); i++)
     {
@@ -478,7 +423,10 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         element.setAttribute("height", String.valueOf(weights[i])); //$NON-NLS-1$
         ChartCanvas canvas = (ChartCanvas)chart.get(i);
         if (canvas.isMainChart())
+        {
           element.setAttribute("main", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+          element.setAttribute("style", String.valueOf(canvas.getStyle())); //$NON-NLS-1$
+        }
         document.getDocumentElement().appendChild(element);
 
         // Save the indicators configuration
@@ -721,96 +669,67 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
       }
     }
   }
+
+  /**
+   * Adds a new zone to the view relative to the given reference zone.
+   * 
+   * @param reference - the refrence zone
+   * @param position - 0=below the reference zone, 1=above the reference zone
+   * @return
+   */
+  public ChartCanvas addZone(ChartCanvas reference, int position)
+  {
+    int[] w = form.getWeights();
+
+    ChartCanvas canvas = new ChartCanvas(form, SWT.NONE);
+    canvas.registerContextMenu(getSite());
+    canvas.getChart().addMouseListener(this);
+    canvas.getChart().addMouseMoveListener(this);
+    canvas.setBarData(barData);
+
+    int[] weights = new int[chart.size()];
+    for (int i = 0; i < w.length; i++)
+      weights[i] = w[i];
+
+    if (container.getHorizontalBar() != null)
+      canvas.setChartOrigin(0 - container.getHorizontalBar().getSelection());
+
+    if (position == 0)
+    {
+      canvas.moveBelow(reference);
+      chart.add(chart.indexOf(reference) + 1, canvas);
+    }
+    else
+    {
+      canvas.moveAbove(reference);
+      chart.add(chart.indexOf(reference), canvas);
+    }
+    weights[chart.indexOf(canvas)] = 120;
+    form.layout();
+
+    ChartCanvas selectedZone = getSelectedZone();
+    selectedZone.deselectAll();
+    selectedZone.setHilight(false);
+    selectedZone = canvas;
+    selectedZone.setHilight(true);
+    getSite().getSelectionProvider().setSelection(new ChartSelection(selectedZone));
+    
+    return canvas;
+  }
+  
+  public void removeZone(ChartCanvas canvas)
+  {
+    canvas.removeMouseListener(this);
+    canvas.removeMouseMoveListener(this);
+    canvas.dispose();
+    chart.remove(chart.indexOf(canvas));
+    form.layout();
+  }
   
   public void updateView()
   {
     for (int i = 0; i < chart.size(); i++)
-      ((ChartCanvas)chart.get(i)).setData(data);
-  }
-
-  public void addOscillator(IChartPlotter chartPlotter, int position)
-  {
-/*    if (position == ChartParametersDialog.SELECTED_ZONE)
-      ((ChartCanvas)chart.get(selectedZone)).getIndicators().add(chartPlotter);
-    else
-    {
-      int[] w = form.getWeights();
-      ChartCanvas canvas = new ChartCanvas(form, SWT.NONE);
-      canvas.registerContextMenu(getSite());
-      canvas.addMouseListener(this);
-      canvas.addMouseMoveListener(this);
-      canvas.addSelectionChangedListener(this);
-      canvas.getIndicators().add(chartPlotter);
-      int[] weights = new int[chart.size()];
-      for (int i = 0; i < w.length; i++)
-        weights[i] = w[i];
-      if (container.getHorizontalBar() != null)
-        canvas.setChartOrigin(0 - container.getHorizontalBar().getSelection());
-
-      if (position == ChartParametersDialog.BELOW_SELECTED_ZONE)
-      {
-        canvas.moveBelow((Control)chart.get(selectedZone));
-        chart.add(selectedZone + 1, canvas);
-        weights[selectedZone + 1] = 140;
-      }
-      else
-      {
-        canvas.moveAbove((Control)chart.get(selectedZone));
-        chart.add(selectedZone, canvas);
-        weights[selectedZone] = 140;
-        selectedZone++;
-      }
-      
-      form.layout();
-    }
-    updateView();
-    savePreferences();*/
-  }
-  
-  public void editOscillator()
-  {
-/*    if (selectedChart != null && selectedChart instanceof IChartConfigurer)
-    {
-      ChartParametersDialog pdlg = new ChartParametersDialog((IChartConfigurer)selectedChart);
-      if (pdlg.openEdit() == ChartParametersDialog.OK)
-      {
-        ((ChartCanvas)chart.get(selectedZone)).updatePainter(selectedChart);
-        updateView();
-        savePreferences();
-      }
-    }*/
-  }
-  
-  public void removeOscillator()
-  {
-/*    if (selectedChart != null)
-    {
-      if (MessageDialog.openConfirm(container.getShell(), Messages.getString("ChartView.ConfirmDeleteTitle"), Messages.getString("ChartView.ConfirmDeleteMessage")) == true) //$NON-NLS-1$ //$NON-NLS-2$
-      {
-        for (int i = chart.size() - 1; i >= 0; i--)
-        {
-          ChartCanvas canvas = (ChartCanvas)chart.get(i);
-          for (int ii = canvas.getPainterCount() - 1; ii >= 0; ii--)
-          {
-            if (canvas.getPainter(ii) == selectedChart)
-            {
-              canvas.getIndicators().add(selectedChart);
-              if (canvas.getPainterCount() == 0)
-              {
-                canvas.removeMouseListener(this);
-                canvas.removeMouseMoveListener(this);
-                canvas.dispose();
-                chart.remove(i);
-                form.layout();
-              }
-              break;
-            }
-          }
-        }
-        updateView();
-        savePreferences();
-      }
-    }*/
+      ((ChartCanvas)chart.get(i)).setBarData(barData);
   }
   
   public ToolsCollection getTools()
@@ -1133,8 +1052,9 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
         return;
       selectedZone.select(newSelection);
       getSite().getSelectionProvider().setSelection(new ChartSelection(selectedZone));
-      if (e.button == 1)
+      if (e.button == 1 && !(newSelection instanceof ToolPlugin))
         return;
+      selectedItem = newSelection;
     }
     
     if (e.button == 1)
@@ -1200,8 +1120,6 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
   {
     ChartCanvas selectedZone = getSelectedZone();
     Object obj = selectedZone.getSelectedItem();
-    if (obj == null)
-      obj = selectedZone.getItemAt(e.x, e.y);
 
     if (mouseDown == true)
     {
@@ -1238,6 +1156,8 @@ public abstract class ChartView extends ViewPart implements ControlListener, Mou
     }
     else
     {
+      if (obj == null)
+        obj = selectedZone.getItemAt(e.x, e.y);
       if (obj == null)
       {
         if (lastSetCursor != arrowCursor)
