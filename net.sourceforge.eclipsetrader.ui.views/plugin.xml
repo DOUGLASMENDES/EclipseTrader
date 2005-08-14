@@ -241,6 +241,11 @@
                class="net.sourceforge.eclipsetrader.ui.views.charts.actions.AddIndicator"
                menubarPath="group3"
                id="chart.add"/>
+         <action
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.UpdateChart"
+               id="chart.refresh"
+               label="Update"
+               menubarPath="group4"/>
       </viewerContribution>
       <viewerContribution
             targetID="net.sourceforge.eclipsetrader.ui.views.RealtimeChart"
@@ -391,7 +396,7 @@
                label="%actions.update"
                tooltip="%actions.update"
                icon="icons/refresh.gif"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.UpdateChart"
                style="push"
                id="chart.refresh"/>
          <menu
@@ -527,7 +532,7 @@
             id="net.sourceforge.eclipsetrader.charts.accumulationDistribution"/>
       <plotter
             label="%BollingerBandsChart.label"
-            class="net.sourceforge.eclipsetrader.ui.views.charts.BollingerBandsChart"
+            class="net.sourceforge.eclipsetrader.ui.views.charts.indicators.BB"
             id="net.sourceforge.eclipsetrader.charts.bollinger"/>
       <plotter
             label="%AverageChart.label"
@@ -589,6 +594,10 @@
             label="%VolumeTrends.label"
             class="net.sourceforge.eclipsetrader.ui.views.charts.VolumeTrends"
             id="net.sourceforge.eclipsetrader.charts.vt"/>
+      <plotter
+            class="net.sourceforge.eclipsetrader.ui.views.charts.indicators.SD"
+            id="net.sourceforge.eclipsetrader.charts.vt"
+            label="Standard Deviation - SD"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
@@ -915,7 +924,7 @@
          <action
                label="%actions.update"
                definitionId="org.eclipse.ui.file.refresh"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.UpdateChart"
                style="push"
                menubarPath="chart/group4"
                id="chart.refresh">
