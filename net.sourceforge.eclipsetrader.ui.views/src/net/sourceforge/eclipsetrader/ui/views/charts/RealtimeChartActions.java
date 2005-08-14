@@ -41,23 +41,7 @@ public class RealtimeChartActions implements IViewActionDelegate
     {
       RealtimeChartView view = (RealtimeChartView)pg.getActivePart();
 
-      if (action.getId().equalsIgnoreCase("chart.add") == true)
-      {
-        NewIndicatorWizard wizard = new NewIndicatorWizard();
-//        wizard.setChartView(view);
-        wizard.open();
-      }
-      else if (action.getId().equalsIgnoreCase("chart.edit") == true)
-        view.editOscillator();
-      else if (action.getId().equalsIgnoreCase("chart.remove") == true)
-        view.removeOscillator();
-      else if (action.getId().equalsIgnoreCase("chart.line") == true)
-        view.setChartType(PriceChart.LINE);
-      else if (action.getId().equalsIgnoreCase("chart.candle") == true)
-        view.setChartType(PriceChart.CANDLE);
-      else if (action.getId().equalsIgnoreCase("chart.bar") == true)
-        view.setChartType(PriceChart.BAR);
-      else if (action.getId().equalsIgnoreCase("chart.refresh") == true)
+      if (action.getId().equalsIgnoreCase("chart.refresh") == true)
         view.refreshChart();
     }
   }

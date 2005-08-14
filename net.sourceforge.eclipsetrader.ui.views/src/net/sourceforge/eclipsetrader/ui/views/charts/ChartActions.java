@@ -78,10 +78,6 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
 //        wizard.setChartView(view);
         wizard.open();
       }
-      else if (action.getId().equalsIgnoreCase("chart.edit") == true)
-        view.editOscillator();
-      else if (action.getId().equalsIgnoreCase("chart.remove") == true)
-        view.removeOscillator();
       else if (action.getId().equalsIgnoreCase("chart.line") == true)
         view.setChartType(PriceChart.LINE);
       else if (action.getId().equalsIgnoreCase("chart.candle") == true)
