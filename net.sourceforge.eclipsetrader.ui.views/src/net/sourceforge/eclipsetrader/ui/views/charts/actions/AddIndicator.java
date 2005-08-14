@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.ui.views.charts.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.ui.views.charts.ChartCanvas;
 import net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection;
 import net.sourceforge.eclipsetrader.ui.views.charts.ChartView;
 import net.sourceforge.eclipsetrader.ui.views.charts.wizards.NewIndicatorWizard;
@@ -68,7 +69,16 @@ public class AddIndicator implements IViewActionDelegate, IWorkbenchWindowAction
       NewIndicatorWizard wizard = new NewIndicatorWizard();
       if (wizard.open() == true)
       {
-        view.getSelectedZone().getIndicators().add(wizard.getIndicator());
+        if (wizard.getZone() == NewIndicatorWizard.SELECTED_ZONE)
+          view.getSelectedZone().getIndicators().add(wizard.getIndicator());
+        else
+        {
+          int position = 0;
+          if (wizard.getZone() == NewIndicatorWizard.ABOVE_SELECTED_ZONE)
+            position = 1;
+          ChartCanvas canvas = view.addZone(view.getSelectedZone(), position);
+          canvas.getIndicators().add(wizard.getIndicator());
+        }
         view.savePreferences();
       }
     }
