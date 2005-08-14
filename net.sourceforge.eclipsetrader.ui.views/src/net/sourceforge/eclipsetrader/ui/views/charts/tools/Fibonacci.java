@@ -31,11 +31,59 @@ public class Fibonacci extends ToolPlugin
   private Color color = new Color(null, 0, 0, 0);
   private double[] retrace = { 1, 1, 2, 3, 5, 8 };
   private double value1 = 0, value2 = 0;
+  private int lastX = -1, lastY = -1;
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#containsPoint(int, int)
    */
-  public boolean containsPoint(int x, int y)
+  public boolean containsPoint(int x1, int y1)
+  {
+    if (p1 == null || p2 == null || isMousePressed() == true)
+      return true;
+
+    if (x1 < p1.x || x1 > p2.x)
+      return false;
+    
+    double total = 0;
+    for (int i = 0; i < retrace.length; i++)
+      total += retrace[i];
+
+    double step = Math.abs(p1.y - p2.y) / total;
+
+    if (Math.abs(y1 - p1.y) <= 2)
+      return true;
+    
+    if (p1.y < p2.y)
+    {
+      double y = p1.y;
+      for (int i = 0; i < retrace.length - 1 && y < p2.y; i++)
+      {
+        y += step * retrace[i];
+        if (Math.abs(y1 - (int)Math.round(y)) <= 2)
+          return true;
+      }
+    }
+    else
+    {
+      double y = p2.y;
+      for (int i = 0; i < retrace.length - 1 && y < p1.y; i++)
+      {
+        y += step * retrace[i];
+        if (Math.abs(y1 - (int)Math.round(y)) <= 2)
+          return true;
+      }
+    }
+
+    if (Math.abs(y1 - p2.y) <= 2)
+      return true;
+    
+    return false;
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#containsPoint(int, int)
+   */
+  public boolean isOnHandle(int x, int y)
   {
     if (p1 == null || p2 == null || isMousePressed() == true)
       return true;
@@ -85,6 +133,11 @@ public class Fibonacci extends ToolPlugin
         p2.y = y;
         selected = p2;
       }
+      else
+      {
+        lastX = me.x;
+        lastY = me.y;
+      }
     }
   }
 
@@ -99,6 +152,16 @@ public class Fibonacci extends ToolPlugin
       selected.x = me.x;
       selected.y = me.y;
     }
+    else if (isMousePressed())
+    {
+      getCanvas().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x) + 1, Math.abs(p1.y - p2.y) + 1, true);
+      p1.x += me.x - lastX;
+      p2.x += me.x - lastX;
+      p1.y += me.y - lastY;
+      p2.y += me.y - lastY;
+      lastX = me.x;
+      lastY = me.y;
+    }
   }
 
   /* (non-Javadoc)
@@ -107,7 +170,10 @@ public class Fibonacci extends ToolPlugin
   public void mouseReleased(MouseEvent me)
   {
     super.mouseReleased(me);
+
     selected = null;
+    lastX = -1;
+    lastY = -1;
     
     setParameter("x1", String.valueOf(p1.x));
     value1 = getScaler().convertToVal(p1.y);
@@ -123,8 +189,10 @@ public class Fibonacci extends ToolPlugin
    */
   public void scalerUpdate()
   {
-    p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
-    p2.y = getScaler().convertToY(Double.parseDouble(getParameter("y2")));
+    if (getParameter("y1") != null)
+      p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
+    if (getParameter("y2") != null)
+      p2.y = getScaler().convertToY(Double.parseDouble(getParameter("y2")));
   }
 
   /* (non-Javadoc)
