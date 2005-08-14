@@ -119,7 +119,8 @@ public class SellArrow extends ToolPlugin
    */
   public void scalerUpdate()
   {
-    p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
+    if (getParameter("y1") != null)
+      p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
   }
 
   /* (non-Javadoc)

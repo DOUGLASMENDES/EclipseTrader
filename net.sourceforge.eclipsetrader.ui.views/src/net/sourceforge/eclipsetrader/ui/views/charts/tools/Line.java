@@ -147,8 +147,10 @@ public class Line extends ToolPlugin
    */
   public void scalerUpdate()
   {
-    p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
-    p2.y = getScaler().convertToY(Double.parseDouble(getParameter("y2")));
+    if (getParameter("y1") != null)
+      p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
+    if (getParameter("y2") != null)
+      p2.y = getScaler().convertToY(Double.parseDouble(getParameter("y2")));
   }
 
   /* (non-Javadoc)
