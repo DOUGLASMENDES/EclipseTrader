@@ -12,33 +12,46 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Shell;
 
 
 /**
  */
-public abstract class ChartObject implements Observer
+public abstract class ChartObject
 {
-  private Canvas canvas;
+  private ChartCanvas canvas;
+  private BarData data;
   private Scaler scaler;
   private boolean pressed = false;
   private boolean selected = false;
   private Map parameters = new HashMap();
 
-  public Canvas getCanvas()
+  public ChartCanvas getCanvas()
   {
     return this.canvas;
   }
   
-  public void setCanvas(Canvas canvas)
+  public void setCanvas(ChartCanvas canvas)
   {
     this.canvas = canvas;
+  }
+  
+  /**
+   * Get the line data used as input to this plugin.
+   * 
+   * @return the input line data
+   */
+  public BarData getData()
+  {
+    return this.data;
+  }
+  
+  public void setBarData(BarData data)
+  {
+    this.data = data;
   }
   
   public Scaler getScaler()
@@ -48,11 +61,7 @@ public abstract class ChartObject implements Observer
   
   public void setScaler(Scaler scaler)
   {
-    if (this.scaler != null)
-      this.scaler.deleteObserver(this);
     this.scaler = scaler;
-    if (this.scaler != null)
-      this.scaler.addObserver(this);
   }
 
   public boolean containsPoint(int x, int y)
@@ -149,14 +158,5 @@ public abstract class ChartObject implements Observer
   public void setSelected(boolean selected)
   {
     this.selected = selected;
-  }
-
-  /* (non-Javadoc)
-   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-   */
-  public void update(Observable o, Object arg)
-  {
-    if (o == scaler)
-      scalerUpdate();
   }
 }
