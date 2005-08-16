@@ -11,13 +11,10 @@
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.ICollectionObserver;
 
@@ -49,7 +46,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 /**
  * Define a canvas over which a IChartPlotter object can draw.
  */
-public class ChartCanvas extends Composite implements ControlListener, Observer, PaintListener
+public class ChartCanvas extends Composite implements ControlListener, PaintListener
 {
   public static final int LINE = 0;
   public static final int BARS = 1;
@@ -156,7 +153,7 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
       {
         if (obj instanceof IndicatorPlugin)
         {
-          ((IndicatorPlugin)obj).setCanvas(ChartCanvas.this.getChart());
+          ((IndicatorPlugin)obj).setCanvas(ChartCanvas.this);
           if (barData != null)
           {
             ((IndicatorPlugin)obj).setBarData(barData);
@@ -164,16 +161,11 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
             updateLabels();
           }
         }
-        
-        if (obj instanceof Observable)
-          ((Observable)obj).addObserver(ChartCanvas.this);
       }
       public void itemRemoved(Object obj)
       {
         redraw();
         updateLabels();
-        if (obj instanceof Observable)
-          ((Observable)obj).deleteObserver(ChartCanvas.this);
       }
     });
     
@@ -181,23 +173,19 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
     tools.addObserver(new ICollectionObserver() {
       public void itemAdded(Object obj)
       {
-        ((ToolPlugin)obj).setCanvas(chart);
+        ((ToolPlugin)obj).setCanvas(ChartCanvas.this);
+        ((ToolPlugin)obj).setBarData(barData);
         ((ToolPlugin)obj).setScaler(scaler);
         if (barData != null)
         {
           getChart().redraw();
           updateLabels();
         }
-        
-        if (obj instanceof Observable)
-          ((Observable)obj).addObserver(ChartCanvas.this);
       }
       public void itemRemoved(Object obj)
       {
         getChart().redraw();
         updateLabels();
-        if (obj instanceof Observable)
-          ((Observable)obj).deleteObserver(ChartCanvas.this);
       }
     });
     
@@ -361,15 +349,16 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
       if (indicators.get(i) instanceof IndicatorPlugin)
         ((IndicatorPlugin)indicators.get(i)).setBarData(barData);
     }
+    for (int i = 0; i < tools.size(); i++)
+      tools.get(i).setBarData(barData);
 
     if (chartContainer.isDisposed() == true)
       return;
     chartContainer.getDisplay().asyncExec(new Runnable() {
       public void run()  
       {
-        setControlSize();
-        chart.redraw();
-        scale.redraw();
+        setChartSize();
+        redraw();
         container.layout();
       }
     });
@@ -449,9 +438,15 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
    */
   public void redraw()
   {
+    updateScaler();
+    redrawChart();
+    redrawScale();
+  }
+
+  private void updateScaler()
+  {
     double scaleHigh = -99999999;
     double scaleLow = 99999999;
-    List output = new ArrayList();
 
     if (isMainChart())
     {
@@ -471,12 +466,15 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
         for(Iterator iter = indicator.getOutput().iterator(); iter.hasNext(); )
         {
           PlotLine plotLine = (PlotLine)iter.next();
+          if (plotLine.getType() == PlotLine.INVISIBLE)
+            continue;
+          if (plotLine.getScaleFlag())
+            continue;
           if (plotLine.getHigh() > scaleHigh)
             scaleHigh = plotLine.getHigh();
           if (plotLine.getLow() < scaleLow)
             scaleLow = plotLine.getLow();
           plotLine.setSelected(indicator.isSelected());
-          output.add(plotLine);
         }
       }
     }
@@ -488,11 +486,12 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
     
     // Set the scaler values
     scaler.set(chart.getSize().y, scaleHigh, scaleLow, logScaleHigh, logRange, logScale);
-    
-    // Empty the cache
+  }
+
+  private void redrawChart()
+  {
     plotlineCache.clear();
 
-    // Draw the chart
     if (chartImage != null)
     {
       GC gc = new GC(chartImage);
@@ -618,33 +617,50 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
           }
         }
         
-        for(Iterator iter = output.iterator(); iter.hasNext(); )
+        for (int i = 0; i < indicators.size(); i++)
         {
-          PlotLine plotLine = (PlotLine)iter.next();
-          switch(plotLine.getType())
+          Object obj = indicators.get(i);
+          if (obj instanceof IndicatorPlugin)
           {
-            case PlotLine.LINE:
-            case PlotLine.DOT:
-            case PlotLine.DASH:
-              drawLine(gc, plotLine);
-              break;
-            case PlotLine.HISTOGRAM:
-              drawHistogram(gc, plotLine);
-              break;
-            case PlotLine.HISTOGRAM_BAR:
-              drawHistogramBar(gc, plotLine);
-              break;
-            case PlotLine.HORIZONTAL:
-              drawHorizontalLine(gc, plotLine);
-              break;
+            IndicatorPlugin indicator = (IndicatorPlugin)obj;
+            for(Iterator iter = indicator.getOutput().iterator(); iter.hasNext(); )
+            {
+              PlotLine plotLine = (PlotLine)iter.next();
+              switch(plotLine.getType())
+              {
+                case PlotLine.LINE:
+                case PlotLine.DOT:
+                case PlotLine.DASH:
+                  drawLine(gc, plotLine);
+                  break;
+                case PlotLine.HISTOGRAM:
+                  drawHistogram(gc, plotLine);
+                  break;
+                case PlotLine.HISTOGRAM_BAR:
+                  drawHistogramBar(gc, plotLine);
+                  break;
+                case PlotLine.HORIZONTAL:
+                  drawHorizontalLine(gc, plotLine);
+                  break;
+              }
+            }
           }
         }
       }
 
       gc.dispose();
     }
-    
-    // Draw the scale
+
+    for(int i = 0; i < tools.size(); i++)
+      tools.get(i).invalidate();
+
+    // Forces a redraw
+    if (chart != null)
+      chart.redraw();
+  }
+
+  private void redrawScale()
+  {
     if (scaleImage != null)
     {
       GC gc = new GC(scaleImage);
@@ -695,21 +711,26 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
     }
 
     // Forces a redraw
-    if (chart != null)
-      chart.redraw();
     if (scale != null)
       scale.redraw();
   }
 
   private void drawLine(GC gc, PlotLine plotLine)
   {
+    Scaler scale = scaler;
+    if (plotLine.getScaleFlag())
+    {
+      scale = new Scaler();
+      scale.set(scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+    }
+    
     int ofs = barData.size() - plotLine.getSize();
     int[] pointArray = new int[plotLine.getSize() * 2];
     int x = getMargin() + columnWidth / 2 + ofs * columnWidth;
     for (int i = 0, pa = 0; i < plotLine.getSize(); i++, x += columnWidth)
     {
       pointArray[pa++] = x;
-      pointArray[pa++] = scaler.convertToY(plotLine.getData(i));
+      pointArray[pa++] = scale.convertToY(plotLine.getData(i));
     }
 
     gc.setForeground(plotLine.getColor());
@@ -744,10 +765,17 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
 
   private void drawHistogram(GC gc, PlotLine plotLine)
   {
+    Scaler scale = scaler;
+    if (plotLine.getScaleFlag())
+    {
+      scale = new Scaler();
+      scale.set(scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+    }
+    
     gc.setLineStyle(SWT.LINE_SOLID);
     gc.setBackground(plotLine.getColor());
 
-    int zero = scaler.convertToY(0);
+    int zero = scale.convertToY(0);
     int ofs = barData.size() - plotLine.getSize();
     int x = -1;
     int x2 = getMargin() + columnWidth / 2 + ofs * columnWidth;
@@ -756,7 +784,7 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
     int[] pointArray = new int[8];
     for (int i = 0; i < plotLine.getSize(); i++, x2 += columnWidth)
     {
-      y2 = scaler.convertToY(plotLine.getData(i));
+      y2 = scale.convertToY(plotLine.getData(i));
 
       pointArray[0] = x; pointArray[1] = zero;
       pointArray[2] = x; pointArray[3] = y;
@@ -772,14 +800,21 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
 
   private void drawHistogramBar(GC gc, PlotLine plotLine)
   {
+    Scaler scale = scaler;
+    if (plotLine.getScaleFlag())
+    {
+      scale = new Scaler();
+      scale.set(scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+    }
+    
     gc.setLineStyle(SWT.LINE_SOLID);
 
-    int zero = scaler.convertToY(0);
+    int zero = scale.convertToY(0);
     int ofs = barData.size() - plotLine.getSize();
     int x = getMargin() + columnWidth / 2 + ofs * columnWidth;
     for (int i = 0; i < plotLine.getSize(); i++, x += columnWidth)
     {
-      int y = scaler.convertToY(plotLine.getData(i));
+      int y = scale.convertToY(plotLine.getData(i));
 
       Color color = plotLine.getColor(i);
       if (color == null)
@@ -836,17 +871,18 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
   public void controlResized(ControlEvent e)
   {
     if (e.getSource() == chartContainer)
-      setControlSize();
+      setChartSize();
     else if (e.getSource() == scaleContainer)
     {
       scale.setSize(scaleWidth, scaleContainer.getClientArea().height);
       if (scaleImage != null)
         scaleImage.dispose();
       scaleImage = new Image(scale.getDisplay(), scale.getSize().x, scale.getSize().y);
+      redrawScale();
     }
   }
   
-  private void setControlSize()
+  private void setChartSize()
   {
     if (barData != null)
     {
@@ -864,7 +900,7 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
     if (chart.getSize().x != 0 && chart.getSize().y != 0)
       chartImage = new Image(chart.getDisplay(), chart.getSize().x, chart.getSize().y);
     
-    redraw();
+    redrawChart();
   }
   
   public void deselectAll()
@@ -1037,14 +1073,5 @@ public class ChartCanvas extends Composite implements ControlListener, Observer,
   public ToolsCollection getTools()
   {
     return tools;
-  }
-
-  /* (non-Javadoc)
-   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-   */
-  public void update(Observable o, Object arg)
-  {
-    if (o instanceof IChartPlotter)
-      updateLabels();
   }
 }
