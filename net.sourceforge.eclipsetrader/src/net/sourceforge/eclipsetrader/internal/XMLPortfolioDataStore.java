@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,8 +36,6 @@ import org.w3c.dom.NodeList;
 /**
  * Default implementation of the IPortfolioDataStore interface.<br>
  * Provides an XML storage for the portfolio data.<br>
- * 
- * @author Marco Maccaferri - 11/08/2004
  */
 public class XMLPortfolioDataStore
 {
@@ -47,7 +44,6 @@ public class XMLPortfolioDataStore
   private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
   private NumberFormat nf = NumberFormat.getInstance();
   private NumberFormat pf = NumberFormat.getInstance();
-  private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
   private Vector data = new Vector();
   private PortfolioData[] dataArray;
 
