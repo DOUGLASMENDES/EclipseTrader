@@ -26,13 +26,26 @@ public class BarData
   public static final int LOW = 2;
   public static final int CLOSE = 3;
   public static final int VOLUME = 4;
+  public static final int INTERVAL_MINUTE1 = 0;
+  public static final int INTERVAL_MINUTE2 = 2;
+  public static final int INTERVAL_MINUTE5 = 3;
+  public static final int INTERVAL_MINUTE10 = 4;
+  public static final int INTERVAL_MINUTE15 = 5;
+  public static final int INTERVAL_MINUTE30 = 6;
+  public static final int INTERVAL_MINUTE60 = 7;
+  public static final int INTERVAL_DAILY = 8;
+  public static final int INTERVAL_WEEKLY = 9;
+  public static final int INTERVAL_MONTHLY = 10;
   private List objects = new ArrayList();
   private double high = -99999999;
   private double low = 99999999;
+  private int compression = INTERVAL_DAILY;
 
   public boolean add(IChartData obj)
   {
     if (objects.indexOf(obj) != -1)
+      return false;
+    if (obj.getMaxPrice() == 0 || obj.getMinPrice() == 0)
       return false;
 
     if (obj.getMaxPrice() > high)
@@ -79,6 +92,16 @@ public class BarData
     objects.clear();
     high = -99999999;
     low = 99999999;
+  }
+  
+  public int getCompression()
+  {
+    return compression;
+  }
+  
+  public void setCompression(int compression)
+  {
+    this.compression = compression;
   }
 
   public PlotLine getInput(int field)
@@ -137,9 +160,12 @@ public class BarData
   
   public int getX(Date date)
   {
+    if (date == null)
+      return -1;
+
     for (int i = 0; i < size(); i++)
     {
-      if (get(i).getDate().equals(date) || get(i).getDate().before(date))
+      if (get(i).getDate().equals(date) || get(i).getDate().after(date))
         return i;
     }
     
