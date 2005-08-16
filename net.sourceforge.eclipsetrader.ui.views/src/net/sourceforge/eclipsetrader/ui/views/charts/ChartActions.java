@@ -69,7 +69,7 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
       else if (pg.getActivePart() instanceof RealtimeChartView)
       {
         if (action.getId().equalsIgnoreCase("chart.refresh") == true)
-          ((RealtimeChartView)view).refreshChart();
+          ((RealtimeChartView)view).updateChart();
       }
 
       if (action.getId().equalsIgnoreCase("chart.add") == true)
@@ -78,12 +78,6 @@ public class ChartActions implements IViewActionDelegate, IWorkbenchWindowAction
 //        wizard.setChartView(view);
         wizard.open();
       }
-      else if (action.getId().equalsIgnoreCase("chart.line") == true)
-        view.setChartType(PriceChart.LINE);
-      else if (action.getId().equalsIgnoreCase("chart.candle") == true)
-        view.setChartType(PriceChart.CANDLE);
-      else if (action.getId().equalsIgnoreCase("chart.bar") == true)
-        view.setChartType(PriceChart.BAR);
       else if (action.getId().equalsIgnoreCase("view.all") == true)
         view.setLimitPeriod(0);
       else if (action.getId().equalsIgnoreCase("view.last6months") == true)

@@ -10,8 +10,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
-import net.sourceforge.eclipsetrader.ui.views.charts.wizards.NewIndicatorWizard;
-
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
@@ -42,7 +40,7 @@ public class RealtimeChartActions implements IViewActionDelegate
       RealtimeChartView view = (RealtimeChartView)pg.getActivePart();
 
       if (action.getId().equalsIgnoreCase("chart.refresh") == true)
-        view.refreshChart();
+        view.updateChart();
     }
   }
 
@@ -51,17 +49,5 @@ public class RealtimeChartActions implements IViewActionDelegate
    */
   public void selectionChanged(IAction action, ISelection selection)
   {
-    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-    if (page != null && page.getActivePart() instanceof RealtimeChartView)
-    {
-      RealtimeChartView view = (RealtimeChartView)page.getActivePart();
-
-      if (action.getId().equalsIgnoreCase("chart.line") == true)
-        action.setChecked(view.getChartType() == PriceChart.LINE);
-      else if (action.getId().equalsIgnoreCase("chart.candle") == true)
-        action.setChecked(view.getChartType() == PriceChart.CANDLE);
-      else if (action.getId().equalsIgnoreCase("chart.bar") == true)
-        action.setChecked(view.getChartType() == PriceChart.BAR);
-    }
   }
 }
