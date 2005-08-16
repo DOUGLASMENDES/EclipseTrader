@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Label;
 public abstract class IndicatorPlugin extends ChartObject
 {
   private List output = new ArrayList();
-  private BarData data;
 
   /**
    * Return the name of the chart.
@@ -37,21 +36,6 @@ public abstract class IndicatorPlugin extends ChartObject
   public String getPluginName()
   {
     return "";
-  }
-  
-  /**
-   * Get the line data used as input to this plugin.
-   * 
-   * @return the input line data
-   */
-  public BarData getData()
-  {
-    return this.data;
-  }
-  
-  public void setBarData(BarData data)
-  {
-    this.data = data;
   }
 
   /**
