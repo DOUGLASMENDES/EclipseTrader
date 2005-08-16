@@ -10,6 +10,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts;
 
+import java.util.Date;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.GC;
@@ -43,6 +45,23 @@ public abstract class ToolPlugin extends ChartObject
       action.setEnabled(true);
       action = null;
     }
+  }
+  
+  public int getX(Date date)
+  {
+    return getCanvas().getMargin() + getCanvas().getColumnWidth() / 2 + getData().getX(date) * getCanvas().getColumnWidth();
+  }
+  
+  public Date getDate(int x)
+  {
+    int index = (x - (getCanvas().getMargin() + (getCanvas().getColumnWidth() / 2))) / getCanvas().getColumnWidth();
+    if (index >= 0 && index < getData().size())
+      return getData().get(index).getDate();
+    return null;
+  }
+  
+  public void invalidate()
+  {
   }
 
   /**
