@@ -14,6 +14,7 @@ import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.monitors.HistoricalChartMonitor;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.StockList;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
@@ -123,23 +124,26 @@ public class StockListView extends ViewPart
   
   public void updateChartData()
   {
-    final IChartDataProvider dataProvider = TraderPlugin.getChartDataProvider();
-    if (dataProvider == null) return;
-    final IBasicData[] data = stockList.getData();
-    if (data == null) return;
+    if (TraderPlugin.getChartDataProvider() == null)
+      return;
+    if (stockList.getData() == null)
+      return;
     
     Job job = new Job(Messages.getString("HistoryChartView.updateChart")) { //$NON-NLS-1$
       public IStatus run(IProgressMonitor monitor)
       {
+        IChartDataProvider dataProvider = TraderPlugin.getChartDataProvider();
+        IBasicData[] data = stockList.getData();
         monitor.beginTask(Messages.getString("HistoryChartView.updateChart"), data.length);
         for (int i = 0; i < data.length; i++)
         {
+          IBasicData basicData = data[i];
+          IChartData[] chartData = TraderPlugin.getDataStore().getHistoricalData(basicData);
           try {
-            monitor.subTask(data[i].getDescription());
-            IChartData[] chartData = new IChartData[TraderPlugin.getDataStore().getHistoricalData(data[i]).size()];
-            TraderPlugin.getDataStore().getHistoricalData(data[i]).toArray(chartData);
-            chartData = dataProvider.update(data[i], chartData);
-            TraderPlugin.getDataStore().storeHistoryData(data[i], chartData);
+            IChartData[] newChartData = dataProvider.update(basicData, chartData);
+            TraderPlugin.getDataStore().storeHistoryData(basicData, newChartData);
+            if (newChartData.length != chartData.length)
+              HistoricalChartMonitor.getInstance().notifyUpdate(basicData);
             monitor.worked(1);
             if (monitor.isCanceled() == true)
               break;
