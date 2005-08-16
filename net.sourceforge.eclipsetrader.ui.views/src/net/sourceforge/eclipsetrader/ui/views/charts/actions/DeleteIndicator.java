@@ -14,6 +14,7 @@ import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection;
 import net.sourceforge.eclipsetrader.ui.views.charts.ChartView;
 import net.sourceforge.eclipsetrader.ui.views.charts.IndicatorPlugin;
+import net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -63,7 +64,10 @@ public class DeleteIndicator implements IViewActionDelegate, IWorkbenchWindowAct
       Object item = view.getSelectedZone().getSelectedItem();
       if (MessageDialog.openConfirm(view.getViewSite().getShell(), Messages.getString("ChartView.ConfirmDeleteTitle"), Messages.getString("ChartView.ConfirmDeleteMessage")) == true) //$NON-NLS-1$ //$NON-NLS-2$
       {
-        view.getSelectedZone().getIndicators().remove((IndicatorPlugin)item);
+        if (item instanceof IndicatorPlugin)
+          view.getSelectedZone().getIndicators().remove((IndicatorPlugin)item);
+        if (item instanceof ToolPlugin)
+          view.getSelectedZone().getTools().remove((ToolPlugin)item);
         view.getSite().getSelectionProvider().setSelection(new ChartSelection(view.getSelectedZone()));
         view.savePreferences();
       }
@@ -76,7 +80,7 @@ public class DeleteIndicator implements IViewActionDelegate, IWorkbenchWindowAct
   public void selectionChanged(IAction action, ISelection selection)
   {
     if (selection instanceof ChartSelection && ((ChartSelection)selection).getChartCanvas() != null)
-      action.setEnabled(((ChartSelection)selection).getChartCanvas().getSelectedItem() instanceof IndicatorPlugin);
+      action.setEnabled(((ChartSelection)selection).getChartCanvas().getSelectedItem() instanceof IndicatorPlugin || ((ChartSelection)selection).getChartCanvas().getSelectedItem() instanceof ToolPlugin);
     else
       action.setEnabled(false);
   }
