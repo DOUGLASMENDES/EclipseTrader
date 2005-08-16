@@ -13,11 +13,10 @@ package net.sourceforge.eclipsetrader.ui.views.charts;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 /**
  */
-public class Scaler extends Observable
+public class Scaler
 {
   private int height = 0;
   private boolean logScale = false;
@@ -107,9 +106,6 @@ public class Scaler extends Observable
       range = scaleHigh - scaleLow;
       scaler = height / range;
     }
-    
-    setChanged();
-    notifyObservers();
   }
 
   public int convertToY(double val)
