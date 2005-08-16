@@ -380,7 +380,7 @@
                label="%actions.next"
                tooltip="%actions.next"
                icon="icons/forward.gif"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.MoveToNext"
                style="push"
                id="chart.next"/>
          <action
@@ -388,7 +388,7 @@
                label="%actions.previous"
                tooltip="%actions.previous"
                icon="icons/back.gif"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.MoveToPrevious"
                style="push"
                id="chart.previous"/>
          <action
@@ -405,25 +405,25 @@
                id="chart.menu2"/>
          <action
                label="%actions.viewLast2Years"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="period"
                id="view.last2years"/>
          <action
                label="%actions.viewLastYear"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="period"
                id="view.last1year"/>
          <action
                label="%actions.viewLast6Months"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="period"
                id="view.last6months"/>
          <action
                label="%actions.viewAll"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="all"
                id="view.all"/>
@@ -780,9 +780,6 @@
                menubarPath="chart/group1"
                state="false"
                id="chart.bar">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection"/>
-            </enablement>
          </action>
          <action
                label="%chart.candle"
@@ -792,9 +789,6 @@
                menubarPath="chart/group1"
                state="false"
                id="chart.candle">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection"/>
-            </enablement>
          </action>
          <action
                label="%chart.line"
@@ -804,9 +798,6 @@
                menubarPath="chart/group1"
                state="false"
                id="chart.line">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartSelection"/>
-            </enablement>
          </action>
          <action
                class="net.sourceforge.eclipsetrader.ui.views.charts.actions.ToggleLogScaleAction"
@@ -861,65 +852,47 @@
          </menu>
          <action
                label="%actions.viewAll"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="chart/show/group1"
                id="view.all">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
                label="%actions.viewLast2Years"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="chart/show/group2"
                id="view.last2years">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
                label="%actions.viewLastYear"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="chart/show/group2"
                id="view.last1year">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
                label="%actions.viewLast6Months"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.SetPeriod"
                style="radio"
                menubarPath="chart/show/group2"
                id="view.last6months">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
                label="%actions.next"
                definitionId="net.sourceforge.eclipsetrader.commands.next"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.MoveToNext"
                style="push"
                menubarPath="chart/group3"
                id="chart.next">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
                label="%actions.previous"
                definitionId="net.sourceforge.eclipsetrader.commands.previous"
-               class="net.sourceforge.eclipsetrader.ui.views.charts.ChartActions"
+               class="net.sourceforge.eclipsetrader.ui.views.charts.actions.MoveToPrevious"
                style="push"
                menubarPath="chart/group3"
                id="chart.previous">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
          <action
                label="%actions.update"
@@ -928,9 +901,6 @@
                style="push"
                menubarPath="chart/group4"
                id="chart.refresh">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.ui.views.charts.ChartPlotterSelection"/>
-            </enablement>
          </action>
       </actionSet>
    </extension>
