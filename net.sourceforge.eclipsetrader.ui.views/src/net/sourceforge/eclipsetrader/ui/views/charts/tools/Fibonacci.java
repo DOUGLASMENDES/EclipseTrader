@@ -10,6 +10,11 @@
  *******************************************************************************/
 package net.sourceforge.eclipsetrader.ui.views.charts.tools;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin;
 
 import org.eclipse.swt.SWT;
@@ -30,8 +35,10 @@ public class Fibonacci extends ToolPlugin
   private Point selected = null;
   private Color color = new Color(null, 0, 0, 0);
   private double[] retrace = { 1, 1, 2, 3, 5, 8 };
+  private Date date1, date2;
   private double value1 = 0, value2 = 0;
   private int lastX = -1, lastY = -1;
+  private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#containsPoint(int, int)
@@ -148,13 +155,13 @@ public class Fibonacci extends ToolPlugin
   {
     if (selected != null)
     {
-      getCanvas().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x) + 1, Math.abs(p1.y - p2.y) + 1, true);
-      selected.x = me.x;
+      getCanvas().getChart().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x) + 1, Math.abs(p1.y - p2.y) + 1, true);
+      selected.x = getX(getDate(me.x));
       selected.y = me.y;
     }
     else if (isMousePressed())
     {
-      getCanvas().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x) + 1, Math.abs(p1.y - p2.y) + 1, true);
+      getCanvas().getChart().redraw(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.abs(p1.x - p2.x) + 1, Math.abs(p1.y - p2.y) + 1, true);
       p1.x += me.x - lastX;
       p2.x += me.x - lastX;
       p1.y += me.y - lastY;
@@ -174,25 +181,65 @@ public class Fibonacci extends ToolPlugin
     selected = null;
     lastX = -1;
     lastY = -1;
-    
-    setParameter("x1", String.valueOf(p1.x));
+
+    date1 = getDate(p1.x);
     value1 = getScaler().convertToVal(p1.y);
-    setParameter("y1", String.valueOf(value1));
-    
-    setParameter("x2", String.valueOf(p2.x));
+    date2 = getDate(p2.x);
     value2 = getScaler().convertToVal(p2.y);
-    setParameter("y2", String.valueOf(value2));
+
+    Map map = new HashMap();
+    map.put("x1", df.format(date1));
+    map.put("y1", String.valueOf(value1));
+    map.put("x2", df.format(date2));
+    map.put("y2", String.valueOf(value2));
+    setParameters(map);
   }
 
   /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#scalerUpdate()
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String,java.lang.String)
    */
-  public void scalerUpdate()
+  public void setParameter(String name, String value)
   {
-    if (getParameter("y1") != null)
-      p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
-    if (getParameter("y2") != null)
-      p2.y = getScaler().convertToY(Double.parseDouble(getParameter("y2")));
+    if (name.equals("x1"))
+    {
+      try {
+        date1 = df.parse(value);
+      } catch(Exception e) {}
+    }
+    else if (name.equals("y1"))
+      value1 = Double.parseDouble(value);
+    else if (name.equals("x2"))
+    {
+      try {
+        date2 = df.parse(value);
+      } catch(Exception e) {}
+    }
+    else if (name.equals("y2"))
+      value2 = Double.parseDouble(value);
+
+    super.setParameter(name, value);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#invalidate()
+   */
+  public void invalidate()
+  {
+    if (date1 != null)
+    {
+      if (p1 == null)
+        p1 = new Point(0, 0);
+      p1.x = getX(date1);
+      p1.y = getScaler().convertToY(value1);
+    }
+
+    if (date2 != null)
+    {
+      if (p2 == null)
+        p2 = new Point(0, 0);
+      p2.x = getX(date2);
+      p2.y = getScaler().convertToY(value2);
+    }
   }
 
   /* (non-Javadoc)
@@ -232,38 +279,6 @@ public class Fibonacci extends ToolPlugin
 
       gc.drawLine(p1.x, p2.y, p2.x, p2.y);
     }
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String, java.lang.String)
-   */
-  public void setParameter(String name, String value)
-  {
-    if (name.equals("x1"))
-    {
-      if (p1 == null)
-        p1 = new Point(0, 0);
-      p1.x = Integer.parseInt(value);
-    }
-    else if (name.equals("y1"))
-    {
-      if (p1 == null)
-        p1 = new Point(0, 0);
-      p1.y = getScaler().convertToY(Double.parseDouble(value));
-    }
-    else if (name.equals("x2"))
-    {
-      if (p2 == null)
-        p2 = new Point(0, 0);
-      p2.x = Integer.parseInt(value);
-    }
-    else if (name.equals("y2"))
-    {
-      if (p2 == null)
-        p2 = new Point(0, 0);
-      p2.y = getScaler().convertToY(Double.parseDouble(value));
-    }
-    super.setParameter(name, value);
   }
 
   /* (non-Javadoc)

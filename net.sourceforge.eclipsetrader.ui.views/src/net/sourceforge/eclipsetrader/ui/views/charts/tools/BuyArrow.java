@@ -12,6 +12,10 @@ package net.sourceforge.eclipsetrader.ui.views.charts.tools;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
 import net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin;
@@ -27,11 +31,12 @@ import org.eclipse.swt.graphics.Point;
  */
 public class BuyArrow extends ToolPlugin
 {
-  private Point p1 = null;
-  private Point selected = null;
-  private double value1 = 0;
-  private Image image;
-  private ImageData imageData;
+  protected Point p1 = null;
+  protected Date date1;
+  protected double value1 = 0;
+  protected Image image;
+  protected ImageData imageData;
+  protected SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
   
   public BuyArrow()
   {
@@ -66,15 +71,7 @@ public class BuyArrow extends ToolPlugin
     super.mousePressed(me);
     
     if (p1 == null)
-    {
       p1 = new Point(me.x, me.y);
-      selected = p1;
-    }
-    else
-    {
-      if (Math.abs(me.x - (p1.x - image.getImageData().width / 2)) <= image.getImageData().width && Math.abs(me.y - p1.y) <= image.getImageData().height)
-        selected = p1;
-    }
     
     mouseDragged(me);
   }
@@ -84,10 +81,10 @@ public class BuyArrow extends ToolPlugin
    */
   public void mouseDragged(MouseEvent me)
   {
-    if (isMousePressed() == true && selected != null)
+    if (isMousePressed() == true)
     {
-      getCanvas().redraw(p1.x - imageData.width / 2, p1.y, imageData.width, imageData.height, true);
-      p1.x = me.x;
+      getCanvas().getChart().redraw(p1.x - imageData.width / 2, p1.y, imageData.width, imageData.height, true);
+      p1.x = getX(getDate(me.x));
       p1.y = me.y;
     }
   }
@@ -98,11 +95,45 @@ public class BuyArrow extends ToolPlugin
   public void mouseReleased(MouseEvent me)
   {
     super.mouseReleased(me);
-    selected = null;
     
-    super.setParameter("x1", String.valueOf(p1.x));
+    date1 = getDate(p1.x);
     value1 = getScaler().convertToVal(p1.y);
-    super.setParameter("y1", String.valueOf(value1));
+
+    Map map = new HashMap();
+    map.put("x1", df.format(date1));
+    map.put("y1", String.valueOf(value1));
+    setParameters(map);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String,java.lang.String)
+   */
+  public void setParameter(String name, String value)
+  {
+    if (name.equals("x1"))
+    {
+      try {
+        date1 = df.parse(value);
+      } catch(Exception e) {}
+    }
+    else if (name.equals("y1"))
+      value1 = Double.parseDouble(value);
+
+    super.setParameter(name, value);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#invalidate()
+   */
+  public void invalidate()
+  {
+    if (date1 != null)
+    {
+      if (p1 == null)
+        p1 = new Point(0, 0);
+      p1.x = getX(date1);
+      p1.y = getScaler().convertToY(value1);
+    }
   }
 
   /* (non-Javadoc)
@@ -112,34 +143,5 @@ public class BuyArrow extends ToolPlugin
   {
     if (p1 != null && image != null)
       gc.drawImage(image, p1.x - imageData.width / 2, p1.y);
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#scalerUpdate()
-   */
-  public void scalerUpdate()
-  {
-    if (getParameter("y1") != null)
-      p1.y = getScaler().convertToY(Double.parseDouble(getParameter("y1")));
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.ui.views.charts.ToolPlugin#setParameter(java.lang.String, java.lang.String)
-   */
-  public void setParameter(String name, String value)
-  {
-    if (name.equals("x1"))
-    {
-      if (p1 == null)
-        p1 = new Point(0, 0);
-      p1.x = Integer.parseInt(value);
-    }
-    else if (name.equals("y1"))
-    {
-      if (p1 == null)
-        p1 = new Point(0, 0);
-      p1.y = getScaler().convertToY(Double.parseDouble(value));
-    }
-    super.setParameter(name, value);
   }
 }
