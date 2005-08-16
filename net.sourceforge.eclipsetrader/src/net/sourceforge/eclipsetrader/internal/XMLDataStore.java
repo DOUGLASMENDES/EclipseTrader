@@ -18,10 +18,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +36,6 @@ import net.sourceforge.eclipsetrader.IAlertData;
 import net.sourceforge.eclipsetrader.IAlertSource;
 import net.sourceforge.eclipsetrader.IBasicData;
 import net.sourceforge.eclipsetrader.IChartData;
-import net.sourceforge.eclipsetrader.IChartDataListener;
 import net.sourceforge.eclipsetrader.IDataStore;
 import net.sourceforge.eclipsetrader.IExtendedData;
 import net.sourceforge.eclipsetrader.ObservableCollection;
@@ -66,8 +63,8 @@ public class XMLDataStore implements IDataStore
   private NumberFormat pf = NumberFormat.getInstance(Locale.US);
   private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
   private SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
+  private SimpleDateFormat dtf = new SimpleDateFormat("dd/MM/yy HH:mm:ss"); //$NON-NLS-1$
   private ObservableCollection stockwatchData;
-  private Map historicalData = new HashMap();
 
   public XMLDataStore()
   {
@@ -351,84 +348,110 @@ public class XMLDataStore implements IDataStore
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IDataStore#getHistoricalData(net.sourceforge.eclipsetrader.IBasicData)
    */
-  public ObservableCollection getHistoricalData(IBasicData data)
+  public IChartData[] getHistoricalData(IBasicData data)
   {
-    ObservableCollection list = (ObservableCollection)historicalData.get(data);
+    return loadChartData(data, new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"), df);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#getIntradayData(net.sourceforge.eclipsetrader.IBasicData)
+   */
+  public IChartData[] getIntradayData(IBasicData data)
+  {
+    return loadChartData(data, new File(INTRADAY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"), dtf);
+  }
+
+  private IChartData[] loadChartData(IBasicData data, File file, SimpleDateFormat dateFormat)
+  {
+    ObservableCollection list = new ObservableCollection();
     
-    if (list == null)
-    {
-      list = new ObservableCollection();
+    if (file.exists() == true)
+      try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(file);
 
-      File f = new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"); //$NON-NLS-1$
-      if (f.exists() == true)
-        try {
-          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-          DocumentBuilder builder = factory.newDocumentBuilder();
-          Document document = builder.parse(f);
-
-          NodeList firstChild = document.getFirstChild().getChildNodes();
-          for (int i = 0; i < firstChild.getLength(); i++)
+        NodeList firstChild = document.getFirstChild().getChildNodes();
+        for (int i = 0; i < firstChild.getLength(); i++)
+        {
+          Node node = firstChild.item(i);
+          if (node.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
           {
-            Node node = firstChild.item(i);
-            if (node.getNodeName().equalsIgnoreCase("data")) //$NON-NLS-1$
+            IChartData cd = new ChartData();
+            NodeList parent = node.getChildNodes();
+            for (int ii = 0; ii < parent.getLength(); ii++)
             {
-              IChartData cd = new ChartData();
-              NodeList parent = node.getChildNodes();
-              for (int ii = 0; ii < parent.getLength(); ii++)
+              Node item = parent.item(ii);
+              Node value = item.getFirstChild();
+              if (value != null)
               {
-                Node item = parent.item(ii);
-                Node value = item.getFirstChild();
-                if (value != null)
+                String nodeName = item.getNodeName(); 
+                if (nodeName.equalsIgnoreCase("open") == true || nodeName.equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
+                  cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equalsIgnoreCase("max") == true || nodeName.equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
+                  cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equalsIgnoreCase("min") == true || nodeName.equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
+                  cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equalsIgnoreCase("close") == true || nodeName.equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
+                  cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equalsIgnoreCase("volume") == true) //$NON-NLS-1$
+                  cd.setVolume(Integer.parseInt(value.getNodeValue()));
+                else if (nodeName.equalsIgnoreCase("date") == true) //$NON-NLS-1$
                 {
-                  if (item.getNodeName().equalsIgnoreCase("open_price") == true) //$NON-NLS-1$
-                    cd.setOpenPrice(Double.parseDouble(value.getNodeValue()));
-                  else if (item.getNodeName().equalsIgnoreCase("max_price") == true) //$NON-NLS-1$
-                    cd.setMaxPrice(Double.parseDouble(value.getNodeValue()));
-                  else if (item.getNodeName().equalsIgnoreCase("min_price") == true) //$NON-NLS-1$
-                    cd.setMinPrice(Double.parseDouble(value.getNodeValue()));
-                  else if (item.getNodeName().equalsIgnoreCase("close_price") == true) //$NON-NLS-1$
-                    cd.setClosePrice(Double.parseDouble(value.getNodeValue()));
-                  else if (item.getNodeName().equalsIgnoreCase("volume") == true) //$NON-NLS-1$
-                    cd.setVolume(Integer.parseInt(value.getNodeValue()));
-                  else if (item.getNodeName().equalsIgnoreCase("date") == true) //$NON-NLS-1$
-                  {
-                    try {
-                      cd.setDate(df.parse(value.getNodeValue()));
-                      list.add(cd);
-                    } catch(Exception e) {};
-                  }
+                  try {
+                    cd.setDate(dateFormat.parse(value.getNodeValue()));
+                    list.add(cd);
+                  } catch(Exception e) {
+                    e.printStackTrace();
+                  };
                 }
               }
             }
           }
-        } catch (Exception ex) {
-          ex.printStackTrace();
         }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
 
-      // Sorts the array by date
-      java.util.Collections.sort(list, new Comparator() {
-        public int compare(Object o1, Object o2) 
-        {
-          IChartData d1 = (IChartData)o1;
-          IChartData d2 = (IChartData)o2;
-          if (d1.getDate().after(d2.getDate()) == true)
-            return 1;
-          else if (d1.getDate().before(d2.getDate()) == true)
-            return -1;
-          return 0;
-        }
-      });
-
-      historicalData.put(data, list);
-    }
+    // Sorts the array by date
+    java.util.Collections.sort(list, new Comparator() {
+      public int compare(Object o1, Object o2) 
+      {
+        IChartData d1 = (IChartData)o1;
+        IChartData d2 = (IChartData)o2;
+        if (d1.getDate().after(d2.getDate()) == true)
+          return 1;
+        else if (d1.getDate().before(d2.getDate()) == true)
+          return -1;
+        return 0;
+      }
+    });
     
-    return list;
+    IChartData[] chartData = new IChartData[list.size()];
+    list.toArray(chartData);
+
+    return chartData;
   }
 
   /* (non-Javadoc)
    * @see net.sourceforge.eclipsetrader.IDataStore#storeHistoryData(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartData[])
    */
   public void storeHistoryData(IBasicData data, IChartData[] chartData)
+  {
+    if (chartData != null)
+      storeChartData(data, chartData, new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"), df);
+  }
+
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.IDataStore#storeIntradayData(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartData[])
+   */
+  public void storeIntradayData(IBasicData data, IChartData[] chartData)
+  {
+    if (chartData != null)
+      storeChartData(data, chartData, new File(INTRADAY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml"), dtf);
+  }
+
+  private void storeChartData(IBasicData data, IChartData[] chartData, File file, SimpleDateFormat dateFormat)
   {
     if (chartData != null)
       try {
@@ -448,18 +471,18 @@ public class XMLDataStore implements IDataStore
           document.getDocumentElement().appendChild(element);
 
           node = document.createElement("date");
-          node.appendChild(document.createTextNode(df.format(chartData[i].getDate())));
+          node.appendChild(document.createTextNode(dateFormat.format(chartData[i].getDate())));
           element.appendChild(node);
-          node = document.createElement("open_price");
+          node = document.createElement("open");
           node.appendChild(document.createTextNode(pf.format(chartData[i].getOpenPrice())));
           element.appendChild(node);
-          node = document.createElement("max_price");
+          node = document.createElement("max");
           node.appendChild(document.createTextNode(pf.format(chartData[i].getMaxPrice())));
           element.appendChild(node);
-          node = document.createElement("min_price");
+          node = document.createElement("min");
           node.appendChild(document.createTextNode(pf.format(chartData[i].getMinPrice())));
           element.appendChild(node);
-          node = document.createElement("close_price");
+          node = document.createElement("close");
           node.appendChild(document.createTextNode(pf.format(chartData[i].getClosePrice())));
           element.appendChild(node);
           node = document.createElement("volume");
@@ -472,26 +495,12 @@ public class XMLDataStore implements IDataStore
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
         DOMSource source = new DOMSource(document);
-        BufferedWriter out = new BufferedWriter(new FileWriter(new File(HISTORY_CHART_FOLDER, data.getSymbol().toLowerCase() + ".xml")));
+        BufferedWriter out = new BufferedWriter(new FileWriter(file));
         StreamResult result = new StreamResult(out);
         transformer.transform(source, result);
         out.flush();
         out.close();
       } catch (Exception ex) { ex.printStackTrace(); };
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IDataStore#addHistoryDataListener(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartDataListener)
-   */
-  public void addHistoryDataListener(IBasicData data, IChartDataListener listener)
-  {
-  }
-
-  /* (non-Javadoc)
-   * @see net.sourceforge.eclipsetrader.IDataStore#removeHistoryDataListener(net.sourceforge.eclipsetrader.IBasicData, net.sourceforge.eclipsetrader.IChartDataListener)
-   */
-  public void removeHistoryDataListener(IBasicData data, IChartDataListener listener)
-  {
   }
 
   public IExtendedData[] loadIndexData()
@@ -557,52 +566,52 @@ public class XMLDataStore implements IDataStore
 
   public void storeIndexData(IExtendedData[] data)
   {
-      try {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.getDOMImplementation().createDocument("", "index", null);
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.getDOMImplementation().createDocument("", "index", null);
 
-        for (int i = 0; i < data.length; i++)
-        {
-          Element element = document.createElement("data");
-          element.setAttribute("symbol", data[i].getSymbol());
-          element.setAttribute("ticker", data[i].getTicker());
-          element.setAttribute("description", data[i].getDescription());
-          document.getDocumentElement().appendChild(element);
+      for (int i = 0; i < data.length; i++)
+      {
+        Element element = document.createElement("data");
+        element.setAttribute("symbol", data[i].getSymbol());
+        element.setAttribute("ticker", data[i].getTicker());
+        element.setAttribute("description", data[i].getDescription());
+        document.getDocumentElement().appendChild(element);
 
-          Node node = document.createElement("date");
-          node.appendChild(document.createTextNode(tf.format(data[i].getDate())));
-          element.appendChild(node);
-          node = document.createElement("price");
-          node.appendChild(document.createTextNode(pf.format(data[i].getLastPrice())));
-          element.appendChild(node);
-          node = document.createElement("open_price");
-          node.appendChild(document.createTextNode(pf.format(data[i].getOpenPrice())));
-          element.appendChild(node);
-          node = document.createElement("max_price");
-          node.appendChild(document.createTextNode(pf.format(data[i].getHighPrice())));
-          element.appendChild(node);
-          node = document.createElement("min_price");
-          node.appendChild(document.createTextNode(pf.format(data[i].getLowPrice())));
-          element.appendChild(node);
-          node = document.createElement("close_price");
-          node.appendChild(document.createTextNode(pf.format(data[i].getClosePrice())));
-          element.appendChild(node);
-          node = document.createElement("volume");
-          node.appendChild(document.createTextNode(nf.format(data[i].getVolume())));
-          element.appendChild(node);
-        }
+        Node node = document.createElement("date");
+        node.appendChild(document.createTextNode(tf.format(data[i].getDate())));
+        element.appendChild(node);
+        node = document.createElement("price");
+        node.appendChild(document.createTextNode(pf.format(data[i].getLastPrice())));
+        element.appendChild(node);
+        node = document.createElement("open_price");
+        node.appendChild(document.createTextNode(pf.format(data[i].getOpenPrice())));
+        element.appendChild(node);
+        node = document.createElement("max_price");
+        node.appendChild(document.createTextNode(pf.format(data[i].getHighPrice())));
+        element.appendChild(node);
+        node = document.createElement("min_price");
+        node.appendChild(document.createTextNode(pf.format(data[i].getLowPrice())));
+        element.appendChild(node);
+        node = document.createElement("close_price");
+        node.appendChild(document.createTextNode(pf.format(data[i].getClosePrice())));
+        element.appendChild(node);
+        node = document.createElement("volume");
+        node.appendChild(document.createTextNode(nf.format(data[i].getVolume())));
+        element.appendChild(node);
+      }
 
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
-        DOMSource source = new DOMSource(document);
-        BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), INDICES_FILE_NAME)));
-        StreamResult result = new StreamResult(out);
-        transformer.transform(source, result);
-        out.flush();
-        out.close();
-      } catch (Exception ex) { ex.printStackTrace(); };
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+      DOMSource source = new DOMSource(document);
+      BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), INDICES_FILE_NAME)));
+      StreamResult result = new StreamResult(out);
+      transformer.transform(source, result);
+      out.flush();
+      out.close();
+    } catch (Exception ex) { ex.printStackTrace(); };
   }
 }

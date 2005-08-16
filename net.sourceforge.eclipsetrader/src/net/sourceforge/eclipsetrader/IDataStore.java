@@ -51,7 +51,7 @@ public interface IDataStore
    * @param data - The stock item.
    * @return An array of IChartData items.
    */
-  public ObservableCollection getHistoricalData(IBasicData data);
+  public IChartData[] getHistoricalData(IBasicData data);
 
   /**
    * Stores the historical chart data for the given stock item.
@@ -60,7 +60,20 @@ public interface IDataStore
    * @param chartData - The array of IChartData items to store. 
    */
   public void storeHistoryData(IBasicData data, IChartData[] chartData);
-  
-  public void addHistoryDataListener(IBasicData data, IChartDataListener listener);
-  public void removeHistoryDataListener(IBasicData data, IChartDataListener listener);
+
+  /**
+   * Load the intraday chart data for the given stock item.
+   * 
+   * @param data - The stock item.
+   * @return An array of IChartData items.
+   */
+  public IChartData[] getIntradayData(IBasicData data);
+
+  /**
+   * Stores the intraday chart data for the given stock item.
+   * 
+   * @param data - The stock item.
+   * @param chartData - The array of IChartData items to store. 
+   */
+  public void storeIntradayData(IBasicData data, IChartData[] chartData);
 }
