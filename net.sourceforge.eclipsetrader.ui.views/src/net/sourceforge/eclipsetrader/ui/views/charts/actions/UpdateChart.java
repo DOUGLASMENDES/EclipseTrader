@@ -63,7 +63,7 @@ public class UpdateChart implements IViewActionDelegate, IWorkbenchWindowActionD
     else if (pg.getActivePart() instanceof RealtimeChartView)
     {
       RealtimeChartView view = (RealtimeChartView)pg.getActivePart();
-      view.refreshChart();
+      view.updateChart();
     }
   }
 
