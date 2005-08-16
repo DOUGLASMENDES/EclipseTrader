@@ -20,6 +20,8 @@ import net.sourceforge.eclipsetrader.IChartData;
 import net.sourceforge.eclipsetrader.IChartDataProvider;
 import net.sourceforge.eclipsetrader.IIndexDataProvider;
 import net.sourceforge.eclipsetrader.TraderPlugin;
+import net.sourceforge.eclipsetrader.monitors.HistoricalChartMonitor;
+import net.sourceforge.eclipsetrader.monitors.IMonitorListener;
 import net.sourceforge.eclipsetrader.ui.internal.views.Messages;
 import net.sourceforge.eclipsetrader.ui.internal.views.StockList;
 import net.sourceforge.eclipsetrader.ui.internal.views.ViewsPlugin;
@@ -31,16 +33,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 
-public class HistoryChartView extends ChartView implements DropTargetListener
+public class HistoryChartView extends ChartView implements IMonitorListener
 {
   public static final String VIEW_ID = "net.sourceforge.eclipsetrader.ui.views.ChartView"; //$NON-NLS-1$
-  protected IChartData[] chartData;
   
   /* (non-Javadoc)
    * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -53,36 +54,64 @@ public class HistoryChartView extends ChartView implements DropTargetListener
     DropTarget target = new DropTarget(parent, DND.DROP_COPY);
     Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
     target.setTransfer(types);
-    target.addDropListener(this);
+    target.addDropListener(new DropTargetAdapter() {
+      public void dragEnter(DropTargetEvent event)
+      {
+        event.detail = DND.DROP_COPY;
+      }
+
+      public void dragOver(DropTargetEvent event)
+      {
+        event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+      }
+
+      public void drop(DropTargetEvent event)
+      {
+        String[] item = ((String)event.data).split(";"); //$NON-NLS-1$
+        String id = getViewSite().getSecondaryId();
+        String symbol = item[1];
+        ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + id, item[1]); //$NON-NLS-1$
+        if (!symbol.equals("")) //$NON-NLS-1$
+        {
+          IBasicData basicData = TraderPlugin.getData(symbol);
+          if (basicData == null)
+          {
+            StockList sl = new StockList();
+            basicData = sl.getData(symbol);
+          }
+          if (basicData == null)
+            basicData = new BasicData(symbol);
+          setData(basicData);
+        }
+      }
+      
+    });
 
     // Restore del grafico precedente
     String id = getViewSite().getSecondaryId();
     String symbol = ViewsPlugin.getDefault().getPreferenceStore().getString("chart." + id); //$NON-NLS-1$
     if (!symbol.equals("")) //$NON-NLS-1$
     {
-      IBasicData bd = TraderPlugin.getData(symbol);
-      if (bd == null)
+      IBasicData basicData = TraderPlugin.getData(symbol);
+      if (basicData == null)
       {
-        StockList sl = new StockList();
-        bd = sl.getData(symbol);
+        StockList stockList = new StockList();
+        basicData = stockList.getData(symbol);
       }
-      if (bd == null)
-      {
-        bd = new BasicData();
-        bd.setSymbol(symbol);
-        bd.setTicker(symbol);
-        bd.setDescription(symbol);
-      }
-      setData(bd);
+      if (basicData == null)
+        basicData = new BasicData(symbol);
+      setData(basicData);
     }
-
-//    getSite().setSelectionProvider(this);
   }
   
-  public void reloadPreferences()
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ChartView#dispose()
+   */
+  public void dispose()
   {
-    File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
-    reloadPreferences(folder);
+    if (getBasicData() != null)
+      HistoricalChartMonitor.getInstance().removeMonitor(getBasicData(), this);
+    super.dispose();
   }
 
   public void savePreferences()
@@ -91,57 +120,63 @@ public class HistoryChartView extends ChartView implements DropTargetListener
     savePreferences(folder);
   }
 
-  public void setData(final IBasicData d)
+  private void setData(IBasicData basicData)
   {
-    if (isIndex(d) == true)
-      updateIndexData(d);
-    setData(d, d.getTicker() + " - " + Messages.getString("HistoryChartView.title"), "chart."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    if (getBasicData() != null)
+      HistoricalChartMonitor.getInstance().removeMonitor(getBasicData(), this);
+    
+    String id = getViewSite().getSecondaryId();
+    ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + id, basicData.getSymbol());
+    setPartName(basicData.getTicker() + " - " + Messages.getString("HistoryChartView.title"));
+
+    File folder = new File(Platform.getLocation().toFile(), "charts"); //$NON-NLS-1$
+    File file = new File(folder, basicData.getSymbol().toLowerCase() + ".prefs"); //$NON-NLS-1$
+
+    loadPreferences(file);
+    setBasicData(basicData);
+    setBarData(getChartData(basicData));
+
+    HistoricalChartMonitor.getInstance().addMonitor(getBasicData(), this);
   }
   
-  public IChartData[] getChartData(IBasicData data)
+  private BarData getChartData(IBasicData data)
   {
-    if (chartData == null)
+    BarData barData = new BarData();
+    IChartData[] chartData = TraderPlugin.getDataStore().getHistoricalData(data);
+
+    if (chartData.length > 0)
     {
-      chartData = new IChartData[TraderPlugin.getDataStore().getHistoricalData(data).size()];
-      TraderPlugin.getDataStore().getHistoricalData(data).toArray(chartData);
-    }
-    
-    // Check if the user has selected a subperiod to display
-    if (chartData != null && chartData.length > 0 && limitPeriod != 0)
-    {
-      // Set the limit date
       Calendar limit = Calendar.getInstance();
       limit.setTime(chartData[chartData.length - 1].getDate());
-      limit.add(Calendar.MONTH, -limitPeriod);
-
-      // Find the first element that is after the limit date
-      int srcPos = 0;
+      limit.add(Calendar.MONTH, - getLimitPeriod());
+      
       Calendar chart = Calendar.getInstance();
-      for (; srcPos < chartData.length; srcPos++)
+      for (int i = 0; i < chartData.length; i++)
       {
-        chart.setTime(chartData[srcPos].getDate());
-        if (chart.after(limit) == true || chart.equals(limit) == true)
-          break;
-      }
-
-      // Create an array with a subset of the original chart data
-      if (srcPos != 0)
-      {
-        int length = chartData.length - srcPos;
-        IChartData[] newChartData = new IChartData[length];
-        System.arraycopy(chartData, srcPos, newChartData, 0, length);
-        return newChartData;
+        chart.setTime(chartData[i].getDate());
+        if (getLimitPeriod() == 0 || chart.after(limit) == true)
+          barData.add(chartData[i]);
       }
     }
     
-    return chartData;
+    return barData;
   }
   
+  /* (non-Javadoc)
+   * @see net.sourceforge.eclipsetrader.ui.views.charts.ChartView#setLimitPeriod(int)
+   */
+  public void setLimitPeriod(int limitPeriod)
+  {
+    super.setLimitPeriod(limitPeriod);
+    setBarData(getChartData(basicData));
+  }
+
   public void updateChart()
   {
     Job job = new Job(Messages.getString("HistoryChartView.updateChart")) { //$NON-NLS-1$
       public IStatus run(IProgressMonitor monitor)
       {
+        IChartDataProvider dataProvider = null;
         if (isIndex(basicData) == true)
         {
           IIndexDataProvider ip = getIndexProvider(basicData);
@@ -150,19 +185,18 @@ public class HistoryChartView extends ChartView implements DropTargetListener
         }
         else
           dataProvider = TraderPlugin.getChartDataProvider();
+
         if (dataProvider != null)
         {
+          IChartData[] chartData = TraderPlugin.getDataStore().getHistoricalData(basicData);
           try {
-            chartData = dataProvider.update(basicData, chartData);
-            TraderPlugin.getDataStore().storeHistoryData(basicData, chartData);
+            IChartData[] newChartData = dataProvider.update(basicData, chartData);
+            TraderPlugin.getDataStore().storeHistoryData(basicData, newChartData);
+            if (newChartData.length != chartData.length)
+              HistoricalChartMonitor.getInstance().notifyUpdate(basicData);
           } catch(Exception e) {
             return new Status(0, "plugin.id", 0, "Exception occurred", e.getCause());  //$NON-NLS-1$ //$NON-NLS-2$
           };
-          container.getDisplay().asyncExec(new Runnable() {
-            public void run() {
-              setData(basicData);
-            }
-          });
         }
         return new Status(0, "plugin.id", 0, "OK", null);  //$NON-NLS-1$ //$NON-NLS-2$
       }
@@ -173,8 +207,6 @@ public class HistoryChartView extends ChartView implements DropTargetListener
   
   public void showNext()
   {
-    chartData = null;
-    
     List list = TraderPlugin.getDataStore().getStockwatchData();
     for (int i = 0; i < list.size(); i++)
     {
@@ -192,8 +224,6 @@ public class HistoryChartView extends ChartView implements DropTargetListener
   
   public void showPrevious()
   {
-    chartData = null;
-    
     List list = TraderPlugin.getDataStore().getStockwatchData();
     for (int i = 0; i < list.size(); i++)
     {
@@ -208,70 +238,16 @@ public class HistoryChartView extends ChartView implements DropTargetListener
       }
     }
   }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.dnd.DropTargetListener#dragEnter(org.eclipse.swt.dnd.DropTargetEvent)
-   */
-  public void dragEnter(DropTargetEvent event)
-  {
-    event.detail = DND.DROP_COPY;
-  }
   
   /* (non-Javadoc)
-   * @see org.eclipse.swt.dnd.DropTargetListener#dragLeave(org.eclipse.swt.dnd.DropTargetEvent)
+   * @see net.sourceforge.eclipsetrader.monitors.IMonitorListener#monitoredDataUpdated(net.sourceforge.eclipsetrader.IBasicData)
    */
-  public void dragLeave(DropTargetEvent event)
+  public void monitoredDataUpdated(IBasicData obj)
   {
-  }
-  
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.dnd.DropTargetListener#dragOperationChanged(org.eclipse.swt.dnd.DropTargetEvent)
-   */
-  public void dragOperationChanged(DropTargetEvent event)
-  {
-  }
-  
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.dnd.DropTargetListener#dragOver(org.eclipse.swt.dnd.DropTargetEvent)
-   */
-  public void dragOver(DropTargetEvent event)
-  {
-    event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
-  }
-  
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.dnd.DropTargetListener#drop(org.eclipse.swt.dnd.DropTargetEvent)
-   */
-  public void drop(DropTargetEvent event)
-  {
-    String[] item = ((String)event.data).split(";"); //$NON-NLS-1$
-    String id = getViewSite().getSecondaryId();
-    String symbol = item[1];
-    ViewsPlugin.getDefault().getPreferenceStore().setValue("chart." + id, item[1]); //$NON-NLS-1$
-    if (!symbol.equals("")) //$NON-NLS-1$
-    {
-      IBasicData bd = TraderPlugin.getData(symbol);
-      if (bd == null)
-      {
-        StockList sl = new StockList();
-        bd = sl.getData(symbol);
+    getDisplay().asyncExec(new Runnable() {
+      public void run() {
+        setBarData(getChartData(basicData));
       }
-      if (bd == null)
-      {
-        bd = new BasicData();
-        bd.setSymbol(symbol);
-        bd.setTicker(symbol);
-        bd.setDescription(symbol);
-      }
-      chartData = null;
-      setData(bd);
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see org.eclipse.swt.dnd.DropTargetListener#dropAccept(org.eclipse.swt.dnd.DropTargetEvent)
-   */
-  public void dropAccept(DropTargetEvent event)
-  {
+    });
   }
 }
