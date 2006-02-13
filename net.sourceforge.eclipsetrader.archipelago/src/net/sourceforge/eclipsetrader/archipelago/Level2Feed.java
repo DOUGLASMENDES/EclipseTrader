@@ -31,6 +31,7 @@ public class Level2Feed implements ILevel2Feed, Runnable
     private Map map = new HashMap();
     private Thread thread;
     private boolean stopping = false;
+    private DataOutputStream os = null;
 
     public Level2Feed()
     {
@@ -44,6 +45,19 @@ public class Level2Feed implements ILevel2Feed, Runnable
         String symbol = security.getLevel2Feed().getSymbol();
         if (symbol == null || symbol.length() == 0)
             symbol = security.getCode();
+
+        if (thread != null && os != null && map.get(security) == null)
+        {
+            try
+            {
+                os.writeBytes("MsgType=RegisterBook&Symbol=" + symbol + "\n");
+                os.writeBytes("MsgType=RegisterSymbol&Symbol=" + symbol + "\n");
+            }
+            catch (Exception e) {
+                CorePlugin.logException(e);
+            }
+        }
+        
         map.put(security, symbol);
     }
 
@@ -52,6 +66,21 @@ public class Level2Feed implements ILevel2Feed, Runnable
      */
     public void unSubscribeLevel2(Security security)
     {
+        if (thread != null && os != null)
+        {
+            String symbol = (String)map.get(security);
+            if (symbol != null)
+            {
+                try
+                {
+                    os.writeBytes("MsgType=UnregisterBook&Symbol=" + symbol + "\n");
+                    os.writeBytes("MsgType=UnregisterSymbol&Symbol=" + symbol + "\n");
+                }
+                catch (Exception e) {
+                    CorePlugin.logException(e);
+                }
+            }
+        }
         map.remove(security);
     }
 
@@ -91,7 +120,6 @@ public class Level2Feed implements ILevel2Feed, Runnable
     public void run()
     {
         Socket socket = null;
-        DataOutputStream os = null;
         BufferedReader is = null;
 
         for (int i = 0; i < 5 && !stopping; i++)
@@ -131,61 +159,49 @@ public class Level2Feed implements ILevel2Feed, Runnable
                 
                 String symbol = "";
                 String inputLine = is.readLine();
-                System.out.println("Archipelago: " + inputLine);
-                if (inputLine.startsWith("MsgType=Book") == true)
+//                System.out.println("Archipelago: " + inputLine);
+                if (inputLine.startsWith("BK&") == true)
                 {
                     String[] sections = inputLine.split("&");
-                    for (int i = 0; i < sections.length; i++)
+                    symbol = sections[1];
+
+//                    System.out.println("  [1] = " + sections[1]);
+//                    System.out.println("  [2] = " + sections[2]);
+//                    System.out.println("  [3] = " + sections[3]);
+
+                    int index = 0, item = 0;
+                    String[] elements = sections[2].split("#");
+                    Level2Bid bid = new Level2Bid();
+                    while (index < elements.length)
                     {
-                        if (sections[i].startsWith("Symbol=") == true)
-                            symbol = sections[i].substring(7);
-                        else if (sections[i].startsWith("BidBook=") == true)
+                        double price = Double.parseDouble(elements[index++]);
+                        int quantity = Integer.parseInt(elements[index++]);
+                        index++; // Time
+                        String id = elements[index++];
+                        bid.add(price, quantity, id);
+                        item++;
+                    }
+
+                    index = 0; item = 0;
+                    elements = sections[3].split("#");
+                    Level2Ask ask = new Level2Ask();
+                    while (index < elements.length)
+                    {
+                        double price = Double.parseDouble(elements[index++]);
+                        int quantity = Integer.parseInt(elements[index++]);
+                        index++; // Time
+                        String id = elements[index++];
+                        ask.add(price, quantity, id);
+                        item++;
+                    }
+
+                    for (Iterator iter = map.keySet().iterator(); iter.hasNext(); )
+                    {
+                        Security security = (Security)iter.next();
+                        if (symbol.equalsIgnoreCase((String)map.get(security)))
                         {
-                            int index = 0, item = 0;
-                            String[] elements = sections[i].substring(8).split("#");
-                            Level2Bid list = new Level2Bid();
-                            while (index < elements.length)
-                            {
-                                double price = Double.parseDouble(elements[index++]);
-                                int quantity = Integer.parseInt(elements[index++]);
-                                index++; // Time
-                                String id = elements[index++];
-                                list.add(price, quantity, id);
-                                item++;
-                            }
-                            for (Iterator iter = map.keySet().iterator(); iter.hasNext(); )
-                            {
-                                Security security = (Security)iter.next();
-                                if (symbol.equalsIgnoreCase((String)map.get(security)))
-                                {
-                                    security.setLevel2(list);
-                                    break;
-                                }
-                            }
-                        }
-                        else if (sections[i].startsWith("AskBook=") == true)
-                        {
-                            int index = 0, item = 0;
-                            String[] elements = sections[i].substring(8).split("#");
-                            Level2Ask list = new Level2Ask();
-                            while (index < elements.length)
-                            {
-                                double price = Double.parseDouble(elements[index++]);
-                                int quantity = Integer.parseInt(elements[index++]);
-                                index++; // Time
-                                String id = elements[index++];
-                                list.add(price, quantity, id);
-                                item++;
-                            }
-                            for (Iterator iter = map.keySet().iterator(); iter.hasNext(); )
-                            {
-                                Security security = (Security)iter.next();
-                                if (symbol.equalsIgnoreCase((String)map.get(security)))
-                                {
-                                    security.setLevel2(list);
-                                    break;
-                                }
-                            }
+                            security.setLevel2(bid, ask);
+                            break;
                         }
                     }
                 }
