@@ -2,22 +2,15 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-     <extension-point id="dataStore" name="Data Store" schema="schema/portfolioData.exsd"/>
-   <extension-point id="chartDataProvider" name="Chart Data Provider" schema="schema/chartDataProvider.exsd"/>
-   <extension-point id="chartProvider" name="Chart Provider" schema="schema/chartProvider.exsd"/>
-   <extension-point id="chartPlotter" name="Chart Plotter" schema="schema/chartPlotter.exsd"/>
-   <extension-point id="dataProvider" name="Data Provider" schema="schema/dataProvider.exsd"/>
-   <extension-point id="tradingProvider" name="Trading Provider" schema="schema/tradingProvider.exsd"/>
-   <extension-point id="newsProvider" name="News Provider" schema="schema/newsProvider.exsd"/>
-   <extension-point id="bookDataProvider" name="Book Data Provider" schema="schema/bookDataProvider.exsd"/>
-   <extension-point id="indexProvider" name="Index Provider" schema="schema/indexProvider.exsd"/>
-   <extension-point id="backfillDataProvider" name="Backfill Data Provider" schema="schema/backfillDataProvider.exsd"/>
    <extension
-         id="Product"
+         id="product"
          point="org.eclipse.core.runtime.products">
       <product
             application="net.sourceforge.eclipsetrader.application"
-            name="%productName">
+            name="EclipseTrader">
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini"/>
          <property
                name="windowImages"
                value="eclipse.gif,eclipse32.gif"/>
@@ -29,158 +22,15 @@
                value="%productBlurb"/>
       </product>
    </extension>
+
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
-         <application>
-             <run
-                  class="net.sourceforge.eclipsetrader.internal.Application">
-             </run>
-         </application>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            icon="icons/twowaycompare_co.gif"
-            class="net.sourceforge.eclipsetrader.internal.TraderPerspective"
-            name="Trader"
-            id="net.sourceforge.eclipsetrader.TraderPerspective"/>
-      <perspective
-            icon="icons/news_persp.gif"
-            class="net.sourceforge.eclipsetrader.internal.NewsPerspective"
-            name="News"
-            id="net.sourceforge.eclipsetrader.NewsPerspective"/>
-      <perspective
-            icon="icons/eview16/charts_persp.gif"
-            class="net.sourceforge.eclipsetrader.internal.ChartsPerspective"
-            name="Charts"
-            id="net.sourceforge.eclipsetrader.ChartsPerspective"/>
-   </extension>
-   <extension
-         name="XML Data Store"
-         point="net.sourceforge.eclipsetrader.dataStore">
-      <provider
-            class="net.sourceforge.eclipsetrader.internal.XMLDataStore"
-            id="net.sourceforge.eclipsetrader.xml_data_store"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            class="net.sourceforge.eclipsetrader.preferences.GeneralPreferencePage"
-            name="%pluginName"
-            id="eclipsetrader"/>
-      <page
-            class="net.sourceforge.eclipsetrader.preferences.StartupPreferencePage"
-            name="%Preferences.startup"
-            category="eclipsetrader"
-            id="eclipsetrader.startup"/>
-      <page
-            class="net.sourceforge.eclipsetrader.preferences.ProxyPreferencePage"
-            name="%Preferences.proxy"
-            category="eclipsetrader"
-            id="eclipsetrader.proxy"/>
-      <page
-            class="net.sourceforge.eclipsetrader.preferences.TimingPreferencePage"
-            name="%Preferences.timing"
-            category="eclipsetrader"
-            id="eclipsetrader.timing"/>
-      <page
-            class="net.sourceforge.eclipsetrader.preferences.ColorsPreferencePage"
-            name="Colors"
-            category="eclipsetrader"
-            id="eclipsetrader.colors"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            label="%UpdateActionSet.label"
-            visible="true"
-            id="org.eclipse.update.ui.softwareUpdates">
-         <menu
-               label="%UpdateActionSet.menu.label"
-               path="help/group.updates"
-               id="org.eclipse.update.ui.updateMenu">
-            <separator
-                  name="group0">
-            </separator>
-            <separator
-                  name="group1">
-            </separator>
-         </menu>
-         <action
-               label="%UpdateActionSet.configManager.label"
-               icon="icons/configs.gif"
-               helpContextId="org.eclipse.update.ui.newUpdates"
-               class="net.sourceforge.eclipsetrader.internal.ConfigurationManagerAction"
-               menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
-               id="org.eclipse.update.ui.configManager">
-         </action>
-         <action
-               label="%UpdateActionSet.updates.label"
-               icon="icons/usearch_obj.gif"
-               helpContextId="org.eclipse.update.ui.newUpdates"
-               class="net.sourceforge.eclipsetrader.internal.InstallWizardAction"
-               menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
-               id="org.eclipse.update.ui.newUpdates">
-         </action>
-      </actionSet>
-      <actionSet
-            label="Streaming Control"
-            visible="false"
-            id="net.sourceforge.eclipsetrader.streaming">
-         <action
-               disabledIcon="icons/dtool16/stop.gif"
-               toolbarPath="additions"
-               label="%Actions.stopStreaming"
-               tooltip="%Actions.stopStreaming"
-               icon="icons/etool16/stop.gif"
-               class="net.sourceforge.eclipsetrader.internal.StreamingControl"
-               style="push"
-               id="net.sourceforge.eclipsetrader.stopStreaming"/>
-         <action
-               disabledIcon="icons/dtool16/run.gif"
-               toolbarPath="additions"
-               label="%Actions.startStreaming"
-               definitionId="net.sourceforge.eclipsetrader.commands.start"
-               tooltip="%Actions.startStreaming"
-               icon="icons/etool16/run.gif"
-               class="net.sourceforge.eclipsetrader.internal.StreamingControl"
-               style="push"
-               id="net.sourceforge.eclipsetrader.startStreaming"/>
-      </actionSet>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.TraderPerspective">
-         <actionSet id="net.sourceforge.eclipsetrader.streaming"/>
-         <perspectiveShortcut id="net.sourceforge.eclipsetrader.NewsPerspective"/>
-         <perspectiveShortcut id="net.sourceforge.eclipsetrader.ChartsPerspective"/>
-      </perspectiveExtension>
-      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.NewsPerspective"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <category
-            description="Eclipse Trader Commands"
-            name="Trader"
-            id="net.sourceforge.eclipsetrader.commands"/>
-      <command
-            description="Start Streaming"
-            categoryId="net.sourceforge.eclipsetrader.commands"
-            name="Start"
-            id="net.sourceforge.eclipsetrader.commands.start"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="net.sourceforge.eclipsetrader.commands.start"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="Ctrl+F5"/>
-      <key
-            platform="carbon"
-            commandId="net.sourceforge.eclipsetrader.commands.start"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="Command+F5"/>
+      <application>
+         <run
+               class="net.sourceforge.eclipsetrader.Application">
+         </run>
+      </application>
    </extension>
 
 </plugin>

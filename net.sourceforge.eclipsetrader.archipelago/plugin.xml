@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-
-     <extension
-         point="net.sourceforge.eclipsetrader.bookDataProvider">
-      <provider
-            label="Archipelago Streaming"
-            class="net.sourceforge.eclipsetrader.archipelago.BookDataProvider"
-            id="archipelago.bookDataProvider"/>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.feeds">
+      <feed
+            id="net.sourceforge.eclipsetrader.archipelago"
+            name="Archipelago">
+         <level2 class="net.sourceforge.eclipsetrader.archipelago.Level2Feed"/>
+      </feed>
    </extension>
 
 </plugin>
