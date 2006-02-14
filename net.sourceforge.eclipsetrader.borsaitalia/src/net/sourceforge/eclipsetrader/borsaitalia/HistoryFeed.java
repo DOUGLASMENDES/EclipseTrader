@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +30,7 @@ import sun.misc.BASE64Encoder;
 public class HistoryFeed implements IHistoryFeed
 {
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.borsaitalia";
-    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 
     public HistoryFeed()
     {
@@ -40,16 +41,28 @@ public class HistoryFeed implements IHistoryFeed
      */
     public void updateHistory(Security security, int interval)
     {
+        List history = new ArrayList();
         Calendar from = Calendar.getInstance();
 
-        List history = security.getHistory();
-        if (history.size() == 0)
-            from.add(Calendar.YEAR, -2);
+        if (interval < IHistoryFeed.INTERVAL_DAILY)
+        {
+            history = security.getIntradayHistory();
+            history.clear();
+            from.set(Calendar.HOUR_OF_DAY, 0);
+            from.set(Calendar.MINUTE, 0);
+            from.set(Calendar.SECOND, 0);
+        }
         else
         {
-            Bar cd = (Bar)history.get(history.size() - 1);
-            from.setTime(cd.getDate());
-            from.add(Calendar.DATE, 1);
+            history = security.getHistory();
+            if (history.size() == 0)
+                from.add(Calendar.YEAR, -2);
+            else
+            {
+                Bar cd = (Bar)history.get(history.size() - 1);
+                from.setTime(cd.getDate());
+                from.add(Calendar.DATE, 1);
+            }
         }
 
         String symbol = null;
@@ -59,11 +72,14 @@ public class HistoryFeed implements IHistoryFeed
             symbol = security.getCode();
 
         try {
-            StringBuffer url = new StringBuffer("http://grafici.borsaitalia.it/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=&codneb=" + symbol);
+            StringBuffer url = new StringBuffer("http://grafici.borsaitalia.it/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=&codneb=" + symbol + "&req_type=GRAF_DS&ascii=1&form_id=");
             if (interval < IHistoryFeed.INTERVAL_DAILY)
-                url.append("&period=2MIN&req_type=GRAF_DS&ascii=1&form_id=");
+                url.append("&period=1MIN");
             else
-                url.append("&period=1DAY&req_type=GRAF_DS&ascii=1&From=" + df.format(from.getTime()) + "000000&form_id=");
+            {
+                url.append("&period=1DAY");
+                url.append("&From=" + df.format(from.getTime()));
+            }
             System.out.println(getClass() + " " + df.format(from.getTime()) + " " + url);
 
             HttpURLConnection con = (HttpURLConnection) new URL(url.toString()).openConnection();
@@ -90,7 +106,7 @@ public class HistoryFeed implements IHistoryFeed
                 String[] item = inputLine.split("\\|");
 
                 Bar bar = new Bar();
-                bar.setDate(df.parse(item[0].substring(0, 8)));
+                bar.setDate(df.parse(item[0]));
                 bar.setOpen(Double.parseDouble(item[1]));
                 bar.setHigh(Double.parseDouble(item[2]));
                 bar.setLow(Double.parseDouble(item[3]));
@@ -117,7 +133,10 @@ public class HistoryFeed implements IHistoryFeed
             CorePlugin.logException(e);
         }
         
-        CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
+        if (interval < IHistoryFeed.INTERVAL_DAILY)
+            CorePlugin.getRepository().saveIntradayHistory(security.getId(), security.getIntradayHistory());
+        else
+            CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
         CorePlugin.getRepository().save(security);
     }
 }
