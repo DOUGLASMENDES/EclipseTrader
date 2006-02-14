@@ -1,117 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.eclipsetrader"
-      label="%featureName"
-      version="0.14.0"
-      provider-name="%providerName">
-   <install-handler/>
+      label="EclipseTrader"
+      version="0.20.0"
+      provider-name="Sourceforge.net">
 
-   <description>
-      %description
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
    </description>
 
-   <copyright>
-      Copyright (c) 2004-2005 Eclipse Trader Contributors and Others.
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
    </copyright>
 
-   <license>
-      %license
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
    </license>
 
-   <url>
-      <update label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
-      <discovery label="EclipseTrader on Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates/"/>
-   </url>
-
-   <plugin
-         id="org.apache.ant"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.lucene"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.help.appserver"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.help.base"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.help.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.help.webapp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.tomcat"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ui.forms"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.update.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.update.scheduler"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.update.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <requires>
+      <import feature="org.eclipse.rcp" version="3.1.2"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+   </requires>
 
    <plugin
          id="net.sourceforge.eclipsetrader"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
-         id="net.sourceforge.eclipsetrader.help"
+         id="net.sourceforge.eclipsetrader.charts"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
-         id="net.sourceforge.eclipsetrader.ui.views"
+         id="net.sourceforge.eclipsetrader.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.trading"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
