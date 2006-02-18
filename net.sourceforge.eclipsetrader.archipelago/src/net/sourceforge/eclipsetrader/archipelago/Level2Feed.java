@@ -115,6 +115,13 @@ public class Level2Feed implements ILevel2Feed, Runnable
     }
 
     /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ILevel2Feed#snapshotLevel2()
+     */
+    public void snapshotLevel2()
+    {
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
     public void run()
@@ -143,7 +150,10 @@ public class Level2Feed implements ILevel2Feed, Runnable
             }
         }
         if (socket == null || os == null || is == null)
+        {
+            thread = null;
             return;
+        }
 
         while (!stopping)
         {
@@ -159,16 +169,11 @@ public class Level2Feed implements ILevel2Feed, Runnable
                 
                 String symbol = "";
                 String inputLine = is.readLine();
-//                System.out.println("Archipelago: " + inputLine);
                 if (inputLine.startsWith("BK&") == true)
                 {
                     String[] sections = inputLine.split("&");
                     symbol = sections[1];
-
-//                    System.out.println("  [1] = " + sections[1]);
-//                    System.out.println("  [2] = " + sections[2]);
-//                    System.out.println("  [3] = " + sections[3]);
-
+                    
                     int index = 0, item = 0;
                     String[] elements = sections[2].split("#");
                     Level2Bid bid = new Level2Bid();
@@ -229,7 +234,10 @@ public class Level2Feed implements ILevel2Feed, Runnable
                     }
                 }
                 if (socket == null || os == null || is == null)
+                {
+                    thread = null;
                     return;
+                }
             }
             catch (Exception e) {
                 CorePlugin.logException(e);
@@ -248,5 +256,7 @@ public class Level2Feed implements ILevel2Feed, Runnable
         catch (Exception e) {
             CorePlugin.logException(e);
         }
+
+        thread = null;
     }
 }
