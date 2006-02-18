@@ -8,5 +8,6 @@ Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader.core
+ net.sourceforge.eclipsetrader.core,
+ org.eclipse.update.ui
 Eclipse-AutoStart: true
