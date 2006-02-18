@@ -1,14 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DirectaWorld Italy
+Bundle-Name: DirectaWorld
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.directaworld; singleton:=true
-Bundle-Version: 0.10.0
-Bundle-ClassPath: directaworld.jar
+Bundle-Version: 0.20.0
 Bundle-Activator: net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin
 Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
-Export-Package: net.sourceforge.eclipsetrader.directaworld
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader
+ net.sourceforge.eclipsetrader.core
 Eclipse-AutoStart: true

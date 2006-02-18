@@ -1,19 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 2004 Marco Maccaferri and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+/*
+ * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
- *******************************************************************************/
+ */
+
 package net.sourceforge.eclipsetrader.directaworld;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -21,88 +24,94 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-
-/**
- */
 public class LoginDialog extends TitleAreaDialog
 {
-  private String userName = "";
-  private String password = "";
-  private Text text1;
-  private Text text2;
-  
-  public LoginDialog()
-  {
-    super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-  }
-  
-  /**
-   * @see org.eclipse.jface.window.Window#configureShell(Shell)
-   */
-  protected void configureShell(Shell newShell) {
-    super.configureShell(newShell);
-    newShell.setText("DirectaWorld");
-  }
-  
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-   */
-  protected Control createDialogArea(Composite parent)
-  {
-    Composite composite = new Composite(parent, SWT.NONE);
-    composite.setLayoutData(new GridData(GridData.GRAB_VERTICAL|GridData.VERTICAL_ALIGN_CENTER|GridData.GRAB_HORIZONTAL|GridData.HORIZONTAL_ALIGN_CENTER));
-    composite.setLayout(new GridLayout(2, false));
-    
-    Label label = new Label(composite, SWT.NONE);
-    label.setText("Codice Utente:");
-    label.setLayoutData(new GridData());
-    text1 = new Text(composite, SWT.BORDER);
-    text1.setText(userName);
-    GridData gridData = new GridData();
-    gridData.widthHint = 200;
-    text1.setLayoutData(gridData);
+    private String userName = "";
+    private String password = "";
+    private Text text1;
+    private Text text2;
+    private Button button;
+    private Image image = DirectaWorldPlugin.getImageDescriptor("icons/key.gif").createImage();
 
-    label = new Label(composite, SWT.NONE);
-    label.setText("Password:");
-    label.setLayoutData(new GridData());
-    text2 = new Text(composite, SWT.BORDER);
-    text2.setEchoChar('*');
-    gridData = new GridData();
-    gridData.widthHint = 200;
-    text2.setLayoutData(gridData);
-    
-    return super.createDialogArea(parent);
-  }
+    public LoginDialog(String userName, String password)
+    {
+        super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+        this.userName = userName;
+        this.password = password;
+    }
 
-  public int open()
-  {
-    create();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+     */
+    protected void configureShell(Shell newShell)
+    {
+        super.configureShell(newShell);
+        newShell.setText("DirectaWorld");
+    }
 
-    setTitle("Realtime Server Login");
-    setMessage("Please enter your user id and password");
-    setTitleImage(Images.ICON_KEY.createImage());
-    
-    return super.open();
-  }
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+     */
+    protected Control createDialogArea(Composite parent)
+    {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+        composite.setLayout(new GridLayout(2, false));
 
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-   */
-  protected void okPressed()
-  {
-    userName = text1.getText();
-    password = text2.getText();
-    
-    super.okPressed();
-  }
+        Label label = new Label(composite, SWT.NONE);
+        label.setText("Codice Utente:");
+        text1 = new Text(composite, SWT.BORDER);
+        text1.setText(userName);
+        text1.setLayoutData(new GridData(200, SWT.DEFAULT));
 
-  public String getUserName()
-  {
-    return userName;
-  }
-  
-  public String getPassword()
-  {
-    return password;
-  }
+        label = new Label(composite, SWT.NONE);
+        label.setText("Password:");
+        text2 = new Text(composite, SWT.BORDER|SWT.PASSWORD);
+        text2.setLayoutData(new GridData(200, SWT.DEFAULT));
+        
+        label = new Label(composite, SWT.NONE);
+        button = new Button(composite, SWT.CHECK);
+        button.setText("Salva la password");
+
+        return super.createDialogArea(parent);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#open()
+     */
+    public int open()
+    {
+        create();
+        
+        setTitle("Realtime Server Login");
+        setMessage("Please enter your user id and password");
+        setTitleImage(image);
+
+        return super.open();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+     */
+    protected void okPressed()
+    {
+        userName = text1.getText();
+        password = text2.getText();
+
+        DirectaWorldPlugin.getDefault().getPreferenceStore().setValue(DirectaWorldPlugin.USERNAME_PREFS, userName);
+        DirectaWorldPlugin.getDefault().getPreferenceStore().setValue(DirectaWorldPlugin.PASSWORD_PREFS, button.getSelection() ? password : "");
+        
+        image.dispose();
+        super.okPressed();
+    }
+
+    public String getUserName()
+    {
+        return userName;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
 }

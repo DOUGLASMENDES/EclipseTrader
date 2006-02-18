@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-
-     <extension
-         point="net.sourceforge.eclipsetrader.dataProvider">
-      <provider
-            label="DirectaWorld Italy (realtime, free w/registration)"
-            class="net.sourceforge.eclipsetrader.directaworld.SnapshotDataProvider"
-            id="directaworld.dataProvider"/>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.feeds">
+      <feed
+            id="net.sourceforge.eclipsetrader.directaworld"
+            name="DirectaWorld">
+         <quote class="net.sourceforge.eclipsetrader.directaworld.Feed"/>
+      </feed>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.directaworld.GeneralPreferencesPage"
+            id="net.sourceforge.eclipsetrader.directaworld.general"
+            name="DirectaWorld"/>
    </extension>
 
 </plugin>
