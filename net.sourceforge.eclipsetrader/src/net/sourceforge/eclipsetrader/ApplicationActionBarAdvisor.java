@@ -10,13 +10,18 @@
  */
 package net.sourceforge.eclipsetrader;
 
+import net.sourceforge.eclipsetrader.internal.CloseAction;
+import net.sourceforge.eclipsetrader.internal.CloseAllAction;
+
 import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -28,7 +33,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
     private IWorkbenchAction aboutAction;
     private IWorkbenchAction editActionSetsAction;
     private IWorkbenchAction resetPerspectiveAction;
+    private IWorkbenchAction savePerspectiveAction;
     private IWorkbenchAction preferencesAction;
+    private IContributionItem wizardList;
+    private IContributionItem perspectiveList;
+    private IContributionItem viewList;
 
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer)
     {
@@ -42,10 +51,15 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
     {
         quitAction = ActionFactory.QUIT.create(window);
         editActionSetsAction = ActionFactory.EDIT_ACTION_SETS.create(window);
+        savePerspectiveAction = ActionFactory.SAVE_PERSPECTIVE.create(window);
         resetPerspectiveAction = ActionFactory.RESET_PERSPECTIVE.create(window);
         preferencesAction = ActionFactory.PREFERENCES.create(window);
         helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);
         aboutAction = ActionFactory.ABOUT.create(window);
+        
+        wizardList = ContributionItemFactory.NEW_WIZARD_SHORTLIST.create(window);
+        perspectiveList = ContributionItemFactory.PERSPECTIVES_SHORTLIST.create(window);
+        viewList = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
     }
 
     /* (non-Javadoc)
@@ -55,11 +69,13 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
     {
         MenuManager menu = new MenuManager("File", IWorkbenchActionConstants.M_FILE);
         menu.add(new Separator(IWorkbenchActionConstants.FILE_START));
-        MenuManager fileNewMenu = new MenuManager("New", "new");
-        fileNewMenu.add(new GroupMarker("top"));
-        fileNewMenu.add(new GroupMarker("additions"));
-        fileNewMenu.add(new GroupMarker("bottom"));
-        menu.add(fileNewMenu);
+
+        MenuManager wizardMenu = new MenuManager("New", "newWizard");
+        wizardMenu.add(wizardList);
+        menu.add(wizardMenu);        
+        menu.add(new Separator());
+        menu.add(new CloseAction());        
+        menu.add(new CloseAllAction());        
         menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         menu.add(new Separator(IWorkbenchActionConstants.FILE_END));
         menu.add(quitAction);
@@ -71,12 +87,19 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
 
         menu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW); //$NON-NLS-1$
         menu.add(new Separator("top")); //$NON-NLS-1$
-        menu.add(new Separator("open")); //$NON-NLS-1$
         menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+
         menu.add(new Separator());
-        editActionSetsAction.setEnabled(true);
+        MenuManager perspectiveMenu = new MenuManager("Open Perspective", "openPerspective"); //$NON-NLS-1$ //$NON-NLS-2$
+        perspectiveMenu.add(perspectiveList);
+        menu.add(perspectiveMenu);
+        MenuManager viewMenu = new MenuManager("Show View", "showView");
+        viewMenu.add(viewList);
+        menu.add(viewMenu);        
+
+        menu.add(new Separator());
         menu.add(editActionSetsAction);
-        resetPerspectiveAction.setEnabled(true);
+        menu.add(savePerspectiveAction);
         menu.add(resetPerspectiveAction);
         menu.add(new Separator());
         menu.add(preferencesAction);
