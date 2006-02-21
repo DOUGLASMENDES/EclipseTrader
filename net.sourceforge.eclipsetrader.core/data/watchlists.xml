@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data nextId="2">
+    <watchlist id="1">
+        <title>Watchlist</title>
+        <style>0</style>
+        <columns>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.Code">
+                <label>Code</label>
+                <width>50</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.Description">
+                <label>Description</label>
+                <width>212</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.LastPrice">
+                <label>Last Price</label>
+                <width>72</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.ChangePercent">
+                <label>Chg.%</label>
+                <width>63</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.BidSize">
+                <label>Bid Q.ty</label>
+                <width>62</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.BidPrice">
+                <label>Bid</label>
+                <width>64</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.AskPrice">
+                <label>Ask</label>
+                <width>66</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.AskSize">
+                <label>Ask Q.ty</label>
+                <width>62</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.Volume">
+                <label>Volume</label>
+                <width>83</width>
+            </column>
+            <column class="net.sourceforge.eclipsetrader.core.db.columns.Time">
+                <label>Time</label>
+                <width>65</width>
+            </column>
+        </columns>
+        <items>
+            <security id="2"/>
+            <security id="3"/>
+            <security id="4"/>
+            <security id="6"/>
+        </items>
+    </watchlist>
+</data>
