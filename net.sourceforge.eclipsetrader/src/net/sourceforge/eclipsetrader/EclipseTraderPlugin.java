@@ -19,6 +19,7 @@ import org.osgi.framework.BundleContext;
  */
 public class EclipseTraderPlugin extends AbstractUIPlugin
 {
+    public static final String PROMPT_ON_EXIT = "PROMPT_ON_EXIT";
     private static EclipseTraderPlugin plugin;
 
     /**
@@ -35,6 +36,7 @@ public class EclipseTraderPlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
+        getPreferenceStore().setDefault(PROMPT_ON_EXIT, true);
     }
 
     /**
