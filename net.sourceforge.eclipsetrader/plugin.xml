@@ -39,6 +39,11 @@
             class="org.eclipse.ui.ExtensionFactory:colorsAndFontsPreferencePage"
             id="org.eclipse.ui.preferencePages.ColorsAndFonts"
             name="Colors and Fonts"/>
+      <page
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.preferences.StartupShutdownPreferencesPage"
+            id="net.sourceforge.eclipsetrader.startupAndShutdown"
+            name="Startup and Shutdown"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
