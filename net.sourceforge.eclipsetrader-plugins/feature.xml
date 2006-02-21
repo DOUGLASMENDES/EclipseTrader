@@ -5,23 +5,24 @@
       version="0.20.0"
       provider-name="Sourceforge.net">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description>
+      %description
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      %copyright
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license>
+      %license
    </license>
+
+   <url>
+      <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+   </url>
 
    <requires>
       <import feature="net.sourceforge.eclipsetrader" version="0.20.0"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="net.sourceforge.eclipsetrader.core"/>
    </requires>
 
    <plugin
