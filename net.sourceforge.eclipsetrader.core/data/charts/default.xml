@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chart>
+    <row>
+        <tab label="SECURITY">
+            <indicator pluginId="net.sourceforge.eclipsetrader.indicators.bars">
+                <param key="positiveCandle" value="255,255,255"/>
+                <param key="negativeCandle" value="0,0,0"/>
+                <param key="positiveBar" value="0,192,0"/>
+                <param key="negativeBar" value="192,0,0"/>
+                <param key="barType" value="7"/>
+                <param key="neutralBar" value="192,192,192"/>
+            </indicator>
+            <indicator pluginId="net.sourceforge.eclipsetrader.indicators.ma">
+                <param key="period" value="7"/>
+                <param key="color" value="0,224,0"/>
+                <param key="lineType" value="4"/>
+                <param key="type" value="0"/>
+                <param key="label" value="MA7"/>
+            </indicator>
+            <indicator pluginId="net.sourceforge.eclipsetrader.indicators.ma">
+                <param key="period" value="21"/>
+                <param key="color" value="224,0,0"/>
+                <param key="type" value="0"/>
+                <param key="lineType" value="4"/>
+                <param key="label" value="MA21"/>
+            </indicator>
+        </tab>
+    </row>
+    <row>
+        <tab label="VOLUME">
+            <indicator pluginId="net.sourceforge.eclipsetrader.indicators.volume">
+                <param key="positive" value="0,192,0"/>
+                <param key="negative" value="192,0,0"/>
+                <param key="neutral" value="192,192,192"/>
+                <param key="label" value="VOLUME"/>
+            </indicator>
+        </tab>
+    </row>
+</chart>

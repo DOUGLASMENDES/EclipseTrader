@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.core; singleton:=true
+Bundle-Version: 0.20.0
+Bundle-Activator: net.sourceforge.eclipsetrader.core.CorePlugin
+Bundle-Vendor: Sourceforge.net
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-AutoStart: true
+Export-Package: net.sourceforge.eclipsetrader.core,
+ net.sourceforge.eclipsetrader.core.db,
+ net.sourceforge.eclipsetrader.core.db.columns,
+ net.sourceforge.eclipsetrader.core.db.feed,
+ net.sourceforge.eclipsetrader.core.db.formatters,
+ net.sourceforge.eclipsetrader.core.internal,
+ net.sourceforge.eclipsetrader.core.ui,
+ net.sourceforge.eclipsetrader.core.ui.actions,
+ net.sourceforge.eclipsetrader.core.ui.preferences,
+ net.sourceforge.eclipsetrader.core.ui.views,
+ net.sourceforge.eclipsetrader.core.ui.widgets,
+ net.sourceforge.eclipsetrader.core.ui.wizards
