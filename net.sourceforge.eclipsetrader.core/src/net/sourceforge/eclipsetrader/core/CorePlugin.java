@@ -11,17 +11,11 @@
 
 package net.sourceforge.eclipsetrader.core;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import net.sourceforge.eclipsetrader.core.internal.XMLRepository;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -33,6 +27,12 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.core";
     public static final String FEED_EXTENSION_POINT = PLUGIN_ID + ".feeds";
     public static final String FEED_RUNNING = "FEED_RUNNING";
+    public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY";
+    public static final String PREFS_PROXY_HOST_ADDRESS = "PROXY_HOST_ADDRESS";
+    public static final String PREFS_PROXY_PORT_ADDRESS = "PROXY_PORT_ADDRESS";
+    public static final String PREFS_ENABLE_PROXY_AUTHENTICATION = "ENABLE_PROXY_AUTHENTICATION";
+    public static final String PREFS_PROXY_USER = "PROXY_USER";
+    public static final String PREFS_PROXY_PASSWORD = "PROXY_PASSWORD";
     private static CorePlugin plugin;
     private static Repository repository;
 
@@ -48,10 +48,6 @@ public class CorePlugin extends AbstractUIPlugin
     {
         super.start(context);
         getPreferenceStore().setDefault(FEED_RUNNING, false);
-     
-        copyWorkspaceFile("charts/default.xml");
-        copyWorkspaceFile("securities.xml");
-        copyWorkspaceFile("watchlists.xml");
     }
 
     /* (non-Javadoc)
@@ -186,32 +182,6 @@ public class CorePlugin extends AbstractUIPlugin
         }
         
         return null;
-    }
-
-    private void copyWorkspaceFile(String file)
-    {
-        File f = new File(Platform.getLocation().toFile(), file);
-        if (!f.exists())
-        {
-            f.getParentFile().mkdirs();
-            try
-            {
-                byte[] buffer = new byte[10240];
-                OutputStream os = new FileOutputStream(f);
-                InputStream is = openStream(new Path("data/" + file));
-                int readed = 0;
-                do
-                {
-                    readed = is.read(buffer);
-                    os.write(buffer, 0, readed);
-                } while (readed == buffer.length);
-                os.close();
-                is.close();
-            }
-            catch (Exception e) {
-                CorePlugin.logException(e);
-            }
-        }
     }
 
     public static void logException(Exception e)

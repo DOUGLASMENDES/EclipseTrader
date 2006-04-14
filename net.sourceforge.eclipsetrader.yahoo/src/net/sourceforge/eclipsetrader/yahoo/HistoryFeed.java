@@ -14,8 +14,6 @@ package net.sourceforge.eclipsetrader.yahoo;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,12 +22,17 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import sun.misc.BASE64Encoder;
-
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Security;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 public class HistoryFeed implements IHistoryFeed
 {
@@ -69,33 +72,34 @@ public class HistoryFeed implements IHistoryFeed
                 to.add(Calendar.DATE, 200);
             }
 
-            String s = "http://table.finance.yahoo.com/table.csv" + "?s=";
+            StringBuffer url = new StringBuffer("http://table.finance.yahoo.com/table.csv" + "?s=");
             String symbol = null;
             if (security.getHistoryFeed() != null)
                 symbol = security.getHistoryFeed().getSymbol();
             if (symbol == null || symbol.length() == 0)
                 symbol = security.getCode();
-            s += symbol + "&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR) + "&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR) + "&g=d&q=q&y=0&z=&x=.csv";
+            url.append(symbol);
+            url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR));
+            url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR));
+            url.append("&g=d&q=q&y=0&z=&x=.csv");
 
             try {
-                URL url = new URL(s);
-                System.out.println(getClass() + " " + df.format(from.getTime()) + "->" + df.format(to.getTime()) + " " + url);
-
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setInstanceFollowRedirects(true);
-                String proxyHost = (String) System.getProperties().get("http.proxyHost");
-                String proxyUser = (String) System.getProperties().get("http.proxyUser");
-                String proxyPassword = (String) System.getProperties().get("http.proxyPassword");
-                if (proxyHost != null && proxyHost.length() != 0 && proxyUser != null && proxyUser.length() != 0 && proxyPassword != null)
+                HttpClient client = new HttpClient();
+                client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+                
+                IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+                if (store.getBoolean(CorePlugin.PREFS_ENABLE_HTTP_PROXY))
                 {
-                    String login = proxyUser + ":" + proxyPassword;
-                    String encodedLogin = new BASE64Encoder().encodeBuffer(login.getBytes());
-                    con.setRequestProperty("Proxy-Authorization", "Basic " + encodedLogin.trim());
+                    client.getHostConfiguration().setProxy(store.getString(CorePlugin.PREFS_PROXY_HOST_ADDRESS), store.getInt(CorePlugin.PREFS_PROXY_PORT_ADDRESS));
+                    if (store.getBoolean(CorePlugin.PREFS_ENABLE_PROXY_AUTHENTICATION))
+                        client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(store.getString(CorePlugin.PREFS_PROXY_USER), store.getString(CorePlugin.PREFS_PROXY_PASSWORD)));
                 }
-                con.setAllowUserInteraction(true);
-                con.setRequestMethod("GET");
-                con.setInstanceFollowRedirects(true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                HttpMethod method = new GetMethod(url.toString());
+                method.setFollowRedirects(true);
+                client.executeMethod(method);
+                
+                BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
                 String inputLine = in.readLine();
                 while ((inputLine = in.readLine()) != null)
                 {
@@ -123,11 +127,7 @@ public class HistoryFeed implements IHistoryFeed
                     bar.setHigh(Double.parseDouble(item[2].replace(',', '.')));
                     bar.setLow(Double.parseDouble(item[3].replace(',', '.')));
                     bar.setClose(Double.parseDouble(item[4].replace(',', '.')));
-                    try {
-                        bar.setVolume(Integer.parseInt(item[5]));
-                    } catch(Exception e) {
-                        CorePlugin.logException(e);
-                    }
+                    bar.setVolume(Long.parseLong(item[5]));
                     history.add(bar);
                 }
                 in.close();

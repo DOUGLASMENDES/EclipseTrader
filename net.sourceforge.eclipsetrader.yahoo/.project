@@ -3,6 +3,7 @@
 	<name>net.sourceforge.eclipsetrader.yahoo</name>
 	<comment></comment>
 	<projects>
+		<project>net.sourceforge.eclipsetrader.news</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

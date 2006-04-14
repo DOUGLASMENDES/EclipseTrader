@@ -24,5 +24,7 @@ public class Perspective implements IPerspectiveFactory
     public void createInitialLayout(IPageLayout layout)
     {
         layout.createPlaceholderFolder("left", IPageLayout.LEFT, 0.20f, IPageLayout.ID_EDITOR_AREA);
+        layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.80f, IPageLayout.ID_EDITOR_AREA);
+        layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.70f, IPageLayout.ID_EDITOR_AREA);
     }
 }

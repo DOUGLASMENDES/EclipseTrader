@@ -10,7 +10,16 @@
  */
 package net.sourceforge.eclipsetrader;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import net.sourceforge.eclipsetrader.core.CorePlugin;
+
 import org.eclipse.ui.plugin.*;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.BundleContext;
 
@@ -37,6 +46,9 @@ public class EclipseTraderPlugin extends AbstractUIPlugin
     {
         super.start(context);
         getPreferenceStore().setDefault(PROMPT_ON_EXIT, true);
+        copyWorkspaceFile("charts/default.xml");
+        copyWorkspaceFile("securities.xml");
+        copyWorkspaceFile("watchlists.xml");
     }
 
     /**
@@ -66,5 +78,31 @@ public class EclipseTraderPlugin extends AbstractUIPlugin
     public static ImageDescriptor getImageDescriptor(String path)
     {
         return AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipsetrader", path);
+    }
+
+    private void copyWorkspaceFile(String file)
+    {
+        File f = new File(Platform.getLocation().toFile(), file);
+        if (!f.exists())
+        {
+            f.getParentFile().mkdirs();
+            try
+            {
+                byte[] buffer = new byte[10240];
+                OutputStream os = new FileOutputStream(f);
+                InputStream is = openStream(new Path("data/" + file));
+                int readed = 0;
+                do
+                {
+                    readed = is.read(buffer);
+                    os.write(buffer, 0, readed);
+                } while (readed == buffer.length);
+                os.close();
+                is.close();
+            }
+            catch (Exception e) {
+                CorePlugin.logException(e);
+            }
+        }
     }
 }

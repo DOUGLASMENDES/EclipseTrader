@@ -3,6 +3,16 @@
 <plugin>
 
    <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="net.sourceforge.eclipsetrader.Application">
+         </run>
+      </application>
+   </extension>
+
+   <extension
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
@@ -22,29 +32,6 @@
                value="%productBlurb"/>
       </product>
    </extension>
-
-   <extension
-         id="application"
-         point="org.eclipse.core.runtime.applications">
-      <application>
-         <run
-               class="net.sourceforge.eclipsetrader.Application">
-         </run>
-      </application>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="net.sourceforge.eclipsetrader"
-            class="org.eclipse.ui.ExtensionFactory:colorsAndFontsPreferencePage"
-            id="org.eclipse.ui.preferencePages.ColorsAndFonts"
-            name="Colors and Fonts"/>
-      <page
-            category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.preferences.StartupShutdownPreferencesPage"
-            id="net.sourceforge.eclipsetrader.startupAndShutdown"
-            name="Startup and Shutdown"/>
-   </extension>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -60,21 +47,34 @@
          </menu>
          <action
                class="net.sourceforge.eclipsetrader.internal.InstallWizardAction"
-               disabledIcon="icons/full/dlcl16/usearch_obj.gif"
-               icon="icons/full/elcl16/usearch_obj.gif"
+               disabledIcon="icons/dlcl16/usearch_obj.gif"
+               icon="icons/elcl16/usearch_obj.gif"
                id="org.eclipse.update.ui.newUpdates"
                label="Find and Install..."
                menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.internal.ConfigurationManagerAction"
-               disabledIcon="icons/full/dlcl16/configs.gif"
-               icon="icons/full/elcl16/configs.gif"
+               disabledIcon="icons/dlcl16/configs.gif"
+               icon="icons/elcl16/configs.gif"
                id="org.eclipse.update.ui.configManager"
                label="Manage Configuration..."
                menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
                style="push"/>
       </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="net.sourceforge.eclipsetrader"
+            class="org.eclipse.ui.ExtensionFactory:colorsAndFontsPreferencePage"
+            id="org.eclipse.ui.preferencePages.ColorsAndFonts"
+            name="Colors and Fonts"/>
+      <page
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.preferences.StartupShutdownPreferencesPage"
+            id="net.sourceforge.eclipsetrader.startupAndShutdown"
+            name="Startup and Shutdown"/>
    </extension>
 
 </plugin>

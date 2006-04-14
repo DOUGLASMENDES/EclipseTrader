@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="net.sourceforge.eclipsetrader.news"
+            label="News Feed Control">
+         <menu
+               id="newsMenu"
+               label="News"
+               path="news">
+            <separator name="top"/>
+            <separator name="group1"/>
+            <separator name="group2"/>
+            <separator name="group3"/>
+            <separator name="group4"/>
+            <separator name="group5"/>
+            <separator name="group6"/>
+            <separator name="additions"/>
+            <separator name="bottom"/>
+         </menu>
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.StopFeedAction"
+               disabledIcon="icons/dtool16/stop.gif"
+               icon="icons/etool16/stop.gif"
+               id="net.sourceforge.eclipsetrader.news.stopFeed"
+               label="Stop News Feed"
+               style="push"
+               toolbarPath="eclipsetrader"
+               tooltip="Stop news feed"/>
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.StartFeedAction"
+               disabledIcon="icons/dtool16/start.gif"
+               icon="icons/etool16/run.gif"
+               id="net.sourceforge.eclipsetrader.news.startFeed"
+               label="Start News Feed"
+               style="push"
+               toolbarPath="eclipsetrader"
+               tooltip="Start news feed"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="net.sourceforge.eclipsetrader.news.Perspective"
+            id="net.sourceforge.eclipsetrader.news"
+            name="News"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.news">
+         <view
+               id="net.sourceforge.eclipsetrader.views.securities"
+               relationship="stack"
+               relative="left"/>
+         <view
+               id="net.sourceforge.eclipsetrader.newslist"
+               relationship="stack"
+               relative="bottom"
+               />
+         <view
+               id="net.sourceforge.eclipsetrader.webbrowser:net.sourceforge.eclipsetrader.news"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               />
+         <viewShortcut id="net.sourceforge.eclipsetrader.securities"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.newslist"/>
+         <actionSet id="net.sourceforge.eclipsetrader.news"/>
+         <actionSet id="net.sourceforge.eclipsetrader.securities"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader">
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.news"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.newslist"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.newsbrowser"/>
+         <view
+               id="net.sourceforge.eclipsetrader.newslist"
+               relationship="stack"
+               relative="bottom"
+               />
+         <view
+               id="net.sourceforge.eclipsetrader.webbrowser:net.sourceforge.eclipsetrader.news"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               visible="false"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="watchlistView"
+            targetID="net.sourceforge.eclipsetrader.watchlist">
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.ShowSecurityNewsAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.news.showNews"
+               label="Show News"
+               menubarPath="group2"
+               style="push"/>
+      </viewerContribution>
+      <viewerContribution
+            id="securitiesView"
+            targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.ShowSecurityNewsAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.news.showNews"
+               label="Show News"
+               menubarPath="group2"
+               style="push"/>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.eclipsetrader.news.preferences.NewsPreferencesPage"
+            id="net.sourceforge.eclipsetrader.news"
+            name="News"/>
+      <page
+            category="net.sourceforge.eclipsetrader.news"
+            class="net.sourceforge.eclipsetrader.news.preferences.RSSPreferencesPage"
+            id="net.sourceforge.eclipsetrader.news.rss"
+            name="RSS News"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <themeElementCategory
+            id="newsList"
+            label="News List"/>
+      <colorDefinition
+            categoryId="newsList"
+            id="NEWS_TABLE_BACKGROUND"
+            label="Background"
+            value="255,255,224"/>
+      <colorDefinition
+            categoryId="newsList"
+            id="NEWS_TABLE_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+      <fontDefinition
+            categoryId="newsList"
+            id="NEWS_TABLE_FONT"
+            label="Font"/>
+      <themeElementCategory
+            id="newsList.readed"
+            label="Readed Item"
+            parentId="newsList"/>
+      <colorDefinition
+            categoryId="newsList.readed"
+            defaultsTo="NEWS_TABLE_BACKGROUND"
+            id="NEWS_READED_ITEM_BACKGROUND"
+            label="Background"/>
+      <colorDefinition
+            categoryId="newsList.readed"
+            id="NEWS_READED_ITEM_FOREGROUND"
+            label="Foreground"
+            value="192,192,192"/>
+      <fontDefinition
+            categoryId="newsList.readed"
+            id="NEWS_READED_ITEM_FONT"
+            label="Font"/>
+      <themeElementCategory
+            id="newsList.new"
+            label="Recently Added Item"
+            parentId="newsList"/>
+      <colorDefinition
+            categoryId="newsList.new"
+            defaultsTo="NEWS_TABLE_BACKGROUND"
+            id="NEWS_NEW_ITEM_BACKGROUND"
+            label="Background"/>
+      <colorDefinition
+            categoryId="newsList.new"
+            defaultsTo="NEWS_TABLE_FOREGROUND"
+            id="NEWS_NEW_ITEM_FOREGROUND"
+            label="Foreground"/>
+      <fontDefinition
+            categoryId="newsList.new"
+            id="NEWS_NEW_ITEM_FONT"
+            label="Font"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.news.views.NewsView"
+            icon="icons/eview16/news.gif"
+            id="net.sourceforge.eclipsetrader.newslist"
+            name="News"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="newsView"
+            targetID="net.sourceforge.eclipsetrader.newslist">
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.ShowNextAction"
+               disabledIcon="icons/dlcl16/next_nav.gif"
+               icon="icons/elcl16/next_nav.gif"
+               id="net.sourceforge.eclipsetrader.news.next"
+               label="Next"
+               style="push"
+               toolbarPath="group1"/>
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.ShowPreviousAction"
+               disabledIcon="icons/dlcl16/prev_nav.gif"
+               icon="icons/elcl16/prev_nav.gif"
+               id="net.sourceforge.eclipsetrader.news.previous"
+               label="Previous"
+               style="push"
+               toolbarPath="group1"/>
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.RefreshFeedAction"
+               disabledIcon="icons/dlcl16/refresh.gif"
+               icon="icons/elcl16/refresh.gif"
+               id="net.sourceforge.eclipsetrader.news.refresh"
+               label="Update"
+               style="push"
+               toolbarPath="group2"
+               tooltip="Update news"/>
+      </viewContribution>
+      <viewContribution
+            id="securitiesView"
+            targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.news.actions.ShowSecurityNewsAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.news.showNews"
+               label="Show News"
+               menubarPath="group2"
+               style="push"/>
+      </viewContribution>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.news">
+      <provider
+            class="net.sourceforge.eclipsetrader.news.providers.RSSNewsProvider"
+            id="net.sourceforge.eclipsetrader.news.rss"
+            name="RSS News"/>
+   </extension>
+
+</plugin>

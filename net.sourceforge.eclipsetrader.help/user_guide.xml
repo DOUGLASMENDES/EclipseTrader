@@ -2,6 +2,7 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="User Guide">
+<!-- 
     <topic label="Getting Started">
         <topic label="First Run" href="guide/first_run.html"/>
     </topic>
@@ -14,24 +15,25 @@
         <topic label="News" href="guide/news.html"/>
         <topic label="Indices" href="guide/indices.html"/>
     </topic>
+-->
     <topic label="Indicators" href="guide/indicators/index.html">
         <topic label="Accumulation Distribution - AD" href="guide/indicators/ad.html"/>
-        <topic label="Average True Range - ATR" href="guide/indicators/atr.html"/>
+<!--         <topic label="Average True Range - ATR" href="guide/indicators/atr.html"/> -->
         <topic label="Bollinger Bands - BB" href="guide/indicators/bb.html"/>
         <topic label="Commodity Channel Index - CCI" href="guide/indicators/cci.html"/>
-        <topic label="Detrended Price Oscillator - DPO" href="guide/indicators/dpo.html"/>
-        <topic label="Directional Movement Index - DMI" href="guide/indicators/dmi.html"/>
-        <topic label="Elder's Market Thermometer - THERM" href="guide/indicators/therm.html"/>
-        <topic label="Elder's Safezone Stop - SZ" href="guide/indicators/sz.html"/>
-        <topic label="Force Index - FI" href="guide/indicators/fi.html"/>
+<!--         <topic label="Detrended Price Oscillator - DPO" href="guide/indicators/dpo.html"/> -->
+<!--         <topic label="Directional Movement Index - DMI" href="guide/indicators/dmi.html"/> -->
+<!--         <topic label="Elder's Market Thermometer - THERM" href="guide/indicators/therm.html"/> -->
+<!--         <topic label="Elder's Safezone Stop - SZ" href="guide/indicators/sz.html"/> -->
+<!--         <topic label="Force Index - FI" href="guide/indicators/fi.html"/> -->
         <topic label="Moving Average - MA" href="guide/indicators/ma.html"/>
         <topic label="Moving Average Convergence Divergence - MACD" href="guide/indicators/macd.html"/>
-        <topic label="Moving Avergate Oscillator - MAOSC" href="guide/indicators/maosc.html"/>
+<!--         <topic label="Moving Avergate Oscillator - MAOSC" href="guide/indicators/maosc.html"/> -->
         <topic label="Relative Strength Index - RSI" href="guide/indicators/rsi.html"/>
         <topic label="Stochastic - STOCH" href="guide/indicators/stoch.html"/>
-        <topic label="Symbol - SYMBOL" href="guide/indicators/symbol.html"/>
-        <topic label="Trend - TREND" href="guide/indicators/trend.html"/>
-        <topic label="Volume Trends - VT" href="guide/indicators/vt.html"/>
+<!--         <topic label="Symbol - SYMBOL" href="guide/indicators/symbol.html"/> -->
+<!--         <topic label="Trend - TREND" href="guide/indicators/trend.html"/> -->
+<!--         <topic label="Volume Trends - VT" href="guide/indicators/vt.html"/> -->
     </topic>
     <!-- install update topics -->
     <topic label="Updating with the update manager" href="tasks/tasks-36.htm" >

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+	<category id="topstories">
+		<title>Top Stories</title>
+		<url>http://finance.yahoo.com/rss/topstories</url>
+	</category>
+	<category id="usmarkets">
+		<title>U.S. Markets</title>
+		<url>http://finance.yahoo.com/rss/usmarkets</url>
+	</category>
+	<category id="economy">
+		<title>Economy &amp; Government</title>
+		<url>http://finance.yahoo.com/rss/economy</url>
+	</category>
+	<category id="international">
+		<title>International Finance</title>
+		<url>http://finance.yahoo.com/rss/international</url>
+	</category>
+	<category id="mostpopular">
+		<title>Most Popular</title>
+		<url>http://finance.yahoo.com/rss/mostpopular</url>
+	</category>
+	<category id="bonds">
+		<title>Bonds</title>
+		<url>http://finance.yahoo.com/rss/bonds</url>
+	</category>
+	<category id="commodities">
+		<title>Commodities</title>
+		<url>http://finance.yahoo.com/rss/commodities</url>
+	</category>
+	<category id="currencies">
+		<title>Currencies</title>
+		<url>http://finance.yahoo.com/rss/currencies</url>
+	</category>
+	<category id="funds">
+		<title>Funds</title>
+		<url>http://finance.yahoo.com/rss/funds</url>
+	</category>
+	<category id="options">
+		<title>Options</title>
+		<url>http://finance.yahoo.com/rss/options</url>
+	</category>
+	<category id="earnings">
+		<title>Earnings</title>
+		<url>http://finance.yahoo.com/rss/earnings</url>
+	</category>
+	<category id="IPO">
+		<title>IPOs</title>
+		<url>http://finance.yahoo.com/rss/IPO</url>
+	</category>
+	<category id="mergersaquisitions">
+		<title>Mergers &amp; Acquisitions</title>
+		<url>http://finance.yahoo.com/rss/mergersaquisitions</url>
+	</category>
+	<category id="upgradesdowngrades">
+		<title>Upgrades &amp; Downgrades</title>
+		<url>http://finance.yahoo.com/rss/upgradesdowngrades</url>
+	</category>
+	<category id="venturecapital">
+		<title>Venture Capital</title>
+		<url>http://finance.yahoo.com/rss/venturecapital</url>
+	</category>
+	<category id="investingpicks">
+		<title>Investing Picks</title>
+		<url>http://finance.yahoo.com/rss/investingpicks</url>
+	</category>
+	<category id="investingstrategies">
+		<title>Investing Strategies</title>
+		<url>http://finance.yahoo.com/rss/investingstrategies</url>
+	</category>
+	<category id="investingideas">
+		<title>Investing Ideas</title>
+		<url>http://finance.yahoo.com/rss/investingideas</url>
+	</category>
+	<category id="banking">
+		<title>Banking</title>
+		<url>http://finance.yahoo.com/rss/banking</url>
+	</category>
+	<category id="mortgages">
+		<title>Mortgages</title>
+		<url>http://finance.yahoo.com/rss/mortgages</url>
+	</category>
+	<category id="retirement">
+		<title>Retirement</title>
+		<url>http://finance.yahoo.com/rss/retirement</url>
+	</category>
+	<category id="taxes">
+		<title>Taxes</title>
+		<url>http://finance.yahoo.com/rss/taxes</url>
+	</category>
+</data>

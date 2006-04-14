@@ -17,7 +17,8 @@
 
    <windowImages small="eclipse.gif" large="eclipse32.gif"/>
 
-   <launcher name="eclipsetrader">
+
+   <launcher name="trader">
       <solaris/>
       <win useIco="false">
          <bmp/>

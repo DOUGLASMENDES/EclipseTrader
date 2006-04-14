@@ -4,9 +4,11 @@ Bundle-Name: Yahoo!
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.yahoo; singleton:=true
 Bundle-Version: 0.20.0
 Bundle-Activator: net.sourceforge.eclipsetrader.yahoo.YahooPlugin
-Bundle-Vendor: Sourceforge.net
+Bundle-Vendor: EclipseTrader.Plugins
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader.core
+ net.sourceforge.eclipsetrader.core,
+ net.sourceforge.eclipsetrader.news;resolution:=optional
 Eclipse-AutoStart: true
+Export-Package: net.sourceforge.eclipsetrader.yahoo

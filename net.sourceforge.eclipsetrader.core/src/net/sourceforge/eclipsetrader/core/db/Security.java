@@ -366,6 +366,7 @@ public class Security extends PersistentObject
     public class Feed
     {
         private String id = "";
+        private String exchange = "";
         private String symbol = "";
         
         public Feed()
@@ -383,6 +384,16 @@ public class Security extends PersistentObject
             setChanged();
         }
         
+        public String getExchange()
+        {
+            return exchange;
+        }
+
+        public void setExchange(String exchange)
+        {
+            this.exchange = exchange;
+        }
+
         public String getSymbol()
         {
             return symbol;
@@ -402,7 +413,7 @@ public class Security extends PersistentObject
             if (obj == null || !(obj instanceof Feed))
                 return false;
             Feed that = (Feed)obj;
-            return this.id.equals(that.id) && this.symbol.equals(that.symbol);
+            return this.id.equals(that.id) && this.symbol.equals(that.symbol) && this.exchange.equals(that.exchange);
         }
     }
 }

@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Charts
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.charts; singleton:=true
+Bundle-Version: 0.20.0
+Bundle-Activator: net.sourceforge.eclipsetrader.charts.ChartsPlugin
+Bundle-Vendor: EclipseTrader
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.sourceforge.eclipsetrader.core
+Eclipse-AutoStart: true
+Export-Package: net.sourceforge.eclipsetrader.charts,
+ net.sourceforge.eclipsetrader.charts.actions,
+ net.sourceforge.eclipsetrader.charts.dialogs,
+ net.sourceforge.eclipsetrader.charts.events,
+ net.sourceforge.eclipsetrader.charts.indicators,
+ net.sourceforge.eclipsetrader.charts.internal,
+ net.sourceforge.eclipsetrader.charts.objects,
+ net.sourceforge.eclipsetrader.charts.views,
+ net.sourceforge.eclipsetrader.charts.wizards

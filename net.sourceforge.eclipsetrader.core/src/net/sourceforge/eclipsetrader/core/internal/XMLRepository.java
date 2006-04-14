@@ -38,6 +38,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
+import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
@@ -60,11 +61,11 @@ public class XMLRepository extends Repository
     private Map chartsMap = new HashMap();
     private Integer watchlistsNextId = new Integer(1);
     private Map watchlistsMap = new HashMap();
-    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
 
     public XMLRepository()
     {
-        File file = new File(Platform.getLocation().toFile(), "securities.xml");
+        File file = new File(Platform.getLocation().toFile(), "securities.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
             try
@@ -74,7 +75,7 @@ public class XMLRepository extends Repository
                 Document document = builder.parse(file);
 
                 Node firstNode = document.getFirstChild();
-                securitiesNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getTextContent());
+                securitiesNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getTextContent()); //$NON-NLS-1$
 
                 NodeList childNodes = firstNode.getChildNodes();
                 for (int i = 0; i < childNodes.getLength(); i++)
@@ -94,7 +95,7 @@ public class XMLRepository extends Repository
             }
         }
 
-        file = new File(Platform.getLocation().toFile(), "watchlists.xml");
+        file = new File(Platform.getLocation().toFile(), "watchlists.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
             try
@@ -104,7 +105,7 @@ public class XMLRepository extends Repository
                 Document document = builder.parse(file);
 
                 Node firstNode = document.getFirstChild();
-                watchlistsNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getTextContent());
+                watchlistsNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getTextContent()); //$NON-NLS-1$
 
                 NodeList childNodes = firstNode.getChildNodes();
                 for (int i = 0; i < childNodes.getLength(); i++)
@@ -123,6 +124,34 @@ public class XMLRepository extends Repository
                 ex.printStackTrace();
             }
         }
+
+        file = new File(Platform.getLocation().toFile(), "news.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+        {
+            try
+            {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(file);
+
+                Node firstNode = document.getFirstChild();
+
+                NodeList childNodes = firstNode.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++)
+                {
+                    Node item = childNodes.item(i);
+                    String nodeName = item.getNodeName();
+                    if (nodeName.equalsIgnoreCase("news")) //$NON-NLS-1$
+                    {
+                        NewsItem obj = loadNews(item.getChildNodes());
+                        obj.setRepository(this);
+                        allNews().add(obj);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -132,6 +161,7 @@ public class XMLRepository extends Repository
     {
         saveSecurities();
         saveWatchlists();
+        saveNews();
         super.dispose();
     }
 
@@ -212,13 +242,13 @@ public class XMLRepository extends Repository
 
         if (obj instanceof Security)
         {
-            File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(obj.getId()) + ".xml");
+            File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
-            file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(obj.getId()) + ".xml");
+            file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
-            file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml");
+            file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
             saveSecurities();
@@ -240,7 +270,7 @@ public class XMLRepository extends Repository
     {
         List barData = new ArrayList();
         
-        File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(id) + ".xml");
+        File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(id) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
         if (file.exists() == true)
         {
             try
@@ -307,7 +337,7 @@ public class XMLRepository extends Repository
                         else if (nodeName.equalsIgnoreCase("close") == true)
                             bar.setClose(Double.parseDouble(value.getNodeValue()));
                         else if (nodeName.equalsIgnoreCase("volume") == true)
-                            bar.setVolume(Integer.parseInt(value.getNodeValue()));
+                            bar.setVolume(Long.parseLong(value.getNodeValue()));
                         else if (nodeName.equalsIgnoreCase("date") == true)
                         {
                             try {
@@ -633,7 +663,10 @@ public class XMLRepository extends Repository
                     if (nodeName.equals("quote")) //$NON-NLS-1$
                     {
                         Security.Feed feed = security.new Feed();
-                        feed.setId(item.getAttributes().getNamedItem("id").getTextContent());
+                        feed.setId(item.getAttributes().getNamedItem("id").getTextContent()); //$NON-NLS-1$
+                        Node attribute = item.getAttributes().getNamedItem("exchange"); //$NON-NLS-1$
+                        if (attribute != null)
+                            feed.setExchange(attribute.getTextContent());
                         if (value != null)
                             feed.setSymbol(value.getNodeValue());
                         security.setQuoteFeed(feed);
@@ -641,7 +674,10 @@ public class XMLRepository extends Repository
                     else if (nodeName.equals("level2")) //$NON-NLS-1$
                     {
                         Security.Feed feed = security.new Feed();
-                        feed.setId(item.getAttributes().getNamedItem("id").getTextContent());
+                        feed.setId(item.getAttributes().getNamedItem("id").getTextContent()); //$NON-NLS-1$
+                        Node attribute = item.getAttributes().getNamedItem("exchange"); //$NON-NLS-1$
+                        if (attribute != null)
+                            feed.setExchange(attribute.getTextContent());
                         if (value != null)
                             feed.setSymbol(value.getNodeValue());
                         security.setLevel2Feed(feed);
@@ -649,7 +685,10 @@ public class XMLRepository extends Repository
                     else if (nodeName.equals("history")) //$NON-NLS-1$
                     {
                         Security.Feed feed = security.new Feed();
-                        feed.setId(item.getAttributes().getNamedItem("id").getTextContent());
+                        feed.setId(item.getAttributes().getNamedItem("id").getTextContent()); //$NON-NLS-1$
+                        Node attribute = item.getAttributes().getNamedItem("exchange"); //$NON-NLS-1$
+                        if (attribute != null)
+                            feed.setExchange(attribute.getTextContent());
                         if (value != null)
                             feed.setSymbol(value.getNodeValue());
                         security.setHistoryFeed(feed);
@@ -760,6 +799,7 @@ public class XMLRepository extends Repository
                     {
                         node = document.createElement("quote");
                         node.setAttribute("id", security.getQuoteFeed().getId());
+                        node.setAttribute("exchange", security.getQuoteFeed().getExchange());
                         node.appendChild(document.createTextNode(security.getQuoteFeed().getSymbol()));
                         feedsNode.appendChild(node);
                     }
@@ -767,6 +807,7 @@ public class XMLRepository extends Repository
                     {
                         node = document.createElement("level2");
                         node.setAttribute("id", security.getLevel2Feed().getId());
+                        node.setAttribute("exchange", security.getLevel2Feed().getExchange());
                         node.appendChild(document.createTextNode(security.getLevel2Feed().getSymbol()));
                         feedsNode.appendChild(node);
                     }
@@ -774,6 +815,7 @@ public class XMLRepository extends Repository
                     {
                         node = document.createElement("history");
                         node.setAttribute("id", security.getHistoryFeed().getId());
+                        node.setAttribute("exchange", security.getHistoryFeed().getExchange());
                         node.appendChild(document.createTextNode(security.getHistoryFeed().getSymbol()));
                         feedsNode.appendChild(node);
                     }
@@ -1055,6 +1097,87 @@ public class XMLRepository extends Repository
             transformer.transform(source, result);
             out.flush();
             out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private NewsItem loadNews(NodeList node)
+    {
+        NewsItem news = new NewsItem();
+        
+        if (((Node)node).getAttributes().getNamedItem("security") != null)
+        {
+            Security security = getSecurity(((Node)node).getAttributes().getNamedItem("security").getTextContent());
+            news.setSecurity(security);
+        }
+        if (((Node)node).getAttributes().getNamedItem("readed") != null)
+            news.setReaded(Boolean.parseBoolean(((Node)node).getAttributes().getNamedItem("readed").getTextContent()));
+        
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            Node item = node.item(i);
+            String nodeName = item.getNodeName();
+            Node value = item.getFirstChild();
+            if (value != null)
+            {
+                if (nodeName.equalsIgnoreCase("date") == true)
+                {
+                    try {
+                        news.setDate(dateTimeFormat.parse(value.getNodeValue()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if (nodeName.equals("description")) //$NON-NLS-1$
+                    news.setTitle(value.getNodeValue());
+                else if (nodeName.equals("source")) //$NON-NLS-1$
+                    news.setSource(value.getNodeValue());
+                else if (nodeName.equals("url")) //$NON-NLS-1$
+                    news.setUrl(value.getNodeValue());
+            }
+        }
+        
+        news.clearChanged();
+        
+        return news;
+    }
+    
+    private void saveNews()
+    {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.getDOMImplementation().createDocument(null, null, null);
+
+            Element root = document.createElement("data");
+            document.appendChild(root);
+            
+            for (Iterator iter = allNews().iterator(); iter.hasNext(); )
+            {
+                NewsItem news = (NewsItem)iter.next(); 
+
+                Element element = document.createElement("news");
+                if (news.getSecurity() != null)
+                    element.setAttribute("security", String.valueOf(news.getSecurity().getId()));
+                element.setAttribute("readed", String.valueOf(news.isReaded()));
+                root.appendChild(element);
+
+                Element node = document.createElement("date");
+                node.appendChild(document.createTextNode(dateTimeFormat.format(news.getDate())));
+                element.appendChild(node);
+                node = document.createElement("description");
+                node.appendChild(document.createTextNode(news.getTitle()));
+                element.appendChild(node);
+                node = document.createElement("source");
+                node.appendChild(document.createTextNode(news.getSource()));
+                element.appendChild(node);
+                node = document.createElement("url");
+                node.appendChild(document.createTextNode(news.getUrl()));
+                element.appendChild(node);
+            }
+            
+            saveDocument(document, "", "news.xml");
+
         } catch (Exception e) {
             e.printStackTrace();
         }

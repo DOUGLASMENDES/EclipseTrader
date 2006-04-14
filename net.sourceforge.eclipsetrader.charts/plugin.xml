@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension-point id="indicators" name="Chart Indicators" schema="schema/indicators.exsd"/>
+   <extension-point id="objects" name="Chart Objects" schema="schema/objects.exsd"/>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="net.sourceforge.eclipsetrader.charts"
+            label="Charts">
+         <menu
+               id="chartMenu"
+               label="Chart"
+               path="charts">
+            <separator name="begin"/>
+            <separator name="group1"/>
+            <separator name="group2"/>
+            <separator name="group3"/>
+            <separator name="group4"/>
+            <separator name="group5"/>
+            <separator name="group6"/>
+            <separator name="end"/>
+         </menu>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.activities">
+      <activityPatternBinding
+            activityId="net.sourceforge.eclipsetrader"
+            pattern="net.sourceforge.eclipsetrader.charts/net.sourceforge.eclipsetrader.views.chart"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="net.sourceforge.eclipsetrader.charts.Perspective"
+            id="net.sourceforge.eclipsetrader.charts"
+            name="Charts"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader">
+         <view
+               id="net.sourceforge.eclipsetrader.views.chart:*"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               visible="false"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader.charts"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.charts">
+         <view
+               id="net.sourceforge.eclipsetrader.views.securities"
+               relationship="stack"
+               relative="left"/>
+         <view
+               id="net.sourceforge.eclipsetrader.views.chart:*"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               visible="false"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.securities"/>
+         <actionSet id="net.sourceforge.eclipsetrader.securities"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="chartsView"
+            targetID="net.sourceforge.eclipsetrader.views.chart">
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.DeleteObjectAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.charts.deleteIndicator"
+               label="Delete Object"
+               menubarPath="group1"
+               style="push">
+         </action>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.EditObjectAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.charts.editIndicator"
+               label="Edit Object"
+               menubarPath="group1"
+               style="push">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.charts.events.IndicatorSelection"/>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
+               id="net.sourceforge.eclipsetrader.charts.newIndicator"
+               label="New Indicator"
+               menubarPath="group1"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.ChartSettingsAction"
+               id="net.sourceforge.eclipsetrader.charts.preferences"
+               label="Settings..."
+               menubarPath="group5"
+               style="push"/>
+      </viewerContribution>
+      <viewerContribution
+            id="watchlistView"
+            targetID="net.sourceforge.eclipsetrader.watchlist">
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.actions.openChart"
+               label="Open Chart"
+               menubarPath="top"
+               style="push"/>
+      </viewerContribution>
+      <viewerContribution
+            id="securitiesView"
+            targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.actions.openChart"
+               label="Open Chart"
+               menubarPath="top"
+               style="push"/>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.charts"
+            label="Charts"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_BACKGROUND"
+            label="Background"
+            value="255,255,224"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_SCALE_BACKGROUND"
+            label="Scale Background"
+            value="255,255,255"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_SCALE_FOREGROUND"
+            label="Scale Foreground"
+            value="0,0,0"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.charts.views.ChartView"
+            icon="icons/eview16/stockcharticon.gif"
+            id="net.sourceforge.eclipsetrader.views.chart"
+            name="Chart"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="chartView"
+            targetID="net.sourceforge.eclipsetrader.views.chart">
+         <menu
+               id="indicator"
+               label="Indicator"
+               path="group1"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.DeleteObjectAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.charts.deleteIndicator"
+               label="Delete Object"
+               menubarPath="group1"
+               style="push">
+         </action>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.EditObjectAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.charts.editIndicator"
+               label="Edit Object"
+               menubarPath="group1"
+               style="push">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.charts.events.IndicatorSelection"/>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
+               disabledIcon="icons/dtool16/new_wiz.gif"
+               icon="icons/elcl16/new_wiz.gif"
+               id="net.sourceforge.eclipsetrader.charts.newIndicator"
+               label="New Indicator"
+               menubarPath="group1"
+               style="push"/>
+         <menu
+               id="newObject"
+               label="New Object"
+               path="group2"/>
+         <menu
+               id="interval"
+               label="Set Interval"
+               path="group3"/>
+         <menu
+               id="period"
+               label="Period"
+               path="group3"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.ChartSettingsAction"
+               id="net.sourceforge.eclipsetrader.charts.preferences"
+               label="Settings..."
+               menubarPath="group5"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.UpdateChartAction"
+               icon="icons/elcl16/refresh.gif"
+               id="net.sourceforge.eclipsetrader.charts.refresh"
+               label="Update Chart"
+               menubarPath="group4"
+               style="push"
+               toolbarPath="refresh"
+               tooltip="Update chart data"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.objects.LineAction"
+               icon="icons/etool16/line.gif"
+               id="net.sourceforge.eclipsetrader.charts.line"
+               label="Line"
+               menubarPath="newObject/additions"
+               style="push"
+               toolbarPath="objects"
+               tooltip="New line object"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.objects.HorizontalLineAction"
+               icon="icons/etool16/horizontalLine.gif"
+               id="net.sourceforge.eclipsetrader.charts.horizontalLine"
+               label="Horizontal Line"
+               menubarPath="newObject/additions"
+               style="push"
+               toolbarPath="objects"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.objects.FiboLineAction"
+               icon="icons/etool16/fiboline.gif"
+               id="net.sourceforge.eclipsetrader.charts.fiboline"
+               label="FiboLine"
+               menubarPath="newObject/additions"
+               style="push"
+               toolbarPath="objects"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set1MinuteIntervalAction"
+               id="1minute"
+               label="1 Min."
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set2MinuteIntervalAction"
+               id="2minute"
+               label="2 Min."
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set5MinuteIntervalAction"
+               id="5minute"
+               label="5 Min."
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set10MinuteIntervalAction"
+               id="10minute"
+               label="10 Min."
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set15MinuteIntervalAction"
+               id="15minute"
+               label="15 Min."
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set30MinuteIntervalAction"
+               id="30minute"
+               label="30 Min."
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set60MinuteIntervalAction"
+               id="60minute"
+               label="60 Min."
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.Set1DayIntervalAction"
+               id="daily"
+               label="Daily"
+               menubarPath="interval/additions"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.SetCustomPeriodAction"
+               id="net.sourceforge.eclipsetrader.charts.customPeriod"
+               label="Custom..."
+               menubarPath="period/limited"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.SetLast6MonthsPeriodAction"
+               id="net.sourceforge.eclipsetrader.charts.last6months"
+               label="Last 6 Months"
+               menubarPath="period/limited"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.SetLastYearPeriodAction"
+               id="net.sourceforge.eclipsetrader.charts.lastYear"
+               label="Last Year"
+               menubarPath="period/limited"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.SetLast2YearsPeriodAction"
+               id="net.sourceforge.eclipsetrader.charts.last2years"
+               label="Last 2 Years"
+               menubarPath="period/limited"
+               style="radio"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.SetViewAllAction"
+               id="net.sourceforge.eclipsetrader.charts.viewAll"
+               label="All"
+               menubarPath="period/limited"
+               style="radio"/>
+      </viewContribution>
+      <viewContribution
+            id="securitiesView"
+            targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.actions.openChart"
+               label="Open Chart"
+               menubarPath="group1"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.UpdateAllChartsAction"
+               id="net.sourceforge.eclipsetrader.charts.updateAll"
+               label="Update all Charts"
+               menubarPath="bottom"
+               style="push"/>
+      </viewContribution>
+      <viewContribution
+            id="watchlistView"
+            targetID="net.sourceforge.eclipsetrader.watchlist">
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.actions.openChart"
+               label="Open Chart"
+               menubarPath="top"
+               style="push"/>
+      </viewContribution>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.charts.indicators">
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.AccumulationDistribution"
+            id="net.sourceforge.eclipsetrader.indicators.ad"
+            name="Accumulation / Distribution - AD">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.AccumulationDistributionPreferencePage"
+               title="Accumulation / Distribution"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.Bars"
+            id="net.sourceforge.eclipsetrader.indicators.bars"
+            name="Bars - BAR">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.BarsPreferences"
+               description="Set the bars type and colors"
+               title="Bars"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.BollingerBands"
+            id="net.sourceforge.eclipsetrader.indicators.bb"
+            name="Bollinger Bands - BB">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.BollingerBandsPreferencePage"
+               title="Bollinger Bands"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.CommodityChannelIndex"
+            id="net.sourceforge.eclipsetrader.indicators.cci"
+            name="Commodity Channel Index - CCI">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.CommodityChannelIndexPreferencePage"
+               title="Commodity Channel Index"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.Lines"
+            id="net.sourceforge.eclipsetrader.indicators.line"
+            name="Lines - LINE">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.LinesPreferences"
+               description="Set the line input field and color"
+               title="Line"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.MA"
+            id="net.sourceforge.eclipsetrader.indicators.ma"
+            name="Moving Average - MA">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.MAPreferences"
+               description="Set the moving average parameters"
+               title="Moving Average"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.MACD"
+            id="net.sourceforge.eclipsetrader.indicators.macd"
+            name="Moving Average Convergence Divergence - MACD">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.MACDPreferences"
+               title="MACD"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.RSI"
+            id="net.sourceforge.eclipsetrader.indicators.rsi"
+            name="Relative Strength Index - RSI">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.RSIPreferences"
+               title="RSI"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.Stochastic"
+            id="net.sourceforge.eclipsetrader.indicators.stoch"
+            name="Stochastic - STOCH">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.StochasticPreferencePage"
+               title="Stochastic"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.Volume"
+            id="net.sourceforge.eclipsetrader.indicators.volume"
+            name="Volume - VOL">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.VolumePreferences"
+               description="Set the volume bar colors"
+               title="Volume"/>
+      </indicator>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.charts.objects">
+      <object
+            class="net.sourceforge.eclipsetrader.charts.objects.Line"
+            id="net.sourceforge.eclipsetrader.objects.line"
+            name="Line">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.objects.LinePreferences"
+               title="Line"/>
+      </object>
+      <object
+            class="net.sourceforge.eclipsetrader.charts.objects.HorizontalLine"
+            id="net.sourceforge.eclipsetrader.objects.horizontalLine"
+            name="Horizontal Line">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.objects.HorizontalLinePreferences"
+               title="Horizontal Line"/>
+      </object>
+      <object
+            class="net.sourceforge.eclipsetrader.charts.objects.FiboLine"
+            id="net.sourceforge.eclipsetrader.objects.fiboline"
+            name="FiboLine">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.objects.FiboLinePreferences"
+               title="FiboLine"/>
+      </object>
+   </extension>
+
+</plugin>

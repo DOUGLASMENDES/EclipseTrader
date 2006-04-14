@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-
-     <extension
-         name="Primary"
+   <extension
          point="org.eclipse.help.toc">
       <toc
             file="user_guide.xml"
-            primary="true">
-      </toc>
-      <toc
-            file="book.xml"
-            primary="true">
-      </toc>
-   </extension>
-   <extension
-         name="TOC"
-         point="org.eclipse.help.toc">
-      <toc
-            file="toc_Ref.xml">
-      </toc>
+            primary="true"/>
    </extension>
 
 </plugin>

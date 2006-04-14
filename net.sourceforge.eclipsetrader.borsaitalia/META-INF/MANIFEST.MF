@@ -4,7 +4,7 @@ Bundle-Name: Borsa Italiana
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.borsaitalia; singleton:=true
 Bundle-Version: 0.20.0
 Bundle-Activator: net.sourceforge.eclipsetrader.borsaitalia.BorsaitaliaPlugin
-Bundle-Vendor: Sourceforge.net
+Bundle-Vendor: EclipseTrader.Plugins
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

@@ -25,6 +25,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -37,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 public class HistoryFeedPage extends WizardPage
 {
     private Combo feed;
+    private Combo exchange;
     private Text symbol;
     private Security security;
 
@@ -70,6 +73,14 @@ public class HistoryFeedPage extends WizardPage
         feed.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         feed.setVisibleItemCount(10);
         feed.add("");
+
+        label = new Label(composite, SWT.NONE);
+        label.setText("Exchange");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        exchange = new Combo(composite, SWT.SINGLE | SWT.READ_ONLY);
+        exchange.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        exchange.setVisibleItemCount(10);
+        exchange.add("");
 
         label = new Label(composite, SWT.NONE);
         label.setText("Symbol");
@@ -120,7 +131,17 @@ public class HistoryFeedPage extends WizardPage
                     }
                 }
             }
+
+            SecurityWizard.updateFeedExchanges("history", exchange, security != null ? security.getHistoryFeed() : null);
         }
+
+        feed.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                String id = (String)feed.getData(String.valueOf(feed.getSelectionIndex()));
+                SecurityWizard.updateFeedExchanges("history", exchange, id);
+            }
+        });
     }
     
     public String getId()

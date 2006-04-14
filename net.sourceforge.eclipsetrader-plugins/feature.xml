@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.eclipsetrader.plugins"
-      label="EclipseTrader Standard Plugins"
+      label="Standard Plugins"
       version="0.20.0"
-      provider-name="Sourceforge.net">
+      provider-name="EclipseTrader">
 
    <description>
       %description

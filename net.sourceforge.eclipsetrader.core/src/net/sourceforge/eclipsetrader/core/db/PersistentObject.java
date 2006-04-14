@@ -17,6 +17,7 @@ import net.sourceforge.eclipsetrader.core.Repository;
 
 
 /**
+ * Base abstract class for all persistent object classes.
  */
 public abstract class PersistentObject extends Observable
 {

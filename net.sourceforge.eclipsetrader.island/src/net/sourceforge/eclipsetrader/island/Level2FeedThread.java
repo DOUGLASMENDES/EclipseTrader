@@ -64,7 +64,6 @@ public class Level2FeedThread implements Runnable
         try
         {
             URL url = new URL("http://bvserver.island.com/SERVICE/SQUOTE?STOCK=" + symbol);
-            System.out.println(url);
             inputStream = url.openStream();
 
             while (!stopping)
@@ -78,21 +77,13 @@ public class Level2FeedThread implements Runnable
                 }
                 
                 int i = inputStream.read();
-                if (i == 0)
-                {
-                    System.out.println("Connection closed");
+                if (i <= 0)
                     break;
-                }
-                if (i < 0)
-                {
-                    System.out.println("Connection failed");
-                    break;
-                }
 
                 switch (i)
                 {
                     case 72: // 'H'
-                        System.out.println("H: " + readNum(inputStream, 3));
+                        readNum(inputStream, 3);
                         break;
 
                     case 83: // 'S'
@@ -135,7 +126,7 @@ public class Level2FeedThread implements Runnable
         for (int i1 = 0; i1 < j; i1++)
         {
             int quantity = (int) readNum(inputStream, sharesSize);
-            double price = Math.abs(readNum(inputStream, priceSize) - priceBase) / 1000.0;
+            double price = Math.abs(readNum(inputStream, priceSize) - priceBase) / 10000.0;
             bid.add(price, quantity);
         }
 
@@ -143,7 +134,7 @@ public class Level2FeedThread implements Runnable
         for (int i1 = 0; i1 < k; i1++)
         {
             int quantity = (int) readNum(inputStream, sharesSize);
-            double price = Math.abs(readNum(inputStream, priceSize) + priceBase) / 1000.0;
+            double price = Math.abs(readNum(inputStream, priceSize) + priceBase) / 10000.0;
             ask.add(price, quantity);
         }
 

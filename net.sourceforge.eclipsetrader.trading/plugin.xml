@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.activities">
+      <activityPatternBinding
+            activityId="net.sourceforge.eclipsetrader"
+            pattern="net.sourceforge.eclipsetrader.trading/net.sourceforge.eclipsetrader.watchlist"/>
+      <activityPatternBinding
+            activityId="net.sourceforge.eclipsetrader"
+            pattern="net.sourceforge.eclipsetrader.trading/net.sourceforge.eclipsetrader.trading.level2"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="net.sourceforge.eclipsetrader.feed"
+            label="Quote Feed Control">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.StopFeedAction"
+               disabledIcon="icons/dtool16/stop.gif"
+               icon="icons/etool16/stop.gif"
+               id="net.sourceforge.eclipsetrader.trading.stopFeed"
+               label="Stop Feed"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Stop quote feed"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.RefreshFeedAction"
+               disabledIcon="icons/dtool16/refresh.gif"
+               icon="icons/etool16/refresh.gif"
+               id="net.sourceforge.eclipsetrader.trading.refreshFeed"
+               label="Refresh"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Take a quote snapshot"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.StartFeedAction"
+               disabledIcon="icons/dtool16/start.gif"
+               icon="icons/etool16/run.gif"
+               id="net.sourceforge.eclipsetrader.trading.startFeed"
+               label="Start Feed"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Start quote feed"/>
+      </actionSet>
+      <actionSet
+            id="net.sourceforge.eclipsetrader.trading"
+            label="Trading"
+            visible="true">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.NewWatchlistAction"
+               icon="icons/etool16/new_watchlist_wiz.gif"
+               id="net.sourceforge.eclipsetrader.trading.newWatchlist"
+               label="Watchlist"
+               menubarPath="file/newWizard/additions"
+               style="push"
+               tooltip="Create a new watchlist"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.OpenWatchlistAction"
+               id="net.sourceforge.eclipsetrader.trading.openWatchlist"
+               label="Open Watchlist"
+               menubarPath="window/additions"
+               style="pulldown"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.watchlist"
+            label="Watchlist"/>
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.watchlist.table"
+            label="Table Layout"
+            parentId="net.sourceforge.eclipsetrader.watchlist"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_EVEN_ROWS_BACKGROUND"
+            label="Even Rows Background"
+            value="255,255,255"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_EVEN_ROWS_FOREGROUND"
+            label="Even Rows Foreground"
+            value="0,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_ODD_ROWS_BACKGROUND"
+            label="Odd Rows Background"
+            value="255,255,224"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_ODD_ROWS_FOREGROUND"
+            label="Odd Rows Foreground"
+            value="0,0,0"/>
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.level2"
+            label="Level II"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2"
+            id="TRENDBAR_INDICATOR"
+            label="Trendbar Indicator"
+            value="0,0,0"/>
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.level2.L1"
+            label="1st Price Level"
+            parentId="net.sourceforge.eclipsetrader.level2"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L1"
+            id="LEVEL_1_BACKGROUND"
+            label="Background"
+            value="0,0,192"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L1"
+            id="LEVEL_1_FOREGROUND"
+            label="Foreground"
+            value="255,255,255"/>
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.level2.L2"
+            label="2nd Price Level"
+            parentId="net.sourceforge.eclipsetrader.level2"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L2"
+            id="LEVEL_2_BACKGROUND"
+            label="Background"
+            value="192,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L2"
+            id="LEVEL_2_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.level2.L3"
+            label="3rd Price Level"
+            parentId="net.sourceforge.eclipsetrader.level2"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L3"
+            id="LEVEL_3_BACKGROUND"
+            label="Background"
+            value="0,255,255"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L3"
+            id="LEVEL_3_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.level2.L4"
+            label="4th Price Level"
+            parentId="net.sourceforge.eclipsetrader.level2"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L4"
+            id="LEVEL_4_BACKGROUND"
+            label="Background"
+            value="0,255,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L4"
+            id="LEVEL_4_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+      <themeElementCategory
+            id="net.sourceforge.eclipsetrader.level2.L5"
+            label="5th Price Level"
+            parentId="net.sourceforge.eclipsetrader.level2"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L5"
+            id="LEVEL_5_BACKGROUND"
+            label="Background"
+            value="255,255,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.level2.L5"
+            id="LEVEL_5_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader">
+         <view
+               id="net.sourceforge.eclipsetrader.watchlist:*"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               visible="false"/>
+         <view
+               id="net.sourceforge.eclipsetrader.trading.level2:*"
+               relationship="stack"
+               relative="right"
+               />
+         <actionSet id="net.sourceforge.eclipsetrader.feed"/>
+         <actionSet id="net.sourceforge.eclipsetrader.trading"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="watchlistView"
+            targetID="net.sourceforge.eclipsetrader.watchlist">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.trading.openLevel2"
+               label="Open Level2"
+               menubarPath="top"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistItemAction"
+               id="net.sourceforge.eclipsetrader.trading.deleteItem"
+               label="Delete"
+               menubarPath="bottom"
+               style="push"/>
+      </viewerContribution>
+      <viewerContribution
+            id="securitiesView"
+            targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.trading.openLevel2"
+               label="Open Level2"
+               menubarPath="top"/>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.WatchlistView"
+            icon="icons/eview16/watchlisticon.gif"
+            id="net.sourceforge.eclipsetrader.watchlist"
+            name="Watch List"/>
+      <view
+            allowMultiple="true"
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.Level2View"
+            icon="icons/eview16/level2view.gif"
+            id="net.sourceforge.eclipsetrader.trading.level2"
+            name="Level II"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="watchlistView"
+            targetID="net.sourceforge.eclipsetrader.watchlist">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistAction"
+               id="net.sourceforge.eclipsetrader.trading.deleteWatchlist"
+               label="Delete Watchlist"
+               menubarPath="bottom"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistItemAction"
+               id="net.sourceforge.eclipsetrader.trading.deleteItem"
+               label="Delete"
+               menubarPath="bottom"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.WatchlistSettingsAction"
+               id="net.sourceforge.eclipsetrader.trading.watchlistSettings"
+               label="Settings..."
+               menubarPath="group6"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
+               id="net.sourceforge.eclipsetrader.trading.openLevel2"
+               label="Open Level2"
+               menubarPath="top"
+               style="push"
+               tooltip="Open Level2"/>
+      </viewContribution>
+      <viewContribution
+            id="securitiesView"
+            targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.trading.openLevel2"
+               label="Open Level2"
+               menubarPath="group1"
+               style="push"
+               tooltip="Open Level2"/>
+      </viewContribution>
+   </extension>
+
+</plugin>

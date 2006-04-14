@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: EclipseTrader
+Bundle-Name: Application
 Bundle-SymbolicName: net.sourceforge.eclipsetrader; singleton:=true
 Bundle-Version: 0.20.0
 Bundle-Activator: net.sourceforge.eclipsetrader.EclipseTraderPlugin
-Bundle-Vendor: Sourceforge.net
+Bundle-Vendor: EclipseTrader
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader.core,
- org.eclipse.update.ui
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.update.ui,
+ net.sourceforge.eclipsetrader.core
 Eclipse-AutoStart: true

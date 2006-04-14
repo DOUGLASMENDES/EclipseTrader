@@ -29,13 +29,13 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor
 {
     private IWorkbenchAction quitAction; 
+    private IWorkbenchAction newWindowAction; 
     private IWorkbenchAction helpContentsAction; 
     private IWorkbenchAction aboutAction;
     private IWorkbenchAction editActionSetsAction;
     private IWorkbenchAction resetPerspectiveAction;
     private IWorkbenchAction savePerspectiveAction;
     private IWorkbenchAction preferencesAction;
-    private IContributionItem wizardList;
     private IContributionItem perspectiveList;
     private IContributionItem viewList;
 
@@ -50,6 +50,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
     protected void makeActions(IWorkbenchWindow window)
     {
         quitAction = ActionFactory.QUIT.create(window);
+        newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
         editActionSetsAction = ActionFactory.EDIT_ACTION_SETS.create(window);
         savePerspectiveAction = ActionFactory.SAVE_PERSPECTIVE.create(window);
         resetPerspectiveAction = ActionFactory.RESET_PERSPECTIVE.create(window);
@@ -57,7 +58,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);
         aboutAction = ActionFactory.ABOUT.create(window);
         
-        wizardList = ContributionItemFactory.NEW_WIZARD_SHORTLIST.create(window);
         perspectiveList = ContributionItemFactory.PERSPECTIVES_SHORTLIST.create(window);
         viewList = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
     }
@@ -71,7 +71,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menu.add(new Separator(IWorkbenchActionConstants.FILE_START));
 
         MenuManager wizardMenu = new MenuManager("New", "newWizard");
-        wizardMenu.add(wizardList);
+        wizardMenu.add(new Separator("top"));
+        wizardMenu.add(new Separator("plugins"));
+        wizardMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        wizardMenu.add(new Separator("bottom"));
         menu.add(wizardMenu);        
         menu.add(new Separator());
         menu.add(new CloseAction());        
@@ -82,11 +85,20 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menuBar.add(menu);
 
         menuBar.add(new GroupMarker("begin")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("charts")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("news")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("group1")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("group2")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("group3")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("group4")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("group5")); //$NON-NLS-1$
+        menuBar.add(new GroupMarker("group6")); //$NON-NLS-1$
         menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
         menuBar.add(new GroupMarker("end")); //$NON-NLS-1$
 
         menu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW); //$NON-NLS-1$
         menu.add(new Separator("top")); //$NON-NLS-1$
+        menu.add(newWindowAction);
         menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
         menu.add(new Separator());

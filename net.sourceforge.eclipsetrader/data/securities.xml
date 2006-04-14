@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data nextId="14">
+    <security id="1">
+        <code>^DJI</code>
+        <description>DowJones</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>11/04/2006 22:03:00</date>
+            <last>11089.63</last>
+            <bid>0.0</bid>
+            <ask>0.0</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>266079680</volume>
+        </quote>
+        <data>
+            <open>11141.33</open>
+            <high>11186.64</high>
+            <low>11053.17</low>
+            <close>11141.33</close>
+        </data>
+    </security>
+    <security id="2">
+        <code>^GSPC</code>
+        <description>S&amp;P 500</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>12/04/2006 23:00:00</date>
+            <last>1288.12</last>
+            <bid>0.0</bid>
+            <ask>0.0</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>1705999616</volume>
+        </quote>
+        <data>
+            <open>1286.89</open>
+            <high>1290.93</high>
+            <low>1286.45</low>
+            <close>1288.12</close>
+        </data>
+    </security>
+    <security id="3">
+        <code>^NYA</code>
+        <description>NYSE Comp.</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+    </security>
+    <security id="4">
+        <code>^IXIC</code>
+        <description>Nasdaq</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>11/04/2006 23:16:00</date>
+            <last>2310.35</last>
+            <bid>0.0</bid>
+            <ask>0.0</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>0</volume>
+        </quote>
+        <data>
+            <open>0.0</open>
+            <high>0.0</high>
+            <low>0.0</low>
+            <close>2310.35</close>
+        </data>
+    </security>
+    <security id="5">
+        <code>^FCHI</code>
+        <description>CAC 40</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>13/04/2006 10:37:00</date>
+            <last>5097.56</last>
+            <bid>0.0</bid>
+            <ask>0.0</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>0</volume>
+        </quote>
+        <data>
+            <open>5097.78</open>
+            <high>5105.71</high>
+            <low>5092.26</low>
+            <close>5085.11</close>
+        </data>
+    </security>
+    <security id="7">
+        <code>^MIBTEL</code>
+        <description>Mibtel</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>13/04/2006 10:28:00</date>
+            <last>29280.0</last>
+            <bid>0.0</bid>
+            <ask>0.0</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>0</volume>
+        </quote>
+        <data>
+            <open>29339.0</open>
+            <high>29370.0</high>
+            <low>29269.0</low>
+            <close>29272.0</close>
+        </data>
+    </security>
+    <security id="8">
+        <code>^FTSE</code>
+        <description>FTSE 100</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>13/04/2006 10:13:00</date>
+            <last>6014.5</last>
+            <bid>0.0</bid>
+            <ask>0.0</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>0</volume>
+        </quote>
+        <data>
+            <open>6000.8</open>
+            <high>6021.5</high>
+            <low>6000.8</low>
+            <close>6000.8</close>
+        </data>
+    </security>
+    <security id="9">
+        <code>AAPL</code>
+        <description>Apple</description>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <level2 exchange="" id="net.sourceforge.eclipsetrader.archipelago"></level2>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+    </security>
+    <security id="10">
+        <code>GOOG</code>
+        <description>Google</description>
+        <currency>USD</currency>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <level2 exchange="" id="net.sourceforge.eclipsetrader.archipelago"></level2>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>11/04/2006 22:00:00</date>
+            <last>409.66</last>
+            <bid>406.0</bid>
+            <ask>406.54</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>5085</volume>
+        </quote>
+        <data>
+            <close>409.66</close>
+        </data>
+    </security>
+    <security id="12">
+        <code>RHAT</code>
+        <description>Red Hat</description>
+        <currency>USD</currency>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <level2 exchange="" id="net.sourceforge.eclipsetrader.archipelago"></level2>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>11/04/2006 22:00:00</date>
+            <last>29.74</last>
+            <bid>13.04</bid>
+            <ask>32.42</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>0</volume>
+        </quote>
+        <data>
+            <close>29.74</close>
+        </data>
+    </security>
+    <security id="13">
+        <code>YHOO</code>
+        <description>Yahoo!</description>
+        <currency>USD</currency>
+        <feeds>
+            <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
+            <level2 exchange="" id="net.sourceforge.eclipsetrader.archipelago"></level2>
+            <history exchange="" id="net.sourceforge.eclipsetrader.yahoo"></history>
+        </feeds>
+        <quote>
+            <date>11/04/2006 22:00:00</date>
+            <last>31.39</last>
+            <bid>31.39</bid>
+            <ask>31.85</ask>
+            <bidSize>0</bidSize>
+            <askSize>0</askSize>
+            <volume>0</volume>
+        </quote>
+        <data>
+            <close>31.39</close>
+        </data>
+    </security>
+</data>

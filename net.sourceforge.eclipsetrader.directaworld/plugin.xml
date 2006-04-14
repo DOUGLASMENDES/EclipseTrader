@@ -12,7 +12,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="net.sourceforge.eclipsetrader"
+            category="net.sourceforge.eclipsetrader.plugins"
             class="net.sourceforge.eclipsetrader.directaworld.GeneralPreferencesPage"
             id="net.sourceforge.eclipsetrader.directaworld.general"
             name="DirectaWorld"/>

@@ -2,13 +2,29 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="net.sourceforge.eclipsetrader.plugins"
+            class="net.sourceforge.eclipsetrader.yahoo.preferences.NewsPreferencesPage"
+            id="net.sourceforge.eclipsetrader.yahoo.news"
+            name="Yahoo! Finance"/>
+   </extension>
+   <extension
          point="net.sourceforge.eclipsetrader.core.feeds">
       <feed
             id="net.sourceforge.eclipsetrader.yahoo"
             name="Yahoo! Finance">
          <history class="net.sourceforge.eclipsetrader.yahoo.HistoryFeed"/>
-         <quote class="net.sourceforge.eclipsetrader.yahoo.Feed"/>
+         <quote class="net.sourceforge.eclipsetrader.yahoo.Feed">
+         </quote>
       </feed>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.news">
+      <provider
+            class="net.sourceforge.eclipsetrader.yahoo.NewsProvider"
+            id="net.sourceforge.eclipsetrader.yahoo.news"
+            name="Yahoo! Finance"/>
    </extension>
 
 </plugin>

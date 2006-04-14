@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Trading
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.trading; singleton:=true
+Bundle-Version: 0.20.0
+Bundle-Activator: net.sourceforge.eclipsetrader.trading.TradingPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.sourceforge.eclipsetrader.core
+Eclipse-AutoStart: true
+Bundle-Vendor: EclipseTrader
+Export-Package: net.sourceforge.eclipsetrader.trading;x-friends:="net.sourceforge.eclipsetrader.tests",
+ net.sourceforge.eclipsetrader.trading.actions;x-friends:="net.sourceforge.eclipsetrader.tests",
+ net.sourceforge.eclipsetrader.trading.views;x-friends:="net.sourceforge.eclipsetrader.tests",
+ net.sourceforge.eclipsetrader.trading.wizards;x-friends:="net.sourceforge.eclipsetrader.tests"

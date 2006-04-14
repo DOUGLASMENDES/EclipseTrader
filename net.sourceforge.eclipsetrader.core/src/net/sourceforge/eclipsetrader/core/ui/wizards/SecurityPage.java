@@ -42,7 +42,7 @@ public class SecurityPage extends WizardPage
     private Text code;
     private Text securityDescription;
     private Text isin;
-    private Combo currency;
+//    private Combo currency;
     private Security security;
 
     public SecurityPage()
@@ -53,8 +53,8 @@ public class SecurityPage extends WizardPage
     public SecurityPage(Security security)
     {
         super("");
-        setTitle("Security Description and Currency");
-        setDescription("Set the security description and currency");
+        setTitle("Security Description");
+        setDescription("Set the security code and description");
         setPageComplete(false);
         this.security = security;
     }
@@ -96,7 +96,7 @@ public class SecurityPage extends WizardPage
             }
         });
 
-        label = new Label(composite, SWT.NONE);
+/*        label = new Label(composite, SWT.NONE);
         label.setText("Currency");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         currency = new Combo(composite, SWT.SINGLE | SWT.READ_ONLY);
@@ -130,7 +130,7 @@ public class SecurityPage extends WizardPage
                 currency.setText(security.getCurrency().getCurrencyCode());
         }
         else
-            currency.setText(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+            currency.setText(Currency.getInstance(Locale.getDefault()).getCurrencyCode());*/
         
         validatePage();
     }
@@ -156,7 +156,7 @@ public class SecurityPage extends WizardPage
         validatePage();
     }
 
-    public Currency getCurrency()
+/*    public Currency getCurrency()
     {
         if (currency.getText().length() != 0)
             return Currency.getInstance(currency.getText());
@@ -167,7 +167,7 @@ public class SecurityPage extends WizardPage
     {
         this.currency.setText(currency.getCurrencyCode());
         validatePage();
-    }
+    }*/
 
     public String getIsin()
     {

@@ -4,7 +4,7 @@ Bundle-Name: Island
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.island; singleton:=true
 Bundle-Version: 0.20.0
 Bundle-Activator: net.sourceforge.eclipsetrader.island.IslandPlugin
-Bundle-Vendor: Sourceforge.net
+Bundle-Vendor: EclipseTrader.Plugins
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

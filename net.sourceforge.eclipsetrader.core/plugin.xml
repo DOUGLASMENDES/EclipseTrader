@@ -2,12 +2,93 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension-point id="feeds" name="Security Feed" schema="schema/feeds.exsd"/>
+   <extension-point id="news" name="News Provider" schema="schema/news.exsd"/>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="net.sourceforge.eclipsetrader.securities"
+            label="Securities">
+         <action
+               class="net.sourceforge.eclipsetrader.core.ui.actions.NewSecurityAction"
+               disabledIcon="icons/dtool16/new_security.gif"
+               icon="icons/etool16/new_security.gif"
+               id="net.sourceforge.eclipsetrader.newSecurity"
+               label="Security"
+               menubarPath="file/newWizard/top"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Create new security"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.activities">
+      <activity
+            id="net.sourceforge.eclipsetrader"
+            name="EclipseTrader Hidden Views"/>
+      <activityPatternBinding
+            activityId="net.sourceforge.eclipsetrader"
+            pattern="net.sourceforge.eclipsetrader.trading/net.sourceforge.eclipsetrader.webbrowser"/>
+   </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="net.sourceforge.eclipsetrader.core.ui.Perspective"
             id="net.sourceforge.eclipsetrader"
-            name="EclipseTrader"/>
+            name="Default"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader">
+         <actionSet id="net.sourceforge.eclipsetrader.securities"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.views.securities"/>
+         <perspectiveShortcut id="net.sourceforge.eclipsetrader"/>
+         <view
+               id="net.sourceforge.eclipsetrader.views.securities"
+               relationship="stack"
+               relative="left"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="securitiesView"
+            targetID="net.sourceforge.eclipsetrader.views.securities"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="net.sourceforge.eclipsetrader.core.ui.preferences.GeneralPreferencesPage"
+            id="net.sourceforge.eclipsetrader"
+            name="General"/>
+      <page
+            class="net.sourceforge.eclipsetrader.core.ui.preferences.PluginsPreferencesPage"
+            id="net.sourceforge.eclipsetrader.plugins"
+            name="Plugins"/>
+      <page
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.core.ui.preferences.ProxyPreferencePage"
+            id="net.sourceforge.eclipsetrader.core.proxy"
+            name="Network"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <themeElementCategory
+            id="securities"
+            label="Securities View"/>
+      <colorDefinition
+            categoryId="securities"
+            id="TABLE_BACKGROUND"
+            label="Background"
+            value="224,224,255"/>
+      <colorDefinition
+            categoryId="securities"
+            id="TABLE_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+      <fontDefinition
+            categoryId="securities"
+            id="TABLE_FONT"
+            label="Font"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -20,101 +101,20 @@
             icon="icons/eview16/securities.gif"
             id="net.sourceforge.eclipsetrader.views.securities"
             name="Securities"/>
+      <view
+            allowMultiple="true"
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.core.ui.views.WebBrowser"
+            icon="icons/eview16/internal_browser.gif"
+            id="net.sourceforge.eclipsetrader.webbrowser"
+            name="Web Browser"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
       <viewContribution
             id="securitiesView"
             targetID="net.sourceforge.eclipsetrader.views.securities">
-         <action
-               class="net.sourceforge.eclipsetrader.core.ui.actions.NewSecurityAction"
-               disabledIcon="icons/dtool16/new_wiz.gif"
-               icon="icons/etool16/new_security.gif"
-               id="net.sourceforge.eclipsetrader.actions.newSecurity"
-               label="New Security"
-               style="push"
-               toolbarPath="securities"
-               tooltip="Create new Security"/>
       </viewContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            id="net.sourceforge.eclipsetrader.core"
-            label="EclipseTrader">
-         <action
-               class="net.sourceforge.eclipsetrader.core.ui.actions.StopFeedAction"
-               disabledIcon="icons/dtool16/stop.gif"
-               icon="icons/etool16/stop.gif"
-               id="net.sourceforge.eclipsetrader.core.stopFeed"
-               label="Stop Feed"
-               style="push"
-               toolbarPath="eclipsetrader"
-               tooltip="Stop feed"/>
-         <action
-               class="net.sourceforge.eclipsetrader.core.ui.actions.RefreshFeedAction"
-               disabledIcon="icons/dtool16/refresh.gif"
-               icon="icons/etool16/refresh.gif"
-               id="net.sourceforge.eclipsetrader.core.refreshFeed"
-               label="Refresh"
-               style="push"
-               toolbarPath="eclipsetrader"
-               tooltip="Take a feed snapshot"/>
-         <action
-               class="net.sourceforge.eclipsetrader.core.ui.actions.StartFeedAction"
-               disabledIcon="icons/dtool16/start.gif"
-               icon="icons/etool16/run.gif"
-               id="net.sourceforge.eclipsetrader.core.startFeed"
-               label="Start Feed"
-               style="push"
-               toolbarPath="eclipsetrader"
-               tooltip="Start feed"/>
-      </actionSet>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension targetID="net.sourceforge.eclipsetrader">
-         <view
-               id="net.sourceforge.eclipsetrader.views.securities"
-               relationship="stack"
-               relative="left"/>
-         <actionSet id="net.sourceforge.eclipsetrader.core"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.views.securities"/>
-         <newWizardShortcut id="net.sourceforge.eclipsetrader.newSecurityWizard"/>
-         <perspectiveShortcut id="net.sourceforge.eclipsetrader"/>
-      </perspectiveExtension>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            class="net.sourceforge.eclipsetrader.core.ui.preferences.GeneralPreferencesPage"
-            id="net.sourceforge.eclipsetrader"
-            name="EclipseTrader"/>
-      <page
-            category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.core.ui.preferences.PluginsPreferencesPage"
-            id="net.sourceforge.eclipsetrader.plugins"
-            name="Plugins"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.activities">
-      <activity
-            id="net.sourceforge.eclipsetrader"
-            name="EclipseTrader Hidden Views"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <category
-            id="net.sourceforge.eclipsetrader"
-            name="EclipseTrader"/>
-      <wizard
-            category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.core.ui.wizards.SecurityWizard"
-            hasPages="true"
-            icon="icons/etool16/new_security.gif"
-            id="net.sourceforge.eclipsetrader.newSecurityWizard"
-            name="Security"/>
-      <primaryWizard id="net.sourceforge.eclipsetrader.newSecurityWizard"/>
    </extension>
 
 </plugin>

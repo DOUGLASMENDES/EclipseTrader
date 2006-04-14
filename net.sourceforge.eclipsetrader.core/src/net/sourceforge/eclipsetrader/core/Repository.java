@@ -12,10 +12,13 @@
 package net.sourceforge.eclipsetrader.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 
+import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
@@ -28,6 +31,8 @@ public class Repository
 {
     private ObservableList securities;
     private ObservableList watchlists;
+    private ObservableList news;
+    private Map newsMap = new HashMap();
 
     public Repository()
     {
@@ -50,9 +55,59 @@ public class Repository
             watchlists = new ObservableList();
         return watchlists;
     }
+    
+    public ObservableList allNews()
+    {
+        if (news == null)
+            news = new ObservableList();
+        return news;
+    }
+    
+    public ObservableList allNews(Security security)
+    {
+        ObservableList list = (ObservableList) newsMap.get(security);
+        if (list == null)
+        {
+            list = new ObservableList();
+            for (Iterator iter = allNews().iterator(); iter.hasNext(); )
+            {
+                NewsItem news = (NewsItem)iter.next();
+                if (news.getSecurity() != null && news.getSecurity().equals(security))
+                    list.add(news);
+            }
+            newsMap.put(security, list);
+        }
+        return list;
+    }
+    
+    public Security getSecurity(String code)
+    {
+        PersistentObject obj = load(Security.class, new Integer(code));
+        if (obj != null && obj instanceof Security)
+            return (Security) obj;
+        
+        for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
+        {
+            Security security = (Security) iter.next();
+            if (security.getCode().equals(code))
+                return security;
+        }
+        
+        return null;
+    }
 
     public PersistentObject load(Class clazz, Integer id)
     {
+        if (clazz.equals(Security.class))
+        {
+            for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
+            {
+                PersistentObject obj = (PersistentObject)iter.next();
+                if (id.equals(obj.getId()))
+                    return obj;
+            }
+        }
+
         if (clazz.equals(Watchlist.class))
         {
             for (Iterator iter = allWatchlists().iterator(); iter.hasNext(); )
@@ -91,6 +146,18 @@ public class Repository
 
         if (obj instanceof Watchlist)
             allWatchlists().remove(obj);
+
+        if (obj instanceof NewsItem)
+        {
+            NewsItem news = (NewsItem) obj;
+            allNews().remove(news);
+            if (news.getSecurity() != null)
+            {
+                ObservableList list = (ObservableList) newsMap.get(news.getSecurity());
+                if (list != null)
+                    list.remove(news);
+            }
+        }
     }
     
     protected PersistentObject getSaveableObject(PersistentObject obj)
@@ -109,6 +176,19 @@ public class Repository
         {
             if (!allWatchlists().contains(obj))
                 allWatchlists().add(obj);
+        }
+
+        if (obj instanceof NewsItem)
+        {
+            NewsItem news = (NewsItem) obj;
+            if (!allNews().contains(news))
+                allNews().add(news);
+            if (news.getSecurity() != null)
+            {
+                ObservableList list = (ObservableList) newsMap.get(news.getSecurity());
+                if (list != null && !list.contains(news))
+                    list.add(news);
+            }
         }
 
         return obj;

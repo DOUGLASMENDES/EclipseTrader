@@ -23,7 +23,7 @@ public class Bar extends PersistentObject
     private double high = -99999999;
     private double low = 99999999;
     private double close;
-    private int volume;
+    private long volume;
     
     public Bar()
     {
@@ -42,7 +42,7 @@ public class Bar extends PersistentObject
         this.close = close;
     }
     
-    public Bar(double open, double high, double low, double close, int volume)
+    public Bar(double open, double high, double low, double close, long volume)
     {
         this.open = open;
         this.high = high;
@@ -51,7 +51,7 @@ public class Bar extends PersistentObject
         this.volume = volume;
     }
     
-    public Bar(Date date, double open, double high, double low, double close, int volume)
+    public Bar(Date date, double open, double high, double low, double close, long volume)
     {
         this.date = date;
         this.open = open;
@@ -111,17 +111,17 @@ public class Bar extends PersistentObject
         this.open = open;
     }
 
-    public int getVolume()
+    public long getVolume()
     {
         return volume;
     }
 
-    public void setVolume(int volume)
+    public void setVolume(long volume)
     {
         this.volume = volume;
     }
     
-    public void update(double open, double high, double low, double close, int volume)
+    public void update(double open, double high, double low, double close, long volume)
     {
         this.open = open;
         if (high > this.high)

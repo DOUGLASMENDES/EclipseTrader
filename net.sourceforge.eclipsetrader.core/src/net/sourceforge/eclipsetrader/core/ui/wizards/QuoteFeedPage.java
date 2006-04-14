@@ -25,6 +25,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -38,8 +40,10 @@ public class QuoteFeedPage extends WizardPage
 {
     private Combo feed;
     private Text symbol;
+    private Combo exchange;
     private Combo level2Feed;
     private Text level2Symbol;
+    private Combo level2Exchange;
     private Security security;
 
     public QuoteFeedPage()
@@ -74,12 +78,23 @@ public class QuoteFeedPage extends WizardPage
         feed.add("");
 
         label = new Label(composite, SWT.NONE);
+        label.setText("Exchange");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        exchange = new Combo(composite, SWT.SINGLE | SWT.READ_ONLY);
+        exchange.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        exchange.setVisibleItemCount(10);
+        exchange.add("");
+
+        label = new Label(composite, SWT.NONE);
         label.setText("Symbol");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         symbol = new Text(composite, SWT.BORDER);
         symbol.setLayoutData(new GridData(100, SWT.DEFAULT));
         if (security != null && security.getQuoteFeed() != null)
             symbol.setText(security.getQuoteFeed().getSymbol());
+
+        label = new Label(composite, SWT.SEPARATOR|SWT.HORIZONTAL);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
         label = new Label(composite, SWT.NONE);
         label.setText("Level II Feed");
@@ -88,6 +103,14 @@ public class QuoteFeedPage extends WizardPage
         level2Feed.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         level2Feed.setVisibleItemCount(10);
         level2Feed.add("");
+
+        label = new Label(composite, SWT.NONE);
+        label.setText("Exchange");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        level2Exchange = new Combo(composite, SWT.SINGLE | SWT.READ_ONLY);
+        level2Exchange.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        level2Exchange.setVisibleItemCount(10);
+        level2Exchange.add("");
 
         label = new Label(composite, SWT.NONE);
         label.setText("Symbol");
@@ -125,7 +148,7 @@ public class QuoteFeedPage extends WizardPage
                 IConfigurationElement[] children = element.getChildren();
                 for (int i = 0; i < children.length; i++)
                 {
-                    if (children[i].getName().equals("quote"))
+                    if (children[i].getName().equals("quote")) //$NON-NLS-1$
                     {
                         feed.setData(String.valueOf(feed.getItemCount()), id);
                         feed.add(name);
@@ -135,7 +158,7 @@ public class QuoteFeedPage extends WizardPage
                                 feed.select(feed.getItemCount() - 1);
                         }
                     }
-                    else if (children[i].getName().equals("level2"))
+                    else if (children[i].getName().equals("level2")) //$NON-NLS-1$
                     {
                         level2Feed.setData(String.valueOf(level2Feed.getItemCount()), id);
                         level2Feed.add(name);
@@ -147,7 +170,25 @@ public class QuoteFeedPage extends WizardPage
                     }
                 }
             }
+            
+            SecurityWizard.updateFeedExchanges("quote", exchange, security != null ? security.getQuoteFeed() : null);
+            SecurityWizard.updateFeedExchanges("level2", level2Exchange, security != null ? security.getLevel2Feed() : null);
         }
+
+        feed.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                String id = (String)feed.getData(String.valueOf(feed.getSelectionIndex()));
+                SecurityWizard.updateFeedExchanges("quote", exchange, id);
+            }
+        });
+        level2Feed.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                String id = (String)level2Feed.getData(String.valueOf(level2Feed.getSelectionIndex()));
+                SecurityWizard.updateFeedExchanges("level2", level2Exchange, id);
+            }
+        });
     }
     
     public String getId()
@@ -168,5 +209,15 @@ public class QuoteFeedPage extends WizardPage
     public String getLevel2Symbol()
     {
         return level2Symbol.getText();
+    }
+    
+    public String getExchange()
+    {
+        return (String)exchange.getData(String.valueOf(exchange.getSelectionIndex()));
+    }
+    
+    public String getLevel2Exchange()
+    {
+        return (String)level2Exchange.getData(String.valueOf(level2Exchange.getSelectionIndex()));
     }
 }
