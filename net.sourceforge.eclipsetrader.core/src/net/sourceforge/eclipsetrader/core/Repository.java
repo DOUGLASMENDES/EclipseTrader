@@ -82,9 +82,11 @@ public class Repository
     
     public Security getSecurity(String code)
     {
-        PersistentObject obj = load(Security.class, new Integer(code));
-        if (obj != null && obj instanceof Security)
-            return (Security) obj;
+        try {
+            PersistentObject obj = load(Security.class, new Integer(code));
+            if (obj != null && obj instanceof Security)
+                return (Security) obj;
+        } catch(Exception e) {}
         
         for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
         {
