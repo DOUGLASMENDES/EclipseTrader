@@ -49,7 +49,7 @@
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.NewWatchlistAction"
-               icon="icons/etool16/new_watchlist_wiz.gif"
+               icon="icons/etool16/table_add.png"
                id="net.sourceforge.eclipsetrader.trading.newWatchlist"
                label="Watchlist"
                menubarPath="file/newWizard/additions"
@@ -223,14 +223,14 @@
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.WatchlistView"
-            icon="icons/eview16/watchlisticon.gif"
+            icon="icons/eview16/table.png"
             id="net.sourceforge.eclipsetrader.watchlist"
             name="Watch List"/>
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.Level2View"
-            icon="icons/eview16/level2view.gif"
+            icon="icons/eview16/application_view_detail.png"
             id="net.sourceforge.eclipsetrader.trading.level2"
             name="Level II"/>
    </extension>
