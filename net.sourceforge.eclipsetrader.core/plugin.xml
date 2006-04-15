@@ -10,8 +10,7 @@
             label="Securities">
          <action
                class="net.sourceforge.eclipsetrader.core.ui.actions.NewSecurityAction"
-               disabledIcon="icons/dtool16/new_security.gif"
-               icon="icons/etool16/new_security.gif"
+               icon="icons/etool16/database_add.png"
                id="net.sourceforge.eclipsetrader.newSecurity"
                label="Security"
                menubarPath="file/newWizard/top"
@@ -52,7 +51,14 @@
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
             id="securitiesView"
-            targetID="net.sourceforge.eclipsetrader.views.securities"/>
+            targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.core.ui.actions.DeleteSecurityAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.core.deleteSecurity"
+               label="Delete"
+               menubarPath="group6"/>
+      </viewerContribution>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -98,7 +104,7 @@
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.SecuritiesView"
-            icon="icons/eview16/securities.gif"
+            icon="icons/eview16/database.png"
             id="net.sourceforge.eclipsetrader.views.securities"
             name="Securities"/>
       <view
@@ -114,6 +120,13 @@
       <viewContribution
             id="securitiesView"
             targetID="net.sourceforge.eclipsetrader.views.securities">
+         <action
+               class="net.sourceforge.eclipsetrader.core.ui.actions.DeleteSecurityAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.core.deleteSecurity"
+               label="Delete"
+               menubarPath="group6"
+               style="push"/>
       </viewContribution>
    </extension>
 

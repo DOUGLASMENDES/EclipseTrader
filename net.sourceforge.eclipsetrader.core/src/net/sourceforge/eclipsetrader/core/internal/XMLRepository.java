@@ -242,6 +242,7 @@ public class XMLRepository extends Repository
 
         if (obj instanceof Security)
         {
+            securitiesMap.remove(obj.getId());
             File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
