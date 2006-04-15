@@ -2,12 +2,25 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
-         point="net.sourceforge.eclipsetrader.core.feeds">
-      <feed
+         point="org.eclipse.ui.actionSets">
+      <actionSet
             id="net.sourceforge.eclipsetrader.directaworld"
-            name="DirectaWorld">
-         <quote class="net.sourceforge.eclipsetrader.directaworld.Feed"/>
-      </feed>
+            label="DirectaWorld"
+            visible="true">
+         <action
+               class="net.sourceforge.eclipsetrader.directaworld.actions.NewSecurityAction"
+               icon="icons/it.gif"
+               id="net.sourceforge.eclipsetrader.directaworld.newSecurity"
+               label="Italian Stock Security"
+               menubarPath="file/newWizard/plugins"
+               style="push"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader">
+         <actionSet id="net.sourceforge.eclipsetrader.directaworld"/>
+      </perspectiveExtension>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -16,6 +29,14 @@
             class="net.sourceforge.eclipsetrader.directaworld.GeneralPreferencesPage"
             id="net.sourceforge.eclipsetrader.directaworld.general"
             name="DirectaWorld"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.feeds">
+      <feed
+            id="net.sourceforge.eclipsetrader.directaworld"
+            name="DirectaWorld">
+         <quote class="net.sourceforge.eclipsetrader.directaworld.Feed"/>
+      </feed>
    </extension>
 
 </plugin>
