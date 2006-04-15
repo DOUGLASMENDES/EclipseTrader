@@ -33,6 +33,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="net.sourceforge.eclipsetrader.charts.Perspective"
+            icon="icons/eview16/chart_curve.png"
             id="net.sourceforge.eclipsetrader.charts"
             name="Charts"/>
    </extension>
@@ -147,7 +148,7 @@
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.charts.views.ChartView"
-            icon="icons/eview16/stockcharticon.gif"
+            icon="icons/eview16/chart_curve.png"
             id="net.sourceforge.eclipsetrader.views.chart"
             name="Chart"/>
    </extension>
@@ -181,8 +182,7 @@
          </action>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
-               disabledIcon="icons/dtool16/new_wiz.gif"
-               icon="icons/elcl16/new_wiz.gif"
+               icon="icons/elcl16/chart_line_add.png"
                id="net.sourceforge.eclipsetrader.charts.newIndicator"
                label="New Indicator"
                menubarPath="group1"
