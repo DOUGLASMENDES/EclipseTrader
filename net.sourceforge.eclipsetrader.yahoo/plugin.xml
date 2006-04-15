@@ -2,6 +2,21 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="net.sourceforge.eclipsetrader.yahoo"
+            label="Yahoo"
+            visible="true">
+         <action
+               class="net.sourceforge.eclipsetrader.yahoo.actions.NewSecurityAction"
+               icon="icons/us.gif"
+               id="net.sourceforge.eclipsetrader.yahoo.newSecurity"
+               label="U.S. Stock Security"
+               menubarPath="file/newWizard/plugins"
+               style="push"/>
+      </actionSet>
+   </extension>
+   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="net.sourceforge.eclipsetrader.plugins"
