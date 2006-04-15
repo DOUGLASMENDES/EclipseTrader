@@ -23,7 +23,7 @@
          <action
                class="net.sourceforge.eclipsetrader.news.actions.StopFeedAction"
                disabledIcon="icons/dtool16/stop.gif"
-               icon="icons/etool16/stop.gif"
+               icon="icons/etool16/newspaper_stop.png"
                id="net.sourceforge.eclipsetrader.news.stopFeed"
                label="Stop News Feed"
                style="push"
@@ -32,7 +32,7 @@
          <action
                class="net.sourceforge.eclipsetrader.news.actions.StartFeedAction"
                disabledIcon="icons/dtool16/start.gif"
-               icon="icons/etool16/run.gif"
+               icon="icons/etool16/newspaper_go.png"
                id="net.sourceforge.eclipsetrader.news.startFeed"
                label="Start News Feed"
                style="push"
@@ -44,6 +44,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="net.sourceforge.eclipsetrader.news.Perspective"
+            icon="icons/eview16/newspaper.png"
             id="net.sourceforge.eclipsetrader.news"
             name="News"/>
    </extension>
@@ -184,7 +185,7 @@
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.news.views.NewsView"
-            icon="icons/eview16/news.gif"
+            icon="icons/eview16/newspaper.png"
             id="net.sourceforge.eclipsetrader.newslist"
             name="News"/>
    </extension>
