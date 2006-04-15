@@ -344,7 +344,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         TableItem items[] = table.getItems();
         for (int i = 0; i < items.length; i++)
         {
-            if (o.equals(items[i].getData()))
+            if (o.equals(((SecurityTableItem) items[i]).getSecurity()))
                 items[i].dispose();
         }
         updateSelection();
