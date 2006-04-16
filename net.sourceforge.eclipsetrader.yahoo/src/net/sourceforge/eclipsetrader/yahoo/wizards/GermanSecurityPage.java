@@ -43,13 +43,13 @@ import org.w3c.dom.NodeList;
 
 /**
  */
-public class SecurityPage extends WizardPage implements ISecurityPage
+public class GermanSecurityPage extends WizardPage implements ISecurityPage
 {
     private Table table;
     private Text search;
     private NodeList childNodes;
 
-    public SecurityPage()
+    public GermanSecurityPage()
     {
         super("");
         setTitle("Security");
@@ -121,7 +121,7 @@ public class SecurityPage extends WizardPage implements ISecurityPage
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(YahooPlugin.getDefault().openStream(new Path("data/securities.xml")));
+            Document document = builder.parse(YahooPlugin.getDefault().openStream(new Path("data/securities_de.xml")));
 
             Node firstNode = document.getFirstChild();
 
@@ -163,13 +163,12 @@ public class SecurityPage extends WizardPage implements ISecurityPage
             
             Feed feed = security.new Feed();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getTextContent());
             security.setQuoteFeed(feed);
             feed = security.new Feed();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getTextContent());
             security.setHistoryFeed(feed);
-            feed = security.new Feed();
-            feed.setId("net.sourceforge.eclipsetrader.archipelago");
-            security.setLevel2Feed(feed);
 
             list.add(security);
         }

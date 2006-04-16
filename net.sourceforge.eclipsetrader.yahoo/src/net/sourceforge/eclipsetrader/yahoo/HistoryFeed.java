@@ -82,6 +82,7 @@ public class HistoryFeed implements IHistoryFeed
             url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR));
             url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR));
             url.append("&g=d&q=q&y=0&z=&x=.csv");
+            System.out.println(url.toString());
 
             try {
                 HttpClient client = new HttpClient();

@@ -14,6 +14,13 @@
                label="U.S. Stock Security"
                menubarPath="file/newWizard/plugins"
                style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.yahoo.actions.NewGermanSecurityAction"
+               icon="icons/de.gif"
+               id="net.sourceforge.eclipsetrader.yahoo.newGermanSecurity"
+               label="German Stock Security"
+               menubarPath="file/newWizard/plugins"
+               style="push"/>
       </actionSet>
    </extension>
    <extension
