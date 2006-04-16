@@ -39,7 +39,11 @@
       <provider
             class="net.sourceforge.eclipsetrader.yahoo.NewsProvider"
             id="net.sourceforge.eclipsetrader.yahoo.news"
-            name="Yahoo! Finance"/>
+            name="Yahoo! Finance U.S."/>
+      <provider
+            class="net.sourceforge.eclipsetrader.yahoo.ItalianNewsProvider"
+            id="net.sourceforge.eclipsetrader.yahoo.news.italy"
+            name="Yahoo! Finance Italy"/>
    </extension>
 
 </plugin>
