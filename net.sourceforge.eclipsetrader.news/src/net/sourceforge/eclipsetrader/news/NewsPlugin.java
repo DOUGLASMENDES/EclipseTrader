@@ -37,7 +37,7 @@ public class NewsPlugin extends AbstractUIPlugin
     public static final String PREFS_UPDATE_ON_STARTUP = "UPDATE_ON_STARTUP";
     public static final String PREFS_FOLLOW_QUOTE_FEED = "FOLLOW_QUOTE_FEED";
     public static final String PREFS_UPDATE_INTERVAL = "UPDATE_INTERVAL";
-    public static final String FEED_RUNNING = "FEED_RUNNING";
+    public static final String FEED_RUNNING = "NEWS_FEED_RUNNING";
     private static NewsPlugin plugin;
     private IPropertyChangeListener feedPropertyListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
