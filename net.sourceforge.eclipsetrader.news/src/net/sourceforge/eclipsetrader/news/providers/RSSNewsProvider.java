@@ -11,16 +11,25 @@
 
 package net.sourceforge.eclipsetrader.news.providers;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.INewsProvider;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
+
+import org.eclipse.core.runtime.Platform;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -89,6 +98,7 @@ public class RSSNewsProvider implements Runnable, INewsProvider
      */
     public void snapshot()
     {
+        update();
     }
 
     /* (non-Javadoc)
@@ -127,13 +137,30 @@ public class RSSNewsProvider implements Runnable, INewsProvider
 
     private void update()
     {
-        try {
-        } catch(Exception e) {
-            CorePlugin.logException(e);
-        }
+        File file = new File(Platform.getLocation().toFile(), "rss.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            try
+            {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(file);
+    
+                Node firstNode = document.getFirstChild();
+    
+                NodeList childNodes = firstNode.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++)
+                {
+                    Node item = childNodes.item(i);
+                    String nodeName = item.getNodeName();
+                    if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
+                        update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getTextContent());
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
     }
 
-    private void update(URL feedUrl)
+    private void update(URL feedUrl, String source)
     {
         try {
             SyndFeed feed = fetcher.retrieveFeed(feedUrl);
@@ -153,6 +180,7 @@ public class RSSNewsProvider implements Runnable, INewsProvider
                     news.setDate(date.getTime());
                 }
                 news.setTitle(entry.getTitle());
+                news.setSource(source);
                 news.setUrl(entry.getLink());
                 CorePlugin.getRepository().save(news);
             }

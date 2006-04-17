@@ -22,7 +22,6 @@
          </menu>
          <action
                class="net.sourceforge.eclipsetrader.news.actions.StopFeedAction"
-               disabledIcon="icons/dtool16/stop.gif"
                icon="icons/etool16/newspaper_stop.png"
                id="net.sourceforge.eclipsetrader.news.stopFeed"
                label="Stop News Feed"
@@ -31,7 +30,6 @@
                tooltip="Stop news feed"/>
          <action
                class="net.sourceforge.eclipsetrader.news.actions.StartFeedAction"
-               disabledIcon="icons/dtool16/start.gif"
                icon="icons/etool16/newspaper_go.png"
                id="net.sourceforge.eclipsetrader.news.startFeed"
                label="Start News Feed"

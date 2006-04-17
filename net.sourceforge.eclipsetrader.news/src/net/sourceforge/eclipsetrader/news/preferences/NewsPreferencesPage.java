@@ -65,7 +65,10 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         
         table = new Table(content, SWT.FULL_SELECTION|SWT.SINGLE|SWT.CHECK);
         table.setHeaderVisible(true);
-        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        table.setLinesVisible(false);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gridData.heightHint = 250;
+        table.setLayoutData(gridData);
         TableColumn column = new TableColumn(table, SWT.NONE);
         column.setText("Provider");
 
