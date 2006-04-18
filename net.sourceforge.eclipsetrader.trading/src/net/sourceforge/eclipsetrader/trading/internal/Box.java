@@ -131,6 +131,7 @@ public class Box extends Composite implements PaintListener
 
     public void setName(String name)
     {
+        name = name.replaceAll("[&]", "&&");
         this.name.setText(name);
     }
 

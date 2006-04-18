@@ -65,7 +65,7 @@ public class DeleteWatchlistItemAction implements IViewActionDelegate
         if (selection instanceof WatchlistItemSelection)
         {
             watchlistItem = ((WatchlistItemSelection)selection).getWatchlistItem();
-            action.setText(defaultText + " " + watchlistItem.getSecurity().getDescription());
+            action.setText(defaultText + " " + watchlistItem.getSecurity().getDescription().replaceAll("[&]", "&&"));
             action.setEnabled(true);
         }
         else
