@@ -392,6 +392,15 @@
                title="Line"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.MarketThermometer"
+            id="net.sourceforge.eclipsetrader.indicators.therm"
+            name="Market Thermometer - THERM">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.MarketThermometerPreferences"
+               description="Set the market thermometer parameters"
+               title="Market Thermometer"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.MA"
             id="net.sourceforge.eclipsetrader.indicators.ma"
             name="Moving Average - MA">
