@@ -159,11 +159,12 @@ public class SecurityPage extends WizardPage
         {
             Node item = (Node) table.getSelection()[i].getData();
             Security security = new Security();
-            security.setCode(item.getAttributes().getNamedItem("code").getTextContent());
+            security.setCode(item.getAttributes().getNamedItem("code").getTextContent() + ".MI");
             security.setDescription(item.getFirstChild().getNodeValue());
 
             Feed feed = security.new Feed();
             feed.setId("net.sourceforge.eclipsetrader.directaworld");
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getTextContent());
             security.setQuoteFeed(feed);
             
             feed = security.new Feed();
