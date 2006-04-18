@@ -125,7 +125,34 @@ public class Repository
     
     public void save(PersistentObject obj)
     {
-        getSaveableObject(obj);
+        obj.setRepository(this);
+        if (obj instanceof Observable)
+            ((Observable)obj).notifyObservers();
+
+        if (obj instanceof Security)
+        {
+            if (!allSecurities().contains(obj))
+                allSecurities().add(obj);
+        }
+
+        if (obj instanceof Watchlist)
+        {
+            if (!allWatchlists().contains(obj))
+                allWatchlists().add(obj);
+        }
+
+        if (obj instanceof NewsItem)
+        {
+            NewsItem news = (NewsItem) obj;
+            if (!allNews().contains(news))
+                allNews().add(news);
+            if (news.getSecurity() != null)
+            {
+                ObservableList list = (ObservableList) newsMap.get(news.getSecurity());
+                if (list != null && !list.contains(news))
+                    list.add(news);
+            }
+        }
     }
     
     public void delete(PersistentObject obj)
@@ -162,40 +189,6 @@ public class Repository
         }
     }
     
-    protected PersistentObject getSaveableObject(PersistentObject obj)
-    {
-        obj.setRepository(this);
-        if (obj instanceof Observable)
-            ((Observable)obj).notifyObservers();
-
-        if (obj instanceof Security)
-        {
-            if (!allSecurities().contains(obj))
-                allSecurities().add(obj);
-        }
-
-        if (obj instanceof Watchlist)
-        {
-            if (!allWatchlists().contains(obj))
-                allWatchlists().add(obj);
-        }
-
-        if (obj instanceof NewsItem)
-        {
-            NewsItem news = (NewsItem) obj;
-            if (!allNews().contains(news))
-                allNews().add(news);
-            if (news.getSecurity() != null)
-            {
-                ObservableList list = (ObservableList) newsMap.get(news.getSecurity());
-                if (list != null && !list.contains(news))
-                    list.add(news);
-            }
-        }
-
-        return obj;
-    }
-
     public List loadHistory(Integer id)
     {
         return new ArrayList();

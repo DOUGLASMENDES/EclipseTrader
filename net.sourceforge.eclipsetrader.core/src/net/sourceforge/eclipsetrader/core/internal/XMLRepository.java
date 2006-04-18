@@ -203,8 +203,6 @@ public class XMLRepository extends Repository
      */
     public void save(PersistentObject obj)
     {
-        obj = getSaveableObject(obj);
-
         if (obj instanceof Security)
         {
             if (obj.getId() == null)
@@ -215,7 +213,8 @@ public class XMLRepository extends Repository
             securitiesMap.put(obj.getId(), obj);
             saveSecurities();
         }
-        else if (obj instanceof Chart)
+        
+        if (obj instanceof Chart)
         {
             chartsMap.put(obj.getId(), obj);
             saveChart((Chart)obj);
@@ -231,6 +230,8 @@ public class XMLRepository extends Repository
             watchlistsMap.put(obj.getId(), obj);
             saveWatchlists();
         }
+        
+        super.save(obj);
     }
 
     /* (non-Javadoc)
