@@ -78,6 +78,25 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
     private int sortColumn = 0;
     private int sortDirection = 1;
     private ITheme theme;
+    private Comparator comparator = new Comparator() {
+        public int compare(Object arg0, Object arg1)
+        {
+            switch(sortColumn)
+            {
+                case 0:
+                    if (sortDirection == 1)
+                        return ((Security)arg0).getCode().compareTo(((Security)arg1).getCode());
+                    else
+                        return ((Security)arg1).getCode().compareTo(((Security)arg0).getCode());
+                case 1:
+                    if (sortDirection == 1)
+                        return ((Security)arg0).getDescription().compareTo(((Security)arg1).getDescription());
+                    else
+                        return ((Security)arg1).getDescription().compareTo(((Security)arg0).getDescription());
+            }
+            return 0;
+        }
+    };
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
@@ -312,7 +331,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         CorePlugin.getRepository().allSecurities().removeCollectionObserver(this);
         super.dispose();
     }
-
+    
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.ICollectionObserver#itemAdded(java.lang.Object)
      */
@@ -324,7 +343,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         for (int i = 0; i < items.length; i++)
         {
             Security arg1 = ((SecurityTableItem)items[i]).getSecurity();
-            if (security.getDescription().compareTo(((Security)arg1).getDescription()) < 0)
+            if (comparator.compare(security, arg1) < 0)
             {
                 new SecurityTableItem(table, SWT.NONE, i, security);
                 updateSelection();
@@ -353,25 +372,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
     public void updateView()
     {
         List list = CorePlugin.getRepository().allSecurities();
-        Collections.sort(list, new Comparator() {
-            public int compare(Object arg0, Object arg1)
-            {
-                switch(sortColumn)
-                {
-                    case 0:
-                        if (sortDirection == 1)
-                            return ((Security)arg0).getCode().compareTo(((Security)arg1).getCode());
-                        else
-                            return ((Security)arg1).getCode().compareTo(((Security)arg0).getCode());
-                    case 1:
-                        if (sortDirection == 1)
-                            return ((Security)arg0).getDescription().compareTo(((Security)arg1).getDescription());
-                        else
-                            return ((Security)arg1).getDescription().compareTo(((Security)arg0).getDescription());
-                }
-                return 0;
-            }
-        });
+        Collections.sort(list, comparator);
         
         int index = 0;
         SecurityTableItem tableItem = null;
