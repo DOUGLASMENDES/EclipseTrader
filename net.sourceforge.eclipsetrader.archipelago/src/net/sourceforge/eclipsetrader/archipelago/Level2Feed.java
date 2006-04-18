@@ -31,6 +31,8 @@ public class Level2Feed implements ILevel2Feed, Runnable
     private Map map = new HashMap();
     private Thread thread;
     private boolean stopping = false;
+    private Socket socket = null;
+    private BufferedReader is = null;
     private DataOutputStream os = null;
 
     public Level2Feed()
@@ -52,6 +54,36 @@ public class Level2Feed implements ILevel2Feed, Runnable
             {
                 os.writeBytes("MsgType=RegisterBook&Symbol=" + symbol + "\n");
                 os.writeBytes("MsgType=RegisterSymbol&Symbol=" + symbol + "\n");
+            }
+            catch (SocketException e)
+            {
+                for (int i = 0; i < 5 && !stopping; i++)
+                {
+                    try
+                    {
+                        socket = new Socket("datasvr.tradearca.com", 8092);
+                        is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        os = new DataOutputStream(socket.getOutputStream());
+                        for (Iterator iter = map.values().iterator(); iter.hasNext(); )
+                        {
+                            String s = (String)iter.next();
+                            os.writeBytes("MsgType=RegisterBook&Symbol=" + s + "\n");
+                            os.writeBytes("MsgType=RegisterSymbol&Symbol=" + s + "\n");
+                        }
+                        os.writeBytes("MsgType=RegisterBook&Symbol=" + symbol + "\n");
+                        os.writeBytes("MsgType=RegisterSymbol&Symbol=" + symbol + "\n");
+                        os.flush();
+                        break;
+                    }
+                    catch (Exception e1) {
+                        CorePlugin.logException(e1);
+                    }
+                }
+                if (socket == null || os == null || is == null)
+                {
+                    thread = null;
+                    return;
+                }
             }
             catch (Exception e) {
                 CorePlugin.logException(e);
@@ -77,7 +109,6 @@ public class Level2Feed implements ILevel2Feed, Runnable
                     os.writeBytes("MsgType=UnregisterSymbol&Symbol=" + symbol + "\n");
                 }
                 catch (Exception e) {
-                    CorePlugin.logException(e);
                 }
             }
         }
@@ -126,9 +157,6 @@ public class Level2Feed implements ILevel2Feed, Runnable
      */
     public void run()
     {
-        Socket socket = null;
-        BufferedReader is = null;
-
         for (int i = 0; i < 5 && !stopping; i++)
         {
             try
@@ -172,6 +200,8 @@ public class Level2Feed implements ILevel2Feed, Runnable
                 if (inputLine.startsWith("BK&") == true)
                 {
                     String[] sections = inputLine.split("&");
+                    if (sections.length < 4)
+                        continue;
                     symbol = sections[1];
                     
                     int index = 0, item = 0;
