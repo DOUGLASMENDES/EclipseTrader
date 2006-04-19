@@ -198,7 +198,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             {
                 int width = table.getSize().x - table.getColumn(0).getWidth(); // - 60;
                 if (table.getVerticalBar() != null)
-                    width -= table.getVerticalBar().getSize().x;
+                    width -= table.getVerticalBar().getSize().x + 5;
                 if (width < 100) width = 100;
                 table.getColumn(1).setWidth(width);
             }
