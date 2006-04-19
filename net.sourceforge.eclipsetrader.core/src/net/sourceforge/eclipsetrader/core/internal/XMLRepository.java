@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -133,6 +134,9 @@ public class XMLRepository extends Repository
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document document = builder.parse(file);
+                
+                Calendar today = Calendar.getInstance();
+                today.add(Calendar.DATE, -2);
 
                 Node firstNode = document.getFirstChild();
 
@@ -144,6 +148,9 @@ public class XMLRepository extends Repository
                     if (nodeName.equalsIgnoreCase("news")) //$NON-NLS-1$
                     {
                         NewsItem obj = loadNews(item.getChildNodes());
+                        if (obj.getDate().before(today.getTime()))
+                            continue;
+                        
                         obj.setRepository(this);
                         allNews().add(obj);
                     }
