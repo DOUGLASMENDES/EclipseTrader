@@ -122,13 +122,16 @@ public class NewsTableItem extends TableItem implements DisposeListener, Observe
      */
     public void update(Observable o, Object arg)
     {
-        getDisplay().asyncExec(new Runnable() {
-            public void run()
-            {
-                if (!isDisposed())
-                    update();
-            }
-        });
+        if (!isDisposed())
+        {
+            getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
+                    if (!isDisposed())
+                        update();
+                }
+            });
+        }
     }
     
     public NewsItem getNewsItem()
