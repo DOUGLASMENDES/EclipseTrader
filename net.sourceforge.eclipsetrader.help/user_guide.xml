@@ -16,6 +16,12 @@
         <topic label="Indices" href="guide/indices.html"/>
     </topic>
 -->
+    <topic label="Concepts">
+        <topic label="Securities" href="guide/securities.html"/>
+        <topic label="Watchlists" href="guide/watchlist.html"/>
+        <topic label="Charts" href="guide/charts.html"/>
+        <topic label="News" href="guide/news.html"/>
+    </topic>
     <topic label="Indicators" href="guide/indicators/index.html">
         <topic label="Accumulation Distribution - AD" href="guide/indicators/ad.html"/>
 <!--         <topic label="Average True Range - ATR" href="guide/indicators/atr.html"/> -->
@@ -23,7 +29,7 @@
         <topic label="Commodity Channel Index - CCI" href="guide/indicators/cci.html"/>
 <!--         <topic label="Detrended Price Oscillator - DPO" href="guide/indicators/dpo.html"/> -->
 <!--         <topic label="Directional Movement Index - DMI" href="guide/indicators/dmi.html"/> -->
-<!--         <topic label="Elder's Market Thermometer - THERM" href="guide/indicators/therm.html"/> -->
+        <topic label="Elder's Market Thermometer - THERM" href="guide/indicators/therm.html"/>
 <!--         <topic label="Elder's Safezone Stop - SZ" href="guide/indicators/sz.html"/> -->
 <!--         <topic label="Force Index - FI" href="guide/indicators/fi.html"/> -->
         <topic label="Moving Average - MA" href="guide/indicators/ma.html"/>
