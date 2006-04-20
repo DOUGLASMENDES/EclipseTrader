@@ -29,6 +29,7 @@ public class WatchlistWizard extends Wizard implements INewWizard
     private Watchlist watchlist;
     private GeneralPage generalPage = new GeneralPage();
     private ColumnsPage columnsPage = new ColumnsPage();
+    private ItemsPage itemsPage = new ItemsPage();
 
     public WatchlistWizard()
     {
@@ -42,6 +43,7 @@ public class WatchlistWizard extends Wizard implements INewWizard
         setWindowTitle("New Watchlist Wizard");
         addPage(new CommonWizardPage(generalPage));
         addPage(new CommonWizardPage(columnsPage));
+        addPage(new CommonWizardPage(itemsPage));
     }
 
     public Watchlist open()
@@ -57,6 +59,7 @@ public class WatchlistWizard extends Wizard implements INewWizard
         
         addPage(new CommonWizardPage(generalPage));
         addPage(new CommonWizardPage(columnsPage));
+        addPage(new CommonWizardPage(itemsPage));
 
         WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);
         dlg.create();
@@ -73,6 +76,7 @@ public class WatchlistWizard extends Wizard implements INewWizard
         
         watchlist.setDescription(generalPage.getText());
         watchlist.setColumns(columnsPage.getColumns());
+        watchlist.setItems(itemsPage.getItems());
 
         CorePlugin.getRepository().save(watchlist);
         
