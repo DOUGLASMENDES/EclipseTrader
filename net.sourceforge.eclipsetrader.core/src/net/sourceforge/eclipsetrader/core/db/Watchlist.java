@@ -119,6 +119,8 @@ public class Watchlist extends PersistentObject
     public void setItems(List items)
     {
         this.items.clear();
+        for (Iterator iter = items.iterator(); iter.hasNext(); )
+            ((WatchlistItem) iter.next()).setParent(this);
         this.items.addAll(items);
         setChanged();
     }

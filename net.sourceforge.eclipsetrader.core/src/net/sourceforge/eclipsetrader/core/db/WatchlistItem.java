@@ -138,9 +138,12 @@ public class WatchlistItem extends PersistentObject implements Observer
         setChanged();
         notifyObservers();
         
-        WatchlistItem totals = getParent().getTotals();
-        if (totals != this)
-            totals.update(o, arg);
+        if (getParent() != null)
+        {
+            WatchlistItem totals = getParent().getTotals();
+            if (totals != this)
+                totals.update(o, arg);
+        }
     }
     
     public void update()
