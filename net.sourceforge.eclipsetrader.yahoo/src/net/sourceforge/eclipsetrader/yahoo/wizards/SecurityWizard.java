@@ -51,6 +51,17 @@ public class SecurityWizard extends Wizard
         WizardDialog dlg = create();
         dlg.open();
     }
+
+    public void openFrance()
+    {
+        setWindowTitle("France Security Wizard");
+
+        securityPage = new FrenchSecurityPage();
+        addPage(securityPage);
+        
+        WizardDialog dlg = create();
+        dlg.open();
+    }
     
     public WizardDialog create()
     {
