@@ -43,7 +43,7 @@
          <view
                id="net.sourceforge.eclipsetrader.views.chart:*"
                relationship="stack"
-               relative="org.eclipse.ui.editorss"
+               relative="center"
                visible="false"/>
          <perspectiveShortcut id="net.sourceforge.eclipsetrader.charts"/>
       </perspectiveExtension>
@@ -55,7 +55,7 @@
          <view
                id="net.sourceforge.eclipsetrader.views.chart:*"
                relationship="stack"
-               relative="org.eclipse.ui.editorss"
+               relative="center"
                visible="false"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.securities"/>
          <actionSet id="net.sourceforge.eclipsetrader.securities"/>
@@ -358,6 +358,14 @@
                title="Accumulation / Distribution"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.ATR"
+            id="net.sourceforge.eclipsetrader.indicators.atr"
+            name="Average True Range - ATR">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.ATRPreferencePage"
+               title="Average True Range"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Bars"
             id="net.sourceforge.eclipsetrader.indicators.bars"
             name="Bars - BAR">
@@ -381,6 +389,14 @@
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.CommodityChannelIndexPreferencePage"
                title="Commodity Channel Index"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.DPO"
+            id="net.sourceforge.eclipsetrader.indicators.dpo"
+            name="Detrended Price Oscillator - DPO">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.DPOPreferencePage"
+               title="Detrended Price Oscillator"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Lines"
@@ -416,6 +432,14 @@
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.MACDPreferences"
                title="MACD"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.MAOSC"
+            id="net.sourceforge.eclipsetrader.indicators.maosc"
+            name="Moving Average Oscillator - MAOSC">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.MAOSCPreferencePage"
+               title="Moving Average Oscillator"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.RSI"
