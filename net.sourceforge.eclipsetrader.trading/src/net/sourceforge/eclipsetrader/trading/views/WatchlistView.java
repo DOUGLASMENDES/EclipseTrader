@@ -22,8 +22,10 @@ import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
+import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.actions.SetRibbonLayoutAction;
 import net.sourceforge.eclipsetrader.trading.actions.SetTableLayoutAction;
+import net.sourceforge.eclipsetrader.trading.actions.ToggleShowTotalsAction;
 import net.sourceforge.eclipsetrader.trading.internal.AbstractLayout;
 import net.sourceforge.eclipsetrader.trading.internal.BoxedLayout;
 import net.sourceforge.eclipsetrader.trading.internal.TableLayout;
@@ -50,6 +52,7 @@ import org.eclipse.ui.part.ViewPart;
 public class WatchlistView extends ViewPart implements ICollectionObserver, Observer
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.watchlist";
+    public static final String PREFS_SHOW_TOTALS = "SHOW_TOTALS_";
     public static final int TABLE = 0;
     public static final int RIBBON = 1;
     private Watchlist watchlist;
@@ -57,6 +60,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     private AbstractLayout layout;
     private Action tableLayout = new SetTableLayoutAction(this);
     private Action ribbonLayout = new SetRibbonLayoutAction(this);
+    private Action toggleShowTotals = new ToggleShowTotalsAction(this);
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
@@ -78,6 +82,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         layoutMenu.add(tableLayout);
         layoutMenu.add(ribbonLayout);
         menuManager.appendToGroup("group5", layoutMenu);
+        menuManager.appendToGroup("group5", toggleShowTotals);
         
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
@@ -152,6 +157,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         watchlist = (Watchlist)CorePlugin.getRepository().load(Watchlist.class, new Integer(getViewSite().getSecondaryId()));
         if (watchlist.getDescription().length() != 0)
             setPartName(watchlist.getDescription());
+        toggleShowTotals.setChecked(TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId()));
 
         parent.getDisplay().asyncExec(new Runnable() {
             public void run()
@@ -219,6 +225,11 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         layout.createPartControl(parent);
         layout.updateView();
         parent.layout();
+    }
+
+    public AbstractLayout getLayout()
+    {
+        return layout;
     }
 
     public Watchlist getWatchlist()

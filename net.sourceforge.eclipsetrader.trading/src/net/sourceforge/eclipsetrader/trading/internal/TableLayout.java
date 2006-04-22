@@ -23,6 +23,7 @@ import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTable;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTableColumn;
 import net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem;
+import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.WatchlistItemSelection;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
@@ -70,6 +71,7 @@ public class TableLayout extends AbstractLayout
     private Color oddBackground;
     private Color negativeForeground = new Color(null, 240, 0, 0);
     private Color positiveForeground = new Color(null, 0, 192, 0);
+    private boolean showTotals = false;
     private ITheme theme;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
@@ -108,13 +110,13 @@ public class TableLayout extends AbstractLayout
 
         table = new EditableTable(content, SWT.MULTI|SWT.FULL_SELECTION);
         table.setHeaderVisible(true);
-        table.setLinesVisible(true);
+        table.setLinesVisible(false);
         table.setBackground(parent.getBackground());
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         table.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                if (table.getSelectionCount() != 0)
+                if (table.getSelectionCount() != 0 && table.getSelection()[0] instanceof WatchlistTableItem)
                 {
                     WatchlistTableItem tableItem = (WatchlistTableItem)table.getSelection()[0];
                     getView().getSite().getSelectionProvider().setSelection(new WatchlistItemSelection(tableItem.getWatchlistItem()));
@@ -155,6 +157,8 @@ public class TableLayout extends AbstractLayout
         });
         table.setMenu(menuMgr.createContextMenu(table));
         getView().getSite().registerContextMenu(menuMgr, getView().getSite().getSelectionProvider());
+        
+        showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getView().getViewSite().getSecondaryId());
 
         return content;
     }
@@ -221,6 +225,7 @@ public class TableLayout extends AbstractLayout
             tableColumn.setData(column);
             index++;
         }
+        
         while(index < table.getColumnCount())
             table.getColumn(index).dispose();
 
@@ -242,6 +247,24 @@ public class TableLayout extends AbstractLayout
             if (security != null && security.getQuoteFeed() != null)
                 FeedMonitor.monitor(security);
 
+            index++;
+        }
+        
+        if (showTotals)
+        {
+            WatchlistTotalsTableItem item = null;
+            if (index < table.getItemCount())
+            {
+                if (table.getItem(index) instanceof WatchlistTotalsTableItem)
+                {
+                    item = (WatchlistTotalsTableItem) table.getItem(index);
+                    item.setWatchlistItem(getView().getWatchlist().getTotals());
+                }
+            }
+            if (item == null)
+                item = new WatchlistTotalsTableItem(table, SWT.NONE, getView().getWatchlist().getTotals());
+            item.setBackground(new Color(null, 255, 255, 0));
+            item.setForeground(new Color(null, 0, 0, 0));
             index++;
         }
 
@@ -273,6 +296,8 @@ public class TableLayout extends AbstractLayout
         {
             WatchlistItem watchlistItem = (WatchlistItem)o;
             int index = table.getItemCount();
+            if (showTotals)
+                index--;
             WatchlistTableItem tableItem = new WatchlistTableItem(table, SWT.NONE, index, watchlistItem);
             tableItem.setBackground(((index & 1) == 1) ? oddBackground : evenBackground);
         }
@@ -302,6 +327,17 @@ public class TableLayout extends AbstractLayout
             getView().getSite().getSelectionProvider().setSelection(new NullSelection());
     }
     
+    public boolean isShowTotals()
+    {
+        return showTotals;
+    }
+
+    public void setShowTotals(boolean showTotals)
+    {
+        this.showTotals = showTotals;
+        TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SHOW_TOTALS + getView().getViewSite().getSecondaryId(), showTotals);
+    }
+
     public Table getTable()
     {
         return table;
@@ -425,6 +461,112 @@ public class TableLayout extends AbstractLayout
             Column c = (Column)table.getColumn(index).getData();
             if (c != null)
                 c.setText(watchlistItem, text);
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(org.eclipse.swt.events.DisposeEvent)
+         */
+        public void widgetDisposed(DisposeEvent e)
+        {
+            if (watchlistItem != null)
+                watchlistItem.deleteObserver(this);
+            ticker.dispose();
+        }
+    }
+    
+    private class WatchlistTotalsTableItem extends TableItem implements DisposeListener, Observer, IEditableItem
+    {
+        private WatchlistItem watchlistItem;
+        private CellTicker ticker;
+
+        WatchlistTotalsTableItem(Table parent, int style, int index, WatchlistItem watchlistItem)
+        {
+            super(parent, style, index);
+            addDisposeListener(this);
+            ticker = new CellTicker(this, CellTicker.BACKGROUND|CellTicker.FOREGROUND);
+            setWatchlistItem(watchlistItem);
+        }
+
+        WatchlistTotalsTableItem(Table parent, int style, WatchlistItem watchlistItem)
+        {
+            super(parent, style);
+            addDisposeListener(this);
+            ticker = new CellTicker(this, CellTicker.BACKGROUND|CellTicker.FOREGROUND);
+            setWatchlistItem(watchlistItem);
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.swt.widgets.TableItem#checkSubclass()
+         */
+        protected void checkSubclass()
+        {
+        }
+        
+        void setWatchlistItem(WatchlistItem watchlistItem)
+        {
+            if (this.watchlistItem != null)
+                this.watchlistItem.deleteObserver(this);
+            this.watchlistItem = watchlistItem;
+            
+            int column = 1;
+            for (Iterator iter2 = watchlistItem.getValues().iterator(); iter2.hasNext(); )
+            {
+                String value = (String)iter2.next();
+                setText(column, value);
+                column++;
+            }
+            
+            this.watchlistItem.addObserver(this);
+        }
+        
+        WatchlistItem getWatchlistItem()
+        {
+            return watchlistItem;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+         */
+        public void update(Observable o, Object arg)
+        {
+            getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
+                    if (isDisposed())
+                        return;
+                    int column = 1;
+                    for (Iterator iter2 = watchlistItem.getValues().iterator(); iter2.hasNext(); )
+                    {
+                        String value = (String)iter2.next();
+                        if (!value.equals(getText(column)))
+                            setText(column, value);
+                        column++;
+                    }
+                }
+            });
+        }
+
+        /* (non-Javadoc)
+         * @see net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem#canEdit(int)
+         */
+        public boolean canEdit(int index)
+        {
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem#isEditable()
+         */
+        public boolean isEditable()
+        {
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem#itemEdited(int, java.lang.String)
+         */
+        public void itemEdited(int index, String text)
+        {
         }
 
         /* (non-Javadoc)
