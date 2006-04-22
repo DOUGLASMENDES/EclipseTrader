@@ -14,7 +14,8 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.feed"
-            label="Quote Feed Control">
+            label="Quote Feed Control"
+            visible="true">
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.StopFeedAction"
                disabledIcon="icons/dtool16/stop.gif"
@@ -177,7 +178,7 @@
          <view
                id="net.sourceforge.eclipsetrader.watchlist:*"
                relationship="stack"
-               relative="org.eclipse.ui.editorss"
+               relative="center"
                visible="false"/>
          <view
                id="net.sourceforge.eclipsetrader.trading.level2:*"
