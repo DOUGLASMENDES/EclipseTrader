@@ -7,7 +7,8 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.securities"
-            label="Securities">
+            label="Securities"
+            visible="true">
          <action
                class="net.sourceforge.eclipsetrader.core.ui.actions.NewSecurityAction"
                icon="icons/etool16/database_add.png"

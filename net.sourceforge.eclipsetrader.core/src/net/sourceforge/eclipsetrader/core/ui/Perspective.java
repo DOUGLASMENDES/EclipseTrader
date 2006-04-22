@@ -17,14 +17,17 @@ import org.eclipse.ui.IPerspectiveFactory;
 public class Perspective implements IPerspectiveFactory
 {
     public static final String PERSPECTIVE_ID = "net.sourceforge.eclipsetrader";
+    public static final String EDITOR_AREA = "center";
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui.IPageLayout)
      */
     public void createInitialLayout(IPageLayout layout)
     {
-        layout.createPlaceholderFolder("left", IPageLayout.LEFT, 0.20f, IPageLayout.ID_EDITOR_AREA);
-        layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.80f, IPageLayout.ID_EDITOR_AREA);
-        layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.70f, IPageLayout.ID_EDITOR_AREA);
+        layout.setEditorAreaVisible(false);
+        layout.createPlaceholderFolder(EDITOR_AREA, IPageLayout.LEFT, 1.00f, IPageLayout.ID_EDITOR_AREA);
+        layout.createPlaceholderFolder("left", IPageLayout.LEFT, 0.20f, EDITOR_AREA);
+        layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.80f, EDITOR_AREA);
+        layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.70f, EDITOR_AREA);
     }
 }
