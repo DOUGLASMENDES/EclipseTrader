@@ -23,11 +23,11 @@ import net.sourceforge.eclipsetrader.core.db.columns.Column;
  */
 public class WatchlistItem extends PersistentObject implements Observer
 {
-    private Security security;
-    private Watchlist parent;
-    private Integer position;
-    private Double paidPrice;
-    private List values;
+    Security security;
+    Watchlist parent;
+    Integer position;
+    Double paidPrice;
+    List values;
     
     public WatchlistItem()
     {
@@ -57,7 +57,6 @@ public class WatchlistItem extends PersistentObject implements Observer
         {
             this.security.addObserver(this);
             this.security.getQuoteMonitor().addObserver(this);
-            update(this, null);
         }
     }
 
@@ -80,21 +79,18 @@ public class WatchlistItem extends PersistentObject implements Observer
     {
         this.position = position;
         setChanged();
-        parent.getTotals().setChanged();
     }
 
     public void setPosition(int position)
     {
         this.position = new Integer(position);
         setChanged();
-        parent.getTotals().setChanged();
     }
 
     public void setPosition(Number position)
     {
         this.position = new Integer(position.intValue());
         setChanged();
-        parent.getTotals().setChanged();
     }
 
     public Double getPaidPrice()
@@ -106,21 +102,18 @@ public class WatchlistItem extends PersistentObject implements Observer
     {
         this.paidPrice = paidPrice;
         setChanged();
-        parent.getTotals().setChanged();
     }
 
     public void setPaidPrice(double paidPrice)
     {
         this.paidPrice = new Double(paidPrice);
         setChanged();
-        parent.getTotals().setChanged();
     }
 
     public void setPaidPrice(Number paidPrice)
     {
         this.paidPrice = new Double(paidPrice.doubleValue());
         setChanged();
-        parent.getTotals().setChanged();
     }
 
     public List getValues()
@@ -137,13 +130,6 @@ public class WatchlistItem extends PersistentObject implements Observer
     {
         setChanged();
         notifyObservers();
-        
-        if (getParent() != null)
-        {
-            WatchlistItem totals = getParent().getTotals();
-            if (totals != this)
-                totals.update(o, arg);
-        }
     }
     
     public void update()
@@ -157,6 +143,16 @@ public class WatchlistItem extends PersistentObject implements Observer
     }
 
     /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.PersistentObject#setChanged()
+     */
+    public synchronized void setChanged()
+    {
+        super.setChanged();
+        if (getParent() != null && getParent().getTotals() != this)
+            getParent().getTotals().setChanged();
+    }
+
+    /* (non-Javadoc)
      * @see java.util.Observable#notifyObservers()
      */
     public void notifyObservers()
@@ -164,5 +160,7 @@ public class WatchlistItem extends PersistentObject implements Observer
         if (values != null && hasChanged())
             update();
         super.notifyObservers();
+        if (getParent() != null && getParent().getTotals() != this)
+            getParent().getTotals().notifyObservers();
     }
 }

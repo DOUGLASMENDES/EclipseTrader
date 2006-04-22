@@ -920,6 +920,7 @@ public class XMLRepository extends Repository
             }
             if (nodeName.equalsIgnoreCase("columns")) //$NON-NLS-1$
             {
+                List list = new ArrayList();
                 NodeList columnList = item.getChildNodes();
                 for (int c = 0; c < columnList.getLength(); c++)
                 {
@@ -946,15 +947,17 @@ public class XMLRepository extends Repository
                                 }
                             }
 
-                            watchlist.getColumns().add(column);
+                            list.add(column);
                         } catch(Exception e) {
                             CorePlugin.logException(e);
                         }
                     }
                 }
+                watchlist.setColumns(list);
             }
             else if (nodeName.equalsIgnoreCase("items")) //$NON-NLS-1$
             {
+                List list = new ArrayList();
                 NodeList itemList = item.getChildNodes();
                 for (int c = 0; c < itemList.getLength(); c++)
                 {
@@ -985,9 +988,10 @@ public class XMLRepository extends Repository
                             }
                         }
 
-                        watchlist.getItems().add(watchlistItem);
+                        list.add(watchlistItem);
                     }
                 }
+                watchlist.setItems(list);
             }
         }
         

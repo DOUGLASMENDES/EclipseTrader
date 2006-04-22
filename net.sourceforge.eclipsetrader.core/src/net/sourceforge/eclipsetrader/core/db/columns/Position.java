@@ -13,8 +13,10 @@ package net.sourceforge.eclipsetrader.core.db.columns;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 
 public class Position extends Column
@@ -61,5 +63,22 @@ public class Position extends Column
         catch (ParseException e) {
             CorePlugin.logException(e);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#getTotalsText(net.sourceforge.eclipsetrader.core.db.Watchlist)
+     */
+    public String getTotalsText(Watchlist watchlist)
+    {
+        int total = 0;
+        
+        for (Iterator iter = watchlist.getItems().iterator(); iter.hasNext(); )
+        {
+            WatchlistItem item = (WatchlistItem)iter.next();
+            if (item.getPosition() != null)
+                total += item.getPosition().intValue();
+        }
+        
+        return formatter.format(total);
     }
 }

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
 
 import net.sourceforge.eclipsetrader.core.ObservableList;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
@@ -32,17 +31,14 @@ public class Watchlist extends PersistentObject
     private List columns = new ArrayList();
     private ObservableList items = new ObservableList();
     private WatchlistItem totals = new WatchlistItem() {
-        public void update(Observable o, Object arg)
+        public void update()
         {
-            getValues().clear();
-            for (Iterator iter = getColumns().iterator(); iter.hasNext(); )
+            values = new ArrayList();
+            for (Iterator iter = parent.getColumns().iterator(); iter.hasNext(); )
             {
                 Column column = (Column)iter.next();
-                getValues().add(column.getTotalsText(Watchlist.this));
+                values.add(column.getTotalsText(Watchlist.this));
             }
-
-            setChanged();
-            notifyObservers();
         }
     };
     
@@ -109,8 +105,9 @@ public class Watchlist extends PersistentObject
         for (Iterator iter = items.iterator(); iter.hasNext(); )
             ((WatchlistItem)iter.next()).update();
         setChanged();
+        totals.update();
     }
-
+    
     public ObservableList getItems()
     {
         return items;
@@ -123,10 +120,38 @@ public class Watchlist extends PersistentObject
             ((WatchlistItem) iter.next()).setParent(this);
         this.items.addAll(items);
         setChanged();
+        totals.update();
     }
 
     public WatchlistItem getTotals()
     {
         return totals;
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.PersistentObject#setChanged()
+     */
+    public synchronized void setChanged()
+    {
+        super.setChanged();
+        totals.setChanged();
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.PersistentObject#clearChanged()
+     */
+    public synchronized void clearChanged()
+    {
+        super.clearChanged();
+        totals.clearChanged();
+    }
+
+    /* (non-Javadoc)
+     * @see java.util.Observable#notifyObservers()
+     */
+    public void notifyObservers()
+    {
+        super.notifyObservers();
+        totals.notifyObservers();
     }
 }
