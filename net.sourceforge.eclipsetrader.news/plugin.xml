@@ -61,7 +61,7 @@
          <view
                id="net.sourceforge.eclipsetrader.webbrowser:net.sourceforge.eclipsetrader.news"
                relationship="stack"
-               relative="org.eclipse.ui.editorss"
+               relative="center"
                />
          <viewShortcut id="net.sourceforge.eclipsetrader.securities"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.newslist"/>
@@ -80,7 +80,7 @@
          <view
                id="net.sourceforge.eclipsetrader.webbrowser:net.sourceforge.eclipsetrader.news"
                relationship="stack"
-               relative="org.eclipse.ui.editorss"
+               relative="center"
                visible="false"/>
       </perspectiveExtension>
    </extension>
