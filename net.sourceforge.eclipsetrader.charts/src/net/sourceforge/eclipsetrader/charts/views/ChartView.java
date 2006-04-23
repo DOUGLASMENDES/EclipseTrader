@@ -14,7 +14,10 @@ package net.sourceforge.eclipsetrader.charts.views;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -48,10 +51,17 @@ import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -73,7 +83,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -99,6 +111,78 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private int oldMouseX = -1, oldMouseY = -1;
     private ChartObject newChartObject;
     private SimpleDateFormat dateParse = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
+     */
+    public void init(IViewSite site) throws PartInitException
+    {
+        IMenuManager menuManager = site.getActionBars().getMenuManager();
+        menuManager.add(new Separator("top")); //$NON-NLS-1$
+        menuManager.add(new Separator("group1")); //$NON-NLS-1$
+        menuManager.add(new Separator("group2")); //$NON-NLS-1$
+        menuManager.add(new Separator("group3")); //$NON-NLS-1$
+        menuManager.add(new Separator("group4")); //$NON-NLS-1$
+        menuManager.add(new Separator("group5")); //$NON-NLS-1$
+        menuManager.add(new Separator("group6")); //$NON-NLS-1$
+        menuManager.add(new Separator("additions")); //$NON-NLS-1$
+        menuManager.add(new Separator("bottom")); //$NON-NLS-1$
+        
+        IMenuManager newObjectMenu = new MenuManager("New Object", "newObject");
+        menuManager.appendToGroup("group2", newObjectMenu);
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(ChartsPlugin.OBJECTS_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            java.util.List plugins = Arrays.asList(members);
+            Collections.sort(plugins, new Comparator() {
+                public int compare(Object arg0, Object arg1)
+                {
+                    if ((arg0 instanceof IConfigurationElement) && (arg1 instanceof IConfigurationElement))
+                    {
+                        String s0 = ((IConfigurationElement) arg0).getAttribute("name"); //$NON-NLS-1$
+                        String s1 = ((IConfigurationElement) arg1).getAttribute("name"); //$NON-NLS-1$
+                        return s0.compareTo(s1);
+                    }
+                    return 0;
+                }
+            });
+
+            for (Iterator iter = plugins.iterator(); iter.hasNext(); )
+            {
+                IConfigurationElement element = (IConfigurationElement)iter.next();
+                Action action = new Action(element.getAttribute("name")) { //$NON-NLS-1$
+                    public void run()
+                    {
+                        ChartObject object = new ChartObject();
+                        object.setPluginId(getActionDefinitionId());
+                        setNewChartObject(object);
+                    }
+                };
+                action.setActionDefinitionId(element.getAttribute("id")); //$NON-NLS-1$
+                newObjectMenu.add(action);
+            }
+        }
+        
+        IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
+        toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("group1")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("group2")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("refresh")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("group3")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("group4")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("objects")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("group5")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("group6")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("additions")); //$NON-NLS-1$
+        toolBarManager.add(new Separator("end")); //$NON-NLS-1$
+        
+        site.getActionBars().updateActionBars();
+        
+        super.init(site);
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)

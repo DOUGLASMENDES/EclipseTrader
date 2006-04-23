@@ -188,10 +188,6 @@
                menubarPath="group1"
                style="push"/>
          <menu
-               id="newObject"
-               label="New Object"
-               path="group2"/>
-         <menu
                id="interval"
                label="Set Interval"
                path="group3"/>
@@ -219,7 +215,6 @@
                icon="icons/etool16/line.gif"
                id="net.sourceforge.eclipsetrader.charts.line"
                label="Line"
-               menubarPath="newObject/additions"
                style="push"
                toolbarPath="objects"
                tooltip="New line object"/>
@@ -228,7 +223,6 @@
                icon="icons/etool16/horizontalLine.gif"
                id="net.sourceforge.eclipsetrader.charts.horizontalLine"
                label="Horizontal Line"
-               menubarPath="newObject/additions"
                style="push"
                toolbarPath="objects"/>
          <action
@@ -236,7 +230,6 @@
                icon="icons/etool16/fiboline.gif"
                id="net.sourceforge.eclipsetrader.charts.fiboline"
                label="FiboLine"
-               menubarPath="newObject/additions"
                style="push"
                toolbarPath="objects"/>
          <action
@@ -492,6 +485,16 @@
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.objects.FiboLinePreferences"
                title="FiboLine"/>
+      </object>
+      <object
+            class="net.sourceforge.eclipsetrader.charts.objects.SellArrow"
+            id="net.sourceforge.eclipsetrader.objects.sellarrow"
+            name="Sell Arrow">
+      </object>
+      <object
+            class="net.sourceforge.eclipsetrader.charts.objects.BuyArrow"
+            id="net.sourceforge.eclipsetrader.objects.buyarrow"
+            name="Buy Arrow">
       </object>
    </extension>
 
