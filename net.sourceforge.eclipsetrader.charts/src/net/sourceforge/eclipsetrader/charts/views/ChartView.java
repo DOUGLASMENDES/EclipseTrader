@@ -150,58 +150,62 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         
         getSite().setSelectionProvider(new ChartSelectionProvider());
 
-        sashForm.getDisplay().asyncExec(new Runnable() {
-            public void run()
-            {
-                security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
-                
-                int period = getPeriod();
-                int size = security.getHistory().size();
-                if (period != PERIOD_ALL && size != 0)
-                {
-                    Date end = ((Bar)security.getHistory().get(size - 1)).getDate();
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(end);
-                    switch(period)
-                    {
-                        case PERIOD_LAST6MONTHS:
-                            calendar.add(Calendar.MONTH, -6);
-                            break;
-                        case PERIOD_LASTYEAR:
-                            calendar.add(Calendar.MONTH, -12);
-                            break;
-                        case PERIOD_LAST2YEARS:
-                            calendar.add(Calendar.MONTH, -24);
-                            break;
-                        case PERIOD_CUSTOM:
-                            try
-                            {
-                                calendar.setTime(dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_BEGIN + getViewSite().getSecondaryId())));
-                                end = dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_END + getViewSite().getSecondaryId())); 
-                            }
-                            catch (ParseException e) {
-                                CorePlugin.logException(e);
-                                return;
-                            }
-                            break;
-                    }
-                    datePlot.setBarData(new BarData(security.getHistory()).getPeriod(calendar.getTime(), end));
-                }
-                else
-                    datePlot.setBarData(new BarData(security.getHistory()));
+        try {
+            security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
+            chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
+            setPartName(chart.getTitle());
 
-                try {
-                    chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
-                    setPartName(chart.getTitle());
-                    for (int r = 0; r < chart.getRows().size(); r++)
-                        itemAdded(chart.getRows().get(r));
-                    chart.getRows().addCollectionObserver(ChartView.this);
-                    chart.addObserver(ChartView.this);
-                } catch(Exception e) {
-                    e.printStackTrace();
+            sashForm.getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
+                    int period = getPeriod();
+                    int size = security.getHistory().size();
+                    if (period != PERIOD_ALL && size != 0)
+                    {
+                        Date end = ((Bar)security.getHistory().get(size - 1)).getDate();
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(end);
+                        switch(period)
+                        {
+                            case PERIOD_LAST6MONTHS:
+                                calendar.add(Calendar.MONTH, -6);
+                                break;
+                            case PERIOD_LASTYEAR:
+                                calendar.add(Calendar.MONTH, -12);
+                                break;
+                            case PERIOD_LAST2YEARS:
+                                calendar.add(Calendar.MONTH, -24);
+                                break;
+                            case PERIOD_CUSTOM:
+                                try
+                                {
+                                    calendar.setTime(dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_BEGIN + getViewSite().getSecondaryId())));
+                                    end = dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_END + getViewSite().getSecondaryId())); 
+                                }
+                                catch (ParseException e) {
+                                    CorePlugin.logException(e);
+                                    return;
+                                }
+                                break;
+                        }
+                        datePlot.setBarData(new BarData(security.getHistory()).getPeriod(calendar.getTime(), end));
+                    }
+                    else
+                        datePlot.setBarData(new BarData(security.getHistory()));
+
+                    try {
+                        for (int r = 0; r < chart.getRows().size(); r++)
+                            itemAdded(chart.getRows().get(r));
+                        chart.getRows().addCollectionObserver(ChartView.this);
+                        chart.addObserver(ChartView.this);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         
 /*
         Job job = new Job("Loading chart") {
