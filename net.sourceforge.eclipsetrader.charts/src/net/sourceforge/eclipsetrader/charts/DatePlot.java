@@ -263,10 +263,10 @@ public class DatePlot extends Composite
                 getMinuteDate();
                 break;
             case BarData.INTERVAL_WEEKLY:
-                //          getWeeklyDate();
+                getWeeklyDate();
                 break;
             case BarData.INTERVAL_MONTHLY:
-                //          getMonthlyDate();
+                getMonthlyDate();
                 break;
             default:
                 getDailyDate();
@@ -310,6 +310,96 @@ public class DatePlot extends Composite
                 if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
                     item.flag = true;
                 item.text = monthYearFormatter.format(currentDate.getTime());
+
+                oldDate.setTime(bar.getDate());
+            }
+
+            dateList.add(item);
+            map.put(item.date, new Integer(x));
+
+            x += indicatorPlot.getGridWidth();
+        }
+    }
+    
+    private void getWeeklyDate()
+    {
+        SimpleDateFormat monthYearFormatter = new SimpleDateFormat("yy"); //$NON-NLS-1$
+        SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM"); //$NON-NLS-1$
+
+        Calendar oldDate = null;
+        Calendar currentDate = Calendar.getInstance();
+
+        int x = indicatorPlot.getMarginWidth() + indicatorPlot.getGridWidth() / 2;
+        
+        for (Iterator iter = barData.iterator(); iter.hasNext(); )
+        {
+            Bar bar = (Bar)iter.next();
+            currentDate.setTime(bar.getDate());
+
+            TickItem item = new TickItem(bar.getDate());
+
+            if (oldDate == null || currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+            {
+                if (oldDate == null)
+                {
+                    oldDate = Calendar.getInstance();
+                    oldDate.setTime(bar.getDate());
+                }
+                
+                if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+                {
+                    item.tick = true;
+                    item.text = monthFormatter.format(currentDate.getTime()).substring(0, 1).toUpperCase();
+                }
+                if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
+                {
+                    item.tick = true;
+                    item.flag = true;
+                    item.text = monthYearFormatter.format(currentDate.getTime());
+                }
+
+                oldDate.setTime(bar.getDate());
+            }
+
+            dateList.add(item);
+            map.put(item.date, new Integer(x));
+
+            x += indicatorPlot.getGridWidth();
+        }
+    }
+    
+    private void getMonthlyDate()
+    {
+        SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy"); //$NON-NLS-1$
+
+        Calendar oldDate = null;
+        Calendar currentDate = Calendar.getInstance();
+
+        int x = indicatorPlot.getMarginWidth() + indicatorPlot.getGridWidth() / 2;
+        
+        for (Iterator iter = barData.iterator(); iter.hasNext(); )
+        {
+            Bar bar = (Bar)iter.next();
+            currentDate.setTime(bar.getDate());
+
+            TickItem item = new TickItem(bar.getDate());
+
+            if (oldDate == null || currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+            {
+                if (oldDate == null)
+                {
+                    oldDate = Calendar.getInstance();
+                    oldDate.setTime(bar.getDate());
+                }
+                
+                if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+                    item.tick = true;
+                if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
+                {
+                    item.tick = true;
+                    item.flag = true;
+                    item.text = yearFormatter.format(currentDate.getTime());
+                }
 
                 oldDate.setTime(bar.getDate());
             }

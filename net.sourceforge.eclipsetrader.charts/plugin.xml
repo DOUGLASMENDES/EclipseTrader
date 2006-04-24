@@ -187,14 +187,6 @@
                label="New Indicator"
                menubarPath="group1"
                style="push"/>
-         <menu
-               id="interval"
-               label="Set Interval"
-               path="group3"/>
-         <menu
-               id="period"
-               label="Period"
-               path="group3"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.ChartSettingsAction"
                id="net.sourceforge.eclipsetrader.charts.preferences"
@@ -217,99 +209,23 @@
                label="Line"
                style="push"
                toolbarPath="objects"
-               tooltip="New line object"/>
+               tooltip="New line"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.objects.HorizontalLineAction"
                icon="icons/etool16/horizontalLine.gif"
                id="net.sourceforge.eclipsetrader.charts.horizontalLine"
                label="Horizontal Line"
                style="push"
-               toolbarPath="objects"/>
+               toolbarPath="objects"
+               tooltip="New horizontal line"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.objects.FiboLineAction"
                icon="icons/etool16/fiboline.gif"
                id="net.sourceforge.eclipsetrader.charts.fiboline"
                label="FiboLine"
                style="push"
-               toolbarPath="objects"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set1MinuteIntervalAction"
-               id="1minute"
-               label="1 Min."
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set2MinuteIntervalAction"
-               id="2minute"
-               label="2 Min."
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set5MinuteIntervalAction"
-               id="5minute"
-               label="5 Min."
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set10MinuteIntervalAction"
-               id="10minute"
-               label="10 Min."
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set15MinuteIntervalAction"
-               id="15minute"
-               label="15 Min."
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set30MinuteIntervalAction"
-               id="30minute"
-               label="30 Min."
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set60MinuteIntervalAction"
-               id="60minute"
-               label="60 Min."
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.Set1DayIntervalAction"
-               id="daily"
-               label="Daily"
-               menubarPath="interval/additions"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.SetCustomPeriodAction"
-               id="net.sourceforge.eclipsetrader.charts.customPeriod"
-               label="Custom..."
-               menubarPath="period/limited"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.SetLast6MonthsPeriodAction"
-               id="net.sourceforge.eclipsetrader.charts.last6months"
-               label="Last 6 Months"
-               menubarPath="period/limited"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.SetLastYearPeriodAction"
-               id="net.sourceforge.eclipsetrader.charts.lastYear"
-               label="Last Year"
-               menubarPath="period/limited"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.SetLast2YearsPeriodAction"
-               id="net.sourceforge.eclipsetrader.charts.last2years"
-               label="Last 2 Years"
-               menubarPath="period/limited"
-               style="radio"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.SetViewAllAction"
-               id="net.sourceforge.eclipsetrader.charts.viewAll"
-               label="All"
-               menubarPath="period/limited"
-               style="radio"/>
+               toolbarPath="objects"
+               tooltip="New fiboline"/>
       </viewContribution>
       <viewContribution
             id="securitiesView"

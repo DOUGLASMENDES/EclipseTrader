@@ -18,13 +18,13 @@ import org.eclipse.jface.action.Action;
 
 /**
  */
-public class Set1MinuteIntervalAction extends Action
+public class SetMonthlyIntervalAction extends Action
 {
     private ChartView view;
 
-    public Set1MinuteIntervalAction(ChartView view)
+    public SetMonthlyIntervalAction(ChartView view)
     {
-        super("1 Min.", AS_RADIO_BUTTON);
+        super("Monthly", AS_RADIO_BUTTON);
         this.view = view;
     }
 
@@ -33,7 +33,6 @@ public class Set1MinuteIntervalAction extends Action
      */
     public void run()
     {
-        if (isChecked())
-            ((ChartView)view).setInterval(BarData.INTERVAL_MINUTE1);
+        ((ChartView)view).setInterval(BarData.INTERVAL_MONTHLY);
     }
 }

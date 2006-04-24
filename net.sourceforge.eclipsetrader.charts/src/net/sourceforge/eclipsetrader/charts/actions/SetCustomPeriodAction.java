@@ -11,51 +11,47 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
-import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
+import java.util.Date;
+
 import net.sourceforge.eclipsetrader.charts.dialogs.CustomPeriodDialog;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
+import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.Chart;
 
-import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IViewPart;
 
 /**
  */
-public class SetCustomPeriodAction implements IViewActionDelegate
+public class SetCustomPeriodAction extends Action
 {
-    private IViewPart view;
+    private ChartView view;
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
-     */
-    public void init(IViewPart view)
+    public SetCustomPeriodAction(ChartView view)
     {
+        super("Custom...", AS_RADIO_BUTTON);
         this.view = view;
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+     * @see org.eclipse.jface.action.Action#run()
      */
-    public void run(IAction action)
+    public void run()
     {
-        if (view instanceof ChartView && action.isChecked())
+        if (isChecked())
         {
-            String begin = ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_BEGIN + view.getViewSite().getSecondaryId());
-            String end = ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_END + view.getViewSite().getSecondaryId());
+            Chart chart = view.getChart();
+            Date begin = chart.getBeginDate();
+            if (begin == null && chart.getSecurity().getHistory().size() != 0)
+                begin = ((Bar) chart.getSecurity().getHistory().get(0)).getDate();
+            Date end = chart.getEndDate();
+            if (end == null && chart.getSecurity().getHistory().size() != 0)
+                end = ((Bar) chart.getSecurity().getHistory().get(chart.getSecurity().getHistory().size() - 1)).getDate();
             CustomPeriodDialog dlg = new CustomPeriodDialog(begin, end);
             if (dlg.open() == Dialog.OK)
-                ((ChartView)view).setPeriod(dlg.getBeginDate(), dlg.getEndDate());
+                view.setPeriod(dlg.getBeginDate(), dlg.getEndDate());
+            else
+                view.updateActionBars();
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection)
-    {
-        if (view instanceof ChartView)
-            action.setChecked(((ChartView)view).getPeriod() == ChartView.PERIOD_CUSTOM);
     }
 }

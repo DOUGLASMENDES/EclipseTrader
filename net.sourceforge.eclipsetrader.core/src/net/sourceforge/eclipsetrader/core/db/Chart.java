@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -21,6 +22,10 @@ public class Chart extends PersistentObject implements Observer
 {
     private String title = "";
     private Security security;
+    private int compression = 8;
+    private int period = 0;
+    private Date beginDate;
+    private Date endDate;
     private ObservableList rows = new ObservableList();
 
     public Chart()
@@ -54,6 +59,46 @@ public class Chart extends PersistentObject implements Observer
         this.security = security;
         if (this.security != null)
             this.security.addObserver(this);
+    }
+
+    public int getCompression()
+    {
+        return compression;
+    }
+
+    public void setCompression(int compression)
+    {
+        this.compression = compression;
+    }
+
+    public Date getBeginDate()
+    {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate)
+    {
+        this.beginDate = beginDate;
+    }
+
+    public Date getEndDate()
+    {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate)
+    {
+        this.endDate = endDate;
+    }
+
+    public int getPeriod()
+    {
+        return period;
+    }
+
+    public void setPeriod(int period)
+    {
+        this.period = period;
     }
 
     public ObservableList getRows()

@@ -18,7 +18,6 @@ import java.util.Date;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -35,11 +34,11 @@ public class CustomPeriodDialog extends Dialog
 {
     private Text begin;
     private Text end;
-    private String beginDate, endDate;
+    private Date beginDate, endDate;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
     private SimpleDateFormat dateParse = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
 
-    public CustomPeriodDialog(String beginDate, String endDate)
+    public CustomPeriodDialog(Date beginDate, Date endDate)
     {
         super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 
@@ -70,7 +69,8 @@ public class CustomPeriodDialog extends Dialog
         label.setText("Begin Date");
         label.setLayoutData(new GridData(80, SWT.DEFAULT));
         begin = new Text(content, SWT.BORDER);
-        begin.setText(beginDate);
+        if (beginDate != null)
+            begin.setText(dateFormat.format(beginDate));
         begin.setLayoutData(new GridData(80, SWT.DEFAULT));
         begin.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -83,7 +83,8 @@ public class CustomPeriodDialog extends Dialog
         label.setText("End Date");
         label.setLayoutData(new GridData(80, SWT.DEFAULT));
         end = new Text(content, SWT.BORDER);
-        end.setText(endDate);
+        if (endDate != null)
+            end.setText(dateFormat.format(endDate));
         end.setLayoutData(new GridData(80, SWT.DEFAULT));
         end.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -93,38 +94,6 @@ public class CustomPeriodDialog extends Dialog
         });
 
         return super.createDialogArea(parent);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.Dialog#createButtonBar(org.eclipse.swt.widgets.Composite)
-     */
-    protected Control createButtonBar(Composite parent)
-    {
-        Composite composite = new Composite(parent, SWT.NONE);
-        // create a layout with spacing and margins appropriate for the font
-        // size.
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 0; // this is incremented by createButton
-        layout.makeColumnsEqualWidth = true;
-        layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-        layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
-        layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-        layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
-        composite.setLayout(layout);
-        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_CENTER|GridData.VERTICAL_ALIGN_CENTER);
-        composite.setLayoutData(data);
-        composite.setFont(parent.getFont());
-        // Add the buttons to the button bar.
-        createButtonsForButtonBar(composite);
-        return composite;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
-     */
-    protected void createButtonsForButtonBar(Composite parent)
-    {
-        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
     }
 
     private void reformatDate(Text text)
@@ -145,17 +114,23 @@ public class CustomPeriodDialog extends Dialog
      */
     protected void okPressed()
     {
-        beginDate = begin.getText();
-        endDate = end.getText();
+        try
+        {
+            beginDate = dateParse.parse(begin.getText());
+            endDate = dateParse.parse(end.getText());
+        }
+        catch (ParseException e) {
+            CorePlugin.logException(e);
+        }
         super.okPressed();
     }
 
-    public String getBeginDate()
+    public Date getBeginDate()
     {
         return beginDate;
     }
 
-    public String getEndDate()
+    public Date getEndDate()
     {
         return endDate;
     }

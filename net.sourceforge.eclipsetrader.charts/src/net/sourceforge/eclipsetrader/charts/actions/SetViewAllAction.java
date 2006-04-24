@@ -13,40 +13,26 @@ package net.sourceforge.eclipsetrader.charts.actions;
 
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IViewPart;
+import org.eclipse.jface.action.Action;
 
 /**
  */
-public class SetViewAllAction implements IViewActionDelegate
+public class SetViewAllAction extends Action
 {
-    private IViewPart view;
+    private ChartView view;
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
-     */
-    public void init(IViewPart view)
+    public SetViewAllAction(ChartView view)
     {
+        super("All", AS_RADIO_BUTTON);
         this.view = view;
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+     * @see org.eclipse.jface.action.Action#run()
      */
-    public void run(IAction action)
+    public void run()
     {
-        if (view instanceof ChartView && action.isChecked())
+        if (isChecked())
             ((ChartView)view).setPeriod(ChartView.PERIOD_ALL);
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection)
-    {
-        if (view instanceof ChartView)
-            action.setChecked(((ChartView)view).getPeriod() == ChartView.PERIOD_ALL);
     }
 }

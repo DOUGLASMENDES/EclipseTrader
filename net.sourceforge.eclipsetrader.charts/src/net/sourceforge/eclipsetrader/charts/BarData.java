@@ -235,73 +235,160 @@ public class BarData
     
     public BarData getCompressed(int interval)
     {
-        int minutes = 1;
-        Bar currentBar = null;
-        Calendar nextBarTime = Calendar.getInstance();
-        Calendar barTime = Calendar.getInstance();
-        
-        switch (interval)
-        {
-            case BarData.INTERVAL_MINUTE1:
-                minutes = 1;
-                break;
-            case BarData.INTERVAL_MINUTE2:
-                minutes = 2;
-                break;
-            case BarData.INTERVAL_MINUTE5:
-                minutes = 5;
-                break;
-            case BarData.INTERVAL_MINUTE10:
-                minutes = 10;
-                break;
-            case BarData.INTERVAL_MINUTE15:
-                minutes = 15;
-                break;
-            case BarData.INTERVAL_MINUTE30:
-                minutes = 30;
-                break;
-            case BarData.INTERVAL_MINUTE60:
-                minutes = 60;
-                break;
-            default:
-                minutes = 1;
-                break;
-        }
-
         BarData barData = new BarData();
         barData.compression = interval;
 
-        for (Iterator iter = barList.iterator(); iter.hasNext(); )
+        if (interval < INTERVAL_DAILY)
         {
-            Bar bar = (Bar)iter.next();
+            int minutes = 1;
+            Bar currentBar = null;
+            Calendar nextBarTime = Calendar.getInstance();
+            Calendar barTime = Calendar.getInstance();
             
-            if (currentBar != null && currentBar.getDate() != null)
+            switch (interval)
             {
-                barTime.setTime(bar.getDate());
-                if (barTime.after(nextBarTime) || barTime.equals(nextBarTime))
-                {
-                    barData.append(currentBar);
-                    currentBar = null;
-                }
-            }
-            
-            if (currentBar == null)
-            {
-                currentBar = new Bar();
-                currentBar.setOpen(bar.getOpen());
-                barTime.setTime(bar.getDate());
-                barTime.set(Calendar.MILLISECOND, 0);
-                barTime.add(Calendar.MINUTE, - (barTime.get(Calendar.MINUTE) % minutes));
-                currentBar.setDate(barTime.getTime());
-                nextBarTime.setTime(currentBar.getDate());
-                nextBarTime.add(Calendar.MINUTE, minutes);
+                case BarData.INTERVAL_MINUTE1:
+                    minutes = 1;
+                    break;
+                case BarData.INTERVAL_MINUTE2:
+                    minutes = 2;
+                    break;
+                case BarData.INTERVAL_MINUTE5:
+                    minutes = 5;
+                    break;
+                case BarData.INTERVAL_MINUTE10:
+                    minutes = 10;
+                    break;
+                case BarData.INTERVAL_MINUTE15:
+                    minutes = 15;
+                    break;
+                case BarData.INTERVAL_MINUTE30:
+                    minutes = 30;
+                    break;
+                case BarData.INTERVAL_MINUTE60:
+                    minutes = 60;
+                    break;
+                default:
+                    minutes = 1;
+                    break;
             }
 
-            currentBar.update(bar);
+            for (Iterator iter = barList.iterator(); iter.hasNext(); )
+            {
+                Bar bar = (Bar)iter.next();
+                
+                if (currentBar != null && currentBar.getDate() != null)
+                {
+                    barTime.setTime(bar.getDate());
+                    if (barTime.after(nextBarTime) || barTime.equals(nextBarTime))
+                    {
+                        barData.append(currentBar);
+                        currentBar = null;
+                    }
+                }
+                
+                if (currentBar == null)
+                {
+                    currentBar = new Bar();
+                    currentBar.setOpen(bar.getOpen());
+                    barTime.setTime(bar.getDate());
+                    barTime.set(Calendar.MILLISECOND, 0);
+                    barTime.add(Calendar.MINUTE, - (barTime.get(Calendar.MINUTE) % minutes));
+                    currentBar.setDate(barTime.getTime());
+                    nextBarTime.setTime(currentBar.getDate());
+                    nextBarTime.add(Calendar.MINUTE, minutes);
+                }
+
+                currentBar.update(bar);
+            }
+            
+            if (currentBar != null)
+                barData.append(currentBar);
         }
-        
-        if (currentBar != null)
-            barData.append(currentBar);
+        else if (interval == INTERVAL_WEEKLY)
+        {
+            Bar currentBar = null;
+            Calendar nextBarTime = Calendar.getInstance();
+            Calendar barTime = Calendar.getInstance();
+            
+            for (Iterator iter = barList.iterator(); iter.hasNext(); )
+            {
+                Bar bar = (Bar)iter.next();
+                
+                if (currentBar != null && currentBar.getDate() != null)
+                {
+                    barTime.setTime(bar.getDate());
+                    if (barTime.after(nextBarTime) || barTime.equals(nextBarTime))
+                    {
+                        barData.append(currentBar);
+                        currentBar = null;
+                    }
+                }
+                
+                if (currentBar == null)
+                {
+                    currentBar = new Bar();
+                    currentBar.setOpen(bar.getOpen());
+                    barTime.setTime(bar.getDate());
+                    barTime.set(Calendar.MILLISECOND, 0);
+                    barTime.set(Calendar.SECOND, 0);
+                    barTime.set(Calendar.MINUTE, 0);
+                    barTime.set(Calendar.HOUR, 0);
+                    barTime.add(Calendar.DATE, - (barTime.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY));
+                    currentBar.setDate(barTime.getTime());
+                    nextBarTime.setTime(currentBar.getDate());
+                    nextBarTime.add(Calendar.DATE, 7);
+                }
+
+                currentBar.update(bar);
+            }
+            
+            if (currentBar != null)
+                barData.append(currentBar);
+        }
+        else if (interval == INTERVAL_MONTHLY)
+        {
+            Bar currentBar = null;
+            Calendar nextBarTime = Calendar.getInstance();
+            Calendar barTime = Calendar.getInstance();
+            
+            for (Iterator iter = barList.iterator(); iter.hasNext(); )
+            {
+                Bar bar = (Bar)iter.next();
+                
+                if (currentBar != null && currentBar.getDate() != null)
+                {
+                    barTime.setTime(bar.getDate());
+                    if (barTime.after(nextBarTime) || barTime.equals(nextBarTime))
+                    {
+                        barData.append(currentBar);
+                        currentBar = null;
+                    }
+                }
+                
+                if (currentBar == null)
+                {
+                    currentBar = new Bar();
+                    currentBar.setOpen(bar.getOpen());
+                    barTime.setTime(bar.getDate());
+                    barTime.set(Calendar.MILLISECOND, 0);
+                    barTime.set(Calendar.SECOND, 0);
+                    barTime.set(Calendar.MINUTE, 0);
+                    barTime.set(Calendar.HOUR, 0);
+                    barTime.add(Calendar.DATE, - (barTime.get(Calendar.DAY_OF_MONTH) - 1));
+                    currentBar.setDate(barTime.getTime());
+                    nextBarTime.setTime(currentBar.getDate());
+                    nextBarTime.add(Calendar.MONTH, 1);
+                }
+
+                currentBar.update(bar);
+            }
+            
+            if (currentBar != null)
+                barData.append(currentBar);
+        }
+        else
+            barData = new BarData(barList);
         
         return barData;
     }

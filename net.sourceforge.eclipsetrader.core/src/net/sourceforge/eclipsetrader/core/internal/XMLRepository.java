@@ -449,6 +449,24 @@ public class XMLRepository extends Repository
                 Element node = document.createElement("title");
                 node.appendChild(document.createTextNode(chart.getTitle()));
                 root.appendChild(node);
+                node = document.createElement("compression");
+                node.appendChild(document.createTextNode(String.valueOf(chart.getCompression())));
+                root.appendChild(node);
+                node = document.createElement("period");
+                node.appendChild(document.createTextNode(String.valueOf(chart.getPeriod())));
+                root.appendChild(node);
+                if (chart.getBeginDate() != null)
+                {
+                    node = document.createElement("begin");
+                    node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getBeginDate())));
+                    root.appendChild(node);
+                }
+                if (chart.getEndDate() != null)
+                {
+                    node = document.createElement("end");
+                    node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getEndDate())));
+                    root.appendChild(node);
+                }
             }
 
             for (int r = 0; r < chart.getRows().size(); r++)
@@ -554,6 +572,26 @@ public class XMLRepository extends Repository
                     
                     if (valueNode != null)
                     {
+                        if (nodeName.equalsIgnoreCase("compression") == true)
+                            chart.setCompression(Integer.parseInt(valueNode.getNodeValue()));
+                        else if (nodeName.equalsIgnoreCase("period") == true)
+                            chart.setPeriod(Integer.parseInt(valueNode.getNodeValue()));
+                        else if (nodeName.equalsIgnoreCase("begin") == true)
+                        {
+                            try {
+                                chart.setBeginDate(dateTimeFormat.parse(valueNode.getNodeValue()));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else if (nodeName.equalsIgnoreCase("end") == true)
+                        {
+                            try {
+                                chart.setEndDate(dateTimeFormat.parse(valueNode.getNodeValue()));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                     if (nodeName.equalsIgnoreCase("row")) //$NON-NLS-1$
                     {

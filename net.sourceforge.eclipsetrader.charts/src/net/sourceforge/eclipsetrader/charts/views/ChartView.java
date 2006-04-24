@@ -11,8 +11,6 @@
 
 package net.sourceforge.eclipsetrader.charts.views;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -31,6 +29,21 @@ import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.ObjectPlugin;
 import net.sourceforge.eclipsetrader.charts.Plot;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.charts.actions.Set10MinuteIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.Set15MinuteIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.Set1DayIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.Set1MinuteIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.Set2MinuteIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.Set30MinuteIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.Set5MinuteIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.Set60MinuteIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.SetCustomPeriodAction;
+import net.sourceforge.eclipsetrader.charts.actions.SetLast2YearsPeriodAction;
+import net.sourceforge.eclipsetrader.charts.actions.SetLast6MonthsPeriodAction;
+import net.sourceforge.eclipsetrader.charts.actions.SetLastYearPeriodAction;
+import net.sourceforge.eclipsetrader.charts.actions.SetMonthlyIntervalAction;
+import net.sourceforge.eclipsetrader.charts.actions.SetViewAllAction;
+import net.sourceforge.eclipsetrader.charts.actions.SetWeeklyIntervalAction;
 import net.sourceforge.eclipsetrader.charts.events.ChartSelectionProvider;
 import net.sourceforge.eclipsetrader.charts.events.IndicatorSelection;
 import net.sourceforge.eclipsetrader.charts.events.ObjectSelection;
@@ -94,14 +107,11 @@ import org.eclipse.ui.part.ViewPart;
 public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, Observer
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.chart";
-    public static final String PERIOD_PREFS = "PERIOD_";
     public static final int PERIOD_ALL = 0;
     public static final int PERIOD_LAST6MONTHS = 1;
     public static final int PERIOD_LASTYEAR = 2;
     public static final int PERIOD_LAST2YEARS = 3;
     public static final int PERIOD_CUSTOM = -1;
-    public static final String PERIOD_BEGIN = "BEGIN_";
-    public static final String PERIOD_END = "END_";
     private Chart chart;
     private SashForm sashForm;
     private DatePlot datePlot;
@@ -110,7 +120,21 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private Security security;
     private int oldMouseX = -1, oldMouseY = -1;
     private ChartObject newChartObject;
-    private SimpleDateFormat dateParse = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
+    private Action viewAll = new SetViewAllAction(this);
+    private Action viewLast2Years = new SetLast2YearsPeriodAction(this);
+    private Action viewLastYear = new SetLastYearPeriodAction(this);
+    private Action viewLast6Months = new SetLast6MonthsPeriodAction(this);
+    private Action viewCustom = new SetCustomPeriodAction(this);
+    private Action monthlyAction = new SetMonthlyIntervalAction(this);
+    private Action weeklyAction = new SetWeeklyIntervalAction(this);
+    private Action dailyAction = new Set1DayIntervalAction(this);
+    private Action minute1Action = new Set1MinuteIntervalAction(this);
+    private Action minute2Action = new Set2MinuteIntervalAction(this);
+    private Action minute5Action = new Set5MinuteIntervalAction(this);
+    private Action minute10Action = new Set10MinuteIntervalAction(this);
+    private Action minute15Action = new Set15MinuteIntervalAction(this);
+    private Action minute30Action = new Set30MinuteIntervalAction(this);
+    private Action minute60Action = new Set60MinuteIntervalAction(this);
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
@@ -157,14 +181,35 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     public void run()
                     {
                         ChartObject object = new ChartObject();
-                        object.setPluginId(getActionDefinitionId());
+                        object.setPluginId(getId());
                         setNewChartObject(object);
                     }
                 };
-                action.setActionDefinitionId(element.getAttribute("id")); //$NON-NLS-1$
+                action.setId(element.getAttribute("id")); //$NON-NLS-1$
                 newObjectMenu.add(action);
             }
         }
+
+        IMenuManager periodMenu = new MenuManager("Period", "period");
+        menuManager.appendToGroup("group3", periodMenu);
+        periodMenu.add(viewAll);
+        periodMenu.add(viewLast2Years);
+        periodMenu.add(viewLastYear);
+        periodMenu.add(viewLast6Months);
+        periodMenu.add(viewCustom);
+        
+        IMenuManager intervalMenu = new MenuManager("Set Interval", "interval");
+        menuManager.appendToGroup("group3", intervalMenu);
+        intervalMenu.add(monthlyAction);
+        intervalMenu.add(weeklyAction);
+        intervalMenu.add(dailyAction);
+        intervalMenu.add(minute60Action);
+        intervalMenu.add(minute30Action);
+        intervalMenu.add(minute15Action);
+        intervalMenu.add(minute10Action);
+        intervalMenu.add(minute5Action);
+        intervalMenu.add(minute2Action);
+        intervalMenu.add(minute1Action);
         
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
@@ -238,44 +283,49 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
             chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
             setPartName(chart.getTitle());
+            updateActionBars();
 
             sashForm.getDisplay().asyncExec(new Runnable() {
                 public void run()
                 {
-                    int period = getPeriod();
-                    int size = security.getHistory().size();
-                    if (period != PERIOD_ALL && size != 0)
-                    {
-                        Date end = ((Bar)security.getHistory().get(size - 1)).getDate();
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(end);
-                        switch(period)
-                        {
-                            case PERIOD_LAST6MONTHS:
-                                calendar.add(Calendar.MONTH, -6);
-                                break;
-                            case PERIOD_LASTYEAR:
-                                calendar.add(Calendar.MONTH, -12);
-                                break;
-                            case PERIOD_LAST2YEARS:
-                                calendar.add(Calendar.MONTH, -24);
-                                break;
-                            case PERIOD_CUSTOM:
-                                try
-                                {
-                                    calendar.setTime(dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_BEGIN + getViewSite().getSecondaryId())));
-                                    end = dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_END + getViewSite().getSecondaryId())); 
-                                }
-                                catch (ParseException e) {
-                                    CorePlugin.logException(e);
-                                    return;
-                                }
-                                break;
-                        }
-                        datePlot.setBarData(new BarData(security.getHistory()).getPeriod(calendar.getTime(), end));
-                    }
+                    datePlot.setInterval(chart.getCompression());
+                    if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
+                        datePlot.setBarData(new BarData(security.getIntradayHistory()).getCompressed(datePlot.getInterval()));
                     else
-                        datePlot.setBarData(new BarData(security.getHistory()));
+                    {
+                        int period = chart.getPeriod();
+                        int size = security.getHistory().size();
+                        BarData barData = new BarData(security.getHistory());
+                        
+                        if (period != PERIOD_ALL && size != 0)
+                        {
+                            Date end = ((Bar)security.getHistory().get(size - 1)).getDate();
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(end);
+                            switch(period)
+                            {
+                                case PERIOD_LAST6MONTHS:
+                                    calendar.add(Calendar.MONTH, -6);
+                                    break;
+                                case PERIOD_LASTYEAR:
+                                    calendar.add(Calendar.MONTH, -12);
+                                    break;
+                                case PERIOD_LAST2YEARS:
+                                    calendar.add(Calendar.MONTH, -24);
+                                    break;
+                                case PERIOD_CUSTOM:
+                                    calendar.setTime(chart.getBeginDate());
+                                    end = chart.getEndDate(); 
+                                    break;
+                            }
+                            barData = new BarData(security.getHistory()).getPeriod(calendar.getTime(), end);
+                        }
+
+                        if (datePlot.getInterval() != BarData.INTERVAL_DAILY)
+                            barData = barData.getCompressed(datePlot.getInterval());
+
+                        datePlot.setBarData(barData);
+                    }
 
                     try {
                         for (int r = 0; r < chart.getRows().size(); r++)
@@ -290,40 +340,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         } catch(Exception e) {
             e.printStackTrace();
         }
-        
-/*
-        Job job = new Job("Loading chart") {
-            protected IStatus run(IProgressMonitor monitor)
-            {
-                monitor.beginTask("Loading", 2);
-                
-                security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
-                monitor.worked(1);
-
-                sashForm.getDisplay().syncExec(new Runnable() {
-                    public void run()
-                    {
-                        datePlot.setBarData(new BarData(security.getHistory()));
-                        try {
-                            chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
-                            setPartName(chart.getTitle());
-                            for (int r = 0; r < chart.getRows().size(); r++)
-                                itemAdded(chart.getRows().get(r));
-                            chart.getRows().addCollectionObserver(ChartView.this);
-                            chart.addObserver(ChartView.this);
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                monitor.worked(1);
-
-                monitor.done();
-                return Status.OK_STATUS;
-            }
-        };
-        job.setUser(false);
-        job.schedule();*/
     }
 
     /* (non-Javadoc)
@@ -347,6 +363,26 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         super.dispose();
     }
     
+    public void updateActionBars()
+    {
+        viewAll.setChecked(chart.getPeriod() == PERIOD_ALL);
+        viewLast2Years.setChecked(chart.getPeriod() == PERIOD_LAST2YEARS);
+        viewLastYear.setChecked(chart.getPeriod() == PERIOD_LASTYEAR);
+        viewLast6Months.setChecked(chart.getPeriod() == PERIOD_LAST6MONTHS);
+        viewCustom.setChecked(chart.getPeriod() == PERIOD_CUSTOM);
+        
+        minute1Action.setChecked(chart.getCompression() == BarData.INTERVAL_MINUTE1);
+        minute2Action.setChecked(chart.getCompression() == BarData.INTERVAL_MINUTE2);
+        minute5Action.setChecked(chart.getCompression() == BarData.INTERVAL_MINUTE5);
+        minute10Action.setChecked(chart.getCompression() == BarData.INTERVAL_MINUTE10);
+        minute15Action.setChecked(chart.getCompression() == BarData.INTERVAL_MINUTE15);
+        minute30Action.setChecked(chart.getCompression() == BarData.INTERVAL_MINUTE30);
+        minute60Action.setChecked(chart.getCompression() == BarData.INTERVAL_MINUTE60);
+        dailyAction.setChecked(chart.getCompression() == BarData.INTERVAL_DAILY);
+        weeklyAction.setChecked(chart.getCompression() == BarData.INTERVAL_WEEKLY);
+        monthlyAction.setChecked(chart.getCompression() == BarData.INTERVAL_MONTHLY);
+    }
+    
     public Chart getChart()
     {
         return chart;
@@ -359,27 +395,37 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     
     public void setInterval(int interval)
     {
+        chart.setCompression(interval);
+        CorePlugin.getRepository().save(chart);
+        
         datePlot.setInterval(interval);
         updateView();
+        updateActionBars();
     }
 
     public int getPeriod()
     {
-        return ChartsPlugin.getDefault().getPreferenceStore().getInt(PERIOD_PREFS + getViewSite().getSecondaryId());
+        return chart.getPeriod();
     }
 
     public void setPeriod(int period)
     {
-        ChartsPlugin.getDefault().getPreferenceStore().setValue(PERIOD_PREFS + getViewSite().getSecondaryId(), period);
+        chart.setPeriod(period);
+        CorePlugin.getRepository().save(chart);
+
         updateView();
+        updateActionBars();
     }
 
-    public void setPeriod(String beginDate, String endDate)
+    public void setPeriod(Date beginDate, Date endDate)
     {
-        ChartsPlugin.getDefault().getPreferenceStore().setValue(PERIOD_PREFS + getViewSite().getSecondaryId(), PERIOD_CUSTOM);
-        ChartsPlugin.getDefault().getPreferenceStore().setValue(PERIOD_BEGIN + getViewSite().getSecondaryId(), beginDate);
-        ChartsPlugin.getDefault().getPreferenceStore().setValue(PERIOD_END + getViewSite().getSecondaryId(), endDate);
+        chart.setPeriod(PERIOD_CUSTOM);
+        chart.setBeginDate(beginDate);
+        chart.setEndDate(endDate);
+        CorePlugin.getRepository().save(chart);
+
         updateView();
+        updateActionBars();
     }
 
     public void setNewChartObject(ChartObject object)
@@ -483,8 +529,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             datePlot.setBarData(new BarData(security.getIntradayHistory()).getCompressed(datePlot.getInterval()));
         else
         {
-            int period = getPeriod();
+            int period = chart.getPeriod();
             int size = security.getHistory().size();
+            BarData barData = new BarData(security.getHistory());
+            
             if (period != PERIOD_ALL && size != 0)
             {
                 Date end = ((Bar)security.getHistory().get(size - 1)).getDate();
@@ -502,21 +550,17 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         calendar.add(Calendar.MONTH, -24);
                         break;
                     case PERIOD_CUSTOM:
-                        try
-                        {
-                            calendar.setTime(dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_BEGIN + getViewSite().getSecondaryId())));
-                            end = dateParse.parse(ChartsPlugin.getDefault().getPreferenceStore().getString(ChartView.PERIOD_END + getViewSite().getSecondaryId())); 
-                        }
-                        catch (ParseException e) {
-                            CorePlugin.logException(e);
-                            return;
-                        }
+                        calendar.setTime(chart.getBeginDate());
+                        end = chart.getEndDate(); 
                         break;
                 }
-                datePlot.setBarData(new BarData(security.getHistory()).getPeriod(calendar.getTime(), end));
+                barData = new BarData(security.getHistory()).getPeriod(calendar.getTime(), end);
             }
-            else
-                datePlot.setBarData(new BarData(security.getHistory()));
+
+            if (datePlot.getInterval() != BarData.INTERVAL_DAILY)
+                barData = barData.getCompressed(datePlot.getInterval());
+
+            datePlot.setBarData(barData);
         }
         
         for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
