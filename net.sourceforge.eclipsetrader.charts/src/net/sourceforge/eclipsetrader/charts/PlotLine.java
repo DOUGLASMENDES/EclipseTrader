@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.graphics.Color;
 
@@ -51,9 +52,62 @@ public class PlotLine
     {
     }
 
+    public PlotLine(BarData barData, int field)
+    {
+        for (Iterator iter = barData.iterator(); iter.hasNext(); )
+        {
+            Bar bar = (Bar)iter.next();
+            switch (field)
+            {
+                case BarData.OPEN:
+                    append(bar.getOpen());
+                    break;
+                case BarData.HIGH:
+                    append(bar.getHigh());
+                    break;
+                case BarData.LOW:
+                    append(bar.getLow());
+                    break;
+                case BarData.VOLUME:
+                    append(bar.getVolume());
+                    break;
+                default:
+                    append(bar.getClose());
+                    break;
+            }
+        }
+    }
+
     public PlotLine(String label)
     {
         this.label = label;
+    }
+
+    public PlotLine(String label, BarData barData, int field)
+    {
+        this.label = label;
+        for (Iterator iter = barData.iterator(); iter.hasNext(); )
+        {
+            Bar bar = (Bar)iter.next();
+            switch (field)
+            {
+                case BarData.OPEN:
+                    append(bar.getOpen());
+                    break;
+                case BarData.HIGH:
+                    append(bar.getHigh());
+                    break;
+                case BarData.LOW:
+                    append(bar.getLow());
+                    break;
+                case BarData.VOLUME:
+                    append(bar.getVolume());
+                    break;
+                default:
+                    append(bar.getClose());
+                    break;
+            }
+        }
     }
 
     /**

@@ -12,10 +12,10 @@
 
 package net.sourceforge.eclipsetrader.charts.indicators;
 
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.PlotLine;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -65,7 +65,7 @@ public class MACD extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine d = getBarData().getInput(input);
+        PlotLine d = new PlotLine(getBarData(), input);
 
         PlotLine fma = getMA(d, maType, fastPeriod);
         int fmaLoop = fma.getSize() - 1;

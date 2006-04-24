@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;

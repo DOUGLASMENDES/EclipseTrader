@@ -12,10 +12,10 @@
 
 package net.sourceforge.eclipsetrader.charts.indicators;
 
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.PlotLine;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -45,7 +45,7 @@ public class MA extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine ma = getMA(getBarData().getInput(BarData.CLOSE), type, period);
+        PlotLine ma = getMA(new PlotLine(getBarData(), BarData.CLOSE), type, period);
         if (getBarData().getMax() > ma.getHigh())
             ma.setHigh(getBarData().getMax());
         if (getBarData().getMin() < ma.getLow())

@@ -11,6 +11,8 @@
 
 package net.sourceforge.eclipsetrader.charts;
 
+import net.sourceforge.eclipsetrader.core.db.BarData;
+
 
 /**
  * Base abstract class for all indicator plugins

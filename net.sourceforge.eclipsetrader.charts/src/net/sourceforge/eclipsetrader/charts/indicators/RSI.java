@@ -12,13 +12,13 @@
 
 package net.sourceforge.eclipsetrader.charts.indicators;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
-
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.PlotLine;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.core.db.BarData;
+
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 
 /**
  */
@@ -56,7 +56,7 @@ public class RSI extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine in = getBarData().getInput(input);
+        PlotLine in = new PlotLine(getBarData(), input);
 
         PlotLine rsi = new PlotLine();
 

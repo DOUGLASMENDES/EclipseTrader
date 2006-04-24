@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.DatePlot;
 import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
@@ -56,6 +55,7 @@ import net.sourceforge.eclipsetrader.charts.events.PlotSelectionListener;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;

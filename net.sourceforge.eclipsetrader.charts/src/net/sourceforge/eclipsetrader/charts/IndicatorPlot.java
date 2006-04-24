@@ -21,6 +21,7 @@ import net.sourceforge.eclipsetrader.charts.events.PlotEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotListener;
 import net.sourceforge.eclipsetrader.charts.internal.PixelTools;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;

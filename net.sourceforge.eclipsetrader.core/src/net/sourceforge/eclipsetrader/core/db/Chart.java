@@ -22,7 +22,7 @@ public class Chart extends PersistentObject implements Observer
 {
     private String title = "";
     private Security security;
-    private int compression = 8;
+    private int compression = BarData.INTERVAL_DAILY;
     private int period = 0;
     private Date beginDate;
     private Date endDate;

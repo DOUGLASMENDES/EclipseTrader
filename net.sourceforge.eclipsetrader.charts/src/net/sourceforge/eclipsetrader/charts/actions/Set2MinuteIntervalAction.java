@@ -11,8 +11,8 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.jface.action.Action;
 

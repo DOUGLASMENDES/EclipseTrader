@@ -13,11 +13,11 @@ package net.sourceforge.eclipsetrader.charts.objects;
 
 import java.text.NumberFormat;
 
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.ObjectPlugin;
 import net.sourceforge.eclipsetrader.charts.Settings;
 import net.sourceforge.eclipsetrader.charts.events.PlotMouseEvent;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;

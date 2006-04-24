@@ -12,10 +12,10 @@
 
 package net.sourceforge.eclipsetrader.charts.indicators;
 
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.PlotLine;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -43,7 +43,7 @@ public class Lines extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine line = getBarData().getInput(input);
+        PlotLine line = new PlotLine(getBarData(), input);
         line.setLabel(label);
         line.setType(PlotLine.LINE);
         line.setColor(color);

@@ -12,10 +12,10 @@
 
 package net.sourceforge.eclipsetrader.charts.indicators;
 
-import net.sourceforge.eclipsetrader.charts.BarData;
 import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.PlotLine;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -46,7 +46,7 @@ public class MAOSC extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine in = getBarData().getInput(BarData.CLOSE);
+        PlotLine in = new PlotLine(getBarData(), BarData.CLOSE);
 
         PlotLine fma = getMA(in, fastMaType, fastPeriod);
         int fmaLoop = fma.getSize() - 1;

@@ -9,15 +9,13 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.charts;
+package net.sourceforge.eclipsetrader.core.db;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import net.sourceforge.eclipsetrader.core.db.Bar;
 
 
 /**
@@ -131,36 +129,6 @@ public class BarData
     public void setCompression(int compression)
     {
         this.compression = compression;
-    }
-
-    public PlotLine getInput(int field)
-    {
-        PlotLine plotLine = new PlotLine();
-
-        for (Iterator iter = barList.iterator(); iter.hasNext(); )
-        {
-            Bar bar = (Bar)iter.next();
-            switch (field)
-            {
-                case OPEN:
-                    plotLine.append(bar.getOpen());
-                    break;
-                case HIGH:
-                    plotLine.append(bar.getHigh());
-                    break;
-                case LOW:
-                    plotLine.append(bar.getLow());
-                    break;
-                case VOLUME:
-                    plotLine.append(bar.getVolume());
-                    break;
-                default:
-                    plotLine.append(bar.getClose());
-                    break;
-            }
-        }
-
-        return plotLine;
     }
 
     public double getClose(int index)
