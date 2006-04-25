@@ -45,6 +45,7 @@ public class Chart extends PersistentObject implements Observer
     public void setTitle(String label)
     {
         this.title = label;
+        setChanged();
     }
 
     public Security getSecurity()
@@ -69,6 +70,7 @@ public class Chart extends PersistentObject implements Observer
     public void setCompression(int compression)
     {
         this.compression = compression;
+        setChanged();
     }
 
     public Date getBeginDate()
@@ -79,6 +81,7 @@ public class Chart extends PersistentObject implements Observer
     public void setBeginDate(Date beginDate)
     {
         this.beginDate = beginDate;
+        setChanged();
     }
 
     public Date getEndDate()
@@ -89,6 +92,7 @@ public class Chart extends PersistentObject implements Observer
     public void setEndDate(Date endDate)
     {
         this.endDate = endDate;
+        setChanged();
     }
 
     public int getPeriod()
@@ -99,6 +103,7 @@ public class Chart extends PersistentObject implements Observer
     public void setPeriod(int period)
     {
         this.period = period;
+        setChanged();
     }
 
     public ObservableList getRows()
