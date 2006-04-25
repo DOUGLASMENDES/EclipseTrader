@@ -48,7 +48,7 @@ public class Bars extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine line = new PlotLine("Stock");
+        PlotLine line = new PlotLine();
 
         if (barType == PlotLine.BAR)
         {
