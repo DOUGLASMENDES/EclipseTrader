@@ -45,6 +45,11 @@
                relationship="stack"
                relative="center"
                visible="false"/>
+         <view
+               id="net.sourceforge.eclipsetrader.chartData"
+               relationship="stack"
+               relative="bottom"
+               visible="false"/>
          <perspectiveShortcut id="net.sourceforge.eclipsetrader.charts"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="net.sourceforge.eclipsetrader.charts">
@@ -57,8 +62,14 @@
                relationship="stack"
                relative="center"
                visible="false"/>
-         <viewShortcut id="net.sourceforge.eclipsetrader.securities"/>
+         <view
+               id="net.sourceforge.eclipsetrader.chartData"
+               relationship="stack"
+               relative="bottom"
+               visible="false"/>
          <actionSet id="net.sourceforge.eclipsetrader.securities"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.securities"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.chartData"/>
       </perspectiveExtension>
    </extension>
    <extension
@@ -151,6 +162,12 @@
             icon="icons/eview16/chart_curve.png"
             id="net.sourceforge.eclipsetrader.views.chart"
             name="Chart"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.charts.views.DataView"
+            icon="icons/eview16/database_table.png"
+            id="net.sourceforge.eclipsetrader.chartData"
+            name="Chart Data"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
