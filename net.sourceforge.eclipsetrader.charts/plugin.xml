@@ -284,6 +284,14 @@
                title="Accumulation / Distribution"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.AdaptiveStoch"
+            id="net.sourceforge.eclipsetrader.indicators.adaptstoch"
+            name="Adaptive Stochastic - AdaptSTOCH">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.AdaptiveStochPreferencePage"
+               title="Adaptive Stochastic"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.ATR"
             id="net.sourceforge.eclipsetrader.indicators.atr"
             name="Average True Range - ATR">
@@ -317,12 +325,28 @@
                title="Commodity Channel Index"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.DMI"
+            id="net.sourceforge.eclipsetrader.indicators.dmi"
+            name="Directional Movement Index - DMI">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.DMIPreferencePage"
+               title="Directional Movement Index"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.DPO"
             id="net.sourceforge.eclipsetrader.indicators.dpo"
             name="Detrended Price Oscillator - DPO">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.DPOPreferencePage"
                title="Detrended Price Oscillator"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.FI"
+            id="net.sourceforge.eclipsetrader.indicators.fi"
+            name="Force Index - FI">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.FIPreferencePage"
+               title="Force Index"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Lines"
@@ -376,6 +400,14 @@
                title="RSI"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.SAR"
+            id="net.sourceforge.eclipsetrader.indicators.sar"
+            name="Parabolic SAR - SAR">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.SARPreferencePage"
+               title="Parabolic SAR"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Stochastic"
             id="net.sourceforge.eclipsetrader.indicators.stoch"
             name="Stochastic - STOCH">
@@ -391,6 +423,22 @@
                class="net.sourceforge.eclipsetrader.charts.indicators.VolumePreferences"
                description="Set the volume bar colors"
                title="Volume"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.VT"
+            id="net.sourceforge.eclipsetrader.indicators.vt"
+            name="Volume Trends - VT">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.VTPreferencePage"
+               title="Volume Trends"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.SD"
+            id="net.sourceforge.eclipsetrader.indicators.sd"
+            name="Standard Deviation - SD">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.SDPreferencePage"
+               title="Standard Deviation"/>
       </indicator>
    </extension>
    <extension
