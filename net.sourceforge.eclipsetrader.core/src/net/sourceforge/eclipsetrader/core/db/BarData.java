@@ -360,4 +360,27 @@ public class BarData
         
         return barData;
     }
+    
+    public Bar[] toArray()
+    {
+        Bar[] result = new Bar[barList.size()];
+        barList.toArray(result);
+        return result;
+    }
+    
+    public Bar[] toArray(int startIndex)
+    {
+        Bar[] result = new Bar[barList.size() - startIndex];
+        for (int i = startIndex; i < barList.size(); i++)
+            result[i - startIndex] = (Bar) barList.get(i);
+        return result;
+    }
+    
+    public Bar[] toArray(int startIndex, int stopIndex)
+    {
+        Bar[] result = new Bar[stopIndex - startIndex];
+        for (int i = startIndex; i < stopIndex; i++)
+            result[i - startIndex] = (Bar) barList.get(i);
+        return result;
+    }
 }
