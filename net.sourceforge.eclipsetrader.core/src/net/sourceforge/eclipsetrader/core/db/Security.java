@@ -27,6 +27,7 @@ public class Security extends PersistentObject
     private String code = "";
     private String description = "";
     private Currency currency;
+    private SecurityGroup group;
     private Feed quoteFeed;
     private Feed level2Feed;
     private Feed historyFeed;
@@ -87,6 +88,16 @@ public class Security extends PersistentObject
         else if (currency == null && this.currency != null)
             setChanged();
         this.currency = currency;
+    }
+
+    public SecurityGroup getGroup()
+    {
+        return group;
+    }
+
+    public void setGroup(SecurityGroup group)
+    {
+        this.group = group;
     }
 
     public Feed getHistoryFeed()
