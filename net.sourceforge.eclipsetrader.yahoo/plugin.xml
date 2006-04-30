@@ -28,6 +28,13 @@
                label="French Stock Security"
                menubarPath="file/newWizard/plugins"
                style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.yahoo.actions.NewIndexAction"
+               icon="icons/world.png"
+               id="net.sourceforge.eclipsetrader.yahoo.newIndex"
+               label="Index"
+               menubarPath="file/newWizard/top"
+               style="push"/>
       </actionSet>
    </extension>
    <extension

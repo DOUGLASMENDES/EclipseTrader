@@ -62,6 +62,17 @@ public class SecurityWizard extends Wizard
         WizardDialog dlg = create();
         dlg.open();
     }
+
+    public void openIndices()
+    {
+        setWindowTitle("Indices Wizard");
+
+        securityPage = new IndicesPage();
+        addPage(securityPage);
+        
+        WizardDialog dlg = create();
+        dlg.open();
+    }
     
     public WizardDialog create()
     {
