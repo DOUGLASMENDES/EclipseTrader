@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.news.preferences;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -25,6 +26,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -35,6 +38,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 {
     private Button updateStartup;
     private Button followQuoteFeed;
+    private Spinner daysToKeep;
     private Table table;
 
     /* (non-Javadoc)
@@ -63,10 +67,16 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         followQuoteFeed.setText("Follow quote feed running status");
         followQuoteFeed.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Days to keep");
+        daysToKeep = new Spinner(content, SWT.BORDER);
+        daysToKeep.setMinimum(1);
+        daysToKeep.setMaximum(9999);
+        
         table = new Table(content, SWT.FULL_SELECTION|SWT.SINGLE|SWT.CHECK);
         table.setHeaderVisible(true);
         table.setLinesVisible(false);
-        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
         gridData.heightHint = 250;
         table.setLayoutData(gridData);
         TableColumn column = new TableColumn(table, SWT.NONE);
@@ -75,6 +85,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         IPreferenceStore store = NewsPlugin.getDefault().getPreferenceStore();
         updateStartup.setSelection(store.getBoolean(NewsPlugin.PREFS_UPDATE_ON_STARTUP));
         followQuoteFeed.setSelection(store.getBoolean(NewsPlugin.PREFS_FOLLOW_QUOTE_FEED));
+        daysToKeep.setSelection(store.getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry.getExtensionPoint(NewsPlugin.PROVIDER_EXTENSION_POINT);
@@ -105,6 +116,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 
         store.setValue(NewsPlugin.PREFS_UPDATE_ON_STARTUP, updateStartup.getSelection());
         store.setValue(NewsPlugin.PREFS_FOLLOW_QUOTE_FEED, followQuoteFeed.getSelection());
+        store.setValue(CorePlugin.PREFS_NEWS_DATE_RANGE, daysToKeep.getSelection());
         
         TableItem[] items = table.getItems();
         for (int i = 0; i < items.length; i++)

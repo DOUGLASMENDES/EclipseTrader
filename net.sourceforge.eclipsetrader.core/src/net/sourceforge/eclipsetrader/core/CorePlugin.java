@@ -35,6 +35,7 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PREFS_PROXY_USER = "PROXY_USER";
     public static final String PREFS_PROXY_PASSWORD = "PROXY_PASSWORD";
     public static final String PREFS_HISTORICAL_PRICE_RANGE = "HISTORICAL_PRICE_RANGE";
+    public static final String PREFS_NEWS_DATE_RANGE = "NEWS_DATE_RANGE";
     private static CorePlugin plugin;
     private static Repository repository;
 
@@ -54,6 +55,10 @@ public class CorePlugin extends AbstractUIPlugin
         preferenceStore.setDefault(FEED_RUNNING, false);
         if (preferenceStore.getDefaultInt(PREFS_HISTORICAL_PRICE_RANGE) == 0)
             preferenceStore.setDefault(PREFS_HISTORICAL_PRICE_RANGE, 5);
+        if (preferenceStore.getDefaultInt(PREFS_NEWS_DATE_RANGE) == 0)
+            preferenceStore.setDefault(PREFS_NEWS_DATE_RANGE, 3);
+
+        preferenceStore.setValue(FEED_RUNNING, false);
     }
 
     /* (non-Javadoc)

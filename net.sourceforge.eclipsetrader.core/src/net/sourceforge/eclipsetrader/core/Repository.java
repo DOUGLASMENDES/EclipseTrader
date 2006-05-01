@@ -12,6 +12,7 @@
 package net.sourceforge.eclipsetrader.core;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -144,6 +145,12 @@ public class Repository
         if (obj instanceof NewsItem)
         {
             NewsItem news = (NewsItem) obj;
+
+            Calendar limit = Calendar.getInstance();
+            limit.add(Calendar.DATE, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
+            if (news.getDate().before(limit.getTime()))
+                return;
+            
             if (!allNews().contains(news))
                 allNews().add(news);
             if (news.getSecurity() != null)

@@ -135,8 +135,8 @@ public class XMLRepository extends Repository
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document document = builder.parse(file);
                 
-                Calendar today = Calendar.getInstance();
-                today.add(Calendar.DATE, -2);
+                Calendar limit = Calendar.getInstance();
+                limit.add(Calendar.DATE, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
 
                 Node firstNode = document.getFirstChild();
 
@@ -148,7 +148,7 @@ public class XMLRepository extends Repository
                     if (nodeName.equalsIgnoreCase("news")) //$NON-NLS-1$
                     {
                         NewsItem obj = loadNews(item.getChildNodes());
-                        if (obj.getDate().before(today.getTime()))
+                        if (obj.getDate().before(limit.getTime()))
                             continue;
                         
                         obj.setRepository(this);
