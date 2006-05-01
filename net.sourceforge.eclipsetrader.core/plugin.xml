@@ -76,6 +76,10 @@
             class="net.sourceforge.eclipsetrader.core.ui.preferences.ProxyPreferencePage"
             id="net.sourceforge.eclipsetrader.core.proxy"
             name="Network"/>
+		<page
+            class="net.sourceforge.eclipsetrader.core.ui.preferences.DataPreferencesPage"
+            id="net.sourceforge.eclipsetrader.data"
+            name="Data"/>
    </extension>
    <extension
          point="org.eclipse.ui.themes">

@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -33,6 +34,7 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PREFS_ENABLE_PROXY_AUTHENTICATION = "ENABLE_PROXY_AUTHENTICATION";
     public static final String PREFS_PROXY_USER = "PROXY_USER";
     public static final String PREFS_PROXY_PASSWORD = "PROXY_PASSWORD";
+    public static final String PREFS_HISTORICAL_PRICE_RANGE = "HISTORICAL_PRICE_RANGE";
     private static CorePlugin plugin;
     private static Repository repository;
 
@@ -47,7 +49,11 @@ public class CorePlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
-        getPreferenceStore().setDefault(FEED_RUNNING, false);
+        
+        IPreferenceStore preferenceStore = getPreferenceStore();
+        preferenceStore.setDefault(FEED_RUNNING, false);
+        if (preferenceStore.getDefaultInt(PREFS_HISTORICAL_PRICE_RANGE) == 0)
+            preferenceStore.setDefault(PREFS_HISTORICAL_PRICE_RANGE, 5);
     }
 
     /* (non-Javadoc)

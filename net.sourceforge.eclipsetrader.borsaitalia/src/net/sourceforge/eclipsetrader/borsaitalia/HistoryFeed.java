@@ -60,7 +60,7 @@ public class HistoryFeed implements IHistoryFeed
         {
             history = security.getHistory();
             if (history.size() == 0)
-                from.add(Calendar.YEAR, -2);
+                from.add(Calendar.YEAR, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE));
             else
             {
                 Bar cd = (Bar)history.get(history.size() - 1);

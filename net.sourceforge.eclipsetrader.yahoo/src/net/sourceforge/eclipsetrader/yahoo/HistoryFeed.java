@@ -12,7 +12,6 @@
 package net.sourceforge.eclipsetrader.yahoo;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -57,7 +56,7 @@ public class HistoryFeed implements IHistoryFeed
         List history = security.getHistory();
         if (history.size() == 0)
         {
-            from.add(Calendar.YEAR, -2);
+            from.add(Calendar.YEAR, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE));
             to.setTime(from.getTime());
             to.add(Calendar.DATE, 200);
         }
@@ -82,7 +81,6 @@ public class HistoryFeed implements IHistoryFeed
             url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR));
             url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR));
             url.append("&g=d&q=q&y=0&z=&x=.csv");
-            System.out.println(url.toString());
 
             try {
                 HttpClient client = new HttpClient();
@@ -104,10 +102,14 @@ public class HistoryFeed implements IHistoryFeed
                 String inputLine = in.readLine();
                 while ((inputLine = in.readLine()) != null)
                 {
-                    if (inputLine.startsWith("<") == true)
+                    if (inputLine.startsWith("<"))
                         continue;
                     String[] item = inputLine.split(",");
+                    if (item.length < 6)
+                        continue;
                     String[] dateItem = item[0].split("-");
+                    if (dateItem.length != 3)
+                        continue;
 
                     int yr = Integer.parseInt(dateItem[2]);
                     if (yr < 30)
@@ -145,24 +147,23 @@ public class HistoryFeed implements IHistoryFeed
                         return 0;
                     }
                 });
-            } catch (FileNotFoundException e) {
-                // Still no data, maybe the symbol was not present yet
-                if (history.size() == 0)
-                {
-                    from.add(Calendar.DATE, 200);
-                    to.setTime(from.getTime());
-                    to.add(Calendar.DATE, 200);
-                    if (to.after(today) == true)
-                    {
-                        to.setTime(today.getTime());
-                        to.add(Calendar.DATE, -1);
-                    }
-                    if (from.after(to) == true)
-                        break;
-                }
             } catch (Exception e) {
                 e.printStackTrace();
                 break;
+            }
+
+            if (history.size() == 0)
+            {
+                from.add(Calendar.DATE, 200);
+                to.setTime(from.getTime());
+                to.add(Calendar.DATE, 200);
+                if (to.after(today) == true)
+                {
+                    to.setTime(today.getTime());
+                    to.add(Calendar.DATE, -1);
+                }
+                if (from.after(to) == true)
+                    break;
             }
         } while (to.before(today));
         
