@@ -11,6 +11,10 @@
 
 package net.sourceforge.eclipsetrader.charts.dialogs;
 
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 
 import org.eclipse.jface.preference.PreferencePage;
@@ -31,6 +35,7 @@ public class GeneralPage extends PreferencePage
     private Button saveAsDefaultButton;
     private boolean clearData = false;
     private boolean saveAsDefault = false;
+    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
 
     public GeneralPage(Chart chart)
     {
@@ -59,6 +64,26 @@ public class GeneralPage extends PreferencePage
         
         label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, true, 2, 1));
+        
+        List history = chart.getSecurity().getHistory();
+        
+        label = new Label(content, SWT.NONE);
+        label.setText("First Date");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        Text text = new Text(content, SWT.BORDER);
+        if (history.size() != 0)
+            text.setText(df.format(((Bar) history.get(0)).getDate()));
+        text.setLayoutData(new GridData(80, SWT.DEFAULT));
+        text.setEnabled(false);
+        
+        label = new Label(content, SWT.NONE);
+        label.setText("Last Date");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        text = new Text(content, SWT.BORDER);
+        if (history.size() != 0)
+            text.setText(df.format(((Bar) history.get(history.size() - 1)).getDate()));
+        text.setLayoutData(new GridData(80, SWT.DEFAULT));
+        text.setEnabled(false);
         
         clearDataButton = new Button(content, SWT.CHECK);
         clearDataButton.setText("Clear chart data");
