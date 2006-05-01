@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+	<category id="bourse">
+		<title>Bourse</title>
+		<url>http://fr.rd.yahoo.com/biz/bourse/rss/*http://fr.biz.yahoo.com/bourse/accueil/actu.html.xml</url>
+	</category>
+	<category id="economie">
+		<title>Economie</title>
+		<url>http://fr.rd.yahoo.com/biz/news/rss/*http://fr.biz.yahoo.com/economie/accueil/actu.html.xml</url>
+	</category>
+	<category id="patrimoine">
+		<title>Patrimoine</title>
+		<url>http://fr.rd.yahoo.com/biz/fp/rss/*http://fr.biz.yahoo.com/finance_personnelle/pfgen_event.html.xml</url>
+	</category>
+</data>

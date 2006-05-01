@@ -44,6 +44,11 @@
             class="net.sourceforge.eclipsetrader.yahoo.preferences.NewsPreferencesPage"
             id="net.sourceforge.eclipsetrader.yahoo.news"
             name="Yahoo! Finance"/>
+      <page
+            category="net.sourceforge.eclipsetrader.plugins"
+            class="net.sourceforge.eclipsetrader.yahoo.preferences.FrenchNewsPreferencesPage"
+            id="net.sourceforge.eclipsetrader.yahoo.news.france"
+            name="Yahoo! Finance France"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.core.feeds">
@@ -65,6 +70,10 @@
             class="net.sourceforge.eclipsetrader.yahoo.ItalianNewsProvider"
             id="net.sourceforge.eclipsetrader.yahoo.news.italy"
             name="Yahoo! Finance Italy"/>
+      <provider
+            class="net.sourceforge.eclipsetrader.yahoo.FrenchNewsProvider"
+            id="net.sourceforge.eclipsetrader.yahoo.news.france"
+            name="Yahoo! Finance France"/>
    </extension>
 
 </plugin>
