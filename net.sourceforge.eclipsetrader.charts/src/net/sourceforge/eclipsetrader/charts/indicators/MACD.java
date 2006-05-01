@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.RGB;
 public class MACD extends IndicatorPlugin
 {
     public static final String DEFAULT_LABEL = "MACD";
-    public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
+    public static final RGB DEFAULT_COLOR = new RGB(0, 0, 0);
     public static final int DEFAULT_FAST_PERIOD = 12;
     public static final int DEFAULT_SLOW_PERIOD = 26;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
@@ -35,9 +35,9 @@ public class MACD extends IndicatorPlugin
     public static final int DEFAULT_TRIGGER_PERIOD = 9;
     public static final String DEFAULT_TRIGGER_LABEL = DEFAULT_LABEL + " Trig.";
     public static final int DEFAULT_TRIGGER_LINETYPE = PlotLine.DOT;
-    public static final RGB DEFAULT_OSC_COLOR = new RGB(0, 0, 224);
+    public static final RGB DEFAULT_OSC_COLOR = new RGB(192, 192, 192);
     public static final String DEFAULT_OSC_LABEL = DEFAULT_LABEL + " Osc.";
-    public static final int DEFAULT_OSC_LINETYPE = PlotLine.HISTOGRAM;
+    public static final int DEFAULT_OSC_LINETYPE = PlotLine.HISTOGRAM_BAR;
     public static final int DEFAULT_INPUT = BarData.CLOSE;
     public static final boolean DEFAULT_OSC_SCALE = true;
     private String label = DEFAULT_LABEL;

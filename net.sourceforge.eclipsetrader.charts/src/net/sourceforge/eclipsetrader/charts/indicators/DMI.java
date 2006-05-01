@@ -22,7 +22,7 @@ public class DMI extends IndicatorPlugin
 {
     public static final RGB DEFAULT_MDI_COLOR = new RGB(224, 0, 0);
     public static final RGB DEFAULT_PDI_COLOR = new RGB(0, 224, 0);
-    public static final RGB DEFAULT_ADX_COLOR = new RGB(224, 224, 0);
+    public static final RGB DEFAULT_ADX_COLOR = new RGB(0, 0, 224);
     public static final int DEFAULT_PDI_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_MDI_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_ADX_LINETYPE = PlotLine.LINE;

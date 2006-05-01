@@ -21,14 +21,14 @@ import net.sourceforge.eclipsetrader.charts.Settings;
 
 public class Stochastic extends IndicatorPlugin
 {
-    public static final RGB DEFAULT_DCOLOR = new RGB(0, 0, 192);
+    public static final RGB DEFAULT_DCOLOR = new RGB(224, 0, 0);
     public static final String DEFAULT_DLABEL = "%D";
     public static final int DEFAULT_DLINETYPE = PlotLine.DOT;
     public static final int DEFAULT_DPERIOD = 3;
     public static final int DEFAULT_KLINETYPE = PlotLine.LINE;
     public static final String DEFAULT_KLABEL = "%K";
     public static final int DEFAULT_KPERIOD = 3;
-    public static final RGB DEFAULT_KCOLOR = new RGB(224, 0, 0);
+    public static final RGB DEFAULT_KCOLOR = new RGB(0, 0, 192);
     public static final RGB DEFAULT_BUYCOLOR = new RGB(192, 192, 192);
     public static final RGB DEFAULT_SELLCOLOR = new RGB(192, 192, 192);
     public static final int DEFAULT_PERIOD = 14;

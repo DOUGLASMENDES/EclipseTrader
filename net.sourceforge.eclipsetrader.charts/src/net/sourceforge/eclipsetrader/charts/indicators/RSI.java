@@ -25,16 +25,16 @@ import org.eclipse.swt.graphics.RGB;
 public class RSI extends IndicatorPlugin
 {
     public static final String DEFAULT_LABEL = "RSI";
-    public static final RGB DEFAULT_COLOR = new RGB(0, 0, 0);
+    public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_PERIOD = 14;
     public static final int DEFAULT_SMOOTHING = 10;
     public static final int DEFAULT_SMOOTHING_TYPE = EMA;
     public static final int DEFAULT_INPUT = BarData.CLOSE;
     public static final int DEFAULT_BUYLINE = 30;
-    public static final RGB DEFAULT_BUYLINE_COLOR = new RGB(128, 128, 128);
+    public static final RGB DEFAULT_BUYLINE_COLOR = new RGB(192, 192, 192);
     public static final int DEFAULT_SELLLINE = 70;
-    public static final RGB DEFAULT_SELLLINE_COLOR = new RGB(128, 128, 128);
+    public static final RGB DEFAULT_SELLLINE_COLOR = new RGB(192, 192, 192);
     private Color color = new Color(null, DEFAULT_COLOR);
     private Color buyLineColor = new Color(null, DEFAULT_BUYLINE_COLOR);
     private Color sellLineColor = new Color(null, DEFAULT_SELLLINE_COLOR);

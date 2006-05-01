@@ -24,7 +24,7 @@ public class MarketThermometer extends IndicatorPlugin
     public static final RGB DEFAULT_UP_COLOR = new RGB(0, 192, 192);
     public static final RGB DEFAULT_THRESH_COLOR = new RGB(0, 0, 192);
     public static final RGB DEFAULT_MA_COLOR = new RGB(255, 165, 0);
-    public static final int DEFAULT_LINETYPE = PlotLine.LINE;
+    public static final int DEFAULT_LINETYPE = PlotLine.HISTOGRAM_BAR;
     public static final int DEFAULT_MA_LINETYPE = PlotLine.LINE;
     public static final String DEFAULT_LABEL = "THERM";
     public static final String DEFAULT_MA_LABEL = "THERM MA";
