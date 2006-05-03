@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsetrader.plugins"
       label="Standard Plugins"
-      version="0.20.0"
+      version="0.21.0"
       provider-name="EclipseTrader">
 
    <description>
