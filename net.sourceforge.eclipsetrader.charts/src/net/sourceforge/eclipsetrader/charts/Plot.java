@@ -115,7 +115,7 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
         for (Iterator iter = indicator.getLines().iterator(); iter.hasNext(); )
         {
             PlotLine line = (PlotLine)iter.next();
-            if (line.getLabel() != null && line.getSize() != 0)
+            if ((line.getLabel() != null || line.getType() == PlotLine.BAR || line.getType() == PlotLine.CANDLE) && line.getSize() != 0)
             {
                 if (line.getType() == PlotLine.BAR || line.getType() == PlotLine.CANDLE)
                 {
