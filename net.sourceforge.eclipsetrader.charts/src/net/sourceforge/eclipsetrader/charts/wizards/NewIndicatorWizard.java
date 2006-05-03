@@ -28,6 +28,7 @@ import org.eclipse.ui.PlatformUI;
 public class NewIndicatorWizard extends Wizard
 {
     private Chart chart;
+    private int defaultRow = 1;
     private IndicatorPage indicatorPage;
     private IndicatorLocationPage indicatorLocationPage;
     private List additionalPages = new ArrayList();
@@ -116,5 +117,20 @@ public class NewIndicatorWizard extends Wizard
     List getAdditionalPages()
     {
         return additionalPages;
+    }
+
+    IndicatorPage getIndicatorPage()
+    {
+        return indicatorPage;
+    }
+
+    public int getDefaultRow()
+    {
+        return defaultRow;
+    }
+
+    public void setDefaultRow(int defaultRow)
+    {
+        this.defaultRow = defaultRow;
     }
 }

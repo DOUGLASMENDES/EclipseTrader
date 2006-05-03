@@ -73,6 +73,7 @@ public class IndicatorLocationPage extends WizardPage
                 stackedTab.setEnabled(true);
                 rowNumber.setEnabled(false);
                 tabLabel.setEnabled(false);
+                tabLabel.setText("");
                 validatePage();
             }
         });
@@ -99,12 +100,22 @@ public class IndicatorLocationPage extends WizardPage
                 stackedTab.setEnabled(false);
                 rowNumber.setEnabled(true);
                 tabLabel.setEnabled(true);
+                if (tabLabel.getText().length() == 0)
+                {
+                    String name = ((NewIndicatorWizard)getWizard()).getIndicatorPage().getIndicatorName();
+                    if (name.indexOf(" - ") != -1)
+                    {
+                        name = name.substring(name.indexOf(" - ") + 3);
+                        tabLabel.setText(name);
+                    }
+                }
                 validatePage();
             }
         });
         rowNumber = new Spinner(content, SWT.BORDER);
         rowNumber.setMinimum(1);
         rowNumber.setMaximum(chart.getRows().size());
+        rowNumber.setSelection(((NewIndicatorWizard)getWizard()).getDefaultRow());
         
         label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
@@ -117,6 +128,15 @@ public class IndicatorLocationPage extends WizardPage
                 stackedTab.setEnabled(false);
                 rowNumber.setEnabled(false);
                 tabLabel.setEnabled(true);
+                if (tabLabel.getText().length() == 0)
+                {
+                    String name = ((NewIndicatorWizard)getWizard()).getIndicatorPage().getIndicatorName();
+                    if (name.indexOf(" - ") != -1)
+                    {
+                        name = name.substring(name.indexOf(" - ") + 3);
+                        tabLabel.setText(name);
+                    }
+                }
                 validatePage();
             }
         });

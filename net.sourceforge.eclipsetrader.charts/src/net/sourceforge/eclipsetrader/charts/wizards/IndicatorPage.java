@@ -102,6 +102,11 @@ public class IndicatorPage extends WizardPage
         return (String)list.getData(String.valueOf(list.getSelectionIndex()));
     }
     
+    public String getIndicatorName()
+    {
+        return (String)list.getItem(list.getSelectionIndex());
+    }
+    
     public void setIndicator(String name)
     {
         list.select(list.indexOf(name));
