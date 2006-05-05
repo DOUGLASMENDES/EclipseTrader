@@ -11,8 +11,11 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import net.sourceforge.eclipsetrader.charts.events.TabSelection;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.charts.wizards.NewIndicatorWizard;
+import net.sourceforge.eclipsetrader.core.db.ChartRow;
+import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -26,12 +29,14 @@ import org.eclipse.ui.PlatformUI;
  */
 public class NewIndicatorAction implements IViewActionDelegate
 {
+    private ChartView view;
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
      */
     public void init(IViewPart view)
     {
+        this.view = (ChartView) view;
     }
 
     /* (non-Javadoc)
@@ -40,12 +45,26 @@ public class NewIndicatorAction implements IViewActionDelegate
     public void run(IAction action)
     {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        IWorkbenchPart part = window.getActivePage().getActivePart();
+
+        if (view == null)
+        {
+            IWorkbenchPart part = window.getActivePage().getActivePart();
+            if (part instanceof ChartView)
+                view = (ChartView) part;
+        }
         
-        if (part instanceof ChartView)
+        if (view != null)
         {
             NewIndicatorWizard dlg = new NewIndicatorWizard();
-            dlg.open(((ChartView)part).getChart());
+            ISelection selection = window.getActivePage().getSelection();
+            if (selection instanceof TabSelection)
+            {
+                ChartTab tab = ((TabSelection) selection).getChartTab();
+                ChartRow row = tab.getParent();
+                dlg.setDefaultRow(row.getParent().getRows().indexOf(row) + 1);
+                dlg.setDefaultTab(tab.getLabel());
+            }
+            dlg.open(view.getChart());
         }
     }
 

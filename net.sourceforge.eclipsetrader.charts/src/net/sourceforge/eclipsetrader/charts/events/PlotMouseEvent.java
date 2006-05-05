@@ -36,6 +36,7 @@ public class PlotMouseEvent
      */
     public Point mouse;
     public Display display;
+    public int button;
     /**
      * Widget that originated the event
      */

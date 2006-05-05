@@ -52,6 +52,7 @@ import net.sourceforge.eclipsetrader.charts.events.PlotMouseEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotMouseListener;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionListener;
+import net.sourceforge.eclipsetrader.charts.events.TabSelection;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Bar;
@@ -88,6 +89,8 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
@@ -239,6 +242,16 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         gridLayout.marginWidth = gridLayout.marginHeight = 2;
         gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
         content.setLayout(gridLayout);
+        content.addTraverseListener(new TraverseListener() {
+            public void keyTraversed(TraverseEvent e)
+            {
+                if (e.detail == SWT.TRAVERSE_ESCAPE)
+                {
+                    newChartObject = null;
+                    sashForm.setCursor(null);
+                }
+            }
+        });
         
         sashForm = new SashForm(content, SWT.VERTICAL);
         sashForm.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
@@ -278,6 +291,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         });
         
         getSite().setSelectionProvider(new ChartSelectionProvider());
+        getSite().getSelectionProvider().setSelection(new NullSelection());
 
         try {
             security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
@@ -431,47 +445,20 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     public void setNewChartObject(ChartObject object)
     {
         this.newChartObject = object;
+        for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
+        {
+            CTabFolder folder = (CTabFolder)iter.next();
+            Plot plot = (Plot)folder.getSelection().getControl();
+            if (plot.getIndicatorPlot().getSelection() != null || plot.getIndicatorPlot().getObjectSelection() != null)
+            {
+                plot.getIndicatorPlot().deselectAll();
+                plot.getIndicatorPlot().redrawAll();
+                plot.getIndicatorPlot().update();
+            }
+        }
         sashForm.setCursor(new Cursor(null, SWT.CURSOR_CROSS));
     }
     
-/*    public void addObjectPlugin(ObjectPlugin plugin, int row)
-    {
-        Plot plot = null;
-        CTabItem item = null;
-        
-        while(tabGroups.size() < row)
-            tabGroups.add(new CTabFolder(sashForm, SWT.TOP|SWT.FLAT));
-        
-        CTabFolder folder = (CTabFolder)tabGroups.get(row - 1); 
-        if (folder.getItemCount() == 0)
-        {
-            item = new CTabItem(folder, SWT.NONE);
-            item.setText(plugin.getName());
-            item.setControl(new Plot(folder, SWT.NONE));
-        }
-        else
-            item = folder.getItem(folder.getItemCount() - 1);
-        plot = (Plot)item.getControl();
-        
-        plugin.setDatePlot(datePlot);
-
-        plot.setDatePlot(datePlot);
-        plot.addObject(plugin);
-        plot.getIndicatorPlot().setPlotBounds(datePlot.getIndicatorPlot().getPlotBounds());
-        plot.addPlotMouseListener(this);
-        
-        int weights[] = new int[tabGroups.size()];
-        int w = 100 / (weights.length + 2);
-        weights[0] = 100 - w * (weights.length - 1);
-        for (int i = 1; i < weights.length; i++)
-            weights[i] = w;
-        sashForm.setWeights(weights);
-        sashForm.layout(true);
-        
-        if (folder.getItemCount() == 1)
-            folder.setSelection(0);
-    }*/
-
     private void updateScrollbar()
     {
         Rectangle plotBounds = datePlot.getIndicatorPlot().getPlotBounds();
@@ -641,6 +628,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                        row.getParent().getRows().remove(row);
                    }
                    CorePlugin.getRepository().save(chart);
+                   getSite().getSelectionProvider().setSelection(new NullSelection());
                }
             });
         }
@@ -699,6 +687,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         plot.setSelection(true);
                         plot.getScalePlot().redraw();
                         plot.getScalePlot().update();
+                        getSite().getSelectionProvider().setSelection(new TabSelection(((ChartTabItem) folder.getSelection()).getChartTab()));
                     }
                 }
                 else
@@ -708,7 +697,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         plot.getIndicatorPlot().deselectAll();
                         plot.getIndicatorPlot().redrawAll();
                         plot.getIndicatorPlot().update();
-                        getSite().getSelectionProvider().setSelection(new NullSelection());
                     }
                     if (plot.getSelection())
                     {
@@ -722,37 +710,40 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             if (newChartObject == null)
                 return;
         }
-        
-        if (newChartObject != null)
-        {
-            sashForm.setCursor(null);
 
-            Plot plot = e.plot;
-            ChartTabFolder folder = (ChartTabFolder)plot.getParent();
-            ChartTabItem item = (ChartTabItem)folder.getSelection();
-            item.createNewObject(newChartObject, e);
-            
-            newChartObject = null;
-            return;
-        }
-        
-        for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
+        if (e.button == 1)
         {
-            CTabFolder folder = (CTabFolder)iter.next();
-            Plot plot = (Plot)folder.getSelection().getControl();
-            GC gc = new GC(plot.getIndicatorPlot());
-            gc.drawLine(e.mouse.x, 0, e.mouse.x, plot.getSize().y);
-            if (plot == e.plot)
+            if (newChartObject != null)
             {
-                gc.drawLine(0, e.mouse.y, plot.getSize().x, e.mouse.y);
-                plot.getScalePlot().setLabel(e.mouse.y);
+                sashForm.setCursor(null);
+
+                Plot plot = e.plot;
+                ChartTabFolder folder = (ChartTabFolder)plot.getParent();
+                ChartTabItem item = (ChartTabItem)folder.getSelection();
+                item.createNewObject(newChartObject, e);
+                
+                newChartObject = null;
+                return;
             }
-            gc.dispose();
-            plot.updateSummary(e.mouse.x);
+            
+            for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
+            {
+                CTabFolder folder = (CTabFolder)iter.next();
+                Plot plot = (Plot)folder.getSelection().getControl();
+                GC gc = new GC(plot.getIndicatorPlot());
+                gc.drawLine(e.mouse.x, 0, e.mouse.x, plot.getSize().y);
+                if (plot == e.plot)
+                {
+                    gc.drawLine(0, e.mouse.y, plot.getSize().x, e.mouse.y);
+                    plot.getScalePlot().setLabel(e.mouse.y);
+                }
+                gc.dispose();
+                plot.updateSummary(e.mouse.x);
+            }
+            datePlot.setLabel(e.mouse.x);
+            oldMouseX = e.mouse.x;
+            oldMouseY = e.mouse.y;
         }
-        datePlot.setLabel(e.mouse.x);
-        oldMouseX = e.mouse.x;
-        oldMouseY = e.mouse.y;
     }
 
     /* (non-Javadoc)
@@ -843,6 +834,47 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             setMaximizeVisible(true);
             setMinimizeVisible(false);
             setSimple(PlatformUI.getPreferenceStore().getBoolean("SHOW_TRADITIONAL_STYLE_TABS"));
+            addSelectionListener(new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    if (e.item instanceof ChartTabItem)
+                    {
+                        for (Iterator iter = tabGroups.iterator(); iter.hasNext(); )
+                        {
+                            CTabItem[] items = ((CTabFolder) iter.next()).getItems();
+                            for(int i = 0; i < items.length; i++)
+                            {
+                                Plot plot = ((ChartTabItem) items[i]).getPlot();
+                                if (items[i] == e.item)
+                                {
+                                    if (!plot.getSelection())
+                                    {
+                                        plot.setSelection(true);
+                                        plot.getScalePlot().redraw();
+                                        plot.getScalePlot().update();
+                                    }
+                                }
+                                else
+                                {
+                                    if (plot.getSelection())
+                                    {
+                                        plot.setSelection(false);
+                                        plot.getScalePlot().redraw();
+                                        plot.getScalePlot().update();
+                                    }
+                                    if (plot.getIndicatorPlot().getSelection() != null || plot.getIndicatorPlot().getObjectSelection() != null)
+                                    {
+                                        plot.getIndicatorPlot().deselectAll();
+                                        plot.getIndicatorPlot().redrawAll();
+                                        plot.getIndicatorPlot().update();
+                                    }
+                                }
+                            }
+                        }
+                        getSite().getSelectionProvider().setSelection(new TabSelection(((ChartTabItem) e.item).getChartTab()));
+                    }
+                }
+            });
 
             for (int t = 0; t < this.chartRow.getTabs().size(); t++)
                 itemAdded(row.getTabs().get(t));
@@ -999,7 +1031,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             
             plot.setRedraw(true);
             if (plot.getIndicatorPlot().getObjectSelection() != null)
-                getSite().getSelectionProvider().setSelection(new NullSelection());
+                getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
         }
         
         /* (non-Javadoc)
@@ -1077,7 +1109,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 if (plugin != null)
                     plot.removeIndicator(plugin.getOutput());
                 indicators.remove(indicator);
-                getSite().getSelectionProvider().setSelection(new NullSelection());
+                getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
             }
             if (o instanceof ChartObject)
             {
@@ -1089,7 +1121,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     plugin.dispose();
                 }
                 objects.remove(object);
-                getSite().getSelectionProvider().setSelection(new NullSelection());
+                getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
             }
         }
 
@@ -1139,7 +1171,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         return;
                     }
                 }
-                getSite().getSelectionProvider().setSelection(new NullSelection());
+                getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
             }
             else if (e.object != null)
             {
@@ -1152,10 +1184,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         return;
                     }
                 }
-                getSite().getSelectionProvider().setSelection(new NullSelection());
+                getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
             }
             else
-                getSite().getSelectionProvider().setSelection(new NullSelection());
+                getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
         }
         
         public Plot getPlot()

@@ -11,16 +11,17 @@
 
 package net.sourceforge.eclipsetrader.charts.events;
 
-import net.sourceforge.eclipsetrader.core.db.ChartObject;
+import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
-public class ObjectSelection extends TabSelection
+import org.eclipse.jface.viewers.ISelection;
+
+public class TabSelection implements ISelection
 {
-    private ChartObject object;
+    private ChartTab chartTab;
 
-    public ObjectSelection(ChartObject object)
+    public TabSelection(ChartTab chartTab)
     {
-        super(object.getParent());
-        this.object = object;
+        this.chartTab = chartTab;
     }
 
     /* (non-Javadoc)
@@ -28,11 +29,11 @@ public class ObjectSelection extends TabSelection
      */
     public boolean isEmpty()
     {
-        return object == null;
+        return chartTab == null;
     }
 
-    public ChartObject getObject()
+    public ChartTab getChartTab()
     {
-        return object;
+        return chartTab;
     }
 }

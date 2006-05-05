@@ -88,7 +88,10 @@ public class IndicatorLocationPage extends WizardPage
                 stackedTab.setData(String.valueOf(stackedTab.getItemCount() - 1), tab);
             }
         }
-        stackedTab.select(0);
+        if (((NewIndicatorWizard)getWizard()).getDefaultTab() != null)
+            stackedTab.setText(((NewIndicatorWizard)getWizard()).getDefaultTab());
+        else
+            stackedTab.select(0);
 
         label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));

@@ -13,14 +13,13 @@ package net.sourceforge.eclipsetrader.charts.events;
 
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 
-import org.eclipse.jface.viewers.ISelection;
-
-public class IndicatorSelection implements ISelection
+public class IndicatorSelection extends TabSelection
 {
     private ChartIndicator indicator;
 
     public IndicatorSelection(ChartIndicator indicator)
     {
+        super(indicator.getParent());
         this.indicator = indicator;
     }
 

@@ -29,6 +29,7 @@ public class NewIndicatorWizard extends Wizard
 {
     private Chart chart;
     private int defaultRow = 1;
+    private String defaultTab;
     private IndicatorPage indicatorPage;
     private IndicatorLocationPage indicatorLocationPage;
     private List additionalPages = new ArrayList();
@@ -132,5 +133,15 @@ public class NewIndicatorWizard extends Wizard
     public void setDefaultRow(int defaultRow)
     {
         this.defaultRow = defaultRow;
+    }
+
+    public String getDefaultTab()
+    {
+        return defaultTab;
+    }
+
+    public void setDefaultTab(String defaultTab)
+    {
+        this.defaultTab = defaultTab;
     }
 }

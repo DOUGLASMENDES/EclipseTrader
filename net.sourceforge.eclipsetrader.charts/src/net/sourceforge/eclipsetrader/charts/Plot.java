@@ -437,6 +437,7 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
         plotMouseEvent.display = getDisplay();
         plotMouseEvent.plot = this;
         plotMouseEvent.mouse = new Point(e.x, e.y);
+        plotMouseEvent.button = e.button;
         if (scaler != null)
         {
             plotMouseEvent.value = scaler.convertToValue(e.y);
@@ -536,9 +537,10 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
             }
 
             buttonDown = true;
-            for (Iterator iter = plotMouseListeners.iterator(); iter.hasNext(); )
-                ((PlotMouseListener)iter.next()).mouseDown(plotMouseEvent);
         }
+
+        for (Iterator iter = plotMouseListeners.iterator(); iter.hasNext(); )
+            ((PlotMouseListener)iter.next()).mouseDown(plotMouseEvent);
     }
 
     /* (non-Javadoc)
