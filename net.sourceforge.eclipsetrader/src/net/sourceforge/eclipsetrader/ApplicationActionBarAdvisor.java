@@ -28,6 +28,13 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor
 {
+    private IWorkbenchAction cutAction; 
+    private IWorkbenchAction copyAction; 
+    private IWorkbenchAction pasteAction; 
+    private IWorkbenchAction pasteSpecialAction; 
+    private IWorkbenchAction deleteAction; 
+    private IWorkbenchAction settingsAction; 
+    private IWorkbenchAction propertiesAction; 
     private IWorkbenchAction quitAction; 
     private IWorkbenchAction newWindowAction; 
     private IWorkbenchAction helpContentsAction; 
@@ -49,12 +56,21 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
      */
     protected void makeActions(IWorkbenchWindow window)
     {
+        propertiesAction = ActionFactory.PROPERTIES.create(window);
         quitAction = ActionFactory.QUIT.create(window);
+
+        cutAction = ActionFactory.CUT.create(window);
+        copyAction = ActionFactory.COPY.create(window);
+        pasteAction = ActionFactory.PASTE.create(window);
+        pasteSpecialAction = new PasteSpecialAction(window);
+        deleteAction = ActionFactory.DELETE.create(window);
+        settingsAction = new SettingsAction(window);
+        preferencesAction = ActionFactory.PREFERENCES.create(window);
+
         newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
         editActionSetsAction = ActionFactory.EDIT_ACTION_SETS.create(window);
         savePerspectiveAction = ActionFactory.SAVE_PERSPECTIVE.create(window);
         resetPerspectiveAction = ActionFactory.RESET_PERSPECTIVE.create(window);
-        preferencesAction = ActionFactory.PREFERENCES.create(window);
         helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);
         aboutAction = ActionFactory.ABOUT.create(window);
         
@@ -81,7 +97,21 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menu.add(new CloseAllAction());        
         menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         menu.add(new Separator(IWorkbenchActionConstants.FILE_END));
+        menu.add(propertiesAction);
+        menu.add(new Separator());
         menu.add(quitAction);
+        menuBar.add(menu);
+
+        menu = new MenuManager("Edit", IWorkbenchActionConstants.M_EDIT);
+        menu.add(cutAction);
+        menu.add(copyAction);
+        menu.add(pasteAction);
+        menu.add(pasteSpecialAction);
+        menu.add(new Separator());
+        menu.add(deleteAction);
+        menu.add(new Separator());
+        menu.add(settingsAction);
+        menu.add(preferencesAction);
         menuBar.add(menu);
 
         menuBar.add(new GroupMarker("begin")); //$NON-NLS-1$
@@ -113,8 +143,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menu.add(editActionSetsAction);
         menu.add(savePerspectiveAction);
         menu.add(resetPerspectiveAction);
-        menu.add(new Separator());
-        menu.add(preferencesAction);
         menu.add(new Separator("bottom")); //$NON-NLS-1$
         menuBar.add(menu);
 
@@ -135,5 +163,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menu.add(aboutAction);
         menu.add(new Separator("group.about.ext")); //$NON-NLS-1$ 
         menuBar.add(menu);
+
+        getActionBarConfigurer().registerGlobalAction(cutAction);
+        getActionBarConfigurer().registerGlobalAction(copyAction);
+        getActionBarConfigurer().registerGlobalAction(pasteAction);
+        getActionBarConfigurer().registerGlobalAction(deleteAction);
     }
 }
