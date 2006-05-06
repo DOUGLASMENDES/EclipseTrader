@@ -21,6 +21,7 @@ import java.util.Observer;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
@@ -39,7 +40,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -185,11 +185,11 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             }
             public void mouseDoubleClick(MouseEvent e)
             {
-                Security security = getSelection();
-                if (security != null)
+                Security[] security = getSelection();
+                if (security.length == 1)
                 {
                     SecurityWizard wizard = new SecurityWizard();
-                    wizard.open(security);
+                    wizard.open(security[0]);
                 }
             }
         });
@@ -250,9 +250,8 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         column.setWidth(60);*/
         
         // Drag and drop support
-        DragSource dragSource = new DragSource(table, DND.DROP_COPY);
-        Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
-        dragSource.setTransfer(types);
+        DragSource dragSource = new DragSource(table, DND.DROP_COPY|DND.DROP_MOVE);
+        dragSource.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
         dragSource.addDragListener(new DragSourceListener() {
             public void dragStart(DragSourceEvent event)
             {
@@ -263,11 +262,11 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             public void dragSetData(DragSourceEvent event)
             {
                 TableItem selection[] = table.getSelection();
-                String securities = "";
+                Security[] securities = new Security[selection.length];
                 for (int i = 0; i < selection.length; i++)
                 {
                     SecurityTableItem item = (SecurityTableItem)selection[i];
-                    securities += String.valueOf(item.getSecurity().getId()) + ";";
+                    securities[i] = item.getSecurity();
                 }
                 event.data = securities;
             }
@@ -393,19 +392,23 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         updateSelection();
     }
     
-    public Security getSelection()
+    public Security[] getSelection()
     {
-        Security selection = null;
-        if (table.getSelectionCount() == 1)
-            selection = ((SecurityTableItem)table.getSelection()[0]).getSecurity();
-        return selection;
+        TableItem selection[] = table.getSelection();
+        Security[] securities = new Security[selection.length];
+        for (int i = 0; i < selection.length; i++)
+        {
+            SecurityTableItem item = (SecurityTableItem)selection[i];
+            securities[i] = item.getSecurity();
+        }
+        return securities;
     }
     
     private void updateSelection()
     {
-        Security security = getSelection();
-        if (security != null)
-            getSite().getSelectionProvider().setSelection(new SecuritySelection(security));
+        Security[] security = getSelection();
+        if (security.length == 1)
+            getSite().getSelectionProvider().setSelection(new SecuritySelection(security[0]));
         else
             getSite().getSelectionProvider().setSelection(new NullSelection());
     }
