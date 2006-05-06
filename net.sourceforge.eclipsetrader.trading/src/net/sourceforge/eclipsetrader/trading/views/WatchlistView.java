@@ -21,6 +21,7 @@ import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.actions.SetRibbonLayoutAction;
@@ -39,7 +40,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -109,14 +109,13 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         getSite().setSelectionProvider(new SelectionProvider());
 
         // Drag and drop support
-        DropTarget target = new DropTarget(parent, DND.DROP_COPY);
-        final TextTransfer textTransfer = TextTransfer.getInstance();
-        Transfer[] types = new Transfer[] { textTransfer };
-        target.setTransfer(types);
+        DropTarget target = new DropTarget(parent, DND.DROP_COPY|DND.DROP_MOVE);
+        target.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
         target.addDropListener(new DropTargetListener() {
             public void dragEnter(DropTargetEvent event)
             {
-                event.detail = DND.DROP_COPY;
+                if (event.detail == DND.DROP_DEFAULT)
+                    event.detail = DND.DROP_COPY;
             }
 
             public void dragOver(DropTargetEvent event)
@@ -138,15 +137,14 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
 
             public void drop(DropTargetEvent event)
             {
-                String[] names = ((String) event.data).split(";");
+                Security[] securities = (Security[]) event.data;
                 if (watchlist != null)
                 {
-                    for (int i = 0; i < names.length; i++)
+                    for (int i = 0; i < securities.length; i++)
                     {
-                        Security security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(names[i]));
                         WatchlistItem item = new WatchlistItem();
                         item.setParent(watchlist);
-                        item.setSecurity(security);
+                        item.setSecurity(securities[i]);
                         watchlist.getItems().add(item);
                     }
                     CorePlugin.getRepository().save(watchlist);

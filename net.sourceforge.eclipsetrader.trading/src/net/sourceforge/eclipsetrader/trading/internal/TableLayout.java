@@ -19,6 +19,7 @@ import net.sourceforge.eclipsetrader.core.FeedMonitor;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
+import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTable;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTableColumn;
@@ -34,6 +35,11 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
@@ -138,6 +144,42 @@ public class TableLayout extends AbstractLayout
         TableColumn column = new TableColumn(table, SWT.NONE);
         column.setWidth(0);
         column.setResizable(false);
+        
+        // Drag and drop support
+        DragSource dragSource = new DragSource(table, DND.DROP_COPY|DND.DROP_MOVE);
+        dragSource.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
+        dragSource.addDragListener(new DragSourceListener() {
+            public void dragStart(DragSourceEvent event)
+            {
+                if (table.getSelectionCount() == 0)
+                    event.doit = false;
+            }
+
+            public void dragSetData(DragSourceEvent event)
+            {
+                TableItem selection[] = table.getSelection();
+                Security[] securities = new Security[selection.length];
+                for (int i = 0; i < selection.length; i++)
+                {
+                    WatchlistTableItem item = (WatchlistTableItem)selection[i];
+                    securities[i] = item.getWatchlistItem().getSecurity();
+                }
+                event.data = securities;
+            }
+
+            public void dragFinished(DragSourceEvent event)
+            {
+                if (event.doit && event.detail == DND.DROP_MOVE)
+                {
+                    TableItem selection[] = table.getSelection();
+                    for (int i = 0; i < selection.length; i++)
+                    {
+                        WatchlistTableItem item = (WatchlistTableItem)selection[i];
+                        getView().getWatchlist().getItems().remove(item.getWatchlistItem());
+                    }
+                }
+            }
+        });
 
         MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
         menuMgr.setRemoveAllWhenShown(true);
