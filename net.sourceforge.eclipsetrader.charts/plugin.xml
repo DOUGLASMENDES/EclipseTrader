@@ -78,19 +78,11 @@
             id="chartsView"
             targetID="net.sourceforge.eclipsetrader.views.chart">
          <action
-               class="net.sourceforge.eclipsetrader.charts.actions.DeleteObjectAction"
-               enablesFor="1"
-               id="net.sourceforge.eclipsetrader.charts.deleteIndicator"
-               label="Delete Object"
-               menubarPath="group1"
-               style="push">
-         </action>
-         <action
                class="net.sourceforge.eclipsetrader.charts.actions.EditObjectAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.charts.editIndicator"
                label="Edit Object"
-               menubarPath="group1"
+               menubarPath="top"
                style="push">
             <enablement>
                <objectClass name="net.sourceforge.eclipsetrader.charts.events.IndicatorSelection"/>
@@ -100,13 +92,7 @@
                class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
                id="net.sourceforge.eclipsetrader.charts.newIndicator"
                label="New Indicator"
-               menubarPath="group1"
-               style="push"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.ChartSettingsAction"
-               id="net.sourceforge.eclipsetrader.charts.preferences"
-               label="Settings..."
-               menubarPath="group5"
+               menubarPath="top"
                style="push"/>
       </viewerContribution>
       <viewerContribution
@@ -203,12 +189,6 @@
                id="net.sourceforge.eclipsetrader.charts.newIndicator"
                label="New Indicator"
                menubarPath="group1"
-               style="push"/>
-         <action
-               class="net.sourceforge.eclipsetrader.charts.actions.ChartSettingsAction"
-               id="net.sourceforge.eclipsetrader.charts.preferences"
-               label="Settings..."
-               menubarPath="group5"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.UpdateChartAction"

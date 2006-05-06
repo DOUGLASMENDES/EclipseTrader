@@ -43,6 +43,7 @@ import net.sourceforge.eclipsetrader.charts.actions.SetLastYearPeriodAction;
 import net.sourceforge.eclipsetrader.charts.actions.SetMonthlyIntervalAction;
 import net.sourceforge.eclipsetrader.charts.actions.SetViewAllAction;
 import net.sourceforge.eclipsetrader.charts.actions.SetWeeklyIntervalAction;
+import net.sourceforge.eclipsetrader.charts.dialogs.ChartSettingsDialog;
 import net.sourceforge.eclipsetrader.charts.events.ChartSelectionProvider;
 import net.sourceforge.eclipsetrader.charts.events.IndicatorSelection;
 import net.sourceforge.eclipsetrader.charts.events.ObjectSelection;
@@ -53,6 +54,11 @@ import net.sourceforge.eclipsetrader.charts.events.PlotMouseListener;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionListener;
 import net.sourceforge.eclipsetrader.charts.events.TabSelection;
+import net.sourceforge.eclipsetrader.charts.internal.CopyAction;
+import net.sourceforge.eclipsetrader.charts.internal.CutAction;
+import net.sourceforge.eclipsetrader.charts.internal.DeleteAction;
+import net.sourceforge.eclipsetrader.charts.internal.PasteAction;
+import net.sourceforge.eclipsetrader.charts.internal.PasteSpecialAction;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Bar;
@@ -99,6 +105,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
@@ -138,6 +145,11 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private Action minute15Action = new Set15MinuteIntervalAction(this);
     private Action minute30Action = new Set30MinuteIntervalAction(this);
     private Action minute60Action = new Set60MinuteIntervalAction(this);
+    private Action cutAction;
+    private Action copyAction;
+    private Action pasteAction;
+    private Action pasteSpecialAction;
+    private Action deleteAction;
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
@@ -292,6 +304,19 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         
         getSite().setSelectionProvider(new ChartSelectionProvider());
         getSite().getSelectionProvider().setSelection(new NullSelection());
+        IActionBars actionBars = getViewSite().getActionBars();
+        actionBars.setGlobalActionHandler("settings", new Action() {
+            public void run()
+            {
+                ChartSettingsDialog dlg = new ChartSettingsDialog(getChart(), getViewSite().getShell());
+                dlg.open();
+            }
+        });
+        actionBars.setGlobalActionHandler("cut", cutAction = new CutAction(this));
+        actionBars.setGlobalActionHandler("copy", copyAction = new CopyAction(this));
+        actionBars.setGlobalActionHandler("paste", pasteAction = new PasteAction(this));
+        actionBars.setGlobalActionHandler("pasteSpecial", pasteSpecialAction = new PasteSpecialAction(this));
+        actionBars.setGlobalActionHandler("delete", deleteAction = new DeleteAction(this));
 
         try {
             security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
@@ -959,7 +984,16 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             menuMgr.addMenuListener(new IMenuListener() {
                 public void menuAboutToShow(IMenuManager mgr)
                 {
+                    mgr.add(new GroupMarker("top"));
+                    mgr.add(new Separator());
+                    mgr.add(cutAction);
+                    mgr.add(copyAction);
+                    mgr.add(pasteAction);
+                    mgr.add(pasteSpecialAction);
+                    mgr.add(new Separator());
+                    mgr.add(deleteAction);
                     mgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+                    mgr.add(new GroupMarker("bottom"));
                 }
             });
             Menu menu = menuMgr.createContextMenu(plot.getIndicatorPlot());
