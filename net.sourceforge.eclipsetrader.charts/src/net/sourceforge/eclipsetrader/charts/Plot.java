@@ -151,16 +151,6 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
 
     public void removeIndicator(Indicator indicator)
     {
-/*        for (Iterator iter = indicator.getLines().iterator(); iter.hasNext(); )
-        {
-            PlotLine line = (PlotLine)iter.next();
-            if (line.getData() != null)
-            {
-                ((SummaryItem)line.getData()).dispose();
-                line.setData(null);
-            }
-        }*/
-        
         Control[] childs = summary.getChildren();
         for (int i = 1; i < childs.length; i++)
             childs[i].dispose();
@@ -177,22 +167,21 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
         for (Iterator iter = list.iterator(); iter.hasNext(); )
         {
             PlotLine line = (PlotLine)iter.next();
-            if (line.getLabel() != null && line.getSize() != 0)
+            if (line.getType() == PlotLine.BAR || line.getType() == PlotLine.CANDLE)
             {
-                if (line.getType() == PlotLine.BAR || line.getType() == PlotLine.CANDLE)
-                {
-                    BarSummaryItem item = new BarSummaryItem(summary, SWT.NONE);
-                    item.setForeground(line.getColor());
-                    line.setData(item);
-                }
-                else
-                {
-                    NumberSummaryItem item = new NumberSummaryItem(summary, SWT.NONE);
-                    item.setText(line.getLabel().toUpperCase());
-                    item.setForeground(line.getColor());
-                    line.setData(item);
-                }
+                BarSummaryItem item = new BarSummaryItem(summary, SWT.NONE);
+                item.setForeground(line.getColor());
+                line.setData(item);
             }
+            else if (line.getLabel() != null && line.getSize() != 0)
+            {
+                NumberSummaryItem item = new NumberSummaryItem(summary, SWT.NONE);
+                item.setText(line.getLabel().toUpperCase());
+                item.setForeground(line.getColor());
+                line.setData(item);
+            }
+            else
+                line.setData(null);
             if (line.getHigh() > high)
                 high = line.getHigh();
             if (line.getLow() < low)
