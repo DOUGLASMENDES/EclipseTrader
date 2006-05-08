@@ -150,6 +150,14 @@ public class BoxedLayout extends AbstractLayout
             }
         }
     }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.trading.internal.AbstractLayout#getSelection()
+     */
+    public WatchlistItem[] getSelection()
+    {
+        return new WatchlistItem[0];
+    }
     
     private class BoxViewItem extends Box implements DisposeListener, Observer
     {

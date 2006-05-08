@@ -20,6 +20,7 @@ import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
+import net.sourceforge.eclipsetrader.core.transfers.WatchlistItemTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTable;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTableColumn;
@@ -39,6 +40,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -56,6 +58,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.themes.ITheme;
@@ -122,13 +125,7 @@ public class TableLayout extends AbstractLayout
         table.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                if (table.getSelectionCount() != 0 && table.getSelection()[0] instanceof WatchlistTableItem)
-                {
-                    WatchlistTableItem tableItem = (WatchlistTableItem)table.getSelection()[0];
-                    getView().getSite().getSelectionProvider().setSelection(new WatchlistItemSelection(tableItem.getWatchlistItem()));
-                }
-                else
-                    getView().getSite().getSelectionProvider().setSelection(new NullSelection());
+                updateSelection();
             }
         });
         table.addMouseListener(new MouseAdapter() {
@@ -137,7 +134,7 @@ public class TableLayout extends AbstractLayout
                 if (table.getItem(new Point(e.x, e.y)) == null)
                 {
                     table.deselectAll();
-                    getView().getSite().getSelectionProvider().setSelection(new NullSelection());
+                    updateSelection();
                 }
             }
         });
@@ -147,7 +144,7 @@ public class TableLayout extends AbstractLayout
         
         // Drag and drop support
         DragSource dragSource = new DragSource(table, DND.DROP_COPY|DND.DROP_MOVE);
-        dragSource.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
+        dragSource.setTransfer(new Transfer[] { SecurityTransfer.getInstance(), WatchlistItemTransfer.getInstance(), TextTransfer.getInstance() });
         dragSource.addDragListener(new DragSourceListener() {
             public void dragStart(DragSourceEvent event)
             {
@@ -157,14 +154,46 @@ public class TableLayout extends AbstractLayout
 
             public void dragSetData(DragSourceEvent event)
             {
-                TableItem selection[] = table.getSelection();
-                Security[] securities = new Security[selection.length];
-                for (int i = 0; i < selection.length; i++)
+                if (SecurityTransfer.getInstance().isSupportedType(event.dataType))
                 {
-                    WatchlistTableItem item = (WatchlistTableItem)selection[i];
-                    securities[i] = item.getWatchlistItem().getSecurity();
+                    TableItem selection[] = table.getSelection();
+                    Security[] securities = new Security[selection.length];
+                    for (int i = 0; i < selection.length; i++)
+                    {
+                        WatchlistTableItem item = (WatchlistTableItem)selection[i];
+                        securities[i] = item.getWatchlistItem().getSecurity();
+                    }
+                    event.data = securities;
                 }
-                event.data = securities;
+                else if (WatchlistItemTransfer.getInstance().isSupportedType(event.dataType))
+                {
+                    TableItem selection[] = table.getSelection();
+                    WatchlistItem[] items = new WatchlistItem[selection.length];
+                    for (int i = 0; i < selection.length; i++)
+                    {
+                        WatchlistTableItem item = (WatchlistTableItem)selection[i];
+                        items[i] = item.getWatchlistItem();
+                    }
+                    event.data = items;
+                }
+                else if (TextTransfer.getInstance().isSupportedType(event.dataType))
+                {
+                    TableItem selection[] = table.getSelection();
+                    
+                    StringBuffer data = new StringBuffer();
+                    for (int i = 0; i < selection.length; i++)
+                    {
+                        for (int c = 1; c < table.getColumnCount(); c++)
+                        {
+                            if (c > 1)
+                                data.append(";");
+                            data.append(selection[i].getText(c));
+                        }
+                        data.append("\r\n");
+                    }
+
+                    event.data = data.toString();
+                }
             }
 
             public void dragFinished(DragSourceEvent event)
@@ -193,6 +222,7 @@ public class TableLayout extends AbstractLayout
                 menuManager.add(new Separator("group4")); //$NON-NLS-1$
                 menuManager.add(new Separator("group5")); //$NON-NLS-1$
                 menuManager.add(new Separator("group6")); //$NON-NLS-1$
+                getView().fillMenuBars(menuManager);
                 menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
                 menuManager.add(new Separator("bottom")); //$NON-NLS-1$
             }
@@ -331,6 +361,24 @@ public class TableLayout extends AbstractLayout
             }
         });
     }
+    
+    private void updateSelection()
+    {
+        boolean enable = false;
+        if (table.getSelectionCount() != 0 && table.getSelection()[0] instanceof WatchlistTableItem)
+        {
+            WatchlistTableItem tableItem = (WatchlistTableItem)table.getSelection()[0];
+            getView().getSite().getSelectionProvider().setSelection(new WatchlistItemSelection(tableItem.getWatchlistItem()));
+            enable = true;
+        }
+        else
+            getView().getSite().getSelectionProvider().setSelection(new NullSelection());
+
+        IActionBars actionBars = getView().getViewSite().getActionBars();
+        actionBars.getGlobalActionHandler("cut").setEnabled(enable);
+        actionBars.getGlobalActionHandler("copy").setEnabled(enable);
+        actionBars.getGlobalActionHandler("delete").setEnabled(enable);
+    }
 
     public void itemAdded(Object o)
     {
@@ -378,6 +426,21 @@ public class TableLayout extends AbstractLayout
     {
         this.showTotals = showTotals;
         TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SHOW_TOTALS + getView().getViewSite().getSecondaryId(), showTotals);
+    }
+    
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.trading.internal.AbstractLayout#getSelection()
+     */
+    public WatchlistItem[] getSelection()
+    {
+        TableItem selection[] = table.getSelection();
+        WatchlistItem[] items = new WatchlistItem[selection.length];
+        for (int i = 0; i < selection.length; i++)
+        {
+            WatchlistTableItem item = (WatchlistTableItem)selection[i];
+            items[i] = item.getWatchlistItem();
+        }
+        return items;
     }
 
     public Table getTable()

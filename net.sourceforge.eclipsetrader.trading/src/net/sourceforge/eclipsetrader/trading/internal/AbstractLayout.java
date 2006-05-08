@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.trading.internal;
 
 import java.util.Observable;
 
+import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
 import org.eclipse.swt.widgets.Composite;
@@ -43,4 +44,6 @@ public abstract class AbstractLayout
     public abstract void itemAdded(Object o);
     
     public abstract void itemRemoved(Object o);
+
+    public abstract WatchlistItem[] getSelection();
 }

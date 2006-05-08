@@ -200,12 +200,6 @@
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
                label="Open Level2"
                menubarPath="top"/>
-         <action
-               class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistItemAction"
-               id="net.sourceforge.eclipsetrader.trading.deleteItem"
-               label="Delete"
-               menubarPath="bottom"
-               style="push"/>
       </viewerContribution>
       <viewerContribution
             id="securitiesView"
@@ -244,12 +238,6 @@
                class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistAction"
                id="net.sourceforge.eclipsetrader.trading.deleteWatchlist"
                label="Delete Watchlist"
-               menubarPath="bottom"
-               style="push"/>
-         <action
-               class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistItemAction"
-               id="net.sourceforge.eclipsetrader.trading.deleteItem"
-               label="Delete"
                menubarPath="bottom"
                style="push"/>
          <action
