@@ -64,6 +64,25 @@
       </actionSet>
    </extension>
    <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipse.ui.edit.pasteSpecial"
+            contextId="org.eclipse.ui.contexts.dialogAndWindow"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+V"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.edit"
+            id="org.eclipse.ui.edit.pasteSpecial"
+            name="Paste Special"/>
+      <command
+            categoryId="org.eclipse.ui.category.edit"
+            id="org.eclipse.ui.edit.settings"
+            name="Settings"/>
+   </extension>
+   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="net.sourceforge.eclipsetrader"

@@ -167,6 +167,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         getActionBarConfigurer().registerGlobalAction(cutAction);
         getActionBarConfigurer().registerGlobalAction(copyAction);
         getActionBarConfigurer().registerGlobalAction(pasteAction);
+        getActionBarConfigurer().registerGlobalAction(pasteSpecialAction);
         getActionBarConfigurer().registerGlobalAction(deleteAction);
     }
 }
