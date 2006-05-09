@@ -184,7 +184,12 @@
                id="net.sourceforge.eclipsetrader.trading.level2:*"
                relationship="stack"
                relative="right"
-               />
+               visible="false"/>
+         <view
+               id="net.sourceforge.eclipsetrader.patternSearch"
+               relationship="stack"
+               relative="bottom"
+               visible="false"/>
          <actionSet id="net.sourceforge.eclipsetrader.feed"/>
          <actionSet id="net.sourceforge.eclipsetrader.trading"/>
       </perspectiveExtension>
@@ -228,6 +233,12 @@
             icon="icons/eview16/application_view_detail.png"
             id="net.sourceforge.eclipsetrader.trading.level2"
             name="Level II"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.PatternSearchView"
+            icon="icons/eview16/searchres.gif"
+            id="net.sourceforge.eclipsetrader.patternSearch"
+            name="Pattern Search"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
@@ -235,10 +246,17 @@
             id="watchlistView"
             targetID="net.sourceforge.eclipsetrader.watchlist">
          <action
-               class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistAction"
-               id="net.sourceforge.eclipsetrader.trading.deleteWatchlist"
-               label="Delete Watchlist"
-               menubarPath="bottom"
+               class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
+               id="net.sourceforge.eclipsetrader.trading.openLevel2"
+               label="Open Level2"
+               menubarPath="top"
+               style="push"
+               tooltip="Open Level2"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.PatternSearchAction"
+               id="net.sourceforge.eclipsetrader.trading.pattern"
+               label="Search Pattern..."
+               menubarPath="group4"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.WatchlistSettingsAction"
@@ -247,12 +265,11 @@
                menubarPath="group6"
                style="push"/>
          <action
-               class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
-               id="net.sourceforge.eclipsetrader.trading.openLevel2"
-               label="Open Level2"
-               menubarPath="top"
-               style="push"
-               tooltip="Open Level2"/>
+               class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistAction"
+               id="net.sourceforge.eclipsetrader.trading.deleteWatchlist"
+               label="Delete Watchlist"
+               menubarPath="bottom"
+               style="push"/>
       </viewContribution>
       <viewContribution
             id="securitiesView"
@@ -266,6 +283,25 @@
                style="push"
                tooltip="Open Level2"/>
       </viewContribution>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.patterns">
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.ClosingPriceReversalRule"
+            id="net.sourceforge.eclipsetrader.patterns.closingpricereversal"
+            name="Closing Price Reversal Rule"/>
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.HighLowReversal"
+            id="net.sourceforge.eclipsetrader.pattern.highlowreversal"
+            name="High / Low Reversal"/>
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.KeyReversal"
+            id="net.sourceforge.eclipsetrader.pattern.keyreversal"
+            name="Key Reversal"/>
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.ThreeBarRule"
+            id="net.sourceforge.eclipsetrader.pattern.threebarsrule"
+            name="Three-Bar Closes Rule"/>
    </extension>
 
 </plugin>
