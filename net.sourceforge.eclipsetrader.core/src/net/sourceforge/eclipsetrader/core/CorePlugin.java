@@ -11,6 +11,11 @@
 
 package net.sourceforge.eclipsetrader.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import net.sourceforge.eclipsetrader.core.internal.XMLRepository;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -27,6 +32,7 @@ public class CorePlugin extends AbstractUIPlugin
 {
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.core";
     public static final String FEED_EXTENSION_POINT = PLUGIN_ID + ".feeds";
+    public static final String PATTERN_EXTENSION_POINT = PLUGIN_ID + ".patterns";
     public static final String FEED_RUNNING = "FEED_RUNNING";
     public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY";
     public static final String PREFS_PROXY_HOST_ADDRESS = "PROXY_HOST_ADDRESS";
@@ -188,6 +194,56 @@ public class CorePlugin extends AbstractUIPlugin
                             }
                     }
                     break;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    public static List getAllPatternPlugins()
+    {
+        List list = new ArrayList();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(PATTERN_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+                list.add(members[i]);
+        }
+        
+        Collections.sort(list, new Comparator() {
+            public int compare(Object arg0, Object arg1)
+            {
+                String s0 = ((IConfigurationElement) arg0).getAttribute("name");
+                String s1 = ((IConfigurationElement) arg1).getAttribute("name");
+                return s0.compareTo(s1);
+            }
+        });
+        
+        return list;
+    }
+    
+    public static IPattern createPatternPlugin(String id)
+    {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(PATTERN_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement item = members[i];
+                if (item.getAttribute("id").equals(id))
+                {
+                    try {
+                        Object obj = members[i].createExecutableExtension("class");
+                        return (IPattern)obj;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
