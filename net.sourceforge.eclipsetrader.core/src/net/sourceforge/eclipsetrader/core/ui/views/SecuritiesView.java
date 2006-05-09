@@ -25,8 +25,11 @@ import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
+import net.sourceforge.eclipsetrader.core.ui.internal.CopyAction;
+import net.sourceforge.eclipsetrader.core.ui.internal.DeleteAction;
 import net.sourceforge.eclipsetrader.core.ui.wizards.SecurityWizard;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -56,6 +59,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
@@ -78,6 +82,8 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
     private int sortColumn = 0;
     private int sortDirection = 1;
     private ITheme theme;
+    private IAction copyAction = new CopyAction(this);
+    private IAction deleteAction = new DeleteAction(this);
     private Comparator comparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
         {
@@ -143,7 +149,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             if (theme != null)
                 theme.addPropertyChangeListener(themeChangeListener);
         }
-
+        
         super.init(site);
     }
 
@@ -283,6 +289,9 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         sortDirection = prefs.getInt(PREFS_SORT_DIRECTION);
 
         getSite().setSelectionProvider(new SelectionProvider());
+        IActionBars actionBars = getViewSite().getActionBars();
+        actionBars.setGlobalActionHandler("copy", copyAction);
+        actionBars.setGlobalActionHandler("delete", deleteAction);
 
         MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
         menuMgr.setRemoveAllWhenShown(true);
@@ -292,6 +301,10 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
                 menuManager.add(new Separator("group1")); //$NON-NLS-1$
                 menuManager.add(new Separator("group2")); //$NON-NLS-1$
+                menuManager.add(new Separator());
+                menuManager.add(copyAction);
+                menuManager.add(new Separator());
+                menuManager.add(deleteAction);
                 menuManager.add(new Separator("group3")); //$NON-NLS-1$
                 menuManager.add(new Separator("group4")); //$NON-NLS-1$
                 menuManager.add(new Separator("group5")); //$NON-NLS-1$
@@ -411,6 +424,8 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             getSite().getSelectionProvider().setSelection(new SecuritySelection(security[0]));
         else
             getSite().getSelectionProvider().setSelection(new NullSelection());
+        copyAction.setEnabled(security.length != 0);
+        deleteAction.setEnabled(security.length != 0);
     }
     
     private class SecurityTableItem extends TableItem implements DisposeListener, Observer
