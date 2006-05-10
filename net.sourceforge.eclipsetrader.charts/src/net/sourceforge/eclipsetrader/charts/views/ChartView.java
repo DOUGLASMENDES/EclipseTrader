@@ -61,6 +61,7 @@ import net.sourceforge.eclipsetrader.charts.internal.PasteAction;
 import net.sourceforge.eclipsetrader.charts.internal.PasteSpecialAction;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
+import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.core.db.Chart;
@@ -74,7 +75,11 @@ import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
@@ -373,6 +378,40 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         chart.addObserver(ChartView.this);
                     } catch(Exception e) {
                         e.printStackTrace();
+                    }
+
+                    boolean askInitialUpdate = false;
+                    if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
+                        askInitialUpdate = (security.getIntradayHistory().size() == 0);
+                    else
+                        askInitialUpdate = (security.getHistory().size() == 0);
+                    if (askInitialUpdate)
+                    {
+                        if (MessageDialog.openConfirm(getViewSite().getShell(), chart.getTitle(), "No data available.\r\nWould you like to download the chart data now ?"))
+                        {
+                            String id = "";
+                            if (chart.getSecurity().getHistoryFeed() != null)
+                                id = chart.getSecurity().getHistoryFeed().getId();
+                            final IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(id);
+                            if (feed != null)
+                            {
+                                Job job = new Job("Update chart data") {
+                                    protected IStatus run(IProgressMonitor monitor)
+                                    {
+                                        monitor.beginTask("Updating " + chart.getSecurity().getDescription(), 1);
+                                        int interval = IHistoryFeed.INTERVAL_DAILY;
+                                        if (getInterval() < BarData.INTERVAL_DAILY)
+                                            interval = IHistoryFeed.INTERVAL_MINUTE;
+                                        feed.updateHistory(chart.getSecurity(), interval);
+                                        monitor.worked(1);
+                                        monitor.done();
+                                        return Status.OK_STATUS;
+                                    }
+                                };
+                                job.setUser(true);
+                                job.schedule();
+                            }
+                        }
                     }
                 }
             });
