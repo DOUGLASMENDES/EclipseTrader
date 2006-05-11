@@ -57,6 +57,13 @@
                style="push"
                tooltip="Create a new watchlist"/>
          <action
+               class="net.sourceforge.eclipsetrader.trading.wizards.accounts.AccountWizardAction"
+               icon="icons/etool16/coins_add.png"
+               id="net.sourceforge.eclipsetrader.trading.newAccount"
+               label="Account"
+               menubarPath="file/newWizard/additions"
+               style="push"/>
+         <action
                class="net.sourceforge.eclipsetrader.trading.actions.OpenWatchlistAction"
                id="net.sourceforge.eclipsetrader.trading.openWatchlist"
                label="Open Watchlist"
@@ -176,6 +183,11 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension targetID="net.sourceforge.eclipsetrader">
          <view
+               id="net.sourceforge.eclipsetrader.views.accounts"
+               relationship="stack"
+               relative="right"
+               visible="true"/>
+         <view
                id="net.sourceforge.eclipsetrader.watchlist:*"
                relationship="stack"
                relative="center"
@@ -192,6 +204,7 @@
                visible="false"/>
          <actionSet id="net.sourceforge.eclipsetrader.feed"/>
          <actionSet id="net.sourceforge.eclipsetrader.trading"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.views.accounts"/>
       </perspectiveExtension>
    </extension>
    <extension
@@ -220,12 +233,11 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.trading.views.WatchlistView"
-            icon="icons/eview16/table.png"
-            id="net.sourceforge.eclipsetrader.watchlist"
-            name="Watch List"/>
+            class="net.sourceforge.eclipsetrader.trading.views.AccountsView"
+            icon="icons/eview16/coins.png"
+            id="net.sourceforge.eclipsetrader.views.accounts"
+            name="Accounts"/>
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
@@ -239,6 +251,13 @@
             icon="icons/eview16/searchres.gif"
             id="net.sourceforge.eclipsetrader.patternSearch"
             name="Pattern Search"/>
+      <view
+            allowMultiple="true"
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.WatchlistView"
+            icon="icons/eview16/table.png"
+            id="net.sourceforge.eclipsetrader.watchlist"
+            name="Watch List"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
