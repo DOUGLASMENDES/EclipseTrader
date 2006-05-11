@@ -19,9 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 
+import net.sourceforge.eclipsetrader.core.db.Account;
+import net.sourceforge.eclipsetrader.core.db.AccountGroup;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 
@@ -30,9 +33,12 @@ import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
  */
 public class Repository
 {
+    private ObservableList securityGroups;
     private ObservableList securities;
     private ObservableList watchlists;
     private ObservableList news;
+    private ObservableList accounts;
+    private ObservableList accountGroups;
     private Map newsMap = new HashMap();
 
     public Repository()
@@ -41,6 +47,13 @@ public class Repository
     
     public void dispose()
     {
+    }
+    
+    public ObservableList allSecurityGroups()
+    {
+        if (securityGroups == null)
+            securityGroups = new ObservableList();
+        return securityGroups;
     }
     
     public ObservableList allSecurities()
@@ -79,6 +92,20 @@ public class Repository
             newsMap.put(security, list);
         }
         return list;
+    }
+    
+    public ObservableList allAccounts()
+    {
+        if (accounts == null)
+            accounts = new ObservableList();
+        return accounts;
+    }
+    
+    public ObservableList allAccountGroups()
+    {
+        if (accountGroups == null)
+            accountGroups = new ObservableList();
+        return accountGroups;
     }
     
     public Security getSecurity(String code)
@@ -130,6 +157,11 @@ public class Repository
         if (obj instanceof Observable)
             ((Observable)obj).notifyObservers();
 
+        if (obj instanceof SecurityGroup)
+        {
+            if (!allSecurityGroups().contains(obj))
+                allSecurityGroups().add(obj);
+        }
         if (obj instanceof Security)
         {
             if (!allSecurities().contains(obj))
@@ -160,10 +192,42 @@ public class Repository
                     list.add(news);
             }
         }
+
+        if (obj instanceof AccountGroup)
+        {
+            AccountGroup group = (AccountGroup)obj;
+            if (!allAccountGroups().contains(group))
+                allAccountGroups().add(group);
+            if (group.getParent() != null)
+            {
+                AccountGroup parent = group.getParent();
+                if (!parent.getGroups().contains(group))
+                    parent.getGroups().add(group);
+            }
+        }
+        if (obj instanceof Account)
+        {
+            Account account = (Account)obj;
+            if (!allAccounts().contains(account))
+                allAccounts().add(account);
+            if (account.getGroup() != null)
+            {
+                AccountGroup group = account.getGroup();
+                if (!group.getAccounts().contains(account))
+                    group.getAccounts().add(account);
+            }
+        }
     }
     
     public void delete(PersistentObject obj)
     {
+        if (obj instanceof SecurityGroup)
+        {
+            for (Iterator iter = ((SecurityGroup)obj).getSecurities().iterator(); iter.hasNext(); )
+                ((Security)iter.next()).setGroup(null);
+            allSecurityGroups().remove(obj);
+        }
+        
         if (obj instanceof Security)
         {
             for (Iterator iter = allWatchlists().iterator(); iter.hasNext(); )
@@ -193,6 +257,31 @@ public class Repository
                 if (list != null)
                     list.remove(news);
             }
+        }
+
+        if (obj instanceof Account)
+        {
+            allAccounts().remove(obj);
+            if (((Account)obj).getGroup() != null)
+                ((Account)obj).getGroup().getAccounts().remove(obj);
+        }
+
+        if (obj instanceof AccountGroup)
+        {
+            AccountGroup group = (AccountGroup)obj;
+            
+            Object[] accounts = group.getAccounts().toArray();
+            for (int i = 0; i < accounts.length; i++)
+                delete((Account)accounts[i]);
+            
+            Object[] groups = group.getAccounts().toArray();
+            for (int i = 0; i < groups.length; i++)
+                delete((AccountGroup)groups[i]);
+            
+            if (group.getParent() != null)
+                group.getParent().getGroups().remove(group);
+
+            allAccountGroups().remove(group);
         }
     }
     

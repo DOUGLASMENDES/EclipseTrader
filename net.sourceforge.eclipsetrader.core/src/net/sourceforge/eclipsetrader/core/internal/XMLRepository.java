@@ -17,6 +17,8 @@ import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +35,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.Repository;
+import net.sourceforge.eclipsetrader.core.db.Account;
+import net.sourceforge.eclipsetrader.core.db.AccountGroup;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
@@ -42,6 +46,8 @@ import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
+import net.sourceforge.eclipsetrader.core.db.Transaction;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
@@ -63,6 +69,10 @@ public class XMLRepository extends Repository
     private Integer watchlistsNextId = new Integer(1);
     private Map watchlistsMap = new HashMap();
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
+    private Integer accountGroupNextId = new Integer(1);
+    private Map accountGroupMap = new HashMap();
+    private Integer accountNextId = new Integer(1);
+    private Map accountMap = new HashMap();
 
     public XMLRepository()
     {
@@ -89,6 +99,12 @@ public class XMLRepository extends Repository
                         obj.setRepository(this);
                         securitiesMap.put(obj.getId(), obj);
                         allSecurities().add(obj);
+                    }
+                    else if (nodeName.equalsIgnoreCase("group")) //$NON-NLS-1$
+                    {
+                        SecurityGroup obj = loadSecurityGroup(item.getChildNodes());
+                        obj.setRepository(this);
+                        allSecurityGroups().add(obj);
                     }
                 }
             } catch (Exception ex) {
@@ -159,6 +175,40 @@ public class XMLRepository extends Repository
                 ex.printStackTrace();
             }
         }
+
+        file = new File(Platform.getLocation().toFile(), "accounts.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+        {
+            try
+            {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(file);
+
+                Node firstNode = document.getFirstChild();
+                accountNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getTextContent()); //$NON-NLS-1$
+                accountGroupNextId = new Integer(firstNode.getAttributes().getNamedItem("nextGroupId").getTextContent()); //$NON-NLS-1$
+
+                NodeList childNodes = firstNode.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++)
+                {
+                    Node item = childNodes.item(i);
+                    String nodeName = item.getNodeName();
+                    if (nodeName.equalsIgnoreCase("account")) //$NON-NLS-1$
+                    {
+                        Account obj = loadAccount(item.getChildNodes(), null);
+                        obj.setRepository(this);
+                    }
+                    else if (nodeName.equalsIgnoreCase("group")) //$NON-NLS-1$
+                    {
+                        AccountGroup obj = loadAccountGroup(item.getChildNodes(), null);
+                        obj.setRepository(this);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -185,6 +235,10 @@ public class XMLRepository extends Repository
             obj = (PersistentObject)chartsMap.get(id);
         else if (clazz.equals(Watchlist.class))
             obj = (PersistentObject)watchlistsMap.get(id);
+        else if (clazz.equals(Account.class))
+            obj = (PersistentObject)accountMap.get(id);
+        else if (clazz.equals(AccountGroup.class))
+            obj = (PersistentObject)accountGroupMap.get(id);
         
         if (obj == null)
         {
@@ -194,13 +248,13 @@ public class XMLRepository extends Repository
                 if (obj != null)
                     chartsMap.put(id, obj);
             }
-
-            if (obj != null)
-                obj.setRepository(this);
         }
         
         if (obj != null && !obj.getClass().equals(clazz))
             return null;
+
+        if (obj != null)
+            obj.setRepository(this);
         
         return obj;
     }
@@ -238,6 +292,28 @@ public class XMLRepository extends Repository
             saveWatchlists();
         }
         
+        if (obj instanceof Account)
+        {
+            if (obj.getId() == null)
+            {
+                obj.setId(accountNextId);
+                accountNextId = getNextId(accountNextId);
+            }
+            accountMap.put(obj.getId(), obj);
+            saveAccounts();
+        }
+        
+        if (obj instanceof AccountGroup)
+        {
+            if (obj.getId() == null)
+            {
+                obj.setId(accountGroupNextId);
+                accountGroupNextId = getNextId(accountGroupNextId);
+            }
+            accountGroupMap.put(obj.getId(), obj);
+            saveAccounts();
+        }
+        
         super.save(obj);
     }
 
@@ -267,6 +343,16 @@ public class XMLRepository extends Repository
         {
             watchlistsMap.remove(obj.getId());
             saveWatchlists();
+        }
+        if (obj instanceof Account)
+        {
+            accountMap.remove(obj.getId());
+            saveAccounts();
+        }
+        if (obj instanceof AccountGroup)
+        {
+            accountGroupMap.remove(obj.getId());
+            saveAccounts();
         }
     }
 
@@ -681,6 +767,27 @@ public class XMLRepository extends Repository
         return chart;
     }
 
+    private SecurityGroup loadSecurityGroup(NodeList node)
+    {
+        SecurityGroup group = new SecurityGroup();
+        
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            Node item = node.item(i);
+            String nodeName = item.getNodeName();
+            Node value = item.getFirstChild();
+            if (value != null)
+            {
+                if (nodeName.equals("description")) //$NON-NLS-1$
+                    group.setDescription(value.getNodeValue());
+            }
+        }
+        
+        group.clearChanged();
+        
+        return group;
+    }
+
     private Security loadSecurity(NodeList node)
     {
         Security security = new Security(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getTextContent())));
@@ -816,6 +923,19 @@ public class XMLRepository extends Repository
             Element root = document.createElement("data");
             root.setAttribute("nextId", String.valueOf(securitiesNextId));
             document.appendChild(root);
+            
+            for (Iterator iter = allSecurityGroups().iterator(); iter.hasNext(); )
+            {
+                SecurityGroup group = (SecurityGroup)iter.next();
+
+                Element element = document.createElement("group");
+                element.setAttribute("id", String.valueOf(group.getId()));
+                root.appendChild(element);
+
+                Element node = document.createElement("description");
+                node.appendChild(document.createTextNode(group.getDescription()));
+                element.appendChild(node);
+            }
             
             for (Iterator iter = securitiesMap.values().iterator(); iter.hasNext(); )
             {
@@ -1125,34 +1245,6 @@ public class XMLRepository extends Repository
         }
     }
 
-    private void saveDocument(Document document, String path, String name)
-    {
-        try {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            try {
-                factory.setAttribute("indent-number", new Integer(4));
-            } catch(Exception e) {}
-            Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
-            DOMSource source = new DOMSource(document);
-            
-            File file = new File(Platform.getLocation().toFile(), path);
-            file.mkdirs();
-            file = new File(file, name);
-            
-            BufferedWriter out = new BufferedWriter(new FileWriter(file));
-            StreamResult result = new StreamResult(out);
-            transformer.transform(source, result);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private NewsItem loadNews(NodeList node)
     {
         NewsItem news = new NewsItem();
@@ -1229,6 +1321,247 @@ public class XMLRepository extends Repository
             
             saveDocument(document, "", "news.xml");
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private AccountGroup loadAccountGroup(NodeList node, AccountGroup parent)
+    {
+        AccountGroup group = new AccountGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getTextContent())));
+        if (parent != null)
+        {
+            group.setParent(parent);
+            parent.getGroups().add(group);
+        }
+        
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            Node item = node.item(i);
+            String nodeName = item.getNodeName();
+            Node value = item.getFirstChild();
+            if (value != null)
+            {
+                if (nodeName.equals("description")) //$NON-NLS-1$
+                    group.setDescription(value.getNodeValue());
+            }
+            if (nodeName.equals("account")) //$NON-NLS-1$
+                loadAccount(item.getChildNodes(), group);
+        }
+        
+        group.clearChanged();
+        accountGroupMap.put(group.getId(), group);
+        allAccountGroups().add(group);
+        
+        return group;
+    }
+
+    private Account loadAccount(NodeList node, AccountGroup group)
+    {
+        Account account = new Account(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getTextContent())));
+        account.setGroup(group);
+        
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            Node item = node.item(i);
+            String nodeName = item.getNodeName();
+            Node value = item.getFirstChild();
+            if (value != null)
+            {
+                if (nodeName.equals("description")) //$NON-NLS-1$
+                    account.setDescription(value.getNodeValue());
+                else if (nodeName.equals("currency")) //$NON-NLS-1$
+                    account.setCurrency(Currency.getInstance(value.getNodeValue()));
+                else if (nodeName.equals("initialBalance")) //$NON-NLS-1$
+                    account.setInitialBalance(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equals("fixedCommissions")) //$NON-NLS-1$
+                    account.setFixedCommissions(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equals("variableCommissions")) //$NON-NLS-1$
+                    account.setVariableCommissions(Double.parseDouble(value.getNodeValue()));
+            }
+            if (nodeName.equals("transaction")) //$NON-NLS-1$
+            {
+                Transaction transaction = new Transaction();
+                NodeList childs = item.getChildNodes();
+                for (int ii = 0; ii < childs.getLength(); ii++)
+                {
+                    item = childs.item(ii);
+                    nodeName = item.getNodeName();
+                    value = item.getFirstChild();
+                    if (value != null)
+                    {
+                        if (nodeName.equals("date")) //$NON-NLS-1$
+                        {
+                            try {
+                                transaction.setDate(dateTimeFormat.parse(value.getNodeValue()));
+                            } catch(Exception e) {
+                                CorePlugin.logException(e);
+                                break;
+                            }
+                        }
+                        else if (nodeName.equals("security")) //$NON-NLS-1$
+                            transaction.setSecurity((Security)load(Security.class, new Integer(Integer.parseInt(value.getNodeValue()))));
+                        else if (nodeName.equals("price")) //$NON-NLS-1$
+                            transaction.setPrice(Double.parseDouble(value.getNodeValue()));
+                        else if (nodeName.equals("quantity")) //$NON-NLS-1$
+                            transaction.setQuantity(Integer.parseInt(value.getNodeValue()));
+                        else if (nodeName.equals("expenses")) //$NON-NLS-1$
+                            transaction.setExpenses(Double.parseDouble(value.getNodeValue()));
+                    }
+                }
+                account.getTransactions().add(transaction);
+            }
+        }
+
+        Collections.sort(account.getTransactions(), new Comparator() {
+            public int compare(Object arg0, Object arg1)
+            {
+                return ((Transaction)arg0).getDate().compareTo(((Transaction)arg1).getDate());
+            }
+        });
+        
+        account.clearChanged();
+        accountMap.put(account.getId(), account);
+        allAccounts().add(account);
+
+        return account;
+    }
+    
+    private void saveGroup(AccountGroup group, Document document, Element root)
+    {
+        Element element = document.createElement("group");
+        element.setAttribute("id", String.valueOf(group.getId()));
+        root.appendChild(element);
+
+        Element node = document.createElement("description");
+        node.appendChild(document.createTextNode(group.getDescription()));
+        element.appendChild(node);
+
+        for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
+        {
+            AccountGroup grp = (AccountGroup)iter.next();
+            saveGroup(grp, document, element);
+        }
+
+        for (Iterator iter = group.getAccounts().iterator(); iter.hasNext(); )
+        {
+            Account account = (Account)iter.next(); 
+            saveAccount(account, document, element);
+        }
+    }
+
+    private void saveAccount(Account account, Document document, Element root)
+    {
+        Element element = document.createElement("account");
+        element.setAttribute("id", String.valueOf(account.getId()));
+        root.appendChild(element);
+        
+        Element node = document.createElement("description");
+        node.appendChild(document.createTextNode(account.getDescription()));
+        element.appendChild(node);
+        if (account.getCurrency() != null)
+        {
+            node = document.createElement("currency");
+            node.appendChild(document.createTextNode(account.getCurrency().getCurrencyCode()));
+            element.appendChild(node);
+        }
+        node = document.createElement("initialBalance");
+        node.appendChild(document.createTextNode(String.valueOf(account.getInitialBalance())));
+        element.appendChild(node);
+        node = document.createElement("fixedCommissions");
+        node.appendChild(document.createTextNode(String.valueOf(account.getFixedCommissions())));
+        element.appendChild(node);
+        node = document.createElement("variableCommissions");
+        node.appendChild(document.createTextNode(String.valueOf(account.getVariableCommissions())));
+        element.appendChild(node);
+
+        for (Iterator iter = account.getTransactions().iterator(); iter.hasNext(); )
+        {
+            Transaction transaction = (Transaction)iter.next();
+            saveTransaction(transaction, document, element);
+        }
+    }
+
+    private void saveTransaction(Transaction transaction, Document document, Element root)
+    {
+        Element element = document.createElement("transaction");
+//        element.setAttribute("id", String.valueOf(transaction.getId()));
+        root.appendChild(element);
+        
+        Element node = document.createElement("date");
+        node.appendChild(document.createTextNode(dateTimeFormat.format(transaction.getDate())));
+        element.appendChild(node);
+        node = document.createElement("security");
+        node.appendChild(document.createTextNode(String.valueOf(transaction.getSecurity().getId())));
+        element.appendChild(node);
+        node = document.createElement("price");
+        node.appendChild(document.createTextNode(String.valueOf(transaction.getPrice())));
+        element.appendChild(node);
+        node = document.createElement("quantity");
+        node.appendChild(document.createTextNode(String.valueOf(transaction.getQuantity())));
+        element.appendChild(node);
+        node = document.createElement("expenses");
+        node.appendChild(document.createTextNode(String.valueOf(transaction.getExpenses())));
+        element.appendChild(node);
+    }
+    
+    private void saveAccounts()
+    {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.getDOMImplementation().createDocument(null, null, null);
+
+            Element root = document.createElement("data");
+            root.setAttribute("nextId", String.valueOf(accountNextId));
+            root.setAttribute("nextGroupId", String.valueOf(accountGroupNextId));
+            document.appendChild(root);
+            
+            for (Iterator iter = allAccountGroups().iterator(); iter.hasNext(); )
+            {
+                AccountGroup group = (AccountGroup)iter.next();
+                if (group.getParent() != null)
+                    continue;
+                saveGroup(group, document, root);
+            }
+            
+            for (Iterator iter = accountMap.values().iterator(); iter.hasNext(); )
+            {
+                Account account = (Account)iter.next();
+                if (account.getGroup() != null)
+                    continue;
+                saveAccount(account, document, root);
+            }
+
+            saveDocument(document, "", "accounts.xml");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveDocument(Document document, String path, String name)
+    {
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            try {
+                factory.setAttribute("indent-number", new Integer(4));
+            } catch(Exception e) {}
+            Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+            DOMSource source = new DOMSource(document);
+            
+            File file = new File(Platform.getLocation().toFile(), path);
+            file.mkdirs();
+            file = new File(file, name);
+            
+            BufferedWriter out = new BufferedWriter(new FileWriter(file));
+            StreamResult result = new StreamResult(out);
+            transformer.transform(source, result);
+            out.flush();
+            out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
