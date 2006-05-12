@@ -321,6 +321,22 @@
             class="net.sourceforge.eclipsetrader.trading.patterns.ThreeBarRule"
             id="net.sourceforge.eclipsetrader.pattern.threebarsrule"
             name="Three-Bar Closes Rule"/>
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.GapRule"
+            id="net.sourceforge.eclipsetrader.pattern.gaprule"
+            name="Gap Rule"/>
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.LindahlBuyRule"
+            id="net.sourceforge.eclipsetrader.pattern.lindahlbuyrule"
+            name="Lindahl Buy Rule"/>
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.LindahlSellRule"
+            id="net.sourceforge.eclipsetrader.pattern.lindahlsellrule"
+            name="Lindahl Sell Rule"/>
+      <pattern
+            class="net.sourceforge.eclipsetrader.trading.patterns.DoubleReversalRule"
+            id="net.sourceforge.eclipsetrader.pattern.doublereversalrule"
+            name="Double Reversal Rule"/>
    </extension>
 
 </plugin>
