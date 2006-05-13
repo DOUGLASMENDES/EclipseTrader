@@ -247,6 +247,16 @@ public class TransactionsView extends ViewPart implements ICollectionObserver
         table.getParent().setFocus();
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+     */
+    public void dispose()
+    {
+        if (account != null)
+            account.getTransactions().removeCollectionObserver(this);
+        super.dispose();
+    }
+
     private void updateView()
     {
         table.setRedraw(false);
