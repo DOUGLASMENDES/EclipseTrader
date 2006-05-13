@@ -23,12 +23,16 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
+import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.AccountGroupSelection;
 import net.sourceforge.eclipsetrader.core.ui.AccountSelection;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
 import net.sourceforge.eclipsetrader.trading.actions.NewAccountGroupAction;
+import net.sourceforge.eclipsetrader.trading.dialogs.TransactionDialog;
 import net.sourceforge.eclipsetrader.trading.internal.DeleteAccountAction;
+import net.sourceforge.eclipsetrader.trading.internal.TransactionAction;
 import net.sourceforge.eclipsetrader.trading.wizards.accounts.AccountSettingsAction;
 
 import org.eclipse.jface.action.Action;
@@ -37,7 +41,13 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
@@ -58,6 +68,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
@@ -66,6 +77,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.accounts";
     private Tree tree;
     private NumberFormat nf = NumberFormat.getInstance();
+    private Action newTransactionAction = new TransactionAction(this);
     private Action deleteAction = new DeleteAccountAction(this);
     private Action propertiesAction = new AccountSettingsAction(this);
     private Comparator groupComparator = new Comparator() {
@@ -119,7 +131,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
         content.setLayout(gridLayout);
         
-        tree = new Tree(content, SWT.FULL_SELECTION|SWT.SINGLE);
+        tree = new Tree(content, SWT.FULL_SELECTION|SWT.MULTI);
         tree.setHeaderVisible(true);
         tree.setLinesVisible(false);
         tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -152,9 +164,78 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                     updateSelection();
                 }
             }
+
+            public void mouseDoubleClick(MouseEvent e)
+            {
+                ISelection selection = getSite().getSelectionProvider().getSelection();
+                if (selection instanceof AccountSelection)
+                {
+                    IWorkbenchPage page = getViewSite().getPage();
+                    try {
+                        page.showView(TransactionsView.VIEW_ID, String.valueOf(((AccountSelection)selection).getAccount().getId()), IWorkbenchPage.VIEW_ACTIVATE);
+                    } catch (PartInitException e1) {
+                        CorePlugin.logException(e1);
+                    }
+                }
+            }
         });
 
         getSite().setSelectionProvider(new SelectionProvider());
+
+        // Drag and drop support
+        DropTarget target = new DropTarget(parent, DND.DROP_COPY|DND.DROP_MOVE);
+        target.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
+        target.addDropListener(new DropTargetListener() {
+            public void dragEnter(DropTargetEvent event)
+            {
+                if (event.detail == DND.DROP_DEFAULT)
+                    event.detail = DND.DROP_COPY;
+            }
+
+            public void dragOver(DropTargetEvent event)
+            {
+                TreeItem item = tree.getItem(tree.toControl(event.x, event.y));
+                if (item != null && item.getData() instanceof Account)
+                {
+                    event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+                    TreeItem[] selection = { item };
+                    tree.setSelection(selection);
+                    updateSelection();
+                }
+                else
+                {
+                    event.feedback = DND.FEEDBACK_NONE;
+                    tree.deselectAll();
+                    updateSelection();
+                }
+            }
+
+            public void dragOperationChanged(DropTargetEvent event)
+            {
+            }
+
+            public void dragLeave(DropTargetEvent event)
+            {
+            }
+
+            public void dropAccept(DropTargetEvent event)
+            {
+            }
+
+            public void drop(DropTargetEvent event)
+            {
+                TreeItem item = tree.getItem(tree.toControl(event.x, event.y));
+                if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType) && item != null && item.getData() instanceof Account)
+                {
+                    Security[] securities = (Security[]) event.data;
+                    for (int i = 0; i < securities.length; i++)
+                    {
+                        TransactionDialog dlg = new TransactionDialog((Account)item.getData(), getViewSite().getShell());
+                        dlg.open(securities[i]);
+                    }
+                }
+            }
+        });
 
         MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
         menuMgr.setRemoveAllWhenShown(true);
@@ -162,6 +243,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             public void menuAboutToShow(IMenuManager menuManager)
             {
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
+                menuManager.add(newTransactionAction);
                 menuManager.add(new NewAccountGroupAction(AccountsView.this));
                 menuManager.add(new Separator("group1")); //$NON-NLS-1$
                 menuManager.add(new Separator("group2")); //$NON-NLS-1$
@@ -247,7 +329,8 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         }
         else
             getSite().getSelectionProvider().setSelection(new NullSelection());
-        
+
+        newTransactionAction.setEnabled(getSite().getSelectionProvider().getSelection() instanceof AccountSelection);
         deleteAction.setEnabled(!(getSite().getSelectionProvider().getSelection() instanceof NullSelection));
         propertiesAction.setEnabled(!(getSite().getSelectionProvider().getSelection() instanceof NullSelection));
     }

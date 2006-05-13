@@ -9,21 +9,17 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.trading.wizards.accounts;
+package net.sourceforge.eclipsetrader.trading.actions;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.db.Account;
-import net.sourceforge.eclipsetrader.trading.views.TransactionsView;
-import net.sourceforge.eclipsetrader.trading.wizards.AccountWizard;
+import net.sourceforge.eclipsetrader.core.ui.AccountSelection;
+import net.sourceforge.eclipsetrader.trading.dialogs.TransactionDialog;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.eclipse.ui.PartInitException;
 
-public class AccountWizardAction implements IWorkbenchWindowActionDelegate
+public class NewTransactionAction implements IWorkbenchWindowActionDelegate
 {
     private IWorkbenchWindow window;
 
@@ -47,16 +43,11 @@ public class AccountWizardAction implements IWorkbenchWindowActionDelegate
      */
     public void run(IAction action)
     {
-        AccountWizard wizard = new AccountWizard();
-        Account account = wizard.open();
-        if (account != null)
+        ISelection selection = window.getSelectionService().getSelection();
+        if (selection instanceof AccountSelection)
         {
-            IWorkbenchPage page = window.getActivePage();
-            try {
-                page.showView(TransactionsView.VIEW_ID, String.valueOf(account.getId()), IWorkbenchPage.VIEW_ACTIVATE);
-            } catch (PartInitException e1) {
-                CorePlugin.logException(e1);
-            }
+            TransactionDialog dlg = new TransactionDialog(((AccountSelection)selection).getAccount(), window.getShell());
+            dlg.open();
         }
     }
 

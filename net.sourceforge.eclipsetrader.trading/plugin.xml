@@ -9,6 +9,9 @@
       <activityPatternBinding
             activityId="net.sourceforge.eclipsetrader"
             pattern="net.sourceforge.eclipsetrader.trading/net.sourceforge.eclipsetrader.trading.level2"/>
+      <activityPatternBinding
+            activityId="net.sourceforge.eclipsetrader"
+            pattern="net.sourceforge.eclipsetrader.trading/net.sourceforge.eclipsetrader.views.transactions"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
@@ -55,14 +58,30 @@
                label="Watchlist"
                menubarPath="file/newWizard/additions"
                style="push"
+               toolbarPath="trading"
                tooltip="Create a new watchlist"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.NewTransactionAction"
+               icon="icons/etool16/book_add.png"
+               id="net.sourceforge.eclipsetrader.trading.newTransaction"
+               label="Transaction"
+               menubarPath="file/newWizard/additions"
+               style="push"
+               toolbarPath="trading"
+               tooltip="Create a new Transaction">
+            <enablement>
+               <objectClass name="net.sourceforge.eclipsetrader.core.ui.AccountSelection"/>
+            </enablement>
+         </action>
          <action
                class="net.sourceforge.eclipsetrader.trading.wizards.accounts.AccountWizardAction"
                icon="icons/etool16/coins_add.png"
                id="net.sourceforge.eclipsetrader.trading.newAccount"
                label="Account"
                menubarPath="file/newWizard/additions"
-               style="push"/>
+               style="push"
+               toolbarPath="trading"
+               tooltip="Create a new Account"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.OpenWatchlistAction"
                id="net.sourceforge.eclipsetrader.trading.openWatchlist"
@@ -198,6 +217,11 @@
                relative="right"
                visible="false"/>
          <view
+               id="net.sourceforge.eclipsetrader.views.transactions:*"
+               relationship="stack"
+               relative="center"
+               visible="false"/>
+         <view
                id="net.sourceforge.eclipsetrader.patternSearch"
                relationship="stack"
                relative="bottom"
@@ -251,6 +275,13 @@
             icon="icons/eview16/searchres.gif"
             id="net.sourceforge.eclipsetrader.patternSearch"
             name="Pattern Search"/>
+      <view
+            allowMultiple="true"
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.TransactionsView"
+            icon="icons/eview16/book.png"
+            id="net.sourceforge.eclipsetrader.views.transactions"
+            name="Transactions"/>
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"

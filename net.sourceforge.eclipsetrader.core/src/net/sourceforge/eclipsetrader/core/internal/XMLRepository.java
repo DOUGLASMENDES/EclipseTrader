@@ -1358,6 +1358,7 @@ public class XMLRepository extends Repository
 
     private Account loadAccount(NodeList node, AccountGroup group)
     {
+        int transactionId = 1;
         Account account = new Account(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getTextContent())));
         account.setGroup(group);
         
@@ -1378,10 +1379,14 @@ public class XMLRepository extends Repository
                     account.setFixedCommissions(Double.parseDouble(value.getNodeValue()));
                 else if (nodeName.equals("variableCommissions")) //$NON-NLS-1$
                     account.setVariableCommissions(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equals("minimumCommission")) //$NON-NLS-1$
+                    account.setMinimumCommission(Double.parseDouble(value.getNodeValue()));
+                else if (nodeName.equals("maximumCommission")) //$NON-NLS-1$
+                    account.setMaximumCommission(Double.parseDouble(value.getNodeValue()));
             }
             if (nodeName.equals("transaction")) //$NON-NLS-1$
             {
-                Transaction transaction = new Transaction();
+                Transaction transaction = new Transaction(new Integer(transactionId++));
                 NodeList childs = item.getChildNodes();
                 for (int ii = 0; ii < childs.getLength(); ii++)
                 {
@@ -1474,10 +1479,18 @@ public class XMLRepository extends Repository
         node = document.createElement("variableCommissions");
         node.appendChild(document.createTextNode(String.valueOf(account.getVariableCommissions())));
         element.appendChild(node);
+        node = document.createElement("minimumCommission");
+        node.appendChild(document.createTextNode(String.valueOf(account.getMinimumCommission())));
+        element.appendChild(node);
+        node = document.createElement("maximumCommission");
+        node.appendChild(document.createTextNode(String.valueOf(account.getMaximumCommission())));
+        element.appendChild(node);
 
+        int transactionId = 1;
         for (Iterator iter = account.getTransactions().iterator(); iter.hasNext(); )
         {
             Transaction transaction = (Transaction)iter.next();
+            transaction.setId(new Integer(transactionId++));
             saveTransaction(transaction, document, element);
         }
     }
@@ -1485,7 +1498,7 @@ public class XMLRepository extends Repository
     private void saveTransaction(Transaction transaction, Document document, Element root)
     {
         Element element = document.createElement("transaction");
-//        element.setAttribute("id", String.valueOf(transaction.getId()));
+        element.setAttribute("id", String.valueOf(transaction.getId()));
         root.appendChild(element);
         
         Element node = document.createElement("date");

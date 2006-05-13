@@ -220,7 +220,10 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
 
         watchlist = (Watchlist)CorePlugin.getRepository().load(Watchlist.class, new Integer(getViewSite().getSecondaryId()));
         if (watchlist.getDescription().length() != 0)
+        {
+            setTitleToolTip(getPartName());
             setPartName(watchlist.getDescription());
+        }
         toggleShowTotals.setChecked(TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId()));
 
         parent.getDisplay().asyncExec(new Runnable() {

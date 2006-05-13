@@ -70,6 +70,8 @@ public class AccountWizard extends Wizard
         
         account.setVariableCommissions(commissionsPage.getVariableCommission());
         account.setFixedCommissions(commissionsPage.getFixedCommission());
+        account.setMinimumCommission(commissionsPage.getMinimumCommission());
+        account.setMaximumCommission(commissionsPage.getMaximumCommission());
 
         CorePlugin.getRepository().save(account);
         

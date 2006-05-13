@@ -28,6 +28,8 @@ public class CommissionsPage extends CommonPreferencePage
     private Account account;
     private Text fixedCommission;
     private Text variableCommission;
+    private Text minimumCommission;
+    private Text maximumCommission;
     private NumberFormat nf = NumberFormat.getInstance();
 
     public CommissionsPage()
@@ -80,6 +82,20 @@ public class CommissionsPage extends CommonPreferencePage
         variableCommission.setLayoutData(new GridData(80, SWT.DEFAULT));
         variableCommission.setText(nf.format(account != null ? account.getVariableCommissions() : 0));
 
+        label = new Label(content, SWT.NONE);
+        label.setText("Minimum");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        minimumCommission = new Text(content, SWT.BORDER);
+        minimumCommission.setLayoutData(new GridData(80, SWT.DEFAULT));
+        minimumCommission.setText(nf.format(account != null ? account.getMinimumCommission() : 0));
+
+        label = new Label(content, SWT.NONE);
+        label.setText("Maximum");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        maximumCommission = new Text(content, SWT.BORDER);
+        maximumCommission.setLayoutData(new GridData(80, SWT.DEFAULT));
+        maximumCommission.setText(nf.format(account != null ? account.getMaximumCommission() : 0));
+
         fixedCommission.setFocus();
     }
 
@@ -92,6 +108,8 @@ public class CommissionsPage extends CommonPreferencePage
         {
             account.setVariableCommissions(getVariableCommission());
             account.setFixedCommissions(getFixedCommission());
+            account.setMinimumCommission(getMinimumCommission());
+            account.setMaximumCommission(getMaximumCommission());
         }
     }
     
@@ -121,5 +139,33 @@ public class CommissionsPage extends CommonPreferencePage
     public void setVariableCommission(double value)
     {
         this.variableCommission.setText(nf.format(value));
+    }
+    
+    public double getMinimumCommission()
+    {
+        try {
+            return nf.parse(minimumCommission.getText()).doubleValue();
+        } catch(Exception e) {
+            return 0;
+        }
+    }
+    
+    public void setMinimumCommission(double value)
+    {
+        this.minimumCommission.setText(nf.format(value));
+    }
+    
+    public double getMaximumCommission()
+    {
+        try {
+            return nf.parse(maximumCommission.getText()).doubleValue();
+        } catch(Exception e) {
+            return 0;
+        }
+    }
+    
+    public void setMaximumCommission(double value)
+    {
+        this.maximumCommission.setText(nf.format(value));
     }
 }

@@ -92,4 +92,13 @@ public class Transaction extends PersistentObject
         this.expenses = expenses;
         setChanged();
     }
+    
+    public double getAmount()
+    {
+        double amount = Math.abs(getQuantity() * getPrice());
+        if (getQuantity() >= 0)
+            return -(amount + getExpenses());
+        else
+            return amount - getExpenses();
+    }
 }

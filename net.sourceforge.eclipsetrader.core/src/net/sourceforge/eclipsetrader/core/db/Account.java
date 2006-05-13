@@ -25,6 +25,8 @@ public class Account extends PersistentObject
     private double initialBalance = 0;
     private double fixedCommissions = 0;
     private double variableCommissions = 0;
+    private double minimumCommission = 0;
+    private double maximumCommission = 0;
     private ObservableList transactions = new ObservableList();
     private ICollectionObserver transactionsObserver = new ICollectionObserver() {
         public void itemAdded(Object o)
@@ -124,6 +126,26 @@ public class Account extends PersistentObject
         this.variableCommissions = variableCommissions;
     }
 
+    public double getMaximumCommission()
+    {
+        return maximumCommission;
+    }
+
+    public void setMaximumCommission(double maximumCommission)
+    {
+        this.maximumCommission = maximumCommission;
+    }
+
+    public double getMinimumCommission()
+    {
+        return minimumCommission;
+    }
+
+    public void setMinimumCommission(double minimumCommission)
+    {
+        this.minimumCommission = minimumCommission;
+    }
+
     public ObservableList getTransactions()
     {
         return transactions;
@@ -142,11 +164,7 @@ public class Account extends PersistentObject
         for (int i = 0; i < objs.length; i++)
         {
             Transaction transaction = (Transaction)objs[i];
-            double amount = Math.abs(transaction.getQuantity() * transaction.getPrice());
-            if (transaction.getQuantity() >= 0)
-                result -= amount + transaction.getExpenses();
-            else
-                result += amount - transaction.getExpenses();
+            result += transaction.getAmount();
         }
         
         return result;
