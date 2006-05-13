@@ -32,7 +32,7 @@ import net.sourceforge.eclipsetrader.trading.internal.AbstractLayout;
 import net.sourceforge.eclipsetrader.trading.internal.BoxedLayout;
 import net.sourceforge.eclipsetrader.trading.internal.CopyAction;
 import net.sourceforge.eclipsetrader.trading.internal.CutAction;
-import net.sourceforge.eclipsetrader.trading.internal.DeleteAction;
+import net.sourceforge.eclipsetrader.trading.internal.DeleteWatchlistItemAction;
 import net.sourceforge.eclipsetrader.trading.internal.PasteAction;
 import net.sourceforge.eclipsetrader.trading.internal.TableLayout;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistSettingsDialog;
@@ -72,7 +72,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     private Action cutAction = new CutAction(this);
     private Action copyAction = new CopyAction(this);
     private Action pasteAction;
-    private Action deleteAction = new DeleteAction(this);
+    private Action deleteAction = new DeleteWatchlistItemAction(this);
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)

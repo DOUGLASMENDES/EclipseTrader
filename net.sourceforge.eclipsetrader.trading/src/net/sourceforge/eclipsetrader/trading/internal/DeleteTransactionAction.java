@@ -15,24 +15,16 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.trading.views.TransactionsView;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
-public class DeleteTransactionAction extends Action
+public class DeleteTransactionAction extends DeleteAction
 {
     private TransactionsView view;
 
     public DeleteTransactionAction(TransactionsView view)
     {
         this.view = view;
-        setText("&Delete");
-        ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
-        setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
-        setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
-        setEnabled(false);
     }
 
     /* (non-Javadoc)

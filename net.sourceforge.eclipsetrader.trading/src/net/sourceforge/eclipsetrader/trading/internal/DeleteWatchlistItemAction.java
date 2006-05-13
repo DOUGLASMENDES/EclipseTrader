@@ -11,18 +11,18 @@
 
 package net.sourceforge.eclipsetrader.trading.internal;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.db.PersistentObject;
-import net.sourceforge.eclipsetrader.trading.views.AccountsView;
+import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
-public class DeleteAccountAction extends DeleteAction
+public class DeleteWatchlistItemAction extends DeleteAction
 {
-    private AccountsView view;
+    private WatchlistView view;
 
-    public DeleteAccountAction(AccountsView view)
+    public DeleteWatchlistItemAction(WatchlistView view)
     {
         this.view = view;
     }
@@ -32,11 +32,12 @@ public class DeleteAccountAction extends DeleteAction
      */
     public void run()
     {
-        if (MessageDialog.openConfirm(view.getViewSite().getShell(), view.getPartName(), "Do you really want to delete the selected account(s) ?"))
+        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (MessageDialog.openConfirm(window.getShell(), "Watchlist", "Do you really want to delete the selected item ?"))
         {
-            TreeItem[] items = view.getTree().getSelection();
+            WatchlistItem[] items = view.getSelection();
             for (int i = 0; i < items.length; i++)
-                CorePlugin.getRepository().delete((PersistentObject)items[i].getData());
+                view.getWatchlist().getItems().remove(items[i]);
         }
     }
 }
