@@ -13,7 +13,6 @@ package net.sourceforge.eclipsetrader.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -58,14 +57,16 @@ public class ObservableList extends ArrayList
     
     protected void notifyItemAdded(Object o)
     {
-        for (Iterator iter = observers.iterator(); iter.hasNext(); )
-            ((ICollectionObserver)iter.next()).itemAdded(o);
+        Object[] obs = observers.toArray();
+        for (int i = 0; i < obs.length; i++)
+            ((ICollectionObserver)obs[i]).itemAdded(o);
     }
     
     protected void notifyItemRemoved(Object o)
     {
-        for (Iterator iter = observers.iterator(); iter.hasNext(); )
-            ((ICollectionObserver)iter.next()).itemRemoved(o);
+        Object[] obs = observers.toArray();
+        for (int i = 0; i < obs.length; i++)
+            ((ICollectionObserver)obs[i]).itemRemoved(o);
     }
 
     /* (non-Javadoc)
