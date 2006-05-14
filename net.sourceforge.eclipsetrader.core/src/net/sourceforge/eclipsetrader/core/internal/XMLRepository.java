@@ -300,7 +300,6 @@ public class XMLRepository extends Repository
                 accountNextId = getNextId(accountNextId);
             }
             accountMap.put(obj.getId(), obj);
-            saveAccounts();
         }
         
         if (obj instanceof AccountGroup)
@@ -311,10 +310,12 @@ public class XMLRepository extends Repository
                 accountGroupNextId = getNextId(accountGroupNextId);
             }
             accountGroupMap.put(obj.getId(), obj);
-            saveAccounts();
         }
         
         super.save(obj);
+
+        if (obj instanceof AccountGroup || obj instanceof Account)
+            saveAccounts();
     }
 
     /* (non-Javadoc)
@@ -1529,7 +1530,7 @@ public class XMLRepository extends Repository
             root.setAttribute("nextGroupId", String.valueOf(accountGroupNextId));
             document.appendChild(root);
             
-            for (Iterator iter = allAccountGroups().iterator(); iter.hasNext(); )
+            for (Iterator iter = accountGroupMap.values().iterator(); iter.hasNext(); )
             {
                 AccountGroup group = (AccountGroup)iter.next();
                 if (group.getParent() != null)
