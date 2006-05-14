@@ -178,4 +178,9 @@ public class GeneralPage extends CommonPreferencePage
         }
         return ag;
     }
+    
+    public void setGroup(AccountGroup group)
+    {
+        this.group.setText(group.getDescription());
+    }
 }

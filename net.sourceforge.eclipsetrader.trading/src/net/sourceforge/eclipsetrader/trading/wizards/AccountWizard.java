@@ -37,6 +37,14 @@ public class AccountWizard extends Wizard
         dlg.open();
         return account;
     }
+
+    public Account open(AccountGroup group)
+    {
+        WizardDialog dlg = create();
+        generalPage.setGroup(group);
+        dlg.open();
+        return account;
+    }
     
     public WizardDialog create()
     {

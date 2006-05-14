@@ -29,6 +29,7 @@ import net.sourceforge.eclipsetrader.core.ui.AccountGroupSelection;
 import net.sourceforge.eclipsetrader.core.ui.AccountSelection;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
+import net.sourceforge.eclipsetrader.trading.actions.NewAccountAction;
 import net.sourceforge.eclipsetrader.trading.actions.NewAccountGroupAction;
 import net.sourceforge.eclipsetrader.trading.dialogs.TransactionDialog;
 import net.sourceforge.eclipsetrader.trading.internal.DeleteAccountAction;
@@ -243,9 +244,10 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             public void menuAboutToShow(IMenuManager menuManager)
             {
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
-                menuManager.add(newTransactionAction);
+                menuManager.add(new NewAccountAction(AccountsView.this));
                 menuManager.add(new NewAccountGroupAction(AccountsView.this));
                 menuManager.add(new Separator("group1")); //$NON-NLS-1$
+                menuManager.add(newTransactionAction);
                 menuManager.add(new Separator("group2")); //$NON-NLS-1$
                 menuManager.add(new Separator("group3")); //$NON-NLS-1$
                 menuManager.add(new Separator("group4")); //$NON-NLS-1$

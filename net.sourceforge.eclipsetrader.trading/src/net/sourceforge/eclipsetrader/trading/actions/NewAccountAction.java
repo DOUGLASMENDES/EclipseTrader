@@ -11,17 +11,27 @@
 
 package net.sourceforge.eclipsetrader.trading.actions;
 
+import net.sourceforge.eclipsetrader.core.db.AccountGroup;
+import net.sourceforge.eclipsetrader.core.ui.AccountGroupSelection;
+import net.sourceforge.eclipsetrader.core.ui.AccountSelection;
 import net.sourceforge.eclipsetrader.trading.views.AccountsView;
 import net.sourceforge.eclipsetrader.trading.wizards.AccountWizard;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
-public class NewAccountAction implements IViewActionDelegate
+public class NewAccountAction extends Action implements IViewActionDelegate
 {
     private AccountsView view;
+    
+    public NewAccountAction(AccountsView view)
+    {
+        init(view);
+        setText("Create Account");
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
@@ -32,12 +42,30 @@ public class NewAccountAction implements IViewActionDelegate
     }
 
     /* (non-Javadoc)
+     * @see org.eclipse.jface.action.Action#run()
+     */
+    public void run()
+    {
+        run(this);
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public void run(IAction action)
     {
+        AccountGroup group = null;
+        ISelection selection = view.getSite().getSelectionProvider().getSelection();
+        if (selection instanceof AccountSelection)
+            group = ((AccountSelection)selection).getAccount().getGroup();
+        else if (selection instanceof AccountGroupSelection)
+            group = ((AccountGroupSelection)selection).getGroup();
+
         AccountWizard wizard = new AccountWizard();
-        wizard.open();
+        if (group == null)
+            wizard.open();
+        else
+            wizard.open(group);
     }
 
     /* (non-Javadoc)
