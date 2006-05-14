@@ -50,6 +50,8 @@ public class DeleteAccountAction extends DeleteAction
                 {
                     for (int i = 0; i < items.length; i++)
                     {
+                        if (!(items[i].getData() instanceof Account))
+                            continue;
                         IViewReference ref = pages[p].findViewReference(TransactionsView.VIEW_ID, String.valueOf(((Account)items[i].getData()).getId()));
                         if (ref != null)
                             pages[p].hideView(ref);
