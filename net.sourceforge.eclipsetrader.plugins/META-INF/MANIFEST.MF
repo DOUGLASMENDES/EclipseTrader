@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Plugins
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.plugins
+Bundle-Version: 0.21.0
+Bundle-Vendor: EclipseTrader
+Bundle-Localization: plugin
