@@ -11,7 +11,14 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Currency;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.ObservableList;
@@ -188,6 +195,39 @@ public class Account extends PersistentObject
                 result += transaction.getQuantity();
         }
         
+        return result;
+    }
+    
+    public List getPortfolio()
+    {
+        List result = new ArrayList();
+        
+        Map map = new HashMap();
+        for (Iterator iter2 = getTransactions().iterator(); iter2.hasNext(); )
+        {
+            Transaction transaction = (Transaction)iter2.next();
+            PortfolioPosition position = (PortfolioPosition)map.get(transaction.getSecurity());
+            if (position == null)
+                map.put(transaction.getSecurity(), new PortfolioPosition(this, transaction.getSecurity(), transaction.getQuantity(), transaction.getAmount()));
+            else
+                position.add(transaction.getQuantity(), transaction.getAmount());
+        }
+
+        List list = new ArrayList(map.keySet());
+        Collections.sort(list, new Comparator() {
+            public int compare(Object arg0, Object arg1)
+            {
+                return ((Security)arg0).getDescription().compareTo(((Security)arg1).getDescription());
+            }
+        });
+        for (Iterator iter = list.iterator(); iter.hasNext(); )
+        {
+            Security security = (Security)iter.next();
+            PortfolioPosition position = (PortfolioPosition)map.get(security);
+            if (position.getQuantity() != 0)
+                result.add(position);
+        }
+
         return result;
     }
 }
