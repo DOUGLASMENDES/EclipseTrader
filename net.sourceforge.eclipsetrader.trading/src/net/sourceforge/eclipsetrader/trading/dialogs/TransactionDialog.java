@@ -49,6 +49,7 @@ public class TransactionDialog extends TitleAreaDialog
 {
     private Account account;
     private Security security;
+    private int defaultQuantity = 1;
     private Transaction transaction;
     private Text dateText;
     private Combo accountCombo;
@@ -167,7 +168,7 @@ public class TransactionDialog extends TitleAreaDialog
         quantitySpinner = new Spinner(content, SWT.BORDER);
         quantitySpinner.setMinimum(1);
         quantitySpinner.setMaximum(999999);
-        quantitySpinner.setSelection(1);
+        quantitySpinner.setSelection(Math.abs(defaultQuantity));
         quantitySpinner.setLayoutData(new GridData(60, SWT.DEFAULT));
         quantitySpinner.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -259,7 +260,8 @@ public class TransactionDialog extends TitleAreaDialog
             setTitle("Create a new Transaction");
             setMessage("Enter the details of the transaction to create");
             dateText.setText(df.format(Calendar.getInstance().getTime()));
-            buyButton.setSelection(true);
+            buyButton.setSelection(defaultQuantity >= 0);
+            sellButton.setSelection(defaultQuantity < 0);
         }
         
         if (security != null)
@@ -357,5 +359,10 @@ public class TransactionDialog extends TitleAreaDialog
             total -= expenses;
 
         totalText.setText(nf.format(total));
+    }
+
+    public void setDefaultQuantity(int defaultQuantity)
+    {
+        this.defaultQuantity = defaultQuantity;
     }
 }

@@ -19,14 +19,14 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewPart;
 
-public class TransactionAction extends Action
+public class ClosePositionAction extends Action
 {
     private IViewPart view;
 
-    public TransactionAction(IViewPart view)
+    public ClosePositionAction(IViewPart view)
     {
         this.view = view;
-        setText("New Transaction");
+        setText("Close Position");
         setEnabled(true);
     }
 
@@ -36,13 +36,11 @@ public class TransactionAction extends Action
     public void run()
     {
         ISelection selection = view.getSite().getSelectionProvider().getSelection();
-        if (selection instanceof AccountSelection)
+        if (selection instanceof PortfolioPositionSelection)
         {
             TransactionDialog dlg = new TransactionDialog(((AccountSelection)selection).getAccount(), view.getViewSite().getShell());
-            if (selection instanceof PortfolioPositionSelection)
-                dlg.open(((PortfolioPositionSelection)selection).getPosition().getSecurity());
-            else
-                dlg.open();
+            dlg.setDefaultQuantity(- ((PortfolioPositionSelection)selection).getPosition().getQuantity());
+            dlg.open(((PortfolioPositionSelection)selection).getPosition().getSecurity());
         }
     }
 }

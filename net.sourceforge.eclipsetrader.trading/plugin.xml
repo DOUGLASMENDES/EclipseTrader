@@ -229,6 +229,11 @@
          <actionSet id="net.sourceforge.eclipsetrader.feed"/>
          <actionSet id="net.sourceforge.eclipsetrader.trading"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.views.accounts"/>
+         <view
+               id="net.sourceforge.eclipsetrader.views.portfolio"
+               relationship="stack"
+               relative="bottom"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.views.portfolio"/>
       </perspectiveExtension>
    </extension>
    <extension
@@ -282,6 +287,12 @@
             icon="icons/eview16/book.png"
             id="net.sourceforge.eclipsetrader.views.transactions"
             name="Transactions"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.PortfolioView"
+            icon="icons/eview16/money.png"
+            id="net.sourceforge.eclipsetrader.views.portfolio"
+            name="Portfolio"/>
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
