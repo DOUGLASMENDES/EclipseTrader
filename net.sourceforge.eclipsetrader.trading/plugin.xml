@@ -247,6 +247,12 @@
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
                label="Open Level2"
                menubarPath="top"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.SecurityPatternSearchAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.trading.searchPattern"
+               label="Search Pattern"
+               menubarPath="group5"/>
       </viewerContribution>
       <viewerContribution
             id="securitiesView"
@@ -257,6 +263,12 @@
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
                label="Open Level2"
                menubarPath="top"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.SecurityPatternSearchAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.trading.searchPattern"
+               label="Search Pattern"
+               menubarPath="group5"/>
       </viewerContribution>
    </extension>
    <extension
