@@ -189,8 +189,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         target.addDropListener(new DropTargetListener() {
             public void dragEnter(DropTargetEvent event)
             {
-                if (event.detail == DND.DROP_DEFAULT)
-                    event.detail = DND.DROP_COPY;
+                event.detail = DND.DROP_COPY;
             }
 
             public void dragOver(DropTargetEvent event)
