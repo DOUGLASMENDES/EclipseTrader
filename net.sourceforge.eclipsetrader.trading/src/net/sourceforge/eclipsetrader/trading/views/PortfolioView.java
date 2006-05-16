@@ -474,7 +474,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
             if (quote != null)
             {
                 setText(4, pf.format(quote.getLast()));
-                setText(5, pf.format(item.getMarketValue()));
+                setText(5, pcf.format(item.getMarketValue()));
                 double gain = (item.getQuantity() > 0) ? item.getMarketValue() - item.getValue() : item.getValue() - item.getMarketValue();
                 String s1 = pcf.format(gain);
                 String s2 = pcf.format(gain / item.getValue() * 100.0);
@@ -567,7 +567,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 public void widgetDisposed(DisposeEvent e)
                 {
                     AccountTreeItem.this.account.deleteObserver(AccountTreeItem.this);
-                    AccountTreeItem.this.account.getTransactions().addCollectionObserver(AccountTreeItem.this);
+                    AccountTreeItem.this.account.getTransactions().removeCollectionObserver(AccountTreeItem.this);
                 }
             });
         }
