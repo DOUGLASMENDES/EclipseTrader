@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsetrader"
       label="EclipseTrader"
-      version="0.21.0"
+      version="0.22.0"
       provider-name="Sourceforge.net"
       plugin="net.sourceforge.eclipsetrader">
 
@@ -23,7 +23,7 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.rcp" version="3.1.2"/>
+      <import feature="org.eclipse.rcp" version="3.1.2" match="perfect"/>
    </requires>
 
    <plugin
