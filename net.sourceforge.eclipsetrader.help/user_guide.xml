@@ -2,25 +2,18 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="User Guide">
-<!-- 
-    <topic label="Getting Started">
-        <topic label="First Run" href="guide/first_run.html"/>
-    </topic>
-    <topic label="Features">
-        <topic label="Stock Watch" href="guide/stockwatch.html"/>
-        <topic label="Intraday Charts" href="guide/intraday_chart.html"/>
-        <topic label="Historical Charts" href="guide/history_chart.html"/>
-        <topic label="Technical Analisys Indicators" href="guide/indicators.html"/>
-        <topic label="Level II / Market Depth" href="guide/level2.html"/>
-        <topic label="News" href="guide/news.html"/>
-        <topic label="Indices" href="guide/indices.html"/>
-    </topic>
--->
+    <topic label="Disclaimer" href="guide/disclaimer.html"/>
     <topic label="Concepts">
         <topic label="Securities" href="guide/securities.html"/>
         <topic label="Watchlists" href="guide/watchlist.html"/>
         <topic label="Charts" href="guide/charts.html"/>
         <topic label="News" href="guide/news.html"/>
+        <topic label="Patterns" href="guide/patterns.html"/>
+        <topic label="Accounts" href="guide/accounts.html"/>
+        <topic label="Portfolio" href="guide/portfolio.html"/>
+    </topic>
+    <topic label="Accounts" href="guide/accounts.html">
+	    <topic label="Portfolio" href="guide/portfolio.html" />
     </topic>
     <topic label="Charts" href="guide/charts.html">
 	    <topic label="Indicators" href="guide/indicators/index.html">
@@ -49,6 +42,18 @@
 	        <topic label="Line" href="guide/objects/line.html"/>
 	        <topic label="Sell Arrow" href="guide/objects/sell.html"/>
 	    </topic>
+    </topic>
+    <topic label="News" href="guide/news.html">
+    </topic>
+    <topic label="Patterns" href="guide/patterns.html">
+        <topic label="Closing Price Reversal Rule" href="guide/patterns/closingprice.html"/>
+        <topic label="Double Reversal Rule" href="guide/patterns/doublereversal.html"/>
+        <topic label="Gap Rule" href="guide/patterns/gap.html"/>
+        <topic label="High / Low Reversal" href="guide/patterns/highlowreversal.html"/>
+        <topic label="Key Reversal" href="guide/patterns/keyreversal.html"/>
+        <topic label="Lindahl Buy Rule" href="guide/patterns/lindhalbuy.html"/>
+        <topic label="Lindahl Sell Rule" href="guide/patterns/lindhalsell.html"/>
+        <topic label="Three-Bar Closes Rule" href="guide/patterns/threebarcloses.html"/>
     </topic>
     <!-- install update topics -->
     <topic label="Updating with the update manager" href="tasks/tasks-36.htm" >
