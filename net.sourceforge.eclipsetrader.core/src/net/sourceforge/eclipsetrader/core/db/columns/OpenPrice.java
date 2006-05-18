@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.core.db.columns;
 
 import java.text.NumberFormat;
 
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 
 public class OpenPrice extends Column
@@ -36,7 +37,7 @@ public class OpenPrice extends Column
         if (item.getSecurity() == null)
             return "";
         if (item.getSecurity().getOpen() != null)
-            return formatter.format(item.getSecurity().getOpen());
+            return formatter.format(CurrencyConverter.getInstance().convert(item.getSecurity().getOpen(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
         return "";
     }
 }

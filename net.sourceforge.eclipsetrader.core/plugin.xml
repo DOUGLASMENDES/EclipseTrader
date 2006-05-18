@@ -68,6 +68,11 @@
             class="net.sourceforge.eclipsetrader.core.ui.preferences.DataPreferencesPage"
             id="net.sourceforge.eclipsetrader.data"
             name="Data"/>
+  <page
+        category="net.sourceforge.eclipsetrader"
+        class="net.sourceforge.eclipsetrader.core.ui.preferences.CurrencyPreferencesPage"
+        id="net.sourceforge.eclipsetrader.currency"
+        name="Currencies"/>
    </extension>
    <extension
          point="org.eclipse.ui.themes">
@@ -96,6 +101,11 @@
             name="EclipseTrader"/>
       <view
             category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.core.ui.views.CurrencyExchangeView"
+            id="net.sourceforge.eclipsetrader.views.currencies"
+            name="Currencies"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.SecuritiesView"
             icon="icons/eview16/database.png"
             id="net.sourceforge.eclipsetrader.views.securities"
@@ -107,6 +117,22 @@
             icon="icons/eview16/internal_browser.gif"
             id="net.sourceforge.eclipsetrader.webbrowser"
             name="Web Browser"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="currenciesViewContribution"
+            targetID="net.sourceforge.eclipsetrader.views.currencies">
+         <action
+               class="net.sourceforge.eclipsetrader.core.ui.actions.RefreshCurrenciesAction"
+               disabledIcon="icons/dlcl16/nav_refresh.gif"
+               icon="icons/elcl16/nav_refresh.gif"
+               id="net.sourceforge.eclipsetrader.currencies.refresh"
+               label="Update Currency Exchange"
+               style="push"
+               toolbarPath="group6"
+               tooltip="Update Currency Exchange"/>
+      </viewContribution>
    </extension>
 
 </plugin>

@@ -21,10 +21,15 @@ import net.sourceforge.eclipsetrader.core.internal.XMLRepository;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -44,6 +49,25 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PREFS_NEWS_DATE_RANGE = "NEWS_DATE_RANGE";
     private static CorePlugin plugin;
     private static Repository repository;
+    private IPropertyChangeListener feedPropertyListener = new IPropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            if (event.getProperty().equals(CorePlugin.FEED_RUNNING))
+            {
+                if (CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.FEED_RUNNING))
+                {
+                    Job job = new Job("Update currencies") {
+                        protected IStatus run(IProgressMonitor monitor)
+                        {
+                            return CurrencyConverter.getInstance().updateExchanges(monitor);
+                        }
+                    };
+                    job.setUser(false);
+                    job.schedule();
+                }
+            }
+        }
+    };
 
     public CorePlugin()
     {
@@ -65,6 +89,7 @@ public class CorePlugin extends AbstractUIPlugin
             preferenceStore.setDefault(PREFS_NEWS_DATE_RANGE, 3);
 
         preferenceStore.setValue(FEED_RUNNING, false);
+        CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(feedPropertyListener);
     }
 
     /* (non-Javadoc)
@@ -78,6 +103,7 @@ public class CorePlugin extends AbstractUIPlugin
             repository.dispose();
 
         getPreferenceStore().setValue(FEED_RUNNING, false);
+        CorePlugin.getDefault().getPreferenceStore().removePropertyChangeListener(feedPropertyListener);
         
         super.stop(context);
         

@@ -1076,6 +1076,8 @@ public class XMLRepository extends Repository
                     watchlist.setStyle(Integer.parseInt(value.getNodeValue()));
                 else if (nodeName.equalsIgnoreCase("feed")) //$NON-NLS-1$
                     watchlist.setDefaultFeed(value.getNodeValue());
+                else if (nodeName.equals("currency")) //$NON-NLS-1$
+                    watchlist.setCurrency(Currency.getInstance(value.getNodeValue()));
             }
             if (nodeName.equalsIgnoreCase("columns")) //$NON-NLS-1$
             {
@@ -1183,6 +1185,12 @@ public class XMLRepository extends Repository
                 node = document.createElement("style");
                 node.appendChild(document.createTextNode(String.valueOf(watchlist.getStyle())));
                 element.appendChild(node);
+                if (watchlist.getCurrency() != null)
+                {
+                    node = document.createElement("currency");
+                    node.appendChild(document.createTextNode(watchlist.getCurrency().getCurrencyCode()));
+                    element.appendChild(node);
+                }
                 if (watchlist.getDefaultFeed() != null)
                 {
                     node = document.createElement("feed");

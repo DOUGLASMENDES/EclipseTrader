@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 
 public class PaidPrice extends Column
@@ -36,7 +37,12 @@ public class PaidPrice extends Column
     public String getText(WatchlistItem item)
     {
         if (item != null && item.getPaidPrice() != null)
-            return formatter.format(item.getPaidPrice());
+        {
+            if (item.getSecurity() != null)
+                return formatter.format(CurrencyConverter.getInstance().convert(item.getPaidPrice(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+            else
+                return formatter.format(item.getPaidPrice());
+        }
         return "";
     }
 

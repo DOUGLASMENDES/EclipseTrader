@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.core.db.columns;
 import java.text.NumberFormat;
 import java.util.Iterator;
 
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
@@ -48,8 +49,8 @@ public class Balance extends Column
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && item.getPosition() != null && item.getPaidPrice() != null)
         {
-            double paid = item.getPosition().intValue() * item.getPaidPrice().doubleValue();
-            double current = item.getPosition().intValue() * quote.getLast();
+            double paid = CurrencyConverter.getInstance().convert(item.getPosition().intValue() * item.getPaidPrice().doubleValue(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+            double current = CurrencyConverter.getInstance().convert(item.getPosition().intValue() * quote.getLast(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
             if (current > paid)
                 return "+" + formatter.format(current - paid) + " (+" + percentFormatter.format((current - paid) / paid * 100.0) + "%)";
             return formatter.format(current - paid) + " (" + percentFormatter.format((current - paid) / paid * 100.0) + "%)";

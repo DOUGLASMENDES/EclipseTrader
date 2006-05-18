@@ -82,6 +82,9 @@ public class Watchlist extends PersistentObject
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
+        for (Iterator iter = items.iterator(); iter.hasNext(); )
+            ((WatchlistItem)iter.next()).update();
+        setChanged();
     }
 
     public String getDefaultFeed()

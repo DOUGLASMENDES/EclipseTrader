@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.core.db.columns;
 
 import java.text.NumberFormat;
 
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 
@@ -38,7 +39,7 @@ public class AskPrice extends Column
             return "";
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && quote.getAsk() != 0)
-            return formatter.format(quote.getAsk());
+            return formatter.format(CurrencyConverter.getInstance().convert(quote.getAsk(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
         return "";
     }
 }

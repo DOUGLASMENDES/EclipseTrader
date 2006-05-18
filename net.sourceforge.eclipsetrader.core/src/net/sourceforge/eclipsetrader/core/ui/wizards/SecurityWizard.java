@@ -111,7 +111,7 @@ public class SecurityWizard extends Wizard implements INewWizard
         
         security.setCode(securityPage.getCode());
         security.setDescription(securityPage.getSecurityDescription());
-//        security.setCurrency(securityPage.getCurrency());
+        security.setCurrency(securityPage.getCurrency());
         
         if (quoteFeedPage.getId() != null)
         {

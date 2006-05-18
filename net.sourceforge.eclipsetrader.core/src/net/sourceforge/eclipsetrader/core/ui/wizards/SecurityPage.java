@@ -11,17 +11,14 @@
 
 package net.sourceforge.eclipsetrader.core.ui.wizards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Security;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -42,7 +39,7 @@ public class SecurityPage extends WizardPage
     private Text code;
     private Text securityDescription;
     private Text isin;
-//    private Combo currency;
+    private Combo currency;
     private Security security;
 
     public SecurityPage()
@@ -96,23 +93,14 @@ public class SecurityPage extends WizardPage
             }
         });
 
-/*        label = new Label(composite, SWT.NONE);
+        label = new Label(composite, SWT.NONE);
         label.setText("Currency");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         currency = new Combo(composite, SWT.SINGLE | SWT.READ_ONLY);
         currency.setVisibleItemCount(10);
         currency.add("");
 
-        Map map = new HashMap();
-        List locale = new ArrayList(Arrays.asList(Locale.getAvailableLocales()));
-        for (Iterator iter = locale.iterator(); iter.hasNext(); )
-        {
-            try {
-                Currency c = Currency.getInstance((Locale)iter.next());
-                map.put(c.getCurrencyCode(), c);
-            } catch(Exception e) {}
-        }
-        List list = new ArrayList(map.keySet());
+        List list = CurrencyConverter.getInstance().getCurrencies();
         Collections.sort(list, new Comparator() {
             public int compare(Object arg0, Object arg1)
             {
@@ -120,17 +108,14 @@ public class SecurityPage extends WizardPage
             }
         });
         for (Iterator iter = list.iterator(); iter.hasNext(); )
-        {
-            Currency c = (Currency)map.get((String)iter.next());
-            currency.add(c.getCurrencyCode());
-        }
+            currency.add((String)iter.next());
         if (security != null)
         {
             if (security.getCurrency() != null)
                 currency.setText(security.getCurrency().getCurrencyCode());
         }
         else
-            currency.setText(Currency.getInstance(Locale.getDefault()).getCurrencyCode());*/
+            currency.setText(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
         
         validatePage();
     }
@@ -156,7 +141,7 @@ public class SecurityPage extends WizardPage
         validatePage();
     }
 
-/*    public Currency getCurrency()
+    public Currency getCurrency()
     {
         if (currency.getText().length() != 0)
             return Currency.getInstance(currency.getText());
@@ -167,7 +152,7 @@ public class SecurityPage extends WizardPage
     {
         this.currency.setText(currency.getCurrencyCode());
         validatePage();
-    }*/
+    }
 
     public String getIsin()
     {

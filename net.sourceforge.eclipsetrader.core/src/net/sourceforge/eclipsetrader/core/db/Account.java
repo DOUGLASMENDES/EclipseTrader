@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.ObservableList;
 
@@ -171,7 +172,10 @@ public class Account extends PersistentObject
         for (int i = 0; i < objs.length; i++)
         {
             Transaction transaction = (Transaction)objs[i];
-            result += transaction.getAmount();
+            double amount = transaction.getAmount();
+            if (getCurrency() != null && !getCurrency().equals(transaction.getSecurity().getCurrency()))
+                amount = CurrencyConverter.getInstance().convert(amount, getCurrency(), transaction.getSecurity().getCurrency());
+            result += amount;
         }
         
         return result;
