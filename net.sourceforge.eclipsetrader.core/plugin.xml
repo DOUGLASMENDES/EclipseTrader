@@ -132,6 +132,12 @@
                style="push"
                toolbarPath="group6"
                tooltip="Update Currency Exchange"/>
+         <action
+               class="net.sourceforge.eclipsetrader.core.ui.actions.ConvertCurrencyAction"
+               id="net.sourceforge.eclipsetrader.currencyConversion"
+               label="Convert..."
+               menubarPath="additions"
+               style="push"/>
       </viewContribution>
    </extension>
 
