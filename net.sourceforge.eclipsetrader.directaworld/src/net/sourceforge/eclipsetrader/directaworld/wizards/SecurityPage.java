@@ -12,7 +12,9 @@
 package net.sourceforge.eclipsetrader.directaworld.wizards;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -161,6 +163,7 @@ public class SecurityPage extends WizardPage
             Security security = new Security();
             security.setCode(item.getAttributes().getNamedItem("code").getTextContent() + ".MI");
             security.setDescription(item.getFirstChild().getNodeValue());
+            security.setCurrency(Currency.getInstance(Locale.ITALY));
 
             Feed feed = security.new Feed();
             feed.setId("net.sourceforge.eclipsetrader.directaworld");
