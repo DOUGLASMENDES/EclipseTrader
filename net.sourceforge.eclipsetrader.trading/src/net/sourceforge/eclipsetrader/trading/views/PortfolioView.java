@@ -44,6 +44,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -71,6 +72,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
@@ -166,6 +168,20 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 {
                     tree.deselectAll();
                     updateSelection();
+                }
+            }
+
+            public void mouseDoubleClick(MouseEvent e)
+            {
+                ISelection selection = getSite().getSelectionProvider().getSelection();
+                if (selection instanceof AccountSelection)
+                {
+                    IWorkbenchPage page = getViewSite().getPage();
+                    try {
+                        page.showView(TransactionsView.VIEW_ID, String.valueOf(((AccountSelection)selection).getAccount().getId()), IWorkbenchPage.VIEW_ACTIVATE);
+                    } catch (PartInitException e1) {
+                        CorePlugin.logException(e1);
+                    }
                 }
             }
         });
