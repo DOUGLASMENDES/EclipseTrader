@@ -12,9 +12,15 @@
 package net.sourceforge.eclipsetrader.trading.wizards.accounts;
 
 import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Currency;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
 import net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage;
@@ -32,6 +38,7 @@ public class GeneralPage extends CommonPreferencePage
     private Account account;
     private Text text;
     private Combo group;
+    private Combo currency;
     private Text balance;
     private Text currentBalance;
     private NumberFormat nf = NumberFormat.getInstance();
@@ -89,6 +96,13 @@ public class GeneralPage extends CommonPreferencePage
             group.setText(account.getGroup().getDescription());
 
         label = new Label(content, SWT.NONE);
+        label.setText("Currency");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        currency = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
+        currency.setVisibleItemCount(10);
+        currency.add("");
+
+        label = new Label(content, SWT.NONE);
         label.setText("Initial Balance");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         balance = new Text(content, SWT.BORDER);
@@ -113,6 +127,23 @@ public class GeneralPage extends CommonPreferencePage
             group.setData(ag.getDescription(), ag);
         }
 
+        List list = CurrencyConverter.getInstance().getCurrencies();
+        Collections.sort(list, new Comparator() {
+            public int compare(Object arg0, Object arg1)
+            {
+                return ((String)arg0).compareTo((String)arg1);
+            }
+        });
+        for (Iterator iter = list.iterator(); iter.hasNext(); )
+            currency.add((String)iter.next());
+        if (account != null)
+        {
+            if (account.getCurrency() != null)
+                currency.setText(account.getCurrency().getCurrencyCode());
+        }
+        else
+            currency.setText(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
         text.setFocus();
     }
 
@@ -124,6 +155,7 @@ public class GeneralPage extends CommonPreferencePage
         if (account != null)
         {
             account.setDescription(getText());
+            account.setCurrency(currency.getText().length() != 0 ? Currency.getInstance(currency.getText()) : null);
             account.setInitialBalance(getBalance());
             AccountGroup group = getGroup();
             if (account.getGroup() != group)

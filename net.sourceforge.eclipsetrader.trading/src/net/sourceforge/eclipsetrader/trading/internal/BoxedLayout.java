@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.FeedMonitor;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
@@ -199,11 +200,13 @@ public class BoxedLayout extends AbstractLayout
             Quote quote = security.getQuote();
             if (quote != null)
             {
-                setValue(numberFormatter.format(quote.getLast()));
+                double last = CurrencyConverter.getInstance().convert(quote.getLast(), security.getCurrency(), watchlistItem.getParent().getCurrency());
+                double close = CurrencyConverter.getInstance().convert(security.getClose(), security.getCurrency(), watchlistItem.getParent().getCurrency());
+                setValue(numberFormatter.format(last));
                 if (security.getClose() != null)
                 {
-                    double change = quote.getLast() - security.getClose().doubleValue();
-                    double percentage = change / security.getClose().doubleValue() * 100;
+                    double change = last - close;
+                    double percentage = change / close * 100;
                     String prefix = "";
                     if (change > 0)
                         prefix = "+";

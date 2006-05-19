@@ -452,7 +452,10 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             this.account = account;
             
             setText(account.getDescription());
-            setText(1, nf.format(account.getBalance()));
+            if (account.getCurrency() != null)
+                setText(1, account.getCurrency().getSymbol() + " " + nf.format(account.getBalance()));
+            else
+                setText(1, nf.format(account.getBalance()));
             setData(account);
 
             account.addObserver(this);
@@ -475,7 +478,10 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                     if (!isDisposed())
                     {
                         setText(account.getDescription());
-                        setText(1, nf.format(account.getBalance()));
+                        if (account.getCurrency() != null)
+                            setText(1, account.getCurrency().getSymbol() + " " + nf.format(account.getBalance()));
+                        else
+                            setText(1, nf.format(account.getBalance()));
                     }
                 }
             });

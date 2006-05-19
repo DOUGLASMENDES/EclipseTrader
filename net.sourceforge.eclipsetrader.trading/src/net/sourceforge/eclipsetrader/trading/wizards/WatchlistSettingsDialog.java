@@ -26,33 +26,38 @@ import org.eclipse.swt.widgets.Shell;
 public class WatchlistSettingsDialog extends PreferenceDialog
 {
     private Watchlist watchlist;
-    private GeneralPage generalPage = new GeneralPage() {
-        public void performFinish()
-        {
-            watchlist.setDescription(getText());
-            super.performFinish();
-        }
-    };
-    private ColumnsPage columnsPage = new ColumnsPage() {
-        public void performFinish()
-        {
-            watchlist.setColumns(getColumns());
-            super.performFinish();
-        }
-    };
-    private ItemsPage itemsPage = new ItemsPage() {
-        public void performFinish()
-        {
-            watchlist.setItems(getItems());
-            super.performFinish();
-        }
-    };
+    private GeneralPage generalPage;
+    private ColumnsPage columnsPage;
+    private ItemsPage itemsPage;
 
     public WatchlistSettingsDialog(Watchlist watchlist, Shell parentShell)
     {
         super(parentShell, new PreferenceManager());
         this.watchlist = watchlist;
         
+        generalPage = new GeneralPage(watchlist) {
+            public void performFinish()
+            {
+                WatchlistSettingsDialog.this.watchlist.setDescription(getText());
+                WatchlistSettingsDialog.this.watchlist.setCurrency(getCurrency());
+                super.performFinish();
+            }
+        };
+        columnsPage = new ColumnsPage() {
+            public void performFinish()
+            {
+                WatchlistSettingsDialog.this.watchlist.setColumns(getColumns());
+                super.performFinish();
+            }
+        };
+        itemsPage = new ItemsPage() {
+            public void performFinish()
+            {
+                WatchlistSettingsDialog.this.watchlist.setItems(getItems());
+                super.performFinish();
+            }
+        };
+
         getPreferenceManager().addToRoot(new PreferenceNode("general", new CommonDialogPage(generalPage) {
             protected Control createContents(Composite parent)
             {
