@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+    <currency>EUR</currency>
+    <currency>USD</currency>
+    <currency>GBP</currency>
+    <conversion symbol="EURGBP">0.6796</conversion>
+    <conversion symbol="USDGBP">0.5269</conversion>
+    <conversion symbol="EURUSD">1.2898</conversion>
+    <conversion symbol="GBPEUR">1.4714</conversion>
+    <conversion symbol="USDEUR">0.7753</conversion>
+    <conversion symbol="GBPUSD">1.8979</conversion>
+</data>
