@@ -142,17 +142,6 @@ public class EventsView extends ViewPart implements ICollectionObserver
             {
                 updateView();
                 CorePlugin.getRepository().allEvents().addCollectionObserver(EventsView.this);
-                
-                Event event = new Event(new Integer(1));
-                event.setMessage("Messaggio di prova");
-                event.setLongMessage("Testo lungo del messaggio di prova.\r\nVediamo se gestisce anche le righe multiple e se e' in grado di andare a capo quando una riga non e' sufficiente per tutto il testo");
-                CorePlugin.getRepository().allEvents().add(event);
-                
-                event = new Event(new Integer(2));
-                event.setSecurity(CorePlugin.getRepository().getSecurity("CAP.MI"));
-                event.setMessage("Messaggio di prova con security");
-                event.setLongMessage("Testo lungo del messaggio di prova.\r\nVediamo se gestisce anche le righe multiple e se e' in grado di andare a capo quando una riga non e' sufficiente per tutto il testo");
-                CorePlugin.getRepository().allEvents().add(event);
             }
         });
     }
