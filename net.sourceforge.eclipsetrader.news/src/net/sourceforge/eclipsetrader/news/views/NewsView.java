@@ -171,6 +171,9 @@ public class NewsView extends ViewPart implements ICollectionObserver
         parent.getDisplay().asyncExec(new Runnable() {
             public void run()
             {
+                if (table.isDisposed())
+                    return;
+                
                 if (getViewSite().getSecondaryId() != null)
                 {
                     security = (Security) CorePlugin.getRepository().getSecurity(getViewSite().getSecondaryId());

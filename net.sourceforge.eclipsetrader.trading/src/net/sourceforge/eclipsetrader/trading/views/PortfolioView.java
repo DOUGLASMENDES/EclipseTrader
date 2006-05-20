@@ -286,10 +286,13 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
         parent.getDisplay().asyncExec(new Runnable() {
             public void run()
             {
-                updateView();
-                updateSelection();
-                CorePlugin.getRepository().allAccountGroups().addCollectionObserver(PortfolioView.this);
-                CorePlugin.getRepository().allAccounts().addCollectionObserver(PortfolioView.this);
+                if (!tree.isDisposed())
+                {
+                    updateView();
+                    updateSelection();
+                    CorePlugin.getRepository().allAccountGroups().addCollectionObserver(PortfolioView.this);
+                    CorePlugin.getRepository().allAccounts().addCollectionObserver(PortfolioView.this);
+                }
             }
         });
     }
