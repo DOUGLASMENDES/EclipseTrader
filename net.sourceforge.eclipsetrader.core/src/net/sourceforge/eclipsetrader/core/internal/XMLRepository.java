@@ -43,6 +43,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
+import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.Security;
@@ -73,6 +74,7 @@ public class XMLRepository extends Repository
     private Map accountGroupMap = new HashMap();
     private Integer accountNextId = new Integer(1);
     private Map accountMap = new HashMap();
+    private Integer eventNextId = new Integer(1);
 
     public XMLRepository()
     {
@@ -209,6 +211,36 @@ public class XMLRepository extends Repository
                 ex.printStackTrace();
             }
         }
+
+        file = new File(Platform.getLocation().toFile(), "events.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+        {
+            try
+            {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(file);
+                
+                Node firstNode = document.getFirstChild();
+
+                NodeList childNodes = firstNode.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++)
+                {
+                    Node item = childNodes.item(i);
+                    String nodeName = item.getNodeName();
+                    if (nodeName.equalsIgnoreCase("event")) //$NON-NLS-1$
+                    {
+                        Event obj = loadEvent(item.getChildNodes());
+                        obj.setRepository(this);
+                        allEvents().add(obj);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        eventNextId = new Integer(allEvents().size() + 1);
     }
 
     /* (non-Javadoc)
@@ -219,6 +251,7 @@ public class XMLRepository extends Repository
         saveSecurities();
         saveWatchlists();
         saveNews();
+        saveEvents();
         super.dispose();
     }
 
@@ -264,6 +297,16 @@ public class XMLRepository extends Repository
      */
     public void save(PersistentObject obj)
     {
+        if (obj instanceof Event)
+        {
+            if (obj.getId() == null)
+            {
+                obj.setId(eventNextId);
+                eventNextId = getNextId(eventNextId);
+            }
+            saveEvents();
+        }
+        
         if (obj instanceof Security)
         {
             if (obj.getId() == null)
@@ -1555,6 +1598,79 @@ public class XMLRepository extends Repository
             }
 
             saveDocument(document, "", "accounts.xml");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Event loadEvent(NodeList node)
+    {
+        Event event = new Event(new Integer(allEvents().size() + 1));
+        
+        if (((Node)node).getAttributes().getNamedItem("security") != null)
+        {
+            Security security = getSecurity(((Node)node).getAttributes().getNamedItem("security").getTextContent());
+            event.setSecurity(security);
+        }
+        
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            Node item = node.item(i);
+            String nodeName = item.getNodeName();
+            Node value = item.getFirstChild();
+            if (value != null)
+            {
+                if (nodeName.equalsIgnoreCase("date") == true)
+                {
+                    try {
+                        event.setDate(dateTimeFormat.parse(value.getNodeValue()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if (nodeName.equals("message")) //$NON-NLS-1$
+                    event.setMessage(value.getNodeValue());
+                else if (nodeName.equals("longMessage")) //$NON-NLS-1$
+                    event.setLongMessage(value.getNodeValue());
+            }
+        }
+        
+        event.clearChanged();
+        
+        return event;
+    }
+    
+    private void saveEvents()
+    {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.getDOMImplementation().createDocument(null, null, null);
+
+            Element root = document.createElement("data");
+            document.appendChild(root);
+            
+            for (Iterator iter = allNews().iterator(); iter.hasNext(); )
+            {
+                Event event = (Event)iter.next(); 
+
+                Element element = document.createElement("event");
+                if (event.getSecurity() != null)
+                    element.setAttribute("security", String.valueOf(event.getSecurity().getId()));
+                root.appendChild(element);
+
+                Element node = document.createElement("date");
+                node.appendChild(document.createTextNode(dateTimeFormat.format(event.getDate())));
+                element.appendChild(node);
+                node = document.createElement("message");
+                node.appendChild(document.createTextNode(event.getMessage()));
+                element.appendChild(node);
+                node = document.createElement("longMessage");
+                node.appendChild(document.createTextNode(event.getLongMessage()));
+                element.appendChild(node);
+            }
+            
+            saveDocument(document, "", "events.xml");
 
         } catch (Exception e) {
             e.printStackTrace();

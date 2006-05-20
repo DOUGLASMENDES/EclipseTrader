@@ -21,6 +21,7 @@ import java.util.Observable;
 
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
+import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.Security;
@@ -39,6 +40,7 @@ public class Repository
     private ObservableList news;
     private ObservableList accounts;
     private ObservableList accountGroups;
+    private ObservableList events;
     private Map newsMap = new HashMap();
 
     public Repository()
@@ -125,6 +127,13 @@ public class Repository
         
         return null;
     }
+    
+    public ObservableList allEvents()
+    {
+        if (events == null)
+            events = new ObservableList();
+        return events;
+    }
 
     public PersistentObject load(Class clazz, Integer id)
     {
@@ -156,6 +165,12 @@ public class Repository
         obj.setRepository(this);
         if (obj instanceof Observable)
             ((Observable)obj).notifyObservers();
+
+        if (obj instanceof Event)
+        {
+            if (!allEvents().contains(obj))
+                allEvents().add(obj);
+        }
 
         if (obj instanceof SecurityGroup)
         {
@@ -221,6 +236,9 @@ public class Repository
     
     public void delete(PersistentObject obj)
     {
+        if (obj instanceof Event)
+            allEvents().remove(obj);
+
         if (obj instanceof SecurityGroup)
         {
             for (Iterator iter = ((SecurityGroup)obj).getSecurities().iterator(); iter.hasNext(); )

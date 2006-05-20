@@ -47,6 +47,12 @@
                id="net.sourceforge.eclipsetrader.views.securities"
                relationship="stack"
                relative="left"/>
+         <view
+               id="net.sourceforge.eclipsetrader.views.events"
+               relationship="stack"
+               relative="bottom"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.views.events"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.views.currencies"/>
       </perspectiveExtension>
    </extension>
    <extension
@@ -104,6 +110,12 @@
             class="net.sourceforge.eclipsetrader.core.ui.views.CurrencyExchangeView"
             id="net.sourceforge.eclipsetrader.views.currencies"
             name="Currencies"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.core.ui.views.EventsView"
+            icon="icons/eview16/page.png"
+            id="net.sourceforge.eclipsetrader.views.events"
+            name="Events"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.SecuritiesView"
