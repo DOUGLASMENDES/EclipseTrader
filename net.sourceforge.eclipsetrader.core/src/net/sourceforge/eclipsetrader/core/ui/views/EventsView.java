@@ -193,39 +193,49 @@ public class EventsView extends ViewPart implements ICollectionObserver
      */
     public void itemAdded(Object o)
     {
-        Event event = (Event)o;
+        final Event event = (Event)o;
         
-        TableItem tableItem = new TableItem(table, SWT.NONE, 0);
-        tableItem.setText(0, dateFormatter.format(event.getDate()));
-        tableItem.setText(1, timeFormatter.format(event.getDate()));
-        tableItem.setText(2, event.getSecurity() != null ? event.getSecurity().getDescription() : "");
-        tableItem.setText(3, event.getMessage());
-        tableItem.setData(event);
+        table.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                TableItem tableItem = new TableItem(table, SWT.NONE, 0);
+                tableItem.setText(0, dateFormatter.format(event.getDate()));
+                tableItem.setText(1, timeFormatter.format(event.getDate()));
+                tableItem.setText(2, event.getSecurity() != null ? event.getSecurity().getDescription() : "");
+                tableItem.setText(3, event.getMessage());
+                tableItem.setData(event);
 
-        for (int i = 0; i < table.getColumnCount(); i++)
-            table.getColumn(i).pack();
+                for (int i = 0; i < table.getColumnCount(); i++)
+                    table.getColumn(i).pack();
 
-        removeSelectedAction.setEnabled(table.getSelectionIndex() != -1);
-        removeAllAction.setEnabled(table.getItemCount() != 0);
+                removeSelectedAction.setEnabled(table.getSelectionIndex() != -1);
+                removeAllAction.setEnabled(table.getItemCount() != 0);
+            }
+        });
     }
 
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.ICollectionObserver#itemRemoved(java.lang.Object)
      */
-    public void itemRemoved(Object o)
+    public void itemRemoved(final Object o)
     {
-        TableItem[] items = table.getItems();
-        for (int i = 0; i < items.length; i++)
-        {
-            if (items[i].getData().equals(o))
-                items[i].dispose();
-        }
-        
-        for (int i = 0; i < table.getColumnCount(); i++)
-            table.getColumn(i).pack();
+        table.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                TableItem[] items = table.getItems();
+                for (int i = 0; i < items.length; i++)
+                {
+                    if (items[i].getData().equals(o))
+                        items[i].dispose();
+                }
+                
+                for (int i = 0; i < table.getColumnCount(); i++)
+                    table.getColumn(i).pack();
 
-        removeSelectedAction.setEnabled(table.getSelectionIndex() != -1);
-        removeAllAction.setEnabled(table.getItemCount() != 0);
+                removeSelectedAction.setEnabled(table.getSelectionIndex() != -1);
+                removeAllAction.setEnabled(table.getItemCount() != 0);
+            }
+        });
     }
     
     public Table getTable()
