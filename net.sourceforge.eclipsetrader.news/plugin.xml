@@ -122,6 +122,10 @@
             name="RSS News"/>
    </extension>
    <extension
+         point="org.eclipse.ui.startup">
+      <startup class="net.sourceforge.eclipsetrader.news.internal.EarlyStartup"/>
+   </extension>
+   <extension
          point="org.eclipse.ui.themes">
       <themeElementCategory
             id="newsList"

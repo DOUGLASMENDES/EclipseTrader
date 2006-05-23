@@ -144,9 +144,9 @@ public class NewsPlugin extends AbstractUIPlugin
         getPreferenceStore().setValue(NewsPlugin.FEED_RUNNING, true);
     }
     
-    public void startFeedSnapshot()
+    public static void startFeedSnapshot()
     {
-        IPreferenceStore store = getPreferenceStore();
+        IPreferenceStore store = NewsPlugin.getDefault().getPreferenceStore();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry.getExtensionPoint(NewsPlugin.PROVIDER_EXTENSION_POINT);
@@ -168,7 +168,7 @@ public class NewsPlugin extends AbstractUIPlugin
             }
         }
         
-        getPreferenceStore().setValue(NewsPlugin.FEED_RUNNING, true);
+        NewsPlugin.getDefault().getPreferenceStore().setValue(NewsPlugin.FEED_RUNNING, true);
     }
     
     public void startFeedSnapshot(Security security)

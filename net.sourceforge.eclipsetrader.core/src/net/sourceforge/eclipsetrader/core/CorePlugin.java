@@ -52,6 +52,10 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PREFS_PROXY_PASSWORD = "PROXY_PASSWORD";
     public static final String PREFS_HISTORICAL_PRICE_RANGE = "HISTORICAL_PRICE_RANGE";
     public static final String PREFS_NEWS_DATE_RANGE = "NEWS_DATE_RANGE";
+    public static final String PREFS_UPDATE_HISTORY = "UPDATE_HISTORY";
+    public static final String PREFS_UPDATE_HISTORY_ONCE = "UPDATE_HISTORY_ONCE";
+    public static final String PREFS_UPDATE_HISTORY_LAST = "UPDATE_HISTORY_LAST";
+    public static final String PREFS_UPDATE_NEWS = "UPDATE_NEWS";
     private static CorePlugin plugin;
     private static Repository repository;
     private IPropertyChangeListener feedPropertyListener = new IPropertyChangeListener() {
