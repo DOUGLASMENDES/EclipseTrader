@@ -120,6 +120,7 @@ public class ItemPreferencePage extends PreferencePage
 
         alerts = new Table(section, SWT.SINGLE|SWT.FULL_SELECTION);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gridData.widthHint = 250;
         gridData.heightHint = alerts.getItemHeight() * 5;
         alerts.setLayoutData(gridData);
         alerts.setHeaderVisible(true);
@@ -295,7 +296,7 @@ public class ItemPreferencePage extends PreferencePage
                 }
                 Alert alert = (Alert)childs[i].getData();
                 alert.setParameters(parameters);
-                alert.setLastSeen((Date)((CTabFolder)alerts.getItem(alerts.getSelectionIndex()).getData("folder")).getData("last"));
+                alert.setLastSeen((Date)((CTabFolder)alerts.getItem(i).getData("folder")).getData("last"));
                 ((AlertPlugin)alert.getData()).init(parameters);
                 ((AlertPlugin)alert.getData()).setLastSeen(alert.getLastSeen());
                 watchlistItem.getAlerts().add(alert);
