@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+   <extension-point id="alerts" name="Watchlist Alerts" schema="schema/alerts.exsd"/>
    <extension
          point="org.eclipse.ui.activities">
       <activityPatternBinding
@@ -248,6 +249,12 @@
                label="Open Level2"
                menubarPath="top"/>
          <action
+               class="net.sourceforge.eclipsetrader.trading.actions.NewAlertAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.trading.newAlert"
+               label="New Alert"
+               menubarPath="top"/>
+         <action
                class="net.sourceforge.eclipsetrader.trading.actions.SecurityPatternSearchAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.searchPattern"
@@ -391,6 +398,25 @@
             class="net.sourceforge.eclipsetrader.trading.patterns.DoubleReversalRule"
             id="net.sourceforge.eclipsetrader.pattern.doublereversalrule"
             name="Double Reversal Rule"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.trading.alerts">
+      <alert
+            class="net.sourceforge.eclipsetrader.trading.alerts.TargetPrice"
+            id="net.sourceforge.eclipsetrader.alert.targetprice"
+            name="Target Price">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.alerts.TargetPricePreferences"
+               name="General"/>
+      </alert>
+      <alert
+            class="net.sourceforge.eclipsetrader.trading.alerts.PriceChange"
+            id="net.sourceforge.eclipsetrader.alert.pricechange"
+            name="Price Change (%)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.alerts.PriceChangePreferences"
+               name="General"/>
+      </alert>
    </extension>
 
 </plugin>

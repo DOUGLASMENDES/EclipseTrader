@@ -37,6 +37,7 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.Repository;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
+import net.sourceforge.eclipsetrader.core.db.Alert;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
@@ -1177,6 +1178,7 @@ public class XMLRepository extends Repository
                         if (watchlistItem.getSecurity() == null)
                             System.err.println("Unable to load security id " + id);
                         
+                        int alertIndex = 1;
                         NodeList quoteList = item.getChildNodes();
                         for (int q = 0; q < quoteList.getLength(); q++)
                         {
@@ -1189,6 +1191,37 @@ public class XMLRepository extends Repository
                                     watchlistItem.setPosition(Integer.parseInt(value.getNodeValue()));
                                 else if (nodeName.equalsIgnoreCase("paid")) //$NON-NLS-1$
                                     watchlistItem.setPaidPrice(Double.parseDouble(value.getNodeValue()));
+                            }
+                            if (nodeName.equalsIgnoreCase("alert")) //$NON-NLS-1$
+                            {
+                                Alert alert = new Alert(new Integer(alertIndex++));
+                                alert.setPluginId(item.getAttributes().getNamedItem("pluginId").getTextContent());
+                                if (item.getAttributes().getNamedItem("lastSeen") != null)
+                                {
+                                    try {
+                                        alert.setLastSeen(dateTimeFormat.parse(item.getAttributes().getNamedItem("lastSeen").getTextContent()));
+                                    } catch(Exception e) {
+                                        CorePlugin.logException(e);
+                                    }
+                                }
+
+                                NodeList paramList = item.getChildNodes();
+                                for (int p = 0; p < paramList.getLength(); p++)
+                                {
+                                    item = paramList.item(p);
+                                    nodeName = item.getNodeName();
+                                    value = item.getFirstChild();
+                                    if (value != null)
+                                    {
+                                        if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
+                                        {
+                                            String key = ((Node)item).getAttributes().getNamedItem("key").getTextContent();
+                                            alert.getParameters().put(key, value.getNodeValue());
+                                        }
+                                    }
+                                }
+                                
+                                watchlistItem.getAlerts().add(alert);
                             }
                         }
 
@@ -1263,11 +1296,11 @@ public class XMLRepository extends Repository
                 Element itemsNode = document.createElement("items");
                 element.appendChild(itemsNode);
 
-                int index = 0;
-                for (Iterator iter2 = watchlist.getItems().iterator(); iter2.hasNext(); )
+                int itemIndex = 1;
+                for (Iterator itemIter = watchlist.getItems().iterator(); itemIter.hasNext(); )
                 {
-                    WatchlistItem item = (WatchlistItem)iter2.next();
-                    item.setId(new Integer(index++));
+                    WatchlistItem item = (WatchlistItem)itemIter.next();
+                    item.setId(new Integer(itemIndex++));
                     item.setParent(watchlist);
                     item.setRepository(this);
 
@@ -1286,6 +1319,29 @@ public class XMLRepository extends Repository
                         node = document.createElement("paid");
                         node.appendChild(document.createTextNode(String.valueOf(item.getPaidPrice())));
                         itemNode.appendChild(node);
+                    }
+
+                    int alertIndex = 1;
+                    for (Iterator alertIter = item.getAlerts().iterator(); alertIter.hasNext(); )
+                    {
+                        Alert alert = (Alert)alertIter.next();
+                        alert.setId(new Integer(alertIndex++));
+
+                        Element alertNode = document.createElement("alert");
+                        alertNode.setAttribute("pluginId", alert.getPluginId());
+                        if (alert.getLastSeen() != null)
+                            alertNode.setAttribute("lastSeen", dateTimeFormat.format(alert.getLastSeen()));
+                        itemNode.appendChild(alertNode);
+
+                        for (Iterator paramIter = alert.getParameters().keySet().iterator(); paramIter.hasNext(); )
+                        {
+                            String key = (String)paramIter.next();
+                            
+                            node = document.createElement("param");
+                            node.setAttribute("key", key);
+                            node.appendChild(document.createTextNode((String)alert.getParameters().get(key)));
+                            alertNode.appendChild(node);
+                        }
                     }
                 }
             }
@@ -1650,7 +1706,7 @@ public class XMLRepository extends Repository
             Element root = document.createElement("data");
             document.appendChild(root);
             
-            for (Iterator iter = allNews().iterator(); iter.hasNext(); )
+            for (Iterator iter = allEvents().iterator(); iter.hasNext(); )
             {
                 Event event = (Event)iter.next(); 
 

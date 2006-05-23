@@ -16,18 +16,24 @@ import java.util.Date;
 
 public class Event extends PersistentObject
 {
-    private Date date = Calendar.getInstance().getTime();
+    private Date date;
     private Security security;
     private String message = "";
     private String longMessage = "";
 
     public Event()
     {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MILLISECOND, 0);
+        date = calendar.getTime();
     }
 
     public Event(Integer id)
     {
         super(id);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MILLISECOND, 0);
+        date = calendar.getTime();
     }
 
     public Date getDate()

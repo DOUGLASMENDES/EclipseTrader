@@ -12,6 +12,7 @@ Eclipse-AutoStart: true
 Bundle-Vendor: EclipseTrader
 Export-Package: net.sourceforge.eclipsetrader.trading;x-friends:="net.sourceforge.eclipsetrader.tests",
  net.sourceforge.eclipsetrader.trading.actions;x-friends:="net.sourceforge.eclipsetrader.tests",
+ net.sourceforge.eclipsetrader.trading.alerts,
  net.sourceforge.eclipsetrader.trading.dialogs,
  net.sourceforge.eclipsetrader.trading.patterns,
  net.sourceforge.eclipsetrader.trading.views;x-friends:="net.sourceforge.eclipsetrader.tests",

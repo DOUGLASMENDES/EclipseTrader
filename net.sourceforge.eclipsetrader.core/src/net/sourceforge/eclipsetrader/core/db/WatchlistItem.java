@@ -24,6 +24,7 @@ import net.sourceforge.eclipsetrader.core.db.columns.Column;
 public class WatchlistItem extends PersistentObject implements Observer
 {
     Security security;
+    List alerts = new ArrayList();
     Watchlist parent;
     Integer position;
     Double paidPrice;
@@ -68,6 +69,16 @@ public class WatchlistItem extends PersistentObject implements Observer
     public void setParent(Watchlist parent)
     {
         this.parent = parent;
+    }
+
+    public List getAlerts()
+    {
+        return alerts;
+    }
+
+    public void setAlerts(List alerts)
+    {
+        this.alerts = alerts;
     }
 
     public Integer getPosition()

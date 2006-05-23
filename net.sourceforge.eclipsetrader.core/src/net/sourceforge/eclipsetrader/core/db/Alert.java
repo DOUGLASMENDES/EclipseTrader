@@ -11,16 +11,15 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
 public class Alert extends PersistentObject
 {
     private String pluginId;
-    private List targets = new ArrayList();
+    private Date lastSeen;
     private Map parameters = new HashMap();
 
     public Alert()
@@ -43,14 +42,14 @@ public class Alert extends PersistentObject
         setChanged();
     }
 
-    public List getTargets()
+    public Date getLastSeen()
     {
-        return targets;
+        return lastSeen;
     }
 
-    public void setTargets(List targets)
+    public void setLastSeen(Date lastSeen)
     {
-        this.targets = targets;
+        this.lastSeen = lastSeen;
     }
 
     public Map getParameters()

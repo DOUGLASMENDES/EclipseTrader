@@ -30,6 +30,11 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveListener;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -68,6 +73,19 @@ public class CorePlugin extends AbstractUIPlugin
             }
         }
     };
+    private IPerspectiveListener perspectiveListener = new IPerspectiveListener() {
+
+        public void perspectiveActivated(IWorkbenchPage page, IPerspectiveDescriptor perspective)
+        {
+            IViewReference[] refs = page.getViewReferences();
+            for (int i = 0; i < refs.length; i++)
+                refs[i].getView(true);
+        }
+
+        public void perspectiveChanged(IWorkbenchPage page, IPerspectiveDescriptor perspective, String changeId)
+        {
+        }
+    };
 
     public CorePlugin()
     {
@@ -90,6 +108,8 @@ public class CorePlugin extends AbstractUIPlugin
 
         preferenceStore.setValue(FEED_RUNNING, false);
         CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(feedPropertyListener);
+        
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().addPerspectiveListener(perspectiveListener);
     }
 
     /* (non-Javadoc)
