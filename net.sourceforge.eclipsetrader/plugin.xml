@@ -95,5 +95,13 @@
             id="net.sourceforge.eclipsetrader.startupAndShutdown"
             name="Startup and Shutdown"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.eclipse.ui.ExtensionFactory:progressView"
+            icon="icons/eview16/pview.gif"
+            id="org.eclipse.ui.views.ProgressView"
+            name="Progress View"/>
+   </extension>
 
 </plugin>
