@@ -417,6 +417,22 @@
                class="net.sourceforge.eclipsetrader.trading.alerts.PriceChangePreferences"
                name="General"/>
       </alert>
+      <alert
+            class="net.sourceforge.eclipsetrader.trading.alerts.PriceAlert"
+            id="net.sourceforge.eclipsetrader.alert.pricealert"
+            name="Price Alert">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.alerts.PriceAlertPreferences"
+               name="General"/>
+      </alert>
+      <alert
+            class="net.sourceforge.eclipsetrader.trading.alerts.MovingAverageCrossover"
+            id="net.sourceforge.eclipsetrader.alert.macrossover"
+            name="Moving Average Crossover">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.alerts.MovingAverageCrossoverPreferences"
+               name="General"/>
+      </alert>
    </extension>
 
 </plugin>
