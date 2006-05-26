@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.trading.AlertPluginPreferencePage;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
+import net.sourceforge.eclipsetrader.trading.internal.wizards.IDynamicWizard;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -142,7 +143,20 @@ public class AlertSelectionPage extends WizardPage
             {
                 AlertPluginPreferencePage preferencePage = (AlertPluginPreferencePage)members[i].createExecutableExtension("class");
                 preferencePage.init(((NewAlertWizard)getWizard()).getSecurity(), new HashMap());
-                PluginParametersPage page = new PluginParametersPage(preferencePage);
+                CommonWizardPage page = new CommonWizardPage(new PluginParametersPage(preferencePage)) {
+                    public IWizardPage getNextPage()
+                    {
+                        java.util.List pages = ((IDynamicWizard)getWizard()).getAdditionalPages();
+                        int index = pages.indexOf(this);
+                        if (index < (pages.size() - 1))
+                        {
+                            IWizardPage page = (IWizardPage)pages.get(index + 1);
+                            page.setWizard(getWizard());
+                            return page;
+                        }
+                        return null;
+                    }
+                };
                 page.setTitle(getIndicatorName());
                 if (members[i].getAttribute("name") != null)
                     page.setDescription(members[i].getAttribute("name"));

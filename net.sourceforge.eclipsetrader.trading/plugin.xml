@@ -2,6 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension-point id="alerts" name="Watchlist Alerts" schema="schema/alerts.exsd"/>
+   <extension-point id="system" name="Trading System" schema="schema/system.exsd"/>
    <extension
          point="org.eclipse.ui.activities">
       <activityPatternBinding
@@ -40,7 +41,7 @@
                tooltip="Take a quote snapshot"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.StartFeedAction"
-               disabledIcon="icons/dtool16/start.gif"
+               disabledIcon="icons/dtool16/run.gif"
                icon="icons/etool16/run.gif"
                id="net.sourceforge.eclipsetrader.trading.startFeed"
                label="Start Feed"
@@ -89,6 +90,20 @@
                label="Open Watchlist"
                menubarPath="window/additions"
                style="pulldown"/>
+      </actionSet>
+      <actionSet
+            id="net.sourceforge.eclipsetrader.tradingSystem"
+            label="Trading Systems"
+            visible="true">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.NewTradingSystemWizardAction"
+               icon="icons/etool16/server_add.png"
+               id="net.sourceforge.eclipsetrader.trading.system"
+               label="Trading System"
+               menubarPath="file/newWizard/bottom"
+               style="push"
+               toolbarPath="tradingSystem"
+               tooltip="Create a new trading system"/>
       </actionSet>
    </extension>
    <extension
@@ -235,6 +250,11 @@
                relationship="stack"
                relative="bottom"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.views.portfolio"/>
+         <view
+               id="net.sourceforge.eclipsetrader.views.system"
+               relationship="stack"
+               relative="center"/>
+         <viewShortcut id="net.sourceforge.eclipsetrader.views.system"/>
       </perspectiveExtension>
    </extension>
    <extension
@@ -313,6 +333,12 @@
             id="net.sourceforge.eclipsetrader.views.portfolio"
             name="Portfolio"/>
       <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.TradingSystemView"
+            icon="icons/eview16/server_database.png"
+            id="net.sourceforge.eclipsetrader.views.system"
+            name="Trading Systems"/>
+      <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.WatchlistView"
@@ -362,6 +388,19 @@
                menubarPath="group1"
                style="push"
                tooltip="Open Level2"/>
+      </viewContribution>
+      <viewContribution
+            id="tradingSystemView"
+            targetID="net.sourceforge.eclipsetrader.views.system">
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.RunTradingSystemAction"
+               disabledIcon="icons/dtool16/refresh.gif"
+               icon="icons/etool16/refresh.gif"
+               id="net.sourceforge.eclipsetrader.trading.updateSignals"
+               label="Update Signals"
+               style="push"
+               toolbarPath="group4"
+               tooltip="Update Signals"/>
       </viewContribution>
    </extension>
    <extension
@@ -433,6 +472,18 @@
                class="net.sourceforge.eclipsetrader.trading.alerts.MovingAverageCrossoverPreferences"
                name="General"/>
       </alert>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.trading.system">
+      <system
+            class="net.sourceforge.eclipsetrader.trading.systems.PatternTrading"
+            id="net.sourceforge.eclipsetrader.system.patternTrading"
+            name="Pattern Trading">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.systems.PatternTradingPreferences"
+               description="Set the pattern search parameters"
+               name="Pattern"/>
+      </system>
    </extension>
 
 </plugin>

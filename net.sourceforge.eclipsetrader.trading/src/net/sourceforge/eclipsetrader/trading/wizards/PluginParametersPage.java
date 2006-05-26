@@ -11,22 +11,18 @@
 
 package net.sourceforge.eclipsetrader.trading.wizards;
 
-import java.util.List;
 import java.util.Map;
 
-import net.sourceforge.eclipsetrader.trading.AlertPluginPreferencePage;
+import net.sourceforge.eclipsetrader.trading.internal.wizards.IPluginParametersPage;
 
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 
-public class PluginParametersPage extends WizardPage
+public class PluginParametersPage extends CommonPreferencePage
 {
-    private AlertPluginPreferencePage page;
+    private IPluginParametersPage page;
 
-    public PluginParametersPage(AlertPluginPreferencePage page)
+    public PluginParametersPage(IPluginParametersPage page)
     {
-        super("");
         this.page = page;
     }
 
@@ -39,21 +35,8 @@ public class PluginParametersPage extends WizardPage
     }
     
     /* (non-Javadoc)
-     * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
+     * @see net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage#performFinish()
      */
-    public IWizardPage getNextPage()
-    {
-        List pages = ((NewAlertWizard)getWizard()).getAdditionalPages();
-        int index = pages.indexOf(this);
-        if (index < (pages.size() - 1))
-        {
-            IWizardPage page = (IWizardPage)pages.get(index + 1);
-            page.setWizard(getWizard());
-            return page;
-        }
-        return null;
-    }
-    
     public void performFinish()
     {
         page.performOk();

@@ -19,12 +19,13 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Alert;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.trading.internal.wizards.IDynamicWizard;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.PlatformUI;
 
-public class NewAlertWizard extends Wizard
+public class NewAlertWizard extends Wizard implements IDynamicWizard
 {
     private WatchlistItem watchlistItem;
     private AlertSelectionPage alertSelectionPage = new AlertSelectionPage();
@@ -75,7 +76,7 @@ public class NewAlertWizard extends Wizard
         return true;
     }
     
-    List getAdditionalPages()
+    public List getAdditionalPages()
     {
         return additionalPages;
     }

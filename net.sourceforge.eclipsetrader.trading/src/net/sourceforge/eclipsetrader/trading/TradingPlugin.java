@@ -1,5 +1,13 @@
 package net.sourceforge.eclipsetrader.trading;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+
+import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -15,7 +23,9 @@ import org.osgi.framework.BundleContext;
 public class TradingPlugin extends AbstractUIPlugin
 {
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.trading";
-    public static final String ALERTS_EXTENSION_POINT = "net.sourceforge.eclipsetrader.trading.alerts";
+    public static final String ALERTS_EXTENSION_POINT = PLUGIN_ID + ".alerts";
+    public static final String SYSTEMS_EXTENSION_POINT = PLUGIN_ID + ".system";
+    public static final String SYSTEM_WIZARDS_EXTENSION_POINT = PLUGIN_ID + ".systemWizard";
     private static TradingPlugin plugin;
 
     /**
@@ -110,6 +120,93 @@ public class TradingPlugin extends AbstractUIPlugin
     {
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry.getExtensionPoint(ALERTS_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement item = members[i];
+                if (item.getAttribute("id").equals(id))
+                    return item.getChildren("preferencePage");
+            }
+        }
+        
+        return new IConfigurationElement[0];
+    }
+    
+    public static List getTradingSystemPlugins()
+    {
+        List list = new ArrayList();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(SYSTEMS_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+                list.add(members[i]);
+        }
+        
+        Collections.sort(list, new Comparator() {
+            public int compare(Object arg0, Object arg1)
+            {
+                String s0 = ((IConfigurationElement) arg0).getAttribute("name");
+                String s1 = ((IConfigurationElement) arg1).getAttribute("name");
+                return s0.compareTo(s1);
+            }
+        });
+        
+        return list;
+    }
+    
+    public static TradingSystemPlugin createTradingSystemPlugin(TradingSystem system)
+    {
+        if (system.getData() != null)
+            return (TradingSystemPlugin) system.getData();
+        
+        TradingSystemPlugin plugin = TradingPlugin.createTradingSystemPlugin(system.getPluginId());
+        system.setData(plugin);
+        
+        plugin.setAccount(system.getAccount());
+        plugin.setSecurity(system.getSecurity());
+        plugin.setMaxExposure(system.getMaxExposure());
+        plugin.setMinAmount(system.getMinAmount());
+        plugin.setMaxAmount(system.getMaxAmount());
+        
+        plugin.setParameters(system.getParameters());
+        
+        return plugin;
+    }
+    
+    public static TradingSystemPlugin createTradingSystemPlugin(String id)
+    {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(SYSTEMS_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement item = members[i];
+                if (item.getAttribute("id").equals(id))
+                {
+                    try {
+                        Object obj = members[i].createExecutableExtension("class");
+                        return (TradingSystemPlugin)obj;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    public static IConfigurationElement[] getTradingSystemPluginPreferencePages(String id)
+    {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(SYSTEMS_EXTENSION_POINT);
         if (extensionPoint != null)
         {
             IConfigurationElement[] members = extensionPoint.getConfigurationElements();

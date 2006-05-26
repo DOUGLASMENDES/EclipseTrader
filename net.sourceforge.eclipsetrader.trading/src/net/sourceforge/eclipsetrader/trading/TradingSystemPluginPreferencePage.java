@@ -17,12 +17,12 @@ import java.util.Map;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.trading.internal.wizards.IPluginParametersPage;
 
-public abstract class AlertPluginPreferencePage implements IPluginParametersPage
+public abstract class TradingSystemPluginPreferencePage implements IPluginParametersPage
 {
     private Security security;
     private Map parameters = new HashMap();
 
-    public AlertPluginPreferencePage()
+    public TradingSystemPluginPreferencePage()
     {
     }
     
