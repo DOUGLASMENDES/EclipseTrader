@@ -171,6 +171,12 @@ class TradingSystemRepository
                 system.setGroup(group);
                 group.getTradingSystems().add(system);
             }
+            else if (nodeName.equals("group")) //$NON-NLS-1$
+            {
+                TradingSystemGroup grp = loadGroup(item.getChildNodes());
+                grp.setParent(group);
+                group.getGroups().add(grp);
+            }
         }
         
         group.clearChanged();
