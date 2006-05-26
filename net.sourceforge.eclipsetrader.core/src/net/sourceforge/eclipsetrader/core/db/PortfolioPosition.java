@@ -25,7 +25,7 @@ public class PortfolioPosition
         this.account = account;
         this.security = security;
         this.quantity = quantity;
-        this.price = Math.abs(amount / quantity);
+        this.price = amount == 0 ? 0 : Math.abs(amount / quantity);
     }
     
     void add(int quantity, double amount)

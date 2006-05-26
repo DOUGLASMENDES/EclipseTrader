@@ -28,6 +28,7 @@ import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 
 
 /**
@@ -41,6 +42,8 @@ public class Repository
     private ObservableList accounts;
     private ObservableList accountGroups;
     private ObservableList events;
+    private ObservableList tradingSystems;
+    private ObservableList tradingSystemGroups;
     private Map newsMap = new HashMap();
 
     public Repository()
@@ -79,6 +82,32 @@ public class Repository
         return news;
     }
     
+    public ObservableList getTradingSystems()
+    {
+        if (tradingSystems == null)
+            tradingSystems = new ObservableList();
+        return tradingSystems;
+    }
+    
+    public ObservableList getTradingSystemGroups()
+    {
+        if (tradingSystemGroups == null)
+            tradingSystemGroups = new ObservableList();
+        return tradingSystemGroups;
+    }
+    
+    public TradingSystem getTradingSystem(String pluginId)
+    {
+        for (Iterator iter = getTradingSystems().iterator(); iter.hasNext(); )
+        {
+            TradingSystem system = (TradingSystem) iter.next();
+            if (system.getPluginId().equals(pluginId))
+                return system;
+        }
+        
+        return null;
+    }
+
     public ObservableList allNews(Security security)
     {
         ObservableList list = (ObservableList) newsMap.get(security);

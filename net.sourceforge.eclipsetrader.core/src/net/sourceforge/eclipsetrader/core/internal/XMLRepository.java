@@ -54,6 +54,8 @@ import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.trading.TradingSystemGroup;
+import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 
 import org.eclipse.core.runtime.Platform;
 import org.w3c.dom.Document;
@@ -76,6 +78,7 @@ public class XMLRepository extends Repository
     private Integer accountNextId = new Integer(1);
     private Map accountMap = new HashMap();
     private Integer eventNextId = new Integer(1);
+    private TradingSystemRepository tradingRepository;
 
     public XMLRepository()
     {
@@ -242,6 +245,8 @@ public class XMLRepository extends Repository
         }
         
         eventNextId = new Integer(allEvents().size() + 1);
+        
+        tradingRepository = new TradingSystemRepository(this);
     }
 
     /* (non-Javadoc)
@@ -253,6 +258,7 @@ public class XMLRepository extends Repository
         saveWatchlists();
         saveNews();
         saveEvents();
+        tradingRepository.saveTradingSystems();
         super.dispose();
     }
 
@@ -273,6 +279,10 @@ public class XMLRepository extends Repository
             obj = (PersistentObject)accountMap.get(id);
         else if (clazz.equals(AccountGroup.class))
             obj = (PersistentObject)accountGroupMap.get(id);
+        else if (clazz.equals(TradingSystem.class))
+            obj = (PersistentObject)tradingRepository.tsMap.get(id);
+        else if (clazz.equals(TradingSystemGroup.class))
+            obj = (PersistentObject)tradingRepository.tsGroupMap.get(id);
         
         if (obj == null)
         {
@@ -356,6 +366,18 @@ public class XMLRepository extends Repository
             accountGroupMap.put(obj.getId(), obj);
         }
         
+        if (obj instanceof TradingSystem)
+        {
+            tradingRepository.save((TradingSystem) obj);
+            tradingRepository.saveTradingSystems();
+        }
+        
+        if (obj instanceof TradingSystemGroup)
+        {
+            tradingRepository.save((TradingSystemGroup) obj);
+            tradingRepository.saveTradingSystems();
+        }
+        
         super.save(obj);
 
         if (obj instanceof AccountGroup || obj instanceof Account)
@@ -398,6 +420,29 @@ public class XMLRepository extends Repository
         {
             accountGroupMap.remove(obj.getId());
             saveAccounts();
+        }
+
+        if (obj instanceof TradingSystem)
+        {
+            TradingSystem system = (TradingSystem) obj;
+            if (system.getGroup() != null)
+                system.getGroup().getTradingSystems().remove(obj);
+            getTradingSystems().remove(obj);
+            tradingRepository.tsMap.remove(obj.getId());
+            tradingRepository.saveTradingSystems();
+        }
+        if (obj instanceof TradingSystemGroup)
+        {
+            TradingSystemGroup group = (TradingSystemGroup) obj;
+            if (group.getParent() != null)
+                group.getParent().getGroups().remove(obj);
+            getTradingSystemGroups().remove(obj);
+            for (Iterator iter = group.getTradingSystems().iterator(); iter.hasNext(); )
+                delete((PersistentObject) iter.next());
+            for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
+                delete((PersistentObject) iter.next());
+            tradingRepository.tsGroupMap.remove(obj.getId());
+            tradingRepository.saveTradingSystems();
         }
     }
 
@@ -1733,7 +1778,7 @@ public class XMLRepository extends Repository
         }
     }
 
-    private void saveDocument(Document document, String path, String name)
+    void saveDocument(Document document, String path, String name)
     {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();

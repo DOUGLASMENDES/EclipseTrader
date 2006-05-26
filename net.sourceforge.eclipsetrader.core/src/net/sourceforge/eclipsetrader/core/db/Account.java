@@ -234,4 +234,18 @@ public class Account extends PersistentObject
 
         return result;
     }
+    
+    public PortfolioPosition getPortfolio(Security security)
+    {
+        PortfolioPosition position = new PortfolioPosition(this, security, 0, 0);
+        
+        for (Iterator iter2 = getTransactions().iterator(); iter2.hasNext(); )
+        {
+            Transaction transaction = (Transaction)iter2.next();
+            if (position.getSecurity().equals(transaction.getSecurity()))
+                position.add(transaction.getQuantity(), transaction.getAmount());
+        }
+
+        return position;
+    }
 }
