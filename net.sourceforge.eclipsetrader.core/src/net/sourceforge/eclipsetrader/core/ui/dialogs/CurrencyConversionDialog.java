@@ -67,8 +67,9 @@ public class CurrencyConversionDialog extends Dialog
      */
     protected Control createDialogArea(Composite parent)
     {
-        Composite content = new Composite(parent, SWT.NONE);
+        Composite content = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
         GridLayout gridLayout = new GridLayout(5, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
@@ -142,7 +143,7 @@ public class CurrencyConversionDialog extends Dialog
         amount.setSelection(100);
         update();
 
-        return super.createDialogArea(parent);
+        return content.getParent();
     }
     
     private void update()
