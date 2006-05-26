@@ -108,6 +108,7 @@
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.CurrencyExchangeView"
+            icon="icons/eview16/money.png"
             id="net.sourceforge.eclipsetrader.views.currencies"
             name="Currencies"/>
       <view
