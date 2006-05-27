@@ -35,6 +35,7 @@ import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.TradingSystemGroupSelection;
 import net.sourceforge.eclipsetrader.trading.TradingSystemPlugin;
 import net.sourceforge.eclipsetrader.trading.TradingSystemSelection;
+import net.sourceforge.eclipsetrader.trading.dialogs.TestPeriodDialog;
 import net.sourceforge.eclipsetrader.trading.internal.DeleteAction;
 import net.sourceforge.eclipsetrader.trading.internal.PropertiesAction;
 import net.sourceforge.eclipsetrader.trading.internal.TreeLayout;
@@ -84,7 +85,9 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class TradingSystemView extends ViewPart implements ICollectionObserver
@@ -102,6 +105,7 @@ public class TradingSystemView extends ViewPart implements ICollectionObserver
     private Action createSystemAction;
     private Action deleteAction;
     private Action propertiesAction;
+    private Action runTestAction;
     private Map expandMap = new HashMap();
     private TradingSystemTreeItemTransfer _tradingSystemTreeItemTransfer = new TradingSystemTreeItemTransfer();
 
@@ -201,15 +205,46 @@ public class TradingSystemView extends ViewPart implements ICollectionObserver
                 }
             }
         };
+        
+        runTestAction = new Action() {
+            public void run()
+            {
+                TreeItem[] selection = tree.getSelection();
+                if (selection.length == 1 && selection[0] instanceof TradingSystemItem)
+                {
+                    TradingSystem system = ((TradingSystemItem)selection[0]).getSystem();
+                    
+                    TestPeriodDialog dlg = new TestPeriodDialog(getViewSite().getShell(), system.getSecurity().getHistory());
+                    if (dlg.open() == TestPeriodDialog.OK)
+                    {
+                        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                        try {
+                            TestRunnerView view = (TestRunnerView)page.showView(TestRunnerView.VIEW_ID);
+                            view.runTradingSystem(system, dlg.getBeginDate(), dlg.getEndDate());
+                        }
+                        catch (PartInitException e1) {
+                            CorePlugin.logException(e1);
+                        }
+                    }
+                }
+            }
+        };
+        runTestAction.setText("Run Test");
 
         IMenuManager menuManager = site.getActionBars().getMenuManager();
         menuManager.add(new Separator("top")); //$NON-NLS-1$
-        menuManager.add(createGroupAction);
-        menuManager.add(createSystemAction);
-        menuManager.add(new Separator("additions")); //$NON-NLS-1$
-        menuManager.add(deleteAction);
+        menuManager.add(new Separator("internal.top")); //$NON-NLS-1$
+        menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS)); //$NON-NLS-1$
+        menuManager.add(new Separator("clipboard.top")); //$NON-NLS-1$
+        menuManager.add(new Separator("clipboard.bottom")); //$NON-NLS-1$
         menuManager.add(new Separator("bottom")); //$NON-NLS-1$
-        menuManager.add(propertiesAction);
+        menuManager.add(new Separator("internal.bottom")); //$NON-NLS-1$
+
+        menuManager.appendToGroup("internal.top", createGroupAction);
+        menuManager.appendToGroup("internal.top", createSystemAction);
+        menuManager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, runTestAction);
+        menuManager.appendToGroup("clipboard.bottom", deleteAction);
+        menuManager.appendToGroup("internal.bottom", propertiesAction);
         
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
@@ -416,12 +451,18 @@ public class TradingSystemView extends ViewPart implements ICollectionObserver
             public void menuAboutToShow(IMenuManager menuManager)
             {
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
-                menuManager.add(createGroupAction);
-                menuManager.add(createSystemAction);
-                menuManager.add(new Separator("additions")); //$NON-NLS-1$
-                menuManager.add(deleteAction);
+                menuManager.add(new Separator("internal.top")); //$NON-NLS-1$
+                menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS)); //$NON-NLS-1$
+                menuManager.add(new Separator("clipboard.top")); //$NON-NLS-1$
+                menuManager.add(new Separator("clipboard.bottom")); //$NON-NLS-1$
                 menuManager.add(new Separator("bottom")); //$NON-NLS-1$
-                menuManager.add(propertiesAction);
+                menuManager.add(new Separator("internal.bottom")); //$NON-NLS-1$
+
+                menuManager.appendToGroup("internal.top", createGroupAction);
+                menuManager.appendToGroup("internal.top", createSystemAction);
+                menuManager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, runTestAction);
+                menuManager.appendToGroup("clipboard.bottom", deleteAction);
+                menuManager.appendToGroup("internal.bottom", propertiesAction);
             }
         });
         tree.setMenu(menuMgr.createContextMenu(tree));
@@ -518,7 +559,8 @@ public class TradingSystemView extends ViewPart implements ICollectionObserver
             getSite().getSelectionProvider().setSelection(new NullSelection());
         
         deleteAction.setEnabled(selection.length != 0);
-        propertiesAction.setEnabled(selection.length != 0);
+        runTestAction.setEnabled(selection.length == 1);
+        propertiesAction.setEnabled(selection.length == 1);
     }
 
     /* (non-Javadoc)

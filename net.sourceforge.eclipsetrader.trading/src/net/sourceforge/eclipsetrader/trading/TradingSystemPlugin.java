@@ -109,7 +109,10 @@ public abstract class TradingSystemPlugin extends Observable
     {
         PortfolioPosition position = getAccount().getPortfolio(getSecurity());
         Bar lastQuote = (Bar)getSecurity().getHistory().get(getSecurity().getHistory().size() - 1);
-        
+
+        if (position.getQuantity() != 0)
+            setSignal(TradingSystem.SIGNAL_HOLD);
+
         if (maxExposure == 0 || position.getValue() < maxExposure)
         {
             double amount = maxAmount;

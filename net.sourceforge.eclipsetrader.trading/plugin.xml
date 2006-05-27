@@ -253,8 +253,14 @@
          <view
                id="net.sourceforge.eclipsetrader.views.system"
                relationship="stack"
-               relative="center"/>
+               relative="center"
+               visible="false"/>
          <viewShortcut id="net.sourceforge.eclipsetrader.views.system"/>
+         <view
+               id="net.sourceforge.eclipsetrader.trading.test"
+               relationship="stack"
+               relative="bottom"
+               visible="false"/>
       </perspectiveExtension>
    </extension>
    <extension
@@ -332,6 +338,12 @@
             icon="icons/eview16/money.png"
             id="net.sourceforge.eclipsetrader.views.portfolio"
             name="Portfolio"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.TestRunnerView"
+            icon="icons/eview16/computer.png"
+            id="net.sourceforge.eclipsetrader.trading.test"
+            name="Trading System Test"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.TradingSystemView"

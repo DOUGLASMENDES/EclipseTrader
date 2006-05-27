@@ -37,14 +37,12 @@ public class PatternTrading extends TradingSystemPlugin
     public void run()
     {
         setSignal(TradingSystem.SIGNAL_NONE);
-        if (getAccount().getPortfolio(getSecurity()).getQuantity() != 0)
-            setSignal(TradingSystem.SIGNAL_HOLD);
 
         BarData barData = new BarData(getSecurity().getHistory());
         if (period != BarData.INTERVAL_DAILY)
             barData = barData.getCompressed(period);
 
-        for (int i = 0; i < barData.size(); i++)
+        for (int i = 1; i < barData.size(); i++)
         {
             Bar[] recs = barData.toArray(i);
             if (pattern.applies(recs))
