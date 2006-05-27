@@ -66,7 +66,7 @@ import org.eclipse.ui.themes.IThemeManager;
 
 /**
  */
-public class TableLayout extends AbstractLayout
+public class WatchlistTableViewer extends AbstractLayout
 {
     public static final String TABLE_EVEN_ROWS_BACKGROUND = "TABLE_EVEN_ROWS_BACKGROUND";
     public static final String TABLE_EVEN_ROWS_FOREGROUND = "TABLE_EVEN_ROWS_FOREGROUND";
@@ -97,7 +97,7 @@ public class TableLayout extends AbstractLayout
         }
     };
     
-    public TableLayout(WatchlistView view)
+    public WatchlistTableViewer(WatchlistView view)
     {
         super(view);
     }
@@ -350,6 +350,8 @@ public class TableLayout extends AbstractLayout
             else
                 table.getColumn(i).setWidth(c.getWidth());
         }
+        if ("gtk".equals(SWT.getPlatform()))
+            table.getColumn(table.getColumnCount() - 1).pack();
     }
 
     public void update(Observable o, Object arg)

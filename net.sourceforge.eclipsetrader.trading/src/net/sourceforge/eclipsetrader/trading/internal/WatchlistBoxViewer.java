@@ -33,7 +33,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class BoxedLayout extends AbstractLayout
+public class WatchlistBoxViewer extends AbstractLayout
 {
     private Image up = TradingPlugin.getImageDescriptor("icons/higher.gif").createImage();
     private Image down = TradingPlugin.getImageDescriptor("icons/lower.gif").createImage();
@@ -43,7 +43,7 @@ public class BoxedLayout extends AbstractLayout
     private SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
     private Composite content;
     
-    public BoxedLayout(WatchlistView view)
+    public WatchlistBoxViewer(WatchlistView view)
     {
         super(view);
 

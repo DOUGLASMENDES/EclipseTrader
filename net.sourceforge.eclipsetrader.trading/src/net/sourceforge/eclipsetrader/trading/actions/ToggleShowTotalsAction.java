@@ -11,7 +11,7 @@
 
 package net.sourceforge.eclipsetrader.trading.actions;
 
-import net.sourceforge.eclipsetrader.trading.internal.TableLayout;
+import net.sourceforge.eclipsetrader.trading.internal.WatchlistTableViewer;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
 import org.eclipse.jface.action.Action;
@@ -31,11 +31,11 @@ public class ToggleShowTotalsAction extends Action
      */
     public void run()
     {
-        if (view.getLayout() instanceof TableLayout)
+        if (view.getLayout() instanceof WatchlistTableViewer)
         {
-            boolean value = ((TableLayout) view.getLayout()).isShowTotals();
-            ((TableLayout) view.getLayout()).setShowTotals(!value);
-            ((TableLayout) view.getLayout()).updateView();
+            boolean value = ((WatchlistTableViewer) view.getLayout()).isShowTotals();
+            ((WatchlistTableViewer) view.getLayout()).setShowTotals(!value);
+            ((WatchlistTableViewer) view.getLayout()).updateView();
         }
     }
 }

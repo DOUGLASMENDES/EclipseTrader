@@ -32,12 +32,12 @@ import net.sourceforge.eclipsetrader.trading.actions.SetRibbonLayoutAction;
 import net.sourceforge.eclipsetrader.trading.actions.SetTableLayoutAction;
 import net.sourceforge.eclipsetrader.trading.actions.ToggleShowTotalsAction;
 import net.sourceforge.eclipsetrader.trading.internal.AbstractLayout;
-import net.sourceforge.eclipsetrader.trading.internal.BoxedLayout;
+import net.sourceforge.eclipsetrader.trading.internal.WatchlistBoxViewer;
 import net.sourceforge.eclipsetrader.trading.internal.CopyAction;
 import net.sourceforge.eclipsetrader.trading.internal.CutAction;
 import net.sourceforge.eclipsetrader.trading.internal.DeleteWatchlistItemAction;
 import net.sourceforge.eclipsetrader.trading.internal.PasteAction;
-import net.sourceforge.eclipsetrader.trading.internal.TableLayout;
+import net.sourceforge.eclipsetrader.trading.internal.WatchlistTableViewer;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistSettingsDialog;
 
 import org.eclipse.jface.action.Action;
@@ -290,10 +290,10 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         switch(style)
         {
             case TABLE:
-                layout = new TableLayout(this);
+                layout = new WatchlistTableViewer(this);
                 break;
             case RIBBON:
-                layout = new BoxedLayout(this);
+                layout = new WatchlistBoxViewer(this);
                 break;
         }
 
@@ -430,8 +430,8 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     
     public Table getTable()
     {
-        if (layout instanceof TableLayout)
-            return ((TableLayout)layout).getTable();
+        if (layout instanceof WatchlistTableViewer)
+            return ((WatchlistTableViewer)layout).getTable();
         return null;
     }
 }
