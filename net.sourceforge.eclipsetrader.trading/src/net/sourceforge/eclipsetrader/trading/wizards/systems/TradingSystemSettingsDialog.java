@@ -56,6 +56,7 @@ public class TradingSystemSettingsDialog extends PreferenceDialog
                 TradingSystemSettingsDialog.this.system.setMinAmount(baseParameters.getMinAmount());
             }
         };
+        baseParameters.setPageComplete(true);
 
         getPreferenceManager().addToRoot(new PreferenceNode("base", new CommonDialogPage(baseParameters) {
             protected Control createContents(Composite parent)
@@ -82,6 +83,7 @@ public class TradingSystemSettingsDialog extends PreferenceDialog
 
                     public boolean performOk()
                     {
+                        preferencePage.performOk();
                         TradingSystemSettingsDialog.this.system.getParameters().putAll(preferencePage.getParameters());
                         return super.performOk();
                     }
