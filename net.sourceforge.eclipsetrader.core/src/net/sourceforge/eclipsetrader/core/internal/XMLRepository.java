@@ -437,10 +437,15 @@ public class XMLRepository extends Repository
             if (group.getParent() != null)
                 group.getParent().getGroups().remove(obj);
             getTradingSystemGroups().remove(obj);
-            for (Iterator iter = group.getTradingSystems().iterator(); iter.hasNext(); )
-                delete((PersistentObject) iter.next());
-            for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
-                delete((PersistentObject) iter.next());
+            
+            Object[] members = group.getTradingSystems().toArray();
+            for (int i = 0; i < members.length; i++)
+                delete((PersistentObject) members[i]);
+            
+            members = group.getGroups().toArray();
+            for (int i = 0; i < members.length; i++)
+                delete((PersistentObject) members[i]);
+
             tradingRepository.tsGroupMap.remove(obj.getId());
             tradingRepository.saveTradingSystems();
         }
