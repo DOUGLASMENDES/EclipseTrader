@@ -50,7 +50,7 @@ public class TargetPrice extends AlertPlugin
             price = Double.parseDouble(value);
         value = (String)params.get("cross");
         if (value != null)
-            cross = Boolean.parseBoolean(value);
+            cross = new Boolean(value).booleanValue();
         
         if (getSecurity().getQuote() != null)
         {

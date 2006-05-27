@@ -98,7 +98,7 @@ public class IndicesPage extends WizardPage implements ISecurityPage
                         if (hasMatchingItems(item.getChildNodes(), pattern))
                         {
                             TreeItem parentItem = new TreeItem(tree, SWT.NONE);
-                            parentItem.setText(item.getAttributes().getNamedItem("name").getTextContent());
+                            parentItem.setText(item.getAttributes().getNamedItem("name").getNodeValue());
                             addMatchingItems(parentItem, item.getChildNodes(), pattern);
                             if (pattern.length() != 0)
                                 parentItem.setExpanded(true);
@@ -106,7 +106,7 @@ public class IndicesPage extends WizardPage implements ISecurityPage
                     }
                     else if (nodeName.equalsIgnoreCase("index")) //$NON-NLS-1$
                     {
-                        String code = item.getAttributes().getNamedItem("code").getTextContent().toLowerCase();
+                        String code = item.getAttributes().getNamedItem("code").getNodeValue().toLowerCase();
                         String description = item.getFirstChild().getNodeValue().toLowerCase();
                         if (pattern.length() == 0 || code.indexOf(pattern) != -1 || description.indexOf(pattern) != -1)
                         {
@@ -138,12 +138,12 @@ public class IndicesPage extends WizardPage implements ISecurityPage
                 if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
                 {
                     TreeItem parentItem = new TreeItem(tree, SWT.NONE);
-                    parentItem.setText(item.getAttributes().getNamedItem("name").getTextContent());
+                    parentItem.setText(item.getAttributes().getNamedItem("name").getNodeValue());
                     addCategory(parentItem, item.getChildNodes());
                 }
                 else if (nodeName.equalsIgnoreCase("index")) //$NON-NLS-1$
                 {
-                    String code = item.getAttributes().getNamedItem("code").getTextContent();
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue();
                     if (CorePlugin.getRepository().getSecurity(code) != null)
                         continue;
                     TreeItem treeItem = new TreeItem(tree, SWT.NONE);
@@ -168,12 +168,12 @@ public class IndicesPage extends WizardPage implements ISecurityPage
             if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
             {
                 TreeItem parent = new TreeItem(parentItem, SWT.NONE);
-                parent.setText(item.getAttributes().getNamedItem("name").getTextContent());
+                parent.setText(item.getAttributes().getNamedItem("name").getNodeValue());
                 addCategory(parent, item.getChildNodes());
             }
             else if (nodeName.equalsIgnoreCase("index")) //$NON-NLS-1$
             {
-                String code = item.getAttributes().getNamedItem("code").getTextContent();
+                String code = item.getAttributes().getNamedItem("code").getNodeValue();
                 if (CorePlugin.getRepository().getSecurity(code) != null)
                     continue;
                 TreeItem treeItem = new TreeItem(parentItem, SWT.NONE);
@@ -199,7 +199,7 @@ public class IndicesPage extends WizardPage implements ISecurityPage
             }
             else if (nodeName.equalsIgnoreCase("index")) //$NON-NLS-1$
             {
-                String code = item.getAttributes().getNamedItem("code").getTextContent().toLowerCase();
+                String code = item.getAttributes().getNamedItem("code").getNodeValue().toLowerCase();
                 String description = item.getFirstChild().getNodeValue().toLowerCase();
                 if (code.indexOf(pattern) != -1 || description.indexOf(pattern) != -1)
                     return true;
@@ -220,7 +220,7 @@ public class IndicesPage extends WizardPage implements ISecurityPage
                 if (hasMatchingItems(item.getChildNodes(), pattern))
                 {
                     TreeItem parent = new TreeItem(parentItem, SWT.NONE);
-                    parent.setText(item.getAttributes().getNamedItem("name").getTextContent());
+                    parent.setText(item.getAttributes().getNamedItem("name").getNodeValue());
                     addMatchingItems(parent, item.getChildNodes(), pattern);
                     if (pattern.length() != 0)
                         parent.setExpanded(true);
@@ -228,7 +228,7 @@ public class IndicesPage extends WizardPage implements ISecurityPage
             }
             else if (nodeName.equalsIgnoreCase("index")) //$NON-NLS-1$
             {
-                String code = item.getAttributes().getNamedItem("code").getTextContent().toLowerCase();
+                String code = item.getAttributes().getNamedItem("code").getNodeValue().toLowerCase();
                 String description = item.getFirstChild().getNodeValue().toLowerCase();
                 if (pattern.length() == 0 || code.indexOf(pattern) != -1 || description.indexOf(pattern) != -1)
                 {
@@ -251,7 +251,7 @@ public class IndicesPage extends WizardPage implements ISecurityPage
         {
             Node item = (Node) tree.getSelection()[i].getData();
             Security security = new Security();
-            security.setCode(item.getAttributes().getNamedItem("code").getTextContent());
+            security.setCode(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setDescription(item.getFirstChild().getNodeValue());
             
             Feed feed = security.new Feed();

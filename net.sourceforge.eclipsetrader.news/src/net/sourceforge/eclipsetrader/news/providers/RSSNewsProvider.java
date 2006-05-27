@@ -153,7 +153,7 @@ public class RSSNewsProvider implements Runnable, INewsProvider
                     Node item = childNodes.item(i);
                     String nodeName = item.getNodeName();
                     if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
-                        update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getTextContent());
+                        update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getNodeValue());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

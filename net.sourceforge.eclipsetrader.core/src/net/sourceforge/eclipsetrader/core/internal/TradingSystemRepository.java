@@ -56,8 +56,8 @@ class TradingSystemRepository
                 Document document = builder.parse(file);
 
                 Node firstNode = document.getFirstChild();
-                tsNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getTextContent()); //$NON-NLS-1$
-                tsGroupNextId = new Integer(firstNode.getAttributes().getNamedItem("nextGroupId").getTextContent()); //$NON-NLS-1$
+                tsNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getNodeValue()); //$NON-NLS-1$
+                tsGroupNextId = new Integer(firstNode.getAttributes().getNamedItem("nextGroupId").getNodeValue()); //$NON-NLS-1$
 
                 NodeList childNodes = firstNode.getChildNodes();
                 for (int i = 0; i < childNodes.getLength(); i++)
@@ -123,12 +123,11 @@ class TradingSystemRepository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, null, null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
-            Element root = document.createElement("data");
+            Element root = document.getDocumentElement();
             root.setAttribute("nextId", String.valueOf(tsNextId));
             root.setAttribute("nextGroupId", String.valueOf(tsGroupNextId));
-            document.appendChild(root);
             
             for (Iterator iter = tsGroupMap.values().iterator(); iter.hasNext(); )
             {
@@ -153,7 +152,7 @@ class TradingSystemRepository
 
     private TradingSystemGroup loadGroup(NodeList node)
     {
-        TradingSystemGroup group = new TradingSystemGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getTextContent())));
+        TradingSystemGroup group = new TradingSystemGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
         
         for (int i = 0; i < node.getLength(); i++)
         {
@@ -255,8 +254,8 @@ class TradingSystemRepository
     
     private TradingSystem loadSystem(NodeList node)
     {
-        TradingSystem system = new TradingSystem(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getTextContent())));
-        system.setPluginId(((Node)node).getAttributes().getNamedItem("pluginId").getTextContent());
+        TradingSystem system = new TradingSystem(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        system.setPluginId(((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue());
         
         for (int i = 0; i < node.getLength(); i++)
         {
@@ -288,7 +287,7 @@ class TradingSystemRepository
                     system.setMaxAmount(Double.parseDouble(value.getNodeValue()));
                 else if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                 {
-                    String key = ((Node)item).getAttributes().getNamedItem("key").getTextContent(); 
+                    String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
                     system.getParameters().put(key, value.getNodeValue());
                 }
             }

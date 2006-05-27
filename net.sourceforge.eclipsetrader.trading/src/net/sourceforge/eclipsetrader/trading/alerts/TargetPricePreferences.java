@@ -132,7 +132,7 @@ public class TargetPricePreferences extends AlertPluginPreferencePage
 
         value = (String)getParameters().get("cross");
         if (value != null)
-            cross.setSelection(Boolean.parseBoolean(value));
+            cross.setSelection(new Boolean(value).booleanValue());
         
         updateCurrentPrice();
         

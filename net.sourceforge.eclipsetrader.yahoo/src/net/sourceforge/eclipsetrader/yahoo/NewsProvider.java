@@ -153,7 +153,7 @@ public class NewsProvider implements Runnable, INewsProvider
                         String nodeName = node.getNodeName();
                         if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
                         {
-                            String id = ((Node)node).getAttributes().getNamedItem("id").getTextContent(); //$NON-NLS-1$
+                            String id = ((Node)node).getAttributes().getNamedItem("id").getNodeValue(); //$NON-NLS-1$
                          
                             NodeList list = node.getChildNodes();
                             for (int x = 0; x < list.getLength(); x++)

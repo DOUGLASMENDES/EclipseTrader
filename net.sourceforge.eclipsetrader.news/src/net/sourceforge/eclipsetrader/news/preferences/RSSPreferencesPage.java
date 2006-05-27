@@ -188,7 +188,7 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
                     if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
                     {
                         TableItem tableItem = new TableItem(table, SWT.NONE);
-                        tableItem.setText(0, item.getAttributes().getNamedItem("name").getTextContent());
+                        tableItem.setText(0, item.getAttributes().getNamedItem("name").getNodeValue());
                         tableItem.setText(1, item.getFirstChild().getNodeValue());
                     }
                 }
@@ -212,10 +212,9 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
 
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, null, null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
-            Element root = document.createElement("data");
-            document.appendChild(root);
+            Element root = document.getDocumentElement();
 
             TableItem[] items = table.getItems();
             for (int i = 0; i < items.length; i++)

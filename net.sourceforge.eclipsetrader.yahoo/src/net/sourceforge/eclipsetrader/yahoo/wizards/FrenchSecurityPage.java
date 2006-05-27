@@ -102,7 +102,7 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
                     if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
                     {
                         String pattern = search.getText();
-                        String code = item.getAttributes().getNamedItem("code").getTextContent();
+                        String code = item.getAttributes().getNamedItem("code").getNodeValue();
                         String description = item.getFirstChild().getNodeValue();
                         if (CorePlugin.getRepository().getSecurity(code) != null)
                             continue;
@@ -134,7 +134,7 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
                 String nodeName = item.getNodeName();
                 if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
                 {
-                    String code = item.getAttributes().getNamedItem("code").getTextContent();
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue();
                     if (CorePlugin.getRepository().getSecurity(code) != null)
                         continue;
                     TableItem tableItem = new TableItem(table, SWT.NONE);
@@ -160,17 +160,17 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
         {
             Node item = (Node) table.getSelection()[i].getData();
             Security security = new Security();
-            security.setCode(item.getAttributes().getNamedItem("code").getTextContent());
+            security.setCode(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setDescription(item.getFirstChild().getNodeValue());
             security.setCurrency(Currency.getInstance(Locale.FRANCE));
             
             Feed feed = security.new Feed();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
-            feed.setSymbol(item.getAttributes().getNamedItem("code").getTextContent());
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setQuoteFeed(feed);
             feed = security.new Feed();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
-            feed.setSymbol(item.getAttributes().getNamedItem("code").getTextContent());
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setHistoryFeed(feed);
 
             list.add(security);

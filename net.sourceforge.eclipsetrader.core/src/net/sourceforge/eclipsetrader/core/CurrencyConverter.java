@@ -81,7 +81,7 @@ public class CurrencyConverter extends Observable
                             currencies.add(valueNode.getNodeValue());
                         else if (nodeName.equalsIgnoreCase("conversion")) //$NON-NLS-1$
                         {
-                            String symbol = ((Node)item).getAttributes().getNamedItem("symbol").getTextContent();
+                            String symbol = ((Node)item).getAttributes().getNamedItem("symbol").getNodeValue();
                             Double value = new Double(Double.parseDouble(valueNode.getNodeValue()));
                             map.put(symbol, value);
                         }
@@ -205,10 +205,9 @@ public class CurrencyConverter extends Observable
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, null, null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.createElement("data");
-            document.appendChild(root);
             
             for (Iterator iter = currencies.iterator(); iter.hasNext(); )
             {
