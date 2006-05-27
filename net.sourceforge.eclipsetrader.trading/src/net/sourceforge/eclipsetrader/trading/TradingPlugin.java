@@ -161,11 +161,12 @@ public class TradingPlugin extends AbstractUIPlugin
     
     public static TradingSystemPlugin createTradingSystemPlugin(TradingSystem system)
     {
-        if (system.getData() != null)
-            return (TradingSystemPlugin) system.getData();
-        
-        TradingSystemPlugin plugin = TradingPlugin.createTradingSystemPlugin(system.getPluginId());
-        system.setData(plugin);
+        TradingSystemPlugin plugin = (TradingSystemPlugin) system.getData();
+        if (plugin == null)
+        {
+            plugin = TradingPlugin.createTradingSystemPlugin(system.getPluginId());
+            system.setData(plugin);
+        }
         
         plugin.setAccount(system.getAccount());
         plugin.setSecurity(system.getSecurity());
