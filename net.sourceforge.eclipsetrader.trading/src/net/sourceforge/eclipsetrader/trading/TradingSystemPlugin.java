@@ -110,22 +110,25 @@ public abstract class TradingSystemPlugin extends Observable
         PortfolioPosition position = getAccount().getPortfolio(getSecurity());
         Bar lastQuote = (Bar)getSecurity().getHistory().get(getSecurity().getHistory().size() - 1);
         
-        if (position.getValue() < maxExposure)
+        if (maxExposure == 0 || position.getValue() < maxExposure)
         {
             double amount = maxAmount;
             if (amount == 0)
                 amount = maxExposure;
             if (amount == 0)
                 amount = getAccount().getBalance();
-            if ((amount + position.getValue()) > maxExposure)
+            if (maxExposure != 0 && (amount + position.getValue()) > maxExposure)
                 amount = maxExposure - position.getValue(); 
             
             if (amount >= minAmount && amount <= getAccount().getBalance())
             {
                 quantity = (int)(amount / lastQuote.getClose());
-                setSignal(TradingSystem.SIGNAL_BUY);
-                setChanged();
-                notifyObservers();
+                if (quantity != 0)
+                {
+                    setSignal(TradingSystem.SIGNAL_BUY);
+                    setChanged();
+                    notifyObservers();
+                }
             }
         }
     }
