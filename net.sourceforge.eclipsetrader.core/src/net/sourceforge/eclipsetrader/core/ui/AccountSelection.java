@@ -13,14 +13,13 @@ package net.sourceforge.eclipsetrader.core.ui;
 
 import net.sourceforge.eclipsetrader.core.db.Account;
 
-import org.eclipse.jface.viewers.ISelection;
-
-public class AccountSelection implements ISelection
+public class AccountSelection extends AccountGroupSelection
 {
     private Account account;
 
     public AccountSelection(Account account)
     {
+        super(account.getGroup());
         this.account = account;
     }
 
