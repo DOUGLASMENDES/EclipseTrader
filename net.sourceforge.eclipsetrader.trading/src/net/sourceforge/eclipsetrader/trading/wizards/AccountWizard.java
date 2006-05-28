@@ -24,6 +24,7 @@ import org.eclipse.ui.PlatformUI;
 public class AccountWizard extends Wizard
 {
     private Account account;
+    private AccountGroup group;
     private GeneralPage generalPage = new GeneralPage();
     private CommissionsPage commissionsPage = new CommissionsPage();
 
@@ -40,8 +41,8 @@ public class AccountWizard extends Wizard
 
     public Account open(AccountGroup group)
     {
+        this.group = group;
         WizardDialog dlg = create();
-        generalPage.setGroup(group);
         dlg.open();
         return account;
     }
@@ -67,12 +68,11 @@ public class AccountWizard extends Wizard
         account = new Account();
         
         account.setDescription(generalPage.getText());
+        account.setCurrency(generalPage.getCurrency());
         account.setInitialBalance(generalPage.getBalance());
-        AccountGroup group = generalPage.getGroup();
         if (group != null)
         {
             account.setGroup(group);
-            group.getAccounts().add(account);
             CorePlugin.getRepository().save(group);
         }
         

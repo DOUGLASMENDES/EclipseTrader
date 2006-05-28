@@ -22,7 +22,6 @@ import java.util.Locale;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Account;
-import net.sourceforge.eclipsetrader.core.db.AccountGroup;
 import net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage;
 
 import org.eclipse.swt.SWT;
@@ -37,7 +36,6 @@ public class GeneralPage extends CommonPreferencePage
 {
     private Account account;
     private Text text;
-    private Combo group;
     private Combo currency;
     private Text balance;
     private Text currentBalance;
@@ -88,14 +86,6 @@ public class GeneralPage extends CommonPreferencePage
             text.setText(account.getDescription());
 
         label = new Label(content, SWT.NONE);
-        label.setText("Group");
-        label.setLayoutData(new GridData(125, SWT.DEFAULT));
-        group = new Combo(content, SWT.DROP_DOWN);
-        group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        if (account != null && account.getGroup() != null)
-            group.setText(account.getGroup().getDescription());
-
-        label = new Label(content, SWT.NONE);
         label.setText("Currency");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         currency = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
@@ -119,13 +109,6 @@ public class GeneralPage extends CommonPreferencePage
         currentBalance.setLayoutData(new GridData(80, SWT.DEFAULT));
         currentBalance.setText(nf.format(account != null ? account.getBalance() : 0));
         currentBalance.setEnabled(false);
-
-        for (Iterator iter = CorePlugin.getRepository().allAccountGroups().iterator(); iter.hasNext(); )
-        {
-            AccountGroup ag = (AccountGroup)iter.next();
-            group.add(ag.getDescription());
-            group.setData(ag.getDescription(), ag);
-        }
 
         List list = CurrencyConverter.getInstance().getCurrencies();
         Collections.sort(list, new Comparator() {
@@ -157,21 +140,6 @@ public class GeneralPage extends CommonPreferencePage
             account.setDescription(getText());
             account.setCurrency(currency.getText().length() != 0 ? Currency.getInstance(currency.getText()) : null);
             account.setInitialBalance(getBalance());
-            AccountGroup group = getGroup();
-            if (account.getGroup() != group)
-            {
-                if (account.getGroup() != null)
-                {
-                    account.getGroup().getAccounts().remove(account);
-                    CorePlugin.getRepository().save(account.getGroup());
-                }
-                account.setGroup(group);
-                if (group != null)
-                {
-                    group.getAccounts().add(account);
-                    CorePlugin.getRepository().save(group);
-                }
-            }
         }
     }
     
@@ -183,6 +151,11 @@ public class GeneralPage extends CommonPreferencePage
     public void setText(String text)
     {
         this.text.setText(text);
+    }
+    
+    public Currency getCurrency()
+    {
+        return currency.getText().length() != 0 ? Currency.getInstance(currency.getText()) : null;
     }
 
     public double getBalance()
@@ -198,21 +171,5 @@ public class GeneralPage extends CommonPreferencePage
     public void setBalance(double balance)
     {
         this.balance.setText(nf.format(balance));
-    }
-    
-    public AccountGroup getGroup()
-    {
-        AccountGroup ag = (AccountGroup)group.getData(group.getText());
-        if (ag == null && group.getText().length() != 0)
-        {
-            ag = new AccountGroup();
-            ag.setDescription(group.getText());
-        }
-        return ag;
-    }
-    
-    public void setGroup(AccountGroup group)
-    {
-        this.group.setText(group.getDescription());
     }
 }

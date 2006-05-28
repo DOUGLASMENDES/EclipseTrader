@@ -11,6 +11,11 @@
 
 package net.sourceforge.eclipsetrader.trading.views;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +34,7 @@ import net.sourceforge.eclipsetrader.core.ui.AccountGroupSelection;
 import net.sourceforge.eclipsetrader.core.ui.AccountSelection;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
+import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.actions.NewAccountAction;
 import net.sourceforge.eclipsetrader.trading.actions.NewAccountGroupAction;
 import net.sourceforge.eclipsetrader.trading.dialogs.TransactionDialog;
@@ -44,13 +50,19 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -76,11 +88,22 @@ import org.eclipse.ui.part.ViewPart;
 public class AccountsView extends ViewPart implements ICollectionObserver
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.accounts";
+    public static final String PREFS_ACCOUNT_COLUMNS_SIZE = "ACCOUNT_COLUMNS_SIZE";
     private Tree tree;
     private NumberFormat nf = NumberFormat.getInstance();
     private Action newTransactionAction = new TransactionAction(this);
     private Action deleteAction = new DeleteAccountAction(this);
     private Action propertiesAction = new AccountSettingsAction(this);
+    private AccountTreeItemTransfer _accountTreeItemTransfer = new AccountTreeItemTransfer();
+    private ControlListener columnControlListener = new ControlAdapter() {
+        public void controlResized(ControlEvent e)
+        {
+            StringBuffer sizes = new StringBuffer();
+            for (int i = 0; i < tree.getColumnCount(); i++)
+                sizes.append(String.valueOf(tree.getColumn(i).getWidth()) + ";");
+            TradingPlugin.getDefault().getPreferenceStore().setValue(PREFS_ACCOUNT_COLUMNS_SIZE, sizes.toString());
+        }
+    };
     private Comparator groupComparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
         {
@@ -132,7 +155,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
         content.setLayout(gridLayout);
         
-        tree = new Tree(content, SWT.FULL_SELECTION|SWT.MULTI);
+        tree = new Tree(content, SWT.FULL_SELECTION|SWT.SINGLE);
         tree.setHeaderVisible(true);
         tree.setLinesVisible(false);
         tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -143,19 +166,10 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             }
         });
         TreeColumn column = new TreeColumn(tree, SWT.NONE);
+        column.addControlListener(columnControlListener);
         column = new TreeColumn(tree, SWT.RIGHT);
         column.setText("Balance");
-        tree.addControlListener(new ControlAdapter() {
-            public void controlResized(ControlEvent e)
-            {
-                int width = tree.getSize().x - 60;
-                if (tree.getVerticalBar() != null)
-                    width -= tree.getVerticalBar().getSize().x + 5;
-                if (width < 100) width = 100;
-                tree.getColumn(0).setWidth(width);
-                tree.getColumn(1).setWidth(60 - (tree.getVerticalBar().getSize().x + 5));
-            }
-        });
+        column.addControlListener(columnControlListener);
         tree.addMouseListener(new MouseAdapter() {
             public void mouseDown(MouseEvent e)
             {
@@ -183,19 +197,80 @@ public class AccountsView extends ViewPart implements ICollectionObserver
 
         getSite().setSelectionProvider(new SelectionProvider());
 
-        // Drag and drop support
+
+        DragSource dragSource = new DragSource(tree, DND.DROP_COPY|DND.DROP_MOVE);
+        dragSource.setTransfer(new Transfer[] { _accountTreeItemTransfer });
+        dragSource.addDragListener(new DragSourceListener() {
+            private TreeItem[] selection;
+
+            public void dragStart(DragSourceEvent event)
+            {
+                selection = tree.getSelection();
+                if (selection.length == 0)
+                    event.doit = false;
+            }
+
+            public void dragSetData(DragSourceEvent event)
+            {
+                int count = 0;
+
+                for (int i = 0; i < selection.length; i++)
+                {
+                    if (selection[i] instanceof AccountTreeItem)
+                        count++;
+                }
+                
+                AccountTreeItem[] items = new AccountTreeItem[count];
+                count = 0;
+                for (int i = 0; i < selection.length; i++)
+                {
+                    if (selection[i] instanceof AccountTreeItem)
+                        items[count++] = (AccountTreeItem)selection[i]; 
+                }
+                event.data = items;
+            }
+
+            public void dragFinished(DragSourceEvent event)
+            {
+            }
+        });
+
         DropTarget target = new DropTarget(parent, DND.DROP_COPY|DND.DROP_MOVE);
-        target.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
+        target.setTransfer(new Transfer[] { SecurityTransfer.getInstance(), _accountTreeItemTransfer });
         target.addDropListener(new DropTargetListener() {
             public void dragEnter(DropTargetEvent event)
             {
-                event.detail = DND.DROP_COPY;
+                if (event.detail == DND.DROP_DEFAULT)
+                    event.detail = DND.DROP_COPY;
+            
+                event.currentDataType = null;
+                
+                TransferData[] data = event.dataTypes;
+                for (int i = 0; i < data.length; i++)
+                {
+                    if (SecurityTransfer.getInstance().isSupportedType(data[i]))
+                    {
+                        event.currentDataType = data[i];
+                        break;
+                    }
+                }
+                if (event.currentDataType == null)
+                {
+                    for (int i = 0; i < data.length; i++)
+                    {
+                        if (_accountTreeItemTransfer.isSupportedType(data[i]))
+                        {
+                            event.currentDataType = data[i];
+                            break;
+                        }
+                    }
+                }
             }
 
             public void dragOver(DropTargetEvent event)
             {
                 TreeItem item = tree.getItem(tree.toControl(event.x, event.y));
-                if (item != null && item.getData() instanceof Account)
+                if (item != null && (item.getData() instanceof Account || _accountTreeItemTransfer.isSupportedType(event.currentDataType)))
                 {
                     event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
                     TreeItem[] selection = { item };
@@ -225,13 +300,43 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             public void drop(DropTargetEvent event)
             {
                 TreeItem item = tree.getItem(tree.toControl(event.x, event.y));
-                if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType) && item != null && item.getData() instanceof Account)
+                if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
                 {
-                    Security[] securities = (Security[]) event.data;
-                    for (int i = 0; i < securities.length; i++)
+                    if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType) && item != null && item.getData() instanceof Account)
                     {
-                        TransactionDialog dlg = new TransactionDialog((Account)item.getData(), getViewSite().getShell());
-                        dlg.open(securities[i]);
+                        Security[] securities = (Security[]) event.data;
+                        for (int i = 0; i < securities.length; i++)
+                        {
+                            TransactionDialog dlg = new TransactionDialog((Account)item.getData(), getViewSite().getShell());
+                            dlg.open(securities[i]);
+                        }
+                    }
+                }
+                if (_accountTreeItemTransfer.isSupportedType(event.currentDataType))
+                {
+                    Integer[] items = (Integer[]) event.data;
+                    if (items != null)
+                    {
+                        AccountGroup group = null;
+                        if (item != null)
+                        {
+                            if (item instanceof GroupTreeItem)
+                                group = ((GroupTreeItem)item).getGroup();
+                            else if (item instanceof AccountTreeItem)
+                                group = ((AccountTreeItem)item).getAccount().getGroup();
+                        }
+                        for (int i = 0; i < items.length; i++)
+                        {
+                            Account account = (Account) CorePlugin.getRepository().load(Account.class, items[i]);
+                            CorePlugin.getRepository().allAccounts().remove(account);
+                            if (account.getGroup() != null)
+                                account.getGroup().getAccounts().remove(account);
+                            account.setGroup(group);
+                            if (account.getGroup() != null)
+                                account.getGroup().getAccounts().add(account);
+                            CorePlugin.getRepository().allAccounts().add(account);
+                            CorePlugin.getRepository().save(account);
+                        }
                     }
                 }
             }
@@ -313,6 +418,21 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             if (account.getGroup() == null)
                 new AccountTreeItem(account, tree, SWT.NONE);
         }
+        
+        String[] sizes = TradingPlugin.getDefault().getPreferenceStore().getString(PREFS_ACCOUNT_COLUMNS_SIZE).split(";");
+        for (int i = 0; i < tree.getColumnCount(); i++)
+        {
+            if (i < sizes.length && sizes[i].length() != 0)
+                tree.getColumn(i).setWidth(Integer.parseInt(sizes[i]));
+            else
+            {
+                tree.getColumn(i).pack();
+                if (tree.getColumn(i).getWidth() == 0)
+                    tree.getColumn(i).setWidth(100);
+            }
+        }
+        if ("gtk".equals(SWT.getPlatform()))
+            tree.getColumn(tree.getColumnCount() - 1).pack();
     }
 
     private void updateSelection()
@@ -466,6 +586,11 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 }
             });
         }
+        
+        public Account getAccount()
+        {
+            return account;
+        }
 
         /* (non-Javadoc)
          * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
@@ -562,6 +687,11 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 }
             });
         }
+        
+        public AccountGroup getGroup()
+        {
+            return group;
+        }
 
         /* (non-Javadoc)
          * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
@@ -638,6 +768,104 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 if (o.equals(items[i].getData()))
                     items[i].dispose();
             }
+        }
+    }
+
+    public class AccountTreeItemTransfer extends ByteArrayTransfer
+    {
+        private final String TYPENAME = AccountTreeItem.class.getName();
+        private final int TYPEID = registerType(TYPENAME);
+
+        private AccountTreeItemTransfer()
+        {
+        }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.swt.dnd.Transfer#getTypeNames()
+         */
+        protected String[] getTypeNames()
+        {
+            return new String[] { TYPENAME };
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.swt.dnd.Transfer#getTypeIds()
+         */
+        protected int[] getTypeIds()
+        {
+            return new int[] { TYPEID };
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.swt.dnd.ByteArrayTransfer#javaToNative(java.lang.Object, org.eclipse.swt.dnd.TransferData)
+         */
+        protected void javaToNative(Object object, TransferData transferData)
+        {
+            if (!checkMyType(object) || !isSupportedType(transferData))
+                DND.error(DND.ERROR_INVALID_DATA);
+
+            try
+            {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ObjectOutputStream writeOut = new ObjectOutputStream(out);
+                
+                if (object instanceof AccountTreeItem)
+                {
+                    writeOut.writeInt(1);
+                    writeOut.writeObject(((AccountTreeItem)object).getAccount().getId());
+                }
+                else if (object instanceof AccountTreeItem[])
+                {
+                    AccountTreeItem[] array = (AccountTreeItem[]) object;
+                    writeOut.writeInt(array.length);
+                    for (int i = 0; i < array.length; i++)
+                        writeOut.writeObject(array[i].getAccount().getId());
+                }
+                
+                byte[] buffer = out.toByteArray();
+                writeOut.close();
+                super.javaToNative(buffer, transferData);
+            }
+            catch (IOException e) {
+                CorePlugin.logException(e);
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.swt.dnd.ByteArrayTransfer#nativeToJava(org.eclipse.swt.dnd.TransferData)
+         */
+        protected Object nativeToJava(TransferData transferData)
+        {
+            if (isSupportedType(transferData))
+            {
+                byte[] buffer = (byte[]) super.nativeToJava(transferData);
+                if (buffer == null)
+                    return null;
+
+                try
+                {
+                    ByteArrayInputStream in = new ByteArrayInputStream(buffer);
+                    ObjectInputStream readIn = new ObjectInputStream(in);
+
+                    int length = readIn.readInt();
+                    Integer[] security = new Integer[length];
+                    for (int i = 0; i < length; i++)
+                        security[i] = (Integer)readIn.readObject();
+                    
+                    readIn.close();
+                    return security;
+                }
+                catch (Exception e) {
+                    CorePlugin.logException(e);
+                }
+            }
+
+            return null;
+        }
+
+        private boolean checkMyType(Object object)
+        {
+            return (object instanceof AccountTreeItem || object instanceof AccountTreeItem[]);
         }
     }
 }
