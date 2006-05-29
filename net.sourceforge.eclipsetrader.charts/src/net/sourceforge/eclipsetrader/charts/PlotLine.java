@@ -433,6 +433,11 @@ public class PlotLine
         return ((Double) list.get(index)).doubleValue();
     }
     
+    public void setData(int index, double value)
+    {
+        list.set(index, new Double(value));
+    }
+    
     public Bar getBarData(int index)
     {
         return (Bar) list.get(index);

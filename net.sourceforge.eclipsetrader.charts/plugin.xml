@@ -432,6 +432,22 @@
                class="net.sourceforge.eclipsetrader.charts.indicators.ROCPreferencePage"
                title="Rate Of Change"/>
       </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.VIDYA"
+            id="net.sourceforge.eclipsetrader.indicators.vidya"
+            name="Tushar Chande's Vidya - VIDYA">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.VIDYAPreferencePage"
+               title="Tushar Chande's Vidya"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.VFI"
+            id="net.sourceforge.eclipsetrader.indicators.vfi"
+            name="Volume Flow Indicator - VFI">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.VFIPreferencePage"
+               title="Volume Flow Indicator"/>
+      </indicator>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.charts.objects">
