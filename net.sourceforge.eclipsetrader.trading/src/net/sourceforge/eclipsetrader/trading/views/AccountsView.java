@@ -19,8 +19,10 @@ import java.io.ObjectOutputStream;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -48,6 +50,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.ByteArrayTransfer;
@@ -69,6 +72,8 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -89,12 +94,14 @@ public class AccountsView extends ViewPart implements ICollectionObserver
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.accounts";
     public static final String PREFS_ACCOUNT_COLUMNS_SIZE = "ACCOUNT_COLUMNS_SIZE";
+    public static final String PREFS_ACCOUNT_EXPANDED_ITEMS = "ACCOUNT_EXPANDED_ITEMS";
     private Tree tree;
     private NumberFormat nf = NumberFormat.getInstance();
     private Action newTransactionAction = new TransactionAction(this);
     private Action deleteAction = new DeleteAccountAction(this);
     private Action propertiesAction = new AccountSettingsAction(this);
     private AccountTreeItemTransfer _accountTreeItemTransfer = new AccountTreeItemTransfer();
+    private Map expandMap = new HashMap();
     private ControlListener columnControlListener = new ControlAdapter() {
         public void controlResized(ControlEvent e)
         {
@@ -165,6 +172,45 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 updateSelection();
             }
         });
+        tree.addTreeListener(new TreeListener() {
+            public void treeCollapsed(TreeEvent e)
+            {
+                if (e.item instanceof GroupTreeItem)
+                {
+                    AccountGroup group = (AccountGroup)e.item.getData();
+                    expandMap.remove("G" + String.valueOf(group.getId()));
+                }
+                else if (e.item instanceof AccountTreeItem)
+                {
+                    Account group = (Account)e.item.getData();
+                    expandMap.remove("A" + String.valueOf(group.getId()));
+                }
+                saveExpandedStatus();
+            }
+
+            public void treeExpanded(TreeEvent e)
+            {
+                if (e.item instanceof GroupTreeItem)
+                {
+                    AccountGroup group = (AccountGroup)e.item.getData();
+                    expandMap.put(String.valueOf(group.getId()), new Boolean(true));
+                }
+                saveExpandedStatus();
+            }
+            
+            private void saveExpandedStatus()
+            {
+                StringBuffer sb = new StringBuffer();
+                for (Iterator iter = expandMap.keySet().iterator(); iter.hasNext(); )
+                {
+                    if (sb.length() != 0)
+                        sb.append(";");
+                    sb.append((String)iter.next());
+                }
+                TradingPlugin.getDefault().getPreferenceStore().setValue(PREFS_ACCOUNT_EXPANDED_ITEMS, sb.toString());
+                updateItemColors();
+            }
+        });
         TreeColumn column = new TreeColumn(tree, SWT.NONE);
         column.addControlListener(columnControlListener);
         column = new TreeColumn(tree, SWT.RIGHT);
@@ -196,7 +242,6 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         });
 
         getSite().setSelectionProvider(new SelectionProvider());
-
 
         DragSource dragSource = new DragSource(tree, DND.DROP_COPY|DND.DROP_MOVE);
         dragSource.setTransfer(new Transfer[] { _accountTreeItemTransfer });
@@ -369,6 +414,11 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler("delete", deleteAction);
         actionBars.setGlobalActionHandler("properties", propertiesAction);
+        
+        IPreferenceStore preferenceStore = TradingPlugin.getDefault().getPreferenceStore();
+        String[] values = preferenceStore.getString(PREFS_ACCOUNT_EXPANDED_ITEMS).split(";");
+        for (int i = 0; i < values.length; i++)
+            expandMap.put(values[i], new Boolean(true));
 
         parent.getDisplay().asyncExec(new Runnable() {
             public void run()
@@ -418,6 +468,11 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             if (account.getGroup() == null)
                 new AccountTreeItem(account, tree, SWT.NONE);
         }
+
+        int index = 0;
+        TreeItem[] items = tree.getItems();
+        for (int i = 0; i < items.length; i++)
+            index = updateItemColors(items[i], index);
         
         String[] sizes = TradingPlugin.getDefault().getPreferenceStore().getString(PREFS_ACCOUNT_COLUMNS_SIZE).split(";");
         for (int i = 0; i < tree.getColumnCount(); i++)
@@ -433,6 +488,45 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         }
         if ("gtk".equals(SWT.getPlatform()))
             tree.getColumn(tree.getColumnCount() - 1).pack();
+    }
+    
+    private void updateItemColors()
+    {
+        tree.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                if (!tree.isDisposed())
+                {
+                    int index = 0;
+                    TreeItem[] items = tree.getItems();
+                    for (int i = 0; i < items.length; i++)
+                        index = updateItemColors(items[i], index);
+                }
+            }
+        });
+    }
+    
+    private int updateItemColors(TreeItem treeItem, int index)
+    {
+//        treeItem.setBackground((index & 1) == 0 ? evenBackground : oddBackground);
+//        treeItem.setForeground((index & 1) == 0 ? evenForeground : oddForeground);
+        index++;
+
+        if (treeItem instanceof GroupTreeItem)
+        {
+            AccountGroup group = (AccountGroup)treeItem.getData();
+            if (expandMap.get(String.valueOf(group.getId())) != null)
+                treeItem.setExpanded(true);
+        }
+        
+        if (treeItem.getExpanded())
+        {
+            TreeItem[] items = treeItem.getItems();
+            for (int i = 0; i < items.length; i++)
+                index = updateItemColors(items[i], index);
+        }
+        
+        return index;
     }
 
     private void updateSelection()
@@ -476,12 +570,14 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 if (accountComparator.compare(account, arg1) < 0)
                 {
                     new AccountTreeItem(account, tree, SWT.NONE, i);
+                    updateItemColors();
                     updateSelection();
                     return;
                 }
             }
             
             new AccountTreeItem(account, tree, SWT.NONE);
+            updateItemColors();
             updateSelection();
         }
         else if (o instanceof AccountGroup)
@@ -496,6 +592,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 if (!(items[i].getData() instanceof AccountGroup))
                 {
                     new GroupTreeItem((AccountGroup)o, tree, SWT.NONE, i);
+                    updateItemColors();
                     updateSelection();
                     return;
                 }
@@ -503,12 +600,14 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 if (groupComparator.compare(group, arg1) < 0)
                 {
                     new GroupTreeItem(group, tree, SWT.NONE, i);
+                    updateItemColors();
                     updateSelection();
                     return;
                 }
             }
             
             new GroupTreeItem(group, tree, SWT.NONE);
+            updateItemColors();
             updateSelection();
         }
     }
@@ -524,6 +623,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             if (items[i].getData().equals(o))
                 items[i].dispose();
         }
+        updateItemColors();
         updateSelection();
     }
     
@@ -725,12 +825,14 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                     if (accountComparator.compare(account, arg1) < 0)
                     {
                         new AccountTreeItem(account, this, SWT.NONE, i);
+                        updateItemColors();
                         updateSelection();
                         return;
                     }
                 }
                 
                 new AccountTreeItem(account, this, SWT.NONE);
+                updateItemColors();
             }
             else if (o instanceof AccountGroup)
             {
@@ -748,12 +850,14 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                     if (groupComparator.compare(group, arg1) < 0)
                     {
                         new GroupTreeItem(group, this, SWT.NONE, i);
+                        updateItemColors();
                         updateSelection();
                         return;
                     }
                 }
                 
                 new GroupTreeItem(group, this, SWT.NONE);
+                updateItemColors();
             }
         }
 
@@ -768,6 +872,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 if (o.equals(items[i].getData()))
                     items[i].dispose();
             }
+            updateItemColors();
         }
     }
 
