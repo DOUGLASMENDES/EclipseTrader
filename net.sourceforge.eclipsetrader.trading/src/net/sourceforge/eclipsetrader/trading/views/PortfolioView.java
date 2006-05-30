@@ -14,8 +14,10 @@ package net.sourceforge.eclipsetrader.trading.views;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -44,6 +46,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -60,6 +63,8 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -87,6 +92,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
     private NumberFormat nf = NumberFormat.getInstance();
     private NumberFormat pf = NumberFormat.getInstance();
     private NumberFormat pcf = NumberFormat.getInstance();
+    private Map expandMap = new HashMap();
     private Comparator groupComparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
         {
@@ -191,6 +197,50 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 updateSelection();
             }
         });
+        tree.addTreeListener(new TreeListener() {
+            public void treeCollapsed(TreeEvent e)
+            {
+                if (e.item instanceof GroupTreeItem)
+                {
+                    AccountGroup group = (AccountGroup)e.item.getData();
+                    expandMap.remove("G" + String.valueOf(group.getId()));
+                }
+                else if (e.item instanceof AccountTreeItem)
+                {
+                    Account group = (Account)e.item.getData();
+                    expandMap.remove("A" + String.valueOf(group.getId()));
+                }
+                saveExpandedStatus();
+            }
+
+            public void treeExpanded(TreeEvent e)
+            {
+                if (e.item instanceof GroupTreeItem)
+                {
+                    AccountGroup group = (AccountGroup)e.item.getData();
+                    expandMap.put(String.valueOf("G" + group.getId()), new Boolean(true));
+                }
+                else if (e.item instanceof AccountTreeItem)
+                {
+                    Account group = (Account)e.item.getData();
+                    expandMap.put(String.valueOf("A" + group.getId()), new Boolean(true));
+                }
+                saveExpandedStatus();
+            }
+            
+            private void saveExpandedStatus()
+            {
+                StringBuffer sb = new StringBuffer();
+                for (Iterator iter = expandMap.keySet().iterator(); iter.hasNext(); )
+                {
+                    if (sb.length() != 0)
+                        sb.append(";");
+                    sb.append((String)iter.next());
+                }
+                TradingPlugin.getDefault().getPreferenceStore().setValue("PORTFOLIO_VIEW_EXPANDED_ITEMS", sb.toString());
+                updateItemColors();
+            }
+        });
         TreeColumn column = new TreeColumn(tree, SWT.NONE);
         column.addControlListener(columnControlListener);
         column = new TreeColumn(tree, SWT.LEFT);
@@ -282,6 +332,11 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
         });
         tree.setMenu(menuMgr.createContextMenu(tree));
         getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
+        
+        IPreferenceStore preferenceStore = TradingPlugin.getDefault().getPreferenceStore();
+        String[] values = preferenceStore.getString("PORTFOLIO_VIEW_EXPANDED_ITEMS").split(";");
+        for (int i = 0; i < values.length; i++)
+            expandMap.put(values[i], new Boolean(true));
 
         parent.getDisplay().asyncExec(new Runnable() {
             public void run()
@@ -339,6 +394,11 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
         }
         
         tree.setRedraw(false);
+
+        int index = 0;
+        TreeItem[] items = tree.getItems();
+        for (int i = 0; i < items.length; i++)
+            index = updateItemColors(items[i], index);
         
         String[] sizes = TradingPlugin.getDefault().getPreferenceStore().getString("PORTFOLIO_COLUMNS_SIZE").split(";");
         for (int i = 0; i < tree.getColumnCount(); i++)
@@ -348,6 +408,53 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
             else
                 tree.getColumn(i).pack();
         }
+        if ("gtk".equals(SWT.getPlatform()))
+            tree.getColumn(tree.getColumnCount() - 1).pack();
+    }
+    
+    private void updateItemColors()
+    {
+        tree.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                if (!tree.isDisposed())
+                {
+                    int index = 0;
+                    TreeItem[] items = tree.getItems();
+                    for (int i = 0; i < items.length; i++)
+                        index = updateItemColors(items[i], index);
+                }
+            }
+        });
+    }
+    
+    private int updateItemColors(TreeItem treeItem, int index)
+    {
+//        treeItem.setBackground((index & 1) == 0 ? evenBackground : oddBackground);
+//        treeItem.setForeground((index & 1) == 0 ? evenForeground : oddForeground);
+        index++;
+
+        if (treeItem instanceof GroupTreeItem)
+        {
+            AccountGroup group = (AccountGroup)treeItem.getData();
+            if (expandMap.get("G" + String.valueOf(group.getId())) != null)
+                treeItem.setExpanded(true);
+        }
+        else if (treeItem instanceof AccountTreeItem)
+        {
+            Account group = (Account)treeItem.getData();
+            if (expandMap.get("A" + String.valueOf(group.getId())) != null)
+                treeItem.setExpanded(true);
+        }
+        
+        if (treeItem.getExpanded())
+        {
+            TreeItem[] items = treeItem.getItems();
+            for (int i = 0; i < items.length; i++)
+                index = updateItemColors(items[i], index);
+        }
+        
+        return index;
     }
     
     private void updateSelection()
@@ -393,12 +500,14 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 if (accountComparator.compare(account, arg1) < 0)
                 {
                     new AccountTreeItem(account, tree, SWT.NONE, i);
+                    updateItemColors();
                     updateSelection();
                     return;
                 }
             }
             
             new AccountTreeItem(account, tree, SWT.NONE);
+            updateItemColors();
             updateSelection();
         }
         else if (o instanceof AccountGroup)
@@ -413,6 +522,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 if (!(items[i].getData() instanceof AccountGroup))
                 {
                     new GroupTreeItem((AccountGroup)o, tree, SWT.NONE, i);
+                    updateItemColors();
                     updateSelection();
                     return;
                 }
@@ -420,12 +530,14 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 if (groupComparator.compare(group, arg1) < 0)
                 {
                     new GroupTreeItem(group, tree, SWT.NONE, i);
+                    updateItemColors();
                     updateSelection();
                     return;
                 }
             }
             
             new GroupTreeItem(group, tree, SWT.NONE);
+            updateItemColors();
             updateSelection();
         }
     }
@@ -441,6 +553,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
             if (items[i].getData().equals(o))
                 items[i].dispose();
         }
+        updateItemColors();
         updateSelection();
     }
     
@@ -470,8 +583,19 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
         void init(PortfolioPosition item)
         {
             this.item = item;
+
             update();
             setData(item.getSecurity());
+
+            this.item.getSecurity().addObserver(this);
+            this.item.getSecurity().getQuoteMonitor().addObserver(this);
+            addDisposeListener(new DisposeListener() {
+                public void widgetDisposed(DisposeEvent e)
+                {
+                    PositionTreeItem.this.item.getSecurity().deleteObserver(PositionTreeItem.this);
+                    PositionTreeItem.this.item.getSecurity().getQuoteMonitor().deleteObserver(PositionTreeItem.this);
+                }
+            });
         }
         
         PortfolioPosition getPosition()
@@ -612,6 +736,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 }
                 while(getItemCount() > index)
                     getItem(index).dispose();
+                updateItemColors();
             }
         }
 
@@ -637,6 +762,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 }
                 while(getItemCount() > index)
                     getItem(index).dispose();
+                updateItemColors();
             }
         }
 
@@ -762,12 +888,14 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                     if (accountComparator.compare(account, arg1) < 0)
                     {
                         new AccountTreeItem(account, this, SWT.NONE, i);
+                        updateItemColors();
                         updateSelection();
                         return;
                     }
                 }
                 
                 new AccountTreeItem(account, this, SWT.NONE);
+                updateItemColors();
             }
             else if (o instanceof AccountGroup)
             {
@@ -785,12 +913,14 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                     if (groupComparator.compare(group, arg1) < 0)
                     {
                         new GroupTreeItem(group, this, SWT.NONE, i);
+                        updateItemColors();
                         updateSelection();
                         return;
                     }
                 }
                 
                 new GroupTreeItem(group, this, SWT.NONE);
+                updateItemColors();
             }
         }
 
@@ -805,6 +935,7 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
                 if (o.equals(items[i].getData()))
                     items[i].dispose();
             }
+            updateItemColors();
         }
     }
 }
