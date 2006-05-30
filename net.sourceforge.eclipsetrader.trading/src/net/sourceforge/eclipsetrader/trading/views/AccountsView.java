@@ -240,9 +240,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         target.addDropListener(new DropTargetListener() {
             public void dragEnter(DropTargetEvent event)
             {
-                if (event.detail == DND.DROP_DEFAULT)
-                    event.detail = DND.DROP_COPY;
-            
+                event.detail = DND.DROP_COPY;
                 event.currentDataType = null;
                 
                 TransferData[] data = event.dataTypes;
@@ -299,6 +297,8 @@ public class AccountsView extends ViewPart implements ICollectionObserver
 
             public void drop(DropTargetEvent event)
             {
+                event.detail = DND.DROP_COPY;
+
                 TreeItem item = tree.getItem(tree.toControl(event.x, event.y));
                 if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
                 {
