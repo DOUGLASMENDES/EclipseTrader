@@ -305,6 +305,8 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
 
             public void drop(DropTargetEvent event)
             {
+                event.detail = DND.DROP_COPY;
+
                 TreeItem item = tree.getItem(tree.toControl(event.x, event.y));
                 if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType) && item != null && item.getData() instanceof Account)
                 {

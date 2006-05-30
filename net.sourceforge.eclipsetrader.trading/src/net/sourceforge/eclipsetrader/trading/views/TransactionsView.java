@@ -167,8 +167,7 @@ public class TransactionsView extends ViewPart implements ICollectionObserver
         target.addDropListener(new DropTargetListener() {
             public void dragEnter(DropTargetEvent event)
             {
-                if (event.detail == DND.DROP_DEFAULT)
-                    event.detail = DND.DROP_COPY;
+                event.detail = DND.DROP_COPY;
             }
 
             public void dragOver(DropTargetEvent event)
@@ -190,6 +189,8 @@ public class TransactionsView extends ViewPart implements ICollectionObserver
 
             public void drop(DropTargetEvent event)
             {
+                event.detail = DND.DROP_COPY;
+
                 if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
                 {
                     Security[] securities = (Security[]) event.data;
