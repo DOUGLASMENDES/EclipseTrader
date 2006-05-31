@@ -73,7 +73,7 @@ public class UpdateAllChartsAction implements IWorkbenchWindowActionDelegate, IV
                         IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(security.getHistoryFeed().getId());
                         if (feed != null)
                         {
-                            monitor.setTaskName("Updating " + security.getDescription());
+                            monitor.subTask("Updating " + security.getDescription());
                             feed.updateHistory(chart.getSecurity(), IHistoryFeed.INTERVAL_DAILY);
                         }
                     }

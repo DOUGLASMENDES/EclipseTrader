@@ -159,6 +159,8 @@ public class NewsView extends ViewPart implements ICollectionObserver
                     width -= table.getVerticalBar().getSize().x;
                 if (width < 100) width = 100;
                 table.getColumn(1).setWidth(width);
+                if ("gtk".equals(SWT.getPlatform()))
+                    table.getColumn(table.getColumnCount() - 1).pack();
             }
         });
         table.addMouseListener(new MouseAdapter() {

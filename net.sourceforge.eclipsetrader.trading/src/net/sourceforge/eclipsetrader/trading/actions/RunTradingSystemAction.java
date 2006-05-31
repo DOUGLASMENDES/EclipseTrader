@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.TradingSystemPlugin;
@@ -52,11 +53,23 @@ public class RunTradingSystemAction implements IViewActionDelegate
             {
                 List list = CorePlugin.getRepository().getTradingSystems();
                 monitor.beginTask("Updating Trading System Signals", list.size());
+                
                 for (Iterator iter = list.iterator(); iter.hasNext(); )
                 {
                     TradingSystem system = (TradingSystem) iter.next();
+                    
+                    if (system.getSecurity().getHistoryFeed() != null)
+                    {
+                        String id = system.getSecurity().getHistoryFeed().getId();
+                        IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(id);
+                        monitor.subTask(system.getSecurity().getDescription() + " - Updating history");
+                        feed.updateHistory(system.getSecurity(), IHistoryFeed.INTERVAL_DAILY);
+                    }
+                    
+                    monitor.subTask(system.getSecurity().getDescription() + " - Running trading system");
                     TradingSystemPlugin plugin = TradingPlugin.createTradingSystemPlugin(system);
                     plugin.run();
+
                     monitor.worked(1);
                     if (monitor.isCanceled())
                         break;

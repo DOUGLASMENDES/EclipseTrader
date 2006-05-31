@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.trading.wizards.accounts;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
+import net.sourceforge.eclipsetrader.trading.views.AccountsView;
 import net.sourceforge.eclipsetrader.trading.views.TransactionsView;
 import net.sourceforge.eclipsetrader.trading.wizards.AccountWizard;
 
@@ -53,6 +54,7 @@ public class AccountWizardAction implements IWorkbenchWindowActionDelegate
         {
             IWorkbenchPage page = window.getActivePage();
             try {
+                page.showView(AccountsView.VIEW_ID);
                 page.showView(TransactionsView.VIEW_ID, String.valueOf(account.getId()), IWorkbenchPage.VIEW_ACTIVATE);
             } catch (PartInitException e1) {
                 CorePlugin.logException(e1);

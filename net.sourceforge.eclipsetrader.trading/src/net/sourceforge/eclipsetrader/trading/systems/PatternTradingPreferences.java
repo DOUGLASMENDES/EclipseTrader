@@ -105,9 +105,12 @@ public class PatternTradingPreferences extends TradingSystemPluginPreferencePage
     {
         Map params = new HashMap();
 
-        params.put("pattern", (String) pattern.getData(pattern.getText()));
-        params.put("period", String.valueOf(period.getSelectionIndex()));
-        params.put("bars", String.valueOf(bars.getSelection()));
+        if (pattern != null)
+            params.put("pattern", (String) pattern.getData(pattern.getText()));
+        if (period != null)
+            params.put("period", String.valueOf(period.getSelectionIndex()));
+        if (bars != null)
+            params.put("bars", String.valueOf(bars.getSelection()));
         
         setParameters(params);
     }

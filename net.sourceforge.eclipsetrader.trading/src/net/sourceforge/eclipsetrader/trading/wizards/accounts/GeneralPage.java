@@ -48,8 +48,8 @@ public class GeneralPage extends CommonPreferencePage
         
         nf.setGroupingUsed(true);
         nf.setMinimumIntegerDigits(1);
-        nf.setMinimumFractionDigits(4);
-        nf.setMaximumFractionDigits(4);
+        nf.setMinimumFractionDigits(2);
+        nf.setMaximumFractionDigits(2);
     }
 
     public GeneralPage(Account account)
