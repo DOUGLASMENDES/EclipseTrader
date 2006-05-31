@@ -16,8 +16,16 @@
 	    <topic label="Running EclipseTrader" href="guide/01.html" />
 	    <topic label="Working with securities">
 		    <topic label="Creating a security" href="guide/security01.html" />
+		    <topic label="Editing securities" href="guide/security03.html" />
+		    <topic label="Deleting securities" href="guide/security04.html" />
+		    <topic label="Searching price patterns" href="guide/security05.html" />
+	    </topic>
+	    <topic label="Working with watchlists">
 		    <topic label="Creating a watchlist" href="guide/security02.html" />
-		    <topic label="Pattern search" href="guide/security03.html" />
+		    <topic label="Change the shown columns" href="guide/watchlist04.html" />
+		    <topic label="Reordering the securities" href="guide/watchlist05.html" />
+		    <topic label="Using the alerts" href="guide/watchlist02.html" />
+		    <topic label="Searching price patterns" href="guide/watchlist03.html" />
 	    </topic>
 	    <topic label="Working with charts" href="guide/chart00.html">
 		    <topic label="Overview" href="guide/chart01.html" />
@@ -28,13 +36,18 @@
 		    <topic label="Copying indicators" href="guide/chart06.html" />
 		    <topic label="Deleting objects" href="guide/chart07.html" />
 	    </topic>
-	    <topic label="Accounts and transactions">
+	    <topic label="Working with accounts and transactions">
 		    <topic label="Creating an account" href="guide/account01.html" />
+		    <topic label="Editing accounts" href="guide/account04.html" />
+		    <topic label="Deleting accounts" href="guide/account05.html" />
 		    <topic label="Creating a transaction" href="guide/account02.html" />
+		    <topic label="Editing transactions" href="guide/account06.html" />
+		    <topic label="Deleting transactions" href="guide/account07.html" />
 		    <topic label="Using the portfolio" href="guide/account03.html" />
 	    </topic>
-	    <topic label="Trading systems">
+	    <topic label="Working with trading systems">
 		    <topic label="Creating a trading system" href="guide/ts01.html" />
+		    <topic label="Using the trading systems" href="guide/ts03.html" />
 		    <topic label="Back testing" href="guide/ts02.html" />
 	    </topic>
 	    <topic label="Updating with the update manager" href="tasks/tasks-36.htm" >
@@ -47,6 +60,12 @@
 	    </topic>
     </topic>
     <topic label="Reference">
+	    <topic label="Alerts">
+	    	<topic label="Moving Average Crossover" href="guide/alert01.html" />
+	    	<topic label="Price Alert" href="guide/alert02.html" />
+	    	<topic label="Price Change (%)" href="guide/alert03.html" />
+	    	<topic label="Target Price" href="guide/alert04.html" />
+	    </topic>
 	    <topic label="Charts" href="guide/charts.html">
 		    <topic label="Indicators">
 		        <topic label="Accumulation Distribution - AD" href="guide/indicators/ad.html"/>
