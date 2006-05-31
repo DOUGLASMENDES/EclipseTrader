@@ -12,6 +12,8 @@
 package net.sourceforge.eclipsetrader.core.ui.views;
 
 import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
@@ -133,6 +135,12 @@ public class CurrencyExchangeView extends ViewPart implements Observer
         table.setRedraw(false);
         
         List currencies = CurrencyConverter.getInstance().getCurrencies();
+        Collections.sort(currencies, new Comparator() {
+            public int compare(Object arg0, Object arg1)
+            {
+                return ((String)arg0).compareTo((String)arg1);
+            }
+        });
 
         int index = 1;
         for (Iterator iter = currencies.iterator(); iter.hasNext(); )
