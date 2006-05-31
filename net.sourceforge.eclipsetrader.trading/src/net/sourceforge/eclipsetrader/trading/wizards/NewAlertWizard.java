@@ -66,7 +66,7 @@ public class NewAlertWizard extends Wizard implements IDynamicWizard
         
         for (Iterator iter = additionalPages.iterator(); iter.hasNext(); )
         {
-            PluginParametersPage page = (PluginParametersPage) iter.next();
+            PluginParametersPage page = (PluginParametersPage) ((CommonWizardPage) iter.next()).getPreferencePage();
             page.performFinish();
             alert.getParameters().putAll(page.getParameters());
         }
