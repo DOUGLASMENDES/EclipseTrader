@@ -196,15 +196,18 @@ public class DataView extends ViewPart implements IPartListener, Observer
                                         continue;
                                     
                                     rowIndex = table.getItemCount() - (table.getItemCount() - line.getSize()) - 1;
-                                    while(rowIndex < table.getItemCount())
-                                        table.getItem(rowIndex++).setText(columnIndex, "");
-                                    
-                                    rowIndex = table.getItemCount() - (table.getItemCount() - line.getSize()) - 1;
-                                    for (Iterator iter = line.iterator(); iter.hasNext(); )
+                                    if (rowIndex >= 0)
                                     {
-                                        Object value = iter.next();
-                                        if (value instanceof Double)
-                                            table.getItem(rowIndex--).setText(columnIndex, nf.format(value));
+                                        while(rowIndex < table.getItemCount())
+                                            table.getItem(rowIndex++).setText(columnIndex, "");
+                                        
+                                        rowIndex = table.getItemCount() - (table.getItemCount() - line.getSize()) - 1;
+                                        for (Iterator iter = line.iterator(); iter.hasNext(); )
+                                        {
+                                            Object value = iter.next();
+                                            if (value instanceof Double)
+                                                table.getItem(rowIndex--).setText(columnIndex, nf.format(value));
+                                        }
                                     }
                                     
                                     columnIndex++;
