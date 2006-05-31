@@ -207,7 +207,7 @@ public class CurrencyConverter extends Observable
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
-            Element root = document.createElement("data");
+            Element root = document.getDocumentElement();
             
             for (Iterator iter = currencies.iterator(); iter.hasNext(); )
             {
