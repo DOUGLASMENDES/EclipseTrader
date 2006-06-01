@@ -89,11 +89,14 @@ public class CurrencyPreferencesPage extends PreferencePage implements IWorkbenc
             {
                 Locale locale = (Locale) available.get(i);
                 Currency currency = Currency.getInstance(locale);
-                TableItem tableItem = new TableItem(table, SWT.NONE);
-                tableItem.setText(0, locale.getDisplayCountry());
-                tableItem.setText(1, currency.getCurrencyCode());
-                tableItem.setChecked(enabled.contains(currency.getCurrencyCode()));
-                tableItem.setData(currency);
+                if (currency != null)
+                {
+                    TableItem tableItem = new TableItem(table, SWT.NONE);
+                    tableItem.setText(0, locale.getDisplayCountry());
+                    tableItem.setText(1, currency.getCurrencyCode());
+                    tableItem.setChecked(enabled.contains(currency.getCurrencyCode()));
+                    tableItem.setData(currency);
+                }
             }
             catch (Exception e) {
             }

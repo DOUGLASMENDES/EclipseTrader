@@ -14,7 +14,6 @@ package net.sourceforge.eclipsetrader.charts.internal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
@@ -62,17 +61,18 @@ public class EarlyStartup implements IStartup
             Job job = new Job("Update chart data") {
                 protected IStatus run(IProgressMonitor monitor)
                 {
-                    monitor.beginTask("Updating charts", CorePlugin.getRepository().allSecurities().size());
-                    for (Iterator iter = CorePlugin.getRepository().allSecurities().iterator(); iter.hasNext(); )
+                    Object[] objs = CorePlugin.getRepository().allSecurities().toArray();
+                    monitor.beginTask("Updating charts", objs.length);
+                    for (int i = 0; i < objs.length; i++)
                     {
-                        Security security = (Security)iter.next();
+                        Security security = (Security)objs[i];
                         Chart chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
                         if (chart != null && security.getHistoryFeed() != null)
                         {
                             IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(security.getHistoryFeed().getId());
                             if (feed != null)
                             {
-                                monitor.setTaskName("Updating " + security.getDescription());
+                                monitor.subTask("Updating " + security.getDescription());
                                 feed.updateHistory(chart.getSecurity(), IHistoryFeed.INTERVAL_DAILY);
                             }
                         }

@@ -11,8 +11,6 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
-import java.util.Iterator;
-
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.Chart;
@@ -63,10 +61,11 @@ public class UpdateAllChartsAction implements IWorkbenchWindowActionDelegate, IV
         Job job = new Job("Update chart data") {
             protected IStatus run(IProgressMonitor monitor)
             {
-                monitor.beginTask("Updating charts", CorePlugin.getRepository().allSecurities().size());
-                for (Iterator iter = CorePlugin.getRepository().allSecurities().iterator(); iter.hasNext(); )
+                Object[] objs = CorePlugin.getRepository().allSecurities().toArray();
+                monitor.beginTask("Updating charts", objs.length);
+                for (int i = 0; i < objs.length; i++)
                 {
-                    Security security = (Security)iter.next();
+                    Security security = (Security)objs[i];
                     Chart chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
                     if (chart != null && security.getHistoryFeed() != null)
                     {
