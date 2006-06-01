@@ -67,9 +67,12 @@ public class EventDetailsDialog extends Dialog
      */
     protected Control createDialogArea(Composite parent)
     {
-        Composite content = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
+        Composite content = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout(3, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        gridLayout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
+        gridLayout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
+        gridLayout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
+        gridLayout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
@@ -109,7 +112,7 @@ public class EventDetailsDialog extends Dialog
         
         updateEvent();
         
-        return content.getParent();
+        return content;
     }
 
     /* (non-Javadoc)
@@ -173,6 +176,7 @@ public class EventDetailsDialog extends Dialog
         security.setText(event.getSecurity() != null ? event.getSecurity().getDescription() : "");
         message.setText(event.getMessage());
         longMessage.setText(event.getLongMessage());
+        message.getParent().layout();
         view.getTable().select(index);
     }
 

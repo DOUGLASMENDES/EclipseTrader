@@ -11,37 +11,34 @@
 
 package net.sourceforge.eclipsetrader.charts.dialogs;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.db.Bar;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 
 public class CustomPeriodDialog extends Dialog
 {
-    private Text begin;
-    private Text end;
+    private Combo begin;
+    private Combo end;
+    private List history;
     private Date beginDate, endDate;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
-    private SimpleDateFormat dateParse = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
 
-    public CustomPeriodDialog(Date beginDate, Date endDate)
+    public CustomPeriodDialog(Shell parentShell, List history, Date beginDate, Date endDate)
     {
-        super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-
+        super(parentShell);
+        this.history = history;
         this.beginDate = beginDate;
         this.endDate = endDate;
     }
@@ -61,52 +58,40 @@ public class CustomPeriodDialog extends Dialog
     protected Control createDialogArea(Composite parent)
     {
         Composite content = new Composite(parent, SWT.NONE);
-        GridLayout gridLayout = new GridLayout(2, false);
+        GridLayout gridLayout = new GridLayout(4, false);
+        gridLayout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
+        gridLayout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
+        gridLayout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
+        gridLayout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         
         Label label = new Label(content, SWT.NONE);
         label.setText("Begin Date");
-        label.setLayoutData(new GridData(80, SWT.DEFAULT));
-        begin = new Text(content, SWT.BORDER);
-        if (beginDate != null)
-            begin.setText(dateFormat.format(beginDate));
-        begin.setLayoutData(new GridData(80, SWT.DEFAULT));
-        begin.addFocusListener(new FocusAdapter() {
-            public void focusLost(FocusEvent e)
-            {
-                reformatDate(begin);
-            }
-        });
+        begin = new Combo(content, SWT.READ_ONLY);
+        begin.setVisibleItemCount(25);
         
         label = new Label(content, SWT.NONE);
         label.setText("End Date");
-        label.setLayoutData(new GridData(80, SWT.DEFAULT));
-        end = new Text(content, SWT.BORDER);
-        if (endDate != null)
-            end.setText(dateFormat.format(endDate));
-        end.setLayoutData(new GridData(80, SWT.DEFAULT));
-        end.addFocusListener(new FocusAdapter() {
-            public void focusLost(FocusEvent e)
-            {
-                reformatDate(end);
-            }
-        });
+        end = new Combo(content, SWT.READ_ONLY);
+        end.setVisibleItemCount(25);
+        
+        int first = -1, last = -1;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
+        for (int i = 0; i < history.size(); i++)
+        {
+            Bar bar = (Bar)history.get(i);
+            begin.add(dateFormat.format(bar.getDate()));
+            end.add(dateFormat.format(bar.getDate()));
+            if (first == -1 && beginDate != null && (bar.getDate().equals(beginDate) || bar.getDate().after(beginDate)))
+                first = i;
+            if (last == -1 && endDate != null && (bar.getDate().equals(endDate) || bar.getDate().after(endDate)))
+                last = i;
+        }
+        begin.select(first != -1 ? first : 0);
+        end.select(last != -1 ? last : end.getItemCount() - 1);
 
-        return super.createDialogArea(parent);
-    }
-
-    private void reformatDate(Text text)
-    {
-        if (text.getText().length() != 0)
-            try
-            {
-                Date date = dateParse.parse(text.getText());
-                text.setText(dateFormat.format(date));
-            }
-            catch (ParseException e) {
-                CorePlugin.logException(e);
-            }
+        return content;
     }
 
     /* (non-Javadoc)
@@ -114,14 +99,8 @@ public class CustomPeriodDialog extends Dialog
      */
     protected void okPressed()
     {
-        try
-        {
-            beginDate = dateParse.parse(begin.getText());
-            endDate = dateParse.parse(end.getText());
-        }
-        catch (ParseException e) {
-            CorePlugin.logException(e);
-        }
+        beginDate = ((Bar)history.get(begin.getSelectionIndex())).getDate();
+        endDate = ((Bar)history.get(end.getSelectionIndex())).getDate();
         super.okPressed();
     }
 

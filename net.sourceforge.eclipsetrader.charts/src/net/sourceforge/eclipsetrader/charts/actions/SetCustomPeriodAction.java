@@ -47,7 +47,7 @@ public class SetCustomPeriodAction extends Action
             Date end = chart.getEndDate();
             if (end == null && chart.getSecurity().getHistory().size() != 0)
                 end = ((Bar) chart.getSecurity().getHistory().get(chart.getSecurity().getHistory().size() - 1)).getDate();
-            CustomPeriodDialog dlg = new CustomPeriodDialog(begin, end);
+            CustomPeriodDialog dlg = new CustomPeriodDialog(view.getViewSite().getShell(), chart.getSecurity().getHistory(), begin, end);
             if (dlg.open() == Dialog.OK)
                 view.setPeriod(dlg.getBeginDate(), dlg.getEndDate());
             else
