@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Observable;
 import java.util.Observer;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -29,7 +30,7 @@ import org.eclipse.ui.themes.IThemeManager;
 
 public class NewsTableItem extends TableItem implements DisposeListener, Observer
 {
-    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm"); //$NON-NLS-1$
+    private SimpleDateFormat dateTimeFormat = CorePlugin.getDateTimeFormat();
     private NewsItem newsItem;
     private ITheme theme;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
@@ -66,6 +67,13 @@ public class NewsTableItem extends TableItem implements DisposeListener, Observe
     {
         super(parent, style);
         init(newsItem);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.widgets.TableItem#checkSubclass()
+     */
+    protected void checkSubclass()
+    {
     }
 
     protected void init(NewsItem newsItem)
@@ -137,12 +145,5 @@ public class NewsTableItem extends TableItem implements DisposeListener, Observe
     public NewsItem getNewsItem()
     {
         return newsItem;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.eclipse.swt.widgets.TableItem#checkSubclass()
-     */
-    protected void checkSubclass()
-    {
     }
 }

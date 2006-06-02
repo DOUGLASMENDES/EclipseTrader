@@ -11,6 +11,8 @@
 
 package net.sourceforge.eclipsetrader.news.dialogs;
 
+import net.sourceforge.eclipsetrader.news.internal.Messages;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -28,7 +30,7 @@ public class RSSFeedDialog extends Dialog
 {
     private Text sourceControl;
     private Text urlControl;
-    private String source = "", url = "";
+    private String source = "", url = ""; //$NON-NLS-1$ //$NON-NLS-2$
 
     public RSSFeedDialog(Shell shell)
     {
@@ -41,7 +43,7 @@ public class RSSFeedDialog extends Dialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("RSS Feed");
+        newShell.setText(Messages.RSSFeedDialog_Title);
     }
 
     /* (non-Javadoc)
@@ -55,14 +57,14 @@ public class RSSFeedDialog extends Dialog
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Source");
+        label.setText(Messages.RSSFeedDialog_Source);
         label.setLayoutData(new GridData(75, SWT.DEFAULT));
         sourceControl = new Text(content, SWT.BORDER);
         sourceControl.setLayoutData(new GridData(140, SWT.DEFAULT));
         sourceControl.setText(source);
         
         label = new Label(content, SWT.NONE);
-        label.setText("URL");
+        label.setText(Messages.RSSFeedDialog_URL);
         label.setLayoutData(new GridData(75, SWT.DEFAULT));
         urlControl = new Text(content, SWT.BORDER);
         urlControl.setLayoutData(new GridData(280, SWT.DEFAULT));

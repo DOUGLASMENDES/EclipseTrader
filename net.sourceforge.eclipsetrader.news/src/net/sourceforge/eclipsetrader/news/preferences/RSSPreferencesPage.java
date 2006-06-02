@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 import net.sourceforge.eclipsetrader.news.dialogs.RSSFeedDialog;
+import net.sourceforge.eclipsetrader.news.internal.Messages;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -81,11 +82,11 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
         group.setLayout(gridLayout);
         group.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         Label label = new Label(group, SWT.NONE);
-        label.setText("Automatic update every");
+        label.setText(Messages.RSSPreferencesPage_AutoUpdate);
         interval = new Text(group, SWT.BORDER);
         interval.setLayoutData(new GridData(60, SWT.DEFAULT));
         label = new Label(group, SWT.NONE);
-        label.setText("minutes");
+        label.setText(Messages.RSSPreferencesPage_Minutes);
         
         table = new Table(content, SWT.FULL_SELECTION|SWT.MULTI);
         table.setHeaderVisible(true);
@@ -95,9 +96,9 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
         gridData.widthHint = 250;
         table.setLayoutData(gridData);
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Source");
+        column.setText(Messages.RSSPreferencesPage_Source);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("URL");
+        column.setText(Messages.RSSPreferencesPage_URL);
         table.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -113,7 +114,7 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
         group.setLayout(gridLayout);
         group.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
         Button button = new Button(group, SWT.PUSH);
-        button.setText("Add");
+        button.setText(Messages.RSSPreferencesPage_Add);
         button.setLayoutData(new GridData(80, SWT.DEFAULT));
         button.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -130,7 +131,7 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
             }
         });
         editButton = new Button(group, SWT.PUSH);
-        editButton.setText("Edit");
+        editButton.setText(Messages.RSSPreferencesPage_Edit);
         editButton.setEnabled(false);
         editButton.setLayoutData(new GridData(80, SWT.DEFAULT));
         editButton.addSelectionListener(new SelectionAdapter() {
@@ -153,7 +154,7 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
             }
         });
         removeButton = new Button(group, SWT.PUSH);
-        removeButton.setText("Remove");
+        removeButton.setText(Messages.RSSPreferencesPage_Remove);
         removeButton.setEnabled(false);
         removeButton.setLayoutData(new GridData(80, SWT.DEFAULT));
         removeButton.addSelectionListener(new SelectionAdapter() {
@@ -188,7 +189,7 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
                     if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
                     {
                         TableItem tableItem = new TableItem(table, SWT.NONE);
-                        tableItem.setText(0, item.getAttributes().getNamedItem("name").getNodeValue());
+                        tableItem.setText(0, item.getAttributes().getNamedItem("name").getNodeValue()); //$NON-NLS-1$
                         tableItem.setText(1, item.getFirstChild().getNodeValue());
                     }
                 }
@@ -212,31 +213,31 @@ public class RSSPreferencesPage extends PreferencePage implements IWorkbenchPref
 
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
 
             TableItem[] items = table.getItems();
             for (int i = 0; i < items.length; i++)
             {
-                Element element = document.createElement("source");
-                element.setAttribute("name", items[i].getText(0));
+                Element element = document.createElement("source"); //$NON-NLS-1$
+                element.setAttribute("name", items[i].getText(0)); //$NON-NLS-1$
                 element.appendChild(document.createTextNode(items[i].getText(1)));
                 root.appendChild(element);
             }
             
             TransformerFactory factory = TransformerFactory.newInstance();
             try {
-                factory.setAttribute("indent-number", new Integer(4));
+                factory.setAttribute("indent-number", new Integer(4)); //$NON-NLS-1$
             } catch(Exception e) {}
             Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
             DOMSource source = new DOMSource(document);
             
-            BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), "rss.xml")));
+            BufferedWriter out = new BufferedWriter(new FileWriter(new File(Platform.getLocation().toFile(), "rss.xml"))); //$NON-NLS-1$
             StreamResult result = new StreamResult(out);
             transformer.transform(source, result);
             out.flush();

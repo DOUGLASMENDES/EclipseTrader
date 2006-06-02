@@ -24,18 +24,18 @@
                class="net.sourceforge.eclipsetrader.news.actions.StopFeedAction"
                icon="icons/etool16/newspaper_stop.png"
                id="net.sourceforge.eclipsetrader.news.stopFeed"
-               label="Stop News Feed"
+               label="%StopFeedAction.label"
                style="push"
                toolbarPath="eclipsetrader"
-               tooltip="Stop news feed"/>
+               tooltip="%StopFeedAction.tooltip"/>
          <action
                class="net.sourceforge.eclipsetrader.news.actions.StartFeedAction"
                icon="icons/etool16/newspaper_go.png"
                id="net.sourceforge.eclipsetrader.news.startFeed"
-               label="Start News Feed"
+               label="%StartFeedAction.label"
                style="push"
                toolbarPath="eclipsetrader"
-               tooltip="Start news feed"/>
+               tooltip="%StartFeedAction.tooltip"/>
       </actionSet>
    </extension>
    <extension
@@ -44,7 +44,7 @@
             class="net.sourceforge.eclipsetrader.news.Perspective"
             icon="icons/eview16/newspaper.png"
             id="net.sourceforge.eclipsetrader.news"
-            name="News"/>
+            name="%Perspective.News"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -93,7 +93,7 @@
                class="net.sourceforge.eclipsetrader.news.actions.ShowSecurityNewsAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.news.showNews"
-               label="Show News"
+               label="%ShowNewsAction.label"
                menubarPath="group2"
                style="push"/>
       </viewerContribution>
@@ -104,7 +104,7 @@
                class="net.sourceforge.eclipsetrader.news.actions.ShowSecurityNewsAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.news.showNews"
-               label="Show News"
+               label="%ShowNewsAction.label"
                menubarPath="group2"
                style="push"/>
       </viewerContribution>
@@ -114,12 +114,12 @@
       <page
             class="net.sourceforge.eclipsetrader.news.preferences.NewsPreferencesPage"
             id="net.sourceforge.eclipsetrader.news"
-            name="News"/>
+            name="%PreferencePages.News"/>
       <page
             category="net.sourceforge.eclipsetrader.news"
             class="net.sourceforge.eclipsetrader.news.preferences.RSSPreferencesPage"
             id="net.sourceforge.eclipsetrader.news.rss"
-            name="RSS News"/>
+            name="%PreferencePages.RSSNews"/>
    </extension>
    <extension
          point="org.eclipse.ui.startup">
@@ -189,7 +189,7 @@
             class="net.sourceforge.eclipsetrader.news.views.NewsView"
             icon="icons/eview16/newspaper.png"
             id="net.sourceforge.eclipsetrader.newslist"
-            name="News"/>
+            name="%Views.News"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
@@ -239,7 +239,7 @@
       <provider
             class="net.sourceforge.eclipsetrader.news.providers.RSSNewsProvider"
             id="net.sourceforge.eclipsetrader.news.rss"
-            name="RSS News"/>
+            name="%NewsProvider.RSS.name"/>
    </extension>
 
 </plugin>

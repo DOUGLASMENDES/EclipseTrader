@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.news.preferences;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
+import net.sourceforge.eclipsetrader.news.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -60,15 +61,15 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         content.setLayout(gridLayout);
         
         updateStartup = new Button(content, SWT.CHECK);
-        updateStartup.setText("Update on startup");
+        updateStartup.setText(Messages.NewsPreferencesPage_StartupUpdate);
         updateStartup.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         
         followQuoteFeed = new Button(content, SWT.CHECK);
-        followQuoteFeed.setText("Follow quote feed running status");
+        followQuoteFeed.setText(Messages.NewsPreferencesPage_FollowQuoteFeed);
         followQuoteFeed.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Days to keep");
+        label.setText(Messages.NewsPreferencesPage_DaysToKeep);
         daysToKeep = new Spinner(content, SWT.BORDER);
         daysToKeep.setMinimum(1);
         daysToKeep.setMaximum(9999);
@@ -80,7 +81,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         gridData.heightHint = 250;
         table.setLayoutData(gridData);
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Provider");
+        column.setText(Messages.NewsPreferencesPage_Provider);
 
         IPreferenceStore store = NewsPlugin.getDefault().getPreferenceStore();
         updateStartup.setSelection(store.getBoolean(NewsPlugin.PREFS_UPDATE_ON_STARTUP));
@@ -94,9 +95,9 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
             IConfigurationElement[] elements = extensionPoint.getConfigurationElements();
             for (int i = 0; i < elements.length; i++)
             {
-                String id = elements[i].getAttribute("id");
+                String id = elements[i].getAttribute("id"); //$NON-NLS-1$
                 TableItem tableItem = new TableItem(table, SWT.NONE);
-                tableItem.setText(elements[i].getAttribute("name"));
+                tableItem.setText(elements[i].getAttribute("name")); //$NON-NLS-1$
                 tableItem.setChecked(store.getBoolean(id));
                 tableItem.setData(id);
             }

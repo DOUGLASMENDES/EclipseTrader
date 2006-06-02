@@ -20,6 +20,7 @@ import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.views.WebBrowser;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
+import net.sourceforge.eclipsetrader.news.internal.Messages;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -48,16 +49,16 @@ import org.eclipse.ui.themes.IThemeManager;
 
 public class NewsView extends ViewPart implements ICollectionObserver
 {
-    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.newslist";
-    public static final String TABLE_BACKGROUND = "NEWS_TABLE_BACKGROUND";
-    public static final String TABLE_FOREGROUND = "NEWS_TABLE_FOREGROUND";
-    public static final String TABLE_FONT = "NEWS_TABLE_FONT";
-    public static final String READED_ITEM_BACKGROUND = "NEWS_READED_ITEM_BACKGROUND";
-    public static final String READED_ITEM_FOREGROUND = "NEWS_READED_ITEM_FOREGROUND";
-    public static final String READED_ITEM_FONT = "NEWS_READED_ITEM_FONT";
-    public static final String NEW_ITEM_BACKGROUND = "NEWS_NEW_ITEM_BACKGROUND";
-    public static final String NEW_ITEM_FOREGROUND = "NEWS_NEW_ITEM_FOREGROUND";
-    public static final String NEW_ITEM_FONT = "NEWS_NEW_ITEM_FONT";
+    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.newslist"; //$NON-NLS-1$
+    public static final String TABLE_BACKGROUND = "NEWS_TABLE_BACKGROUND"; //$NON-NLS-1$
+    public static final String TABLE_FOREGROUND = "NEWS_TABLE_FOREGROUND"; //$NON-NLS-1$
+    public static final String TABLE_FONT = "NEWS_TABLE_FONT"; //$NON-NLS-1$
+    public static final String READED_ITEM_BACKGROUND = "NEWS_READED_ITEM_BACKGROUND"; //$NON-NLS-1$
+    public static final String READED_ITEM_FOREGROUND = "NEWS_READED_ITEM_FOREGROUND"; //$NON-NLS-1$
+    public static final String READED_ITEM_FONT = "NEWS_READED_ITEM_FONT"; //$NON-NLS-1$
+    public static final String NEW_ITEM_BACKGROUND = "NEWS_NEW_ITEM_BACKGROUND"; //$NON-NLS-1$
+    public static final String NEW_ITEM_FOREGROUND = "NEWS_NEW_ITEM_FOREGROUND"; //$NON-NLS-1$
+    public static final String NEW_ITEM_FONT = "NEWS_NEW_ITEM_FONT"; //$NON-NLS-1$
     private Security security;
     private Table table;
     private ObservableList newsList = new ObservableList();
@@ -140,16 +141,16 @@ public class NewsView extends ViewPart implements ICollectionObserver
         }
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Date");
+        column.setText(Messages.NewsView_Date);
         column.setWidth(120);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Title");
+        column.setText(Messages.NewsView_Title);
         column.setWidth(60);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Security");
+        column.setText(Messages.NewsView_Security);
         column.setWidth(120);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Source");
+        column.setText(Messages.NewsView_Source);
         column.setWidth(100);
         table.addControlListener(new ControlAdapter() {
             public void controlResized(ControlEvent e)
@@ -159,7 +160,7 @@ public class NewsView extends ViewPart implements ICollectionObserver
                     width -= table.getVerticalBar().getSize().x;
                 if (width < 100) width = 100;
                 table.getColumn(1).setWidth(width);
-                if ("gtk".equals(SWT.getPlatform()))
+                if ("gtk".equals(SWT.getPlatform())) //$NON-NLS-1$
                     table.getColumn(table.getColumnCount() - 1).pack();
             }
         });
@@ -181,7 +182,7 @@ public class NewsView extends ViewPart implements ICollectionObserver
                     security = (Security) CorePlugin.getRepository().getSecurity(getViewSite().getSecondaryId());
                     if (security != null)
                     {
-                        setPartName(security.getDescription() + " " + getPartName());
+                        setPartName(security.getDescription() + " " + getPartName()); //$NON-NLS-1$
                         newsList = CorePlugin.getRepository().allNews(security);
                     }
                 }
