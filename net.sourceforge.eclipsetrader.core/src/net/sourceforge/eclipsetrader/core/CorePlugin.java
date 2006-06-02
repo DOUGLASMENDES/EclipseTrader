@@ -11,11 +11,13 @@
 
 package net.sourceforge.eclipsetrader.core;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.core.internal.Messages;
 import net.sourceforge.eclipsetrader.core.internal.XMLRepository;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -40,24 +42,30 @@ import org.osgi.framework.BundleContext;
 
 public class CorePlugin extends AbstractUIPlugin
 {
-    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.core";
-    public static final String FEED_EXTENSION_POINT = PLUGIN_ID + ".feeds";
-    public static final String PATTERN_EXTENSION_POINT = PLUGIN_ID + ".patterns";
-    public static final String FEED_RUNNING = "FEED_RUNNING";
-    public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY";
-    public static final String PREFS_PROXY_HOST_ADDRESS = "PROXY_HOST_ADDRESS";
-    public static final String PREFS_PROXY_PORT_ADDRESS = "PROXY_PORT_ADDRESS";
-    public static final String PREFS_ENABLE_PROXY_AUTHENTICATION = "ENABLE_PROXY_AUTHENTICATION";
-    public static final String PREFS_PROXY_USER = "PROXY_USER";
-    public static final String PREFS_PROXY_PASSWORD = "PROXY_PASSWORD";
-    public static final String PREFS_HISTORICAL_PRICE_RANGE = "HISTORICAL_PRICE_RANGE";
-    public static final String PREFS_NEWS_DATE_RANGE = "NEWS_DATE_RANGE";
-    public static final String PREFS_UPDATE_HISTORY = "UPDATE_HISTORY";
-    public static final String PREFS_UPDATE_HISTORY_ONCE = "UPDATE_HISTORY_ONCE";
-    public static final String PREFS_UPDATE_HISTORY_LAST = "UPDATE_HISTORY_LAST";
-    public static final String PREFS_UPDATE_NEWS = "UPDATE_NEWS";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.core"; //$NON-NLS-1$
+    public static final String FEED_EXTENSION_POINT = PLUGIN_ID + ".feeds"; //$NON-NLS-1$
+    public static final String PATTERN_EXTENSION_POINT = PLUGIN_ID + ".patterns"; //$NON-NLS-1$
+    public static final String FEED_RUNNING = "FEED_RUNNING"; //$NON-NLS-1$
+    public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY"; //$NON-NLS-1$
+    public static final String PREFS_PROXY_HOST_ADDRESS = "PROXY_HOST_ADDRESS"; //$NON-NLS-1$
+    public static final String PREFS_PROXY_PORT_ADDRESS = "PROXY_PORT_ADDRESS"; //$NON-NLS-1$
+    public static final String PREFS_ENABLE_PROXY_AUTHENTICATION = "ENABLE_PROXY_AUTHENTICATION"; //$NON-NLS-1$
+    public static final String PREFS_PROXY_USER = "PROXY_USER"; //$NON-NLS-1$
+    public static final String PREFS_PROXY_PASSWORD = "PROXY_PASSWORD"; //$NON-NLS-1$
+    public static final String PREFS_HISTORICAL_PRICE_RANGE = "HISTORICAL_PRICE_RANGE"; //$NON-NLS-1$
+    public static final String PREFS_NEWS_DATE_RANGE = "NEWS_DATE_RANGE"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_HISTORY = "UPDATE_HISTORY"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_HISTORY_ONCE = "UPDATE_HISTORY_ONCE"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_HISTORY_LAST = "UPDATE_HISTORY_LAST"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_NEWS = "UPDATE_NEWS"; //$NON-NLS-1$
     private static CorePlugin plugin;
     private static Repository repository;
+    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat(Messages.CorePlugin_DateTimeFormat);
+    private static SimpleDateFormat dateTimeParse = new SimpleDateFormat(Messages.CorePlugin_DateTimeParse);
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat(Messages.CorePlugin_DateFormat);
+    private static SimpleDateFormat dateParse = new SimpleDateFormat(Messages.CorePlugin_DateParse);
+    private static SimpleDateFormat timeFormat = new SimpleDateFormat(Messages.CorePlugin_TimeFormat);
+    private static SimpleDateFormat timeParse = new SimpleDateFormat(Messages.CorePlugin_TimeParse);
     private IPropertyChangeListener feedPropertyListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
@@ -65,7 +73,7 @@ public class CorePlugin extends AbstractUIPlugin
             {
                 if (CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.FEED_RUNNING))
                 {
-                    Job job = new Job("Update currencies") {
+                    Job job = new Job(Messages.CorePlugin_UpdateCurrencies) {
                         protected IStatus run(IProgressMonitor monitor)
                         {
                             return CurrencyConverter.getInstance().updateExchanges(monitor);
@@ -168,14 +176,14 @@ public class CorePlugin extends AbstractUIPlugin
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                 {
                     members = item.getChildren();
                     for (int ii = 0; ii < members.length; ii++)
                     {
-                        if (members[ii].getName().equals("history"))
+                        if (members[ii].getName().equals("history")) //$NON-NLS-1$
                             try {
-                                Object obj = members[ii].createExecutableExtension("class");
+                                Object obj = members[ii].createExecutableExtension("class"); //$NON-NLS-1$
                                 return (IHistoryFeed)obj;
                             } catch(Exception e) {
                                 e.printStackTrace();
@@ -199,14 +207,14 @@ public class CorePlugin extends AbstractUIPlugin
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                 {
                     members = item.getChildren();
                     for (int ii = 0; ii < members.length; ii++)
                     {
-                        if (members[ii].getName().equals("quote"))
+                        if (members[ii].getName().equals("quote")) //$NON-NLS-1$
                             try {
-                                Object obj = members[ii].createExecutableExtension("class");
+                                Object obj = members[ii].createExecutableExtension("class"); //$NON-NLS-1$
                                 return (IFeed)obj;
                             } catch(Exception e) {
                                 e.printStackTrace();
@@ -230,14 +238,14 @@ public class CorePlugin extends AbstractUIPlugin
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                 {
                     members = item.getChildren();
                     for (int ii = 0; ii < members.length; ii++)
                     {
-                        if (members[ii].getName().equals("level2"))
+                        if (members[ii].getName().equals("level2")) //$NON-NLS-1$
                             try {
-                                Object obj = members[ii].createExecutableExtension("class");
+                                Object obj = members[ii].createExecutableExtension("class"); //$NON-NLS-1$
                                 return (ILevel2Feed)obj;
                             } catch(Exception e) {
                                 e.printStackTrace();
@@ -267,8 +275,8 @@ public class CorePlugin extends AbstractUIPlugin
         Collections.sort(list, new Comparator() {
             public int compare(Object arg0, Object arg1)
             {
-                String s0 = ((IConfigurationElement) arg0).getAttribute("name");
-                String s1 = ((IConfigurationElement) arg1).getAttribute("name");
+                String s0 = ((IConfigurationElement) arg0).getAttribute("name"); //$NON-NLS-1$
+                String s1 = ((IConfigurationElement) arg1).getAttribute("name"); //$NON-NLS-1$
                 return s0.compareTo(s1);
             }
         });
@@ -286,10 +294,10 @@ public class CorePlugin extends AbstractUIPlugin
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                 {
                     try {
-                        Object obj = members[i].createExecutableExtension("class");
+                        Object obj = members[i].createExecutableExtension("class"); //$NON-NLS-1$
                         return (IPattern)obj;
                     } catch(Exception e) {
                         e.printStackTrace();
@@ -299,6 +307,36 @@ public class CorePlugin extends AbstractUIPlugin
         }
         
         return null;
+    }
+
+    public static SimpleDateFormat getDateFormat()
+    {
+        return dateFormat;
+    }
+
+    public static SimpleDateFormat getDateParse()
+    {
+        return dateParse;
+    }
+
+    public static SimpleDateFormat getDateTimeFormat()
+    {
+        return dateTimeFormat;
+    }
+
+    public static SimpleDateFormat getDateTimeParse()
+    {
+        return dateTimeParse;
+    }
+
+    public static SimpleDateFormat getTimeFormat()
+    {
+        return timeFormat;
+    }
+
+    public static SimpleDateFormat getTimeParse()
+    {
+        return timeParse;
     }
 
     public static void logException(Exception e)
