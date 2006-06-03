@@ -26,7 +26,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class ShowSecurityNewsAction implements IViewActionDelegate
 {
-    private String defaultText;
+//    private String defaultText;
     private Security security;
 
     /* (non-Javadoc)
@@ -57,17 +57,17 @@ public class ShowSecurityNewsAction implements IViewActionDelegate
      */
     public void selectionChanged(IAction action, ISelection selection)
     {
-        if (defaultText == null)
-            defaultText = action.getText();
+//        if (defaultText == null)
+//            defaultText = action.getText();
         
         this.security = null;
         if (selection instanceof SecuritySelection)
         {
             this.security = ((SecuritySelection)selection).getSecurity();
-            action.setText(defaultText + " for " + security.getDescription());
+//            action.setText(defaultText + " for " + security.getDescription());
         }
-        else
-            action.setText(defaultText);
+//        else
+//            action.setText(defaultText);
         action.setEnabled(this.security != null);
     }
 }

@@ -25,14 +25,13 @@ import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
-import net.sourceforge.eclipsetrader.core.ui.internal.CopyAction;
+import net.sourceforge.eclipsetrader.core.ui.actions.PropertiesAction;
 import net.sourceforge.eclipsetrader.core.ui.internal.DeleteAction;
-import net.sourceforge.eclipsetrader.core.ui.wizards.SecurityWizard;
+import net.sourceforge.eclipsetrader.core.ui.preferences.SecurityPropertiesDialog;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -82,7 +81,6 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
     private int sortColumn = 0;
     private int sortDirection = 1;
     private ITheme theme;
-    private Action copyAction = new CopyAction(this);
     private Action deleteAction = new DeleteAction(this);
     private Action propertiesAction;
     private Comparator comparator = new Comparator() {
@@ -121,49 +119,22 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
      */
     public void init(IViewSite site) throws PartInitException
     {
-        propertiesAction = new Action() {
+        propertiesAction = new PropertiesAction() {
             public void run()
             {
                 Security[] security = getSelection();
                 if (security.length == 1)
                 {
-                    SecurityWizard wizard = new SecurityWizard();
-                    wizard.open(security[0]);
+                    SecurityPropertiesDialog dlg = new SecurityPropertiesDialog(security[0], getSite().getShell());
+                    dlg.open();
                 }
             }
         };
-        propertiesAction.setText("Properties");
-        propertiesAction.setEnabled(false);
         
         IMenuManager menuManager = site.getActionBars().getMenuManager();
         menuManager.add(new Separator("top")); //$NON-NLS-1$
-        menuManager.add(new Separator("internal.top")); //$NON-NLS-1$
-        menuManager.add(new Separator("group1")); //$NON-NLS-1$
-        menuManager.add(new Separator("group2")); //$NON-NLS-1$
-        menuManager.add(new Separator("group3")); //$NON-NLS-1$
-        menuManager.add(new Separator("group4")); //$NON-NLS-1$
-        menuManager.add(new Separator("group5")); //$NON-NLS-1$
-        menuManager.add(new Separator("group6")); //$NON-NLS-1$
-        menuManager.add(new Separator("clipboard.top")); //$NON-NLS-1$
-        menuManager.add(new Separator("clipboard.bottom")); //$NON-NLS-1$
         menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         menuManager.add(new Separator("bottom")); //$NON-NLS-1$
-        menuManager.add(new Separator("internal.bottom")); //$NON-NLS-1$
-        
-        IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
-        toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group1")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group2")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group3")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group4")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group5")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group6")); //$NON-NLS-1$
-        toolBarManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        toolBarManager.add(new Separator("end")); //$NON-NLS-1$
-
-        menuManager.appendToGroup("clipboard.top", copyAction);
-        menuManager.appendToGroup("clipboard.bottom", deleteAction);
-        menuManager.appendToGroup("internal.bottom", propertiesAction);
         
         IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
         if (themeManager != null)
@@ -304,7 +275,6 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
 
         getSite().setSelectionProvider(new SelectionProvider());
         IActionBars actionBars = getViewSite().getActionBars();
-        actionBars.setGlobalActionHandler("copy", copyAction);
         actionBars.setGlobalActionHandler("delete", deleteAction);
         actionBars.setGlobalActionHandler("properties", propertiesAction);
 
@@ -314,22 +284,12 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             public void menuAboutToShow(IMenuManager menuManager)
             {
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
-                menuManager.add(new Separator("internal.top")); //$NON-NLS-1$
-                menuManager.add(new Separator("group1")); //$NON-NLS-1$
-                menuManager.add(new Separator("group2")); //$NON-NLS-1$
-                menuManager.add(new Separator("group3")); //$NON-NLS-1$
-                menuManager.add(new Separator("group4")); //$NON-NLS-1$
-                menuManager.add(new Separator("group5")); //$NON-NLS-1$
-                menuManager.add(new Separator("group6")); //$NON-NLS-1$
-                menuManager.add(new Separator("clipboard.top")); //$NON-NLS-1$
-                menuManager.add(new Separator("clipboard.bottom")); //$NON-NLS-1$
                 menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+                menuManager.add(new Separator());
+                menuManager.add(deleteAction);
                 menuManager.add(new Separator("bottom")); //$NON-NLS-1$
-                menuManager.add(new Separator("internal.bottom")); //$NON-NLS-1$
-
-                menuManager.appendToGroup("clipboard.top", copyAction);
-                menuManager.appendToGroup("clipboard.bottom", deleteAction);
-                menuManager.appendToGroup("internal.bottom", propertiesAction);
+                menuManager.add(new Separator());
+                menuManager.add(propertiesAction);
             }
         });
         table.setMenu(menuMgr.createContextMenu(table));
@@ -443,7 +403,6 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             getSite().getSelectionProvider().setSelection(new SecuritySelection(security[0]));
         else
             getSite().getSelectionProvider().setSelection(new NullSelection());
-        copyAction.setEnabled(security.length != 0);
         deleteAction.setEnabled(security.length != 0);
         propertiesAction.setEnabled(security.length == 1);
     }

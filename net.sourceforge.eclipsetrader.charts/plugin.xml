@@ -112,6 +112,7 @@
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
                enablesFor="1"
+               icon="icons/eview16/chart_curve.png"
                id="net.sourceforge.eclipsetrader.actions.openChart"
                label="Open Chart"
                menubarPath="top"
@@ -234,12 +235,14 @@
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
                enablesFor="1"
+               icon="icons/eview16/chart_curve.png"
                id="net.sourceforge.eclipsetrader.actions.openChart"
                label="Open Chart"
-               menubarPath="group1"
+               menubarPath="top"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.UpdateAllChartsAction"
+               icon="icons/elcl16/refresh.gif"
                id="net.sourceforge.eclipsetrader.charts.updateAll"
                label="Update all Charts"
                menubarPath="bottom"

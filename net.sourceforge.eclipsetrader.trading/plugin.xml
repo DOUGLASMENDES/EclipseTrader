@@ -301,7 +301,7 @@
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.searchPattern"
                label="Search Pattern"
-               menubarPath="group5"/>
+               menubarPath="additions"/>
       </viewerContribution>
    </extension>
    <extension
@@ -397,7 +397,7 @@
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
                label="Open Level2"
-               menubarPath="group1"
+               menubarPath="top"
                style="push"
                tooltip="Open Level2"/>
       </viewContribution>
