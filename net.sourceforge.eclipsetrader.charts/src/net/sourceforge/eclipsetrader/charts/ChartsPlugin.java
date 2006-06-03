@@ -107,15 +107,15 @@ public class ChartsPlugin extends AbstractUIPlugin
         return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
     }
     
-    public static IndicatorPlugin createIndicatorPlugin(String id)
+    public static IIndicatorPlugin createIndicatorPlugin(String id)
     {
         IConfigurationElement item = getIndicatorPlugin(id);
         if (item != null)
         {
             try {
                 Object obj = item.createExecutableExtension("class");
-                if (obj instanceof IndicatorPlugin)
-                    return (IndicatorPlugin)obj;
+                if (obj instanceof IIndicatorPlugin)
+                    return (IIndicatorPlugin)obj;
             } catch(Exception e) {
                 e.printStackTrace();
             }

@@ -17,7 +17,7 @@ import net.sourceforge.eclipsetrader.core.db.BarData;
 /**
  * Base abstract class for all indicator plugins
  */
-public abstract class IndicatorPlugin
+public abstract class IndicatorPlugin implements IIndicatorPlugin
 {
     public static final int SMA = 0;
     public static final int EMA = 1;

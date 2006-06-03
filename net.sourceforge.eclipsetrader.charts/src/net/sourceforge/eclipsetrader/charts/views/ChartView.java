@@ -24,7 +24,7 @@ import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.DatePlot;
-import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
+import net.sourceforge.eclipsetrader.charts.IIndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.ObjectPlugin;
 import net.sourceforge.eclipsetrader.charts.Plot;
 import net.sourceforge.eclipsetrader.charts.Settings;
@@ -1125,7 +1125,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 ChartIndicator indicator = (ChartIndicator)o;
                 indicator.clearChanged();
                 
-                IndicatorPlugin plugin = ChartsPlugin.createIndicatorPlugin(indicator.getPluginId());
+                IIndicatorPlugin plugin = ChartsPlugin.createIndicatorPlugin(indicator.getPluginId());
                 indicator.setData(plugin);
                 if (plugin != null)
                 {
@@ -1178,7 +1178,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             if (o instanceof ChartIndicator)
             {
                 ChartIndicator indicator = (ChartIndicator)o;
-                IndicatorPlugin plugin = (IndicatorPlugin)indicator.getData();
+                IIndicatorPlugin plugin = (IIndicatorPlugin)indicator.getData();
                 if (plugin != null)
                     plot.removeIndicator(plugin.getOutput());
                 indicators.remove(indicator);
@@ -1238,7 +1238,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 for (Iterator iter = indicators.iterator(); iter.hasNext(); )
                 {
                     ChartIndicator indicator = (ChartIndicator)iter.next();
-                    if (((IndicatorPlugin)indicator.getData()).getOutput() == e.indicator)
+                    if (((IIndicatorPlugin)indicator.getData()).getOutput() == e.indicator)
                     {
                         getSite().getSelectionProvider().setSelection(new IndicatorSelection(indicator));
                         return;
