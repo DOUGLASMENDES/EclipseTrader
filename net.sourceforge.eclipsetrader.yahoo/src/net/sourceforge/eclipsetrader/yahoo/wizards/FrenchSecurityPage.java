@@ -21,7 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.Security.Feed;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.yahoo.YahooPlugin;
 
 import org.eclipse.core.runtime.Path;
@@ -164,11 +164,11 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
             security.setDescription(item.getFirstChild().getNodeValue());
             security.setCurrency(Currency.getInstance(Locale.FRANCE));
             
-            Feed feed = security.new Feed();
+            FeedSource feed = new FeedSource();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
             feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setQuoteFeed(feed);
-            feed = security.new Feed();
+            feed = new FeedSource();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
             feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setHistoryFeed(feed);

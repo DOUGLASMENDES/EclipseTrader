@@ -19,7 +19,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.Security.Feed;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.yahoo.YahooPlugin;
 
 import org.eclipse.core.runtime.Path;
@@ -254,13 +254,13 @@ public class IndicesPage extends WizardPage implements ISecurityPage
             security.setCode(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setDescription(item.getFirstChild().getNodeValue());
             
-            Feed feed = security.new Feed();
+            FeedSource feed = new FeedSource();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
             security.setQuoteFeed(feed);
-            feed = security.new Feed();
+            feed = new FeedSource();
             feed.setId("net.sourceforge.eclipsetrader.yahoo");
             security.setHistoryFeed(feed);
-            feed = security.new Feed();
+            feed = new FeedSource();
             feed.setId("net.sourceforge.eclipsetrader.archipelago");
             security.setLevel2Feed(feed);
 

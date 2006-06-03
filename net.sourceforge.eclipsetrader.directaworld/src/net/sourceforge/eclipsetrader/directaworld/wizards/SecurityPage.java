@@ -21,7 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.Security.Feed;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin;
 
 import org.eclipse.core.runtime.Path;
@@ -165,12 +165,12 @@ public class SecurityPage extends WizardPage
             security.setDescription(item.getFirstChild().getNodeValue());
             security.setCurrency(Currency.getInstance(Locale.ITALY));
 
-            Feed feed = security.new Feed();
+            FeedSource feed = new FeedSource();
             feed.setId("net.sourceforge.eclipsetrader.directaworld");
             feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
             security.setQuoteFeed(feed);
             
-            feed = security.new Feed();
+            feed = new FeedSource();
             feed.setId("net.sourceforge.eclipsetrader.borsaitalia");
             feed.setSymbol(item.getAttributes().getNamedItem("isin").getNodeValue());
             security.setHistoryFeed(feed);

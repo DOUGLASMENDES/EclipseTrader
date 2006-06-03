@@ -20,7 +20,7 @@ import java.util.List;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.Security.Feed;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -190,7 +190,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         {
             Control control = super.createContents(parent);
 
-            Feed securityFeed = security.getQuoteFeed(); 
+            FeedSource securityFeed = security.getQuoteFeed(); 
             if (securityFeed != null)
             {
                 String[] items = feed.getItems();
@@ -245,7 +245,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         {
             Control control = super.createContents(parent);
 
-            Feed securityFeed = security.getLevel2Feed(); 
+            FeedSource securityFeed = security.getLevel2Feed(); 
             if (securityFeed != null)
             {
                 String[] items = feed.getItems();
@@ -300,7 +300,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         {
             Control control = super.createContents(parent);
 
-            Feed securityFeed = security.getHistoryFeed(); 
+            FeedSource securityFeed = security.getHistoryFeed(); 
             if (securityFeed != null)
             {
                 String[] items = feed.getItems();

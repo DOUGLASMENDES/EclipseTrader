@@ -16,6 +16,7 @@ import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.ObservableList;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 import net.sourceforge.eclipsetrader.core.internal.CObservable;
 
@@ -28,9 +29,9 @@ public class Security extends PersistentObject
     private String description = "";
     private Currency currency;
     private SecurityGroup group;
-    private Feed quoteFeed;
-    private Feed level2Feed;
-    private Feed historyFeed;
+    private FeedSource quoteFeed;
+    private FeedSource level2Feed;
+    private FeedSource historyFeed;
     private ObservableList history;
     private ObservableList intradayHistory;
     private Quote quote;
@@ -100,12 +101,12 @@ public class Security extends PersistentObject
         this.group = group;
     }
 
-    public Feed getHistoryFeed()
+    public FeedSource getHistoryFeed()
     {
         return historyFeed;
     }
 
-    public void setHistoryFeed(Feed historyFeed)
+    public void setHistoryFeed(FeedSource historyFeed)
     {
         if (this.historyFeed != null && !this.historyFeed.equals(historyFeed))
             setChanged();
@@ -114,12 +115,12 @@ public class Security extends PersistentObject
         this.historyFeed = historyFeed;
     }
 
-    public Feed getQuoteFeed()
+    public FeedSource getQuoteFeed()
     {
         return quoteFeed;
     }
 
-    public void setQuoteFeed(Feed quoteFeed)
+    public void setQuoteFeed(FeedSource quoteFeed)
     {
         if (this.quoteFeed != null && !this.quoteFeed.equals(quoteFeed))
             setChanged();
@@ -128,12 +129,12 @@ public class Security extends PersistentObject
         this.quoteFeed = quoteFeed;
     }
 
-    public Feed getLevel2Feed()
+    public FeedSource getLevel2Feed()
     {
         return level2Feed;
     }
 
-    public void setLevel2Feed(Feed level2Feed)
+    public void setLevel2Feed(FeedSource level2Feed)
     {
         if (this.level2Feed != null && !this.level2Feed.equals(level2Feed))
             setChanged();
@@ -372,59 +373,5 @@ public class Security extends PersistentObject
     public CObservable getQuoteMonitor()
     {
         return quoteMonitor;
-    }
-    
-    public class Feed
-    {
-        private String id = "";
-        private String exchange = "";
-        private String symbol = "";
-        
-        public Feed()
-        {
-        }
-        
-        public String getId()
-        {
-            return id;
-        }
-        
-        public void setId(String id)
-        {
-            this.id = id;
-            setChanged();
-        }
-        
-        public String getExchange()
-        {
-            return exchange;
-        }
-
-        public void setExchange(String exchange)
-        {
-            this.exchange = exchange;
-        }
-
-        public String getSymbol()
-        {
-            return symbol;
-        }
-        
-        public void setSymbol(String symbol)
-        {
-            this.symbol = symbol;
-            setChanged();
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        public boolean equals(Object obj)
-        {
-            if (obj == null || !(obj instanceof Feed))
-                return false;
-            Feed that = (Feed)obj;
-            return this.id.equals(that.id) && this.symbol.equals(that.symbol) && this.exchange.equals(that.exchange);
-        }
     }
 }

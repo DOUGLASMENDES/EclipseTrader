@@ -16,7 +16,7 @@ import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.Security.Feed;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -115,7 +115,7 @@ public class SecurityWizard extends Wizard implements INewWizard
         
         if (quoteFeedPage.getId() != null)
         {
-            Feed feed = security.new Feed();
+            FeedSource feed = new FeedSource();
             feed.setId(quoteFeedPage.getId());
             feed.setSymbol(quoteFeedPage.getSymbol());
             security.setQuoteFeed(feed);
@@ -125,7 +125,7 @@ public class SecurityWizard extends Wizard implements INewWizard
         
         if (quoteFeedPage.getLevel2Id() != null)
         {
-            Feed feed = security.new Feed();
+            FeedSource feed = new FeedSource();
             feed.setId(quoteFeedPage.getLevel2Id());
             feed.setSymbol(quoteFeedPage.getLevel2Symbol());
             security.setLevel2Feed(feed);
@@ -135,7 +135,7 @@ public class SecurityWizard extends Wizard implements INewWizard
         
         if (historyFeedPage.getId() != null)
         {
-            Feed feed = security.new Feed();
+            FeedSource feed = new FeedSource();
             feed.setId(historyFeedPage.getId());
             feed.setSymbol(historyFeedPage.getSymbol());
             security.setHistoryFeed(feed);
@@ -147,7 +147,7 @@ public class SecurityWizard extends Wizard implements INewWizard
         return true;
     }
 
-    static void updateFeedExchanges(String type, Combo combo, Security.Feed feed)
+    static void updateFeedExchanges(String type, Combo combo, FeedSource feed)
     {
         combo.removeAll();
         combo.add("");

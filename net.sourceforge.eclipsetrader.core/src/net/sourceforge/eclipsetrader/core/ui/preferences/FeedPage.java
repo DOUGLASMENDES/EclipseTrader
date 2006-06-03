@@ -17,8 +17,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.Security.Feed;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -173,11 +172,11 @@ public abstract class FeedPage extends PreferencePage
         exchange.setEnabled(exchange.getItemCount() > 1);
     }
 
-    public Feed getFeed()
+    public FeedSource getFeed()
     {
         if (feed.getSelectionIndex() <= 0)
             return null;
-        Feed newFeed = new Security().new Feed();
+        FeedSource newFeed = new FeedSource();
         newFeed.setId((String)feed.getData(String.valueOf(feed.getSelectionIndex())));
         newFeed.setExchange((String)exchange.getData(String.valueOf(exchange.getSelectionIndex())));
         newFeed.setSymbol(symbol.getText());

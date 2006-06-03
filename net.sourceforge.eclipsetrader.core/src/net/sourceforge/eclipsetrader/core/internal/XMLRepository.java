@@ -53,6 +53,7 @@ import net.sourceforge.eclipsetrader.core.db.Transaction;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystemGroup;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
@@ -906,7 +907,7 @@ public class XMLRepository extends Repository
                     value = item.getFirstChild();
                     if (nodeName.equals("quote")) //$NON-NLS-1$
                     {
-                        Security.Feed feed = security.new Feed();
+                        FeedSource feed = new FeedSource();
                         feed.setId(item.getAttributes().getNamedItem("id").getNodeValue()); //$NON-NLS-1$
                         Node attribute = item.getAttributes().getNamedItem("exchange"); //$NON-NLS-1$
                         if (attribute != null)
@@ -917,7 +918,7 @@ public class XMLRepository extends Repository
                     }
                     else if (nodeName.equals("level2")) //$NON-NLS-1$
                     {
-                        Security.Feed feed = security.new Feed();
+                        FeedSource feed = new FeedSource();
                         feed.setId(item.getAttributes().getNamedItem("id").getNodeValue()); //$NON-NLS-1$
                         Node attribute = item.getAttributes().getNamedItem("exchange"); //$NON-NLS-1$
                         if (attribute != null)
@@ -928,7 +929,7 @@ public class XMLRepository extends Repository
                     }
                     else if (nodeName.equals("history")) //$NON-NLS-1$
                     {
-                        Security.Feed feed = security.new Feed();
+                        FeedSource feed = new FeedSource();
                         feed.setId(item.getAttributes().getNamedItem("id").getNodeValue()); //$NON-NLS-1$
                         Node attribute = item.getAttributes().getNamedItem("exchange"); //$NON-NLS-1$
                         if (attribute != null)
