@@ -13,13 +13,14 @@ package net.sourceforge.eclipsetrader.core.db.columns;
 
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class Description extends Column
 {
 
     public Description()
     {
-        super("Description", LEFT);
+        super(Messages.Description_Label, LEFT);
     }
 
     /* (non-Javadoc)
@@ -28,7 +29,7 @@ public class Description extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         return item.getSecurity().getDescription();
     }
 
@@ -37,6 +38,6 @@ public class Description extends Column
      */
     public String getTotalsText(Watchlist watchlist)
     {
-        return "TOTALS";
+        return Messages.Description_Totals;
     }
 }

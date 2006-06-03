@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class AskSize extends Column
 {
@@ -22,7 +23,7 @@ public class AskSize extends Column
 
     public AskSize()
     {
-        super("Ask Q.ty", RIGHT);
+        super(Messages.AskSize_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(0);
@@ -35,10 +36,10 @@ public class AskSize extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && quote.getAskSize() != 0)
             return formatter.format(quote.getAskSize());
-        return "";
+        return ""; //$NON-NLS-1$
     }
 }

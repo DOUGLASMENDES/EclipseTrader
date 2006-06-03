@@ -16,6 +16,7 @@ import java.text.NumberFormat;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class AskPrice extends Column
 {
@@ -23,7 +24,7 @@ public class AskPrice extends Column
 
     public AskPrice()
     {
-        super("Ask", RIGHT);
+        super(Messages.AskPrice_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(4);
@@ -36,10 +37,10 @@ public class AskPrice extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && quote.getAsk() != 0)
             return formatter.format(CurrencyConverter.getInstance().convert(quote.getAsk(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
-        return "";
+        return ""; //$NON-NLS-1$
     }
 }

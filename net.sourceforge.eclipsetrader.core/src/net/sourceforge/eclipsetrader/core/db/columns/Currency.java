@@ -12,13 +12,14 @@
 package net.sourceforge.eclipsetrader.core.db.columns;
 
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class Currency extends Column
 {
 
     public Currency()
     {
-        super("Curr.", LEFT);
+        super(Messages.Currency_Label, LEFT);
     }
 
     /* (non-Javadoc)
@@ -27,9 +28,9 @@ public class Currency extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         if (item.getSecurity().getCurrency() != null)
             return item.getSecurity().getCurrency().getCurrencyCode();
-        return "";
+        return ""; //$NON-NLS-1$
     }
 }

@@ -18,6 +18,7 @@ import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class Balance extends Column
 {
@@ -26,7 +27,7 @@ public class Balance extends Column
 
     public Balance()
     {
-        super("Balance", RIGHT);
+        super(Messages.Balance_Label, RIGHT);
 
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
@@ -45,17 +46,17 @@ public class Balance extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && item.getPosition() != null && item.getPaidPrice() != null)
         {
             double paid = CurrencyConverter.getInstance().convert(item.getPosition().intValue() * item.getPaidPrice().doubleValue(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
             double current = CurrencyConverter.getInstance().convert(item.getPosition().intValue() * quote.getLast(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
             if (current > paid)
-                return "+" + formatter.format(current - paid) + " (+" + percentFormatter.format((current - paid) / paid * 100.0) + "%)";
-            return formatter.format(current - paid) + " (" + percentFormatter.format((current - paid) / paid * 100.0) + "%)";
+                return "+" + formatter.format(current - paid) + " (+" + percentFormatter.format((current - paid) / paid * 100.0) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return formatter.format(current - paid) + " (" + percentFormatter.format((current - paid) / paid * 100.0) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
         }
-        return "";
+        return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -81,10 +82,10 @@ public class Balance extends Column
         }
         
         if (paid == 0 || current == 0)
-            return "";
+            return ""; //$NON-NLS-1$
         
         if (current > paid)
-            return "+" + formatter.format(current - paid) + " (+" + percentFormatter.format((current - paid) / paid * 100.0) + "%)";
-        return formatter.format(current - paid) + " (" + percentFormatter.format((current - paid) / paid * 100.0) + "%)";
+            return "+" + formatter.format(current - paid) + " (+" + percentFormatter.format((current - paid) / paid * 100.0) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        return formatter.format(current - paid) + " (" + percentFormatter.format((current - paid) / paid * 100.0) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

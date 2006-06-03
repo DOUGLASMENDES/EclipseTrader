@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class OpenPrice extends Column
 {
@@ -22,7 +23,7 @@ public class OpenPrice extends Column
 
     public OpenPrice()
     {
-        super("Open", RIGHT);
+        super(Messages.OpenPrice_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(4);
@@ -35,9 +36,9 @@ public class OpenPrice extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         if (item.getSecurity().getOpen() != null)
             return formatter.format(CurrencyConverter.getInstance().convert(item.getSecurity().getOpen(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
-        return "";
+        return ""; //$NON-NLS-1$
     }
 }

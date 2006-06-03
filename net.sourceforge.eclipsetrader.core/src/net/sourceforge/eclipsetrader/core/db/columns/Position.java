@@ -18,6 +18,7 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class Position extends Column
 {
@@ -25,7 +26,7 @@ public class Position extends Column
 
     public Position()
     {
-        super("Pos.", RIGHT);
+        super(Messages.Position_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(0);
@@ -39,7 +40,7 @@ public class Position extends Column
     {
         if (item != null && item.getPosition() != null)
             return formatter.format(item.getPosition());
-        return "";
+        return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

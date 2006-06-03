@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class ChangePercent extends Column
 {
@@ -22,7 +23,7 @@ public class ChangePercent extends Column
 
     public ChangePercent()
     {
-        super("Chg.%", RIGHT);
+        super(Messages.ChangePercent_Label, RIGHT);
 
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
@@ -36,7 +37,7 @@ public class ChangePercent extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && quote.getLast() != 0 && item.getSecurity().getClose() != null)
         {
@@ -44,9 +45,9 @@ public class ChangePercent extends Column
             double percentage = (change / item.getSecurity().getClose().doubleValue()) * 100.0;
 
             if (change > 0)
-                return "+" + formatter.format(percentage) + "%";
-            return formatter.format(percentage) + "%";
+                return "+" + formatter.format(percentage) + "%"; //$NON-NLS-1$ //$NON-NLS-2$
+            return formatter.format(percentage) + "%"; //$NON-NLS-1$
         }
-        return "";
+        return ""; //$NON-NLS-1$
     }
 }

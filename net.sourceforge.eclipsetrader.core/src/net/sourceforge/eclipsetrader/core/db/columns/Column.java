@@ -28,7 +28,7 @@ public abstract class Column implements Cloneable
     public static final int RIGHT = 1;
     public static final int CENTER = 2;
     private int style;
-    private String label = "";
+    private String label = ""; //$NON-NLS-1$
     private int width = 0;
 
     public Column(String label, int style)
@@ -105,7 +105,7 @@ public abstract class Column implements Cloneable
     
     public String getTotalsText(Watchlist watchlist)
     {
-        return "";
+        return ""; //$NON-NLS-1$
     }
     
     /**

@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class BidSize extends Column
 {
@@ -22,7 +23,7 @@ public class BidSize extends Column
 
     public BidSize()
     {
-        super("Bid Q.ty", RIGHT);
+        super(Messages.BidSize_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(0);
@@ -35,10 +36,10 @@ public class BidSize extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && quote.getBidSize() != 0)
             return formatter.format(quote.getBidSize());
-        return "";
+        return ""; //$NON-NLS-1$
     }
 }

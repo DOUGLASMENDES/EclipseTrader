@@ -17,6 +17,7 @@ import java.text.ParseException;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class PaidPrice extends Column
 {
@@ -24,7 +25,7 @@ public class PaidPrice extends Column
 
     public PaidPrice()
     {
-        super("Price", RIGHT);
+        super(Messages.PaidPrice_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(4);
@@ -43,7 +44,7 @@ public class PaidPrice extends Column
             else
                 return formatter.format(item.getPaidPrice());
         }
-        return "";
+        return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

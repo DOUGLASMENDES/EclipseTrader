@@ -13,16 +13,18 @@ package net.sourceforge.eclipsetrader.core.db.columns;
 
 import java.text.SimpleDateFormat;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class DateTime extends Column
 {
-    protected SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    protected SimpleDateFormat formatter = CorePlugin.getDateTimeFormat();
 
     public DateTime()
     {
-        super("Date/Time", RIGHT);
+        super(Messages.DateTime_Label, RIGHT);
     }
 
     /* (non-Javadoc)
@@ -31,10 +33,10 @@ public class DateTime extends Column
     public String getText(WatchlistItem item)
     {
         if (item.getSecurity() == null)
-            return "";
+            return ""; //$NON-NLS-1$
         Quote quote = item.getSecurity().getQuote();
         if (quote != null && quote.getDate() != null)
             return formatter.format(quote.getDate());
-        return "";
+        return ""; //$NON-NLS-1$
     }
 }
