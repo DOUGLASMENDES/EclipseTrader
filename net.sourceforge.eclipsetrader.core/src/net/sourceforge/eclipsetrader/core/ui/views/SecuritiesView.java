@@ -45,12 +45,14 @@ import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -72,8 +74,9 @@ import org.eclipse.ui.themes.IThemeManager;
 public class SecuritiesView extends ViewPart implements ICollectionObserver
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.securities";
-    public static final String PREFS_SORT_COLUMN = "SORT_COLUMN";
-    public static final String PREFS_SORT_DIRECTION = "SORT_DIRECTION";
+    public static final String PREFS_SORT_COLUMN = "SECURITIES_SORT_COLUMN";
+    public static final String PREFS_SORT_DIRECTION = "SECURITIES_SORT_DIRECTION";
+    public static final String PREFS_COLUMNS_SIZE = "SECURITIES_COLUMNS_SIZE";
     public static final String TABLE_BACKGROUND = "TABLE_BACKGROUND";
     public static final String TABLE_FOREGROUND = "TABLE_FOREGROUND";
     public static final String TABLE_FONT = "TABLE_FONT";
@@ -98,6 +101,19 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                         return ((Security)arg0).getDescription().compareTo(((Security)arg1).getDescription());
                     else
                         return ((Security)arg1).getDescription().compareTo(((Security)arg0).getDescription());
+                case 2:
+                {
+                    String s0 = "";
+                    String s1 = "";
+                    if (((Security)arg0).getCurrency() != null)
+                        s0 = ((Security)arg0).getCurrency().getCurrencyCode();
+                    if (((Security)arg1).getCurrency() != null)
+                        s1 = ((Security)arg1).getCurrency().getCurrencyCode();
+                    if (sortDirection == 1)
+                        return s0.compareTo(s1);
+                    else
+                        return s1.compareTo(s0);
+                }
             }
             return 0;
         }
@@ -111,6 +127,34 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 table.setForeground(theme.getColorRegistry().get(TABLE_FOREGROUND));
             else if (event.getProperty().equals(TABLE_FONT))
                 table.setFont(theme.getFontRegistry().get(TABLE_FONT));
+        }
+    };
+    private ControlListener columnControlListener = new ControlAdapter() {
+        public void controlResized(ControlEvent e)
+        {
+            StringBuffer sizes = new StringBuffer();
+            for (int i = 0; i < table.getColumnCount(); i++)
+                sizes.append(String.valueOf(table.getColumn(i).getWidth()) + ";");
+            CorePlugin.getDefault().getPreferenceStore().setValue(PREFS_COLUMNS_SIZE, sizes.toString());
+        }
+    };
+    private SelectionListener columnSelectionListener = new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent e)
+        {
+            int index = table.indexOf((TableColumn)e.widget);
+            if (sortColumn == index)
+                sortDirection = (sortDirection == 1) ? 0 : 1;
+            else
+            {
+                sortColumn = index;
+                sortDirection = 1;
+            }
+
+            IPreferenceStore prefs = CorePlugin.getDefault().getPreferenceStore();
+            prefs.setValue(PREFS_SORT_COLUMN, sortColumn);
+            prefs.setValue(PREFS_SORT_DIRECTION, sortDirection);
+            
+            updateView();
         }
     };
 
@@ -184,61 +228,18 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 }
             }
         });
-        table.addControlListener(new ControlAdapter() {
-            public void controlResized(ControlEvent e)
-            {
-                int width = table.getSize().x - table.getColumn(0).getWidth(); // - 60;
-                if (table.getVerticalBar() != null)
-                    width -= table.getVerticalBar().getSize().x + 5;
-                if (width < 100) width = 100;
-                table.getColumn(1).setWidth(width);
-            }
-        });
         TableColumn column = new TableColumn(table, SWT.NONE);
         column.setText("Code");
-        column.setWidth(60);
-        column.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e)
-            {
-                if (sortColumn == 0)
-                    sortDirection = (sortDirection == 1) ? 0 : 1;
-                else
-                {
-                    sortColumn = 0;
-                    sortDirection = 1;
-                }
-
-                IPreferenceStore prefs = CorePlugin.getDefault().getPreferenceStore();
-                prefs.setValue(PREFS_SORT_COLUMN, sortColumn);
-                prefs.setValue(PREFS_SORT_DIRECTION, sortDirection);
-                
-                updateView();
-            }
-        });
+        column.addControlListener(columnControlListener);
+        column.addSelectionListener(columnSelectionListener);
         column = new TableColumn(table, SWT.NONE);
         column.setText("Description");
-        column.setWidth(50);
-        column.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e)
-            {
-                if (sortColumn == 1)
-                    sortDirection = (sortDirection == 1) ? 0 : 1;
-                else
-                {
-                    sortColumn = 1;
-                    sortDirection = 1;
-                }
-
-                IPreferenceStore prefs = CorePlugin.getDefault().getPreferenceStore();
-                prefs.setValue(PREFS_SORT_COLUMN, sortColumn);
-                prefs.setValue(PREFS_SORT_DIRECTION, sortDirection);
-                
-                updateView();
-            }
-        });
-/*        column = new TableColumn(table, SWT.NONE);
+        column.addControlListener(columnControlListener);
+        column.addSelectionListener(columnSelectionListener);
+        column = new TableColumn(table, SWT.NONE);
         column.setText("Currency");
-        column.setWidth(60);*/
+        column.addControlListener(columnControlListener);
+        column.addSelectionListener(columnSelectionListener);
         
         // Drag and drop support
         DragSource dragSource = new DragSource(table, DND.DROP_COPY|DND.DROP_MOVE);
@@ -381,6 +382,21 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         }
         table.setItemCount(index);
         
+        String[] sizes = CorePlugin.getDefault().getPreferenceStore().getString(PREFS_COLUMNS_SIZE).split(";");
+        for (int i = 0; i < table.getColumnCount(); i++)
+        {
+            if (i < sizes.length && sizes[i].length() != 0)
+                table.getColumn(i).setWidth(Integer.parseInt(sizes[i]));
+            else
+            {
+                table.getColumn(i).pack();
+                if (table.getColumn(i).getWidth() == 0)
+                    table.getColumn(i).setWidth(100);
+            }
+        }
+        if ("gtk".equals(SWT.getPlatform()))
+            table.getColumn(table.getColumnCount() - 1).pack();
+        
         updateSelection();
     }
     
@@ -452,7 +468,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         {
             setText(0, security.getCode());
             setText(1, security.getDescription());
-//            setText(2, security.getCurrency() != null ? security.getCurrency().getCurrencyCode() : "");
+            setText(2, security.getCurrency() != null ? security.getCurrency().getCurrencyCode() : "");
         }
 
         /* (non-Javadoc)
