@@ -43,10 +43,19 @@ public class CurrencyConversionDialog extends Dialog
     private Combo to;
     private Text result;
     private NumberFormat nf = NumberFormat.getInstance();
+    private String defaultFrom;
+    private String defaultTo;
 
     public CurrencyConversionDialog(Shell parentShell)
     {
+        this(parentShell, null, null);
+    }
+
+    public CurrencyConversionDialog(Shell parentShell, String defaultFrom, String defaultTo)
+    {
         super(parentShell);
+        this.defaultFrom = defaultFrom;
+        this.defaultTo = defaultTo;
 
         nf.setGroupingUsed(true);
         nf.setMinimumIntegerDigits(1);
@@ -141,8 +150,13 @@ public class CurrencyConversionDialog extends Dialog
         }
         
         String locale = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        from.setText(locale.equals("EUR") ? "USD" : "EUR");
-        to.setText(locale);
+        if (defaultFrom == null)
+            defaultFrom = locale.equals("EUR") ? "USD" : "EUR";
+        if (defaultTo == null)
+            defaultTo = locale;
+        
+        from.setText(defaultFrom);
+        to.setText(defaultTo);
         
         amount.setSelection(100);
         update();

@@ -20,13 +20,17 @@ import java.util.Observable;
 import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
+import net.sourceforge.eclipsetrader.core.ui.dialogs.CurrencyConversionDialog;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -88,7 +92,7 @@ public class CurrencyExchangeView extends ViewPart implements Observer
         gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
         content.setLayout(gridLayout);
         
-        table = new Table(content, SWT.MULTI|SWT.FULL_SELECTION);
+        table = new Table(content, SWT.MULTI);
         table.setHeaderVisible(true);
         table.setLinesVisible(false);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -96,6 +100,41 @@ public class CurrencyExchangeView extends ViewPart implements Observer
             public void widgetSelected(SelectionEvent e)
             {
                 table.deselectAll();
+            }
+        });
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseDown(MouseEvent e)
+            {
+                table.deselectAll();
+            }
+
+            public void mouseDoubleClick(MouseEvent e)
+            {
+                Point pt = new Point(e.x, e.y);
+                TableItem tableItem = table.getItem(pt);
+                if (tableItem != null)
+                {
+                    int columnIndex = -1;
+                    
+                    int x = 0;
+                    for (int i = 0; i < table.getColumnCount(); i++)
+                    {
+                        if (pt.x >= x && pt.x < (x + table.getColumn(i).getWidth()))
+                            columnIndex = i;
+                        x += table.getColumn(i).getWidth();
+                    }
+                    
+                    if (columnIndex != -1)
+                    {
+                        String from = tableItem.getText(0);
+                        String to = table.getColumn(columnIndex).getText();
+                        if (!from.equals(to) && from.length() != 0 && to.length() != 0)
+                        {
+                            CurrencyConversionDialog dlg = new CurrencyConversionDialog(getSite().getShell(), from, to);
+                            dlg.open();
+                        }
+                    }
+                }
             }
         });
         new TableColumn(table, SWT.NONE);
