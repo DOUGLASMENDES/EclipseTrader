@@ -11,6 +11,8 @@
 
 package net.sourceforge.eclipsetrader.trading.internal;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -50,6 +52,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -81,6 +84,8 @@ public class WatchlistTableViewer extends AbstractLayout
     private Color negativeForeground = new Color(null, 240, 0, 0);
     private Color positiveForeground = new Color(null, 0, 192, 0);
     private boolean showTotals = false;
+    private int sortColumn = -1;
+    private int sortDirection = 0;
     private ITheme theme;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
@@ -94,6 +99,35 @@ public class WatchlistTableViewer extends AbstractLayout
             else if (event.getProperty().equals(TABLE_ODD_ROWS_FOREGROUND))
                 oddForeground = theme.getColorRegistry().get(TABLE_ODD_ROWS_FOREGROUND);
             updateView();
+        }
+    };
+    private Comparator comparator = new Comparator() {
+        public int compare(Object arg0, Object arg1)
+        {
+            Comparator c = ((Column) table.getColumn(sortColumn).getData());
+            if (sortDirection == 0)
+                return c.compare(arg0, arg1);
+            else
+                return c.compare(arg1, arg0);
+        }
+    };
+    private SelectionListener columnSelectionListener = new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent e)
+        {
+            int index = table.indexOf((TableColumn) e.widget);
+            if (index == sortColumn)
+                sortDirection = sortDirection == 0 ? 1 : 0;
+            else
+            {
+                sortColumn = index;
+                sortDirection = 0;
+            }
+
+            Collections.sort(getView().getWatchlist().getItems(), comparator);
+            updateView();
+            
+            String s = String.valueOf(sortColumn) + ";" + String.valueOf(sortDirection);
+            TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getView().getViewSite().getSecondaryId(), s);
         }
     };
     
@@ -231,6 +265,12 @@ public class WatchlistTableViewer extends AbstractLayout
         getView().getSite().registerContextMenu(menuMgr, getView().getSite().getSelectionProvider());
         
         showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getView().getViewSite().getSecondaryId());
+        String[] items = TradingPlugin.getDefault().getPreferenceStore().getString(WatchlistView.PREFS_SORTING + getView().getViewSite().getSecondaryId()).split(";");
+        if (items.length == 2)
+        {
+            sortColumn = new Integer(items[0]).intValue();
+            sortDirection = new Integer(items[1]).intValue();
+        }
 
         return content;
     }
@@ -292,6 +332,7 @@ public class WatchlistTableViewer extends AbstractLayout
                             c.setWidth(((TableColumn)e.widget).getWidth());
                     }
                 });
+                tableColumn.addSelectionListener(columnSelectionListener);
             }
             tableColumn.setText(column.getLabel());
             tableColumn.setData(column);
@@ -386,13 +427,17 @@ public class WatchlistTableViewer extends AbstractLayout
     {
         if (o instanceof WatchlistItem)
         {
+            Collections.sort(getView().getWatchlist().getItems(), comparator);
+            updateView();
+        }
+/*        {
             WatchlistItem watchlistItem = (WatchlistItem)o;
             int index = table.getItemCount();
             if (showTotals)
                 index--;
             WatchlistTableItem tableItem = new WatchlistTableItem(table, SWT.NONE, index, watchlistItem);
             tableItem.setBackground(((index & 1) == 1) ? oddBackground : evenBackground);
-        }
+        }*/
     }
 
     public void itemRemoved(Object o)

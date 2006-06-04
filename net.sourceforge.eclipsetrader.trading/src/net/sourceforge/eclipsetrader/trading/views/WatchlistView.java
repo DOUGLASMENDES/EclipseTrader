@@ -64,6 +64,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.watchlist";
     public static final String PREFS_SHOW_TOTALS = "SHOW_TOTALS_";
+    public static final String PREFS_SORTING = "SORT_";
     public static final int TABLE = 0;
     public static final int RIBBON = 1;
     private Watchlist watchlist;
@@ -177,7 +178,6 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
             {
                 if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
                 {
-                    System.out.println("Drop of SecurityTransfer type");
                     Security[] securities = (Security[]) event.data;
                     if (watchlist != null)
                     {
@@ -193,7 +193,6 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                 }
                 else if (WatchlistItemTransfer.getInstance().isSupportedType(event.currentDataType))
                 {
-                    System.out.println("Drop of WatchlistItemTransfer type");
                     WatchlistItem[] items = (WatchlistItem[]) event.data;
                     if (watchlist != null)
                     {
