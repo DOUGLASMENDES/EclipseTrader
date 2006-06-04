@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
+import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
 public class HighPrice extends Column
@@ -40,5 +41,26 @@ public class HighPrice extends Column
         if (item.getSecurity().getHigh() != null)
             return formatter.format(CurrencyConverter.getInstance().convert(item.getSecurity().getHigh(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
         return ""; //$NON-NLS-1$
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     */
+    public int compare(Object arg0, Object arg1)
+    {
+        if (getValue((WatchlistItem)arg0) > getValue((WatchlistItem)arg1))
+            return 1;
+        else if (getValue((WatchlistItem)arg0) < getValue((WatchlistItem)arg1))
+            return -1;
+        return 0;
+    }
+
+    private double getValue(WatchlistItem item)
+    {
+        if (item.getSecurity() == null)
+            return 0;
+        if (item.getSecurity().getHigh() != null)
+            return CurrencyConverter.getInstance().convert(item.getSecurity().getHigh(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+        return 0;
     }
 }

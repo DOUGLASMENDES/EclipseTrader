@@ -88,4 +88,30 @@ public class Balance extends Column
             return "+" + formatter.format(current - paid) + " (+" + percentFormatter.format((current - paid) / paid * 100.0) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return formatter.format(current - paid) + " (" + percentFormatter.format((current - paid) / paid * 100.0) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
     }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     */
+    public int compare(Object arg0, Object arg1)
+    {
+        if (getValue((WatchlistItem)arg0) > getValue((WatchlistItem)arg1))
+            return 1;
+        else if (getValue((WatchlistItem)arg0) < getValue((WatchlistItem)arg1))
+            return -1;
+        return 0;
+    }
+
+    private double getValue(WatchlistItem item)
+    {
+        if (item.getSecurity() == null)
+            return 0;
+        Quote quote = item.getSecurity().getQuote();
+        if (quote != null && item.getPosition() != null && item.getPaidPrice() != null)
+        {
+            double paid = CurrencyConverter.getInstance().convert(item.getPosition().intValue() * item.getPaidPrice().doubleValue(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+            double current = CurrencyConverter.getInstance().convert(item.getPosition().intValue() * quote.getLast(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+            return current - paid;
+        }
+        return 0;
+    }
 }

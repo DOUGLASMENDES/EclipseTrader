@@ -22,7 +22,7 @@ import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 /**
  * Base abstract class for all watchlist columns.
  */
-public abstract class Column implements Cloneable
+public abstract class Column implements Cloneable, Comparator
 {
     public static final int LEFT = 0;
     public static final int RIGHT = 1;
@@ -116,6 +116,14 @@ public abstract class Column implements Cloneable
     public boolean isEditable()
     {
         return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+     */
+    public int compare(Object arg0, Object arg1)
+    {
+        return getText((WatchlistItem)arg0).compareTo(getText((WatchlistItem)arg1));
     }
 
     /* (non-Javadoc)

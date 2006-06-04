@@ -82,4 +82,23 @@ public class Position extends Column
         
         return formatter.format(total);
     }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     */
+    public int compare(Object arg0, Object arg1)
+    {
+        if (getValue((WatchlistItem)arg0) > getValue((WatchlistItem)arg1))
+            return 1;
+        else if (getValue((WatchlistItem)arg0) < getValue((WatchlistItem)arg1))
+            return -1;
+        return 0;
+    }
+
+    private int getValue(WatchlistItem item)
+    {
+        if (item != null && item.getPosition() != null)
+            return item.getPosition().intValue();
+        return 0;
+    }
 }

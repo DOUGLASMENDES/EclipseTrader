@@ -41,4 +41,25 @@ public class LowPrice extends Column
             return formatter.format(CurrencyConverter.getInstance().convert(item.getSecurity().getLow(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
         return ""; //$NON-NLS-1$
     }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     */
+    public int compare(Object arg0, Object arg1)
+    {
+        if (getValue((WatchlistItem)arg0) > getValue((WatchlistItem)arg1))
+            return 1;
+        else if (getValue((WatchlistItem)arg0) < getValue((WatchlistItem)arg1))
+            return -1;
+        return 0;
+    }
+
+    private double getValue(WatchlistItem item)
+    {
+        if (item.getSecurity() == null)
+            return 0;
+        if (item.getSecurity().getLow() != null)
+            return CurrencyConverter.getInstance().convert(item.getSecurity().getLow(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+        return 0;
+    }
 }

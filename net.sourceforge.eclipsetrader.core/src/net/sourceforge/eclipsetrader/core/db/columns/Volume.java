@@ -42,4 +42,26 @@ public class Volume extends Column
             return formatter.format(quote.getVolume());
         return ""; //$NON-NLS-1$
     }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     */
+    public int compare(Object arg0, Object arg1)
+    {
+        if (getValue((WatchlistItem)arg0) > getValue((WatchlistItem)arg1))
+            return 1;
+        else if (getValue((WatchlistItem)arg0) < getValue((WatchlistItem)arg1))
+            return -1;
+        return 0;
+    }
+
+    private int getValue(WatchlistItem item)
+    {
+        if (item.getSecurity() == null)
+            return 0;
+        Quote quote = item.getSecurity().getQuote();
+        if (quote != null)
+            return quote.getVolume();
+        return 0;
+    }
 }
