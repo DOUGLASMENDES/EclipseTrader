@@ -48,23 +48,17 @@ public class Volume extends IndicatorPlugin
         line.setScaleFlag(true);
         line.setType(PlotLine.HISTOGRAM_BAR);
 
-        Bar previous = null;
         for (Iterator iter = getBarData().iterator(); iter.hasNext(); )
         {
             Bar bar = (Bar)iter.next();
 
             Color color = neutral;
-            if (previous != null)
-            {
-                if (bar.getClose() > previous.getClose())
-                    color = positive;
-                else if (bar.getClose() < previous.getClose())
-                    color = negative;
-            }
+            if (bar.getClose() > bar.getOpen())
+                color = positive;
+            else if (bar.getClose() < bar.getOpen())
+                color = negative;
 
             line.append(bar.getVolume(), color);
-            
-            previous = bar;
         }
         
         getOutput().add(line);

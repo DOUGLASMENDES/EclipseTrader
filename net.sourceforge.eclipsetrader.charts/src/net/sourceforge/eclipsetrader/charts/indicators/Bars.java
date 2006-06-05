@@ -52,44 +52,32 @@ public class Bars extends IndicatorPlugin
 
         if (barType == PlotLine.BAR)
         {
-            Bar previous = null;
             for (Iterator iter = getBarData().iterator(); iter.hasNext(); )
             {
                 Bar bar = (Bar)iter.next();
     
                 Color color = neutralBar;
-                if (previous != null)
-                {
-                    if (bar.getClose() > previous.getClose())
-                        color = positiveBar;
-                    else if (bar.getClose() < previous.getClose())
-                        color = negativeBar;
-                }
+                if (bar.getClose() > bar.getOpen())
+                    color = positiveBar;
+                else if (bar.getClose() < bar.getOpen())
+                    color = negativeBar;
     
                 line.append(color, bar.getOpen(), bar.getHigh(), bar.getLow(), bar.getClose());
-                
-                previous = bar;
             }
         }
         else if (barType == PlotLine.CANDLE)
         {
             line.setColor(negativeCandle);
 
-            Bar previous = null;
             for (Iterator iter = getBarData().iterator(); iter.hasNext(); )
             {
                 Bar bar = (Bar)iter.next();
     
                 Color color = negativeCandle;
-                if (previous != null)
-                {
-                    if (bar.getClose() > previous.getClose())
-                        color = positiveCandle;
-                }
+                if (bar.getClose() > bar.getOpen())
+                    color = positiveCandle;
     
                 line.append(color, bar.getOpen(), bar.getHigh(), bar.getLow(), bar.getClose());
-                
-                previous = bar;
             }
         }
 
