@@ -467,7 +467,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             if (image.getBounds().width < getBounds().width)
                 drawGrid(e.gc, getBounds());
 
-            if (needRepaint && image != null && !image.isDisposed())
+            if (needRepaint)
             {
                 GC gc = new GC(image);
                 draw(gc);

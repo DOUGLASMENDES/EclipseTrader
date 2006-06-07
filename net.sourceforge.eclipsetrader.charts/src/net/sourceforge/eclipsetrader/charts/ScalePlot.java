@@ -40,10 +40,11 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
     private Label label;
     private Color labelColor = new Color(null, 255, 255, 0);
     private Color separatorColor = new Color(null, 0, 0, 0);
+    private boolean needRepaint = true;
 
     public ScalePlot(Composite parent, int style)
     {
-        super(parent, style);
+        super(parent, style|SWT.DOUBLE_BUFFERED);
 
         nf.setGroupingUsed(true);
         nf.setMinimumIntegerDigits(1);
@@ -108,11 +109,11 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
     
     public void redrawAll()
     {
-        GC gc = new GC(image);
-        draw(gc);
-        gc.dispose();
-
-        redraw();
+        if (needRepaint == false)
+        {
+            needRepaint = true;
+            redraw();
+        }
     }
 
     public void draw(GC gc)
@@ -190,7 +191,16 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
     public void paintControl(PaintEvent e)
     {
         if (image != null && !image.isDisposed())
+        {
+            if (needRepaint)
+            {
+                GC gc = new GC(image);
+                draw(gc);
+                gc.dispose();
+                needRepaint = false;
+            }
             e.gc.drawImage(image, e.x, e.y, e.width, e.height, e.x, e.y, e.width, e.height);
+        }
 
         e.gc.setForeground(separatorColor);
         e.gc.drawLine(0, 0, 0, getSize().y);
