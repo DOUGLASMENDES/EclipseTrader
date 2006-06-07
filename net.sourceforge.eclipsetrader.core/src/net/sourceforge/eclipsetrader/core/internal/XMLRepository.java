@@ -633,6 +633,9 @@ public class XMLRepository extends Repository
                 node = document.createElement("period");
                 node.appendChild(document.createTextNode(String.valueOf(chart.getPeriod())));
                 root.appendChild(node);
+                node = document.createElement("autoScale");
+                node.appendChild(document.createTextNode(String.valueOf(chart.isAutoScale())));
+                root.appendChild(node);
                 if (chart.getBeginDate() != null)
                 {
                     node = document.createElement("begin");
@@ -754,6 +757,8 @@ public class XMLRepository extends Repository
                             chart.setCompression(Integer.parseInt(valueNode.getNodeValue()));
                         else if (nodeName.equalsIgnoreCase("period") == true)
                             chart.setPeriod(Integer.parseInt(valueNode.getNodeValue()));
+                        else if (nodeName.equalsIgnoreCase("autoScale") == true)
+                            chart.setAutoScale(new Boolean(valueNode.getNodeValue()).booleanValue());
                         else if (nodeName.equalsIgnoreCase("begin") == true)
                         {
                             try {

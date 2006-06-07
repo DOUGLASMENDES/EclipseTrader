@@ -28,6 +28,7 @@ import net.sourceforge.eclipsetrader.charts.IIndicatorPlugin;
 import net.sourceforge.eclipsetrader.charts.ObjectPlugin;
 import net.sourceforge.eclipsetrader.charts.Plot;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.charts.actions.AutoScaleAction;
 import net.sourceforge.eclipsetrader.charts.actions.Set10MinuteIntervalAction;
 import net.sourceforge.eclipsetrader.charts.actions.Set15MinuteIntervalAction;
 import net.sourceforge.eclipsetrader.charts.actions.Set1DayIntervalAction;
@@ -134,6 +135,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private List tabGroups = new ArrayList();
     private Security security;
     private int oldMouseX = -1, oldMouseY = -1;
+    private boolean autoScale = false;
     private ChartObject newChartObject;
     private Action viewAll = new SetViewAllAction(this);
     private Action viewLast2Years = new SetLast2YearsPeriodAction(this);
@@ -150,6 +152,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private Action minute15Action = new Set15MinuteIntervalAction(this);
     private Action minute30Action = new Set30MinuteIntervalAction(this);
     private Action minute60Action = new Set60MinuteIntervalAction(this);
+    private Action autoScaleAction = new AutoScaleAction(this);
     private Action cutAction;
     private Action copyAction;
     private Action pasteAction;
@@ -230,6 +233,9 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         intervalMenu.add(minute5Action);
         intervalMenu.add(minute2Action);
         intervalMenu.add(minute1Action);
+
+        menuManager.appendToGroup("group3", new Separator());
+        menuManager.appendToGroup("group3", autoScaleAction);
         
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
@@ -326,6 +332,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         try {
             security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
             chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
+            autoScale = chart.isAutoScale();
+            
             setPartName(chart.getTitle());
             updateActionBars();
 
@@ -459,6 +467,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         dailyAction.setChecked(chart.getCompression() == BarData.INTERVAL_DAILY);
         weeklyAction.setChecked(chart.getCompression() == BarData.INTERVAL_WEEKLY);
         monthlyAction.setChecked(chart.getCompression() == BarData.INTERVAL_MONTHLY);
+        
+        autoScaleAction.setChecked(autoScale);
     }
     
     public Chart getChart()
@@ -477,6 +487,16 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         CorePlugin.getRepository().save(chart);
         
         datePlot.setInterval(interval);
+        updateView();
+        updateActionBars();
+    }
+    
+    public void setAutoScale(boolean autoScale)
+    {
+        this.autoScale = autoScale;
+        chart.setAutoScale(autoScale);
+        CorePlugin.getRepository().save(chart);
+        
         updateView();
         updateActionBars();
     }
@@ -570,7 +590,11 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             CTabFolder folder = (CTabFolder)iter.next();
             CTabItem[] items = folder.getItems();
             for (int i = 0; i < items.length; i++)
+            {
                 ((Plot)items[i].getControl()).getIndicatorPlot().setPlotBounds(bounds);
+                if (autoScale)
+                    ((Plot)items[i].getControl()).updateScale();
+            }
         }
     }
     
@@ -1016,6 +1040,14 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             plot.addPlotMouseListener(ChartView.this);
             plot.addPlotSelectionListener(ChartTabItem.this);
             setControl(plot);
+            
+            plot.getIndicatorPlot().addControlListener(new ControlAdapter() {
+                public void controlResized(ControlEvent e)
+                {
+                    if (autoScale)
+                        plot.updateScale();
+                }
+            });
 
             // Create popup menu
             MenuManager menuMgr = new MenuManager("#popupMenu", "contextMenu"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1101,6 +1133,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     plugin.setSettings(settings);
                 }
             }
+            if (autoScale)
+                plot.updateScale();
             
             plot.setRedraw(true);
             if (plot.getIndicatorPlot().getObjectSelection() != null)

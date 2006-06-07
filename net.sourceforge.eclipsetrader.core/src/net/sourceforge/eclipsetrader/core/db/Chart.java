@@ -26,6 +26,7 @@ public class Chart extends PersistentObject implements Observer
     private int period = 0;
     private Date beginDate;
     private Date endDate;
+    private boolean autoScale = true;
     private ObservableList rows = new ObservableList();
 
     public Chart()
@@ -104,6 +105,16 @@ public class Chart extends PersistentObject implements Observer
     {
         this.period = period;
         setChanged();
+    }
+
+    public boolean isAutoScale()
+    {
+        return autoScale;
+    }
+
+    public void setAutoScale(boolean autoScale)
+    {
+        this.autoScale = autoScale;
     }
 
     public ObservableList getRows()

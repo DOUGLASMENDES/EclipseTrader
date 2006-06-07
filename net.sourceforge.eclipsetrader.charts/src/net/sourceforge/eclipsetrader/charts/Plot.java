@@ -19,6 +19,7 @@ import net.sourceforge.eclipsetrader.charts.events.PlotMouseEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotMouseListener;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionListener;
+import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -376,7 +377,7 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
     {
         return scaler;
     }
-
+    
     public DatePlot getDatePlot()
     {
         return datePlot;
@@ -611,5 +612,82 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
     {
         if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
         plotMouseListeners.remove(listener);
+    }
+
+    public void updateScale()
+    {
+        BarData barData = datePlot.getBarData();
+        if (barData.size() != 0)
+        {
+            int first = ((- indicatorPlot.getPlotLocation().x) - indicatorPlot.getMarginWidth() - indicatorPlot.getGridWidth() / 2) / indicatorPlot.getGridWidth();
+            if (first > 0)
+                first--;
+            int bars = (indicatorPlot.getBounds().width / indicatorPlot.getGridWidth()) + 1;
+            double high = -99999999;
+            double low = 99999999;
+            
+            for (Iterator iter = indicatorPlot.getIndicators().iterator(); iter.hasNext(); )
+            {
+                Indicator indicator = (Indicator)iter.next();
+                
+                for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
+                {
+                    PlotLine plotLine = (PlotLine)iter2.next();
+                    if (plotLine.getScaleFlag())
+                        continue;
+
+                    switch(plotLine.getType())
+                    {
+                        case PlotLine.DOT:
+                        case PlotLine.DASH:
+                        case PlotLine.LINE:
+                        case PlotLine.HISTOGRAM:
+                        case PlotLine.HISTOGRAM_BAR:
+                        {
+                            int ofs = barData.size() - plotLine.getSize();
+                            int x = first - ofs;
+                            for (int i = 0; i < bars; i++, x++)
+                            {
+                                if (x >= 0 && x < plotLine.getSize())
+                                {
+                                    if (plotLine.getData(x) > high)
+                                        high = plotLine.getData(x);
+                                    if (plotLine.getData(x) < low)
+                                        low = plotLine.getData(x);
+                                }
+                            }
+                            break;
+                        }
+                        case PlotLine.BAR:
+                        case PlotLine.CANDLE:
+                        {
+                            int ofs = barData.size() - plotLine.getSize();
+                            int x = first - ofs;
+                            for (int i = 0; i < bars; i++, x++)
+                            {
+                                if (x >= 0 && x < plotLine.getSize())
+                                {
+                                    if (plotLine.getBar(x).getHigh() > high)
+                                        high = plotLine.getBar(x).getHigh();
+                                    if (plotLine.getBar(x).getLow() < low)
+                                        low = plotLine.getBar(x).getLow();
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (high != -99999999 && low != 99999999)
+            {
+                scaler.set(high, low);
+                if (drawCount <= 0)
+                {
+                    indicatorPlot.redrawAll();
+                    scalePlot.redrawAll();
+                }
+            }
+        }
     }
 }

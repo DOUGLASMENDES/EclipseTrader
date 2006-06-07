@@ -57,10 +57,11 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
     private List objects = new ArrayList();
     private Indicator selection;
     private ObjectPlugin objectSelection;
+    private boolean needRepaint = true;
 
     public IndicatorPlot(Composite parent, int style)
     {
-        super(parent, style);
+        super(parent, style|SWT.DOUBLE_BUFFERED);
         
         addControlListener(this);
         addDisposeListener(this);
@@ -303,7 +304,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                 Indicator indicator = (Indicator)indicators.get(ii);
 
                 Scaler indicatorScaler = new Scaler();
-                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+                indicatorScaler.set(scaler.getHeight(), scaler.getHigh(), scaler.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
                 
                 for (int ll = indicator.getLines().size() - 1; ll >= 0; ll--)
                 {
@@ -389,33 +390,11 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
     
     public void redrawAll()
     {
-/*        if (barData.size() != 0 && getSize().y != 0)
+        if (needRepaint == false)
         {
-            int offset = 0;
-            int width = getMarginWidth() + barData.size() * getGridWidth() + getMarginWidth();
-            if (image == null || image.isDisposed() || image.getBounds().width != width || image.getBounds().height != getSize().y)
-            {
-                if (image != null && !image.isDisposed())
-                {
-                    offset = width - image.getBounds().width;
-                    image.dispose();
-                }
-                image = new Image(getDisplay(), width, getSize().y);
-                plotLocation.x -= offset;
-                if (getHorizontalBar().isVisible())
-                {
-                    getHorizontalBar().setMaximum(width);
-                    getHorizontalBar().setSelection(- plotLocation.x);
-                }
-            }
-        }*/
-        if (image != null && !image.isDisposed())
-        {
-            GC gc = new GC(image);
-            draw(gc);
-            gc.dispose();
+            needRepaint = true;
+            redraw();
         }
-        redraw();
     }
     
     public void draw(GC gc)
@@ -440,7 +419,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                 Indicator indicator = (Indicator)iter.next();
                 
                 Scaler indicatorScaler = new Scaler();
-                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+                indicatorScaler.set(scaler.getHeight(), scaler.getHigh(), scaler.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
 
                 for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
                 {
@@ -477,7 +456,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         if (foreground != null)
             foreground.dispose();
     }
-
+    
     /* (non-Javadoc)
      * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
      */
@@ -487,13 +466,14 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         {
             if (image.getBounds().width < getBounds().width)
                 drawGrid(e.gc, getBounds());
-/*            int srcX = e.x - plotLocation.x;
-            int width = e.width;
-            if (width > (image.getBounds().width - srcX))
-                width = image.getBounds().width - srcX;
-            if (srcX >= 0 && width > 0)
-                e.gc.drawImage(image, srcX, e.y, width, e.height, e.x, e.y, width, e.height);*/
 
+            if (needRepaint && image != null && !image.isDisposed())
+            {
+                GC gc = new GC(image);
+                draw(gc);
+                gc.dispose();
+                needRepaint = false;
+            }
             e.gc.drawImage(image, plotLocation.x, plotLocation.y);
 
             if (scaler != null && barData.size() != 0)
