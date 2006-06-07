@@ -11,8 +11,19 @@
 
 package net.sourceforge.eclipsetrader.trading.wizards;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
+import net.sourceforge.eclipsetrader.core.db.columns.AskPrice;
+import net.sourceforge.eclipsetrader.core.db.columns.BidPrice;
+import net.sourceforge.eclipsetrader.core.db.columns.Change;
+import net.sourceforge.eclipsetrader.core.db.columns.Code;
+import net.sourceforge.eclipsetrader.core.db.columns.Description;
+import net.sourceforge.eclipsetrader.core.db.columns.LastPrice;
+import net.sourceforge.eclipsetrader.core.db.columns.Time;
+import net.sourceforge.eclipsetrader.core.db.columns.Volume;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -63,6 +74,17 @@ public class WatchlistWizard extends Wizard implements INewWizard
 
         WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);
         dlg.create();
+        
+        List columns = new ArrayList();
+        columns.add(new Code());
+        columns.add(new Description());
+        columns.add(new LastPrice());
+        columns.add(new Change());
+        columns.add(new BidPrice());
+        columns.add(new AskPrice());
+        columns.add(new Volume());
+        columns.add(new Time());
+        columnsPage.setColumns(columns);
         
         return dlg;
     }
