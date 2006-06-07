@@ -47,7 +47,6 @@ public class Lines extends IndicatorPlugin
         line.setLabel(label);
         line.setType(PlotLine.LINE);
         line.setColor(color);
-        line.setScaleFlag(true);
         getOutput().add(line);
     }
 

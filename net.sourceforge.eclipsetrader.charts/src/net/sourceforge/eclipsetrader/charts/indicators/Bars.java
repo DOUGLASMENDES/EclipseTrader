@@ -81,7 +81,6 @@ public class Bars extends IndicatorPlugin
             }
         }
 
-        line.setScaleFlag(true);
         line.setType(barType);
         
         getOutput().add(line);

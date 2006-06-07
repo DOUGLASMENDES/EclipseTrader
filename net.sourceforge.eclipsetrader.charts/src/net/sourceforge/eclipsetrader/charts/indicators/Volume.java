@@ -45,7 +45,6 @@ public class Volume extends IndicatorPlugin
     public void calculate()
     {
         PlotLine line = new PlotLine(label);
-        line.setScaleFlag(true);
         line.setType(PlotLine.HISTOGRAM_BAR);
 
         for (Iterator iter = getBarData().iterator(); iter.hasNext(); )
