@@ -34,6 +34,16 @@ public class Bar extends PersistentObject
         super(id);
     }
     
+    public Bar(Bar bar)
+    {
+        this.date = bar.date;
+        this.open = bar.open;
+        this.high = bar.high;
+        this.low = bar.low;
+        this.close = bar.close;
+        this.volume = bar.volume;
+    }
+    
     public Bar(double open, double high, double low, double close)
     {
         this.open = open;

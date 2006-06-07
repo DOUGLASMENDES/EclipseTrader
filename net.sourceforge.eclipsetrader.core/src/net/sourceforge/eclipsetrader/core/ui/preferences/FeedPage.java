@@ -56,7 +56,9 @@ public abstract class FeedPage extends PreferencePage
     protected Control createContents(Composite parent)
     {
         Composite content = new Composite(parent, SWT.NONE);
-        content.setLayout(new GridLayout(2, false));
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Label label = new Label(content, SWT.NONE);

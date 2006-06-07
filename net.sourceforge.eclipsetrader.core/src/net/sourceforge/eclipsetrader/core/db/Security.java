@@ -25,6 +25,13 @@ import net.sourceforge.eclipsetrader.core.internal.CObservable;
  */
 public class Security extends PersistentObject
 {
+    public static final int SUN = 0x0001;
+    public static final int MON = 0x0002;
+    public static final int TUE = 0x0004;
+    public static final int WED = 0x0008;
+    public static final int THU = 0x0010;
+    public static final int FRI = 0x0020;
+    public static final int SAT = 0x0040;
     private String code = "";
     private String description = "";
     private Currency currency;
@@ -43,6 +50,11 @@ public class Security extends PersistentObject
     private Double high;
     private CObservable quoteMonitor = new CObservable();
     private CObservable level2Monitor = new CObservable();
+    private boolean enableDataCollector = false;
+    private int beginTime = 0;
+    private int endTime = 0;
+    private int weekDays = MON|TUE|WED|THU|FRI;
+    private int keepDays = 1;
 
     public Security()
     {
@@ -195,7 +207,7 @@ public class Security extends PersistentObject
         else if (this.quote == null && quote != null)
             quoteMonitor.setChanged();
         this.quote = quote;
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public void setQuote(Quote quote, Double open, Double high, Double low, Double close)
@@ -230,7 +242,7 @@ public class Security extends PersistentObject
             quoteMonitor.setChanged();
         this.close = close;
 
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public void setQuote(Quote quote, Double high, Double low)
@@ -253,7 +265,7 @@ public class Security extends PersistentObject
             quoteMonitor.setChanged();
         this.low = low;
 
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public void setQuote(Quote quote, Double open)
@@ -270,7 +282,7 @@ public class Security extends PersistentObject
             quoteMonitor.setChanged();
         this.open = open;
 
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public Double getHigh()
@@ -285,7 +297,7 @@ public class Security extends PersistentObject
         else if (this.high == null && this.high != null)
             quoteMonitor.setChanged();
         this.high = high;
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public Double getLow()
@@ -300,7 +312,7 @@ public class Security extends PersistentObject
         else if (this.low == null && this.low != null)
             quoteMonitor.setChanged();
         this.low = low;
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public Double getOpen()
@@ -315,7 +327,7 @@ public class Security extends PersistentObject
         else if (this.open == null && this.open != null)
             quoteMonitor.setChanged();
         this.open = open;
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public Double getClose()
@@ -330,7 +342,7 @@ public class Security extends PersistentObject
         else if (this.close == null && this.close != null)
             quoteMonitor.setChanged();
         this.close = close;
-        quoteMonitor.notifyObservers();
+        quoteMonitor.notifyObservers(this);
     }
 
     public Level2 getLevel2Bid()
@@ -373,5 +385,55 @@ public class Security extends PersistentObject
     public CObservable getQuoteMonitor()
     {
         return quoteMonitor;
+    }
+
+    public int getBeginTime()
+    {
+        return beginTime;
+    }
+
+    public void setBeginTime(int beginTime)
+    {
+        this.beginTime = beginTime;
+    }
+
+    public boolean isEnableDataCollector()
+    {
+        return enableDataCollector;
+    }
+
+    public void setEnableDataCollector(boolean enableDataCollector)
+    {
+        this.enableDataCollector = enableDataCollector;
+    }
+
+    public int getEndTime()
+    {
+        return endTime;
+    }
+
+    public void setEndTime(int endTime)
+    {
+        this.endTime = endTime;
+    }
+
+    public int getWeekDays()
+    {
+        return weekDays;
+    }
+
+    public void setWeekDays(int weekDays)
+    {
+        this.weekDays = weekDays;
+    }
+
+    public int getKeepDays()
+    {
+        return keepDays;
+    }
+
+    public void setKeepDays(int keepDays)
+    {
+        this.keepDays = keepDays;
     }
 }

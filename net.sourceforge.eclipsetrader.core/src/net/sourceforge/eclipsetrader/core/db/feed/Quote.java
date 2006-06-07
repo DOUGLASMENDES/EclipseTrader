@@ -13,6 +13,9 @@ package net.sourceforge.eclipsetrader.core.db.feed;
 
 import java.util.Date;
 
+/**
+ * Instances of this class represents a quote snapshot.
+ */
 public class Quote
 {
     private Date date;
@@ -27,6 +30,11 @@ public class Quote
     {
     }
 
+    /**
+     * Build a new instance that is the exact copy of the given instance.
+     * 
+     * @param quote the instance to copy
+     */
     public Quote(Quote quote)
     {
         if (quote != null)
@@ -41,6 +49,13 @@ public class Quote
         }
     }
 
+    /**
+     * Build a new instance giving the last, bid and ask prices.
+     * 
+     * @param last the last price
+     * @param bid the bid price
+     * @param ask the ask price
+     */
     public Quote(double last, double bid, double ask)
     {
         this.last = last;
@@ -48,11 +63,37 @@ public class Quote
         this.ask = ask;
     }
 
+    /**
+     * Build a new instance giving the last update date, last, bid and ask prices.
+     * 
+     * @param date the last update date
+     * @param last the last price
+     * @param bid the bid price
+     * @param ask the ask price
+     */
+    public Quote(Date date, double last, double bid, double ask)
+    {
+        this.date = date;
+        this.last = last;
+        this.bid = bid;
+        this.ask = ask;
+    }
+
+    /**
+     * Returns the date when the quote was last updated.
+     * 
+     * @return the last update date/time
+     */
     public Date getDate()
     {
         return date;
     }
 
+    /**
+     * Sets the date when the quote was last updated.
+     * 
+     * @param date the last update date/time
+     */
     public void setDate(Date date)
     {
         this.date = date;
@@ -108,18 +149,29 @@ public class Quote
         this.bidSize = bidSize;
     }
 
+    /**
+     * Returns the cumulative volume exchange.
+     * 
+     * @return the volume value
+     */
     public int getVolume()
     {
         return volume;
     }
 
+    /**
+     * Sets the cumulative volume exchange.
+     * 
+     * @param volume the volume value
+     */
     public void setVolume(int volume)
     {
         this.volume = volume;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     * <p>Quote objects are equal if all fields, excluding the date field, are equals.</p>
      */
     public boolean equals(Object obj)
     {

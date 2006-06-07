@@ -27,6 +27,7 @@ public class TradingPlugin extends AbstractUIPlugin
     public static final String SYSTEMS_EXTENSION_POINT = PLUGIN_ID + ".system";
     public static final String SYSTEM_WIZARDS_EXTENSION_POINT = PLUGIN_ID + ".systemWizard";
     private static TradingPlugin plugin;
+    private DataCollector dataCollector;
 
     /**
      * The constructor.
@@ -42,6 +43,7 @@ public class TradingPlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
+        dataCollector = new DataCollector();
     }
 
     /**
@@ -49,6 +51,7 @@ public class TradingPlugin extends AbstractUIPlugin
      */
     public void stop(BundleContext context) throws Exception
     {
+        dataCollector.dispose();
         super.stop(context);
         plugin = null;
     }

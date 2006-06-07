@@ -17,22 +17,22 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
+import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbench;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 
 /**
  */
-public class SecurityWizard extends Wizard implements INewWizard
+public class SecurityWizard extends Wizard
 {
     public static String WINDOW_TITLE = "New Security Wizard";
     public static String EDIT_WINDOW_TITLE = "Security Edit Wizard";
@@ -40,38 +40,16 @@ public class SecurityWizard extends Wizard implements INewWizard
     private SecurityPage securityPage;
     private QuoteFeedPage quoteFeedPage;
     private HistoryFeedPage historyFeedPage;
+    private IntradayDataOptions options = new IntradayDataOptions();
 
     public SecurityWizard()
     {
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
-     */
-    public void init(IWorkbench workbench, IStructuredSelection selection)
-    {
-        setWindowTitle(WINDOW_TITLE);
-        
-        securityPage = new SecurityPage(security);
-        addPage(securityPage);
-        quoteFeedPage = new QuoteFeedPage(security);
-        addPage(quoteFeedPage);
-        historyFeedPage = new HistoryFeedPage(security);
-        addPage(historyFeedPage);
     }
 
     public Security open()
     {
         setWindowTitle(WINDOW_TITLE);
         WizardDialog dlg = create(null);
-        dlg.open();
-        return this.security;
-    }
-    
-    public Security open(Security security)
-    {
-        setWindowTitle(EDIT_WINDOW_TITLE);
-        WizardDialog dlg = create(security);
         dlg.open();
         return this.security;
     }
@@ -86,6 +64,16 @@ public class SecurityWizard extends Wizard implements INewWizard
         addPage(quoteFeedPage);
         historyFeedPage = new HistoryFeedPage(security);
         addPage(historyFeedPage);
+        
+        WizardPage page = new WizardPage("") {
+            public void createControl(Composite parent)
+            {
+                setControl(options.createControls(parent, SecurityWizard.this.security));
+            }
+        };
+        page.setTitle("Intraday Charts");
+        page.setDescription("Set the options to automatically build intraday charts");
+        addPage(page);
 
         WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);
         dlg.create();
@@ -142,6 +130,8 @@ public class SecurityWizard extends Wizard implements INewWizard
         }
         else
             security.setHistoryFeed(null);
+
+        options.saveSettings(security);
         
         CorePlugin.getRepository().save(security);
         return true;

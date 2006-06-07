@@ -52,6 +52,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         PreferenceNode node = new PreferenceNode("feed", new PreferencePage("Feeds") {
             protected Control createContents(Composite parent)
             {
+                noDefaultAndApplyButton();
                 return new Composite(parent, SWT.NONE);
             }
         });
@@ -59,6 +60,8 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         node.add(new PreferenceNode("quote", new QuoteFeedPage()));
         node.add(new PreferenceNode("level2", new Level2FeedPage()));
         node.add(new PreferenceNode("history", new HistoryFeedPage()));
+        
+        getPreferenceManager().addToRoot(new PreferenceNode("intraday", new DataCollectorPage()));
     }
 
     /* (non-Javadoc)
@@ -98,7 +101,9 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         protected Control createContents(Composite parent)
         {
             Composite content = new Composite(parent, SWT.NONE);
-            content.setLayout(new GridLayout(2, false));
+            GridLayout gridLayout = new GridLayout(2, false);
+            gridLayout.marginWidth = gridLayout.marginHeight = 0;
+            content.setLayout(gridLayout);
             content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
             Label label = new Label(content, SWT.NONE);
@@ -337,6 +342,37 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         {
             if (isValid())
                 security.setHistoryFeed(getFeed());
+            return super.performOk();
+        }
+    }
+
+    private class DataCollectorPage extends PreferencePage
+    {
+        IntradayDataOptions options = new IntradayDataOptions();
+
+        public DataCollectorPage()
+        {
+            super("Intraday Charts");
+            noDefaultAndApplyButton();
+            setValid(false);
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+         */
+        protected Control createContents(Composite parent)
+        {
+            setValid(true);
+            return options.createControls(parent, security);
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.preference.PreferencePage#performOk()
+         */
+        public boolean performOk()
+        {
+            if (isValid())
+                return options.saveSettings(security);
             return super.performOk();
         }
     }

@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.core.internal;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -897,7 +898,32 @@ public class XMLRepository extends Repository
                 else if (nodeName.equals("currency")) //$NON-NLS-1$
                     security.setCurrency(Currency.getInstance(value.getNodeValue()));
             }
-            if (nodeName.equalsIgnoreCase("feeds")) //$NON-NLS-1$
+            if (nodeName.equals("dataCollector")) //$NON-NLS-1$
+            {
+                security.setEnableDataCollector(new Boolean(((Node)item).getAttributes().getNamedItem("enable").getNodeValue()).booleanValue());
+                NodeList nodeList = item.getChildNodes();
+                for (int q = 0; q < nodeList.getLength(); q++)
+                {
+                    item = nodeList.item(q);
+                    nodeName = item.getNodeName();
+                    value = item.getFirstChild();
+                    if (nodeName.equals("begin")) //$NON-NLS-1$
+                    {
+                        String[] s = value.getNodeValue().split(":");
+                        security.setBeginTime(Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]));
+                    }
+                    else if (nodeName.equals("end")) //$NON-NLS-1$
+                    {
+                        String[] s = value.getNodeValue().split(":");
+                        security.setEndTime(Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]));
+                    }
+                    else if (nodeName.equals("weekdays")) //$NON-NLS-1$
+                        security.setWeekDays(Integer.parseInt(value.getNodeValue()));
+                    else if (nodeName.equals("keepdays")) //$NON-NLS-1$
+                        security.setKeepDays(Integer.parseInt(value.getNodeValue()));
+                }
+            }
+            else if (nodeName.equalsIgnoreCase("feeds")) //$NON-NLS-1$
             {
                 NodeList nodeList = item.getChildNodes();
                 for (int q = 0; q < nodeList.getLength(); q++)
@@ -1027,7 +1053,7 @@ public class XMLRepository extends Repository
                 element.appendChild(node);
             }
             
-            for (Iterator iter = securitiesMap.values().iterator(); iter.hasNext(); )
+            for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
             {
                 Security security = (Security)iter.next(); 
 
@@ -1048,6 +1074,28 @@ public class XMLRepository extends Repository
                     element.appendChild(node);
                 }
                 
+                NumberFormat nf = NumberFormat.getInstance();
+                nf.setGroupingUsed(false);
+                nf.setMinimumIntegerDigits(2);
+                nf.setMinimumFractionDigits(0);
+                nf.setMaximumFractionDigits(0);
+                
+                Element collectorNode = document.createElement("dataCollector");
+                collectorNode.setAttribute("enable", String.valueOf(security.isEnableDataCollector()));
+                element.appendChild(collectorNode);
+                node = document.createElement("begin");
+                node.appendChild(document.createTextNode(nf.format(security.getBeginTime() / 60) + ":" + nf.format(security.getBeginTime() % 60)));
+                collectorNode.appendChild(node);
+                node = document.createElement("end");
+                node.appendChild(document.createTextNode(nf.format(security.getEndTime() / 60) + ":" + nf.format(security.getEndTime() % 60)));
+                collectorNode.appendChild(node);
+                node = document.createElement("weekdays");
+                node.appendChild(document.createTextNode(String.valueOf(security.getWeekDays())));
+                collectorNode.appendChild(node);
+                node = document.createElement("keepdays");
+                node.appendChild(document.createTextNode(String.valueOf(security.getKeepDays())));
+                collectorNode.appendChild(node);
+
                 if (security.getQuoteFeed() != null || security.getHistoryFeed() != null)
                 {
                     Node feedsNode = document.createElement("feeds");
