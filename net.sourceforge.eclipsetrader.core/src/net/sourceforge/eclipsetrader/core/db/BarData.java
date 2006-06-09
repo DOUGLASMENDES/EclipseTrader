@@ -52,6 +52,21 @@ public class BarData
         barList.toArray(bar);
         addAll(bar);
     }
+    
+    public BarData(List barList, Date begin, Date end)
+    {
+        Bar[] bar = new Bar[barList.size()];
+        barList.toArray(bar);
+        
+        for (int i = 0; i < bar.length; i++)
+        {
+            if (begin != null && bar[i].getDate().before(begin))
+                continue;
+            if (end != null && bar[i].getDate().after(end))
+                continue;
+            append(bar[i]);
+        }
+    }
 
     public boolean append(Bar obj)
     {
@@ -203,6 +218,11 @@ public class BarData
     
     public BarData getCompressed(int interval)
     {
+        return getCompressed(interval, null, null);
+    }
+    
+    public BarData getCompressed(int interval, Date begin, Date end)
+    {
         BarData barData = new BarData();
         barData.compression = interval;
 
@@ -282,6 +302,8 @@ public class BarData
             for (Iterator iter = barList.iterator(); iter.hasNext(); )
             {
                 Bar bar = (Bar)iter.next();
+                if ((begin != null && bar.getDate().before(begin)) || (end != null && bar.getDate().after(end)))
+                    continue;
                 
                 if (currentBar != null && currentBar.getDate() != null)
                 {
@@ -323,6 +345,8 @@ public class BarData
             for (Iterator iter = barList.iterator(); iter.hasNext(); )
             {
                 Bar bar = (Bar)iter.next();
+                if ((begin != null && bar.getDate().before(begin)) || (end != null && bar.getDate().after(end)))
+                    continue;
                 
                 if (currentBar != null && currentBar.getDate() != null)
                 {
