@@ -11,7 +11,7 @@
 
 package net.sourceforge.eclipsetrader.trading.actions;
 
-import net.sourceforge.eclipsetrader.trading.dialogs.PatternSearchDialog;
+import net.sourceforge.eclipsetrader.trading.dialogs.WatchlistPatternSearchDialog;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -39,7 +39,7 @@ public class PatternSearchAction implements IViewActionDelegate
      */
     public void run(IAction action)
     {
-        PatternSearchDialog dlg = new PatternSearchDialog(view);
+        WatchlistPatternSearchDialog dlg = new WatchlistPatternSearchDialog(view);
         dlg.open();
     }
 

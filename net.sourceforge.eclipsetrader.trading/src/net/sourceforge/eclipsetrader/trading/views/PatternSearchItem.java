@@ -12,14 +12,15 @@
 package net.sourceforge.eclipsetrader.trading.views;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PatternSearchItem
 {
     private String code;
     private String description;
-    private String date;
-    private String price;
+    private Date date;
+    private Double price;
     private String pattern;
     private String opportunity;
     private List children = new ArrayList();
@@ -38,12 +39,12 @@ public class PatternSearchItem
         this.code = code;
     }
 
-    public String getDate()
+    public Date getDate()
     {
         return date;
     }
 
-    public void setDate(String date)
+    public void setDate(Date date)
     {
         this.date = date;
     }
@@ -78,12 +79,17 @@ public class PatternSearchItem
         this.pattern = pattern;
     }
 
-    public String getPrice()
+    public Double getPrice()
     {
         return price;
     }
 
-    public void setPrice(String price)
+    public void setPrice(double price)
+    {
+        this.price = new Double(price);
+    }
+
+    public void setPrice(Double price)
     {
         this.price = price;
     }

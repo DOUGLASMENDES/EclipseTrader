@@ -13,31 +13,35 @@ package net.sourceforge.eclipsetrader.trading.internal;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.IPattern;
 import net.sourceforge.eclipsetrader.core.db.BarData;
-import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.Watchlist;
+import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 
-public class SecurityPatternsSearchPage extends PatternsSearchPage
+public class WatchlistPatternsSearchPage extends PatternsSearchPage
 {
-    private Security security;
+    private Watchlist watchlist;
 
-    public SecurityPatternsSearchPage(Security security, int period, Date begin, Date end, boolean bullishOnly)
+    public WatchlistPatternsSearchPage(Watchlist watchlist, int period, Date begin, Date end, boolean bullishOnly)
     {
         super(period, begin, end, bullishOnly);
-        this.security = security;
+        this.watchlist = watchlist;
 
         securities = new ArrayList();
-        securities.add(security);
+        for (Iterator iter = watchlist.getItems().iterator(); iter.hasNext(); )
+            securities.add(((WatchlistItem) iter.next()).getSecurity());
     }
 
-    public SecurityPatternsSearchPage(Security security, IPattern plugin, String name, int period, Date begin, Date end, boolean bullishOnly)
+    public WatchlistPatternsSearchPage(Watchlist watchlist, IPattern plugin, String name, int period, Date begin, Date end, boolean bullishOnly)
     {
         super(plugin, name, period, begin, end, bullishOnly);
-        this.security = security;
+        this.watchlist = watchlist;
 
         securities = new ArrayList();
-        securities.add(security);
+        for (Iterator iter = watchlist.getItems().iterator(); iter.hasNext(); )
+            securities.add(((WatchlistItem) iter.next()).getSecurity());
     }
     
     public String getDescription()
@@ -61,7 +65,7 @@ public class SecurityPatternsSearchPage extends PatternsSearchPage
         }
         if (bullishOnly)
             s += " - bullish";
-        s += " - " + String.valueOf(results.size()) + " result(s) in " + security.getDescription();
+        s += " - " + String.valueOf(results.size()) + " result(s) in " + watchlist.getDescription();
         return s;
     }
     
@@ -86,7 +90,7 @@ public class SecurityPatternsSearchPage extends PatternsSearchPage
         }
         if (bullishOnly)
             s += " - bullish";
-        s += " - " + security.getDescription();
+        s += " - " + watchlist.getDescription();
         return s;
     }
 }

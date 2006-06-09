@@ -11,10 +11,15 @@
 
 package net.sourceforge.eclipsetrader.trading.views;
 
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.dialogs.SearchPageSelectionDialog;
 
@@ -27,6 +32,7 @@ import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -55,6 +61,8 @@ public class PatternSearchView extends ViewPart implements SelectionListener
     private Color oddBackground = new Color(null, 240, 240, 240);
     private Color negativeForeground = new Color(null, 240, 0, 0);
     private Color positiveForeground = new Color(null, 0, 192, 0);
+    private SimpleDateFormat dateFormat = CorePlugin.getDateFormat();
+    private NumberFormat priceFormat = NumberFormat.getInstance();
     private List pages = new ArrayList();
     private IPatternSearchPage currentPage;
     private Action historyMenu;
@@ -96,6 +104,10 @@ public class PatternSearchView extends ViewPart implements SelectionListener
     
     public PatternSearchView()
     {
+        priceFormat.setGroupingUsed(true);
+        priceFormat.setMinimumIntegerDigits(1);
+        priceFormat.setMinimumFractionDigits(4);
+        priceFormat.setMaximumFractionDigits(4);
     }
 
     /* (non-Javadoc)
@@ -218,16 +230,81 @@ public class PatternSearchView extends ViewPart implements SelectionListener
 
         column = new TableColumn(table, SWT.LEFT);
         column.setText("Code");
+        column.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                List list = currentPage.getResults();
+                Collections.sort(list, new Comparator() {
+                    public int compare(Object arg0, Object arg1)
+                    {
+                        return ((PatternSearchItem) arg0).getCode().compareTo(((PatternSearchItem) arg1).getCode());
+                    }
+                });
+                updateView();
+            }
+        });
         column = new TableColumn(table, SWT.LEFT);
         column.setText("Name");
+        column.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                List list = currentPage.getResults();
+                Collections.sort(list, new Comparator() {
+                    public int compare(Object arg0, Object arg1)
+                    {
+                        return ((PatternSearchItem) arg0).getDescription().compareTo(((PatternSearchItem) arg1).getDescription());
+                    }
+                });
+                updateView();
+            }
+        });
         column = new TableColumn(table, SWT.RIGHT);
         column.setText("Date");
+        column.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                List list = currentPage.getResults();
+                Collections.sort(list, new Comparator() {
+                    public int compare(Object arg0, Object arg1)
+                    {
+                        return ((PatternSearchItem) arg0).getDate().compareTo(((PatternSearchItem) arg1).getDate());
+                    }
+                });
+                updateView();
+            }
+        });
         column = new TableColumn(table, SWT.RIGHT);
         column.setText("Price");
         column = new TableColumn(table, SWT.LEFT);
         column.setText("Pattern");
+        column.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                List list = currentPage.getResults();
+                Collections.sort(list, new Comparator() {
+                    public int compare(Object arg0, Object arg1)
+                    {
+                        return ((PatternSearchItem) arg0).getPattern().compareTo(((PatternSearchItem) arg1).getPattern());
+                    }
+                });
+                updateView();
+            }
+        });
         column = new TableColumn(table, SWT.LEFT);
         column.setText("Bullish / Bearish");
+        column.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                List list = currentPage.getResults();
+                Collections.sort(list, new Comparator() {
+                    public int compare(Object arg0, Object arg1)
+                    {
+                        return ((PatternSearchItem) arg0).getOpportunity().compareTo(((PatternSearchItem) arg1).getOpportunity());
+                    }
+                });
+                updateView();
+            }
+        });
         
         for (int i = 1; i < table.getColumnCount(); i++)
             table.getColumn(i).pack();
@@ -281,8 +358,8 @@ public class PatternSearchView extends ViewPart implements SelectionListener
                 tableItem.setForeground((index & 1) == 0 ? evenForeground : oddForeground);
                 tableItem.setText(1, item.getCode());
                 tableItem.setText(2, item.getDescription());
-                tableItem.setText(3, item.getDate() != null ? item.getDate() : "");
-                tableItem.setText(4, item.getPrice() != null ? item.getPrice() : "");
+                tableItem.setText(3, item.getDate() != null ? dateFormat.format(item.getDate()) : "");
+                tableItem.setText(4, item.getPrice() != null ? priceFormat.format(item.getPrice()) : "");
                 tableItem.setText(5, item.getPattern());
                 tableItem.setText(6, item.getOpportunity());
                 tableItem.setForeground(6, item.getOpportunity().equals("Bullish") ? positiveForeground : negativeForeground);

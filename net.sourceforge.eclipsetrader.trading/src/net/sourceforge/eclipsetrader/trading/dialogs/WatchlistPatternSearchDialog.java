@@ -17,13 +17,12 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IPattern;
 import net.sourceforge.eclipsetrader.core.db.BarData;
-import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
+import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.trading.internal.PatternsSearchPage;
-import net.sourceforge.eclipsetrader.trading.internal.SecurityPatternsSearchPage;
+import net.sourceforge.eclipsetrader.trading.internal.WatchlistPatternsSearchPage;
 import net.sourceforge.eclipsetrader.trading.views.PatternSearchView;
+import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,16 +36,16 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-public class SecurityPatternSearchDialog extends PatternSearchDialog
+public class WatchlistPatternSearchDialog extends PatternSearchDialog
 {
-    private Combo securities;
+    protected Combo watchlists;
 
-    public SecurityPatternSearchDialog(Shell parentShell)
+    public WatchlistPatternSearchDialog(Shell parentShell)
     {
         super(parentShell);
     }
 
-    public SecurityPatternSearchDialog(IViewPart view)
+    public WatchlistPatternSearchDialog(IViewPart view)
     {
         super(view);
     }
@@ -62,23 +61,20 @@ public class SecurityPatternSearchDialog extends PatternSearchDialog
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Security");
+        label.setText("Watchlist");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
-        securities = new Combo(content, SWT.READ_ONLY);
-        securities.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        for (Iterator iter = CorePlugin.getRepository().allSecurities().iterator(); iter.hasNext(); )
+        watchlists = new Combo(content, SWT.READ_ONLY);
+        watchlists.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        for (Iterator iter = CorePlugin.getRepository().allWatchlists().iterator(); iter.hasNext(); )
         {
-            Security security = (Security)iter.next();
-            securities.add(security.getDescription());
-            securities.setData(security.getDescription(), security);
+            Watchlist list = (Watchlist)iter.next();
+            watchlists.add(list.getDescription());
+            watchlists.setData(list.getDescription(), list);
         }
-        securities.select(0);
-        if (view != null && view.getViewSite().getSelectionProvider() != null)
-        {
-            ISelection selection = view.getViewSite().getSelectionProvider().getSelection();
-            if (selection instanceof SecuritySelection)
-                securities.setText(((SecuritySelection)selection).getSecurity().getDescription());
-        }
+        if (view instanceof WatchlistView)
+            watchlists.setText(((WatchlistView)view).getWatchlist().getDescription());
+        else
+            watchlists.select(0);
 
         return super.createDialogArea(content);
     }
@@ -93,7 +89,7 @@ public class SecurityPatternSearchDialog extends PatternSearchDialog
         try {
             PatternSearchView view = (PatternSearchView)page.showView(PatternSearchView.VIEW_ID);
             
-            Security security = (Security)securities.getData(securities.getText());
+            Watchlist list = (Watchlist)watchlists.getData(watchlists.getText());
             int period = BarData.INTERVAL_DAILY;
             switch (this.period.getSelectionIndex())
             {
@@ -123,10 +119,10 @@ public class SecurityPatternSearchDialog extends PatternSearchDialog
             if (pattern.getData(pattern.getText()) != null)
             {
                 IPattern plugin = CorePlugin.createPatternPlugin((String)pattern.getData(pattern.getText()));
-                searchPage = new SecurityPatternsSearchPage(security, plugin, pattern.getText(), period, beginDate, endDate, bullishOnly.getSelection());
+                searchPage = new WatchlistPatternsSearchPage(list, plugin, pattern.getText(), period, beginDate, endDate, bullishOnly.getSelection());
             }
             else
-                searchPage = new SecurityPatternsSearchPage(security, period, beginDate, endDate, bullishOnly.getSelection());
+                searchPage = new WatchlistPatternsSearchPage(list, period, beginDate, endDate, bullishOnly.getSelection());
             searchPage.setAllOccurrences(allOccurrences.getSelection());
             view.addPage(searchPage);
 
