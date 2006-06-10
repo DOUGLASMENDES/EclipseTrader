@@ -14,8 +14,6 @@ package net.sourceforge.eclipsetrader.trading.alerts;
 import java.text.NumberFormat;
 import java.util.Map;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.trading.AlertPlugin;
 
 public class PriceChange extends AlertPlugin
@@ -84,7 +82,7 @@ public class PriceChange extends AlertPlugin
             s = "Bid";
         else if (field == ASK)
             s = "Ask";
-        return s + " price changes by " + priceFormatter.format(change); 
+        return s + " price changes by " + percentFormatter.format(change) + "% from " + priceFormatter.format(reference); 
     }
 
     /* (non-Javadoc)
@@ -117,12 +115,7 @@ public class PriceChange extends AlertPlugin
         boolean result = percent >= change;
         
         if (result)
-        {
-            Event event = new Event();
-            event.setSecurity(getSecurity());
-            event.setMessage("Price change of " + percentFormatter.format(change) + "% at " + priceFormatter.format(value));
-            CorePlugin.getRepository().save(event);
-        }
+            fireEvent("Price change of " + percentFormatter.format(change) + "% at " + priceFormatter.format(value));
         
         return result;
     }

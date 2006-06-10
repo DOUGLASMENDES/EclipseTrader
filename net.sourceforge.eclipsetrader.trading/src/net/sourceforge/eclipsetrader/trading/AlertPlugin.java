@@ -15,6 +15,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.db.Alert;
+import net.sourceforge.eclipsetrader.core.db.Event;
+import net.sourceforge.eclipsetrader.core.db.PopupEvent;
 import net.sourceforge.eclipsetrader.core.db.Security;
 
 /**
@@ -24,6 +28,7 @@ public abstract class AlertPlugin
 {
     private Security security;
     private Date lastSeen;
+    private Alert alert;
 
     public AlertPlugin()
     {
@@ -32,6 +37,12 @@ public abstract class AlertPlugin
     public String getDescription()
     {
         return "";
+    }
+
+    public void init(Security security, Alert alert)
+    {
+        this.alert = alert;
+        init(security, alert.getParameters());
     }
 
     public void init(Security security, Map params)
@@ -75,5 +86,19 @@ public abstract class AlertPlugin
     public void setLastSeen(Date lastSeen)
     {
         this.lastSeen = lastSeen;
+    }
+    
+    protected void fireEvent(String message)
+    {
+        fireEvent(message, "");
+    }
+    
+    protected void fireEvent(String message, String details)
+    {
+        Event event = (alert != null && alert.isPopup()) ? new PopupEvent() : new Event();
+        event.setSecurity(getSecurity());
+        event.setLongMessage(message);
+        event.setMessage(message);
+        CorePlugin.getRepository().save(event);
     }
 }

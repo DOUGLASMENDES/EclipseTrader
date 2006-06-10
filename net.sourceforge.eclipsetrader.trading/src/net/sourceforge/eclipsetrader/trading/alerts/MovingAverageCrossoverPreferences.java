@@ -17,9 +17,10 @@ import java.util.Map;
 import net.sourceforge.eclipsetrader.trading.AlertPluginPreferencePage;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -28,13 +29,17 @@ import org.eclipse.swt.widgets.Spinner;
 
 public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
 {
-    private Button daily;
-    private Button weekly;
-    private Button monthly;
+    private Combo interval;
     private Spinner period;
     private Combo maType;
-    private Button upward;
-    private Button downward;
+    private Combo direction;
+    private Label description;
+    private SelectionAdapter selectionAdapter = new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent e)
+        {
+            updateDescription();
+        }
+    };
 
     public MovingAverageCrossoverPreferences()
     {
@@ -47,25 +52,18 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
     {
         Composite content = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout(2, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
 
         Label label = new Label(content, SWT.NONE);
         label.setText("Interval");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
-
-        Composite group = new Composite(content, SWT.NONE);
-        gridLayout = new GridLayout(3, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
-        group.setLayout(gridLayout);
-        
-        daily = new Button(group, SWT.RADIO);
-        daily.setText("Daily");
-        weekly = new Button(group, SWT.RADIO);
-        weekly.setText("Weekly");
-        monthly = new Button(group, SWT.RADIO);
-        monthly.setText("Monthly");
+        interval = new Combo(content, SWT.READ_ONLY);
+        interval.add("Daily");
+        interval.add("Weekly");
+        interval.add("Monthly");
+        interval.setVisibleItemCount(15);
+        interval.addSelectionListener(selectionAdapter);
         
         label = new Label(content, SWT.NONE);
         label.setText("Moving Average Type");
@@ -74,6 +72,8 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
         maType.add("EXPONENTIAL");
         maType.add("WEIGHTED");
         maType.add("WILLIAM'S");
+        maType.setVisibleItemCount(15);
+        maType.addSelectionListener(selectionAdapter);
         
         label = new Label(content, SWT.NONE);
         label.setText("Period");
@@ -81,42 +81,42 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
         period = new Spinner(content, SWT.BORDER);
         period.setMinimum(0);
         period.setMaximum(99999);
+        period.addSelectionListener(selectionAdapter);
         
         label = new Label(content, SWT.NONE);
         label.setText("Direction");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        direction = new Combo(content, SWT.READ_ONLY);
+        direction.add("Upward");
+        direction.add("Downward");
+        direction.setVisibleItemCount(15);
+        direction.addSelectionListener(selectionAdapter);
 
-        group = new Composite(content, SWT.NONE);
-        gridLayout = new GridLayout(2, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
-        group.setLayout(gridLayout);
-        
-        upward = new Button(group, SWT.RADIO);
-        upward.setText("Upward");
-        downward = new Button(group, SWT.RADIO);
-        downward.setText("Downward");
+        description = new Label(content, SWT.NONE);
+        description.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true, 2, 1));
 
         int field = MovingAverageCrossover.DAILY;
         String value = (String)getParameters().get("interval");
         if (value != null)
             field = Integer.parseInt(value);
-        daily.setSelection(field == MovingAverageCrossover.DAILY);
-        weekly.setSelection(field == MovingAverageCrossover.WEEKLY);
-        monthly.setSelection(field == MovingAverageCrossover.MONTHLY);
+        interval.select(field - MovingAverageCrossover.DAILY);
+        
+        value = (String)getParameters().get("maType");
+        maType.select(value != null ? Integer.parseInt(value) : 1);
         
         value = (String)getParameters().get("period");
         if (value != null)
             period.setSelection(Integer.parseInt(value));
-        
-        value = (String)getParameters().get("maType");
-        maType.select(value != null ? Integer.parseInt(value) : 1);
+        else
+            period.setSelection(7);
         
         field = MovingAverageCrossover.UPWARD;
         value = (String)getParameters().get("direction");
         if (value != null)
             field = Integer.parseInt(value);
-        upward.setSelection(field == MovingAverageCrossover.UPWARD);
-        downward.setSelection(field == MovingAverageCrossover.DOWNWARD);
+        direction.select(field);
+        
+        updateDescription();
         
         return content;
     }
@@ -128,19 +128,52 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
     {
         Map parameters = new HashMap();
 
-        if (daily.getSelection())
-            parameters.put("interval", String.valueOf(PriceAlert.DAILY));
-        else if (weekly.getSelection())
-            parameters.put("interval", String.valueOf(PriceAlert.WEEKLY));
-        else if (monthly.getSelection())
-            parameters.put("interval", String.valueOf(PriceAlert.MONTHLY));
+        parameters.put("interval", String.valueOf(interval.getSelectionIndex() + MovingAverageCrossover.DAILY));
         parameters.put("period", String.valueOf(period.getSelection()));
         parameters.put("maType", String.valueOf(maType.getSelectionIndex()));
-        if (upward.getSelection())
-            parameters.put("direction", String.valueOf(MovingAverageCrossover.UPWARD));
-        else if (downward.getSelection())
-            parameters.put("direction", String.valueOf(MovingAverageCrossover.DOWNWARD));
+        parameters.put("direction", String.valueOf(direction.getSelectionIndex()));
         
         setParameters(parameters);
+    }
+
+    private void updateDescription()
+    {
+        String s = "Price crosses";
+        if (direction.getSelectionIndex() == MovingAverageCrossover.UPWARD)
+            s += " upward";
+        else if (direction.getSelectionIndex() == MovingAverageCrossover.DOWNWARD)
+            s += " downward";
+        s += " over its " + String.valueOf(period.getSelection());
+        switch(interval.getSelectionIndex() + MovingAverageCrossover.DAILY)
+        {
+            case MovingAverageCrossover.DAILY:
+                s += " days";
+                break; 
+            case MovingAverageCrossover.WEEKLY:
+                s += " weeks";
+                break; 
+            case MovingAverageCrossover.MONTHLY:
+                s += " months";
+                break; 
+        }
+        switch(maType.getSelectionIndex())
+        {
+            case MA.SMA:
+                s += "";
+                break; 
+            case MA.EMA:
+                s += " exponential";
+                break; 
+            case MA.WMA:
+                s += " weighted";
+                break; 
+            case MA.Wilder:
+                s += " Wilder's";
+                break; 
+        }
+        s += " moving average";
+        
+        description.setText(s);
+        description.getParent().layout();
     }
 }

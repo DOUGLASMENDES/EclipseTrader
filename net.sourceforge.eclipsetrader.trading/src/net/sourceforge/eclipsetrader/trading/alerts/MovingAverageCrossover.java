@@ -14,9 +14,7 @@ package net.sourceforge.eclipsetrader.trading.alerts;
 import java.text.NumberFormat;
 import java.util.Map;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.BarData;
-import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.trading.AlertPlugin;
 
 public class MovingAverageCrossover extends AlertPlugin
@@ -173,10 +171,7 @@ public class MovingAverageCrossover extends AlertPlugin
                     break; 
             }
             s += " moving average at " + priceFormatter.format(getSecurity().getQuote().getLast());
-            Event event = new Event();
-            event.setSecurity(getSecurity());
-            event.setMessage(s);
-            CorePlugin.getRepository().save(event);
+            fireEvent(s);
         }
         
         return result;

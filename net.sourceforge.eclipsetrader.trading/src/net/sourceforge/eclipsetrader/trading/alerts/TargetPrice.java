@@ -14,8 +14,6 @@ package net.sourceforge.eclipsetrader.trading.alerts;
 import java.text.NumberFormat;
 import java.util.Map;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.trading.AlertPlugin;
 
 public class TargetPrice extends AlertPlugin
@@ -116,13 +114,10 @@ public class TargetPrice extends AlertPlugin
         
         if (result)
         {
-            Event event = new Event();
-            event.setSecurity(getSecurity());
             if (!cross)
-                event.setMessage("Target price " + priceFormatter.format(price) + " reached");
+                fireEvent("Target price " + priceFormatter.format(price) + " reached");
             else
-                event.setMessage("Target price " + priceFormatter.format(price) + " crossed");
-            CorePlugin.getRepository().save(event);
+                fireEvent("Target price " + priceFormatter.format(price) + " crossed");
         }
         
         return result;

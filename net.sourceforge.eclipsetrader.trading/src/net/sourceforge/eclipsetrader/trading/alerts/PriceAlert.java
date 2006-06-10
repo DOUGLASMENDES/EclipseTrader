@@ -14,9 +14,7 @@ package net.sourceforge.eclipsetrader.trading.alerts;
 import java.text.NumberFormat;
 import java.util.Map;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.BarData;
-import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.trading.AlertPlugin;
 
 public class PriceAlert extends AlertPlugin
@@ -124,8 +122,6 @@ public class PriceAlert extends AlertPlugin
         
         if (result)
         {
-            Event event = new Event();
-            event.setSecurity(getSecurity());
             String s = "Price reached a new " + String.valueOf(period);
             switch(interval)
             {
@@ -141,8 +137,7 @@ public class PriceAlert extends AlertPlugin
             }
             s += type == HIGH ? " high" : " low";
             s += " at " + priceFormatter.format(value);
-            event.setMessage(s);
-            CorePlugin.getRepository().save(event);
+            fireEvent(s);
         }
         
         return result;

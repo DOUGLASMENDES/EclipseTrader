@@ -17,9 +17,11 @@ import java.util.Map;
 import net.sourceforge.eclipsetrader.trading.AlertPluginPreferencePage;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -27,12 +29,16 @@ import org.eclipse.swt.widgets.Spinner;
 
 public class PriceAlertPreferences extends AlertPluginPreferencePage
 {
-    private Button daily;
-    private Button weekly;
-    private Button monthly;
+    private Combo interval;
     private Spinner period;
-    private Button high;
-    private Button low;
+    private Combo type;
+    private Label description;
+    private SelectionAdapter selectionAdapter = new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent e)
+        {
+            updateDescription();
+        }
+    };
 
     public PriceAlertPreferences()
     {
@@ -45,25 +51,18 @@ public class PriceAlertPreferences extends AlertPluginPreferencePage
     {
         Composite content = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout(2, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         
         Label label = new Label(content, SWT.NONE);
         label.setText("Interval");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
-
-        Composite group = new Composite(content, SWT.NONE);
-        gridLayout = new GridLayout(3, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
-        group.setLayout(gridLayout);
-        
-        daily = new Button(group, SWT.RADIO);
-        daily.setText("Daily");
-        weekly = new Button(group, SWT.RADIO);
-        weekly.setText("Weekly");
-        monthly = new Button(group, SWT.RADIO);
-        monthly.setText("Monthly");
+        interval = new Combo(content, SWT.READ_ONLY);
+        interval.add("Daily");
+        interval.add("Weekly");
+        interval.add("Monthly");
+        interval.setVisibleItemCount(15);
+        interval.addSelectionListener(selectionAdapter);
         
         label = new Label(content, SWT.NONE);
         label.setText("Period");
@@ -71,39 +70,36 @@ public class PriceAlertPreferences extends AlertPluginPreferencePage
         period = new Spinner(content, SWT.BORDER);
         period.setMinimum(0);
         period.setMaximum(99999);
+        period.addSelectionListener(selectionAdapter);
         
         label = new Label(content, SWT.NONE);
         label.setText("Type");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        type = new Combo(content, SWT.READ_ONLY);
+        type.add("High");
+        type.add("Low");
+        type.setVisibleItemCount(15);
+        type.addSelectionListener(selectionAdapter);
 
-        group = new Composite(content, SWT.NONE);
-        gridLayout = new GridLayout(3, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
-        group.setLayout(gridLayout);
-        
-        high = new Button(group, SWT.RADIO);
-        high.setText("High");
-        low = new Button(group, SWT.RADIO);
-        low.setText("Low");
+        description = new Label(content, SWT.NONE);
+        description.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true, 2, 1));
 
         int field = PriceAlert.DAILY;
         String value = (String)getParameters().get("interval");
         if (value != null)
             field = Integer.parseInt(value);
-        daily.setSelection(field == PriceAlert.DAILY);
-        weekly.setSelection(field == PriceAlert.WEEKLY);
-        monthly.setSelection(field == PriceAlert.MONTHLY);
+        interval.select(field - PriceAlert.DAILY);
         
         value = (String)getParameters().get("period");
-        if (value != null)
-            period.setSelection(Integer.parseInt(value));
+        period.setSelection(value != null ? Integer.parseInt(value) : 7);
         
-        int type = PriceAlert.HIGH;
+        field = PriceAlert.HIGH;
         value = (String)getParameters().get("type");
         if (value != null)
-            type = Integer.parseInt(value);
-        high.setSelection(type == PriceAlert.HIGH);
-        low.setSelection(type == PriceAlert.LOW);
+            field = Integer.parseInt(value);
+        type.select(field);
+        
+        updateDescription();
         
         return content;
     }
@@ -115,18 +111,30 @@ public class PriceAlertPreferences extends AlertPluginPreferencePage
     {
         Map parameters = new HashMap();
 
-        if (daily.getSelection())
-            parameters.put("interval", String.valueOf(PriceAlert.DAILY));
-        else if (weekly.getSelection())
-            parameters.put("interval", String.valueOf(PriceAlert.WEEKLY));
-        else if (monthly.getSelection())
-            parameters.put("interval", String.valueOf(PriceAlert.MONTHLY));
+        parameters.put("interval", String.valueOf(interval.getSelectionIndex() + MovingAverageCrossover.DAILY));
         parameters.put("period", String.valueOf(period.getSelection()));
-        if (high.getSelection())
-            parameters.put("type", String.valueOf(PriceAlert.HIGH));
-        else if (low.getSelection())
-            parameters.put("type", String.valueOf(PriceAlert.LOW));
+        parameters.put("type", String.valueOf(type.getSelectionIndex()));
         
         setParameters(parameters);
+    }
+
+    private void updateDescription()
+    {
+        String s = "Price reaches a new " + String.valueOf(period.getSelection());
+        switch(interval.getSelectionIndex() + PriceAlert.DAILY)
+        {
+            case PriceAlert.DAILY:
+                s += " days";
+                break; 
+            case PriceAlert.WEEKLY:
+                s += " weeks";
+                break; 
+            case PriceAlert.MONTHLY:
+                s += " months";
+                break; 
+        }
+        s += type.getSelectionIndex() == PriceAlert.HIGH ? " high" : " low";
+        description.setText(s);
+        description.getParent().layout();
     }
 }
