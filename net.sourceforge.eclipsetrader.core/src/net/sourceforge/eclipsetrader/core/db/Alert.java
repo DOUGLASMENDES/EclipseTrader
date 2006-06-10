@@ -20,6 +20,8 @@ public class Alert extends PersistentObject
 {
     private String pluginId;
     private Date lastSeen;
+    private boolean popup = false;
+    private boolean hilight = false;
     private Map parameters = new HashMap();
 
     public Alert()
@@ -61,5 +63,25 @@ public class Alert extends PersistentObject
     {
         this.parameters = parameters;
         setChanged();
+    }
+
+    public boolean isHilight()
+    {
+        return hilight;
+    }
+
+    public void setHilight(boolean hilight)
+    {
+        this.hilight = hilight;
+    }
+
+    public boolean isPopup()
+    {
+        return popup;
+    }
+
+    public void setPopup(boolean popup)
+    {
+        this.popup = popup;
     }
 }

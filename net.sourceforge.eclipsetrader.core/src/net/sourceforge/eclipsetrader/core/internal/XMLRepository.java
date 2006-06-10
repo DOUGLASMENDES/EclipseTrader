@@ -1302,6 +1302,10 @@ public class XMLRepository extends Repository
                                         CorePlugin.logException(e);
                                     }
                                 }
+                                if (item.getAttributes().getNamedItem("popup") != null)
+                                    alert.setPopup(new Boolean(item.getAttributes().getNamedItem("popup").getNodeValue()).booleanValue());
+                                if (item.getAttributes().getNamedItem("hilight") != null)
+                                    alert.setHilight(new Boolean(item.getAttributes().getNamedItem("hilight").getNodeValue()).booleanValue());
 
                                 NodeList paramList = item.getChildNodes();
                                 for (int p = 0; p < paramList.getLength(); p++)
@@ -1428,6 +1432,8 @@ public class XMLRepository extends Repository
                         alertNode.setAttribute("pluginId", alert.getPluginId());
                         if (alert.getLastSeen() != null)
                             alertNode.setAttribute("lastSeen", dateTimeFormat.format(alert.getLastSeen()));
+                        alertNode.setAttribute("popup", String.valueOf(alert.isPopup()));
+                        alertNode.setAttribute("hilight", String.valueOf(alert.isHilight()));
                         itemNode.appendChild(alertNode);
 
                         for (Iterator paramIter = alert.getParameters().keySet().iterator(); paramIter.hasNext(); )
