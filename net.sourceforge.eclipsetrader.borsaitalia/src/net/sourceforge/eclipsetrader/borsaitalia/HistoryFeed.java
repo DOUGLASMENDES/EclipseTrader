@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
@@ -39,6 +40,17 @@ public class HistoryFeed implements IHistoryFeed
     public HistoryFeed()
     {
     }
+    
+    private Bar getBar(List list, Date date)
+    {
+        Bar[] elementData = (Bar[])list.toArray(new Bar[0]);
+        for (int i = 0; i < elementData.length; i++)
+        {
+            if (elementData[i].getDate().equals(date))
+                return elementData[i];
+        }
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.IHistoryFeed#updateHistory(net.sourceforge.eclipsetrader.core.db.Security, int)
@@ -47,11 +59,11 @@ public class HistoryFeed implements IHistoryFeed
     {
         List history = new ArrayList();
         Calendar from = Calendar.getInstance();
+        from.set(Calendar.MILLISECOND, 0);
 
         if (interval < IHistoryFeed.INTERVAL_DAILY)
         {
             history = security.getIntradayHistory();
-            history.clear();
             from.set(Calendar.HOUR_OF_DAY, 0);
             from.set(Calendar.MINUTE, 0);
             from.set(Calendar.SECOND, 0);
@@ -109,14 +121,19 @@ public class HistoryFeed implements IHistoryFeed
                     continue;
                 String[] item = inputLine.split("\\|");
 
-                Bar bar = new Bar();
-                bar.setDate(df.parse(item[0]));
+                Date date = df.parse(item[0]);
+                Bar bar = getBar(history, date);
+                if (bar == null)
+                {
+                    bar = new Bar();
+                    history.add(bar);
+                }
+                bar.setDate(date);
                 bar.setOpen(Double.parseDouble(item[1]));
                 bar.setHigh(Double.parseDouble(item[2]));
                 bar.setLow(Double.parseDouble(item[3]));
                 bar.setClose(Double.parseDouble(item[4]));
                 bar.setVolume((long)Double.parseDouble(item[5]));
-                history.add(bar);
             }
 
             in.close();
