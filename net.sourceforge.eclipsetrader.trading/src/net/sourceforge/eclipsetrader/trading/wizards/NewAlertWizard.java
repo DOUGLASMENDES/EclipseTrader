@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Alert;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.trading.internal.wizards.IDynamicWizard;
 
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.PlatformUI;
@@ -29,17 +29,18 @@ public class NewAlertWizard extends Wizard implements IDynamicWizard
 {
     private WatchlistItem watchlistItem;
     private AlertSelectionPage alertSelectionPage = new AlertSelectionPage();
+    private AlertActionsPage alertActionsPage = new AlertActionsPage();
     private List additionalPages = new ArrayList();
+    private Alert alert;
 
     public NewAlertWizard()
     {
     }
     
-    public void open(WatchlistItem watchlistItem)
+    public Alert open(WatchlistItem watchlistItem)
     {
         WizardDialog dlg = create(watchlistItem);
-        if (dlg.open() == WizardDialog.OK)
-            CorePlugin.getRepository().save(watchlistItem.getParent());
+        return dlg.open() == WizardDialog.OK ? alert : null;
     }
 
     public WizardDialog create(WatchlistItem watchlistItem)
@@ -49,6 +50,7 @@ public class NewAlertWizard extends Wizard implements IDynamicWizard
 
         setForcePreviousAndNextButtons(true);
         addPage(alertSelectionPage);
+        addPage(alertActionsPage);
 
         WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);
         dlg.create();
@@ -61,8 +63,11 @@ public class NewAlertWizard extends Wizard implements IDynamicWizard
      */
     public boolean performFinish()
     {
-        Alert alert = new Alert();
+        alert = new Alert();
         alert.setPluginId(alertSelectionPage.getIndicator());
+        
+        alert.setPopup(alertActionsPage.getPopupSelection());
+        alert.setHilight(alertActionsPage.getHilightSelection());
         
         for (Iterator iter = additionalPages.iterator(); iter.hasNext(); )
         {
@@ -71,11 +76,40 @@ public class NewAlertWizard extends Wizard implements IDynamicWizard
             alert.getParameters().putAll(page.getParameters());
         }
         
-        watchlistItem.getAlerts().add(alert);
-        
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
+     */
+    public IWizardPage getNextPage(IWizardPage page)
+    {
+        IWizardPage nextPage = null;
+        
+        if (page == alertSelectionPage)
+        {
+            if (additionalPages.size() != 0)
+                nextPage = (IWizardPage) additionalPages.get(0);
+        }
+        else
+        {
+            int index = additionalPages.indexOf(page); 
+            if (index != -1)
+            {
+                index++;
+                if (index < additionalPages.size())
+                    nextPage = (IWizardPage) additionalPages.get(index);
+                else
+                    nextPage = alertActionsPage;
+            }
+        }
+        
+        if (nextPage != null)
+            nextPage.setWizard(this);
+        
+        return nextPage;
+    }
+
     public List getAdditionalPages()
     {
         return additionalPages;

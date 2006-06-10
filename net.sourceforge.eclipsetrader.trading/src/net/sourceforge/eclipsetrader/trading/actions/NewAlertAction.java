@@ -11,6 +11,9 @@
 
 package net.sourceforge.eclipsetrader.trading.actions;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.db.Alert;
+import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.trading.WatchlistItemSelection;
 import net.sourceforge.eclipsetrader.trading.wizards.NewAlertWizard;
 
@@ -54,8 +57,14 @@ public class NewAlertAction implements IWorkbenchWindowActionDelegate, IViewActi
     {
         if (selection != null)
         {
+            WatchlistItem watchlistItem = selection.getWatchlistItem();
             NewAlertWizard wizard = new NewAlertWizard();
-            wizard.open(selection.getWatchlistItem());
+            Alert alert = wizard.open(watchlistItem);
+            if (alert != null)
+            {
+                watchlistItem.getAlerts().add(alert);
+                CorePlugin.getRepository().save(watchlistItem.getParent());
+            }
         }
     }
 

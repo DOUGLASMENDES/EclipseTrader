@@ -19,7 +19,6 @@ import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.trading.AlertPluginPreferencePage;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
-import net.sourceforge.eclipsetrader.trading.internal.wizards.IDynamicWizard;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -114,21 +113,6 @@ public class AlertSelectionPage extends WizardPage
         list.select(list.indexOf(name));
         setPages();
     }
-    
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
-     */
-    public IWizardPage getNextPage()
-    {
-        java.util.List pages = ((NewAlertWizard)getWizard()).getAdditionalPages();
-        if (pages.size() != 0)
-        {
-            IWizardPage page = (IWizardPage)pages.get(0);
-            page.setWizard(getWizard());
-            return page;
-        }
-        return null;
-    }
 
     private void setPages()
     {
@@ -143,23 +127,10 @@ public class AlertSelectionPage extends WizardPage
             {
                 AlertPluginPreferencePage preferencePage = (AlertPluginPreferencePage)members[i].createExecutableExtension("class");
                 preferencePage.init(((NewAlertWizard)getWizard()).getSecurity(), new HashMap());
-                CommonWizardPage page = new CommonWizardPage(new PluginParametersPage(preferencePage)) {
-                    public IWizardPage getNextPage()
-                    {
-                        java.util.List pages = ((IDynamicWizard)getWizard()).getAdditionalPages();
-                        int index = pages.indexOf(this);
-                        if (index < (pages.size() - 1))
-                        {
-                            IWizardPage page = (IWizardPage)pages.get(index + 1);
-                            page.setWizard(getWizard());
-                            return page;
-                        }
-                        return null;
-                    }
-                };
+                CommonWizardPage page = new CommonWizardPage(new PluginParametersPage(preferencePage));
                 page.setTitle(getIndicatorName());
-                if (members[i].getAttribute("name") != null)
-                    page.setDescription(members[i].getAttribute("name"));
+                if (members[i].getAttribute("description") != null)
+                    page.setDescription(members[i].getAttribute("description"));
                 ((NewAlertWizard)getWizard()).getAdditionalPages().add(page);
             }
         } catch(Exception e) {
