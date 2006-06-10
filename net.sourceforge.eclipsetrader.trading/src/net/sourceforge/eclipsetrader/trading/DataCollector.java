@@ -66,7 +66,7 @@ public class DataCollector implements Observer, ICollectionObserver
     public void update(Observable o, Object arg)
     {
         Security security = (Security) arg;
-        if (!security.isEnableDataCollector())
+        if (!security.isEnableDataCollector() || security.getQuote().getDate() == null)
             return;
         
         barTime.setTime(security.getQuote().getDate());
