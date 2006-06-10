@@ -11,11 +11,8 @@
 
 package net.sourceforge.eclipsetrader.trading.wizards;
 
-import java.util.Iterator;
-
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
-import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -32,8 +29,6 @@ public class WatchlistSettingsDialog extends PreferenceDialog
     private GeneralPage generalPage;
     private ColumnsPage columnsPage;
     private ItemsPage itemsPage;
-//    private PreferenceNode alertsNode = new PreferenceNode("alerts", new AlertsNodePage());
-    private PreferenceNode alertsNode;
 
     public WatchlistSettingsDialog(Watchlist watchlist, Shell parentShell)
     {
@@ -79,21 +74,14 @@ public class WatchlistSettingsDialog extends PreferenceDialog
                 return control;
             }
         }));
-        alertsNode = new PreferenceNode("items", new CommonDialogPage(itemsPage) {
+        getPreferenceManager().addToRoot(new PreferenceNode("items", new CommonDialogPage(itemsPage) {
             protected Control createContents(Composite parent)
             {
                 Control control = super.createContents(parent);
                 itemsPage.setItems(WatchlistSettingsDialog.this.watchlist.getItems());
                 return control;
             }
-        });
-        getPreferenceManager().addToRoot(alertsNode);
-
-        for (Iterator iter = watchlist.getItems().iterator(); iter.hasNext(); )
-        {
-            WatchlistItem watchlistItem = (WatchlistItem)iter.next();
-            alertsNode.add(new PreferenceNode("alerts" + String.valueOf(watchlistItem.getId()), new ItemPreferencePage(watchlistItem)));
-        }
+        }));
     }
 
     /* (non-Javadoc)

@@ -17,6 +17,7 @@ import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IViewSite;
 
 
 public abstract class AbstractLayout
@@ -46,4 +47,13 @@ public abstract class AbstractLayout
     public abstract void itemRemoved(Object o);
 
     public abstract WatchlistItem[] getSelection();
+    
+    public void tickAlert(WatchlistItem watchlistItem)
+    {
+    }
+    
+    public IViewSite getViewSite()
+    {
+        return view.getViewSite();
+    }
 }

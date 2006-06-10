@@ -17,6 +17,9 @@ import java.util.List;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.TableItem;
 
+/**
+ * Instances of this class are used to hilight a table cell or row.
+ */
 public class CellTicker
 {
     public static final int BACKGROUND = 0x0001;
@@ -29,27 +32,36 @@ public class CellTicker
     private Color incrementBackground;
     private Color decrementForeground = new Color(null, 224, 0, 0);
     private Color decrementBackground;
+    private Color alertForeground;
+    private Color alertBackground = new Color(null, 224, 224, 224);
     private TableItem tableItem;
+    private Status rowStatus;
     private List status = new ArrayList();
     
     private class Status implements Runnable {
         TableItem item;
-        int index;
+        int index = -1;
         Color bg;
         Color fg;
         long started = 0;
         
         public void run()
         {
-            if (!item.isDisposed())
+            if (item != null && !item.isDisposed() && started != 0)
             {
-                item.setBackground(index, bg);
+                if (index == -1)
+                    item.setBackground(bg);
+                else
+                    item.setBackground(index, bg);
                 if (bg != null)
                 {
                     bg.dispose();
                     bg = null;
                 }
-                item.setForeground(index, fg);
+                if (index == -1)
+                    item.setForeground(fg);
+                else
+                    item.setForeground(index, fg);
                 if (fg != null)
                 {
                     fg.dispose();
@@ -66,6 +78,8 @@ public class CellTicker
         this.style = style;
         while(status.size() < tableItem.getParent().getColumnCount())
             status.add(new Status());
+        rowStatus = new Status();
+        rowStatus.item = tableItem;
     }
     
     public void dispose()
@@ -91,26 +105,86 @@ public class CellTicker
         tick(index, decrementBackground, decrementForeground);
     }
 
+    public void tickAlert()
+    {
+        tick(alertBackground, alertForeground);
+    }
+
+    /**
+     * Ticks a single cell.
+     * <p>The ticking occurs only if there isn't already a row tick in progress.</p>
+     * 
+     * @param index - the column index to tick
+     * @param background - the background color
+     * @param foreground - the foreground color
+     */
     public synchronized void tick(int index, Color background, Color foreground)
     {
         while(status.size() < (index + 1))
             status.add(new Status());
         
         Status s = (Status)status.get(index);
-        if (s.started == 0)
+        if (s.started == 0 && rowStatus.started == 0)
         {
             s.item = tableItem;
             s.index = index;
             if ((style & FOREGROUND) != 0)
+            {
                 s.bg = tableItem.getBackground(index);
+                Color bg = tableItem.getBackground();
+                if (bg.equals(s.bg))
+                {
+                    s.bg.dispose();
+                    s.bg = null;
+                }
+                bg.dispose();
+            }
             if ((style & BACKGROUND) != 0)
+            {
                 s.fg = tableItem.getForeground(index);
+                Color fg = tableItem.getForeground();
+                if (fg.equals(s.fg))
+                {
+                    s.fg.dispose();
+                    s.fg = null;
+                }
+                fg.dispose();
+            }
             if (background != null)
                 tableItem.setBackground(index, background);
             if (foreground != null)
                 tableItem.setForeground(index, foreground);
             s.started = System.currentTimeMillis();
             tableItem.getDisplay().timerExec(interval * 1000, s);
+        }
+    }
+
+    /**
+     * Ticks the entire row.
+     * <p>The existing cell tickers are reset to allow the whole row to
+     * be hilighted with the given colors.</p>
+     * 
+     * @param background - the background color
+     * @param foreground - the foreground color
+     */
+    public synchronized void tick(Color background, Color foreground)
+    {
+        if (rowStatus.started == 0)
+        {
+            Status[] stats = (Status[]) status.toArray(new Status[0]);
+            for (int i = 0; i < stats.length; i++)
+                stats[i].run();
+            
+            if ((style & FOREGROUND) != 0)
+                rowStatus.bg = tableItem.getBackground();
+            if ((style & BACKGROUND) != 0)
+                rowStatus.fg = tableItem.getForeground();
+            if (background != null)
+                tableItem.setBackground(background);
+            if (foreground != null)
+                tableItem.setForeground(foreground);
+            rowStatus.started = System.currentTimeMillis();
+            tableItem.getDisplay().timerExec(interval * 1000, rowStatus);
         }
     }
 
@@ -182,5 +256,25 @@ public class CellTicker
     public void setInterval(int interval)
     {
         this.interval = interval;
+    }
+
+    public Color getAlertBackground()
+    {
+        return alertBackground;
+    }
+
+    public void setAlertBackground(Color alertBackground)
+    {
+        this.alertBackground = alertBackground;
+    }
+
+    public Color getAlertForeground()
+    {
+        return alertForeground;
+    }
+
+    public void setAlertForeground(Color alertForeground)
+    {
+        this.alertForeground = alertForeground;
     }
 }

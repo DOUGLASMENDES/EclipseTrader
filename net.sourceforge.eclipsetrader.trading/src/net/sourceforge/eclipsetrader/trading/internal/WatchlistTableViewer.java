@@ -30,7 +30,9 @@ import net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.WatchlistItemSelection;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
+import net.sourceforge.eclipsetrader.trading.wizards.WatchlistItemPropertiesDialog;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -87,6 +89,7 @@ public class WatchlistTableViewer extends AbstractLayout
     private int sortColumn = -1;
     private int sortDirection = 0;
     private ITheme theme;
+    private Action propertiesAction;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
@@ -127,13 +130,32 @@ public class WatchlistTableViewer extends AbstractLayout
             updateView();
             
             String s = String.valueOf(sortColumn) + ";" + String.valueOf(sortDirection);
-            TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getView().getViewSite().getSecondaryId(), s);
+            TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), s);
         }
     };
     
     public WatchlistTableViewer(WatchlistView view)
     {
         super(view);
+        
+        propertiesAction = new Action() {
+            public void run()
+            {
+                TableItem[] selection = table.getSelection();
+                if (selection.length != 0 && selection[0] instanceof WatchlistTableItem)
+                {
+                    WatchlistItem item = ((WatchlistTableItem) selection[0]).getWatchlistItem();
+                    WatchlistItemPropertiesDialog dlg = new WatchlistItemPropertiesDialog(item, getViewSite().getShell());
+                    dlg.open();
+                }
+                
+            }
+        };
+        propertiesAction.setText("Properties");
+        propertiesAction.setEnabled(false);
+
+        IActionBars actionBars = getViewSite().getActionBars();
+        actionBars.setGlobalActionHandler("properties", propertiesAction);
     }
     
     public Composite createPartControl(Composite parent)
@@ -259,13 +281,14 @@ public class WatchlistTableViewer extends AbstractLayout
                 getView().fillMenuBars(menuManager);
                 menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
                 menuManager.add(new Separator("bottom")); //$NON-NLS-1$
+                menuManager.add(propertiesAction);
             }
         });
         table.setMenu(menuMgr.createContextMenu(table));
         getView().getSite().registerContextMenu(menuMgr, getView().getSite().getSelectionProvider());
         
-        showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getView().getViewSite().getSecondaryId());
-        String[] items = TradingPlugin.getDefault().getPreferenceStore().getString(WatchlistView.PREFS_SORTING + getView().getViewSite().getSecondaryId()).split(";");
+        showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId());
+        String[] items = TradingPlugin.getDefault().getPreferenceStore().getString(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId()).split(";");
         if (items.length == 2)
         {
             sortColumn = new Integer(items[0]).intValue();
@@ -292,6 +315,9 @@ public class WatchlistTableViewer extends AbstractLayout
             content.dispose();
         if (theme != null)
             theme.removePropertyChangeListener(themeChangeListener);
+        
+        IActionBars actionBars = getViewSite().getActionBars();
+        actionBars.setGlobalActionHandler("properties", null);
     }
 
     public void updateView()
@@ -397,10 +423,11 @@ public class WatchlistTableViewer extends AbstractLayout
 
     public void update(Observable o, Object arg)
     {
-        table.getDisplay().syncExec(new Runnable() {
+        table.getDisplay().asyncExec(new Runnable() {
             public void run()
             {
-                updateView();
+                if (!table.isDisposed())
+                    updateView();
             }
         });
     }
@@ -417,10 +444,11 @@ public class WatchlistTableViewer extends AbstractLayout
         else
             getView().getSite().getSelectionProvider().setSelection(new NullSelection());
 
-        IActionBars actionBars = getView().getViewSite().getActionBars();
+        IActionBars actionBars = getViewSite().getActionBars();
         actionBars.getGlobalActionHandler("cut").setEnabled(enable);
         actionBars.getGlobalActionHandler("copy").setEnabled(enable);
         actionBars.getGlobalActionHandler("delete").setEnabled(enable);
+        actionBars.getGlobalActionHandler("properties").setEnabled(enable);
     }
 
     public void itemAdded(Object o)
@@ -472,7 +500,7 @@ public class WatchlistTableViewer extends AbstractLayout
     public void setShowTotals(boolean showTotals)
     {
         this.showTotals = showTotals;
-        TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SHOW_TOTALS + getView().getViewSite().getSecondaryId(), showTotals);
+        TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId(), showTotals);
     }
     
     /* (non-Javadoc)
@@ -488,6 +516,23 @@ public class WatchlistTableViewer extends AbstractLayout
             items[i] = item.getWatchlistItem();
         }
         return items;
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.trading.internal.AbstractLayout#tickAlert(net.sourceforge.eclipsetrader.core.db.WatchlistItem)
+     */
+    public void tickAlert(WatchlistItem watchlistItem)
+    {
+        TableItem[] items = table.getItems();
+        for (int i = 0; i < items.length; i++)
+        {
+            WatchlistTableItem tableItem = (WatchlistTableItem)items[i];
+            if (tableItem.getWatchlistItem().equals(watchlistItem))
+            {
+                tableItem.ticker.tickAlert();
+                break;
+            }
+        }
     }
 
     public Table getTable()

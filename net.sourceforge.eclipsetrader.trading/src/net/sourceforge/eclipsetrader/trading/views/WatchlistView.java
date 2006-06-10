@@ -32,11 +32,11 @@ import net.sourceforge.eclipsetrader.trading.actions.SetRibbonLayoutAction;
 import net.sourceforge.eclipsetrader.trading.actions.SetTableLayoutAction;
 import net.sourceforge.eclipsetrader.trading.actions.ToggleShowTotalsAction;
 import net.sourceforge.eclipsetrader.trading.internal.AbstractLayout;
-import net.sourceforge.eclipsetrader.trading.internal.WatchlistBoxViewer;
 import net.sourceforge.eclipsetrader.trading.internal.CopyAction;
 import net.sourceforge.eclipsetrader.trading.internal.CutAction;
 import net.sourceforge.eclipsetrader.trading.internal.DeleteWatchlistItemAction;
 import net.sourceforge.eclipsetrader.trading.internal.PasteAction;
+import net.sourceforge.eclipsetrader.trading.internal.WatchlistBoxViewer;
 import net.sourceforge.eclipsetrader.trading.internal.WatchlistTableViewer;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistSettingsDialog;
 
@@ -52,7 +52,6 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -69,7 +68,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     public static final int RIBBON = 1;
     private Watchlist watchlist;
     private Composite parent;
-    private AbstractLayout layout;
+    AbstractLayout layout;
     private Action tableLayout = new SetTableLayoutAction(this);
     private Action ribbonLayout = new SetRibbonLayoutAction(this);
     private Action toggleShowTotals = new ToggleShowTotalsAction(this);
@@ -316,7 +315,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                 if (plugin == null)
                 {
                     plugin = TradingPlugin.createAlertPlugin(alert.getPluginId());
-                    plugin.init(watchlistItem.getSecurity(), alert.getParameters());
+                    plugin.init(watchlistItem.getSecurity(), alert);
                     plugin.setLastSeen(alert.getLastSeen());
                     alert.setData(plugin);
                 }
@@ -343,7 +342,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     {
         if (o == watchlist)
         {
-            parent.getDisplay().syncExec(new Runnable() {
+            parent.getDisplay().asyncExec(new Runnable() {
                 public void run()
                 {
                     if (watchlist.getDescription().length() != 0 && !watchlist.getDescription().equals(getPartName()))
@@ -354,7 +353,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         }
         if (o instanceof WatchlistItem)
         {
-            WatchlistItem watchlistItem = (WatchlistItem)o;
+            final WatchlistItem watchlistItem = (WatchlistItem)o;
             for (Iterator iter = watchlistItem.getAlerts().iterator(); iter.hasNext(); )
             {
                 Alert alert = (Alert) iter.next();
@@ -362,7 +361,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                 if (plugin == null)
                 {
                     plugin = TradingPlugin.createAlertPlugin(alert.getPluginId());
-                    plugin.init(watchlistItem.getSecurity(), alert.getParameters());
+                    plugin.init(watchlistItem.getSecurity(), alert);
                     plugin.setLastSeen(alert.getLastSeen());
                     alert.setData(plugin);
                 }
@@ -372,6 +371,15 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                     {
                         plugin.setLastSeen(Calendar.getInstance().getTime());
                         alert.setLastSeen(plugin.getLastSeen());
+                        if (alert.isHilight())
+                        {
+                            parent.getDisplay().asyncExec(new Runnable() {
+                                public void run()
+                                {
+                                    layout.tickAlert(watchlistItem);
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -398,7 +406,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
             if (plugin == null)
             {
                 plugin = TradingPlugin.createAlertPlugin(alert.getPluginId());
-                plugin.init(watchlistItem.getSecurity(), alert.getParameters());
+                plugin.init(watchlistItem.getSecurity(), alert);
                 plugin.setLastSeen(alert.getLastSeen());
                 alert.setData(plugin);
             }
@@ -425,12 +433,5 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     public WatchlistItem[] getSelection()
     {
         return layout.getSelection();
-    }
-    
-    public Table getTable()
-    {
-        if (layout instanceof WatchlistTableViewer)
-            return ((WatchlistTableViewer)layout).getTable();
-        return null;
     }
 }

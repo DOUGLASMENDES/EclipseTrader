@@ -121,6 +121,13 @@ public class WatchlistBoxViewer extends AbstractLayout
      */
     public void update(Observable o, Object arg)
     {
+        content.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                if (!content.isDisposed())
+                    updateView();
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -236,7 +243,8 @@ public class WatchlistBoxViewer extends AbstractLayout
             getDisplay().asyncExec(new Runnable() {
                 public void run()
                 {
-                    updateDisplay();
+                    if (!isDisposed())
+                        updateDisplay();
                 }
             });
         }
