@@ -14,12 +14,14 @@ package net.sourceforge.eclipsetrader.core.ui.dialogs;
 import java.text.SimpleDateFormat;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Event;
-import net.sourceforge.eclipsetrader.core.ui.views.EventsView;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -32,25 +34,31 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class EventDetailsDialog extends Dialog
+public class EventDetailsDialog extends Dialog implements ICollectionObserver
 {
-    private EventsView view;
-    private int index;
-    private Label date;
-    private Label security;
-    private Text message;
-    private Text longMessage;
-    private Button up;
-    private Button down;
-    private Image upImage = CorePlugin.getImageDescriptor("icons/elcl16/prev_nav.gif").createImage();
-    private Image downImage = CorePlugin.getImageDescriptor("icons/elcl16/next_nav.gif").createImage();
-    private SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    Event event;
+    Label date;
+    Label security;
+    Text message;
+    Text longMessage;
+    Button up;
+    Button down;
+    Image upImage = CorePlugin.getImageDescriptor("icons/elcl16/prev_nav.gif").createImage();
+    Image downImage = CorePlugin.getImageDescriptor("icons/elcl16/next_nav.gif").createImage();
+    SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private DisposeListener dialogDisposeListener = new DisposeListener() {
+        public void widgetDisposed(DisposeEvent e)
+        {
+            CorePlugin.getRepository().allEvents().removeCollectionObserver(EventDetailsDialog.this);
+            upImage.dispose();
+            downImage.dispose();
+        }
+    };
 
-    public EventDetailsDialog(EventsView view, int index)
+    public EventDetailsDialog(Event event, Shell parentShell)
     {
-        super(view.getViewSite().getShell());
-        this.view = view;
-        this.index = index;
+        super(parentShell);
+        this.event = event;
     }
 
     /* (non-Javadoc)
@@ -60,6 +68,8 @@ public class EventDetailsDialog extends Dialog
     {
         super.configureShell(newShell);
         newShell.setText("Event Details");
+        newShell.addDisposeListener(dialogDisposeListener);
+        CorePlugin.getRepository().allEvents().addCollectionObserver(this);
     }
 
     /* (non-Javadoc)
@@ -140,13 +150,7 @@ public class EventDetailsDialog extends Dialog
         up.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                if (index > 0)
-                {
-                    index--;
-                    updateEvent();
-                }
-                up.setEnabled(index > 0);
-                down.setEnabled(index < (view.getTable().getItemCount() - 1));
+                upPressed();
             }
         });
         
@@ -155,39 +159,87 @@ public class EventDetailsDialog extends Dialog
         down.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                if (index < (view.getTable().getItemCount() - 1))
-                {
-                    index++;
-                    updateEvent();
-                }
-                up.setEnabled(index > 0);
-                down.setEnabled(index < (view.getTable().getItemCount() - 1));
+                downPressed();
             }
         });
 
-        up.setEnabled(index > 0);
-        down.setEnabled(index < (view.getTable().getItemCount() - 1));
+        updateButtonStatus();
     }
     
-    private void updateEvent()
+    protected void upPressed()
     {
-        Event event = (Event)view.getTable().getItem(index).getData();
+        int index = CorePlugin.getRepository().allEvents().indexOf(event);
+        if (index < (CorePlugin.getRepository().allEvents().size() - 1))
+        {
+            event = (Event) CorePlugin.getRepository().allEvents().get(index + 1);
+            updateEvent();
+        }
+        updateButtonStatus();
+    }
+    
+    protected void downPressed()
+    {
+        int index = CorePlugin.getRepository().allEvents().indexOf(event);
+        if (index > 0)
+        {
+            event = (Event) CorePlugin.getRepository().allEvents().get(index - 1);
+            updateEvent();
+        }
+        updateButtonStatus();
+    }
+    
+    protected void updateButtonStatus()
+    {
+        int index = CorePlugin.getRepository().allEvents().indexOf(event);
+        up.setEnabled(index < (CorePlugin.getRepository().allEvents().size() - 1));
+        down.setEnabled(index > 0);
+    }
+    
+    protected void updateEvent()
+    {
         date.setText(dateTimeFormatter.format(event.getDate()));
         security.setText(event.getSecurity() != null ? event.getSecurity().getDescription() : "");
         message.setText(event.getMessage());
         longMessage.setText(event.getLongMessage());
         message.getParent().layout();
-        view.getTable().select(index);
+    }
+
+    protected Event getEvent()
+    {
+        return event;
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.jface.window.Window#open()
+     * @see net.sourceforge.eclipsetrader.core.ICollectionObserver#itemAdded(java.lang.Object)
      */
-    public int open()
+    public void itemAdded(Object o)
     {
-        int result = super.open();
-        upImage.dispose();
-        downImage.dispose();
-        return result;
+        if (!getShell().isDisposed())
+        {
+            getShell().getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
+                    if (!getShell().isDisposed())
+                        updateButtonStatus();
+                }
+            });
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ICollectionObserver#itemRemoved(java.lang.Object)
+     */
+    public void itemRemoved(Object o)
+    {
+        if (!getShell().isDisposed())
+        {
+            getShell().getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
+                    if (!getShell().isDisposed())
+                        updateButtonStatus();
+                }
+            });
+        }
     }
 }

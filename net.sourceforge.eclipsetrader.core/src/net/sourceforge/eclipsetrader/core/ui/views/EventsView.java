@@ -21,12 +21,15 @@ import java.util.List;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Event;
+import net.sourceforge.eclipsetrader.core.db.PopupEvent;
 import net.sourceforge.eclipsetrader.core.ui.dialogs.EventDetailsDialog;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +37,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -45,15 +49,22 @@ import org.eclipse.ui.part.ViewPart;
 public class EventsView extends ViewPart implements ICollectionObserver
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.events";
-    private Table table;
-    private Action removeSelectedAction;
-    private Action removeAllAction;
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-    private SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
-    Comparator comparator = new Comparator() {
+    Table table;
+    Action removeSelectedAction;
+    Action removeAllAction;
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+    ViewEventDetailsDialog dialog;
+    private Comparator comparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
         {
             return ((Event)arg1).getDate().compareTo(((Event)arg0).getDate());
+        }
+    };
+    private DisposeListener dialogDisposeListener = new DisposeListener() {
+        public void widgetDisposed(DisposeEvent e)
+        {
+            dialog = null;
         }
     };
 
@@ -117,8 +128,12 @@ public class EventsView extends ViewPart implements ICollectionObserver
             {
                 if (table.getSelectionIndex() != -1)
                 {
-                    EventDetailsDialog dlg = new EventDetailsDialog(EventsView.this, table.getSelectionIndex());
-                    dlg.open();
+                    if (dialog == null)
+                    {
+                        Event event = (Event) table.getItem(table.getSelectionIndex()).getData();
+                        dialog = new ViewEventDetailsDialog(event, getViewSite().getShell());
+                        dialog.open();
+                    }
                 }
             }
         });
@@ -210,6 +225,18 @@ public class EventsView extends ViewPart implements ICollectionObserver
 
                 removeSelectedAction.setEnabled(table.getSelectionIndex() != -1);
                 removeAllAction.setEnabled(table.getItemCount() != 0);
+                
+                if (event instanceof PopupEvent)
+                {
+                    if (dialog == null)
+                    {
+                        dialog = new ViewEventDetailsDialog(event, getViewSite().getShell());
+                        dialog.open();
+                    }
+                }
+                
+                if (dialog != null)
+                    dialog.updateButtonStatus();
             }
         });
     }
@@ -234,6 +261,8 @@ public class EventsView extends ViewPart implements ICollectionObserver
 
                 removeSelectedAction.setEnabled(table.getSelectionIndex() != -1);
                 removeAllAction.setEnabled(table.getItemCount() != 0);
+                if (dialog != null)
+                    dialog.updateButtonStatus();
             }
         });
     }
@@ -241,5 +270,52 @@ public class EventsView extends ViewPart implements ICollectionObserver
     public Table getTable()
     {
         return table;
+    }
+
+    /**
+     * View-aware event details dialog.
+     * <p>This object subclasses the standard event details dialog to hilight the currently
+     * viewed event.</p>
+     */
+    class ViewEventDetailsDialog extends EventDetailsDialog
+    {
+
+        public ViewEventDetailsDialog(Event event, Shell parentShell)
+        {
+            super(event, parentShell);
+        }
+
+        /* (non-Javadoc)
+         * @see net.sourceforge.eclipsetrader.core.ui.dialogs.EventDetailsDialog#updateEvent()
+         */
+        protected void updateEvent()
+        {
+            TableItem[] items = table.getItems();
+            for (int i = 0; i < items.length; i++)
+            {
+                if (getEvent().equals(items[i].getData()))
+                    table.select(i);
+            }
+            super.updateEvent();
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.window.Window#open()
+         */
+        public int open()
+        {
+            dialog.setBlockOnOpen(false);
+            int result = super.open();
+            dialog.getShell().addDisposeListener(dialogDisposeListener);
+            return result;
+        }
+
+        /* (non-Javadoc)
+         * @see net.sourceforge.eclipsetrader.core.ui.dialogs.EventDetailsDialog#updateButtonStatus()
+         */
+        public void updateButtonStatus()
+        {
+            super.updateButtonStatus();
+        }
     }
 }
