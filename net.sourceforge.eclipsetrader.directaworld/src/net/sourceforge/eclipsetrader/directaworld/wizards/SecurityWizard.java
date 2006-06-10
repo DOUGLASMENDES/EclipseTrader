@@ -15,10 +15,13 @@ import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -29,6 +32,7 @@ public class SecurityWizard extends Wizard implements INewWizard
 {
     public static String WINDOW_TITLE = "Italian Security Wizard";
     private SecurityPage securityPage;
+    private IntradayDataOptions options = new IntradayDataOptions();
 
     public SecurityWizard()
     {
@@ -57,6 +61,16 @@ public class SecurityWizard extends Wizard implements INewWizard
         securityPage = new SecurityPage();
         addPage(securityPage);
 
+        WizardPage page = new WizardPage("") {
+            public void createControl(Composite parent)
+            {
+                setControl(options.createControls(parent, null));
+            }
+        };
+        page.setTitle("Intraday Charts");
+        page.setDescription("Set the options to automatically build intraday charts");
+        addPage(page);
+
         WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);
         dlg.create();
         
@@ -77,7 +91,11 @@ public class SecurityWizard extends Wizard implements INewWizard
     public boolean performFinish()
     {
         for (Iterator iter = securityPage.getSelectedSecurities().iterator(); iter.hasNext(); )
-            CorePlugin.getRepository().save((Security) iter.next());
+        {
+            Security security = (Security) iter.next();
+            options.saveSettings(security);
+            CorePlugin.getRepository().save(security);
+        }
 
         return true;
     }
