@@ -20,7 +20,6 @@ import java.util.List;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -31,6 +30,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -87,6 +87,8 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         private Text code;
         private Text securityDescription;
         private Combo currency;
+        private Button clearHistory;
+        private Button clearIntraday;
 
         public GeneralPage()
         {
@@ -136,6 +138,17 @@ public class SecurityPropertiesDialog extends PreferenceDialog
             currency = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
             currency.setVisibleItemCount(10);
             currency.add("");
+            
+            label = new Label(content, SWT.NONE);
+            label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, true, 2, 1));
+
+            clearHistory = new Button(content, SWT.CHECK);
+            clearHistory.setText("Clear historical data");
+            clearHistory.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 2, 1));
+
+            clearIntraday = new Button(content, SWT.CHECK);
+            clearIntraday.setText("Clear intraday data");
+            clearIntraday.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 2, 1));
 
             List list = CurrencyConverter.getInstance().getCurrencies();
             Collections.sort(list, new Comparator() {
@@ -176,16 +189,34 @@ public class SecurityPropertiesDialog extends PreferenceDialog
                 security.setCode(code.getText());
                 security.setDescription(securityDescription.getText());
                 security.setCurrency(Currency.getInstance(currency.getText()));
+                
+                if (clearHistory.getSelection())
+                {
+                    security.getHistory().clear();
+                    security.setChanged();
+                    CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
+                }
+
+                if (clearIntraday.getSelection())
+                {
+                    security.getIntradayHistory().clear();
+                    security.setChanged();
+                    CorePlugin.getRepository().saveIntradayHistory(security.getId(), security.getIntradayHistory());
+                }
             }
             return super.performOk();
         }
     }
 
-    private class QuoteFeedPage extends FeedPage
+    private class QuoteFeedPage extends PreferencePage
     {
+        FeedOptions options = new FeedOptions("quote");
+
         public QuoteFeedPage()
         {
-            super("Quote", "quote");
+            super("Quote");
+            noDefaultAndApplyButton();
+            setValid(false);
         }
 
         /* (non-Javadoc)
@@ -193,36 +224,15 @@ public class SecurityPropertiesDialog extends PreferenceDialog
          */
         protected Control createContents(Composite parent)
         {
-            Control control = super.createContents(parent);
+            Composite content = options.createControls(parent, security.getQuoteFeed());
+            
+            GridLayout gridLayout = new GridLayout(2, false);
+            gridLayout.marginWidth = gridLayout.marginHeight = 0;
+            content.setLayout(gridLayout);
 
-            FeedSource securityFeed = security.getQuoteFeed(); 
-            if (securityFeed != null)
-            {
-                String[] items = feed.getItems();
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (feed.getData(String.valueOf(i)) != null && feed.getData(String.valueOf(i)).equals(securityFeed.getId()))
-                    {
-                        feed.select(i);
-                        updateFeedExchanges();
-                        break;
-                    }
-                }
-
-                items = exchange.getItems();
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (exchange.getData(String.valueOf(i)) != null && exchange.getData(String.valueOf(i)).equals(securityFeed.getExchange()))
-                    {
-                        exchange.select(i);
-                        break;
-                    }
-                }
-
-                symbol.setText(securityFeed.getSymbol());
-            }
-
-            return control;
+            setValid(true);
+            
+            return content;
         }
 
         /* (non-Javadoc)
@@ -231,16 +241,20 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         public boolean performOk()
         {
             if (isValid())
-                security.setQuoteFeed(getFeed());
+                security.setQuoteFeed(options.getFeed());
             return super.performOk();
         }
     }
     
-    private class Level2FeedPage extends FeedPage
+    private class Level2FeedPage extends PreferencePage
     {
+        FeedOptions options = new FeedOptions("level2");
+
         public Level2FeedPage()
         {
-            super("Level II", "level2");
+            super("Level II");
+            noDefaultAndApplyButton();
+            setValid(false);
         }
 
         /* (non-Javadoc)
@@ -248,36 +262,15 @@ public class SecurityPropertiesDialog extends PreferenceDialog
          */
         protected Control createContents(Composite parent)
         {
-            Control control = super.createContents(parent);
+            Composite content = options.createControls(parent, security.getLevel2Feed());
 
-            FeedSource securityFeed = security.getLevel2Feed(); 
-            if (securityFeed != null)
-            {
-                String[] items = feed.getItems();
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (feed.getData(String.valueOf(i)) != null && feed.getData(String.valueOf(i)).equals(securityFeed.getId()))
-                    {
-                        feed.select(i);
-                        updateFeedExchanges();
-                        break;
-                    }
-                }
-
-                items = exchange.getItems();
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (exchange.getData(String.valueOf(i)) != null && exchange.getData(String.valueOf(i)).equals(securityFeed.getExchange()))
-                    {
-                        exchange.select(i);
-                        break;
-                    }
-                }
-
-                symbol.setText(securityFeed.getSymbol());
-            }
-
-            return control;
+            GridLayout gridLayout = new GridLayout(2, false);
+            gridLayout.marginWidth = gridLayout.marginHeight = 0;
+            content.setLayout(gridLayout);
+            
+            setValid(true);
+            
+            return content;
         }
 
         /* (non-Javadoc)
@@ -286,16 +279,20 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         public boolean performOk()
         {
             if (isValid())
-                security.setLevel2Feed(getFeed());
+                security.setLevel2Feed(options.getFeed());
             return super.performOk();
         }
     }
     
-    private class HistoryFeedPage extends FeedPage
+    private class HistoryFeedPage extends PreferencePage
     {
+        FeedOptions options = new FeedOptions("history");
+
         public HistoryFeedPage()
         {
-            super("History", "history");
+            super("History");
+            noDefaultAndApplyButton();
+            setValid(false);
         }
 
         /* (non-Javadoc)
@@ -303,36 +300,15 @@ public class SecurityPropertiesDialog extends PreferenceDialog
          */
         protected Control createContents(Composite parent)
         {
-            Control control = super.createContents(parent);
+            Composite content = options.createControls(parent, security.getHistoryFeed());
 
-            FeedSource securityFeed = security.getHistoryFeed(); 
-            if (securityFeed != null)
-            {
-                String[] items = feed.getItems();
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (feed.getData(String.valueOf(i)) != null && feed.getData(String.valueOf(i)).equals(securityFeed.getId()))
-                    {
-                        feed.select(i);
-                        updateFeedExchanges();
-                        break;
-                    }
-                }
-
-                items = exchange.getItems();
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (exchange.getData(String.valueOf(i)) != null && exchange.getData(String.valueOf(i)).equals(securityFeed.getExchange()))
-                    {
-                        exchange.select(i);
-                        break;
-                    }
-                }
-
-                symbol.setText(securityFeed.getSymbol());
-            }
-
-            return control;
+            GridLayout gridLayout = new GridLayout(2, false);
+            gridLayout.marginWidth = gridLayout.marginHeight = 0;
+            content.setLayout(gridLayout);
+            
+            setValid(true);
+            
+            return content;
         }
 
         /* (non-Javadoc)
@@ -341,7 +317,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         public boolean performOk()
         {
             if (isValid())
-                security.setHistoryFeed(getFeed());
+                security.setHistoryFeed(options.getFeed());
             return super.performOk();
         }
     }
@@ -362,8 +338,15 @@ public class SecurityPropertiesDialog extends PreferenceDialog
          */
         protected Control createContents(Composite parent)
         {
+            Composite content = options.createControls(parent, security);
+
+            GridLayout gridLayout = new GridLayout(2, false);
+            gridLayout.marginWidth = gridLayout.marginHeight = 0;
+            content.setLayout(gridLayout);
+            
             setValid(true);
-            return options.createControls(parent, security);
+            
+            return content;
         }
 
         /* (non-Javadoc)

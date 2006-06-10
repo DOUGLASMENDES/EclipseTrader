@@ -17,6 +17,7 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
+import net.sourceforge.eclipsetrader.core.ui.preferences.FeedOptions;
 import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -35,40 +36,65 @@ import org.eclipse.ui.PlatformUI;
 public class SecurityWizard extends Wizard
 {
     public static String WINDOW_TITLE = "New Security Wizard";
-    public static String EDIT_WINDOW_TITLE = "Security Edit Wizard";
-    private Security security;
     private SecurityPage securityPage;
-    private QuoteFeedPage quoteFeedPage;
-    private HistoryFeedPage historyFeedPage;
-    private IntradayDataOptions options = new IntradayDataOptions();
+    private FeedOptions quoteFeedOptions = new FeedOptions("quote");
+    private FeedOptions level2FeedOptions = new FeedOptions("level2");
+    private FeedOptions historyFeedOptions = new FeedOptions("history");
+    private IntradayDataOptions intradayOptions = new IntradayDataOptions();
 
     public SecurityWizard()
     {
     }
 
-    public Security open()
+    public void open()
     {
         setWindowTitle(WINDOW_TITLE);
-        WizardDialog dlg = create(null);
+        WizardDialog dlg = create();
         dlg.open();
-        return this.security;
     }
     
-    public WizardDialog create(Security security)
+    public WizardDialog create()
     {
-        this.security = security;
-        
-        securityPage = new SecurityPage(security);
+        securityPage = new SecurityPage();
         addPage(securityPage);
-        quoteFeedPage = new QuoteFeedPage(security);
-        addPage(quoteFeedPage);
-        historyFeedPage = new HistoryFeedPage(security);
-        addPage(historyFeedPage);
-        
+
         WizardPage page = new WizardPage("") {
             public void createControl(Composite parent)
             {
-                setControl(options.createControls(parent, SecurityWizard.this.security));
+                setControl(quoteFeedOptions.createControls(parent));
+            }
+        };
+        page.setTitle("Quote Feed");
+        page.setDescription("Set the security feed for quotes");
+        page.setPageComplete(true);
+        addPage(page);
+        
+        page = new WizardPage("") {
+            public void createControl(Composite parent)
+            {
+                setControl(level2FeedOptions.createControls(parent));
+            }
+        };
+        page.setTitle("Level II Quote Feed");
+        page.setDescription("Set the security feed for level II quotes");
+        page.setPageComplete(true);
+        addPage(page);
+        
+        page = new WizardPage("") {
+            public void createControl(Composite parent)
+            {
+                setControl(historyFeedOptions.createControls(parent));
+            }
+        };
+        page.setTitle("History Feed");
+        page.setDescription("Set the security feed for history data");
+        page.setPageComplete(true);
+        addPage(page);
+        
+        page = new WizardPage("") {
+            public void createControl(Composite parent)
+            {
+                setControl(intradayOptions.createControls(parent, null));
             }
         };
         page.setTitle("Intraday Charts");
@@ -94,44 +120,17 @@ public class SecurityWizard extends Wizard
      */
     public boolean performFinish()
     {
-        if (security == null)
-            security = new Security();
+        Security security = new Security();
         
         security.setCode(securityPage.getCode());
         security.setDescription(securityPage.getSecurityDescription());
         security.setCurrency(securityPage.getCurrency());
-        
-        if (quoteFeedPage.getId() != null)
-        {
-            FeedSource feed = new FeedSource();
-            feed.setId(quoteFeedPage.getId());
-            feed.setSymbol(quoteFeedPage.getSymbol());
-            security.setQuoteFeed(feed);
-        }
-        else
-            security.setQuoteFeed(null);
-        
-        if (quoteFeedPage.getLevel2Id() != null)
-        {
-            FeedSource feed = new FeedSource();
-            feed.setId(quoteFeedPage.getLevel2Id());
-            feed.setSymbol(quoteFeedPage.getLevel2Symbol());
-            security.setLevel2Feed(feed);
-        }
-        else
-            security.setLevel2Feed(null);
-        
-        if (historyFeedPage.getId() != null)
-        {
-            FeedSource feed = new FeedSource();
-            feed.setId(historyFeedPage.getId());
-            feed.setSymbol(historyFeedPage.getSymbol());
-            security.setHistoryFeed(feed);
-        }
-        else
-            security.setHistoryFeed(null);
 
-        options.saveSettings(security);
+        security.setQuoteFeed(quoteFeedOptions.getFeed());
+        security.setLevel2Feed(level2FeedOptions.getFeed());
+        security.setHistoryFeed(historyFeedOptions.getFeed());
+        
+        intradayOptions.saveSettings(security);
         
         CorePlugin.getRepository().save(security);
         return true;
