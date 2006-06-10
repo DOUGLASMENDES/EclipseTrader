@@ -8,13 +8,15 @@
     <security code="AT9.DE" wkn="512250">ABIT</security>
     <security code="ACV.DE" wkn="511000">AC-SERVICE</security>
     <security code="APM.DE" wkn="940883">AD PEPPER MEDIA</security>
-    <security code="ADS.DE" wkn="500340">ADIDAS-SALOMON</security>
+    <security code="ADS.DE" wkn="500340">ADIDAS</security>
+    <security code="LKI.DE" wkn="549015">ADLINK INTERN MED N</security>
     <security code="VSJ.DE" wkn="931340">ADV VISION TECH</security>
     <security code="ADV.DE" wkn="510300">ADVA OPTICAL NETWOR</security>
     <security code="AP8.DE" wkn="828820">ADVANCED PHOTO TECH</security>
     <security code="AAH.DE" wkn="500970">AHLERS</security>
     <security code="AAH3.DE" wkn="500973">AHLERS VZ</security>
     <security code="ARE.DE" wkn="634421">AIG INT REAL ESTATE</security>
+    <security code="AB1.DE" wkn="AB1000">AIR BERLIN</security>
     <security code="AIX.DE" wkn="506620">AIXTRON</security>
     <security code="ALV.DE" wkn="840400">ALLIANZ N</security>
     <security code="ATF.DE" wkn="548795">ALPHAFORM </security>
@@ -26,7 +28,7 @@
     <security code="AQU.DE" wkn="515600">ARQUES INDUSTRIES</security>
     <security code="AAGN.DE" wkn="515503">ARTICON INTEGR N</security>
     <security code="ARX.DE" wkn="509800">ARXES NET COMM CONS</security>
-    <security code="AUS.DE" wkn="922230">AT&amp;S AUSTRIA TECH</security>
+    <security code="AUS.DE" wkn="922230">AT&amp;amp;S AUSTRIA TECH</security>
     <security code="AOF.DE" wkn="510440">ATOSS SOFTWARE</security>
     <security code="ABE1.DE" wkn="A0D661">AUGUSTA TECHNOLOGIE</security>
     <security code="AWD.DE" wkn="508590">AWD HOLDING</security>
@@ -46,7 +48,6 @@
     <security code="BEI.DE" wkn="520000">BEIERSDORF</security>
     <security code="BDT.DE" wkn="523280">BERTRANDT</security>
     <security code="BSS.DE" wkn="522440">BETA SYSTEMS SOFTWA</security>
-    <security code="BSK.DE" wkn="522390">BHW HOLDING AG</security>
     <security code="GBF.DE" wkn="590900">BILFINGER BERGER</security>
     <security code="BIB.DE" wkn="521340">BIOLITEC</security>
     <security code="BIO.DE" wkn="522720">BIOTEST</security>
@@ -59,14 +60,13 @@
     <security code="BPW.DE" wkn="553169">BRAINPOWER</security>
     <security code="MSC.DE" wkn="549086">BROADNET</security>
     <security code="BMM.DE" wkn="527550">BRUEDER MANNESMANN</security>
+    <security code="O2C.DE" wkn="A0JKWU">C.A.T. OIL</security>
     <security code="COO1.DE" wkn="A0EPUK">CAATOOSEE</security>
     <security code="COK.DE" wkn="541910">CANCOM IT SYSTEME</security>
     <security code="AFX.DE" wkn="531370">CARL ZEISS MEDITEC</security>
     <security code="SGS.DE" wkn="500910">CASH.LIFE</security>
     <security code="CCR.DE" wkn="762720">CCR LOGISTICS</security>
     <security code="OGG.DE" wkn="548812">CDV SOFTWARE ENT </security>
-    <security code="CEW2.DE" wkn="508222">CE GLOBL SOURCING N</security>
-    <security code="CEA.DE" wkn="620110">CEAG AG</security>
     <security code="CLS.DE" wkn="585800">CELESIO</security>
     <security code="CSH.DE" wkn="540710">CENIT SYSTEMHAUS</security>
     <security code="CEV.DE" wkn="540750">CENTROTEC SUSTAIN</security>
@@ -101,6 +101,7 @@
     <security code="DTE.DE" wkn="555750">DEUTSCHE TELEKOM N</security>
     <security code="DEZ.DE" wkn="630500">DEUTZ</security>
     <security code="DLG.DE" wkn="927200">DIALOG SEMICOND </security>
+    <security code="DAZ.DE" wkn="509840">DIC ASSET</security>
     <security code="DDE.DE" wkn="501690">DIS DT IND SERV</security>
     <security code="AJ9.DE" wkn="547100">DOCCHECK</security>
     <security code="DOU.DE" wkn="609900">DOUGLAS HOLDING</security>
@@ -109,14 +110,14 @@
     <security code="DRW3.DE" wkn="555063">DRAEGERWERK VZ</security>
     <security code="DRI.DE" wkn="554550">DRILLISCH</security>
     <security code="DBA.DE" wkn="550810">DT BETEILIGUNG</security>
-    <security code="EFF.DE" wkn="804100">DT.EFF.&amp;WECHSEL-BET</security>
+    <security code="EFF.DE" wkn="804100">DT.EFF.&amp;amp;WECHSEL-BET</security>
     <security code="LHA.DE" wkn="823212">DT.LUFTHANSA N</security>
     <security code="DUE.DE" wkn="556520">DUERR</security>
     <security code="DYK.DE" wkn="559100">DYCKERHOFF AG</security>
     <security code="DYK3.DE" wkn="559103">DYCKERHOFF AG VZ</security>
     <security code="EMN.DE" wkn="521280">E.M.S.-NEW MEDIA</security>
     <security code="EOA.DE" wkn="761440">E.ON AG </security>
-    <security code="EUZ.DE" wkn="565970">ECKERT &amp; ZIEGLER</security>
+    <security code="EUZ.DE" wkn="565970">ECKERT &amp;amp; ZIEGLER</security>
     <security code="ELN.DE" wkn="A0B5R7">ELECTRON LINES 3000</security>
     <security code="EEX.DE" wkn="508500">ELEXIS</security>
     <security code="ELG.DE" wkn="567710">ELMOS SEMICONDUCTOR</security>
@@ -158,18 +159,19 @@
     <security code="GMM.DE" wkn="589540">GRAMMER</security>
     <security code="GKR.DE" wkn="589600">GRAPHIT KROPFMUEHL</security>
     <security code="GLJ.DE" wkn="586590">GRENKELEASING</security>
-    <security code="WAS.DE" wkn="775700">H&amp;R WASAG</security>
+    <security code="WAS.DE" wkn="775700">H&amp;amp;R WASAG</security>
     <security code="HNR1.DE" wkn="840221">HANNOVER RUECKV. N </security>
     <security code="HAW.DE" wkn="604270">HAWESKO HOLDING</security>
     <security code="HXCI.DE" wkn="A0D9Y9">HCI CAPITAL N</security>
     <security code="HEI.DE" wkn="604700">HEIDELBERGCEMENT</security>
     <security code="HDD.DE" wkn="731400">HEIDELBERGER DRUCKM</security>
     <security code="HLR.DE" wkn="542990">HEILER SOFTWARE N</security>
+    <security code="HPB.DE" wkn="604729">HELIAD EQUITY PART</security>
     <security code="HEN.DE" wkn="604840">HENKEL</security>
     <security code="HEN3.DE" wkn="604843">HENKEL VZ</security>
     <security code="HLG.DE" wkn="920299">HIGHLIGHT COMMUNICA</security>
     <security code="HOT.DE" wkn="607000">HOCHTIEF</security>
-    <security code="HWS.DE" wkn="601100">HOEFT &amp; WESSEL </security>
+    <security code="HWS.DE" wkn="601100">HOEFT &amp;amp; WESSEL </security>
     <security code="HBH3.DE" wkn="608343">HORNBACH HOLDING VZ</security>
     <security code="HBM.DE" wkn="608440">HORNBACH-BAUMARKT</security>
     <security code="BOS.DE" wkn="524550">HUGO BOSS AG</security>
@@ -194,15 +196,16 @@
     <security code="IWK.DE" wkn="620440">IWKA</security>
     <security code="JWP.DE" wkn="508750">JACK WHITE PROD</security>
     <security code="JEN.DE" wkn="622910">JENOPTIK</security>
-    <security code="JI4.DE" wkn="678747">JERINI N</security>
+    <security code="JI4.DE" wkn="678747">JERINI</security>
     <security code="JTT.DE" wkn="626400">JETTER</security>
     <security code="JUN3.DE" wkn="621993">JUNGHEINRICH VZ</security>
     <security code="SDF.DE" wkn="716200">K+S AG</security>
     <security code="KAR.DE" wkn="627500">KARSTADT QUELLE</security>
     <security code="KLK.DE" wkn="678000">KLOECKNER-WERKE</security>
-    <security code="SKB.DE" wkn="719350">KOENIG &amp; BAUER</security>
+    <security code="SKB.DE" wkn="719350">KOENIG &amp;amp; BAUER</security>
     <security code="KBC.DE" wkn="605395">KONTRON</security>
     <security code="KRN.DE" wkn="633500">KRONES</security>
+    <security code="KWS.DE" wkn="707400">KWS SAAT</security>
     <security code="LXS.DE" wkn="547040">LANXESS</security>
     <security code="LEI.DE" wkn="646450">LEIFHEIT AG</security>
     <security code="LEO.DE" wkn="540888">LEONI N</security>
@@ -211,9 +214,10 @@
     <security code="LIO.DE" wkn="504350">LION BIOSCIENCE</security>
     <security code="L1O.DE" wkn="617487">LLOYD FONDS</security>
     <security code="LOE.DE" wkn="649410">LOEWE</security>
-    <security code="LPK.DE" wkn="645000">LPKF LASER &amp; ELECTR</security>
+    <security code="LPK.DE" wkn="645000">LPKF LASER &amp;amp; ELECTR</security>
     <security code="ECK.DE" wkn="519990">LUDWIG BECK</security>
     <security code="LCY.DE" wkn="932728">LYCOS EUROPE</security>
+    <security code="MGX.DE" wkn="722078">MAGIX N</security>
     <security code="MAN.DE" wkn="593700">MAN</security>
     <security code="MAN3.DE" wkn="593703">MAN AG VZ</security>
     <security code="MKA.DE" wkn="778300">MARSEILLE KLINIK</security>
@@ -250,19 +254,19 @@
     <security code="ONV.DE" wkn="546160">ONVISTA</security>
     <security code="OHT.DE" wkn="928634">ORAD HI-TEC SYSTEMS</security>
     <security code="OBS.DE" wkn="522877">ORBIS </security>
-    <security code="PUI.DE" wkn="691340">P &amp; I PERSON &amp; INFO</security>
+    <security code="PUI.DE" wkn="691340">P &amp;amp; I PERSON &amp;amp; INFO</security>
     <security code="PA8.DE" wkn="A0B65S">PAION</security>
-    <security code="PDE.DE" wkn="691630">PANDATEL</security>
     <security code="PKL.DE" wkn="914732">PANKL RACING SYS</security>
     <security code="PGN.DE" wkn="555869">PARAGON</security>
     <security code="PAQ.DE" wkn="508990">PARSYTEC</security>
+    <security code="P1Z.DE" wkn="PAT1AG">PATRIZIA IMMO N</security>
     <security code="PCW.DE" wkn="691090">PC-WARE INFO TECH</security>
     <security code="PFV.DE" wkn="691660">PFEIFFER VACU TECH</security>
     <security code="PFD4.DE" wkn="676474">PFLEIDERER N</security>
     <security code="PNE3.DE" wkn="A0JBPG">PLAMBECK NEUE EN N</security>
     <security code="PM3.DE" wkn="547180">PLASMASELECT</security>
     <security code="PLE.DE" wkn="690100">PLENUM</security>
-    <security code="PUZ.DE" wkn="695400">PONGS &amp; ZAHN</security>
+    <security code="PUZ.DE" wkn="695400">PONGS &amp;amp; ZAHN</security>
     <security code="PRA.DE" wkn="A0F6MD">PRAKTIKER HOLDING</security>
     <security code="PRE.DE" wkn="PREM11">PREMIERE N</security>
     <security code="P4T.DE" wkn="511700">PRIMION TECHN</security>
@@ -279,6 +283,7 @@
     <security code="RSL1.DE" wkn="725772">R. STAHL</security>
     <security code="RAA.DE" wkn="701080">RATIONAL</security>
     <security code="RTC.DE" wkn="700890">REALTECH</security>
+    <security code="HRP.DE" wkn="525070">REINECKE+POHL SUN E</security>
     <security code="RPW.DE" wkn="617703">REPOWER SYSTEMS</security>
     <security code="RHM.DE" wkn="703000">RHEINMETALL</security>
     <security code="RHK.DE" wkn="704230">RHOEN-KLINIKUM</security>
@@ -287,6 +292,7 @@
     <security code="RUK.DE" wkn="704110">RUECKER</security>
     <security code="RWE.DE" wkn="703712">RWE -A-</security>
     <security code="RWE3.DE" wkn="703714">RWE VZ</security>
+    <security code="S4X.DE" wkn="A0JD78">SAF SIMULATION</security>
     <security code="SZG.DE" wkn="620200">SALZGITTER</security>
     <security code="SNC3.DE" wkn="716313">SANACORP PHARMAH VZ</security>
     <security code="SAC.DE" wkn="919963">SANOCHEMIA PHARMA</security>
@@ -295,6 +301,7 @@
     <security code="SRT3.DE" wkn="716563">SARTORIUS VZ</security>
     <security code="SCH.DE" wkn="717200">SCHERING</security>
     <security code="SHT.DE" wkn="504630">SCHLOTT GRUPPE AG</security>
+    <security code="SB1.DE" wkn="SBGS11">SCHMACK BIOGAS N</security>
     <security code="SRZ.DE" wkn="722190">SCHWARZ PHARMA</security>
     <security code="SMY.DE" wkn="909247">SCM MICROSYSTEMS</security>
     <security code="YSN.DE" wkn="727650">SECUNET SEC NETW</security>
@@ -315,7 +322,6 @@
     <security code="MHJG.DE" wkn="A0DPY1">SPARK SP GDR REG-S</security>
     <security code="SPM.DE" wkn="727950">SPLENDID MEDIEN</security>
     <security code="SAZ.DE" wkn="725180">STADA ARZNEIMIT. N</security>
-    <security code="DVD.DE" wkn="730900">STEAG HAMATECH</security>
     <security code="SBS.DE" wkn="728900">STRATEC BIOMEDICAL</security>
     <security code="SZU.DE" wkn="729700">SUEDZUCKER</security>
     <security code="SMH.DE" wkn="722670">SUESS MICROTEC</security>
@@ -355,18 +361,20 @@
     <security code="VRI.DE" wkn="691190">VARETIS AG</security>
     <security code="VFM1.DE" wkn="330437">VCL FILM + MEDIEN</security>
     <security code="VIZ.DE" wkn="926501">VI(Z)RT</security>
-    <security code="VIB3.DE" wkn="765723">VILLEROY &amp; BOCH VZ</security>
+    <security code="VIB3.DE" wkn="765723">VILLEROY &amp;amp; BOCH VZ</security>
+    <security code="V6C.DE" wkn="784686">VISCOM</security>
     <security code="VIA.DE" wkn="604891">VIVACON</security>
     <security code="VOW.DE" wkn="766400">VOLKSWAGEN</security>
     <security code="VOW3.DE" wkn="766403">VOLKSWAGEN VZ</security>
     <security code="VOS.DE" wkn="766710">VOSSLOH</security>
     <security code="WOM.DE" wkn="663739">W.O.M.WORLD OF MEDI</security>
+    <security code="WCH.DE" wkn="WCH888">WACKER CHEMIE</security>
     <security code="WPM.DE" wkn="549550">WAPME SYSTEMS </security>
     <security code="WSU.DE" wkn="750750">WASH TEC </security>
     <security code="WLT.DE" wkn="512560">WAVELIGHT</security>
     <security code="WCM.DE" wkn="780100">WCM BETEILIGUNG</security>
-    <security code="WUG.DE" wkn="777520">WESTAG &amp; GETALIT</security>
-    <security code="WUG3.DE" wkn="777523">WESTAG &amp; GETALIT VZ</security>
+    <security code="WUG.DE" wkn="777520">WESTAG &amp;amp; GETALIT</security>
+    <security code="WUG3.DE" wkn="777523">WESTAG &amp;amp; GETALIT VZ</security>
     <security code="WIN.DE" wkn="A0CAYB">WINCOR NIXDORF</security>
     <security code="IGP.DE" wkn="747206">WIRE CARD</security>
     <security code="WZM.DE" wkn="915856">WIZCOM TECH</security>

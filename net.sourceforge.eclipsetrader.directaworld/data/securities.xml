@@ -5,10 +5,6 @@
     <security code="ACE" isin="IT0001207098">Acea</security>
     <security code="AEG" isin="IT0003066146">Acegas-Aps</security>
     <security code="ACO" isin="IT0001469953">Acotel Group</security>
-    <security code="ADF" isin="IT0000086022">Acq De Ferrari</security>
-    <security code="ADFR" isin="IT0000086048">Acq De Ferrari Rnc</security>
-    <security code="ANG" isin="IT0000068889">Acq Nicolay</security>
-    <security code="APM" isin="IT0001040572">Acq Pia Marcia</security>
     <security code="ACP" isin="IT0003128623">Acque Potabili</security>
     <security code="ACS" isin="IT0001382024">Acsm</security>
     <security code="ACT" isin="IT0003198790">Actelios</security>
@@ -21,12 +17,13 @@
     <security code="AZA" isin="IT0003918577">Alitalia</security>
     <security code="AZA10" isin="IT0003331888">Alitalia-10 Cv  7,5%</security>
     <security code="AL" isin="IT0000078193">Alleanza Ass</security>
-    <security code="AMP" isin="IT0003101059">Amplifon</security>
+    <security code="AMP" isin="IT0004056880">Amplifon</security>
     <security code="ANM" isin="IT0003886469">Anima</security>
     <security code="STS" isin="IT0003977540">Ansaldo Sts</security>
+    <security code="AP" isin="IT0004016504">Antichi Pellettieri</security>
     <security code="APP" isin="IT0003890123">Apulia Prontop</security>
     <security code="ART" isin="IT0001441002">Art'E'</security>
-    <security code="ASM" isin="IT0003275200">Asm Brescia</security>
+    <security code="ASM" isin="IT0003275200">Asm</security>
     <security code="AST" isin="IT0003261069">Astaldi</security>
     <security code="AGL" isin="IT0001137345">Autogrill Spa</security>
     <security code="AT" isin="IT0000084027">Autostrada To-Mi</security>
@@ -40,7 +37,7 @@
     <security code="IF" isin="IT0003188064">Banca Ifis</security>
     <security code="IF09" isin="IT0003664122">Banca Ifis 04-09  Cv</security>
     <security code="BIM" isin="IT0000074077">Banca Intermobiliare</security>
-    <security code="BIL" isin="IT0000226503">Banca Italease</security>
+    <security code="BIL" isin="IT0000226503">BancaItalease</security>
     <security code="BPU" isin="IT0003487029">Banche Pop Unite</security>
     <security code="BAN" isin="IT0001033700">Basicnet</security>
     <security code="B" isin="IT0000072071">Bastogi Spa</security>
@@ -56,7 +53,6 @@
     <security code="BMPS" isin="IT0001334587">Bca Mps</security>
     <security code="PIN06" isin="IT0003190797">Bca P Intra 06 Cv 3%</security>
     <security code="SPO" isin="IT0001007209">Bca Pop Di Spoleto</security>
-    <security code="BPE06" isin="IT0003939854">Bca Pop Emil R  Ge06</security>
     <security code="BPE" isin="IT0000066123">Bca Pop Emil Romagna</security>
     <security code="PEL" isin="IT0000060878">Bca Pop Etrur-Lazio</security>
     <security code="PIN" isin="IT0000064441">Bca Pop Intra</security>
@@ -79,6 +75,7 @@
     <security code="BPL" isin="IT0003682926">Bipielle Invest</security>
     <security code="BNLR" isin="IT0001254892">Bnl Rp Nc</security>
     <security code="BOE" isin="IT0000066966">Boero Bartolomeo</security>
+    <security code="BLZ" isin="IT0004027279">Bolzoni</security>
     <security code="BF" isin="IT0000074135">Bonifiche Ferraresi</security>
     <security code="BO" isin="IT0003217335">Borgosesia</security>
     <security code="BOR" isin="IT0003217368">Borgosesia R</security>
@@ -86,9 +83,9 @@
     <security code="BRE" isin="IT0001050910">Brembo</security>
     <security code="BRI" isin="IT0000066180">Brioschi</security>
     <security code="BUL" isin="IT0001119087">Bulgari</security>
-    <security code="BVIT" isin="IT0001488607">Buongiorno Vitaminic</security>
+    <security code="BNG" isin="IT0001488607">Buongiorno</security>
+    <security code="BZU" isin="IT0001347308">Buzzi Unicem</security>
     <security code="BZUR" isin="IT0001369427">Buzzi Unicem     Rnc</security>
-    <security code="BZU" isin="IT0001347308">BuzziUnicem</security>
     <security code="CAD" isin="IT0001489720">Cad It</security>
     <security code="CAI" isin="IT0001457222">Cairo Communication</security>
     <security code="CLF" isin="IT0003025019">Caleffi</security>
@@ -109,6 +106,7 @@
     <security code="CLT" isin="IT0003023980">Centrale Latte To</security>
     <security code="RIC" isin="IT0003690283">Ceramiche Ricchetti.</security>
     <security code="CHL" isin="IT0001446613">Chl</security>
+    <security code="CHLAZI" isin="IT0004077217">Chl          Azixazi</security>
     <security code="CIA" isin="IT0003389522">Cia</security>
     <security code="CC" isin="IT0000080421">Ciccolella</security>
     <security code="CIR" isin="IT0000080447">Cir-Comp Ind Riunite</security>
@@ -128,7 +126,7 @@
     <security code="DAN" isin="IT0000076502">Danieli&amp;C</security>
     <security code="DANR" isin="IT0000076486">Danieli&amp;C Risp Nc</security>
     <security code="DAS" isin="IT0001479523">Data Service</security>
-    <security code="DAL" isin="IT0003040547">Datalogic</security>
+    <security code="DAL" isin="IT0004053440">Datalogic</security>
     <security code="DAM" isin="IT0001020616">Datamat</security>
     <security code="DLG" isin="IT0003115950">De'Longhi</security>
     <security code="DIB" isin="IT0001469995">Digital Bros</security>
@@ -137,6 +135,7 @@
     <security code="DMH" isin="IT0001278081">Ducati Motor Hold</security>
     <security code="EDN" isin="IT0003152417">Edison</security>
     <security code="EDNR" isin="IT0003372205">Edison R</security>
+    <security code="EEMS" isin="IT0001498234">Eems</security>
     <security code="ELN" isin="IT0001481867">El.En.</security>
     <security code="EM" isin="IT0001237053">Emak</security>
     <security code="ENEL" isin="IT0003128367">Enel</security>
@@ -153,7 +152,6 @@
     <security code="EUT" isin="IT0001425211">Eutelia</security>
     <security code="XPR" isin="IT0001477402">Exprivia</security>
     <security code="FWB" isin="IT0001423562">Fastweb</security>
-    <security code="FNM" isin="IT0000060886">Ferrovie Nord Mi</security>
     <security code="F" isin="IT0001976403">Fiat</security>
     <security code="FP" isin="IT0001976411">Fiat Priv</security>
     <security code="FR" isin="IT0001976429">Fiat Risp</security>
@@ -162,10 +160,11 @@
     <security code="FDP" isin="IT0001339321">Filatura Di Pollone</security>
     <security code="FCD" isin="IT0000068178">Finarte-Sem C D'Aste</security>
     <security code="FNC" isin="IT0003856405">Finmeccanica</security>
+    <security code="FNM" isin="IT0000060886">Fnm</security>
     <security code="FSA" isin="IT0001463071">Fondiaria-Sai</security>
     <security code="FSAR" isin="IT0001463089">Fondiaria-Sai R</security>
     <security code="FUL" isin="IT0001487047">Fullsix</security>
-    <security code="GAB" isin="IT0000062650">Gabetti Holding  Spa</security>
+    <security code="GAB" isin="IT0000062650">Gabetti</security>
     <security code="GAR" isin="IT0000078748">Garboli</security>
     <security code="GE" isin="IT0003203947">Gefran</security>
     <security code="GEM" isin="IT0001480323">Gemina</security>
@@ -210,6 +209,8 @@
     <security code="JUVE" isin="IT0000336518">Juventus Fc</security>
     <security code="KAI" isin="IT0001356887">Kaitech</security>
     <security code="KRS" isin="IT0003926661">Kerself</security>
+    <security code="KME" isin="IT0003667257">Kme Group</security>
+    <security code="KMER" isin="IT0000078334">Kme Group Rsp</security>
     <security code="LD" isin="IT0001055521">La Doria</security>
     <security code="GAI" isin="IT0000074630">La Gaiana</security>
     <security code="LAV" isin="IT0001467072">Lavorwash</security>
@@ -227,6 +228,7 @@
     <security code="MS" isin="IT0001063210">Mediaset S.P.A</security>
     <security code="MB" isin="IT0000062957">Mediobanca</security>
     <security code="MED" isin="IT0001279501">Mediolanum</security>
+    <security code="MEA" isin="IT0000068889">Mediterranea Acque</security>
     <security code="MEL" isin="IT0001346268">Meliorbanca</security>
     <security code="MI" isin="IT0000062221">Milano Ass Ord</security>
     <security code="MIR" isin="IT0000062205">Milano Ass Risp Port</security>
@@ -241,12 +243,15 @@
     <security code="MSA" isin="IT0003838817">Monti Ascensori</security>
     <security code="NM" isin="IT0001251286">Navigaz Montanari</security>
     <security code="NGB" isin="IT0003138671">Negri Bossi</security>
+    <security code="NICE" isin="IT0003317945">Nice</security>
+    <security code="NOE" isin="IT0004014533">Noemalife</security>
     <security code="OLI" isin="IT0001350625">Olidata</security>
     <security code="PAG" isin="IT0001054581">Pagnossin</security>
     <security code="PAN" isin="IT0001467577">Panariagroup</security>
     <security code="PLT" isin="IT0003826473">Parmalat</security>
     <security code="PIT" isin="IT0003838833">Part-Italiane</security>
     <security code="PMS" isin="IT0001341111">Permasteelisa</security>
+    <security code="PRL" isin="IT0004007560">Pierrel</security>
     <security code="PINF" isin="IT0003056386">Pininfarina Spa</security>
     <security code="PC" isin="IT0000072725">Pirelli E C</security>
     <security code="PCP" isin="IT0000072733">Pirelli E C Risp Por</security>
@@ -280,6 +285,7 @@
     <security code="SPM" isin="IT0000068525">Saipem</security>
     <security code="SPMR" isin="IT0000068533">Saipem Risp Cv</security>
     <security code="SPI" isin="IT0001269361">San Paolo Imi</security>
+    <security code="SRS" isin="IT0000433307">Saras</security>
     <security code="SAVE" isin="IT0001490736">Save</security>
     <security code="SCH" isin="IT0001163622">Schiapparelli</security>
     <security code="PG" isin="IT0003479638">Seat Pagine  Gialle</security>
@@ -288,8 +294,6 @@
     <security code="SIS17" isin="IT0003872394">Sias-17 Cv 2,625%</security>
     <security code="SIC" isin="IT0001162509">Sicc</security>
     <security code="SIT" isin="IT0000086790">Sirti</security>
-    <security code="SMI" isin="IT0003667257">Smi Metalli</security>
-    <security code="SMIR" isin="IT0000078334">Smi Metalli Risp Nc</security>
     <security code="SMU" isin="IT0000072055">Smurfit Sisa</security>
     <security code="SNA" isin="IT0000074903">Snai</security>
     <security code="SRG" isin="IT0003153415">Snam Rete Gas</security>
