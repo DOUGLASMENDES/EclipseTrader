@@ -2,13 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Help
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.help; singleton:=true
-Bundle-Version: 0.23.0
+Bundle-Version: 0.24.0
 Bundle-Activator: net.sourceforge.eclipsetrader.help.HelpPlugin
 Bundle-Vendor: EclipseTrader
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.apache.lucene,
+ org.eclipse.core.runtime,
+ org.eclipse.help.appserver,
  org.eclipse.help,
- org.eclipse.ui,
- net.sourceforge.eclipsetrader,
- net.sourceforge.eclipsetrader.core
+ org.eclipse.help.base,
+ org.eclipse.help.ui,
+ org.eclipse.help.webapp,
+ org.eclipse.tomcat,
+ org.eclipse.ui
 Eclipse-AutoStart: true

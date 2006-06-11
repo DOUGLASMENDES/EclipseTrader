@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trading
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.trading; singleton:=true
-Bundle-Version: 0.23.0
+Bundle-Version: 0.24.0
 Bundle-Activator: net.sourceforge.eclipsetrader.trading.TradingPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
