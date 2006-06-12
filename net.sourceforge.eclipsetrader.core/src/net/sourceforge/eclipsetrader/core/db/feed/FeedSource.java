@@ -38,7 +38,7 @@ public class FeedSource
 
     public void setExchange(String exchange)
     {
-        this.exchange = exchange;
+        this.exchange = (exchange != null) ? exchange : "";
     }
 
     public String getSymbol()
