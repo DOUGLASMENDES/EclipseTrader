@@ -3,7 +3,7 @@
 <schema targetNamespace="net.sourceforge.eclipsetrader.trading">
 <annotation>
       <appInfo>
-         <meta.schema plugin="net.sourceforge.eclipsetrader.trading" id="system" name="Trading System"/>
+         <meta.schema plugin="net.sourceforge.eclipsetrader.trading" id="systems" name="Trading Systems"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]

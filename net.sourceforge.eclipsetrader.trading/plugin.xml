@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension-point id="alerts" name="Watchlist Alerts" schema="schema/alerts.exsd"/>
-   <extension-point id="system" name="Trading System" schema="schema/system.exsd"/>
+   <extension-point id="systems" name="Trading System" schema="schema/systems.exsd"/>
    <extension
          point="org.eclipse.ui.activities">
       <activityPatternBinding
@@ -486,7 +486,7 @@
       </alert>
    </extension>
    <extension
-         point="net.sourceforge.eclipsetrader.trading.system">
+         point="net.sourceforge.eclipsetrader.trading.systems">
       <system
             class="net.sourceforge.eclipsetrader.trading.systems.PatternTrading"
             id="net.sourceforge.eclipsetrader.system.patternTrading"
