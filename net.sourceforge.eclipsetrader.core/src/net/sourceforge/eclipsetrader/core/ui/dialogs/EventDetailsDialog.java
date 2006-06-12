@@ -108,6 +108,7 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
         message = new Text(content, SWT.BORDER|SWT.READ_ONLY|SWT.WRAP);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gridData.widthHint = 300;
         gridData.heightHint = 40;
         message.setLayoutData(gridData);
 
@@ -115,7 +116,7 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
         label.setText("Details");
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
         longMessage = new Text(content, SWT.BORDER|SWT.READ_ONLY|SWT.MULTI|SWT.V_SCROLL|SWT.WRAP);
-        gridData = new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1);
+        gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false, 3, 1);
         gridData.widthHint = 350;
         gridData.heightHint = 150;
         longMessage.setLayoutData(gridData);
