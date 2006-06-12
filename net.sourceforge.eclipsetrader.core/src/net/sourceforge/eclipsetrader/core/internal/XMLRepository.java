@@ -296,7 +296,7 @@ public class XMLRepository extends Repository
             }
         }
         
-        if (obj != null && !obj.getClass().equals(clazz))
+        if (obj != null && !clazz.isInstance(obj))
             return null;
 
         if (obj != null)
@@ -1109,7 +1109,8 @@ public class XMLRepository extends Repository
                     {
                         node = document.createElement("quote");
                         node.setAttribute("id", security.getQuoteFeed().getId());
-                        node.setAttribute("exchange", security.getQuoteFeed().getExchange());
+                        if (security.getQuoteFeed().getExchange() != null)
+                            node.setAttribute("exchange", security.getQuoteFeed().getExchange());
                         node.appendChild(document.createTextNode(security.getQuoteFeed().getSymbol()));
                         feedsNode.appendChild(node);
                     }
@@ -1117,7 +1118,8 @@ public class XMLRepository extends Repository
                     {
                         node = document.createElement("level2");
                         node.setAttribute("id", security.getLevel2Feed().getId());
-                        node.setAttribute("exchange", security.getLevel2Feed().getExchange());
+                        if (security.getLevel2Feed().getExchange() != null)
+                            node.setAttribute("exchange", security.getLevel2Feed().getExchange());
                         node.appendChild(document.createTextNode(security.getLevel2Feed().getSymbol()));
                         feedsNode.appendChild(node);
                     }
@@ -1125,7 +1127,8 @@ public class XMLRepository extends Repository
                     {
                         node = document.createElement("history");
                         node.setAttribute("id", security.getHistoryFeed().getId());
-                        node.setAttribute("exchange", security.getHistoryFeed().getExchange());
+                        if (security.getHistoryFeed().getExchange() != null)
+                            node.setAttribute("exchange", security.getHistoryFeed().getExchange());
                         node.appendChild(document.createTextNode(security.getHistoryFeed().getSymbol()));
                         feedsNode.appendChild(node);
                     }
