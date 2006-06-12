@@ -188,7 +188,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
             {
                 security.setCode(code.getText());
                 security.setDescription(securityDescription.getText());
-                security.setCurrency(Currency.getInstance(currency.getText()));
+               	security.setCurrency(currency.getText().length() != 0 ? Currency.getInstance(currency.getText()) : null);
                 
                 if (clearHistory.getSelection())
                 {
