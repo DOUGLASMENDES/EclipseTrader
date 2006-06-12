@@ -16,9 +16,11 @@ import java.util.Map;
 
 import net.sourceforge.eclipsetrader.trading.AlertPluginPreferencePage;
 
+import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -34,6 +36,7 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
     private Combo maType;
     private Combo direction;
     private Label description;
+    private ColorSelector color;
     private SelectionAdapter selectionAdapter = new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e)
         {
@@ -91,6 +94,11 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
         direction.add("Downward");
         direction.setVisibleItemCount(15);
         direction.addSelectionListener(selectionAdapter);
+        
+        label = new Label(content, SWT.NONE);
+        label.setText("Hilight Color");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        color = new ColorSelector(content);
 
         description = new Label(content, SWT.NONE);
         description.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true, 2, 1));
@@ -115,6 +123,15 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
         if (value != null)
             field = Integer.parseInt(value);
         direction.select(field);
+
+        value = (String)getParameters().get("hilightBackground");
+        if (value != null)
+        {
+            String[] ar = value.split(",");
+            color.setColorValue(new RGB(Integer.parseInt(ar[0]), Integer.parseInt(ar[1]), Integer.parseInt(ar[2])));
+        }
+        else
+            color.setColorValue(new RGB(0, 224, 0));
         
         updateDescription();
         
@@ -132,6 +149,8 @@ public class MovingAverageCrossoverPreferences extends AlertPluginPreferencePage
         parameters.put("period", String.valueOf(period.getSelection()));
         parameters.put("maType", String.valueOf(maType.getSelectionIndex()));
         parameters.put("direction", String.valueOf(direction.getSelectionIndex()));
+        RGB rgb = color.getColorValue();
+        parameters.put("hilightBackground", String.valueOf(rgb.red) + "," + String.valueOf(rgb.green) + "," + String.valueOf(rgb.blue));
         
         setParameters(parameters);
     }

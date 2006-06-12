@@ -16,6 +16,7 @@ import java.util.Observable;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 
@@ -48,7 +49,7 @@ public abstract class AbstractLayout
 
     public abstract WatchlistItem[] getSelection();
     
-    public void tickAlert(WatchlistItem watchlistItem)
+    public void tickAlert(WatchlistItem watchlistItem, RGB foreground, RGB background)
     {
     }
     

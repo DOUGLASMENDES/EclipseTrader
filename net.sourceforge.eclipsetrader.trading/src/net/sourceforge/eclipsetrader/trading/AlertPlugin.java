@@ -15,6 +15,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.RGB;
+
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Alert;
 import net.sourceforge.eclipsetrader.core.db.Event;
@@ -56,7 +58,7 @@ public abstract class AlertPlugin
     }
 
     public abstract boolean apply();
-    
+
     public boolean isSeenToday()
     {
         if (getLastSeen() != null)
@@ -71,6 +73,26 @@ public abstract class AlertPlugin
         }
         
         return false;
+    }
+    
+    /**
+     * Get the color to use to hilight the watchlist row background.
+     * 
+     * @return the hilight color, or null to use the default
+     */
+    public RGB getHilightBackground()
+    {
+        return null;
+    }
+    
+    /**
+     * Get the color to use to hilight the watchlist row foreground.
+     * 
+     * @return the hilight color, or null to use the default
+     */
+    public RGB getHilightForeground()
+    {
+        return null;
     }
 
     public Security getSecurity()

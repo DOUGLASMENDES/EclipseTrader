@@ -14,6 +14,8 @@ package net.sourceforge.eclipsetrader.trading.alerts;
 import java.text.NumberFormat;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.RGB;
+
 import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.trading.AlertPlugin;
 
@@ -33,6 +35,7 @@ public class MovingAverageCrossover extends AlertPlugin
     private int period = 7;
     private int interval = CLOSE;
     private int direction = UPWARD;
+    private RGB hilightColor = new RGB(255, 0, 0);
     private NumberFormat priceFormatter = NumberFormat.getInstance();
 
     public MovingAverageCrossover()
@@ -63,6 +66,12 @@ public class MovingAverageCrossover extends AlertPlugin
         value = (String)params.get("direction");
         if (value != null)
             direction = Integer.parseInt(value);
+        value = (String)params.get("hilightBackground");
+        if (value != null)
+        {
+            String[] ar = value.split(",");
+            hilightColor = new RGB(Integer.parseInt(ar[0]), Integer.parseInt(ar[1]), Integer.parseInt(ar[2]));
+        }
     }
 
     /* (non-Javadoc)
@@ -175,5 +184,13 @@ public class MovingAverageCrossover extends AlertPlugin
         }
         
         return result;
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.trading.AlertPlugin#getHilightBackground()
+     */
+    public RGB getHilightBackground()
+    {
+        return hilightColor;
     }
 }

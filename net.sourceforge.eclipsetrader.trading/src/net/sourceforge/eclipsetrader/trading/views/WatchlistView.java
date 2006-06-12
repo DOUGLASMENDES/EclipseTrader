@@ -51,6 +51,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
@@ -373,10 +374,12 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                         alert.setLastSeen(plugin.getLastSeen());
                         if (alert.isHilight())
                         {
+                            final RGB foreground = plugin.getHilightForeground();
+                            final RGB background = plugin.getHilightBackground();
                             parent.getDisplay().asyncExec(new Runnable() {
                                 public void run()
                                 {
-                                    layout.tickAlert(watchlistItem);
+                                    layout.tickAlert(watchlistItem, foreground, background);
                                 }
                             });
                         }

@@ -32,8 +32,6 @@ public class CellTicker
     private Color incrementBackground;
     private Color decrementForeground = new Color(null, 224, 0, 0);
     private Color decrementBackground;
-    private Color alertForeground;
-    private Color alertBackground = new Color(null, 224, 224, 224);
     private TableItem tableItem;
     private Status rowStatus;
     private List status = new ArrayList();
@@ -103,11 +101,6 @@ public class CellTicker
     public void tickDecrement(int index)
     {
         tick(index, decrementBackground, decrementForeground);
-    }
-
-    public void tickAlert()
-    {
-        tick(alertBackground, alertForeground);
     }
 
     /**
@@ -256,25 +249,5 @@ public class CellTicker
     public void setInterval(int interval)
     {
         this.interval = interval;
-    }
-
-    public Color getAlertBackground()
-    {
-        return alertBackground;
-    }
-
-    public void setAlertBackground(Color alertBackground)
-    {
-        this.alertBackground = alertBackground;
-    }
-
-    public Color getAlertForeground()
-    {
-        return alertForeground;
-    }
-
-    public void setAlertForeground(Color alertForeground)
-    {
-        this.alertForeground = alertForeground;
     }
 }

@@ -57,6 +57,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -85,6 +86,7 @@ public class WatchlistTableViewer extends AbstractLayout
     private Color oddBackground;
     private Color negativeForeground = new Color(null, 240, 0, 0);
     private Color positiveForeground = new Color(null, 0, 192, 0);
+    private Color alertHilightBackground = new Color(null, 224, 0, 0);
     private boolean showTotals = false;
     private int sortColumn = -1;
     private int sortDirection = 0;
@@ -519,9 +521,9 @@ public class WatchlistTableViewer extends AbstractLayout
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.internal.AbstractLayout#tickAlert(net.sourceforge.eclipsetrader.core.db.WatchlistItem)
+     * @see net.sourceforge.eclipsetrader.trading.internal.AbstractLayout#tickAlert(net.sourceforge.eclipsetrader.core.db.WatchlistItem, org.eclipse.swt.graphics.RGB, org.eclipse.swt.graphics.RGB)
      */
-    public void tickAlert(WatchlistItem watchlistItem)
+    public void tickAlert(WatchlistItem watchlistItem, RGB foreground, RGB background)
     {
         TableItem[] items = table.getItems();
         for (int i = 0; i < items.length; i++)
@@ -529,7 +531,13 @@ public class WatchlistTableViewer extends AbstractLayout
             WatchlistTableItem tableItem = (WatchlistTableItem)items[i];
             if (tableItem.getWatchlistItem().equals(watchlistItem))
             {
-                tableItem.ticker.tickAlert();
+                Color fg = foreground != null ? new Color(null, foreground) : null;
+                Color bg = background != null ? new Color(null, background) : new Color(null, alertHilightBackground.getRGB());
+                tableItem.ticker.tick(bg, fg);
+                if (bg != null)
+                    bg.dispose();
+                if (fg != null)
+                    fg.dispose();
                 break;
             }
         }
