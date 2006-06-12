@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Plugin Developer Guide">
+    <topic label="Reference">
+        <topic label="API Reference">
+            <topic label="net.sourceforge.eclipsetrader.charts" href="reference/api/net/sourceforge/eclipsetrader/charts/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core" href="reference/api/net/sourceforge/eclipsetrader/core/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.db" href="reference/api/net/sourceforge/eclipsetrader/core/db/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.db.columns" href="reference/api/net/sourceforge/eclipsetrader/core/db/columns/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.db.feed" href="reference/api/net/sourceforge/eclipsetrader/core/db/feed/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.db.trading" href="reference/api/net/sourceforge/eclipsetrader/core/db/trading/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.news" href="reference/api/net/sourceforge/eclipsetrader/news/package-summary.html"/>
+            <topic label="net.sourceforge.eclipsetrader.trading" href="reference/api/net/sourceforge/eclipsetrader/trading/package-summary.html"/>
+        </topic>
+        <topic label="Extension Points Reference">
+            <topic label="net.sourceforge.eclipsetrader.charts.indicators" href="reference/extension-points/net_sourceforge_eclipsetrader_charts_indicators.html"/>
+            <topic label="net.sourceforge.eclipsetrader.charts.objects" href="reference/extension-points/net_sourceforge_eclipsetrader_charts_objects.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.feeds" href="reference/extension-points/net_sourceforge_eclipsetrader_core_feeds.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.news" href="reference/extension-points/net_sourceforge_eclipsetrader_core_news.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.patterns" href="reference/extension-points/net_sourceforge_eclipsetrader_core_patterns.html"/>
+            <topic label="net.sourceforge.eclipsetrader.trading.alerts" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_alerts.html"/>
+            <topic label="net.sourceforge.eclipsetrader.trading.systems" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_systems.html"/>
+        </topic>
+    </topic>
+</toc>

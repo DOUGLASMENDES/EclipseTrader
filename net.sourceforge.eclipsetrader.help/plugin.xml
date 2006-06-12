@@ -6,6 +6,9 @@
       <toc
             file="user_guide.xml"
             primary="true"/>
+      <toc
+            file="developer_guide.xml"
+            primary="true"/>
    </extension>
 
 </plugin>

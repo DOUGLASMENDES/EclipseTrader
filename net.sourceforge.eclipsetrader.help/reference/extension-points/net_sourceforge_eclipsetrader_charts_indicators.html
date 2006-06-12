@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Chart Indicators</title>
+<style>@import url("book.css");</style>
+<style>@import url("schema.css");</style>
+</HEAD>
+<BODY>
+<H1><CENTER>Chart Indicators</CENTER></H1>
+<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>net.sourceforge.eclipsetrader.charts.indicators<p></p>
+<h6 class=CaptionFigColumn id=header>Since: </h6>1.0
+<p></p>
+
+<p>
+<h6 class=CaptionFigColumn id=header>Description: </h6>This extension point is used to define additional indicator objects for the charts view.</p>
+<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.indicator">indicator</a>+)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.indicator">indicator</a> (<a href="#e.preferencePage">preferencePage</a>+)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST indicator</p>
+<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>class&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>id</b> - a unique name that will be used to identify this indicator</li>
+<li><b>name</b> - a translatable name that will be used in the UI for this indicator</li>
+<li><b>class</b> - name of the fully qualified class that implements net.sourceforge.eclipsetrader.charts.IIndicatorPlugin</li>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.preferencePage">preferencePage</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST preferencePage</p>
+<p class=code id=dtdAttlist>title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>description&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>title</b> - a translatable title that will be used in the UI for this page</li>
+<li><b>description</b> - a translatable description that will be used in the UI for this page</li>
+<li><b>class</b> - name of the fully qualified class that implements net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage</li>
+</ul>
+<br><h6 class=CaptionFigColumn id=header>Examples: </h6>The following is an example of the extension point:
+
+<p><pre>
+   <p class=code id=tag>&lt;extension
+         point=<p class=code id=cstring>&quot;net.sourceforge.eclipsetrader.charts.indicators&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;indicator
+            class=<p class=code id=cstring>&quot;net.sourceforge.eclipsetrader.charts.indicators.AccumulationDistribution&quot;</p><p class=code id=tag>
+            id=<p class=code id=cstring>&quot;net.sourceforge.eclipsetrader.indicators.ad&quot;</p><p class=code id=tag>
+            name=<p class=code id=cstring>&quot;Accumulation / Distribution - AD&quot;</p><p class=code id=tag>&gt;</p>
+         <p class=code id=tag>&lt;preferencePage
+               class=<p class=code id=cstring>&quot;net.sourceforge.eclipsetrader.charts.indicators.AccumulationDistributionPreferencePage&quot;</p><p class=code id=tag>
+               title=<p class=code id=cstring>&quot;Accumulation / Distribution&quot;</p><p class=code id=tag>/&gt;</p>
+      <p class=code id=tag>&lt;/indicator&gt;</p>
+   <p class=code id=tag>&lt;/extension&gt;</p>
+</pre></p>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>API Information: </h6><p>The value of the indicator's class attribute must be a fully qualified name of the class that implements <code>net.sourceforge.eclipsetrader.charts.IIndicatorPlugin</code>. It is common practice to subclass <code>net.sourceforge.eclipsetrader.charts.IndicatorPlugin</code> when developing a new indicator.</p>
+
+<p>The value of the preferencePage's class attribute must be a fully qualified name of the class that extends <code>net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage</code>.</p>
+<p></p>
+
+<br>
+<p class=note id=copyright>
+Copyright &copy; 2004-2006 Marco Maccaferri and others.<br>
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at <a href="http://www.eclipse.org/legal/epl-v10.html">http://www.eclipse.org/legal/epl-v10.html</a>
+<p></p>
+
+</p>
+</BODY>
+</HTML>
