@@ -85,29 +85,18 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     {
         IMenuManager menuManager = site.getActionBars().getMenuManager();
         menuManager.add(new Separator("top")); //$NON-NLS-1$
-        menuManager.add(new Separator("group1")); //$NON-NLS-1$
-        menuManager.add(new Separator("group2")); //$NON-NLS-1$
-        menuManager.add(new Separator("group3")); //$NON-NLS-1$
-        menuManager.add(new Separator("group4")); //$NON-NLS-1$
-        menuManager.add(new Separator("group5")); //$NON-NLS-1$
-        menuManager.add(new Separator("group6")); //$NON-NLS-1$
-        menuManager.add(new Separator("additions")); //$NON-NLS-1$
-        menuManager.add(new Separator("bottom")); //$NON-NLS-1$
-        
+        menuManager.add(new Separator()); //$NON-NLS-1$
         IMenuManager layoutMenu = new MenuManager("Layout", "layout");
         layoutMenu.add(tableLayout);
         layoutMenu.add(ribbonLayout);
-        menuManager.appendToGroup("group5", layoutMenu);
-        menuManager.appendToGroup("group5", toggleShowTotals);
+        menuManager.add(layoutMenu);
+        menuManager.add(toggleShowTotals);
+        menuManager.add(new Separator("search")); //$NON-NLS-1$
+        menuManager.add(new Separator("additions")); //$NON-NLS-1$
+        menuManager.add(new Separator("bottom")); //$NON-NLS-1$
         
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group1")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group2")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group3")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group4")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group5")); //$NON-NLS-1$
-        toolBarManager.add(new Separator("group6")); //$NON-NLS-1$
         toolBarManager.add(new Separator("additions")); //$NON-NLS-1$
         toolBarManager.add(new Separator("end")); //$NON-NLS-1$
         

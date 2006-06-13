@@ -158,6 +158,7 @@ public class WatchlistTableViewer extends AbstractLayout
 
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler("properties", propertiesAction);
+        actionBars.updateActionBars();
     }
     
     public Composite createPartControl(Composite parent)
@@ -274,12 +275,7 @@ public class WatchlistTableViewer extends AbstractLayout
             public void menuAboutToShow(IMenuManager menuManager)
             {
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
-                menuManager.add(new Separator("group1")); //$NON-NLS-1$
-                menuManager.add(new Separator("group2")); //$NON-NLS-1$
-                menuManager.add(new Separator("group3")); //$NON-NLS-1$
-                menuManager.add(new Separator("group4")); //$NON-NLS-1$
-                menuManager.add(new Separator("group5")); //$NON-NLS-1$
-                menuManager.add(new Separator("group6")); //$NON-NLS-1$
+                menuManager.add(new Separator("search")); //$NON-NLS-1$
                 getView().fillMenuBars(menuManager);
                 menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
                 menuManager.add(new Separator("bottom")); //$NON-NLS-1$

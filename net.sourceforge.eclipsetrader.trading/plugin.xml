@@ -269,23 +269,23 @@
             id="watchlistView"
             targetID="net.sourceforge.eclipsetrader.watchlist">
          <action
+               class="net.sourceforge.eclipsetrader.trading.actions.NewAlertAction"
+               enablesFor="1"
+               id="net.sourceforge.eclipsetrader.trading.newAlert"
+               label="New Alert"
+               menubarPath="additions"/>
+         <action
                class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
                label="Open Level2"
                menubarPath="top"/>
          <action
-               class="net.sourceforge.eclipsetrader.trading.actions.NewAlertAction"
-               enablesFor="1"
-               id="net.sourceforge.eclipsetrader.trading.newAlert"
-               label="New Alert"
-               menubarPath="top"/>
-         <action
                class="net.sourceforge.eclipsetrader.trading.actions.SecurityPatternSearchAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.searchPattern"
                label="Search Pattern"
-               menubarPath="group5"/>
+               menubarPath="search"/>
       </viewerContribution>
       <viewerContribution
             id="securitiesView"
@@ -374,18 +374,18 @@
                class="net.sourceforge.eclipsetrader.trading.actions.PatternSearchAction"
                id="net.sourceforge.eclipsetrader.trading.pattern"
                label="Search Pattern..."
-               menubarPath="group4"
-               style="push"/>
-         <action
-               class="net.sourceforge.eclipsetrader.trading.actions.WatchlistSettingsAction"
-               id="net.sourceforge.eclipsetrader.trading.watchlistSettings"
-               label="Settings..."
-               menubarPath="group6"
+               menubarPath="search"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistAction"
                id="net.sourceforge.eclipsetrader.trading.deleteWatchlist"
                label="Delete Watchlist"
+               menubarPath="bottom"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.trading.actions.WatchlistSettingsAction"
+               id="net.sourceforge.eclipsetrader.trading.watchlistSettings"
+               label="Settings..."
                menubarPath="bottom"
                style="push"/>
       </viewContribution>

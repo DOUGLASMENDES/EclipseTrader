@@ -26,7 +26,6 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 public class NewAlertAction implements IWorkbenchWindowActionDelegate, IViewActionDelegate
 {
-    private String defaultText;
     private WatchlistItemSelection selection;
 
     /* (non-Javadoc)
@@ -73,17 +72,9 @@ public class NewAlertAction implements IWorkbenchWindowActionDelegate, IViewActi
      */
     public void selectionChanged(IAction action, ISelection selection)
     {
-        if (defaultText == null)
-            defaultText = action.getText();
-        
         this.selection = null;
         if (selection instanceof WatchlistItemSelection)
-        {
             this.selection = (WatchlistItemSelection)selection;
-            action.setText(defaultText + " for " + this.selection.getWatchlistItem().getSecurity().getDescription());
-        }
-        else
-            action.setText(defaultText);
         action.setEnabled(this.selection != null);
     }
 }

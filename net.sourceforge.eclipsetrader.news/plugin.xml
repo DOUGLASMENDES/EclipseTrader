@@ -94,7 +94,7 @@
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.news.showNews"
                label="%ShowNewsAction.label"
-               menubarPath="group2"
+               menubarPath="additions"
                style="push"/>
       </viewerContribution>
       <viewerContribution
