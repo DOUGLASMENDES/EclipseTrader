@@ -458,10 +458,8 @@ public class WatchlistTableViewer extends AbstractLayout
         if (o instanceof WatchlistItem)
         {
             if (sortColumn >= 0)
-            {
                 Collections.sort(getView().getWatchlist().getItems(), comparator);
-                updateView();
-            }
+            updateView();
         }
 /*        {
             WatchlistItem watchlistItem = (WatchlistItem)o;
