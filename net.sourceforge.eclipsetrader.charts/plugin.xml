@@ -35,7 +35,7 @@
             class="net.sourceforge.eclipsetrader.charts.Perspective"
             icon="icons/eview16/chart_curve.png"
             id="net.sourceforge.eclipsetrader.charts"
-            name="Charts"/>
+            name="%perspectiveName"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -81,7 +81,7 @@
                class="net.sourceforge.eclipsetrader.charts.actions.EditObjectAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.charts.editIndicator"
-               label="Edit Object"
+               label="%editObjectAction"
                menubarPath="top"
                style="push">
             <enablement>
@@ -91,7 +91,7 @@
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
                id="net.sourceforge.eclipsetrader.charts.newIndicator"
-               label="New Indicator"
+               label="%newIndicatorAction"
                menubarPath="top"
                style="push"/>
       </viewerContribution>
@@ -102,7 +102,7 @@
                class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.actions.openChart"
-               label="Open Chart"
+               label="%openChartAction"
                menubarPath="top"
                style="push"/>
       </viewerContribution>
@@ -114,7 +114,7 @@
                enablesFor="1"
                icon="icons/eview16/chart_curve.png"
                id="net.sourceforge.eclipsetrader.actions.openChart"
-               label="Open Chart"
+               label="%openChartAction"
                menubarPath="top"
                style="push"/>
       </viewerContribution>
@@ -152,13 +152,13 @@
             class="net.sourceforge.eclipsetrader.charts.views.ChartView"
             icon="icons/eview16/chart_curve.png"
             id="net.sourceforge.eclipsetrader.views.chart"
-            name="Chart"/>
+            name="%chartViewName"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.charts.views.DataView"
             icon="icons/eview16/database_table.png"
             id="net.sourceforge.eclipsetrader.chartData"
-            name="Chart Data"/>
+            name="%chartDataViewName"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
@@ -173,7 +173,7 @@
                class="net.sourceforge.eclipsetrader.charts.actions.DeleteObjectAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.charts.deleteIndicator"
-               label="Delete Object"
+               label="%deleteObjectAction"
                menubarPath="group1"
                style="push">
          </action>
@@ -181,7 +181,7 @@
                class="net.sourceforge.eclipsetrader.charts.actions.EditObjectAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.charts.editIndicator"
-               label="Edit Object"
+               label="%editObjectAction"
                menubarPath="group1"
                style="push">
             <enablement>
@@ -192,42 +192,42 @@
                class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
                icon="icons/elcl16/chart_line_add.png"
                id="net.sourceforge.eclipsetrader.charts.newIndicator"
-               label="New Indicator"
+               label="%newIndicatorAction"
                menubarPath="group1"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.UpdateChartAction"
                icon="icons/elcl16/refresh.gif"
                id="net.sourceforge.eclipsetrader.charts.refresh"
-               label="Update Chart"
+               label="%updateChartAction"
                menubarPath="group4"
                style="push"
                toolbarPath="refresh"
-               tooltip="Update chart data"/>
+               tooltip="%updateChartTooltip"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.objects.LineAction"
                icon="icons/etool16/line.gif"
                id="net.sourceforge.eclipsetrader.charts.line"
-               label="Line"
+               label="%lineObjectAction"
                style="push"
                toolbarPath="objects"
-               tooltip="New line"/>
+               tooltip="%lineObjectTooltip"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.objects.HorizontalLineAction"
                icon="icons/etool16/horizontalLine.gif"
                id="net.sourceforge.eclipsetrader.charts.horizontalLine"
-               label="Horizontal Line"
+               label="%horizontalLineAction"
                style="push"
                toolbarPath="objects"
-               tooltip="New horizontal line"/>
+               tooltip="%horizontalLineTooltip"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.objects.FiboLineAction"
                icon="icons/etool16/fiboline.gif"
                id="net.sourceforge.eclipsetrader.charts.fiboline"
-               label="FiboLine"
+               label="%fibolineAction"
                style="push"
                toolbarPath="objects"
-               tooltip="New fiboline"/>
+               tooltip="%fibolineTooltip"/>
       </viewContribution>
       <viewContribution
             id="securitiesView"
@@ -237,14 +237,14 @@
                enablesFor="1"
                icon="icons/eview16/chart_curve.png"
                id="net.sourceforge.eclipsetrader.actions.openChart"
-               label="Open Chart"
+               label="%openChartAction"
                menubarPath="top"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.UpdateAllChartsAction"
                icon="icons/elcl16/refresh.gif"
                id="net.sourceforge.eclipsetrader.charts.updateAll"
-               label="Update all Charts"
+               label="%updateAllChartsAction"
                menubarPath="bottom"
                style="push"/>
       </viewContribution>
@@ -255,7 +255,7 @@
                class="net.sourceforge.eclipsetrader.charts.actions.OpenChartAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.actions.openChart"
-               label="Open Chart"
+               label="%openChartAction"
                menubarPath="top"
                style="push"/>
       </viewContribution>

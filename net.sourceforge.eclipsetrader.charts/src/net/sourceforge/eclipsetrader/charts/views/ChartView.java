@@ -58,6 +58,7 @@ import net.sourceforge.eclipsetrader.charts.events.TabSelection;
 import net.sourceforge.eclipsetrader.charts.internal.CopyAction;
 import net.sourceforge.eclipsetrader.charts.internal.CutAction;
 import net.sourceforge.eclipsetrader.charts.internal.DeleteAction;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.internal.PasteAction;
 import net.sourceforge.eclipsetrader.charts.internal.PasteSpecialAction;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
@@ -122,7 +123,7 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, Observer
 {
-    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.chart";
+    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.chart"; //$NON-NLS-1$
     public static final int PERIOD_ALL = 0;
     public static final int PERIOD_LAST6MONTHS = 1;
     public static final int PERIOD_LASTYEAR = 2;
@@ -175,8 +176,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         menuManager.add(new Separator("additions")); //$NON-NLS-1$
         menuManager.add(new Separator("bottom")); //$NON-NLS-1$
         
-        IMenuManager newObjectMenu = new MenuManager("New Object", "newObject");
-        menuManager.appendToGroup("group2", newObjectMenu);
+        IMenuManager newObjectMenu = new MenuManager(Messages.ChartView_NewObject, "newObject"); //$NON-NLS-2$
+        menuManager.appendToGroup("group2", newObjectMenu); //$NON-NLS-1$
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry.getExtensionPoint(ChartsPlugin.OBJECTS_EXTENSION_POINT);
@@ -213,16 +214,16 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             }
         }
 
-        IMenuManager periodMenu = new MenuManager("Period", "period");
-        menuManager.appendToGroup("group3", periodMenu);
+        IMenuManager periodMenu = new MenuManager(Messages.ChartView_Period, "period"); //$NON-NLS-2$
+        menuManager.appendToGroup("group3", periodMenu); //$NON-NLS-1$
         periodMenu.add(viewAll);
         periodMenu.add(viewLast2Years);
         periodMenu.add(viewLastYear);
         periodMenu.add(viewLast6Months);
         periodMenu.add(viewCustom);
         
-        IMenuManager intervalMenu = new MenuManager("Set Interval", "interval");
-        menuManager.appendToGroup("group3", intervalMenu);
+        IMenuManager intervalMenu = new MenuManager(Messages.ChartView_SetInterval, "interval"); //$NON-NLS-2$
+        menuManager.appendToGroup("group3", intervalMenu); //$NON-NLS-1$
         intervalMenu.add(monthlyAction);
         intervalMenu.add(weeklyAction);
         intervalMenu.add(dailyAction);
@@ -234,8 +235,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         intervalMenu.add(minute2Action);
         intervalMenu.add(minute1Action);
 
-        menuManager.appendToGroup("group3", new Separator());
-        menuManager.appendToGroup("group3", autoScaleAction);
+        menuManager.appendToGroup("group3", new Separator()); //$NON-NLS-1$
+        menuManager.appendToGroup("group3", autoScaleAction); //$NON-NLS-1$
         
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
@@ -316,18 +317,18 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         getSite().setSelectionProvider(new ChartSelectionProvider());
         getSite().getSelectionProvider().setSelection(new NullSelection());
         IActionBars actionBars = getViewSite().getActionBars();
-        actionBars.setGlobalActionHandler("settings", new Action() {
+        actionBars.setGlobalActionHandler("settings", new Action() { //$NON-NLS-1$
             public void run()
             {
                 ChartSettingsDialog dlg = new ChartSettingsDialog(getChart(), getViewSite().getShell());
                 dlg.open();
             }
         });
-        actionBars.setGlobalActionHandler("cut", cutAction = new CutAction(this));
-        actionBars.setGlobalActionHandler("copy", copyAction = new CopyAction(this));
-        actionBars.setGlobalActionHandler("paste", pasteAction = new PasteAction(this));
-        actionBars.setGlobalActionHandler("pasteSpecial", pasteSpecialAction = new PasteSpecialAction(this));
-        actionBars.setGlobalActionHandler("delete", deleteAction = new DeleteAction(this));
+        actionBars.setGlobalActionHandler("cut", cutAction = new CutAction(this)); //$NON-NLS-1$
+        actionBars.setGlobalActionHandler("copy", copyAction = new CopyAction(this)); //$NON-NLS-1$
+        actionBars.setGlobalActionHandler("paste", pasteAction = new PasteAction(this)); //$NON-NLS-1$
+        actionBars.setGlobalActionHandler("pasteSpecial", pasteSpecialAction = new PasteSpecialAction(this)); //$NON-NLS-1$
+        actionBars.setGlobalActionHandler("delete", deleteAction = new DeleteAction(this)); //$NON-NLS-1$
 
         try {
             security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
@@ -395,18 +396,18 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         askInitialUpdate = (security.getHistory().size() == 0);
                     if (askInitialUpdate)
                     {
-                        if (MessageDialog.openConfirm(getViewSite().getShell(), chart.getTitle(), "No data available.\r\nWould you like to download the chart data now ?"))
+                        if (MessageDialog.openQuestion(getViewSite().getShell(), chart.getTitle(), Messages.ChartView_NoDataMessage))
                         {
-                            String id = "";
+                            String id = ""; //$NON-NLS-1$
                             if (chart.getSecurity().getHistoryFeed() != null)
                                 id = chart.getSecurity().getHistoryFeed().getId();
                             final IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(id);
                             if (feed != null)
                             {
-                                Job job = new Job("Update chart data") {
+                                Job job = new Job(Messages.ChartView_UpdateChartMessage) {
                                     protected IStatus run(IProgressMonitor monitor)
                                     {
-                                        monitor.beginTask("Updating " + chart.getSecurity().getDescription(), 1);
+                                        monitor.beginTask(Messages.ChartView_UpdatingMessage + chart.getSecurity().getDescription(), 1);
                                         int interval = IHistoryFeed.INTERVAL_DAILY;
                                         if (getInterval() < BarData.INTERVAL_DAILY)
                                             interval = IHistoryFeed.INTERVAL_MINUTE;
@@ -703,7 +704,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         ChartTabFolder folder = (ChartTabFolder)event.widget;
         ChartTabItem item = (ChartTabItem)event.item;
         
-        if (MessageDialog.openConfirm(folder.getShell(), "Chart", "Do you really want to remove the " + item.getText() + " tab ?"))
+        if (MessageDialog.openQuestion(folder.getShell(), getPartName(), Messages.ChartView_DeleteMessagePrefix + item.getText() + Messages.ChartView_DeleteMessageSuffix))
         {
             final ChartTab tab = item.getChartTab();
             sashForm.getDisplay().asyncExec(new Runnable() {
@@ -921,7 +922,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             addCTabFolder2Listener(ChartView.this);
             setMaximizeVisible(true);
             setMinimizeVisible(false);
-            setSimple(PlatformUI.getPreferenceStore().getBoolean("SHOW_TRADITIONAL_STYLE_TABS"));
+            setSimple(PlatformUI.getPreferenceStore().getBoolean("SHOW_TRADITIONAL_STYLE_TABS")); //$NON-NLS-1$
             addSelectionListener(new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e)
                 {
@@ -1055,7 +1056,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             menuMgr.addMenuListener(new IMenuListener() {
                 public void menuAboutToShow(IMenuManager mgr)
                 {
-                    mgr.add(new GroupMarker("top"));
+                    mgr.add(new GroupMarker("top")); //$NON-NLS-1$
                     mgr.add(new Separator());
                     mgr.add(cutAction);
                     mgr.add(copyAction);
@@ -1064,7 +1065,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     mgr.add(new Separator());
                     mgr.add(deleteAction);
                     mgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
-                    mgr.add(new GroupMarker("bottom"));
+                    mgr.add(new GroupMarker("bottom")); //$NON-NLS-1$
                 }
             });
             Menu menu = menuMgr.createContextMenu(plot.getIndicatorPlot());

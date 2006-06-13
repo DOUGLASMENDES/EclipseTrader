@@ -20,6 +20,7 @@ import java.util.Observer;
 import net.sourceforge.eclipsetrader.charts.Indicator;
 import net.sourceforge.eclipsetrader.charts.Plot;
 import net.sourceforge.eclipsetrader.charts.PlotLine;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView.ChartTabItem;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.BarData;
@@ -41,7 +42,7 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class DataView extends ViewPart implements IPartListener, Observer
 {
-    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.chartData";
+    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.chartData"; //$NON-NLS-1$
     private Table table;
     private ChartView chartView;
     private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
@@ -74,15 +75,15 @@ public class DataView extends ViewPart implements IPartListener, Observer
         column.setResizable(false);
 
         column = new TableColumn(table, SWT.RIGHT);
-        column.setText("Date");
+        column.setText(Messages.DataView_Date);
         column = new TableColumn(table, SWT.RIGHT);
-        column.setText("Open");
+        column.setText(Messages.DataView_Open);
         column = new TableColumn(table, SWT.RIGHT);
-        column.setText("High");
+        column.setText(Messages.DataView_High);
         column = new TableColumn(table, SWT.RIGHT);
-        column.setText("Low");
+        column.setText(Messages.DataView_Low);
         column = new TableColumn(table, SWT.RIGHT);
-        column.setText("Close");
+        column.setText(Messages.DataView_Close);
         
         for (int i = 1; i < table.getColumnCount(); i++)
             table.getColumn(i).pack();
@@ -114,7 +115,7 @@ public class DataView extends ViewPart implements IPartListener, Observer
         if (table.isDisposed())
             return;
         
-        setContentDescription((chartView != null) ? chartView.getPartName() : "");
+        setContentDescription((chartView != null) ? chartView.getPartName() : ""); //$NON-NLS-1$
 
         table.getDisplay().asyncExec(new Runnable() {
             public void run()
@@ -199,7 +200,7 @@ public class DataView extends ViewPart implements IPartListener, Observer
                                     if (rowIndex >= 0)
                                     {
                                         while(rowIndex < table.getItemCount())
-                                            table.getItem(rowIndex++).setText(columnIndex, "");
+                                            table.getItem(rowIndex++).setText(columnIndex, ""); //$NON-NLS-1$
                                         
                                         rowIndex = table.getItemCount() - (table.getItemCount() - line.getSize()) - 1;
                                         for (Iterator iter = line.iterator(); iter.hasNext(); )
