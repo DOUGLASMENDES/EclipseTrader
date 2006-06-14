@@ -4,7 +4,8 @@
       label="EclipseTrader"
       version="0.24.0"
       provider-name="Sourceforge.net"
-      plugin="net.sourceforge.eclipsetrader">
+      plugin="net.sourceforge.eclipsetrader"
+      image="eclipse_update_120.jpg">
 
    <description>
       %description
@@ -24,10 +25,6 @@
 
    <includes
          id="org.eclipse.rcp"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.platform.launchers"
          version="0.0.0"/>
 
    <requires>

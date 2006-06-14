@@ -1,5 +1,0 @@
-#Eclipse Product File
-#Thu Jun 01 09:16:49 CEST 2006
-version=@buildTag@
-name=EclipseTrader
-id=net.sourceforge.eclipsetrader.product
