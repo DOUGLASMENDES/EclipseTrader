@@ -85,7 +85,11 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="net.sourceforge.eclipsetrader"
+            class="org.eclipse.ui.ExtensionFactory:appearancePreferencePage"
+            id="org.eclipse.ui.preferencePages.Appearance"
+            name="Appearance"/>
+      <page
+            category="org.eclipse.ui.preferencePages.Appearance"
             class="org.eclipse.ui.ExtensionFactory:colorsAndFontsPreferencePage"
             id="org.eclipse.ui.preferencePages.ColorsAndFonts"
             name="Colors and Fonts"/>
