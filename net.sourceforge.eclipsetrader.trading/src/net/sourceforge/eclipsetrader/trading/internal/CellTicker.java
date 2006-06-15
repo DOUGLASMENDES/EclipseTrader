@@ -188,7 +188,9 @@ public class CellTicker
 
     public void setBackground(Color background)
     {
-        this.background = background;
+        if (this.background != null)
+            this.background.dispose();
+        this.background = new Color(tableItem.getDisplay(), background.getRGB());
     }
 
     public Color getForeground()
@@ -198,7 +200,9 @@ public class CellTicker
 
     public void setForeground(Color foreground)
     {
-        this.foreground = foreground;
+        if (this.foreground != null)
+            this.foreground.dispose();
+        this.foreground = new Color(tableItem.getDisplay(), foreground.getRGB());
     }
 
     public Color getDecrementBackground()

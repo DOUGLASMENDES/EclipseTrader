@@ -112,9 +112,25 @@
             id="net.sourceforge.eclipsetrader.watchlist"
             label="Watchlist"/>
       <themeElementCategory
+            class="net.sourceforge.eclipsetrader.trading.internal.TableViewerThemePreview"
             id="net.sourceforge.eclipsetrader.watchlist.table"
             label="Table Layout"
             parentId="net.sourceforge.eclipsetrader.watchlist"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_POSITIVE_FOREGROUND"
+            label="Positive Value Color"
+            value="0,224,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_NEGATIVE_FOREGROUND"
+            label="Negative Value Color"
+            value="224,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_ALERT_BACKGROUND"
+            label="Alert Hilight Color"
+            value="255,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_EVEN_ROWS_BACKGROUND"
@@ -135,6 +151,46 @@
             id="TABLE_ODD_ROWS_FOREGROUND"
             label="Odd Rows Foreground"
             value="0,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_TOTALS_ROWS_BACKGROUND"
+            label="Totals Rows Background"
+            value="255,255,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_TOTALS_ROWS_FOREGROUND"
+            label="Totals Rows Foreground"
+            value="0,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.table"
+            id="TABLE_TICK_BACKGROUND"
+            label="Changed Value Background"
+            value="255,224,0"/>
+      <themeElementCategory
+            class="net.sourceforge.eclipsetrader.trading.internal.BoxViewerThemePreview"
+            id="net.sourceforge.eclipsetrader.watchlist.box"
+            label="Ribbon Layout"
+            parentId="net.sourceforge.eclipsetrader.watchlist"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.box"
+            id="BOX_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.box"
+            id="BOX_BACKGROUND"
+            label="Background"
+            value="255,255,255"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.box"
+            id="BOX_POSITIVE_FOREGROUND"
+            label="Positive Value Color"
+            value="0,224,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.watchlist.box"
+            id="BOX_NEGATIVE_FOREGROUND"
+            label="Negative Value Color"
+            value="224,0,0"/>
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.level2"
             label="Level II"/>

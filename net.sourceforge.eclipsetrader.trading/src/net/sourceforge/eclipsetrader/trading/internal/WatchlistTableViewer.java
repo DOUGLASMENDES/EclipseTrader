@@ -74,35 +74,66 @@ import org.eclipse.ui.themes.IThemeManager;
  */
 public class WatchlistTableViewer extends AbstractLayout
 {
-    public static final String TABLE_EVEN_ROWS_BACKGROUND = "TABLE_EVEN_ROWS_BACKGROUND";
-    public static final String TABLE_EVEN_ROWS_FOREGROUND = "TABLE_EVEN_ROWS_FOREGROUND";
-    public static final String TABLE_ODD_ROWS_BACKGROUND = "TABLE_ODD_ROWS_BACKGROUND";
-    public static final String TABLE_ODD_ROWS_FOREGROUND = "TABLE_ODD_ROWS_FOREGROUND";
+    public static final String EVEN_ROWS_BACKGROUND = "TABLE_EVEN_ROWS_BACKGROUND";
+    public static final String EVEN_ROWS_FOREGROUND = "TABLE_EVEN_ROWS_FOREGROUND";
+    public static final String ODD_ROWS_BACKGROUND = "TABLE_ODD_ROWS_BACKGROUND";
+    public static final String ODD_ROWS_FOREGROUND = "TABLE_ODD_ROWS_FOREGROUND";
+    public static final String TOTALS_ROWS_BACKGROUND = "TABLE_TOTALS_ROWS_BACKGROUND";
+    public static final String TOTALS_ROWS_FOREGROUND = "TABLE_TOTALS_ROWS_FOREGROUND";
+    public static final String TICK_BACKGROUND = "TABLE_TICK_BACKGROUND";
+    public static final String POSITIVE_FOREGROUND = "TABLE_POSITIVE_FOREGROUND";
+    public static final String NEGATIVE_FOREGROUND = "TABLE_NEGATIVE_FOREGROUND";
+    public static final String ALERT_BACKGROUND = "TABLE_ALERT_BACKGROUND";
     private Composite content;
     private EditableTable table;
     private Color evenForeground;
     private Color evenBackground;
     private Color oddForeground;
     private Color oddBackground;
-    private Color negativeForeground = new Color(null, 240, 0, 0);
-    private Color positiveForeground = new Color(null, 0, 192, 0);
-    private Color alertHilightBackground = new Color(null, 224, 0, 0);
+    private Color totalsForeground;
+    private Color totalsBackground;
+    private Color tickBackground;
+    private Color negativeForeground;
+    private Color positiveForeground;
+    private Color alertHilightBackground;
     private boolean showTotals = false;
     private int sortColumn = -1;
     private int sortDirection = 0;
-    private ITheme theme;
     private Action propertiesAction;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
-            if (event.getProperty().equals(TABLE_EVEN_ROWS_BACKGROUND))
-                evenBackground = theme.getColorRegistry().get(TABLE_EVEN_ROWS_BACKGROUND);
-            else if (event.getProperty().equals(TABLE_EVEN_ROWS_FOREGROUND))
-                evenForeground = theme.getColorRegistry().get(TABLE_EVEN_ROWS_FOREGROUND);
-            else if (event.getProperty().equals(TABLE_ODD_ROWS_BACKGROUND))
-                oddBackground = theme.getColorRegistry().get(TABLE_ODD_ROWS_BACKGROUND);
-            else if (event.getProperty().equals(TABLE_ODD_ROWS_FOREGROUND))
-                oddForeground = theme.getColorRegistry().get(TABLE_ODD_ROWS_FOREGROUND);
+            if (event.getProperty().equals(IThemeManager.CHANGE_CURRENT_THEME))
+            {
+                ((ITheme) event.getOldValue()).removePropertyChangeListener(this);
+                setTheme((ITheme) event.getNewValue());
+            }
+            else
+            {
+                IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+                ITheme theme = themeManager.getCurrentTheme();
+
+                if (event.getProperty().equals(EVEN_ROWS_BACKGROUND))
+                    evenBackground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(EVEN_ROWS_FOREGROUND))
+                    evenForeground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(ODD_ROWS_BACKGROUND))
+                    oddBackground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(ODD_ROWS_FOREGROUND))
+                    oddForeground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(TOTALS_ROWS_FOREGROUND))
+                    totalsForeground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(TOTALS_ROWS_FOREGROUND))
+                    totalsForeground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(POSITIVE_FOREGROUND))
+                    positiveForeground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(NEGATIVE_FOREGROUND))
+                    negativeForeground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(TICK_BACKGROUND))
+                    tickBackground = theme.getColorRegistry().get(event.getProperty());
+                else if (event.getProperty().equals(ALERT_BACKGROUND))
+                    alertHilightBackground = theme.getColorRegistry().get(event.getProperty());
+            }
             updateView();
         }
     };
@@ -169,12 +200,9 @@ public class WatchlistTableViewer extends AbstractLayout
         content.setLayout(gridLayout);
         
         IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
-        theme = themeManager.getCurrentTheme();
-        evenForeground = theme.getColorRegistry().get(TABLE_EVEN_ROWS_FOREGROUND);
-        evenBackground = theme.getColorRegistry().get(TABLE_EVEN_ROWS_BACKGROUND);
-        oddForeground = theme.getColorRegistry().get(TABLE_ODD_ROWS_FOREGROUND);
-        oddBackground = theme.getColorRegistry().get(TABLE_ODD_ROWS_BACKGROUND);
-        theme.addPropertyChangeListener(themeChangeListener);
+        themeManager.addPropertyChangeListener(themeChangeListener);
+        ITheme theme = themeManager.getCurrentTheme();
+        setTheme(theme);
 
         table = new EditableTable(content, SWT.MULTI|SWT.FULL_SELECTION);
         table.setHeaderVisible(true);
@@ -309,10 +337,13 @@ public class WatchlistTableViewer extends AbstractLayout
      */
     public void dispose()
     {
+        IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+        themeManager.removePropertyChangeListener(themeChangeListener);
+        ITheme theme = themeManager.getCurrentTheme();
+        theme.removePropertyChangeListener(themeChangeListener);
+
         if (content != null)
             content.dispose();
-        if (theme != null)
-            theme.removePropertyChangeListener(themeChangeListener);
         
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler("properties", null);
@@ -400,8 +431,8 @@ public class WatchlistTableViewer extends AbstractLayout
             }
             if (item == null)
                 item = new WatchlistTotalsTableItem(table, SWT.NONE, getView().getWatchlist().getTotals());
-            item.setBackground(new Color(null, 255, 255, 0));
-            item.setForeground(new Color(null, 0, 0, 0));
+            item.setBackground(totalsBackground);
+            item.setForeground(totalsForeground);
             index++;
         }
 
@@ -538,6 +569,21 @@ public class WatchlistTableViewer extends AbstractLayout
                 break;
             }
         }
+    }
+    
+    protected void setTheme(ITheme theme)
+    {
+        positiveForeground = theme.getColorRegistry().get(POSITIVE_FOREGROUND);
+        negativeForeground = theme.getColorRegistry().get(NEGATIVE_FOREGROUND);
+        evenForeground = theme.getColorRegistry().get(EVEN_ROWS_FOREGROUND);
+        evenBackground = theme.getColorRegistry().get(EVEN_ROWS_BACKGROUND);
+        oddForeground = theme.getColorRegistry().get(ODD_ROWS_FOREGROUND);
+        oddBackground = theme.getColorRegistry().get(ODD_ROWS_BACKGROUND);
+        totalsForeground = theme.getColorRegistry().get(TOTALS_ROWS_FOREGROUND);
+        totalsBackground = theme.getColorRegistry().get(TOTALS_ROWS_BACKGROUND);
+        tickBackground = theme.getColorRegistry().get(TICK_BACKGROUND);
+        alertHilightBackground = theme.getColorRegistry().get(ALERT_BACKGROUND);
+        theme.addPropertyChangeListener(themeChangeListener);
     }
 
     public Table getTable()
@@ -685,7 +731,7 @@ public class WatchlistTableViewer extends AbstractLayout
         {
             super(parent, style, index);
             addDisposeListener(this);
-            ticker = new CellTicker(this, CellTicker.BACKGROUND|CellTicker.FOREGROUND);
+            ticker = new CellTicker(this, CellTicker.BACKGROUND);
             setWatchlistItem(watchlistItem);
         }
 
@@ -693,7 +739,7 @@ public class WatchlistTableViewer extends AbstractLayout
         {
             super(parent, style);
             addDisposeListener(this);
-            ticker = new CellTicker(this, CellTicker.BACKGROUND|CellTicker.FOREGROUND);
+            ticker = new CellTicker(this, CellTicker.BACKGROUND);
             setWatchlistItem(watchlistItem);
         }
 
@@ -719,6 +765,8 @@ public class WatchlistTableViewer extends AbstractLayout
             }
             
             this.watchlistItem.addObserver(this);
+
+            ticker.setBackground(tickBackground);
         }
         
         WatchlistItem getWatchlistItem()

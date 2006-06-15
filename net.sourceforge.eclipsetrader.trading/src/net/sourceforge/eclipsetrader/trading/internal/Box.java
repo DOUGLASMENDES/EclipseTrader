@@ -48,7 +48,7 @@ public class Box extends Composite implements PaintListener
         gridLayout.horizontalSpacing = 5;
         gridLayout.verticalSpacing = 2;
         setLayout(gridLayout);
-        setBackground(background);
+        super.setBackground(background);
         addPaintListener(this);
         
         row1 = new Composite(this, SWT.NONE);
@@ -167,5 +167,53 @@ public class Box extends Composite implements PaintListener
         e.gc.setForeground(foreground);
         Rectangle rect = getClientArea();
         e.gc.drawRectangle(0, 0, rect.width - 1, rect.height - 1);
+    }
+
+    public void setBackground(Color background)
+    {
+        if (this.background != null)
+            this.background.dispose();
+        this.background = new Color(null, background.getRGB());
+
+        super.setBackground(background);
+        row1.setBackground(background);
+        name.setBackground(background);
+        time.setBackground(background);
+        row2.setBackground(background);
+        value.setBackground(background);
+        change.setBackground(background);
+        change.getParent().setBackground(background);
+        icon.setBackground(background);
+    }
+
+    public void setForeground(Color foreground)
+    {
+        if (this.foreground != null)
+            this.foreground.dispose();
+        this.foreground = new Color(null, foreground.getRGB());
+        name.setForeground(foreground);
+        time.setForeground(foreground);
+        value.setForeground(foreground);
+        if (!change.getText().startsWith("-") && !change.getText().startsWith("+"))
+            this.change.setForeground(foreground);
+        redraw();
+    }
+
+    public void setNegativeForeground(Color negativeForeground)
+    {
+        if (this.negativeForeground != null)
+            this.negativeForeground.dispose();
+        this.negativeForeground = new Color(null, negativeForeground.getRGB());
+        if (change.getText().startsWith("-"))
+            this.change.setForeground(negativeForeground);
+    }
+
+    public void setPositiveForeground(Color positiveForeground)
+    {
+        if (this.positiveForeground != null)
+            this.positiveForeground.dispose();
+        this.positiveForeground = new Color(null, positiveForeground.getRGB());
+        if (change.getText().startsWith("+"))
+            this.change.setForeground(positiveForeground);
     }
 }
