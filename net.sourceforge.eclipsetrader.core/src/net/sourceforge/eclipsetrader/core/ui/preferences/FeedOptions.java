@@ -18,6 +18,7 @@ import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -53,23 +54,30 @@ public class FeedOptions
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Feed");
+        label.setText(Messages.FeedOptions_Feed);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         feed = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
         feed.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         feed.setVisibleItemCount(10);
-        feed.add("");
+        feed.add(""); //$NON-NLS-1$
+        feed.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                updateFeedExchanges();
+            }
+        });
 
         label = new Label(content, SWT.NONE);
-        label.setText("Exchange");
+        label.setText(Messages.FeedOptions_Exchange);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         exchange = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
         exchange.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         exchange.setVisibleItemCount(10);
-        exchange.add("");
+        exchange.add(""); //$NON-NLS-1$
+        exchange.setEnabled(false);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Symbol");
+        label.setText(Messages.FeedOptions_Symbol);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         symbol = new Text(content, SWT.BORDER);
         symbol.setLayoutData(new GridData(100, SWT.DEFAULT));
@@ -157,7 +165,7 @@ public class FeedOptions
     protected void updateFeedExchanges()
     {
         exchange.removeAll();
-        exchange.add("");
+        exchange.add(""); //$NON-NLS-1$
 
         String feedId = (String)feed.getData(String.valueOf(feed.getSelectionIndex()));
         if (feedId != null)

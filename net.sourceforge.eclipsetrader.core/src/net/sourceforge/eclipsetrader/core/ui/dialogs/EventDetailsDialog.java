@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Event;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -43,9 +44,9 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
     Text longMessage;
     Button up;
     Button down;
-    Image upImage = CorePlugin.getImageDescriptor("icons/elcl16/prev_nav.gif").createImage();
-    Image downImage = CorePlugin.getImageDescriptor("icons/elcl16/next_nav.gif").createImage();
-    SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    Image upImage = CorePlugin.getImageDescriptor("icons/elcl16/prev_nav.gif").createImage(); //$NON-NLS-1$
+    Image downImage = CorePlugin.getImageDescriptor("icons/elcl16/next_nav.gif").createImage(); //$NON-NLS-1$
+    SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
     private DisposeListener dialogDisposeListener = new DisposeListener() {
         public void widgetDisposed(DisposeEvent e)
         {
@@ -67,7 +68,7 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Event Details");
+        newShell.setText(Messages.EventDetailsDialog_Title);
         newShell.addDisposeListener(dialogDisposeListener);
         CorePlugin.getRepository().allEvents().addCollectionObserver(this);
     }
@@ -87,7 +88,7 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Date");
+        label.setText(Messages.EventDetailsDialog_Date);
         label.setLayoutData(new GridData(60, SWT.DEFAULT));
         date = new Label(content, SWT.NONE);
 
@@ -99,12 +100,12 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
         createNavigationButtons(buttons);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Security");
+        label.setText(Messages.EventDetailsDialog_Security);
         label.setLayoutData(new GridData(60, SWT.DEFAULT));
         security = new Label(content, SWT.NONE);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Message");
+        label.setText(Messages.EventDetailsDialog_Message);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
         message = new Text(content, SWT.BORDER|SWT.READ_ONLY|SWT.WRAP);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -113,7 +114,7 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
         message.setLayoutData(gridData);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Details");
+        label.setText(Messages.EventDetailsDialog_Details);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
         longMessage = new Text(content, SWT.BORDER|SWT.READ_ONLY|SWT.MULTI|SWT.V_SCROLL|SWT.WRAP);
         gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false, 3, 1);
@@ -199,7 +200,7 @@ public class EventDetailsDialog extends Dialog implements ICollectionObserver
     protected void updateEvent()
     {
         date.setText(dateTimeFormatter.format(event.getDate()));
-        security.setText(event.getSecurity() != null ? event.getSecurity().getDescription() : "");
+        security.setText(event.getSecurity() != null ? event.getSecurity().getDescription() : ""); //$NON-NLS-1$
         message.setText(event.getMessage());
         longMessage.setText(event.getLongMessage());
         message.getParent().layout();

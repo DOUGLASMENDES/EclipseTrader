@@ -17,6 +17,7 @@ import java.util.Calendar;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
@@ -41,7 +42,7 @@ public class IntradayDataOptions
     private Button thu;
     private Button fri;
     private Button sat;
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
     private Calendar time = Calendar.getInstance();
 
     public IntradayDataOptions()
@@ -58,10 +59,10 @@ public class IntradayDataOptions
         Label label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         enable = new Button(content, SWT.CHECK);
-        enable.setText("Enable automatic build");
+        enable.setText(Messages.IntradayDataOptions_Enable);
         
         label = new Label(content, SWT.NONE);
-        label.setText("Begin (hh:mm)");
+        label.setText(Messages.IntradayDataOptions_Begin);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         beginTime = new Text(content, SWT.BORDER);
         beginTime.setLayoutData(new GridData(60, SWT.DEFAULT));
@@ -80,7 +81,7 @@ public class IntradayDataOptions
         });
         
         label = new Label(content, SWT.NONE);
-        label.setText("End (hh:mm)");
+        label.setText(Messages.IntradayDataOptions_End);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         endTime = new Text(content, SWT.BORDER);
         endTime.setLayoutData(new GridData(60, SWT.DEFAULT));
@@ -99,7 +100,7 @@ public class IntradayDataOptions
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("Week Days");
+        label.setText(Messages.IntradayDataOptions_WeekDays);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
         Composite group = new Composite(content, SWT.NONE);
         gridLayout = new GridLayout(1, true);
@@ -107,22 +108,22 @@ public class IntradayDataOptions
         group.setLayout(gridLayout);
         group.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         sun = new Button(group, SWT.CHECK);
-        sun.setText("Sun");
+        sun.setText(Messages.IntradayDataOptions_Sun);
         mon = new Button(group, SWT.CHECK);
-        mon.setText("Mon");
+        mon.setText(Messages.IntradayDataOptions_Mon);
         tue = new Button(group, SWT.CHECK);
-        tue.setText("Tue");
+        tue.setText(Messages.IntradayDataOptions_Tue);
         wed = new Button(group, SWT.CHECK);
-        wed.setText("Wed");
+        wed.setText(Messages.IntradayDataOptions_Wed);
         thu = new Button(group, SWT.CHECK);
-        thu.setText("Thu");
+        thu.setText(Messages.IntradayDataOptions_Thu);
         fri = new Button(group, SWT.CHECK);
-        fri.setText("Fri");
+        fri.setText(Messages.IntradayDataOptions_Fri);
         sat = new Button(group, SWT.CHECK);
-        sat.setText("Sat");
+        sat.setText(Messages.IntradayDataOptions_Sat);
         
         label = new Label(content, SWT.NONE);
-        label.setText("Keep (days)");
+        label.setText(Messages.IntradayDataOptions_KeepDays);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         keepDays = new Text(content, SWT.BORDER);
         keepDays.setLayoutData(new GridData(60, SWT.DEFAULT));

@@ -27,6 +27,7 @@ import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
 import net.sourceforge.eclipsetrader.core.ui.actions.PropertiesAction;
 import net.sourceforge.eclipsetrader.core.ui.internal.DeleteAction;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.preferences.SecurityPropertiesDialog;
 
 import org.eclipse.jface.action.Action;
@@ -73,13 +74,13 @@ import org.eclipse.ui.themes.IThemeManager;
  */
 public class SecuritiesView extends ViewPart implements ICollectionObserver
 {
-    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.securities";
-    public static final String PREFS_SORT_COLUMN = "SECURITIES_SORT_COLUMN";
-    public static final String PREFS_SORT_DIRECTION = "SECURITIES_SORT_DIRECTION";
-    public static final String PREFS_COLUMNS_SIZE = "SECURITIES_COLUMNS_SIZE";
-    public static final String TABLE_BACKGROUND = "TABLE_BACKGROUND";
-    public static final String TABLE_FOREGROUND = "TABLE_FOREGROUND";
-    public static final String TABLE_FONT = "TABLE_FONT";
+    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.securities"; //$NON-NLS-1$
+    public static final String PREFS_SORT_COLUMN = "SECURITIES_SORT_COLUMN"; //$NON-NLS-1$
+    public static final String PREFS_SORT_DIRECTION = "SECURITIES_SORT_DIRECTION"; //$NON-NLS-1$
+    public static final String PREFS_COLUMNS_SIZE = "SECURITIES_COLUMNS_SIZE"; //$NON-NLS-1$
+    public static final String TABLE_BACKGROUND = "TABLE_BACKGROUND"; //$NON-NLS-1$
+    public static final String TABLE_FOREGROUND = "TABLE_FOREGROUND"; //$NON-NLS-1$
+    public static final String TABLE_FONT = "TABLE_FONT"; //$NON-NLS-1$
     private Table table;
     private int sortColumn = 0;
     private int sortDirection = 1;
@@ -103,8 +104,8 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                         return ((Security)arg1).getDescription().compareTo(((Security)arg0).getDescription());
                 case 2:
                 {
-                    String s0 = "";
-                    String s1 = "";
+                    String s0 = ""; //$NON-NLS-1$
+                    String s1 = ""; //$NON-NLS-1$
                     if (((Security)arg0).getCurrency() != null)
                         s0 = ((Security)arg0).getCurrency().getCurrencyCode();
                     if (((Security)arg1).getCurrency() != null)
@@ -134,7 +135,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         {
             StringBuffer sizes = new StringBuffer();
             for (int i = 0; i < table.getColumnCount(); i++)
-                sizes.append(String.valueOf(table.getColumn(i).getWidth()) + ";");
+                sizes.append(String.valueOf(table.getColumn(i).getWidth()) + ";"); //$NON-NLS-1$
             CorePlugin.getDefault().getPreferenceStore().setValue(PREFS_COLUMNS_SIZE, sizes.toString());
         }
     };
@@ -229,15 +230,15 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             }
         });
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Code");
+        column.setText(Messages.SecuritiesView_Code);
         column.addControlListener(columnControlListener);
         column.addSelectionListener(columnSelectionListener);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Description");
+        column.setText(Messages.SecuritiesView_Description);
         column.addControlListener(columnControlListener);
         column.addSelectionListener(columnSelectionListener);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Currency");
+        column.setText(Messages.SecuritiesView_Currency);
         column.addControlListener(columnControlListener);
         column.addSelectionListener(columnSelectionListener);
         
@@ -276,8 +277,8 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
 
         getSite().setSelectionProvider(new SelectionProvider());
         IActionBars actionBars = getViewSite().getActionBars();
-        actionBars.setGlobalActionHandler("delete", deleteAction);
-        actionBars.setGlobalActionHandler("properties", propertiesAction);
+        actionBars.setGlobalActionHandler("delete", deleteAction); //$NON-NLS-1$
+        actionBars.setGlobalActionHandler("properties", propertiesAction); //$NON-NLS-1$
 
         MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
         menuMgr.setRemoveAllWhenShown(true);
@@ -382,7 +383,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         }
         table.setItemCount(index);
         
-        String[] sizes = CorePlugin.getDefault().getPreferenceStore().getString(PREFS_COLUMNS_SIZE).split(";");
+        String[] sizes = CorePlugin.getDefault().getPreferenceStore().getString(PREFS_COLUMNS_SIZE).split(";"); //$NON-NLS-1$
         for (int i = 0; i < table.getColumnCount(); i++)
         {
             if (i < sizes.length && sizes[i].length() != 0)
@@ -394,7 +395,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                     table.getColumn(i).setWidth(100);
             }
         }
-        if ("gtk".equals(SWT.getPlatform()))
+        if ("gtk".equals(SWT.getPlatform())) //$NON-NLS-1$
             table.getColumn(table.getColumnCount() - 1).pack();
         
         updateSelection();
@@ -468,7 +469,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         {
             setText(0, security.getCode());
             setText(1, security.getDescription());
-            setText(2, security.getCurrency() != null ? security.getCurrency().getCurrencyCode() : "");
+            setText(2, security.getCurrency() != null ? security.getCurrency().getCurrencyCode() : ""); //$NON-NLS-1$
         }
 
         /* (non-Javadoc)

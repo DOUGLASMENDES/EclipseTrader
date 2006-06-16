@@ -17,6 +17,7 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.preferences.FeedOptions;
 import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
 
@@ -35,11 +36,11 @@ import org.eclipse.ui.PlatformUI;
  */
 public class SecurityWizard extends Wizard
 {
-    public static String WINDOW_TITLE = "New Security Wizard";
+    public static String WINDOW_TITLE = Messages.SecurityWizard_Title;
     private SecurityPage securityPage;
-    private FeedOptions quoteFeedOptions = new FeedOptions("quote");
-    private FeedOptions level2FeedOptions = new FeedOptions("level2");
-    private FeedOptions historyFeedOptions = new FeedOptions("history");
+    private FeedOptions quoteFeedOptions = new FeedOptions("quote"); //$NON-NLS-1$
+    private FeedOptions level2FeedOptions = new FeedOptions("level2"); //$NON-NLS-1$
+    private FeedOptions historyFeedOptions = new FeedOptions("history"); //$NON-NLS-1$
     private IntradayDataOptions intradayOptions = new IntradayDataOptions();
 
     public SecurityWizard()
@@ -58,47 +59,47 @@ public class SecurityWizard extends Wizard
         securityPage = new SecurityPage();
         addPage(securityPage);
 
-        WizardPage page = new WizardPage("") {
+        WizardPage page = new WizardPage("") { //$NON-NLS-1$
             public void createControl(Composite parent)
             {
                 setControl(quoteFeedOptions.createControls(parent));
             }
         };
-        page.setTitle("Quote Feed");
-        page.setDescription("Set the security feed for quotes");
+        page.setTitle(Messages.SecurityWizard_QuoteFeedTitle);
+        page.setDescription(Messages.SecurityWizard_QuoteFeedDescription);
         page.setPageComplete(true);
         addPage(page);
         
-        page = new WizardPage("") {
+        page = new WizardPage("") { //$NON-NLS-1$
             public void createControl(Composite parent)
             {
                 setControl(level2FeedOptions.createControls(parent));
             }
         };
-        page.setTitle("Level II Quote Feed");
-        page.setDescription("Set the security feed for level II quotes");
+        page.setTitle(Messages.SecurityWizard_Level2FeedTitle);
+        page.setDescription(Messages.SecurityWizard_Level2FeedDescription);
         page.setPageComplete(true);
         addPage(page);
         
-        page = new WizardPage("") {
+        page = new WizardPage("") { //$NON-NLS-1$
             public void createControl(Composite parent)
             {
                 setControl(historyFeedOptions.createControls(parent));
             }
         };
-        page.setTitle("History Feed");
-        page.setDescription("Set the security feed for history data");
+        page.setTitle(Messages.SecurityWizard_HistoryFeedTitle);
+        page.setDescription(Messages.SecurityWizard_HistoryFeedDescription);
         page.setPageComplete(true);
         addPage(page);
         
-        page = new WizardPage("") {
+        page = new WizardPage("") { //$NON-NLS-1$
             public void createControl(Composite parent)
             {
                 setControl(intradayOptions.createControls(parent, null));
             }
         };
-        page.setTitle("Intraday Charts");
-        page.setDescription("Set the options to automatically build intraday charts");
+        page.setTitle(Messages.SecurityWizard_IntradayChartsTitle);
+        page.setDescription(Messages.SecurityWizard_IntradayChartsDescription);
         addPage(page);
 
         WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);
@@ -139,7 +140,7 @@ public class SecurityWizard extends Wizard
     static void updateFeedExchanges(String type, Combo combo, FeedSource feed)
     {
         combo.removeAll();
-        combo.add("");
+        combo.add(""); //$NON-NLS-1$
 
         if (feed != null)
         {
@@ -164,7 +165,7 @@ public class SecurityWizard extends Wizard
                             {
                                 if (exchanges[x].getName().equals("exchange")) //$NON-NLS-1$
                                 {
-                                    String id = exchanges[x].getAttribute("id");
+                                    String id = exchanges[x].getAttribute("id"); //$NON-NLS-1$
                                     combo.setData(String.valueOf(combo.getItemCount()), id); //$NON-NLS-1$
                                     combo.add(exchanges[x].getAttribute("name")); //$NON-NLS-1$
                                     if (id.equals(feed.getExchange()))
@@ -183,7 +184,7 @@ public class SecurityWizard extends Wizard
     static void updateFeedExchanges(String type, Combo combo, String feed)
     {
         combo.removeAll();
-        combo.add("");
+        combo.add(""); //$NON-NLS-1$
 
         if (feed != null)
         {
@@ -208,7 +209,7 @@ public class SecurityWizard extends Wizard
                             {
                                 if (exchanges[x].getName().equals("exchange")) //$NON-NLS-1$
                                 {
-                                    String id = exchanges[x].getAttribute("id");
+                                    String id = exchanges[x].getAttribute("id"); //$NON-NLS-1$
                                     combo.setData(String.valueOf(combo.getItemCount()), id); //$NON-NLS-1$
                                     combo.add(exchanges[x].getAttribute("name")); //$NON-NLS-1$
                                 }

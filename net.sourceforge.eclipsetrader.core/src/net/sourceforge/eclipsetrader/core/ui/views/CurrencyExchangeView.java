@@ -46,7 +46,7 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class CurrencyExchangeView extends ViewPart implements Observer
 {
-    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.currencies";
+    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.currencies"; //$NON-NLS-1$
     private Color evenForeground = new Color(null, 0, 0, 0);
     private Color evenBackground = new Color(null, 255, 255, 255);
     private Color oddForeground = new Color(null, 0, 0, 0);

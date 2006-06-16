@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.core.ui.actions;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -57,7 +58,7 @@ public class DeleteSecurityAction implements IWorkbenchWindowActionDelegate, IVi
         if (security != null)
         {
             IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-            if (MessageDialog.openConfirm(window.getShell(), "Security", "Do you really want to delete the selected security ?"))
+            if (MessageDialog.openConfirm(window.getShell(), Messages.DeleteSecurityAction_Title, Messages.DeleteSecurityAction_Message))
                 CorePlugin.getRepository().delete(security);
         }
     }

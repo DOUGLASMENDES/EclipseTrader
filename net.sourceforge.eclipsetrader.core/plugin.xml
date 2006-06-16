@@ -8,17 +8,17 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.securities"
-            label="Securities"
+            label="%securitiesActionSet"
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.core.ui.actions.NewSecurityAction"
                icon="icons/etool16/database_add.png"
                id="net.sourceforge.eclipsetrader.newSecurity"
-               label="Security"
+               label="%newSecurityAction"
                menubarPath="file/newWizard/top"
                style="push"
                toolbarPath="additions"
-               tooltip="Create new security"/>
+               tooltip="%newSecurityActionTooltip"/>
       </actionSet>
    </extension>
    <extension
@@ -104,32 +104,31 @@
          point="org.eclipse.ui.views">
       <category
             id="net.sourceforge.eclipsetrader"
-            name="EclipseTrader"/>
+            name="%categoryName"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.CurrencyExchangeView"
             icon="icons/eview16/money.png"
             id="net.sourceforge.eclipsetrader.views.currencies"
-            name="Currencies"/>
+            name="%currenciesView"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.EventsView"
             icon="icons/eview16/page.png"
             id="net.sourceforge.eclipsetrader.views.events"
-            name="Events"/>
+            name="%eventsView"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.SecuritiesView"
             icon="icons/eview16/database.png"
             id="net.sourceforge.eclipsetrader.views.securities"
-            name="Securities"/>
+            name="%securitiesView"/>
       <view
             allowMultiple="true"
-            category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.views.WebBrowser"
             icon="icons/eview16/internal_browser.gif"
             id="net.sourceforge.eclipsetrader.webbrowser"
-            name="Web Browser"/>
+            name="%webBrowserView"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
@@ -141,14 +140,14 @@
                disabledIcon="icons/dlcl16/nav_refresh.gif"
                icon="icons/elcl16/nav_refresh.gif"
                id="net.sourceforge.eclipsetrader.currencies.refresh"
-               label="Update Currency Exchange"
+               label="%refreshCurrenciesAction"
                style="push"
                toolbarPath="group6"
-               tooltip="Update Currency Exchange"/>
+               tooltip="%refreshCurrenciesActionTooltip"/>
          <action
                class="net.sourceforge.eclipsetrader.core.ui.actions.ConvertCurrencyAction"
                id="net.sourceforge.eclipsetrader.currencyConversion"
-               label="Convert..."
+               label="%convertCurrencyAction"
                menubarPath="additions"
                style="push"/>
       </viewContribution>

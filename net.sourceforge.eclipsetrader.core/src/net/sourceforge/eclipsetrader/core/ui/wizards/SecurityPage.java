@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -49,9 +50,9 @@ public class SecurityPage extends WizardPage
 
     public SecurityPage(Security security)
     {
-        super("");
-        setTitle("Security Description");
-        setDescription("Set the security code and description");
+        super(""); //$NON-NLS-1$
+        setTitle(Messages.SecurityPage_Title);
+        setDescription(Messages.SecurityPage_Description);
         setPageComplete(false);
         this.security = security;
     }
@@ -66,7 +67,7 @@ public class SecurityPage extends WizardPage
         setControl(composite);
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("Code");
+        label.setText(Messages.SecurityPage_CodeColumn);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         code = new Text(composite, SWT.BORDER);
         code.setLayoutData(new GridData(100, SWT.DEFAULT));
@@ -80,7 +81,7 @@ public class SecurityPage extends WizardPage
         });
 
         label = new Label(composite, SWT.NONE);
-        label.setText("Description");
+        label.setText(Messages.SecurityPage_DescriptionColumn);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         securityDescription = new Text(composite, SWT.BORDER);
         securityDescription.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -94,11 +95,11 @@ public class SecurityPage extends WizardPage
         });
 
         label = new Label(composite, SWT.NONE);
-        label.setText("Currency");
+        label.setText(Messages.SecurityPage_CurrencyColumn);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         currency = new Combo(composite, SWT.SINGLE | SWT.READ_ONLY);
         currency.setVisibleItemCount(10);
-        currency.add("");
+        currency.add(""); //$NON-NLS-1$
 
         List list = CurrencyConverter.getInstance().getCurrencies();
         Collections.sort(list, new Comparator() {

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -65,9 +66,9 @@ public class CurrencyPreferencesPage extends PreferencePage implements IWorkbenc
         gridData.heightHint = 250;
         table.setLayoutData(gridData);
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Country");
+        column.setText(Messages.CurrencyPreferencesPage_Country);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Code");
+        column.setText(Messages.CurrencyPreferencesPage_Code);
 
         List available = new ArrayList(Arrays.asList(Locale.getAvailableLocales()));
         Collections.sort(available, new Comparator() {
@@ -128,7 +129,7 @@ public class CurrencyPreferencesPage extends PreferencePage implements IWorkbenc
         
         CurrencyConverter.getInstance().setCurrencies(enabled);
 
-        Job job = new Job("Update currencies") {
+        Job job = new Job(Messages.CurrencyPreferencesPage_JobName) {
             protected IStatus run(IProgressMonitor monitor)
             {
                 return CurrencyConverter.getInstance().updateExchanges(monitor);

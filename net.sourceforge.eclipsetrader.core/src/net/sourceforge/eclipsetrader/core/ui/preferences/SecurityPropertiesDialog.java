@@ -20,6 +20,7 @@ import java.util.List;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -47,9 +48,9 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         super(parentShell, new PreferenceManager());
         this.security = security;
         
-        getPreferenceManager().addToRoot(new PreferenceNode("general", new GeneralPage()));
+        getPreferenceManager().addToRoot(new PreferenceNode("general", new GeneralPage())); //$NON-NLS-1$
 
-        PreferenceNode node = new PreferenceNode("feed", new PreferencePage("Feeds") {
+        PreferenceNode node = new PreferenceNode("feed", new PreferencePage("Feeds") { //$NON-NLS-1$ //$NON-NLS-2$
             protected Control createContents(Composite parent)
             {
                 noDefaultAndApplyButton();
@@ -57,11 +58,11 @@ public class SecurityPropertiesDialog extends PreferenceDialog
             }
         });
         getPreferenceManager().addToRoot(node);
-        node.add(new PreferenceNode("quote", new QuoteFeedPage()));
-        node.add(new PreferenceNode("level2", new Level2FeedPage()));
-        node.add(new PreferenceNode("history", new HistoryFeedPage()));
+        node.add(new PreferenceNode("quote", new QuoteFeedPage())); //$NON-NLS-1$
+        node.add(new PreferenceNode("level2", new Level2FeedPage())); //$NON-NLS-1$
+        node.add(new PreferenceNode("history", new HistoryFeedPage())); //$NON-NLS-1$
         
-        getPreferenceManager().addToRoot(new PreferenceNode("intraday", new DataCollectorPage()));
+        getPreferenceManager().addToRoot(new PreferenceNode("intraday", new DataCollectorPage())); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -70,7 +71,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Properties for " + security.getDescription());
+        newShell.setText(Messages.SecurityPropertiesDialog_Title + security.getDescription());
     }
 
     /* (non-Javadoc)
@@ -92,7 +93,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
 
         public GeneralPage()
         {
-            super("General");
+            super(Messages.SecurityPropertiesDialog_GeneralPage);
             noDefaultAndApplyButton();
             setValid(false);
         }
@@ -109,7 +110,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
             content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
             Label label = new Label(content, SWT.NONE);
-            label.setText("Code");
+            label.setText(Messages.SecurityPropertiesDialog_Code);
             label.setLayoutData(new GridData(125, SWT.DEFAULT));
             code = new Text(content, SWT.BORDER);
             code.setLayoutData(new GridData(100, SWT.DEFAULT));
@@ -121,7 +122,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
             });
 
             label = new Label(content, SWT.NONE);
-            label.setText("Description");
+            label.setText(Messages.SecurityPropertiesDialog_Description);
             label.setLayoutData(new GridData(125, SWT.DEFAULT));
             securityDescription = new Text(content, SWT.BORDER);
             securityDescription.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -133,21 +134,21 @@ public class SecurityPropertiesDialog extends PreferenceDialog
             });
 
             label = new Label(content, SWT.NONE);
-            label.setText("Currency");
+            label.setText(Messages.SecurityPropertiesDialog_Currency);
             label.setLayoutData(new GridData(125, SWT.DEFAULT));
             currency = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
             currency.setVisibleItemCount(10);
-            currency.add("");
+            currency.add(""); //$NON-NLS-1$
             
             label = new Label(content, SWT.NONE);
             label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, true, 2, 1));
 
             clearHistory = new Button(content, SWT.CHECK);
-            clearHistory.setText("Clear historical data");
+            clearHistory.setText(Messages.SecurityPropertiesDialog_ClearHistory);
             clearHistory.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 2, 1));
 
             clearIntraday = new Button(content, SWT.CHECK);
-            clearIntraday.setText("Clear intraday data");
+            clearIntraday.setText(Messages.SecurityPropertiesDialog_ClearIntraday);
             clearIntraday.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 2, 1));
 
             List list = CurrencyConverter.getInstance().getCurrencies();
@@ -210,11 +211,11 @@ public class SecurityPropertiesDialog extends PreferenceDialog
 
     private class QuoteFeedPage extends PreferencePage
     {
-        FeedOptions options = new FeedOptions("quote");
+        FeedOptions options = new FeedOptions("quote"); //$NON-NLS-1$
 
         public QuoteFeedPage()
         {
-            super("Quote");
+            super(Messages.SecurityPropertiesDialog_QuotePage);
             noDefaultAndApplyButton();
             setValid(false);
         }
@@ -248,11 +249,11 @@ public class SecurityPropertiesDialog extends PreferenceDialog
     
     private class Level2FeedPage extends PreferencePage
     {
-        FeedOptions options = new FeedOptions("level2");
+        FeedOptions options = new FeedOptions("level2"); //$NON-NLS-1$
 
         public Level2FeedPage()
         {
-            super("Level II");
+            super(Messages.SecurityPropertiesDialog_Level2Page);
             noDefaultAndApplyButton();
             setValid(false);
         }
@@ -286,11 +287,11 @@ public class SecurityPropertiesDialog extends PreferenceDialog
     
     private class HistoryFeedPage extends PreferencePage
     {
-        FeedOptions options = new FeedOptions("history");
+        FeedOptions options = new FeedOptions("history"); //$NON-NLS-1$
 
         public HistoryFeedPage()
         {
-            super("History");
+            super(Messages.SecurityPropertiesDialog_HistoryPage);
             noDefaultAndApplyButton();
             setValid(false);
         }
@@ -328,7 +329,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
 
         public DataCollectorPage()
         {
-            super("Intraday Charts");
+            super(Messages.SecurityPropertiesDialog_IntradayChartsPage);
             noDefaultAndApplyButton();
             setValid(false);
         }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -69,7 +70,7 @@ public class CurrencyConversionDialog extends Dialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Currency Conversion");
+        newShell.setText(Messages.CurrencyConversionDialog_Title);
     }
 
     /* (non-Javadoc)
@@ -87,7 +88,7 @@ public class CurrencyConversionDialog extends Dialog
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Convert");
+        label.setText(Messages.CurrencyConversionDialog_Convert);
         label.setLayoutData(new GridData(60, SWT.DEFAULT));
         
         amount = new Spinner(content, SWT.BORDER);
@@ -117,7 +118,7 @@ public class CurrencyConversionDialog extends Dialog
         label = new Label(content, SWT.NONE);
 
         label = new Label(content, SWT.NONE);
-        label.setText("to");
+        label.setText(Messages.CurrencyConversionDialog_To);
         label.setLayoutData(new GridData(60, SWT.DEFAULT));
         
         to = new Combo(content, SWT.READ_ONLY);
@@ -130,7 +131,7 @@ public class CurrencyConversionDialog extends Dialog
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("=");
+        label.setText(Messages.CurrencyConversionDialog_Equal);
         
         result = new Text(content, SWT.BORDER|SWT.READ_ONLY);
         result.setLayoutData(new GridData(80, SWT.DEFAULT));
@@ -151,7 +152,7 @@ public class CurrencyConversionDialog extends Dialog
         
         String locale = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
         if (defaultFrom == null)
-            defaultFrom = locale.equals("EUR") ? "USD" : "EUR";
+            defaultFrom = locale.equals("EUR") ? "USD" : "EUR"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         if (defaultTo == null)
             defaultTo = locale;
         
@@ -170,7 +171,7 @@ public class CurrencyConversionDialog extends Dialog
             double value = amount.getSelection() / Math.pow(10, amount.getDigits());
             result.setText(nf.format(CurrencyConverter.getInstance().convert(value, from.getText(), to.getText())));
         } catch(Exception e) {
-            to.setText("");
+            to.setText(""); //$NON-NLS-1$
         }
     }
 }

@@ -23,6 +23,7 @@ import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.PopupEvent;
 import net.sourceforge.eclipsetrader.core.ui.dialogs.EventDetailsDialog;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -48,12 +49,12 @@ import org.eclipse.ui.part.ViewPart;
 
 public class EventsView extends ViewPart implements ICollectionObserver
 {
-    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.events";
+    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.events"; //$NON-NLS-1$
     Table table;
     Action removeSelectedAction;
     Action removeAllAction;
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-    SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
+    SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
     ViewEventDetailsDialog dialog;
     private Comparator comparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
@@ -87,11 +88,11 @@ public class EventsView extends ViewPart implements ICollectionObserver
                     CorePlugin.getRepository().delete((Event)selection[i].getData());
             }
         };
-        removeSelectedAction.setToolTipText("Remove Selected Event");
-        removeSelectedAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/elcl16/search_rem.gif"));
-        removeSelectedAction.setDisabledImageDescriptor(CorePlugin.getImageDescriptor("icons/dlcl16/search_rem.gif"));
+        removeSelectedAction.setToolTipText(Messages.EventsView_RemoveActionTooltip);
+        removeSelectedAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/elcl16/search_rem.gif")); //$NON-NLS-1$
+        removeSelectedAction.setDisabledImageDescriptor(CorePlugin.getImageDescriptor("icons/dlcl16/search_rem.gif")); //$NON-NLS-1$
         removeSelectedAction.setEnabled(false);
-        toolBarManager.appendToGroup("group5", removeSelectedAction);
+        toolBarManager.appendToGroup("group5", removeSelectedAction); //$NON-NLS-1$
         removeAllAction = new Action() {
             public void run()
             {
@@ -99,11 +100,11 @@ public class EventsView extends ViewPart implements ICollectionObserver
                 updateView();
             }
         };
-        removeAllAction.setToolTipText("Remove All Events");
-        removeAllAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/elcl16/search_remall.gif"));
-        removeAllAction.setDisabledImageDescriptor(CorePlugin.getImageDescriptor("icons/dlcl16/search_remall.gif"));
+        removeAllAction.setToolTipText(Messages.EventsView_RemoveAllActionTooltip);
+        removeAllAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/elcl16/search_remall.gif")); //$NON-NLS-1$
+        removeAllAction.setDisabledImageDescriptor(CorePlugin.getImageDescriptor("icons/dlcl16/search_remall.gif")); //$NON-NLS-1$
         removeAllAction.setEnabled(false);
-        toolBarManager.appendToGroup("group5", removeAllAction);
+        toolBarManager.appendToGroup("group5", removeAllAction); //$NON-NLS-1$
 
         super.init(site);
     }
@@ -144,13 +145,13 @@ public class EventsView extends ViewPart implements ICollectionObserver
             }
         });
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Date");
+        column.setText(Messages.EventsView_Date);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Time");
+        column.setText(Messages.EventsView_Time);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Security");
+        column.setText(Messages.EventsView_Security);
         column = new TableColumn(table, SWT.NONE);
-        column.setText("Message");
+        column.setText(Messages.EventsView_Message);
         
         parent.getDisplay().asyncExec(new Runnable() {
             public void run()
@@ -191,7 +192,7 @@ public class EventsView extends ViewPart implements ICollectionObserver
             TableItem tableItem = new TableItem(table, SWT.NONE);
             tableItem.setText(0, dateFormatter.format(event.getDate()));
             tableItem.setText(1, timeFormatter.format(event.getDate()));
-            tableItem.setText(2, event.getSecurity() != null ? event.getSecurity().getDescription() : "");
+            tableItem.setText(2, event.getSecurity() != null ? event.getSecurity().getDescription() : ""); //$NON-NLS-1$
             tableItem.setText(3, event.getMessage());
             tableItem.setData(event);
         }
@@ -216,7 +217,7 @@ public class EventsView extends ViewPart implements ICollectionObserver
                 TableItem tableItem = new TableItem(table, SWT.NONE, 0);
                 tableItem.setText(0, dateFormatter.format(event.getDate()));
                 tableItem.setText(1, timeFormatter.format(event.getDate()));
-                tableItem.setText(2, event.getSecurity() != null ? event.getSecurity().getDescription() : "");
+                tableItem.setText(2, event.getSecurity() != null ? event.getSecurity().getDescription() : ""); //$NON-NLS-1$
                 tableItem.setText(3, event.getMessage());
                 tableItem.setData(event);
 
