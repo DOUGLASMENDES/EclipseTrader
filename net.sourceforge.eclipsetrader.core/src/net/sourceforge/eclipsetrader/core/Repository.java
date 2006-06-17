@@ -288,6 +288,14 @@ public class Repository
                         watchlist.getItems().remove(item);
                 }
             }
+            
+            TradingSystem[] systems = (TradingSystem[])getTradingSystems().toArray(new TradingSystem[0]);
+            for (int i = 0; i < systems.length; i++)
+            {
+                if (systems[i].getSecurity().equals(obj))
+                    delete(systems[i]);
+            }
+
             allSecurities().remove(obj);
         }
 
@@ -311,6 +319,13 @@ public class Repository
             allAccounts().remove(obj);
             if (((Account)obj).getGroup() != null)
                 ((Account)obj).getGroup().getAccounts().remove(obj);
+            
+            TradingSystem[] systems = (TradingSystem[])getTradingSystems().toArray(new TradingSystem[0]);
+            for (int i = 0; i < systems.length; i++)
+            {
+                if (systems[i].getAccount().equals(obj))
+                    delete(systems[i]);
+            }
         }
 
         if (obj instanceof AccountGroup)
