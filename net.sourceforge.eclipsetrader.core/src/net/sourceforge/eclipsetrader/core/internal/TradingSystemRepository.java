@@ -80,6 +80,18 @@ class TradingSystemRepository
             }
         }
     }
+    
+    void clear()
+    {
+        File file = new File(Platform.getLocation().toFile(), "ts.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        
+        tsGroupNextId = new Integer(1);
+        tsGroupMap = new HashMap();
+        tsNextId = new Integer(1);
+        tsMap = new HashMap();
+    }
 
     public void save(TradingSystemGroup object)
     {

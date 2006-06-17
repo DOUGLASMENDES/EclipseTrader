@@ -50,8 +50,28 @@ public class Repository
     {
     }
     
+    /**
+     * Disposes the resources associated with the receiver.
+     */
     public void dispose()
     {
+    }
+    
+    /**
+     * Removes all contents from the receiver.
+     */
+    public void clear()
+    {
+        securityGroups = null;
+        securities = null;
+        watchlists = null;
+        news = null;
+        accounts = null;
+        accountGroups = null;
+        events = null;
+        tradingSystems = null;
+        tradingSystemGroups = null;
+        newsMap = new HashMap();
     }
     
     public ObservableList allSecurityGroups()

@@ -265,6 +265,53 @@ public class XMLRepository extends Repository
     }
 
     /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.Repository#clear()
+     */
+    public void clear()
+    {
+        File file = new File(Platform.getLocation().toFile(), "securities.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        file = new File(Platform.getLocation().toFile(), "watchlists.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        file = new File(Platform.getLocation().toFile(), "news.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        file = new File(Platform.getLocation().toFile(), "accounts.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        file = new File(Platform.getLocation().toFile(), "events.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        
+        for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
+        {
+            Security security = (Security)iter.next();
+            file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(security.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+            if (file.exists() == true)
+                file.delete();
+            file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(security.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+            if (file.exists() == true)
+                file.delete();
+        }
+        
+        securitiesNextId = new Integer(1);
+        securitiesMap = new HashMap();
+        chartsMap = new HashMap();
+        watchlistsNextId = new Integer(1);
+        watchlistsMap = new HashMap();
+        accountGroupNextId = new Integer(1);
+        accountGroupMap = new HashMap();
+        accountNextId = new Integer(1);
+        accountMap = new HashMap();
+        eventNextId = new Integer(1);
+        tradingRepository.clear();
+
+        super.clear();
+    }
+
+    /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.Repository#load(java.lang.Class, java.lang.Integer)
      */
     public PersistentObject load(Class clazz, Integer id)
