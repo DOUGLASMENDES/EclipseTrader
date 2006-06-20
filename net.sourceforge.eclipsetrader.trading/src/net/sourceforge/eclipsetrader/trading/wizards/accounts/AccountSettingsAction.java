@@ -17,7 +17,6 @@ import net.sourceforge.eclipsetrader.core.db.AccountGroup;
 import net.sourceforge.eclipsetrader.core.ui.AccountGroupSelection;
 import net.sourceforge.eclipsetrader.core.ui.AccountSelection;
 import net.sourceforge.eclipsetrader.trading.views.AccountsView;
-import net.sourceforge.eclipsetrader.trading.wizards.AccountSettingsDialog;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;

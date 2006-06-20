@@ -24,17 +24,18 @@ import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.ObservableList;
 
-public class Account extends PersistentObject
+import org.eclipse.jface.util.Assert;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+
+public abstract class Account extends PersistentObject implements Cloneable
 {
-    private String serviceId;
-    private String description;
-    private Currency currency;
-    private AccountGroup group;
+    private String pluginId = "";
+    private String description = "";
+    private Currency currency = null;
     private double initialBalance = 0;
-    private double fixedCommissions = 0;
-    private double variableCommissions = 0;
-    private double minimumCommission = 0;
-    private double maximumCommission = 0;
+    private AccountGroup group = null;
+    private PersistentPreferenceStore preferenceStore = new PersistentPreferenceStore();
     private ObservableList transactions = new ObservableList();
     private ICollectionObserver transactionsObserver = new ICollectionObserver() {
         public void itemAdded(Object o)
@@ -47,26 +48,47 @@ public class Account extends PersistentObject
             setChanged();
         }
     };
+    private IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            setChanged();
+        }
+    };
 
     public Account()
     {
         transactions.addCollectionObserver(transactionsObserver);
+        preferenceStore.addPropertyChangeListener(propertyChangeListener);
     }
 
     public Account(Integer id)
     {
         super(id);
         transactions.addCollectionObserver(transactionsObserver);
+        preferenceStore.addPropertyChangeListener(propertyChangeListener);
     }
 
-    public String getServiceId()
+    /**
+     * Creates a copy of the given account.
+     */
+    protected Account(Account account)
     {
-        return serviceId;
+        setDescription(account.getDescription());
+        setCurrency(account.getCurrency());
+        setInitialBalance(account.getBalance());
+        setGroup(account.getGroup());
+        setPreferenceStore(new PersistentPreferenceStore(account.getPreferenceStore()));
     }
 
-    public void setServiceId(String serviceId)
+    public String getPluginId()
     {
-        this.serviceId = serviceId;
+        return pluginId;
+    }
+
+    public void setPluginId(String serviceId)
+    {
+        Assert.isNotNull(serviceId);
+        this.pluginId = serviceId;
         setChanged();
     }
 
@@ -92,17 +114,6 @@ public class Account extends PersistentObject
         setChanged();
     }
 
-    public AccountGroup getGroup()
-    {
-        return group;
-    }
-
-    public void setGroup(AccountGroup group)
-    {
-        this.group = group;
-        setChanged();
-    }
-
     public double getInitialBalance()
     {
         return initialBalance;
@@ -114,49 +125,39 @@ public class Account extends PersistentObject
         setChanged();
     }
 
-    public double getFixedCommissions()
+    public AccountGroup getGroup()
     {
-        return fixedCommissions;
+        return group;
     }
 
-    public void setFixedCommissions(double fixedCommissions)
+    public void setGroup(AccountGroup group)
     {
-        this.fixedCommissions = fixedCommissions;
+        this.group = group;
+        setChanged();
     }
 
-    public double getVariableCommissions()
+    public PersistentPreferenceStore getPreferenceStore()
     {
-        return variableCommissions;
+        return preferenceStore;
     }
 
-    public void setVariableCommissions(double variableCommissions)
+    public void setPreferenceStore(PersistentPreferenceStore preferenceStore)
     {
-        this.variableCommissions = variableCommissions;
-    }
-
-    public double getMaximumCommission()
-    {
-        return maximumCommission;
-    }
-
-    public void setMaximumCommission(double maximumCommission)
-    {
-        this.maximumCommission = maximumCommission;
-    }
-
-    public double getMinimumCommission()
-    {
-        return minimumCommission;
-    }
-
-    public void setMinimumCommission(double minimumCommission)
-    {
-        this.minimumCommission = minimumCommission;
+        Assert.isNotNull(preferenceStore);
+        this.preferenceStore.removePropertyChangeListener(propertyChangeListener);
+        this.preferenceStore = preferenceStore;
+        this.preferenceStore.addPropertyChangeListener(propertyChangeListener);
     }
 
     public ObservableList getTransactions()
     {
         return transactions;
+    }
+
+    public void setTransactions(List transactions)
+    {
+        Assert.isNotNull(transactions);
+        this.transactions = new ObservableList(transactions);
     }
 
     /**
@@ -166,7 +167,7 @@ public class Account extends PersistentObject
      */
     public double getBalance()
     {
-        double result = initialBalance;
+        double result = getInitialBalance();
 
         Object[] objs = getTransactions().toArray();
         for (int i = 0; i < objs.length; i++)
@@ -247,5 +248,18 @@ public class Account extends PersistentObject
         }
 
         return position;
+    }
+    
+    public double getExpenses(Security security, int quantity, double price)
+    {
+        return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        throw new CloneNotSupportedException();
     }
 }

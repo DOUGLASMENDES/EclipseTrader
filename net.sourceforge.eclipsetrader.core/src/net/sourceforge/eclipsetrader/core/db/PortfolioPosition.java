@@ -20,7 +20,7 @@ public class PortfolioPosition
     private int quantity;
     private double price;
 
-    PortfolioPosition(Account account, Security security, int quantity, double amount)
+    public PortfolioPosition(Account account, Security security, int quantity, double amount)
     {
         this.account = account;
         this.security = security;
@@ -28,7 +28,7 @@ public class PortfolioPosition
         this.price = amount == 0 ? 0 : Math.abs(amount / quantity);
     }
     
-    void add(int quantity, double amount)
+    public void add(int quantity, double amount)
     {
         double total = this.quantity * this.price - amount;
         this.quantity += quantity;
@@ -78,12 +78,7 @@ public class PortfolioPosition
         if (quote != null)
         {
             result = Math.abs(quantity) * quote.getLast();
-            double expenses = account.getFixedCommissions() + (result / 100.0 * account.getVariableCommissions());
-            if (expenses < account.getMinimumCommission())
-                expenses = account.getMinimumCommission();
-            if (account.getMaximumCommission() != 0 && expenses > account.getMaximumCommission())
-                expenses = account.getMaximumCommission();
-            result -= expenses;
+            result -= account.getExpenses(security, quantity, price);
         }
         
         return result;

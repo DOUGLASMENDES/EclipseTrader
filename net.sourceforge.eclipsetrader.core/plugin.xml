@@ -4,6 +4,7 @@
    <extension-point id="feeds" name="Security Feed" schema="schema/feeds.exsd"/>
    <extension-point id="news" name="News Provider" schema="schema/news.exsd"/>
    <extension-point id="patterns" name="Price Pattern" schema="schema/patterns.exsd"/>
+   <extension-point id="accountProviders" name="Account Providers" schema="schema/accountProviders.exsd"/>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet

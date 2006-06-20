@@ -347,11 +347,7 @@ public class TransactionDialog extends TitleAreaDialog
         double price = priceSpinner.getSelection() / Math.pow(10, priceSpinner.getDigits());
         double total = quantity * price;
 
-        double expenses = account.getFixedCommissions() + (total / 100.0 * account.getVariableCommissions());
-        if (expenses < account.getMinimumCommission())
-            expenses = account.getMinimumCommission();
-        if (account.getMaximumCommission() != 0 && expenses > account.getMaximumCommission())
-            expenses = account.getMaximumCommission();
+        double expenses = account.getExpenses(security, quantity, price); 
         expensesSpinner.setSelection((int)Math.round(expenses * Math.pow(10, expensesSpinner.getDigits())));
         if (buyButton.getSelection())
             total += expenses;

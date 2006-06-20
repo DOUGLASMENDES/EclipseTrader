@@ -48,6 +48,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
+import net.sourceforge.eclipsetrader.core.db.PersistentPreferenceStore;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 import net.sourceforge.eclipsetrader.core.db.Transaction;
@@ -56,8 +57,8 @@ import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
-import net.sourceforge.eclipsetrader.core.db.trading.TradingSystemGroup;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
+import net.sourceforge.eclipsetrader.core.db.trading.TradingSystemGroup;
 
 import org.eclipse.core.runtime.Platform;
 import org.w3c.dom.Document;
@@ -1619,31 +1620,21 @@ public class XMLRepository extends Repository
     private Account loadAccount(NodeList node, AccountGroup group)
     {
         int transactionId = 1;
-        Account account = new Account(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
-        account.setGroup(group);
+        
+        Integer id = new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()));
+        String pluginId = "";
+        if (((Node)node).getAttributes().getNamedItem("pluginId") != null)
+            pluginId = ((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue();
+        if (pluginId.equals(""))
+            pluginId = "net.sourceforge.eclipsetrader.accounts.simple";
+        PersistentPreferenceStore preferenceStore = new PersistentPreferenceStore();
+        List transactions = new ArrayList();
         
         for (int i = 0; i < node.getLength(); i++)
         {
             Node item = node.item(i);
             String nodeName = item.getNodeName();
             Node value = item.getFirstChild();
-            if (value != null)
-            {
-                if (nodeName.equals("description")) //$NON-NLS-1$
-                    account.setDescription(value.getNodeValue());
-                else if (nodeName.equals("currency")) //$NON-NLS-1$
-                    account.setCurrency(Currency.getInstance(value.getNodeValue()));
-                else if (nodeName.equals("initialBalance")) //$NON-NLS-1$
-                    account.setInitialBalance(Double.parseDouble(value.getNodeValue()));
-                else if (nodeName.equals("fixedCommissions")) //$NON-NLS-1$
-                    account.setFixedCommissions(Double.parseDouble(value.getNodeValue()));
-                else if (nodeName.equals("variableCommissions")) //$NON-NLS-1$
-                    account.setVariableCommissions(Double.parseDouble(value.getNodeValue()));
-                else if (nodeName.equals("minimumCommission")) //$NON-NLS-1$
-                    account.setMinimumCommission(Double.parseDouble(value.getNodeValue()));
-                else if (nodeName.equals("maximumCommission")) //$NON-NLS-1$
-                    account.setMaximumCommission(Double.parseDouble(value.getNodeValue()));
-            }
             if (nodeName.equals("transaction")) //$NON-NLS-1$
             {
                 Transaction transaction = new Transaction(new Integer(transactionId++));
@@ -1674,16 +1665,48 @@ public class XMLRepository extends Repository
                             transaction.setExpenses(Double.parseDouble(value.getNodeValue()));
                     }
                 }
-                account.getTransactions().add(transaction);
+                transactions.add(transaction);
+            }
+            else if (value != null)
+            {
+                if (nodeName.equals("description")) //$NON-NLS-1$
+                    ;
+                else if (nodeName.equals("currency")) //$NON-NLS-1$
+                    ;
+                else if (nodeName.equals("initialBalance")) //$NON-NLS-1$
+                    ;
+                else
+                    preferenceStore.setValue(nodeName, value.getNodeValue());
             }
         }
 
-        Collections.sort(account.getTransactions(), new Comparator() {
+        Collections.sort(transactions, new Comparator() {
             public int compare(Object arg0, Object arg1)
             {
                 return ((Transaction)arg0).getDate().compareTo(((Transaction)arg1).getDate());
             }
         });
+        
+        Account account = CorePlugin.createAccount(pluginId, preferenceStore, transactions);
+        account.setId(id);
+        account.setPluginId(pluginId);
+        account.setGroup(group);
+        
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            Node item = node.item(i);
+            String nodeName = item.getNodeName();
+            Node value = item.getFirstChild();
+            if (value != null)
+            {
+                if (nodeName.equals("description")) //$NON-NLS-1$
+                    account.setDescription(value.getNodeValue());
+                else if (nodeName.equals("currency")) //$NON-NLS-1$
+                    account.setCurrency(Currency.getInstance(value.getNodeValue()));
+                else if (nodeName.equals("initialBalance")) //$NON-NLS-1$
+                    account.setInitialBalance(Double.parseDouble(value.getNodeValue()));
+            }
+        }
         
         account.clearChanged();
         accountMap.put(account.getId(), account);
@@ -1719,6 +1742,7 @@ public class XMLRepository extends Repository
     {
         Element element = document.createElement("account");
         element.setAttribute("id", String.valueOf(account.getId()));
+        element.setAttribute("pluginId", String.valueOf(account.getPluginId()));
         root.appendChild(element);
         
         Element node = document.createElement("description");
@@ -1733,18 +1757,14 @@ public class XMLRepository extends Repository
         node = document.createElement("initialBalance");
         node.appendChild(document.createTextNode(String.valueOf(account.getInitialBalance())));
         element.appendChild(node);
-        node = document.createElement("fixedCommissions");
-        node.appendChild(document.createTextNode(String.valueOf(account.getFixedCommissions())));
-        element.appendChild(node);
-        node = document.createElement("variableCommissions");
-        node.appendChild(document.createTextNode(String.valueOf(account.getVariableCommissions())));
-        element.appendChild(node);
-        node = document.createElement("minimumCommission");
-        node.appendChild(document.createTextNode(String.valueOf(account.getMinimumCommission())));
-        element.appendChild(node);
-        node = document.createElement("maximumCommission");
-        node.appendChild(document.createTextNode(String.valueOf(account.getMaximumCommission())));
-        element.appendChild(node);
+
+        String[] names = account.getPreferenceStore().preferenceNames();
+        for (int i = 0; i < names.length; i++)
+        {
+            node = document.createElement(names[i]);
+            node.appendChild(document.createTextNode(account.getPreferenceStore().getString(names[i])));
+            element.appendChild(node);
+        }
 
         int transactionId = 1;
         for (Iterator iter = account.getTransactions().iterator(); iter.hasNext(); )

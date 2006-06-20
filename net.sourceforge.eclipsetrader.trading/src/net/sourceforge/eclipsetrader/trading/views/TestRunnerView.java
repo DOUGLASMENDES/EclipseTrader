@@ -16,8 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.DefaultAccount;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.Transaction;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
@@ -223,12 +225,12 @@ public class TestRunnerView extends ViewPart
             security.setDescription(system.getSecurity().getDescription());
 
             // Create a fake account to hold the simulation transactions
-            account = new Account();
-            account.setInitialBalance(system.getAccount().getBalance());
-            account.setFixedCommissions(system.getAccount().getFixedCommissions());
-            account.setVariableCommissions(system.getAccount().getVariableCommissions());
-            account.setMinimumCommission(system.getAccount().getMinimumCommission());
-            account.setMaximumCommission(system.getAccount().getMaximumCommission());
+            try {
+                account = (Account)system.getAccount().clone();
+            } catch(Exception e) {
+                CorePlugin.logException(e);
+                account = new DefaultAccount(system.getAccount());
+            }
 
             // Create a new instance of the trading system plugin to run the simulation
             plugin = TradingPlugin.createTradingSystemPlugin(system.getPluginId());
@@ -260,11 +262,7 @@ public class TestRunnerView extends ViewPart
                         firstBuy = false;
                     }
                     final Transaction transaction = new Transaction(quote.getDate(), security, plugin.getQuantity(), quote.getOpen());
-                    double expenses = account.getFixedCommissions() + (Math.abs(plugin.getQuantity() * quote.getOpen()) / 100.0 * account.getVariableCommissions());
-                    if (expenses < account.getMinimumCommission())
-                        expenses = account.getMinimumCommission();
-                    if (account.getMaximumCommission() != 0 && expenses > account.getMaximumCommission())
-                        expenses = account.getMaximumCommission();
+                    double expenses = account.getExpenses(security, plugin.getQuantity(), quote.getOpen());
                     transaction.setExpenses(expenses);
                     account.getTransactions().add(transaction);
                     lastBuyTransaction = transaction;
@@ -285,11 +283,7 @@ public class TestRunnerView extends ViewPart
                 else if (plugin.getSignal() == TradingSystem.SIGNAL_SELL)
                 {
                     final Transaction transaction = new Transaction(quote.getDate(), security, - plugin.getQuantity(), quote.getOpen());
-                    double expenses = account.getFixedCommissions() + (Math.abs(plugin.getQuantity() * quote.getOpen()) / 100.0 * account.getVariableCommissions());
-                    if (expenses < account.getMinimumCommission())
-                        expenses = account.getMinimumCommission();
-                    if (account.getMaximumCommission() != 0 && expenses > account.getMaximumCommission())
-                        expenses = account.getMaximumCommission();
+                    double expenses = account.getExpenses(security, plugin.getQuantity(), quote.getOpen());
                     transaction.setExpenses(expenses);
                     account.getTransactions().add(transaction);
                     transaction.setData(lastBuyTransaction);

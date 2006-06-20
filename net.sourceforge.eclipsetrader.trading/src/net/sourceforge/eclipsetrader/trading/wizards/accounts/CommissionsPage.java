@@ -13,42 +13,30 @@ package net.sourceforge.eclipsetrader.trading.wizards.accounts;
 
 import java.text.NumberFormat;
 
-import net.sourceforge.eclipsetrader.core.db.Account;
-import net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage;
+import net.sourceforge.eclipsetrader.trading.internal.SimpleAccount;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-public class CommissionsPage extends CommonPreferencePage
+public class CommissionsPage extends PreferencePage
 {
-    private Account account;
-    private Text fixedCommission;
-    private Text variableCommission;
-    private Text minimumCommission;
-    private Text maximumCommission;
-    private NumberFormat nf = NumberFormat.getInstance();
+    Text fixedCommission;
+    Text variableCommission;
+    Text minimumCommission;
+    Text maximumCommission;
+    NumberFormat nf = NumberFormat.getInstance();
 
     public CommissionsPage()
     {
-        setTitle("Commissions");
-        setDescription("Set the commissions required for the transactions");
-        
-        nf.setGroupingUsed(true);
-        nf.setMinimumIntegerDigits(1);
-        nf.setMinimumFractionDigits(4);
-        nf.setMaximumFractionDigits(4);
-    }
-
-    public CommissionsPage(Account account)
-    {
-        this.account = account;
-        setTitle("Commissions");
-        setDescription("Set the commissions required for the transactions");
-        setPageComplete(true);
+        setValid(true);
+        noDefaultAndApplyButton();
         
         nf.setGroupingUsed(true);
         nf.setMinimumIntegerDigits(1);
@@ -57,115 +45,81 @@ public class CommissionsPage extends CommonPreferencePage
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage#createControl(org.eclipse.swt.widgets.Composite)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
-    public void createControl(Composite parent)
+    protected Control createContents(Composite parent)
     {
         Composite content = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout(2, false);
         gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setControl(content);
 
         Label label = new Label(content, SWT.NONE);
         label.setText("Fixed");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         fixedCommission = new Text(content, SWT.BORDER);
         fixedCommission.setLayoutData(new GridData(80, SWT.DEFAULT));
-        fixedCommission.setText(nf.format(account != null ? account.getFixedCommissions() : 0));
+        fixedCommission.setText(nf.format(getPreferenceStore().getDouble(SimpleAccount.PREFS_FIXEDCOMMISSIONS)));
 
         label = new Label(content, SWT.NONE);
         label.setText("Variable (%)");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         variableCommission = new Text(content, SWT.BORDER);
         variableCommission.setLayoutData(new GridData(80, SWT.DEFAULT));
-        variableCommission.setText(nf.format(account != null ? account.getVariableCommissions() : 0));
+        variableCommission.setText(nf.format(getPreferenceStore().getDouble(SimpleAccount.PREFS_VARIABLECOMMISSIONS)));
 
         label = new Label(content, SWT.NONE);
         label.setText("Minimum");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         minimumCommission = new Text(content, SWT.BORDER);
         minimumCommission.setLayoutData(new GridData(80, SWT.DEFAULT));
-        minimumCommission.setText(nf.format(account != null ? account.getMinimumCommission() : 0));
+        minimumCommission.setText(nf.format(getPreferenceStore().getDouble(SimpleAccount.PREFS_MINIMUMCOMMISSION)));
 
         label = new Label(content, SWT.NONE);
         label.setText("Maximum");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         maximumCommission = new Text(content, SWT.BORDER);
         maximumCommission.setLayoutData(new GridData(80, SWT.DEFAULT));
-        maximumCommission.setText(nf.format(account != null ? account.getMaximumCommission() : 0));
+        maximumCommission.setText(nf.format(getPreferenceStore().getDouble(SimpleAccount.PREFS_MAXIMUMCOMMISSION)));
 
-        fixedCommission.setFocus();
+        return content;
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage#performFinish()
+     * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
      */
-    public void performFinish()
+    public void setVisible(boolean visible)
     {
-        if (account != null)
-        {
-            account.setVariableCommissions(getVariableCommission());
-            account.setFixedCommissions(getFixedCommission());
-            account.setMinimumCommission(getMinimumCommission());
-            account.setMaximumCommission(getMaximumCommission());
-        }
+        super.setVisible(visible);
+        if (visible)
+            fixedCommission.setFocus();
     }
-    
-    public double getFixedCommission()
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    public boolean performOk()
     {
+        IPreferenceStore store = getPreferenceStore();
+        
         try {
-            return nf.parse(fixedCommission.getText()).doubleValue();
+            store.setValue(SimpleAccount.PREFS_FIXEDCOMMISSIONS, nf.parse(fixedCommission.getText()).doubleValue());
         } catch(Exception e) {
-            return 0;
         }
-    }
-    
-    public void setFixedCommission(double value)
-    {
-        this.fixedCommission.setText(nf.format(value));
-    }
-    
-    public double getVariableCommission()
-    {
         try {
-            return nf.parse(variableCommission.getText()).doubleValue();
+            store.setValue(SimpleAccount.PREFS_VARIABLECOMMISSIONS, nf.parse(variableCommission.getText()).doubleValue());
         } catch(Exception e) {
-            return 0;
         }
-    }
-    
-    public void setVariableCommission(double value)
-    {
-        this.variableCommission.setText(nf.format(value));
-    }
-    
-    public double getMinimumCommission()
-    {
         try {
-            return nf.parse(minimumCommission.getText()).doubleValue();
+            store.setValue(SimpleAccount.PREFS_MINIMUMCOMMISSION, nf.parse(minimumCommission.getText()).doubleValue());
         } catch(Exception e) {
-            return 0;
         }
-    }
-    
-    public void setMinimumCommission(double value)
-    {
-        this.minimumCommission.setText(nf.format(value));
-    }
-    
-    public double getMaximumCommission()
-    {
         try {
-            return nf.parse(maximumCommission.getText()).doubleValue();
+            store.setValue(SimpleAccount.PREFS_MAXIMUMCOMMISSION, nf.parse(maximumCommission.getText()).doubleValue());
         } catch(Exception e) {
-            return 0;
         }
-    }
-    
-    public void setMaximumCommission(double value)
-    {
-        this.maximumCommission.setText(nf.format(value));
+
+        return super.performOk();
     }
 }

@@ -15,7 +15,6 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.trading.views.AccountsView;
 import net.sourceforge.eclipsetrader.trading.views.TransactionsView;
-import net.sourceforge.eclipsetrader.trading.wizards.AccountWizard;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -48,7 +47,7 @@ public class AccountWizardAction implements IWorkbenchWindowActionDelegate
      */
     public void run(IAction action)
     {
-        AccountWizard wizard = new AccountWizard();
+        NewAccountWizard wizard = new NewAccountWizard();
         Account account = wizard.open();
         if (account != null)
         {

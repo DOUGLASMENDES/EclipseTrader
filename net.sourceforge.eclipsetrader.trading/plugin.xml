@@ -553,5 +553,17 @@
                name="Pattern"/>
       </system>
    </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.accountProviders">
+      <provider
+            class="net.sourceforge.eclipsetrader.trading.internal.SimpleAccountProvider"
+            id="net.sourceforge.eclipsetrader.accounts.simple"
+            name="Simple Account">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.wizards.accounts.CommissionsPage"
+               description="Set the commissions required for transactions"
+               name="Commissions"/>
+      </provider>
+   </extension>
 
 </plugin>

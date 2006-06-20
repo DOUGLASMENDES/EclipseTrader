@@ -22,29 +22,34 @@ import java.util.Locale;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Account;
-import net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage;
 
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-public class GeneralPage extends CommonPreferencePage
+public class GeneralPage extends PreferencePage
 {
-    private Account account;
-    private Text text;
-    private Combo currency;
-    private Text balance;
-    private Text currentBalance;
-    private NumberFormat nf = NumberFormat.getInstance();
+    Account account;
+    Text text;
+    Combo currency;
+    Text balance;
+    Text currentBalance;
+    NumberFormat nf = NumberFormat.getInstance();
 
     public GeneralPage()
     {
         setTitle("General");
         setDescription("Set the account general settings");
+        noDefaultAndApplyButton();
+        setValid(false);
         
         nf.setGroupingUsed(true);
         nf.setMinimumIntegerDigits(1);
@@ -56,8 +61,8 @@ public class GeneralPage extends CommonPreferencePage
     {
         this.account = account;
         setTitle("General");
-        setDescription("Set the account general settings");
-        setPageComplete(true);
+        noDefaultAndApplyButton();
+        setValid(true);
 
         nf.setGroupingUsed(true);
         nf.setMinimumIntegerDigits(1);
@@ -66,22 +71,27 @@ public class GeneralPage extends CommonPreferencePage
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage#createControl(org.eclipse.swt.widgets.Composite)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
-    public void createControl(Composite parent)
+    protected Control createContents(Composite parent)
     {
         Composite content = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout(2, false);
         gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setControl(content);
 
         Label label = new Label(content, SWT.NONE);
         label.setText("Name");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         text = new Text(content, SWT.BORDER);
         text.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+        text.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e)
+            {
+                setValid(text.getText().length() != 0);
+            }
+        });
         if (account != null)
             text.setText(account.getDescription());
 
@@ -127,13 +137,23 @@ public class GeneralPage extends CommonPreferencePage
         else
             currency.setText(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
-        text.setFocus();
+        return content;
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.wizards.CommonPreferencePage#performFinish()
+     * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
      */
-    public void performFinish()
+    public void setVisible(boolean visible)
+    {
+        super.setVisible(visible);
+        if (visible)
+            text.setFocus();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    public boolean performOk()
     {
         if (account != null)
         {
@@ -141,6 +161,7 @@ public class GeneralPage extends CommonPreferencePage
             account.setCurrency(currency.getText().length() != 0 ? Currency.getInstance(currency.getText()) : null);
             account.setInitialBalance(getBalance());
         }
+        return super.performOk();
     }
     
     public String getText()

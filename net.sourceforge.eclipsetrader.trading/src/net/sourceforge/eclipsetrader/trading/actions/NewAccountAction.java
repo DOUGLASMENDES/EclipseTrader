@@ -14,7 +14,7 @@ package net.sourceforge.eclipsetrader.trading.actions;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
 import net.sourceforge.eclipsetrader.core.ui.AccountGroupSelection;
 import net.sourceforge.eclipsetrader.trading.views.AccountsView;
-import net.sourceforge.eclipsetrader.trading.wizards.AccountWizard;
+import net.sourceforge.eclipsetrader.trading.wizards.accounts.NewAccountWizard;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -58,7 +58,7 @@ public class NewAccountAction extends Action implements IViewActionDelegate
         if (selection instanceof AccountGroupSelection)
             group = ((AccountGroupSelection)selection).getGroup();
 
-        AccountWizard wizard = new AccountWizard();
+        NewAccountWizard wizard = new NewAccountWizard();
         if (group == null)
             wizard.open();
         else

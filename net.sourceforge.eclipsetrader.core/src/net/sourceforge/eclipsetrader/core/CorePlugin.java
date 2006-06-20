@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.core.db.Account;
+import net.sourceforge.eclipsetrader.core.db.DefaultAccount;
+import net.sourceforge.eclipsetrader.core.db.PersistentPreferenceStore;
 import net.sourceforge.eclipsetrader.core.internal.Messages;
 import net.sourceforge.eclipsetrader.core.internal.XMLRepository;
 
@@ -45,6 +48,7 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.core"; //$NON-NLS-1$
     public static final String FEED_EXTENSION_POINT = PLUGIN_ID + ".feeds"; //$NON-NLS-1$
     public static final String PATTERN_EXTENSION_POINT = PLUGIN_ID + ".patterns"; //$NON-NLS-1$
+    public static final String ACCOUNT_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".accountProviders"; //$NON-NLS-1$
     public static final String FEED_RUNNING = "FEED_RUNNING"; //$NON-NLS-1$
     public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY"; //$NON-NLS-1$
     public static final String PREFS_PROXY_HOST_ADDRESS = "PROXY_HOST_ADDRESS"; //$NON-NLS-1$
@@ -337,6 +341,41 @@ public class CorePlugin extends AbstractUIPlugin
     public static SimpleDateFormat getTimeParse()
     {
         return timeParse;
+    }
+
+    public static Account createAccount(String pluginId, PersistentPreferenceStore preferenceStore, List transactions)
+    {
+        Account account = null;
+        
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(CorePlugin.ACCOUNT_PROVIDERS_EXTENSION_POINT); //$NON-NLS-1$
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement item = members[i];
+                if (item.getAttribute("id").equals(pluginId)) //$NON-NLS-1$
+                {
+                    try {
+                        IAccountProvider provider = (IAccountProvider)members[i].createExecutableExtension("class"); //$NON-NLS-1$
+                        account = provider.createAccount(preferenceStore, transactions);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        }
+        
+        if (account == null)
+        {
+            account = new DefaultAccount();
+            account.setPreferenceStore(preferenceStore);
+            account.setTransactions(transactions);
+        }
+        
+        return account;
     }
 
     public static void logException(Exception e)
