@@ -34,6 +34,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
     private IWorkbenchAction pasteSpecialAction; 
     private IWorkbenchAction deleteAction; 
     private IWorkbenchAction settingsAction; 
+    private IWorkbenchAction importAction; 
+    private IWorkbenchAction exportAction; 
     private IWorkbenchAction propertiesAction; 
     private IWorkbenchAction quitAction; 
     private IWorkbenchAction newWindowAction; 
@@ -56,6 +58,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
      */
     protected void makeActions(IWorkbenchWindow window)
     {
+        importAction = ActionFactory.IMPORT.create(window);
+        exportAction = ActionFactory.EXPORT.create(window);
         propertiesAction = ActionFactory.PROPERTIES.create(window);
         quitAction = ActionFactory.QUIT.create(window);
 
@@ -95,6 +99,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menu.add(new Separator());
         menu.add(new CloseAction());        
         menu.add(new CloseAllAction());        
+        menu.add(new Separator());
+        menu.add(importAction);
+        menu.add(exportAction);
         menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         menu.add(new Separator(IWorkbenchActionConstants.FILE_END));
         menu.add(propertiesAction);
