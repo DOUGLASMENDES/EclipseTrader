@@ -32,6 +32,18 @@
             pattern="net.sourceforge.eclipsetrader.trading/net.sourceforge.eclipsetrader.webbrowser"/>
    </extension>
    <extension
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            class="net.sourceforge.eclipsetrader.core.ui.export.CSVExport"
+            icon="icons/wizard16/table.png"
+            id="net.sourceforge.eclipsetrader.export.csv"
+            name="CSV Data">
+         <description>
+            Export securities data to CSV files.
+         </description>
+      </wizard>
+   </extension>
+   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="net.sourceforge.eclipsetrader.core.ui.Perspective"
