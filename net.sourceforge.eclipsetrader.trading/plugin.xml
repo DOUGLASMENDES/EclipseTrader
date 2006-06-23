@@ -540,6 +540,14 @@
                class="net.sourceforge.eclipsetrader.trading.alerts.MovingAverageCrossoverPreferences"
                name="General"/>
       </alert>
+      <alert
+            class="net.sourceforge.eclipsetrader.trading.alerts.RSICrossover"
+            id="net.sourceforge.eclipsetrader.alert.rsicrossover"
+            name="RSI Crossover">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.alerts.RSICrossoverPreferences"
+               name="General"/>
+      </alert>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.trading.systems">
