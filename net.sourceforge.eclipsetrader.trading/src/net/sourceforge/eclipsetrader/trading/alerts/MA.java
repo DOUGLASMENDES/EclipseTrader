@@ -32,21 +32,23 @@ public class MA
             return ma;
         
         double data[] = new double[period + 1];
-        for (int i = data.length - period - 1; i < data.length; i++)
+
+        int index = in.size() - period - 1;
+        for (int i = 0; i < data.length; i++, index++)
         {
             switch(field)
             {
                 case BarData.OPEN:
-                    data[i] = in.getOpen(i);
+                    data[i] = in.getOpen(index);
                     break;
                 case BarData.HIGH:
-                    data[i] = in.getHigh(i);
+                    data[i] = in.getHigh(index);
                     break;
                 case BarData.LOW:
-                    data[i] = in.getLow(i);
+                    data[i] = in.getLow(index);
                     break;
                 case BarData.CLOSE:
-                    data[i] = in.getClose(i);
+                    data[i] = in.getClose(index);
                     break;
             }
         }
