@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.rcp"
       label="%featureName"
-      version="3.1.2"
+      version="3.2.0.v20060609m-SVDNgVrNoh-MeGG"
       provider-name="%providerName"
       plugin="org.eclipse.rcp"
       image="eclipse_update_120.jpg">
@@ -11,110 +11,114 @@
       %description
    </description>
 
+   <copyright>
+      %copyright
+   </copyright>
+
    <license url="%licenseURL">
       %license
    </license>
 
    <url>
-      <update label="%updateSiteName" url="http://update.eclipse.org/updates/3.1"/>
+      <update label="%updateSiteName" url="http://update.eclipse.org/updates/3.2"/>
    </url>
+
+   <plugin
+         id="com.ibm.icu"
+         download-size="0"
+         install-size="0"
+         version="3.4.4.1"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.core.commands"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.I20060605-1400"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.core.jobs"
+         download-size="0"
+         install-size="0"
+         version="3.2.0.v20060603"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.expressions"
          download-size="0"
          install-size="0"
-         version="3.1.0"
+         version="3.2.0.v20060605-1400"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.runtime"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20060603"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.core.runtime.compatibility.auth"
+         download-size="0"
+         install-size="0"
+         version="3.2.0.v20060601"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.osgi"
          download-size="0"
          install-size="0"
-         version="3.1.2"
+         version="3.2.0.v20060601"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20060602"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.swt"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232o"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jface"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.I20060605-1400"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jface.databinding"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.I20060605-1400"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ui.forms"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         version="3.2.0.I20060605-1400"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.workbench"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.I20060605-1400"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.configurator"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.update.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.update.scheduler"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.update.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20060605"
          unpack="false"/>
 
    <plugin
@@ -124,7 +128,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -135,7 +139,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -146,7 +150,18 @@
          arch="sparc"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.swt.gtk.solaris.x86"
+         os="solaris"
+         ws="gtk"
+         arch="x86"
+         download-size="0"
+         install-size="0"
+         version="3.2.0.HEAD"
          fragment="true"
          unpack="false"/>
 
@@ -157,7 +172,7 @@
          arch="ppc"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -168,18 +183,17 @@
          arch="x86_64"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.swt.carbon.macosx.ppc"
+         id="org.eclipse.swt.carbon.macosx"
          os="macosx"
          ws="carbon"
-         arch="ppc"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -190,7 +204,7 @@
          arch="ppc"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -201,7 +215,7 @@
          arch="PA_RISC"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -212,7 +226,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -223,7 +237,7 @@
          arch="ia64"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.HEAD"
          fragment="true"
          unpack="false"/>
 
@@ -234,7 +248,7 @@
          arch="sparc"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -245,7 +259,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v3232m"
          fragment="true"
          unpack="false"/>
 
@@ -256,7 +270,7 @@
          arch="ia64_32"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.HEAD"
          fragment="true"
          unpack="false"/>
 
@@ -264,14 +278,36 @@
          id="org.eclipse.rcp"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20060605"
          unpack="false"/>
 
    <plugin
-         id="org.apache.lucene"
+         id="org.eclipse.core.contenttype"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="3.2.0.v20060603"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.common"
+         download-size="0"
+         install-size="0"
+         version="3.2.0.v20060603"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.preferences"
+         download-size="0"
+         install-size="0"
+         version="3.2.0.v20060601"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.registry"
+         download-size="0"
+         install-size="0"
+         version="3.2.0.v20060601"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.help.appserver"
@@ -305,5 +341,39 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="org.apache.lucene"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.update.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.update.scheduler"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.update.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ui.forms"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
