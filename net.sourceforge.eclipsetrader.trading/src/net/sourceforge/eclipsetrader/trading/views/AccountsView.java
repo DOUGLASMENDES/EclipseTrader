@@ -480,11 +480,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
             if (i < sizes.length && sizes[i].length() != 0)
                 tree.getColumn(i).setWidth(Integer.parseInt(sizes[i]));
             else
-            {
-                tree.getColumn(i).pack();
-                if (tree.getColumn(i).getWidth() == 0)
-                    tree.getColumn(i).setWidth(100);
-            }
+                tree.getColumn(i).setWidth(i == 0 ? 100 : 75);
         }
         if ("gtk".equals(SWT.getPlatform()))
             tree.getColumn(tree.getColumnCount() - 1).pack();
