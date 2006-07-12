@@ -22,14 +22,14 @@
                name="preferenceCustomization"
                value="plugin_customization.ini"/>
          <property
-               name="windowImages"
-               value="eclipse.gif,eclipse32.gif"/>
-         <property
                name="aboutImage"
                value="eclipse_lg.gif"/>
          <property
                name="aboutText"
                value="%productBlurb"/>
+         <property
+               name="windowImages"
+               value="eclipse.gif,eclipse32.gif"/>
       </product>
    </extension>
    <extension

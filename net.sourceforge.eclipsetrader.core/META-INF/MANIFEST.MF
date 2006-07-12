@@ -2,13 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Core
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.core; singleton:=true
-Bundle-Version: 0.24.0
+Bundle-Version: 0.25.0
 Bundle-Activator: net.sourceforge.eclipsetrader.core.CorePlugin
 Bundle-Vendor: EclipseTrader
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui
-Eclipse-AutoStart: true
 Export-Package: net.sourceforge.eclipsetrader.core,
  net.sourceforge.eclipsetrader.core.db,
  net.sourceforge.eclipsetrader.core.db.columns,
@@ -41,3 +40,4 @@ Bundle-ClassPath: .,
  lib/commons-codec-1.3.jar,
  lib/commons-httpclient-3.0.jar,
  lib/commons-logging.jar
+Eclipse-LazyStart: true

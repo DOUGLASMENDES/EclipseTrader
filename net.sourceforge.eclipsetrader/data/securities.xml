@@ -149,6 +149,7 @@
     <security id="9">
         <code>AAPL</code>
         <description>Apple</description>
+        <currency>USD</currency>
         <feeds>
             <quote exchange="" id="net.sourceforge.eclipsetrader.yahoo"></quote>
             <level2 exchange="" id="net.sourceforge.eclipsetrader.archipelago"></level2>
