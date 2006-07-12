@@ -24,7 +24,7 @@ public class Quote
     private int bidSize = 0;
     private double ask = 0;
     private int askSize = 0;
-    private int volume = 0;
+    private long volume = 0;
     
     public Quote()
     {
@@ -154,7 +154,7 @@ public class Quote
      * 
      * @return the volume value
      */
-    public int getVolume()
+    public long getVolume()
     {
         return volume;
     }
@@ -164,7 +164,7 @@ public class Quote
      * 
      * @param volume the volume value
      */
-    public void setVolume(int volume)
+    public void setVolume(long volume)
     {
         this.volume = volume;
     }

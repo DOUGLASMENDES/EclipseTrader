@@ -34,7 +34,7 @@ public class DataCollector implements Observer, ICollectionObserver
     {
         Bar bar;
         List history;
-        int volume;
+        long volume;
         Calendar nextBarTime;
 
         MapData(List data)

@@ -55,7 +55,7 @@ public class Volume extends Column
         return 0;
     }
 
-    private int getValue(WatchlistItem item)
+    private long getValue(WatchlistItem item)
     {
         if (item.getSecurity() == null)
             return 0;
