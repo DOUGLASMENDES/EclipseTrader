@@ -292,9 +292,9 @@ public class Security extends PersistentObject
 
     public void setHigh(Double high)
     {
-        if (this.high != null && !this.high.equals(open))
+        if (this.high != null && !this.high.equals(high))
             quoteMonitor.setChanged();
-        else if (this.high == null && this.high != null)
+        else if (this.high == null && high != null)
             quoteMonitor.setChanged();
         this.high = high;
         quoteMonitor.notifyObservers(this);
@@ -307,9 +307,9 @@ public class Security extends PersistentObject
 
     public void setLow(Double low)
     {
-        if (this.low != null && !this.low.equals(open))
+        if (this.low != null && !this.low.equals(low))
             quoteMonitor.setChanged();
-        else if (this.low == null && this.low != null)
+        else if (this.low == null && low != null)
             quoteMonitor.setChanged();
         this.low = low;
         quoteMonitor.notifyObservers(this);
@@ -324,7 +324,7 @@ public class Security extends PersistentObject
     {
         if (this.open != null && !this.open.equals(open))
             quoteMonitor.setChanged();
-        else if (this.open == null && this.open != null)
+        else if (this.open == null && open != null)
             quoteMonitor.setChanged();
         this.open = open;
         quoteMonitor.notifyObservers(this);
@@ -337,9 +337,9 @@ public class Security extends PersistentObject
 
     public void setClose(Double close)
     {
-        if (this.close != null && !this.close.equals(open))
+        if (this.close != null && !this.close.equals(close))
             quoteMonitor.setChanged();
-        else if (this.close == null && this.close != null)
+        else if (this.close == null && close != null)
             quoteMonitor.setChanged();
         this.close = close;
         quoteMonitor.notifyObservers(this);
