@@ -93,12 +93,12 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             switch(sortColumn)
             {
                 case 0:
-                    if (sortDirection == 1)
+                    if (sortDirection == 0)
                         return ((Security)arg0).getCode().compareTo(((Security)arg1).getCode());
                     else
                         return ((Security)arg1).getCode().compareTo(((Security)arg0).getCode());
                 case 1:
-                    if (sortDirection == 1)
+                    if (sortDirection == 0)
                         return ((Security)arg0).getDescription().compareTo(((Security)arg1).getDescription());
                     else
                         return ((Security)arg1).getDescription().compareTo(((Security)arg0).getDescription());
@@ -110,7 +110,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                         s0 = ((Security)arg0).getCurrency().getCurrencyCode();
                     if (((Security)arg1).getCurrency() != null)
                         s1 = ((Security)arg1).getCurrency().getCurrencyCode();
-                    if (sortDirection == 1)
+                    if (sortDirection == 0)
                         return s0.compareTo(s1);
                     else
                         return s1.compareTo(s0);
@@ -144,11 +144,11 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         {
             int index = table.indexOf((TableColumn)e.widget);
             if (sortColumn == index)
-                sortDirection = (sortDirection == 1) ? 0 : 1;
+                sortDirection = sortDirection == 0 ? 1 : 0;
             else
             {
                 sortColumn = index;
-                sortDirection = 1;
+                sortDirection = 0;
             }
 
             IPreferenceStore prefs = CorePlugin.getDefault().getPreferenceStore();
@@ -397,6 +397,18 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
         }
         if ("gtk".equals(SWT.getPlatform())) //$NON-NLS-1$
             table.getColumn(table.getColumnCount() - 1).pack();
+        
+        if (sortColumn >= 0 && sortColumn < table.getColumnCount())
+        {
+            table.setSortColumn(table.getColumn(sortColumn));
+            table.setSortDirection(sortDirection == 0 ? SWT.UP : SWT.DOWN);
+        }
+        else
+        {
+            table.setSortColumn(null);
+            sortColumn = -1;
+            sortDirection = 0;
+        }
         
         updateSelection();
     }

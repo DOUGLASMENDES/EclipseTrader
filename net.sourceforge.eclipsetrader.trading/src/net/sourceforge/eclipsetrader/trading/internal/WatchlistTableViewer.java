@@ -150,7 +150,10 @@ public class WatchlistTableViewer extends AbstractLayout
     private SelectionListener columnSelectionListener = new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e)
         {
-            int index = table.indexOf((TableColumn) e.widget);
+            TableColumn tableColumn = (TableColumn) e.widget;
+            Column column = (Column)tableColumn.getData();
+            
+            int index = table.indexOf(tableColumn);
             if (index == sortColumn)
                 sortDirection = sortDirection == 0 ? 1 : 0;
             else
@@ -158,12 +161,11 @@ public class WatchlistTableViewer extends AbstractLayout
                 sortColumn = index;
                 sortDirection = 0;
             }
+            String s = column.getClass().getName() + ";" + String.valueOf(sortDirection);
+            TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), s);
 
             Collections.sort(getView().getWatchlist().getItems(), comparator);
             updateView();
-            
-            String s = String.valueOf(sortColumn) + ";" + String.valueOf(sortDirection);
-            TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), s);
         }
     };
     
@@ -314,12 +316,6 @@ public class WatchlistTableViewer extends AbstractLayout
         getView().getSite().registerContextMenu(menuMgr, getView().getSite().getSelectionProvider());
         
         showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId());
-        String[] items = TradingPlugin.getDefault().getPreferenceStore().getString(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId()).split(";");
-        if (items.length == 2)
-        {
-            sortColumn = new Integer(items[0]).intValue();
-            sortDirection = new Integer(items[1]).intValue();
-        }
 
         return content;
     }
@@ -354,6 +350,11 @@ public class WatchlistTableViewer extends AbstractLayout
         int index;
         TableColumn tableColumn;
         WatchlistTableItem tableItem;
+
+        String[] items = TradingPlugin.getDefault().getPreferenceStore().getString(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId()).split(";");
+        if (items.length != 2)
+            items = new String[] { "", "0" };
+        sortDirection = new Integer(items[1]).intValue();
 
         index = 1;
         for (Iterator iter = getView().getWatchlist().getColumns().iterator(); iter.hasNext(); )
@@ -391,6 +392,10 @@ public class WatchlistTableViewer extends AbstractLayout
             }
             tableColumn.setText(column.getLabel());
             tableColumn.setData(column);
+
+            if (column.getClass().getName().equals(items[0]))
+                sortColumn = index;
+            
             index++;
         }
         
@@ -448,6 +453,18 @@ public class WatchlistTableViewer extends AbstractLayout
         }
         if ("gtk".equals(SWT.getPlatform()))
             table.getColumn(table.getColumnCount() - 1).pack();
+
+        if (sortColumn >= 1 && sortColumn < table.getColumnCount())
+        {
+            table.setSortColumn(table.getColumn(sortColumn));
+            table.setSortDirection(sortDirection == 0 ? SWT.UP : SWT.DOWN);
+        }
+        else
+        {
+            table.setSortColumn(null);
+            sortColumn = -1;
+            sortDirection = 0;
+        }
     }
 
     public void update(Observable o, Object arg)
