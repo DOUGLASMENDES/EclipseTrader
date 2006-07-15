@@ -223,6 +223,26 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                 if (watchlist != null)
                 {
                     setLayout(watchlist.getStyle());
+                    for (Iterator itemIter = watchlist.getItems().iterator(); itemIter.hasNext(); )
+                    {
+                        WatchlistItem watchlistItem = (WatchlistItem)itemIter.next();
+                        for (Iterator iter = watchlistItem.getAlerts().iterator(); iter.hasNext(); )
+                        {
+                            Alert alert = (Alert) iter.next();
+                            AlertPlugin plugin = (AlertPlugin) alert.getData();
+                            if (plugin == null)
+                            {
+                                plugin = TradingPlugin.createAlertPlugin(alert.getPluginId());
+                                plugin.init(watchlistItem.getSecurity(), alert);
+                                plugin.setLastSeen(alert.getLastSeen());
+                                alert.setData(plugin);
+                            }
+                        }
+                        watchlistItem.addObserver(WatchlistView.this);
+                        Security security = watchlistItem.getSecurity();
+                        if (security != null && security.getQuoteFeed() != null)
+                            FeedMonitor.monitor(security);
+                    }
                     watchlist.getItems().addCollectionObserver(WatchlistView.this);
                     watchlist.addObserver(WatchlistView.this);
                 }
@@ -293,26 +313,6 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         layout.createPartControl(parent);
         layout.updateView();
         parent.layout();
-        
-        for (Iterator itemIter = watchlist.getItems().iterator(); itemIter.hasNext(); )
-        {
-            WatchlistItem watchlistItem = (WatchlistItem)itemIter.next();
-
-            for (Iterator iter = watchlistItem.getAlerts().iterator(); iter.hasNext(); )
-            {
-                Alert alert = (Alert) iter.next();
-                AlertPlugin plugin = (AlertPlugin) alert.getData();
-                if (plugin == null)
-                {
-                    plugin = TradingPlugin.createAlertPlugin(alert.getPluginId());
-                    plugin.init(watchlistItem.getSecurity(), alert);
-                    plugin.setLastSeen(alert.getLastSeen());
-                    alert.setData(plugin);
-                }
-            }
-            
-            watchlistItem.addObserver(this);
-        }
     }
 
     public AbstractLayout getLayout()

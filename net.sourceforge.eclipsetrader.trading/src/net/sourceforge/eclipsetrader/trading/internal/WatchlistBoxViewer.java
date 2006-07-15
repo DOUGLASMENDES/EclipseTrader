@@ -18,7 +18,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
-import net.sourceforge.eclipsetrader.core.FeedMonitor;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
@@ -162,10 +161,6 @@ public class WatchlistBoxViewer extends AbstractLayout
             viewItem.setPositiveForeground(positiveForeground);
             viewItem.setNegativeForeground(negativeForeground);
 
-            Security security = watchlistItem.getSecurity();
-            if (security != null && security.getQuoteFeed() != null)
-                FeedMonitor.monitor(security);
-            
             index++;
         }
         while(index < items.length)
@@ -252,12 +247,7 @@ public class WatchlistBoxViewer extends AbstractLayout
         void setWatchlistItem(WatchlistItem watchlistItem)
         {
             if (this.watchlistItem != null)
-            {
                 this.watchlistItem.deleteObserver(this);
-                Security security = this.watchlistItem.getSecurity();
-                if (security != null)
-                    FeedMonitor.cancelMonitor(security);
-            }
             this.watchlistItem = watchlistItem;
 
             updateDisplay();

@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import net.sourceforge.eclipsetrader.core.FeedMonitor;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
@@ -416,10 +415,6 @@ public class WatchlistTableViewer extends AbstractLayout
             tableItem.setBackground(((index & 1) == 1) ? oddBackground : evenBackground);
             tableItem.setForeground(((index & 1) == 1) ? oddForeground : evenForeground);
 
-            Security security = watchlistItem.getSecurity();
-            if (security != null && security.getQuoteFeed() != null)
-                FeedMonitor.monitor(security);
-
             index++;
         }
         
@@ -639,12 +634,7 @@ public class WatchlistTableViewer extends AbstractLayout
         void setWatchlistItem(WatchlistItem watchlistItem)
         {
             if (this.watchlistItem != null)
-            {
                 this.watchlistItem.deleteObserver(this);
-                Security security = this.watchlistItem.getSecurity();
-                if (security != null)
-                    FeedMonitor.cancelMonitor(security);
-            }
             this.watchlistItem = watchlistItem;
             
             int column = 1;
