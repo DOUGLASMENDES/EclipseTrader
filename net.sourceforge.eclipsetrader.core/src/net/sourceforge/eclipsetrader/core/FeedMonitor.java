@@ -26,6 +26,13 @@ public class FeedMonitor
     private FeedMonitor()
     {
     }
+    
+    public static void clear()
+    {
+        feedMap.clear();
+        securityMap.clear();
+        securityInstances.clear();
+    }
 
     public static void monitor(Security security)
     {

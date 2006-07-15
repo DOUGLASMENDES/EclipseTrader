@@ -97,6 +97,15 @@ public class CurrencyConverter extends Observable
     {
         return instance;
     }
+    
+    public void clear()
+    {
+        File file = new File(Platform.getLocation().toFile(), "currencies.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        currencies.clear();
+        map.clear();
+    }
 
     public List getCurrencies()
     {
