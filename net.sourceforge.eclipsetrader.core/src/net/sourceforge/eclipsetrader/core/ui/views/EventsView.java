@@ -214,6 +214,9 @@ public class EventsView extends ViewPart implements ICollectionObserver
         table.getDisplay().asyncExec(new Runnable() {
             public void run()
             {
+                if (table.isDisposed())
+                    return;
+                
                 TableItem tableItem = new TableItem(table, SWT.NONE, 0);
                 tableItem.setText(0, dateFormatter.format(event.getDate()));
                 tableItem.setText(1, timeFormatter.format(event.getDate()));
