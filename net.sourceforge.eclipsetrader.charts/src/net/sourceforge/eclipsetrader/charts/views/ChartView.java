@@ -1180,6 +1180,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 }
 
                 indicators.add(indicator);
+                if (autoScale)
+                    plot.updateScale();
             }
             if (o instanceof ChartObject)
             {
@@ -1218,6 +1220,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     plot.removeIndicator(plugin.getOutput());
                 indicators.remove(indicator);
                 getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
+                if (autoScale)
+                    plot.updateScale();
             }
             if (o instanceof ChartObject)
             {
