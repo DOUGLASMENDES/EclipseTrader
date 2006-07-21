@@ -32,9 +32,10 @@ public class Line extends ObjectPlugin
     private Date date1, date2;
     private double value1 = 0, value2 = 0;
     private Color color = new Color(null, 0, 0, 224);
-    private boolean extend = false;
+    private boolean extend1 = false, extend2 = false;
     private Point p1, p2, selected;
     private Point o1, o2;
+    private Point d1, d2;
     private int lastX = -1, lastY = -1;
 
     public Line()
@@ -55,11 +56,11 @@ public class Line extends ObjectPlugin
      */
     public boolean isOverLine(int x, int y)
     {
-        if (p1 == null || p2 == null)
+        if (d1 == null || d2 == null)
             return false;
         if (isOverHandle(x, y))
             return true;
-        return PixelTools.isPointOnLine(x, y, p1.x, p1.y, p2.x, p2.y);
+        return PixelTools.isPointOnLine(x, y, d1.x, d1.y, d2.x, d2.y);
     }
 
     /* (non-Javadoc)
@@ -91,6 +92,8 @@ public class Line extends ObjectPlugin
             value2 = e.value;
             p1 = new Point(e.x, e.y);
             p2 = new Point(e.x, e.y);
+            d1 = new Point(e.x,e.y);
+            d2 = new Point(e.x,e.y);
             selected = p2;
         }
         else
@@ -192,24 +195,42 @@ public class Line extends ObjectPlugin
             p2.y = getPlot().getScaler().convertToY(value2);
             gc.drawLine (p1.x + location.x, p1.y, p2.x + location.x, p2.y);
             
-            if (extend)
+            if (d1 == null)
+            	d1 = new Point(0,0);
+            d1.x = p1.x;
+            d1.y = p1.y;
+            if (d2 == null)
+            	d2 = new Point(0,0);
+            d2.x = p2.x;
+            d2.y = p2.y;
+
+            if (extend1)
             {
-                int x = p1.x;
-                int y = p1.y;
-                int x2 = p2.x;
-                int y2 = p2.y;
-                int ydiff = y - y2;
-                int xdiff = x2 - x;
+                int ydiff = p2.y- p1.y;
+                int xdiff = p1.x - p2.x;
                 if (xdiff != 0 || ydiff != 0)
                 {
-                    while(x2 > 0 && x2 < rect.width && y2 > 0 && y2 < rect.height)
+                    while(d1.x > 0 && d1.x < rect.width && d1.y > 0 && d1.y < rect.height)
                     {
-                        x = x2;
-                        y = y2;
-                        x2 += xdiff;
-                        y2 -= ydiff;
-                        gc.drawLine (x + location.x, y, x2 + location.x, y2);
-                    }
+                        d1.x += xdiff;
+                        d1.y -= ydiff;
+                     }
+                    gc.drawLine (d1.x + location.x, d1.y, p1.x + location.x, p1.y);
+                }
+            }
+            
+            if (extend2)
+            {
+                int ydiff = p1.y- p2.y;
+                int xdiff = p2.x - p1.x;
+                if (xdiff != 0 || ydiff != 0)
+                {
+                    while(d2.x > 0 && d2.x < rect.width && d2.y > 0 && d2.y < rect.height)
+                    {
+                        d2.x += xdiff;
+                        d2.y -= ydiff;
+                     }
+                    gc.drawLine (p2.x + location.x, p2.y, d2.x + location.x, d2.y);
                 }
             }
 
@@ -234,7 +255,8 @@ public class Line extends ObjectPlugin
         value1 = settings.getDouble("value1", 0).doubleValue();
         value2 = settings.getDouble("value2", 0).doubleValue();
         color = settings.getColor("color", color.getRGB());
-        extend = settings.getBoolean("extend", false);
-        p1 = p2 = null;
+        extend1 = settings.getBoolean("extend1", false);
+        extend2 = settings.getBoolean("extend2", false);
+        p1 = p2 = d1 = d2 = null;
     }
 }

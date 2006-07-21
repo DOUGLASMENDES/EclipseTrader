@@ -36,7 +36,8 @@ public class LinePreferences extends ObjectPluginPreferencePage
     private Text value1;
     private Text date2;
     private Text value2;
-    private Button extend;
+    private Button extend1;
+    private Button extend2;
     private NumberFormat nf = ChartsPlugin.getPriceFormat();
     private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
 
@@ -93,9 +94,15 @@ public class LinePreferences extends ObjectPluginPreferencePage
         value2.setText(nf.format(getSettings().getDouble("value2", null)));
 
         label = new Label(content, SWT.NONE);
-        extend = new Button(content, SWT.CHECK);
-        extend.setText("Extend");
-        extend.setSelection(getSettings().getBoolean("extend", false));
+        extend1 = new Button(content, SWT.CHECK);
+        extend1.setText("Extend Start");
+        extend1.setSelection(getSettings().getBoolean("extend1", false));
+
+        label = new Label(content, SWT.NONE);
+        extend2 = new Button(content, SWT.CHECK);
+        extend2.setText("Extend End");
+        extend2.setSelection(getSettings().getBoolean("extend2", false));
+
     }
 
     /* (non-Javadoc)
@@ -110,7 +117,8 @@ public class LinePreferences extends ObjectPluginPreferencePage
             getSettings().set("date2", df.parse(date2.getText()));
             getSettings().set("value1", nf.parse(value1.getText()).doubleValue());
             getSettings().set("value2", nf.parse(value2.getText()).doubleValue());
-            getSettings().set("extend", extend.getSelection());
+            getSettings().set("extend1", extend1.getSelection());
+            getSettings().set("extend2", extend2.getSelection());
         }
         catch (ParseException e) {
             CorePlugin.logException(e);
