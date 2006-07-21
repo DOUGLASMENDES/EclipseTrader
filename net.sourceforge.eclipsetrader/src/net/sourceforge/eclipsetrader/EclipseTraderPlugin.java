@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 
 import org.eclipse.ui.plugin.*;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -91,7 +92,7 @@ public class EclipseTraderPlugin extends AbstractUIPlugin
             {
                 byte[] buffer = new byte[10240];
                 OutputStream os = new FileOutputStream(f);
-                InputStream is = openStream(new Path("data/" + file));
+                InputStream is = FileLocator.openStream(getBundle(), new Path("data/" + file), false);
                 int readed = 0;
                 do
                 {

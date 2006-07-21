@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.yahoo.YahooPlugin;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -76,7 +77,7 @@ public class FrenchNewsPreferencesPage extends PreferencePage implements IWorkbe
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(YahooPlugin.getDefault().openStream(new Path("categories.fr.xml")));
+            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("categories.fr.xml"), false));
 
             NodeList childNodes = document.getFirstChild().getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++)

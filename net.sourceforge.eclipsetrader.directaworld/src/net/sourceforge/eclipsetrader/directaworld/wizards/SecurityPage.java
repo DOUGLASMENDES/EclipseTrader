@@ -24,6 +24,7 @@ import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -124,7 +125,7 @@ public class SecurityPage extends WizardPage
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(DirectaWorldPlugin.getDefault().openStream(new Path("data/securities.xml")));
+            Document document = builder.parse(FileLocator.openStream(DirectaWorldPlugin.getDefault().getBundle(), new Path("data/securities.xml"), false));
 
             Node firstNode = document.getFirstChild();
 

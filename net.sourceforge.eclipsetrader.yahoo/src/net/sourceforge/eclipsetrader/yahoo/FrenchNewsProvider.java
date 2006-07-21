@@ -27,6 +27,7 @@ import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -148,7 +149,7 @@ public class FrenchNewsProvider implements Runnable, INewsProvider
                 {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
-                    Document document = builder.parse(YahooPlugin.getDefault().openStream(new Path(NEWS_CONFIG_FILE))); //$NON-NLS-1$
+                    Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path(NEWS_CONFIG_FILE), false)); //$NON-NLS-1$
 
                     NodeList childNodes = document.getFirstChild().getChildNodes();
                     for (int i = 0; i < childNodes.getLength(); i++)

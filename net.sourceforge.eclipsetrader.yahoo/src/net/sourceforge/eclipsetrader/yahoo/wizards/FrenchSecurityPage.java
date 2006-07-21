@@ -24,6 +24,7 @@ import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.yahoo.YahooPlugin;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -123,7 +124,7 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(YahooPlugin.getDefault().openStream(new Path("data/securities_fr.xml")));
+            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("data/securities_fr.xml"), false));
 
             Node firstNode = document.getFirstChild();
 

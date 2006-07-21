@@ -16,11 +16,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.ListenerList;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.util.SafeRunnable;
 

@@ -17,9 +17,9 @@ import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -151,7 +151,7 @@ public class ImageResource
     private static void registerImage(String key, String partialURL) 
     {
         try {
-            URL iconURL = Platform.find(CorePlugin.getDefault().getBundle(), ICON_BASE_URL.append(partialURL));
+            URL iconURL = FileLocator.find(CorePlugin.getDefault().getBundle(), ICON_BASE_URL.append(partialURL), null);
             ImageDescriptor id = ImageDescriptor.createFromURL(iconURL);
             imageRegistry.put(key, id);
             imageDescriptors.put(key, id);

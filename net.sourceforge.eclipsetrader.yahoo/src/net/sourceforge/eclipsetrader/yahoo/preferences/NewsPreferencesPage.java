@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.yahoo.YahooPlugin;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -76,7 +77,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(YahooPlugin.getDefault().openStream(new Path("categories.xml")));
+            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("categories.xml"), false));
 
             NodeList childNodes = document.getFirstChild().getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++)
