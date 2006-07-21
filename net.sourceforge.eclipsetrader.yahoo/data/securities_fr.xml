@@ -17,7 +17,6 @@
     <security code="ASF.PA" wkn="ASF.PA">AUTOROUTES SUD FRAN</security>
     <security code="AVT.PA" wkn="AVT.PA">AVENIR TELECOM</security>
     <security code="CS.PA" wkn="CS.PA">AXA</security>
-    <security code="AXL.PA" wkn="AXL.PA">AXALTO HOLDING</security>
     <security code="DAL.PA" wkn="DAL.PA">BACOU-DALLOZ</security>
     <security code="BEN.PA" wkn="BEN.PA">BENETEAU</security>
     <security code="BB.PA" wkn="BB.PA">BIC</security>
@@ -57,6 +56,7 @@
     <security code="FTE.PA" wkn="FTE.PA">FRANCE TELECOM</security>
     <security code="GAZ.PA" wkn="GAZ.PA">GAZ DE FRANCE</security>
     <security code="GFC.PA" wkn="GFC.PA">GECINA N</security>
+    <security code="AXL.PA" wkn="AXL.PA">GEMALTO</security>
     <security code="GEM.PA" wkn="GEM.PA">GEMPLUS INTL</security>
     <security code="GNE.PA" wkn="GNE.PA">GENERAL ELECTRIC</security>
     <security code="GDS.PA" wkn="GDS.PA">GENERALE DE SANTE</security>
@@ -64,6 +64,7 @@
     <security code="GFI.PA" wkn="GFI.PA">GFI INFORMATIQUE</security>
     <security code="RIA.PA" wkn="RIA.PA">GROUPE STERIA</security>
     <security code="GG.PA" wkn="GG.PA">GUYENNE GASCOGNE</security>
+    <security code="PIG.PA" wkn="PIG.PA">HAULOTTE GROUP</security>
     <security code="HAV.PA" wkn="HAV.PA">HAVAS</security>
     <security code="RMS.PA" wkn="RMS.PA">HERMES INTL</security>
     <security code="HSB.PA" wkn="HSB.PA">HSBC HLDG</security>
@@ -91,7 +92,6 @@
     <security code="PPS.PA" wkn="PPS.PA">PENAUILLE POLYSERV.</security>
     <security code="RI.PA" wkn="RI.PA">PERNOD RICARD</security>
     <security code="UG.PA" wkn="UG.PA">PEUGEOT</security>
-    <security code="PIG.PA" wkn="PIG.PA">PINGUELY-HAULOTTE</security>
     <security code="PP.PA" wkn="PP.PA">PPR</security>
     <security code="VIM.PA" wkn="VIM.PA">PROVIMI</security>
     <security code="PUB.PA" wkn="PUB.PA">PUBLICIS GROUPE</security>
@@ -113,15 +113,15 @@
     <security code="SOI.PA" wkn="SOI.PA">SOITEC</security>
     <security code="SOP.PA" wkn="SOP.PA">SOPRA GROUP</security>
     <security code="SPI.PA" wkn="SPI.PA">SPIR COMMUNICATIONS</security>
-    <security code="RCF.PA" wkn="RCF.PA">SR TELEPERFORMANCE</security>
     <security code="GLE.PA" wkn="GLE.PA">STE GENERALE-A-</security>
     <security code="STM.PA" wkn="STM.PA">STMICROELECTRONICS </security>
     <security code="SZE.PA" wkn="SZE.PA">SUEZ</security>
     <security code="TEC.PA" wkn="TEC.PA">TECHNIP</security>
     <security code="TF.PA" wkn="TF.PA">TELEFONICA</security>
+    <security code="RCF.PA" wkn="RCF.PA">TELEPERFORMANCE</security>
     <security code="TFI.PA" wkn="TFI.PA">TF1</security>
     <security code="HO.PA" wkn="HO.PA">THALES</security>
-    <security code="TMM.PA" wkn="TMM.PA">THOMSON</security>
+    <security code="TMS.PA" wkn="TMS.PA">THOMSON</security>
     <security code="FP.PA" wkn="FP.PA">TOTAL</security>
     <security code="TRD.PA" wkn="TRD.PA">TRADER CLASSIFIED</security>
     <security code="TRI.PA" wkn="TRI.PA">TRIGANO</security>
@@ -131,7 +131,7 @@
     <security code="VK.PA" wkn="VK.PA">VALLOUREC</security>
     <security code="VIE.PA" wkn="VIE.PA">VEOLIA ENVIRONN.</security>
     <security code="DG.PA" wkn="DG.PA">VINCI </security>
-    <security code="EX.PA" wkn="EX.PA">VIVENDI UNIVERSAL</security>
+    <security code="VIV.PA" wkn="VIV.PA">VIVENDI</security>
     <security code="MF.PA" wkn="MF.PA">WENDEL INVESTIS.</security>
     <security code="ZC.PA" wkn="ZC.PA">ZODIAC</security>
 </data>
