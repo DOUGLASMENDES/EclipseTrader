@@ -60,6 +60,8 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -224,6 +226,14 @@ public class WatchlistTableViewer extends AbstractLayout
                     table.deselectAll();
                     updateSelection();
                 }
+            }
+        });
+        // TODO This is a workaround for the sort column background color
+        table.addListener(SWT.EraseItem, new Listener() {
+            public void handleEvent(Event event)
+            {
+                event.gc.setBackground(((TableItem)event.item).getBackground());
+                event.gc.fillRectangle(event.getBounds());
             }
         });
         TableColumn column = new TableColumn(table, SWT.NONE);
