@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Marco Maccaferri - initial API and implementation
+ *     Danilo Tuler     - column selection
  */
 
 package net.sourceforge.eclipsetrader.trading.internal;
@@ -27,6 +28,7 @@ import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTable;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTableColumn;
 import net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
+import net.sourceforge.eclipsetrader.trading.WatchlistColumnSelection;
 import net.sourceforge.eclipsetrader.trading.WatchlistItemSelection;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistItemPropertiesDialog;
@@ -101,6 +103,7 @@ public class WatchlistTableViewer extends AbstractLayout
     private int sortColumn = -1;
     private int sortDirection = 0;
     private Action propertiesAction;
+    private Column selectedColumn;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
@@ -219,8 +222,10 @@ public class WatchlistTableViewer extends AbstractLayout
             }
         });
         table.addMouseListener(new MouseAdapter() {
-            public void mouseDown(MouseEvent e)
+
+			public void mouseDown(MouseEvent e)
             {
+            	selectedColumn = getColumn(e);
                 if (table.getItem(new Point(e.x, e.y)) == null)
                 {
                     table.deselectAll();
@@ -329,7 +334,30 @@ public class WatchlistTableViewer extends AbstractLayout
         return content;
     }
 
-    /* (non-Javadoc)
+    protected Column getColumn(MouseEvent e)
+    {
+        TableColumn[] columns = table.getColumns();
+
+        if (columns.length == 0)
+            return null;
+
+        TableColumn column;
+        int i = 0;
+        int x = 0;
+        do
+        {
+            column = columns[i];
+            x += column.getWidth();
+            i++;
+        } while (x < e.x);
+
+        if (column.getData() instanceof Column)
+            return (Column) column.getData();
+
+        return null;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
      */
     void setFocus()
@@ -489,7 +517,10 @@ public class WatchlistTableViewer extends AbstractLayout
         if (table.getSelectionCount() != 0 && table.getSelection()[0] instanceof WatchlistTableItem)
         {
             WatchlistTableItem tableItem = (WatchlistTableItem)table.getSelection()[0];
-            getView().getSite().getSelectionProvider().setSelection(new WatchlistItemSelection(tableItem.getWatchlistItem()));
+            if (selectedColumn != null)
+                getView().getSite().getSelectionProvider().setSelection(new WatchlistColumnSelection(tableItem.getWatchlistItem(), selectedColumn));
+            else
+                getView().getSite().getSelectionProvider().setSelection(new WatchlistItemSelection(tableItem.getWatchlistItem()));
             enable = true;
         }
         else
