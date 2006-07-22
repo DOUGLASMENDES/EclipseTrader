@@ -93,6 +93,7 @@ public class StartupShutdownPreferencesPage extends PreferencePage implements IW
         EclipseTraderPlugin.getDefault().getPreferenceStore().setValue(EclipseTraderPlugin.PROMPT_ON_EXIT, confirmExit.getSelection());
         
         CorePlugin.getDefault().getPreferenceStore().setValue(CorePlugin.PREFS_UPDATE_HISTORY, updateHistoryData.getSelection());
+        CorePlugin.getDefault().getPreferenceStore().setValue(CorePlugin.PREFS_UPDATE_HISTORY_ONCE, updateOnce.getSelection());
         CorePlugin.getDefault().getPreferenceStore().setValue(CorePlugin.PREFS_UPDATE_NEWS, updateNews.getSelection());
         
         return super.performOk();
