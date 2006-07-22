@@ -451,6 +451,14 @@
                class="net.sourceforge.eclipsetrader.charts.indicators.VFIPreferencePage"
                title="Volume Flow Indicator"/>
       </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.UO"
+            id="net.sourceforge.eclipsetrader.indicators.uo"
+            name="Ultimate Oscillator - UO">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.UOPreferencePage"
+               title="Ultimate Oscillator"/>
+      </indicator>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.charts.objects">
