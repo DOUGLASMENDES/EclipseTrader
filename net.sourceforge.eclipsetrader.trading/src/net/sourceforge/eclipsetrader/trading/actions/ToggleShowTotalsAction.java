@@ -12,18 +12,18 @@
 package net.sourceforge.eclipsetrader.trading.actions;
 
 import net.sourceforge.eclipsetrader.trading.internal.WatchlistTableViewer;
-import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
 import org.eclipse.jface.action.Action;
 
 public class ToggleShowTotalsAction extends Action
 {
-    private WatchlistView view;
+    private WatchlistTableViewer view;
     
-    public ToggleShowTotalsAction(WatchlistView view)
+    public ToggleShowTotalsAction(WatchlistTableViewer view)
     {
         super("Show Totals", AS_CHECK_BOX);
         this.view = view;
+        setId("toggleShowTotalsAction");
     }
 
     /* (non-Javadoc)
@@ -31,11 +31,8 @@ public class ToggleShowTotalsAction extends Action
      */
     public void run()
     {
-        if (view.getLayout() instanceof WatchlistTableViewer)
-        {
-            boolean value = ((WatchlistTableViewer) view.getLayout()).isShowTotals();
-            ((WatchlistTableViewer) view.getLayout()).setShowTotals(!value);
-            ((WatchlistTableViewer) view.getLayout()).updateView();
-        }
+        boolean value = view.isShowTotals();
+        view.setShowTotals(!value);
+        view.updateView();
     }
 }

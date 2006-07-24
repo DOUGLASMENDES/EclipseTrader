@@ -32,6 +32,7 @@ import net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.WatchlistColumnSelection;
 import net.sourceforge.eclipsetrader.trading.WatchlistItemSelection;
+import net.sourceforge.eclipsetrader.trading.actions.ToggleShowTotalsAction;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistItemPropertiesDialog;
 
@@ -105,6 +106,7 @@ public class WatchlistTableViewer extends AbstractLayout
     private boolean showTotals = false;
     int sortColumn = -1;
     int sortDirection = 0;
+    Action toggleShowTotals;
     private Action propertiesAction;
     private Column selectedColumn;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
@@ -190,6 +192,11 @@ public class WatchlistTableViewer extends AbstractLayout
         super(view);
         
         showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId());
+        toggleShowTotals = new ToggleShowTotalsAction(this);
+        toggleShowTotals.setChecked(showTotals);
+
+        IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+        menuManager.appendToGroup("toggles", toggleShowTotals);
         
         propertiesAction = new Action() {
             public void run()
@@ -345,29 +352,6 @@ public class WatchlistTableViewer extends AbstractLayout
         return content;
     }
 
-    protected Column getColumn(MouseEvent e)
-    {
-        TableColumn[] columns = table.getColumns();
-
-        if (columns.length == 0)
-            return null;
-
-        TableColumn column;
-        int i = 0;
-        int x = 0;
-        do
-        {
-            column = columns[i];
-            x += column.getWidth();
-            i++;
-        } while (x < e.x);
-
-        if (column.getData() instanceof Column)
-            return (Column) column.getData();
-
-        return null;
-    }
-
 	/* (non-Javadoc)
      * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
      */
@@ -386,11 +370,14 @@ public class WatchlistTableViewer extends AbstractLayout
         ITheme theme = themeManager.getCurrentTheme();
         theme.removePropertyChangeListener(themeChangeListener);
 
-        if (content != null)
-            content.dispose();
-
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler("properties", null);
+
+        IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+        menuManager.remove(toggleShowTotals.getId());
+
+        if (content != null)
+            content.dispose();
     }
 
     public void updateView()
@@ -485,10 +472,15 @@ public class WatchlistTableViewer extends AbstractLayout
         for (Iterator iter = list.iterator(); iter.hasNext(); )
         {
             WatchlistItem watchlistItem = (WatchlistItem)iter.next();
-            if ((!showTotals && index < table.getItemCount()) || (showTotals && index < (table.getItemCount() - 1)))
+            if (index < table.getItemCount())
             {
-                tableItem = (WatchlistTableItem)table.getItem(index);
-                tableItem.setWatchlistItem(watchlistItem);
+                if (table.getItem(index) instanceof WatchlistTableItem)
+                {
+                    tableItem = (WatchlistTableItem)table.getItem(index);
+                    tableItem.setWatchlistItem(watchlistItem);
+                }
+                else
+                    tableItem = new WatchlistTableItem(table, SWT.NONE, index, watchlistItem);
             }
             else
                 tableItem = new WatchlistTableItem(table, SWT.NONE, index, watchlistItem);
@@ -674,6 +666,29 @@ public class WatchlistTableViewer extends AbstractLayout
     public Table getTable()
     {
         return table;
+    }
+
+    protected Column getColumn(MouseEvent e)
+    {
+        TableColumn[] columns = table.getColumns();
+
+        if (columns.length == 0)
+            return null;
+
+        TableColumn column;
+        int i = 0;
+        int x = 0;
+        do
+        {
+            column = columns[i];
+            x += column.getWidth();
+            i++;
+        } while (x < e.x);
+
+        if (column.getData() instanceof Column)
+            return (Column) column.getData();
+
+        return null;
     }
     
     private class WatchlistTableItem extends TableItem implements DisposeListener, Observer, IEditableItem

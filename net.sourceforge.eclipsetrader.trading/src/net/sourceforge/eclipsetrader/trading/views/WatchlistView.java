@@ -30,7 +30,6 @@ import net.sourceforge.eclipsetrader.trading.AlertPlugin;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.actions.SetRibbonLayoutAction;
 import net.sourceforge.eclipsetrader.trading.actions.SetTableLayoutAction;
-import net.sourceforge.eclipsetrader.trading.actions.ToggleShowTotalsAction;
 import net.sourceforge.eclipsetrader.trading.internal.AbstractLayout;
 import net.sourceforge.eclipsetrader.trading.internal.CopyAction;
 import net.sourceforge.eclipsetrader.trading.internal.CutAction;
@@ -74,7 +73,6 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     AbstractLayout layout;
     Action tableLayout = new SetTableLayoutAction(this);
     Action ribbonLayout = new SetRibbonLayoutAction(this);
-    Action toggleShowTotals = new ToggleShowTotalsAction(this);
     Action cutAction = new CutAction(this);
     Action copyAction = new CopyAction(this);
     Action pasteAction;
@@ -154,7 +152,6 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         layoutMenu.add(ribbonLayout);
         menuManager.add(layoutMenu);
         menuManager.add(new Separator("toggles")); //$NON-NLS-1$
-        menuManager.add(toggleShowTotals);
         menuManager.add(new Separator("search")); //$NON-NLS-1$
         menuManager.add(new Separator("additions")); //$NON-NLS-1$
         menuManager.add(new Separator("bottom")); //$NON-NLS-1$
@@ -201,7 +198,6 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
             setTitleToolTip(getPartName());
             setPartName(watchlist.getDescription());
         }
-        toggleShowTotals.setChecked(TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId()));
 
         parent.getDisplay().asyncExec(new Runnable() {
             public void run()
