@@ -31,6 +31,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -210,6 +211,14 @@ public class WatchlistBoxViewer extends AbstractLayout
         }
     }
     
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.trading.internal.AbstractLayout#getItemIndex(org.eclipse.swt.graphics.Point)
+     */
+    public int getItemIndex(Point point)
+    {
+        return -1;
+    }
+
     protected void setTheme(ITheme theme)
     {
         positiveForeground = theme.getColorRegistry().get(POSITIVE_FOREGROUND);

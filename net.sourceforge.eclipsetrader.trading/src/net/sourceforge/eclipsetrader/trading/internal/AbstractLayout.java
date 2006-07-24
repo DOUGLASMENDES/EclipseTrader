@@ -16,6 +16,7 @@ import java.util.Observable;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
@@ -57,4 +58,6 @@ public abstract class AbstractLayout
     {
         return view.getViewSite();
     }
+    
+    public abstract int getItemIndex(Point point);
 }

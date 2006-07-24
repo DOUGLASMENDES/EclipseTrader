@@ -51,6 +51,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -65,18 +66,80 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.watchlist";
     public static final String PREFS_SHOW_TOTALS = "SHOW_TOTALS_";
     public static final String PREFS_SORTING = "SORT_";
+    public static final String PREFS_AUTO_SORT = "AUTOSORT_";
     public static final int TABLE = 0;
     public static final int RIBBON = 1;
-    private Watchlist watchlist;
-    private Composite parent;
+    Watchlist watchlist;
+    Composite parent;
     AbstractLayout layout;
-    private Action tableLayout = new SetTableLayoutAction(this);
-    private Action ribbonLayout = new SetRibbonLayoutAction(this);
-    private Action toggleShowTotals = new ToggleShowTotalsAction(this);
-    private Action cutAction = new CutAction(this);
-    private Action copyAction = new CopyAction(this);
-    private Action pasteAction;
-    private Action deleteAction = new DeleteWatchlistItemAction(this);
+    Action tableLayout = new SetTableLayoutAction(this);
+    Action ribbonLayout = new SetRibbonLayoutAction(this);
+    Action toggleShowTotals = new ToggleShowTotalsAction(this);
+    Action cutAction = new CutAction(this);
+    Action copyAction = new CopyAction(this);
+    Action pasteAction;
+    Action deleteAction = new DeleteWatchlistItemAction(this);
+    DropTargetListener dropTargetListener = new DropTargetListener() {
+        public void dragEnter(DropTargetEvent event)
+        {
+            if (event.detail == DND.DROP_DEFAULT)
+                event.detail = DND.DROP_COPY;
+        
+            event.currentDataType = null;
+            
+            TransferData[] data = event.dataTypes;
+            for (int i = 0; i < data.length; i++)
+            {
+                if (WatchlistItemTransfer.getInstance().isSupportedType(data[i]))
+                {
+                    event.currentDataType = data[i];
+                    break;
+                }
+            }
+            if (event.currentDataType == null)
+            {
+                for (int i = 0; i < data.length; i++)
+                {
+                    if (SecurityTransfer.getInstance().isSupportedType(data[i]))
+                    {
+                        event.currentDataType = data[i];
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void dragOver(DropTargetEvent event)
+        {
+            event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+        }
+
+        public void dragOperationChanged(DropTargetEvent event)
+        {
+        }
+
+        public void dragLeave(DropTargetEvent event)
+        {
+        }
+
+        public void dropAccept(DropTargetEvent event)
+        {
+        }
+
+        public void drop(DropTargetEvent event)
+        {
+            if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
+            {
+                Security[] securities = (Security[]) event.data;
+                itemsDropped(securities, new Point(event.x, event.y));
+            }
+            else if (WatchlistItemTransfer.getInstance().isSupportedType(event.currentDataType))
+            {
+                WatchlistItem[] items = (WatchlistItem[]) event.data;
+                itemsDropped(items, new Point(event.x, event.y));
+            }
+        }
+    };
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
@@ -90,6 +153,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         layoutMenu.add(tableLayout);
         layoutMenu.add(ribbonLayout);
         menuManager.add(layoutMenu);
+        menuManager.add(new Separator("toggles")); //$NON-NLS-1$
         menuManager.add(toggleShowTotals);
         menuManager.add(new Separator("search")); //$NON-NLS-1$
         menuManager.add(new Separator("additions")); //$NON-NLS-1$
@@ -116,86 +180,8 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         // Drag and drop support
         DropTarget target = new DropTarget(parent, DND.DROP_COPY|DND.DROP_MOVE);
         target.setTransfer(new Transfer[] { SecurityTransfer.getInstance(), WatchlistItemTransfer.getInstance() });
-        target.addDropListener(new DropTargetListener() {
-            public void dragEnter(DropTargetEvent event)
-            {
-                if (event.detail == DND.DROP_DEFAULT)
-                    event.detail = DND.DROP_COPY;
-            
-                event.currentDataType = null;
-                
-                TransferData[] data = event.dataTypes;
-                for (int i = 0; i < data.length; i++)
-                {
-                    if (WatchlistItemTransfer.getInstance().isSupportedType(data[i]))
-                    {
-                        event.currentDataType = data[i];
-                        break;
-                    }
-                }
-                if (event.currentDataType == null)
-                {
-                    for (int i = 0; i < data.length; i++)
-                    {
-                        if (SecurityTransfer.getInstance().isSupportedType(data[i]))
-                        {
-                            event.currentDataType = data[i];
-                            break;
-                        }
-                    }
-                }
-            }
-
-            public void dragOver(DropTargetEvent event)
-            {
-                event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
-            }
-
-            public void dragOperationChanged(DropTargetEvent event)
-            {
-            }
-
-            public void dragLeave(DropTargetEvent event)
-            {
-            }
-
-            public void dropAccept(DropTargetEvent event)
-            {
-            }
-
-            public void drop(DropTargetEvent event)
-            {
-                if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
-                {
-                    Security[] securities = (Security[]) event.data;
-                    if (watchlist != null)
-                    {
-                        for (int i = 0; i < securities.length; i++)
-                        {
-                            WatchlistItem item = new WatchlistItem();
-                            item.setParent(watchlist);
-                            item.setSecurity(securities[i]);
-                            watchlist.getItems().add(item);
-                        }
-                        CorePlugin.getRepository().save(watchlist);
-                    }
-                }
-                else if (WatchlistItemTransfer.getInstance().isSupportedType(event.currentDataType))
-                {
-                    WatchlistItem[] items = (WatchlistItem[]) event.data;
-                    if (watchlist != null)
-                    {
-                        for (int i = 0; i < items.length; i++)
-                        {
-                            items[i].setParent(watchlist);
-                            watchlist.getItems().add(items[i]);
-                        }
-                        CorePlugin.getRepository().save(watchlist);
-                    }
-                }
-            }
-        });
-
+        target.addDropListener(dropTargetListener);
+        
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler("cut", cutAction);
         actionBars.setGlobalActionHandler("copy", copyAction);
@@ -208,7 +194,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                 dlg.open();
             }
         });
-
+        
         watchlist = (Watchlist)CorePlugin.getRepository().load(Watchlist.class, new Integer(getViewSite().getSecondaryId()));
         if (watchlist.getDescription().length() != 0)
         {
@@ -420,6 +406,42 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         Security security = watchlistItem.getSecurity();
         if (security != null && security.getQuoteFeed() != null)
             FeedMonitor.cancelMonitor(security);
+    }
+
+    void itemsDropped(Security[] securities, Point point)
+    {
+        int index = layout.getItemIndex(point);
+        if (index == -1)
+            index = watchlist.getItems().size();
+
+        if (watchlist != null)
+        {
+            for (int i = 0; i < securities.length; i++)
+            {
+                WatchlistItem item = new WatchlistItem();
+                item.setParent(watchlist);
+                item.setSecurity(securities[i]);
+                watchlist.getItems().add(index++, item);
+            }
+            CorePlugin.getRepository().save(watchlist);
+        }
+    }
+
+    void itemsDropped(WatchlistItem[] items, Point point)
+    {
+        int index = layout.getItemIndex(point);
+        if (index == -1)
+            index = watchlist.getItems().size();
+
+        if (watchlist != null)
+        {
+            for (int i = 0; i < items.length; i++)
+            {
+                items[i].setParent(watchlist);
+                watchlist.getItems().add(index++, items[i]);
+            }
+            CorePlugin.getRepository().save(watchlist);
+        }
     }
     
     public WatchlistItem[] getSelection()

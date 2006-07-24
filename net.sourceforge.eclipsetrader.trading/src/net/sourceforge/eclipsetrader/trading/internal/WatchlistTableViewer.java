@@ -12,9 +12,11 @@
 
 package net.sourceforge.eclipsetrader.trading.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -87,6 +89,7 @@ public class WatchlistTableViewer extends AbstractLayout
     public static final String POSITIVE_FOREGROUND = "TABLE_POSITIVE_FOREGROUND";
     public static final String NEGATIVE_FOREGROUND = "TABLE_NEGATIVE_FOREGROUND";
     public static final String ALERT_BACKGROUND = "TABLE_ALERT_BACKGROUND";
+    private List list = new ArrayList();
     private Composite content;
     private EditableTable table;
     private Color evenForeground;
@@ -100,8 +103,8 @@ public class WatchlistTableViewer extends AbstractLayout
     private Color positiveForeground;
     private Color alertHilightBackground;
     private boolean showTotals = false;
-    private int sortColumn = -1;
-    private int sortDirection = 0;
+    int sortColumn = -1;
+    int sortDirection = 0;
     private Action propertiesAction;
     private Column selectedColumn;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
@@ -151,7 +154,7 @@ public class WatchlistTableViewer extends AbstractLayout
                 return c.compare(arg1, arg0);
         }
     };
-    private SelectionListener columnSelectionListener = new SelectionAdapter() {
+    SelectionListener columnSelectionListener = new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e)
         {
             TableColumn tableColumn = (TableColumn) e.widget;
@@ -159,16 +162,25 @@ public class WatchlistTableViewer extends AbstractLayout
             
             int index = table.indexOf(tableColumn);
             if (index == sortColumn)
-                sortDirection = sortDirection == 0 ? 1 : 0;
+            {
+                if (sortDirection == 1)
+                    sortColumn = -1;
+                else
+                    sortDirection = 1;
+            }
             else
             {
                 sortColumn = index;
                 sortDirection = 0;
             }
-            String s = column.getClass().getName() + ";" + String.valueOf(sortDirection);
-            TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), s);
 
-            Collections.sort(getView().getWatchlist().getItems(), comparator);
+            if (sortColumn != -1)
+            {
+                String s = column.getClass().getName() + ";" + String.valueOf(sortDirection);
+                TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), s);
+            }
+            else
+                TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), "");
             updateView();
         }
     };
@@ -176,6 +188,8 @@ public class WatchlistTableViewer extends AbstractLayout
     public WatchlistTableViewer(WatchlistView view)
     {
         super(view);
+        
+        showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId());
         
         propertiesAction = new Action() {
             public void run()
@@ -249,6 +263,8 @@ public class WatchlistTableViewer extends AbstractLayout
         DragSource dragSource = new DragSource(table, DND.DROP_COPY|DND.DROP_MOVE);
         dragSource.setTransfer(new Transfer[] { SecurityTransfer.getInstance(), WatchlistItemTransfer.getInstance(), TextTransfer.getInstance() });
         dragSource.addDragListener(new DragSourceListener() {
+            WatchlistItem[] watchlistSelection;
+            
             public void dragStart(DragSourceEvent event)
             {
                 if (table.getSelectionCount() == 0)
@@ -257,59 +273,56 @@ public class WatchlistTableViewer extends AbstractLayout
 
             public void dragSetData(DragSourceEvent event)
             {
+                TableItem[] selection = table.getSelection();
+                watchlistSelection = new WatchlistItem[selection.length];
+
                 if (SecurityTransfer.getInstance().isSupportedType(event.dataType))
                 {
-                    TableItem selection[] = table.getSelection();
                     Security[] securities = new Security[selection.length];
                     for (int i = 0; i < selection.length; i++)
                     {
                         WatchlistTableItem item = (WatchlistTableItem)selection[i];
                         securities[i] = item.getWatchlistItem().getSecurity();
+                        watchlistSelection[i] = item.getWatchlistItem();
                     }
                     event.data = securities;
                 }
                 else if (WatchlistItemTransfer.getInstance().isSupportedType(event.dataType))
                 {
-                    TableItem selection[] = table.getSelection();
-                    WatchlistItem[] items = new WatchlistItem[selection.length];
                     for (int i = 0; i < selection.length; i++)
                     {
                         WatchlistTableItem item = (WatchlistTableItem)selection[i];
-                        items[i] = item.getWatchlistItem();
+                        watchlistSelection[i] = item.getWatchlistItem();
                     }
-                    event.data = items;
+                    event.data = watchlistSelection;
                 }
                 else if (TextTransfer.getInstance().isSupportedType(event.dataType))
                 {
-                    TableItem selection[] = table.getSelection();
-                    
                     StringBuffer data = new StringBuffer();
                     for (int i = 0; i < selection.length; i++)
                     {
+                        WatchlistTableItem item = (WatchlistTableItem)selection[i];
                         for (int c = 1; c < table.getColumnCount(); c++)
                         {
                             if (c > 1)
                                 data.append(";");
-                            data.append(selection[i].getText(c));
+                            data.append(item.getText(c));
                         }
                         data.append("\r\n");
+                        watchlistSelection[i] = item.getWatchlistItem();
                     }
-
                     event.data = data.toString();
                 }
             }
 
             public void dragFinished(DragSourceEvent event)
             {
-                if (event.doit && event.detail == DND.DROP_MOVE)
+                if (event.doit && event.detail == DND.DROP_MOVE && watchlistSelection != null)
                 {
-                    TableItem selection[] = table.getSelection();
-                    for (int i = 0; i < selection.length; i++)
-                    {
-                        WatchlistTableItem item = (WatchlistTableItem)selection[i];
-                        getView().getWatchlist().getItems().remove(item.getWatchlistItem());
-                    }
+                    for (int i = 0; i < watchlistSelection.length; i++)
+                        getView().getWatchlist().getItems().remove(watchlistSelection[i]);
                 }
+                watchlistSelection = null;
             }
         });
 
@@ -328,8 +341,6 @@ public class WatchlistTableViewer extends AbstractLayout
         });
         table.setMenu(menuMgr.createContextMenu(table));
         getView().getSite().registerContextMenu(menuMgr, getView().getSite().getSelectionProvider());
-        
-        showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId());
 
         return content;
     }
@@ -377,7 +388,7 @@ public class WatchlistTableViewer extends AbstractLayout
 
         if (content != null)
             content.dispose();
-        
+
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler("properties", null);
     }
@@ -386,7 +397,6 @@ public class WatchlistTableViewer extends AbstractLayout
     {
         int index;
         TableColumn tableColumn;
-        WatchlistTableItem tableItem;
 
         String[] items = TradingPlugin.getDefault().getPreferenceStore().getString(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId()).split(";");
         if (items.length != 2)
@@ -439,17 +449,49 @@ public class WatchlistTableViewer extends AbstractLayout
         while(index < table.getColumnCount())
             table.getColumn(index).dispose();
 
-        index = 0;
-        for (Iterator iter = getView().getWatchlist().getItems().iterator(); iter.hasNext(); )
+        list = new ArrayList(getView().getWatchlist().getItems());
+        if (sortColumn >= 1 && sortColumn < table.getColumnCount())
+        {
+            table.setSortColumn(table.getColumn(sortColumn));
+            table.setSortDirection(sortDirection == 0 ? SWT.UP : SWT.DOWN);
+            Collections.sort(list, comparator);
+        }
+        else
+        {
+            table.setSortColumn(null);
+            sortColumn = -1;
+            sortDirection = 0;
+        }
+
+        updateTableContents();
+
+        for (int i = 1; i < table.getColumnCount(); i++)
+        {
+            Column c = (Column)table.getColumn(i).getData();
+            if (c.getWidth() == 0)
+                table.getColumn(i).pack();
+            else
+                table.getColumn(i).setWidth(c.getWidth());
+        }
+        if ("gtk".equals(SWT.getPlatform()))
+            table.getColumn(table.getColumnCount() - 1).pack();
+    }
+    
+    public void updateTableContents()
+    {
+        WatchlistTableItem tableItem;
+
+        int index = 0;
+        for (Iterator iter = list.iterator(); iter.hasNext(); )
         {
             WatchlistItem watchlistItem = (WatchlistItem)iter.next();
-            if (index < table.getItemCount())
+            if ((!showTotals && index < table.getItemCount()) || (showTotals && index < (table.getItemCount() - 1)))
             {
                 tableItem = (WatchlistTableItem)table.getItem(index);
                 tableItem.setWatchlistItem(watchlistItem);
             }
             else
-                tableItem = new WatchlistTableItem(table, SWT.NONE, watchlistItem);
+                tableItem = new WatchlistTableItem(table, SWT.NONE, index, watchlistItem);
             tableItem.setBackground(((index & 1) == 1) ? oddBackground : evenBackground);
             tableItem.setForeground(((index & 1) == 1) ? oddForeground : evenForeground);
 
@@ -475,29 +517,6 @@ public class WatchlistTableViewer extends AbstractLayout
         }
 
         table.setItemCount(index);
-
-        for (int i = 1; i < table.getColumnCount(); i++)
-        {
-            Column c = (Column)table.getColumn(i).getData();
-            if (c.getWidth() == 0)
-                table.getColumn(i).pack();
-            else
-                table.getColumn(i).setWidth(c.getWidth());
-        }
-        if ("gtk".equals(SWT.getPlatform()))
-            table.getColumn(table.getColumnCount() - 1).pack();
-
-        if (sortColumn >= 1 && sortColumn < table.getColumnCount())
-        {
-            table.setSortColumn(table.getColumn(sortColumn));
-            table.setSortDirection(sortDirection == 0 ? SWT.UP : SWT.DOWN);
-        }
-        else
-        {
-            table.setSortColumn(null);
-            sortColumn = -1;
-            sortDirection = 0;
-        }
     }
 
     public void update(Observable o, Object arg)
@@ -537,8 +556,10 @@ public class WatchlistTableViewer extends AbstractLayout
     {
         if (o instanceof WatchlistItem)
         {
+            int index = getView().getWatchlist().getItems().indexOf(o);
+            list.add(index >= 0 ? index : list.size(), o);
             if (sortColumn >= 0)
-                Collections.sort(getView().getWatchlist().getItems(), comparator);
+                Collections.sort(list, comparator);
             updateView();
         }
 /*        {
@@ -565,6 +586,8 @@ public class WatchlistTableViewer extends AbstractLayout
                 break;
             }
         }
+        
+        list.remove(o);
         
         if (table.getSelectionCount() != 0)
         {
@@ -624,6 +647,15 @@ public class WatchlistTableViewer extends AbstractLayout
         }
     }
     
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.trading.internal.AbstractLayout#getItemIndex(org.eclipse.swt.graphics.Point)
+     */
+    public int getItemIndex(Point point)
+    {
+        TableItem tableItem = table.getItem(table.toControl(point)); 
+        return tableItem != null ? table.indexOf(tableItem) : -1;
+    }
+
     protected void setTheme(ITheme theme)
     {
         positiveForeground = theme.getColorRegistry().get(POSITIVE_FOREGROUND);
