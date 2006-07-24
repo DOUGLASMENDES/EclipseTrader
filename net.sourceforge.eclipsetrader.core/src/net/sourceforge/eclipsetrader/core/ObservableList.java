@@ -89,6 +89,7 @@ public class ObservableList extends ArrayList
         super.add(index, element);
         if (originalList != null)
             originalList.add(index, element);
+        notifyItemAdded(element);
     }
 
     /* (non-Javadoc)
