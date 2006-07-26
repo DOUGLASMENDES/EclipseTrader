@@ -26,23 +26,8 @@
    </launcher>
 
 
-   <plugins>
-      <plugin id="net.sourceforge.eclipsetrader"/>
-      <plugin id="net.sourceforge.eclipsetrader.core"/>
-      <plugin id="org.eclipse.core.commands"/>
-      <plugin id="org.eclipse.core.expressions"/>
-      <plugin id="org.eclipse.core.runtime"/>
-      <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.jface"/>
-      <plugin id="org.eclipse.osgi"/>
-      <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.ui"/>
-      <plugin id="org.eclipse.ui.workbench"/>
-   </plugins>
-
    <features>
-      <feature id="net.sourceforge.eclipsetrader" version="0.24.0"/>
+      <feature id="net.sourceforge.eclipsetrader" version="0.0.0"/>
    </features>
 
 </product>
