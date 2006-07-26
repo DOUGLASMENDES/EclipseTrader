@@ -41,7 +41,8 @@ public class FiboLinePreferences extends ObjectPluginPreferencePage
     private Text line3;
     private Text line4;
     private Text line5;
-    private Button extend;
+    private Button extendStart;
+    private Button extendEnd;
     private NumberFormat nf = ChartsPlugin.getPriceFormat();
     private NumberFormat pcf = ChartsPlugin.getPercentageFormat();
     private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
@@ -136,9 +137,14 @@ public class FiboLinePreferences extends ObjectPluginPreferencePage
             line5.setText(pcf.format(value));
         
         label = new Label(content, SWT.NONE);
-        extend = new Button(content, SWT.CHECK);
-        extend.setText("Extend");
-        extend.setSelection(getSettings().getBoolean("extend", false));
+        extendStart = new Button(content, SWT.CHECK);
+        extendStart.setText("Extend Start");
+        extendStart.setSelection(getSettings().getBoolean("extendStart", false));
+        
+        label = new Label(content, SWT.NONE);
+        extendEnd = new Button(content, SWT.CHECK);
+        extendEnd.setText("Extend End");
+        extendEnd.setSelection(getSettings().getBoolean("extendEnd", false));
     }
 
     /* (non-Javadoc)
@@ -153,7 +159,8 @@ public class FiboLinePreferences extends ObjectPluginPreferencePage
             getSettings().set("date2", df.parse(date2.getText()));
             getSettings().set("value1", nf.parse(value1.getText()).doubleValue());
             getSettings().set("value2", nf.parse(value2.getText()).doubleValue());
-            getSettings().set("extend", extend.getSelection());
+            getSettings().set("extendStart", extendStart.getSelection());
+            getSettings().set("extendEnd", extendEnd.getSelection());
             if (line1.getText().length() != 0)
                 getSettings().set("line1", nf.parse(line1.getText()).doubleValue());
             if (line2.getText().length() != 0)

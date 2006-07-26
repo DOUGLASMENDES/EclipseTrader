@@ -30,7 +30,8 @@ public class FiboLine extends ObjectPlugin
     private Date date1, date2;
     private double value1 = 0, value2 = 0;
     private double line[] = { 0, 0.382, 0.5, 0.618, 0 };
-    private boolean extend = false;
+    private boolean extendStart = false;
+    private boolean extendEnd = false;
     private int lineY[] = null;
     private Color color = new Color(null, 0, 0, 224);
     private Point p1, p2, selected;
@@ -57,10 +58,10 @@ public class FiboLine extends ObjectPlugin
      */
     public boolean isOverLine(int x, int y)
     {
-        if (p1 == null || p2 == null)
+        if (p1 == null || p2 == null || lineY == null)
             return false;
 
-        if (lineY != null && x >= Math.min(p1.x, p2.x) && x <= Math.max(p1.x, p2.x))
+        if ((extendStart || x >= Math.min(p1.x, p2.x)) && (extendEnd || x <= Math.max(p1.x, p2.x)))
         {
             for (int i = 0; i < lineY.length; i++)
             {
@@ -203,8 +204,10 @@ public class FiboLine extends ObjectPlugin
             double high = Math.max(value1, value2); 
             double low = Math.min(value1, value2); 
             int x1 = Math.min(p1.x, p2.x) + location.x;
+            if (extendStart)
+                x1 = 0;
             int x2 = Math.max(p1.x, p2.x) + location.x;
-            if (extend)
+            if (extendEnd)
                 x2 = rect.width + location.x;
 
             int y = getPlot().getScaler().convertToY(high);
@@ -257,7 +260,8 @@ public class FiboLine extends ObjectPlugin
         line[2] = settings.getDouble("line3", 50.).doubleValue();
         line[3] = settings.getDouble("line4", 61.8).doubleValue();
         line[4] = settings.getDouble("line5", 0).doubleValue();
-        extend = settings.getBoolean("extend", false);
+        extendStart = settings.getBoolean("extendStart", false);
+        extendEnd = settings.getBoolean("extendEnd", false);
         p1 = p2 = null;
     }
 
