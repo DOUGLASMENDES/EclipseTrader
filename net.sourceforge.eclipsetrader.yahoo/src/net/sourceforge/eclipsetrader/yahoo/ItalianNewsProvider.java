@@ -39,22 +39,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 {
     private Thread thread;
     private boolean stopping = false;
-    private String url[] = {
-            "http://it.biz.yahoo.com/finance_top_business.html",
-            "http://it.biz.yahoo.com/attualita/mib30/index.html",
-            "http://it.biz.yahoo.com/attualita/nasdaq.html",
-            "http://it.biz.yahoo.com/francoforte.html",
-            "http://it.biz.yahoo.com/londra.html",
-            "http://it.biz.yahoo.com/parigi.html",
-            "http://it.biz.yahoo.com/attualita/giappone.html",
-            "http://it.biz.yahoo.com/attualita/avviso.html",
-            "http://it.biz.yahoo.com/attualita/occhio.html",
-            "http://it.biz.yahoo.com/attualita/companyres.html",
-            "http://it.biz.yahoo.com/researchalerts.html",
-            "http://it.biz.yahoo.com/attualita/giornali.html",
-            "http://it.biz.yahoo.com/listasettori.html",
-            "http://it.biz.yahoo.com/attualita/comunicati.html",
-    };
+    private String url[] = { "http://it.biz.yahoo.com/finance_top_business.html", "http://it.biz.yahoo.com/attualita/mib30/index.html", "http://it.biz.yahoo.com/attualita/nasdaq.html", "http://it.biz.yahoo.com/francoforte.html", "http://it.biz.yahoo.com/londra.html", "http://it.biz.yahoo.com/parigi.html", "http://it.biz.yahoo.com/attualita/giappone.html", "http://it.biz.yahoo.com/attualita/avviso.html", "http://it.biz.yahoo.com/attualita/occhio.html", "http://it.biz.yahoo.com/attualita/companyres.html", "http://it.biz.yahoo.com/researchalerts.html", "http://it.biz.yahoo.com/attualita/giornali.html", "http://it.biz.yahoo.com/listasettori.html", "http://it.biz.yahoo.com/attualita/comunicati.html", };
 
     public ItalianNewsProvider()
     {
@@ -81,9 +66,12 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
         stopping = true;
         if (thread != null)
         {
-            try {
+            try
+            {
                 thread.join();
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
             thread = null;
@@ -112,7 +100,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
     {
         long nextRun = System.currentTimeMillis() + 2 * 1000;
 
-        while(!stopping)
+        while (!stopping)
         {
             if (System.currentTimeMillis() >= nextRun)
             {
@@ -121,14 +109,17 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
                 nextRun = System.currentTimeMillis() + interval * 60 * 1000;
             }
 
-            try {
+            try
+            {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
                 break;
             }
         }
-        
+
         thread = null;
     }
 
@@ -153,68 +144,74 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
         job.setUser(false);
         job.schedule();
     }
-    
+
     private void parseNewsPage(String url)
     {
-        try {
-          Parser parser = new Parser(url);
-          NodeList list = parser.extractAllNodesThatMatch(new OrFilter(new TagNameFilter("dt"), new TagNameFilter("li")));
-          for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes(); )
-          {
-              Node root = iter.nextNode();
-              if (root instanceof TagNode)
-              {
-                  if (((TagNode) root).getTagName().equalsIgnoreCase("dt"))
-                  {
-                      NodeList childs = root.getChildren();
-                      NewsItem news = new NewsItem();
+        try
+        {
+            Parser parser = new Parser(url);
+            NodeList list = parser.extractAllNodesThatMatch(new OrFilter(new TagNameFilter("dt"), new TagNameFilter("li")));
+            for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes();)
+            {
+                Node root = iter.nextNode();
+                if (root instanceof TagNode)
+                {
+                    if (((TagNode) root).getTagName().equalsIgnoreCase("dt"))
+                    {
+                        NodeList childs = root.getChildren();
+                        NewsItem news = new NewsItem();
 
-                      Node node = childs.elementAt(3);
-                      news.setTitle(node.getFirstChild().getText().trim());
-                      news.setUrl(((LinkTag) node).getLink());
+                        Node node = childs.elementAt(3);
+                        news.setTitle(node.getFirstChild().getText().trim());
+                        news.setUrl(((LinkTag) node).getLink());
 
-                      node = childs.elementAt(9);
-                      String source = node.getText();
-                      source = source.replaceAll("[\r\n]", " ");
-                      source = source.replaceAll("[()]", "");
-                      source = source.replaceAll("[ ]{2,}", " ").trim();
-                      news.setSource(source);
+                        node = childs.elementAt(9);
+                        String source = node.getText();
+                        source = source.replaceAll("[\r\n]", " ");
+                        source = source.replaceAll("[()]", "");
+                        source = source.replaceAll("[ ]{2,}", " ").trim();
+                        news.setSource(source);
 
-                      childs = root.getNextSibling().getNextSibling().getNextSibling().getChildren();
+                        childs = root.getNextSibling().getNextSibling().getNextSibling().getChildren();
 
-                      node = childs.elementAt(1);
-                      news.setDate(parseDateString(node.getText()));
+                        node = childs.elementAt(1);
+                        news.setDate(parseDateString(node.getText()));
 
-                      CorePlugin.getRepository().save(news);
-                  }
-                  if (((TagNode) root).getTagName().equalsIgnoreCase("li"))
-                  {
-                      NodeList childs = root.getChildren();
-                      NewsItem news = new NewsItem();
+                        CorePlugin.getRepository().save(news);
+                    }
+                    if (((TagNode) root).getTagName().equalsIgnoreCase("li"))
+                    {
+                        NodeList childs = root.getChildren();
 
-                      Node node = childs.elementAt(1);
-                      news.setTitle(node.getFirstChild().getText().trim());
-                      news.setUrl(((LinkTag) node).getLink());
+                        Node node = childs.elementAt(1);
+                        if (node.getFirstChild() != null)
+                        {
+                            NewsItem news = new NewsItem();
+                            news.setTitle(node.getFirstChild().getText().trim());
+                            news.setUrl(((LinkTag) node).getLink());
 
-                      node = childs.elementAt(6);
-                      String source = node.getText();
-                      source = source.replaceAll("[\r\n]", " ");
-                      source = source.replaceAll("[()]", "");
-                      source = source.replaceAll("[ ]{2,}", " ").trim();
-                      news.setSource(source);
+                            node = childs.elementAt(6);
+                            String source = node.getText();
+                            source = source.replaceAll("[\r\n]", " ");
+                            source = source.replaceAll("[()]", "");
+                            source = source.replaceAll("[ ]{2,}", " ").trim();
+                            news.setSource(source);
 
-                      node = childs.elementAt(10);
-                      news.setDate(parseDateString(node.getText()));
+                            node = childs.elementAt(10);
+                            news.setDate(parseDateString(node.getText()));
 
-                      CorePlugin.getRepository().save(news);
-                  }
-              }
-          }
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
+                            CorePlugin.getRepository().save(news);
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            CorePlugin.logException(e);
+        }
     }
-    
+
     private Date parseDateString(String date)
     {
         Calendar gc = Calendar.getInstance(Locale.ITALY);
@@ -233,7 +230,6 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
         gc.set(Calendar.MILLISECOND, 0);
         return gc.getTime();
     }
-    
 
     private int getMonth(String t)
     {
