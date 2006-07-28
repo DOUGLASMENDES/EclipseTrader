@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="feeds" name="Security Feed" schema="schema/feeds.exsd"/>
-   <extension-point id="news" name="News Provider" schema="schema/news.exsd"/>
-   <extension-point id="patterns" name="Price Pattern" schema="schema/patterns.exsd"/>
-   <extension-point id="accountProviders" name="Account Providers" schema="schema/accountProviders.exsd"/>
+   <extension-point id="feeds" name="%extension-point.name.Feeds" schema="schema/feeds.exsd"/>
+   <extension-point id="news" name="%extension-point.name.News" schema="schema/news.exsd"/>
+   <extension-point id="patterns" name="%extension-point.name.Patterns" schema="schema/patterns.exsd"/>
+   <extension-point id="accountProviders" name="%extension-point.name.AccountProviders" schema="schema/accountProviders.exsd"/>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -26,7 +26,7 @@
          point="org.eclipse.ui.activities">
       <activity
             id="net.sourceforge.eclipsetrader"
-            name="EclipseTrader Hidden Views"/>
+            name="%activity.name.Hidden"/>
       <activityPatternBinding
             activityId="net.sourceforge.eclipsetrader"
             pattern="net.sourceforge.eclipsetrader.trading/net.sourceforge.eclipsetrader.webbrowser"/>
@@ -37,9 +37,9 @@
             class="net.sourceforge.eclipsetrader.core.ui.export.CSVExport"
             icon="icons/wizard16/table.png"
             id="net.sourceforge.eclipsetrader.export.csv"
-            name="CSV Data">
+            name="%wizard.name.CSV">
          <description>
-            Export securities data to CSV files.
+            %wizard.description.ExportCSV
          </description>
       </wizard>
    </extension>
@@ -48,7 +48,7 @@
       <perspective
             class="net.sourceforge.eclipsetrader.core.ui.Perspective"
             id="net.sourceforge.eclipsetrader"
-            name="Default"/>
+            name="%perspective.name.Default"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -73,45 +73,45 @@
       <page
             class="net.sourceforge.eclipsetrader.core.ui.preferences.GeneralPreferencesPage"
             id="net.sourceforge.eclipsetrader"
-            name="General"/>
+            name="%page.name.General"/>
       <page
             class="net.sourceforge.eclipsetrader.core.ui.preferences.PluginsPreferencesPage"
             id="net.sourceforge.eclipsetrader.plugins"
-            name="Plugins"/>
+            name="%page.name.Plugins"/>
       <page
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.core.ui.preferences.ProxyPreferencePage"
             id="net.sourceforge.eclipsetrader.core.proxy"
-            name="Network"/>
+            name="%page.name.Network"/>
 		<page
             class="net.sourceforge.eclipsetrader.core.ui.preferences.DataPreferencesPage"
             id="net.sourceforge.eclipsetrader.data"
-            name="Data"/>
+            name="%page.name.Data"/>
   <page
         category="net.sourceforge.eclipsetrader"
         class="net.sourceforge.eclipsetrader.core.ui.preferences.CurrencyPreferencesPage"
         id="net.sourceforge.eclipsetrader.currency"
-        name="Currencies"/>
+        name="%page.name.Currencies"/>
    </extension>
    <extension
          point="org.eclipse.ui.themes">
       <themeElementCategory
             id="securities"
-            label="Securities View"/>
+            label="%themeElementCategory.label.SecuritiesView"/>
       <colorDefinition
             categoryId="securities"
             id="TABLE_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.Background"
             value="224,224,255"/>
       <colorDefinition
             categoryId="securities"
             id="TABLE_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.Foreground"
             value="0,0,0"/>
       <fontDefinition
             categoryId="securities"
             id="TABLE_FONT"
-            label="Font"/>
+            label="%fontDefinition.label"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">

@@ -5,10 +5,10 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.news"
-            label="News Feed Control">
+            label="%actionSet.label.news">
          <menu
                id="newsMenu"
-               label="News"
+               label="%menu.label.news"
                path="news">
             <separator name="top"/>
             <separator name="group1"/>
@@ -129,57 +129,57 @@
          point="org.eclipse.ui.themes">
       <themeElementCategory
             id="newsList"
-            label="News List"/>
+            label="%themeElementCategory.label.newsList"/>
       <colorDefinition
             categoryId="newsList"
             id="NEWS_TABLE_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.newsList.background"
             value="255,255,224"/>
       <colorDefinition
             categoryId="newsList"
             id="NEWS_TABLE_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.newsList.foreground"
             value="0,0,0"/>
       <fontDefinition
             categoryId="newsList"
             id="NEWS_TABLE_FONT"
-            label="Font"/>
+            label="%fontDefinition.label.newsList.font"/>
       <themeElementCategory
             id="newsList.readed"
-            label="Readed Item"
+            label="%themeElementCategory.label.newsList.read"
             parentId="newsList"/>
       <colorDefinition
             categoryId="newsList.readed"
             defaultsTo="NEWS_TABLE_BACKGROUND"
             id="NEWS_READED_ITEM_BACKGROUND"
-            label="Background"/>
+            label="%colorDefinition.label.newsList.read.background"/>
       <colorDefinition
             categoryId="newsList.readed"
             id="NEWS_READED_ITEM_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.newsList.read.foreground"
             value="192,192,192"/>
       <fontDefinition
             categoryId="newsList.readed"
             id="NEWS_READED_ITEM_FONT"
-            label="Font"/>
+            label="%fontDefinition.label.newsList.read.font"/>
       <themeElementCategory
             id="newsList.new"
-            label="Recently Added Item"
+            label="%themeElementCategory.label.newsList.added"
             parentId="newsList"/>
       <colorDefinition
             categoryId="newsList.new"
             defaultsTo="NEWS_TABLE_BACKGROUND"
             id="NEWS_NEW_ITEM_BACKGROUND"
-            label="Background"/>
+            label="%colorDefinition.label.newsList.added.background"/>
       <colorDefinition
             categoryId="newsList.new"
             defaultsTo="NEWS_TABLE_FOREGROUND"
             id="NEWS_NEW_ITEM_FOREGROUND"
-            label="Foreground"/>
+            label="%colorDefinition.label.newsList.added.foreground"/>
       <fontDefinition
             categoryId="newsList.new"
             id="NEWS_NEW_ITEM_FONT"
-            label="Font"/>
+            label="%fontDefinition.label.newsList.added.font"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -201,7 +201,7 @@
                disabledIcon="icons/dlcl16/next_nav.gif"
                icon="icons/elcl16/next_nav.gif"
                id="net.sourceforge.eclipsetrader.news.next"
-               label="Next"
+               label="%action.label.next"
                style="push"
                toolbarPath="group1"/>
          <action
@@ -209,7 +209,7 @@
                disabledIcon="icons/dlcl16/prev_nav.gif"
                icon="icons/elcl16/prev_nav.gif"
                id="net.sourceforge.eclipsetrader.news.previous"
-               label="Previous"
+               label="%action.label.previous"
                style="push"
                toolbarPath="group1"/>
          <action
@@ -217,10 +217,10 @@
                disabledIcon="icons/dlcl16/refresh.gif"
                icon="icons/elcl16/refresh.gif"
                id="net.sourceforge.eclipsetrader.news.refresh"
-               label="Update"
+               label="%action.label.update"
                style="push"
                toolbarPath="group2"
-               tooltip="Update news"/>
+               tooltip="%action.tooltip.updateNews"/>
       </viewContribution>
       <viewContribution
             id="securitiesView"
@@ -229,7 +229,7 @@
                class="net.sourceforge.eclipsetrader.news.actions.ShowSecurityNewsAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.news.showNews"
-               label="Show News"
+               label="%action.label.showNews"
                menubarPath="additions"
                style="push"/>
       </viewContribution>

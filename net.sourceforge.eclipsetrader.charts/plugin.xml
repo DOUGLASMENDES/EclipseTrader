@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="indicators" name="Chart Indicators" schema="schema/indicators.exsd"/>
-   <extension-point id="objects" name="Chart Objects" schema="schema/objects.exsd"/>
+   <extension-point id="indicators" name="%extension-point.name.indicators" schema="schema/indicators.exsd"/>
+   <extension-point id="objects" name="%extension-point.name.objects" schema="schema/objects.exsd"/>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.charts"
-            label="Charts">
+            label="%actionSet.label.charts">
          <menu
                id="chartMenu"
-               label="Chart"
+               label="%menu.label.chart"
                path="charts">
             <separator name="begin"/>
             <separator name="group1"/>
@@ -127,21 +127,21 @@
          point="org.eclipse.ui.themes">
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.charts"
-            label="Charts"/>
+            label="%themeElementCategory.label.charts"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.charts"
             id="CHART_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.background"
             value="255,255,224"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.charts"
             id="CHART_SCALE_BACKGROUND"
-            label="Scale Background"
+            label="%colorDefinition.label.scale.background"
             value="255,255,255"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.charts"
             id="CHART_SCALE_FOREGROUND"
-            label="Scale Foreground"
+            label="%colorDefinition.label.scale.foreground"
             value="0,0,0"/>
    </extension>
    <extension
@@ -167,7 +167,7 @@
             targetID="net.sourceforge.eclipsetrader.views.chart">
          <menu
                id="indicator"
-               label="Indicator"
+               label="%menu.label.indicator"
                path="group1"/>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.DeleteObjectAction"
@@ -265,199 +265,199 @@
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.AccumulationDistribution"
             id="net.sourceforge.eclipsetrader.indicators.ad"
-            name="Accumulation / Distribution - AD">
+            name="%indicator.name.AD">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.AccumulationDistributionPreferencePage"
-               title="Accumulation / Distribution"/>
+               title="%preferencePage.title.AD"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.AdaptiveStoch"
             id="net.sourceforge.eclipsetrader.indicators.adaptstoch"
-            name="Adaptive Stochastic - AdaptSTOCH">
+            name="%indicator.name.AdaptSTOCH">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.AdaptiveStochPreferencePage"
-               title="Adaptive Stochastic"/>
+               title="%preferencePage.title.AdaptSTOCH"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.ATR"
             id="net.sourceforge.eclipsetrader.indicators.atr"
-            name="Average True Range - ATR">
+            name="%indicator.name.ATR">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.ATRPreferencePage"
-               title="Average True Range"/>
+               title="%preferencePage.title.ATR"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Bars"
             id="net.sourceforge.eclipsetrader.indicators.bars"
-            name="Bars - BAR">
+            name="%indicator.name.BAR">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.BarsPreferences"
-               description="Set the bars type and colors"
-               title="Bars"/>
+               description="%preferencePage.description.BAR"
+               title="%preferencePage.title.BAR"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.BollingerBands"
             id="net.sourceforge.eclipsetrader.indicators.bb"
-            name="Bollinger Bands - BB">
+            name="%indicator.name.BB">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.BollingerBandsPreferencePage"
-               title="Bollinger Bands"/>
+               title="%preferencePage.title.BB"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.CommodityChannelIndex"
             id="net.sourceforge.eclipsetrader.indicators.cci"
-            name="Commodity Channel Index - CCI">
+            name="%indicator.name.CCI">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.CommodityChannelIndexPreferencePage"
-               title="Commodity Channel Index"/>
+               title="%preferencePage.title.CCI"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.DMI"
             id="net.sourceforge.eclipsetrader.indicators.dmi"
-            name="Directional Movement Index - DMI">
+            name="%indicator.name.DMI">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.DMIPreferencePage"
-               title="Directional Movement Index"/>
+               title="%preferencePage.title.DMI"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.DPO"
             id="net.sourceforge.eclipsetrader.indicators.dpo"
-            name="Detrended Price Oscillator - DPO">
+            name="%indicator.name.DPO">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.DPOPreferencePage"
-               title="Detrended Price Oscillator"/>
+               title="%preferencePage.title.DPO"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.FI"
             id="net.sourceforge.eclipsetrader.indicators.fi"
-            name="Force Index - FI">
+            name="%indicator.name.FI">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.FIPreferencePage"
-               title="Force Index"/>
+               title="%preferencePage.title.FI"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Lines"
             id="net.sourceforge.eclipsetrader.indicators.line"
-            name="Lines - LINE">
+            name="%indicator.name.LINE">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.LinesPreferences"
-               description="Set the line input field and color"
-               title="Line"/>
+               description="%preferencePage.description.LINE"
+               title="%preferencePage.title.LINE"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.MarketThermometer"
             id="net.sourceforge.eclipsetrader.indicators.therm"
-            name="Market Thermometer - THERM">
+            name="%indicator.name.THERM">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.MarketThermometerPreferences"
-               description="Set the market thermometer parameters"
-               title="Market Thermometer"/>
+               description="%preferencePage.description.THERM"
+               title="%preferencePage.title.THERM"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.MA"
             id="net.sourceforge.eclipsetrader.indicators.ma"
-            name="Moving Average - MA">
+            name="%indicator.name.MA">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.MAPreferences"
-               description="Set the moving average parameters"
-               title="Moving Average"/>
+               description="%preferencePage.description.MA"
+               title="%preferencePage.title.MA"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.MACD"
             id="net.sourceforge.eclipsetrader.indicators.macd"
-            name="Moving Average Convergence Divergence - MACD">
+            name="%indicator.name.MACD">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.MACDPreferences"
-               title="MACD"/>
+               title="%preferencePage.title.MACD"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.MAOSC"
             id="net.sourceforge.eclipsetrader.indicators.maosc"
-            name="Moving Average Oscillator - MAOSC">
+            name="%indicator.name.MAOSC">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.MAOSCPreferencePage"
-               title="Moving Average Oscillator"/>
+               title="%preferencePage.title.MAOSC"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.RSI"
             id="net.sourceforge.eclipsetrader.indicators.rsi"
-            name="Relative Strength Index - RSI">
+            name="%indicator.name.RSI">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.RSIPreferences"
-               title="RSI"/>
+               title="%preferencePage.title.RSI"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.SAR"
             id="net.sourceforge.eclipsetrader.indicators.sar"
-            name="Parabolic SAR - SAR">
+            name="%indicator.name.SAR">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.SARPreferencePage"
-               title="Parabolic SAR"/>
+               title="%preferencePage.title.SAR"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Stochastic"
             id="net.sourceforge.eclipsetrader.indicators.stoch"
-            name="Stochastic - STOCH">
+            name="%indicator.name.STOCH">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.StochasticPreferencePage"
-               title="Stochastic"/>
+               title="%preferencePage.title.STOCH"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.Volume"
             id="net.sourceforge.eclipsetrader.indicators.volume"
-            name="Volume - VOL">
+            name="%indicator.name.VOL">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.VolumePreferences"
-               description="Set the volume bar colors"
-               title="Volume"/>
+               description="%preferencePage.description.VOL"
+               title="%preferencePage.title.VOL"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.VT"
             id="net.sourceforge.eclipsetrader.indicators.vt"
-            name="Volume Trends - VT">
+            name="%indicator.name.VT">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.VTPreferencePage"
-               title="Volume Trends"/>
+               title="%preferencePage.title.VT"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.SD"
             id="net.sourceforge.eclipsetrader.indicators.sd"
-            name="Standard Deviation - SD">
+            name="%indicator.name.SD">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.SDPreferencePage"
-               title="Standard Deviation"/>
+               title="%preferencePage.title.SD"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.ROC"
             id="net.sourceforge.eclipsetrader.indicators.roc"
-            name="Rate Of Change - ROC">
+            name="%indicator.name.ROC">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.ROCPreferencePage"
-               title="Rate Of Change"/>
+               title="%preferencePage.title.ROC"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.VIDYA"
             id="net.sourceforge.eclipsetrader.indicators.vidya"
-            name="Tushar Chande's Vidya - VIDYA">
+            name="%indicator.name.VIDYA">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.VIDYAPreferencePage"
-               title="Tushar Chande's Vidya"/>
+               title="%preferencePage.title.VIDYA"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.VFI"
             id="net.sourceforge.eclipsetrader.indicators.vfi"
-            name="Volume Flow Indicator - VFI">
+            name="%indicator.name.VFI">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.VFIPreferencePage"
-               title="Volume Flow Indicator"/>
+               title="%preferencePage.title.VFI"/>
       </indicator>
       <indicator
             class="net.sourceforge.eclipsetrader.charts.indicators.UO"
             id="net.sourceforge.eclipsetrader.indicators.uo"
-            name="Ultimate Oscillator - UO">
+            name="%indicator.name.UO">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.indicators.UOPreferencePage"
-               title="Ultimate Oscillator"/>
+               title="%preferencePage.title.UO"/>
       </indicator>
    </extension>
    <extension
@@ -465,44 +465,44 @@
       <object
             class="net.sourceforge.eclipsetrader.charts.objects.Line"
             id="net.sourceforge.eclipsetrader.objects.line"
-            name="Line">
+            name="%object.name.line">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.objects.LinePreferences"
-               title="Line"/>
+               title="%preferencePage.title.line"/>
       </object>
       <object
             class="net.sourceforge.eclipsetrader.charts.objects.HorizontalLine"
             id="net.sourceforge.eclipsetrader.objects.horizontalLine"
-            name="Horizontal Line">
+            name="%object.name.horizontalLine">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.objects.HorizontalLinePreferences"
-               title="Horizontal Line"/>
+               title="%preferencePage.title.horizontalLine"/>
       </object>
       <object
             class="net.sourceforge.eclipsetrader.charts.objects.FiboLine"
             id="net.sourceforge.eclipsetrader.objects.fiboline"
-            name="FiboLine">
+            name="%object.name.fiboline">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.objects.FiboLinePreferences"
-               title="FiboLine"/>
+               title="%preferencePage.title.fiboline"/>
       </object>
       <object
             class="net.sourceforge.eclipsetrader.charts.objects.SellArrow"
             id="net.sourceforge.eclipsetrader.objects.sellarrow"
-            name="Sell Arrow">
+            name="%object.name.sellArrow">
       </object>
       <object
             class="net.sourceforge.eclipsetrader.charts.objects.BuyArrow"
             id="net.sourceforge.eclipsetrader.objects.buyarrow"
-            name="Buy Arrow">
+            name="%object.name.buyArrow">
       </object>
       <object
             class="net.sourceforge.eclipsetrader.charts.objects.FanLines"
             id="net.sourceforge.eclipsetrader.objects.fanlines"
-            name="Fibonacci Fan Lines">
+            name="%object.name.fibonacciFan">
          <preferencePage
                class="net.sourceforge.eclipsetrader.charts.objects.FanLinesPreferences"
-               title="Fibonacci Fan Lines"/>
+               title="%preferencePage.title.fibonacciFan"/>
       </object>
    </extension>
 

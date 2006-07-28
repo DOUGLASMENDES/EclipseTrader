@@ -17,7 +17,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="net.sourceforge.eclipsetrader.application"
-            name="EclipseTrader">
+            name="%product.name.eclipseTrader">
          <property
                name="preferenceCustomization"
                value="plugin_customization.ini"/>
@@ -36,11 +36,11 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.eclipse.update.ui.softwareUpdates"
-            label="Software Updates"
+            label="%actionSet.label.softwareUpdates"
             visible="true">
          <menu
                id="org.eclipse.update.ui.updateMenu"
-               label="Software Updates"
+               label="%menu.label.softwareUpdates"
                path="help/group.updates">
             <separator name="group0"/>
             <separator name="group1"/>
@@ -50,7 +50,7 @@
                disabledIcon="icons/dlcl16/usearch_obj.gif"
                icon="icons/elcl16/usearch_obj.gif"
                id="org.eclipse.update.ui.newUpdates"
-               label="Find and Install..."
+               label="%action.label.newUpates"
                menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
                style="push"/>
          <action
@@ -58,7 +58,7 @@
                disabledIcon="icons/dlcl16/configs.gif"
                icon="icons/elcl16/configs.gif"
                id="org.eclipse.update.ui.configManager"
-               label="Manage Configuration..."
+               label="%action.label.configManager"
                menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
                style="push"/>
       </actionSet>
@@ -76,28 +76,28 @@
       <command
             categoryId="org.eclipse.ui.category.edit"
             id="org.eclipse.ui.edit.pasteSpecial"
-            name="Paste Special"/>
+            name="%command.name.pasteSpecial"/>
       <command
             categoryId="org.eclipse.ui.category.edit"
             id="org.eclipse.ui.edit.settings"
-            name="Settings"/>
+            name="%command.name.settings"/>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="org.eclipse.ui.ExtensionFactory:appearancePreferencePage"
             id="org.eclipse.ui.preferencePages.Appearance"
-            name="Appearance"/>
+            name="%page.name.appearance"/>
       <page
             category="org.eclipse.ui.preferencePages.Appearance"
             class="org.eclipse.ui.ExtensionFactory:colorsAndFontsPreferencePage"
             id="org.eclipse.ui.preferencePages.ColorsAndFonts"
-            name="Colors and Fonts"/>
+            name="%page.name.colorsAndFonts"/>
       <page
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.preferences.StartupShutdownPreferencesPage"
             id="net.sourceforge.eclipsetrader.startupAndShutdown"
-            name="Startup and Shutdown"/>
+            name="%page.name.startupAndShutdown"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -105,7 +105,7 @@
             class="org.eclipse.ui.ExtensionFactory:progressView"
             icon="icons/eview16/pview.gif"
             id="org.eclipse.ui.views.ProgressView"
-            name="Progress View"/>
+            name="%view.name.progressView"/>
    </extension>
 
 </plugin>

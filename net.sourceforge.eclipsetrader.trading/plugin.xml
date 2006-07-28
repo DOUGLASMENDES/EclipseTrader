@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="alerts" name="Watchlist Alerts" schema="schema/alerts.exsd"/>
-   <extension-point id="systems" name="Trading System" schema="schema/systems.exsd"/>
+   <extension-point id="alerts" name="%extension-point.name.alerts" schema="schema/alerts.exsd"/>
+   <extension-point id="systems" name="%extension-point.name.systems" schema="schema/systems.exsd"/>
    <extension
          point="org.eclipse.ui.activities">
       <activityPatternBinding
@@ -19,58 +19,58 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.feed"
-            label="Quote Feed Control"
+            label="%actionSet.label.feed"
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.StopFeedAction"
                disabledIcon="icons/dtool16/stop.gif"
                icon="icons/etool16/stop.gif"
                id="net.sourceforge.eclipsetrader.trading.stopFeed"
-               label="Stop Feed"
+               label="%action.label.stopFeed"
                style="push"
                toolbarPath="additions"
-               tooltip="Stop quote feed"/>
+               tooltip="%action.tooltip.stopFeed"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.RefreshFeedAction"
                disabledIcon="icons/dtool16/refresh.gif"
                icon="icons/etool16/refresh.gif"
                id="net.sourceforge.eclipsetrader.trading.refreshFeed"
-               label="Refresh"
+               label="%action.label.refreshFeed"
                style="push"
                toolbarPath="additions"
-               tooltip="Take a quote snapshot"/>
+               tooltip="%action.tooltip.refreshFeed"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.StartFeedAction"
                disabledIcon="icons/dtool16/run.gif"
                icon="icons/etool16/run.gif"
                id="net.sourceforge.eclipsetrader.trading.startFeed"
-               label="Start Feed"
+               label="%action.label.startFeed"
                style="push"
                toolbarPath="additions"
-               tooltip="Start quote feed"/>
+               tooltip="%action.tooltip.startFeed"/>
       </actionSet>
       <actionSet
             id="net.sourceforge.eclipsetrader.trading"
-            label="Trading"
+            label="%actionSet.label.trading"
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.NewWatchlistAction"
                icon="icons/etool16/table_add.png"
                id="net.sourceforge.eclipsetrader.trading.newWatchlist"
-               label="Watchlist"
+               label="%action.label.newWatchlist"
                menubarPath="file/newWizard/additions"
                style="push"
                toolbarPath="trading"
-               tooltip="Create a new watchlist"/>
+               tooltip="%action.tooltip.newWatchlist"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.NewTransactionAction"
                icon="icons/etool16/book_add.png"
                id="net.sourceforge.eclipsetrader.trading.newTransaction"
-               label="Transaction"
+               label="%action.label.newTransaction"
                menubarPath="file/newWizard/additions"
                style="push"
                toolbarPath="trading"
-               tooltip="Create a new Transaction">
+               tooltip="%action.tooltip.newTransaction">
             <enablement>
                <objectClass name="net.sourceforge.eclipsetrader.core.ui.AccountSelection"/>
             </enablement>
@@ -79,195 +79,195 @@
                class="net.sourceforge.eclipsetrader.trading.wizards.accounts.AccountWizardAction"
                icon="icons/etool16/coins_add.png"
                id="net.sourceforge.eclipsetrader.trading.newAccount"
-               label="Account"
+               label="%action.label.newAccount"
                menubarPath="file/newWizard/additions"
                style="push"
                toolbarPath="trading"
-               tooltip="Create a new Account"/>
+               tooltip="%action.tooltip.newAccount"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.OpenWatchlistAction"
                id="net.sourceforge.eclipsetrader.trading.openWatchlist"
-               label="Open Watchlist"
+               label="%action.label.openWatchlist"
                menubarPath="window/additions"
                style="pulldown"/>
       </actionSet>
       <actionSet
             id="net.sourceforge.eclipsetrader.tradingSystem"
-            label="Trading Systems"
+            label="%actionSet.label.tradingSystem"
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.NewTradingSystemWizardAction"
                icon="icons/etool16/server_add.png"
                id="net.sourceforge.eclipsetrader.trading.system"
-               label="Trading System"
+               label="%action.label.newTradingSystem"
                menubarPath="file/newWizard/bottom"
                style="push"
                toolbarPath="tradingSystem"
-               tooltip="Create a new trading system"/>
+               tooltip="%action.tooltip.newTradingSystem"/>
       </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.themes">
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.watchlist"
-            label="Watchlist"/>
+            label="%themeElementCategory.label.watchlist"/>
       <themeElementCategory
             class="net.sourceforge.eclipsetrader.trading.internal.TableViewerThemePreview"
             id="net.sourceforge.eclipsetrader.watchlist.table"
-            label="Table Layout"
+            label="%themeElementCategory.label.tableLayout"
             parentId="net.sourceforge.eclipsetrader.watchlist"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_POSITIVE_FOREGROUND"
-            label="Positive Value Color"
+            label="%colorDefinition.label.positiveValueForeground"
             value="0,224,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_NEGATIVE_FOREGROUND"
-            label="Negative Value Color"
+            label="%colorDefinition.label.negativeValueForeground"
             value="224,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_ALERT_BACKGROUND"
-            label="Alert Hilight Color"
+            label="%colorDefinition.label.alert"
             value="255,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_EVEN_ROWS_BACKGROUND"
-            label="Even Rows Background"
+            label="%colorDefinition.label.evenRowsBackground"
             value="255,255,255"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_EVEN_ROWS_FOREGROUND"
-            label="Even Rows Foreground"
+            label="%colorDefinition.label.evenRowsForeground"
             value="0,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_ODD_ROWS_BACKGROUND"
-            label="Odd Rows Background"
+            label="%colorDefinition.label.oddRowsBackground"
             value="255,255,224"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_ODD_ROWS_FOREGROUND"
-            label="Odd Rows Foreground"
+            label="%colorDefinition.label.oddRowsForeground"
             value="0,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_TOTALS_ROWS_BACKGROUND"
-            label="Totals Rows Background"
+            label="%colorDefinition.label.totalRowsBackground"
             value="255,255,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_TOTALS_ROWS_FOREGROUND"
-            label="Totals Rows Foreground"
+            label="%colorDefinition.label.totalRowsForeground"
             value="0,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.table"
             id="TABLE_TICK_BACKGROUND"
-            label="Changed Value Background"
+            label="%colorDefinition.label.changedValueBackground"
             value="255,224,0"/>
       <themeElementCategory
             class="net.sourceforge.eclipsetrader.trading.internal.BoxViewerThemePreview"
             id="net.sourceforge.eclipsetrader.watchlist.box"
-            label="Ribbon Layout"
+            label="%themeElementCategory.label.ribbonLayout"
             parentId="net.sourceforge.eclipsetrader.watchlist"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.box"
             id="BOX_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.foreground"
             value="0,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.box"
             id="BOX_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.background"
             value="255,255,255"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.box"
             id="BOX_POSITIVE_FOREGROUND"
-            label="Positive Value Color"
+            label="%colorDefinition.label.box.positiveValue"
             value="0,224,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.watchlist.box"
             id="BOX_NEGATIVE_FOREGROUND"
-            label="Negative Value Color"
+            label="%colorDefinition.label.box.negativeValue"
             value="224,0,0"/>
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.level2"
-            label="Level II"/>
+            label="%themeElementCategory.label.level2"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2"
             id="TRENDBAR_INDICATOR"
-            label="Trendbar Indicator"
+            label="%colorDefinition.label.trendbarIndicator"
             value="0,0,0"/>
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.level2.L1"
-            label="1st Price Level"
+            label="%themeElementCategory.label.1priceLevel"
             parentId="net.sourceforge.eclipsetrader.level2"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L1"
             id="LEVEL_1_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.1priceBackground"
             value="0,0,192"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L1"
             id="LEVEL_1_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.1priceForeground"
             value="255,255,255"/>
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.level2.L2"
-            label="2nd Price Level"
+            label="%themeElementCategory.label.2priceLevel"
             parentId="net.sourceforge.eclipsetrader.level2"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L2"
             id="LEVEL_2_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.2priceBackground"
             value="192,0,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L2"
             id="LEVEL_2_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.2priceForeground"
             value="0,0,0"/>
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.level2.L3"
-            label="3rd Price Level"
+            label="%themeElementCategory.label.3priceLevel"
             parentId="net.sourceforge.eclipsetrader.level2"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L3"
             id="LEVEL_3_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.3priceBackground"
             value="0,255,255"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L3"
             id="LEVEL_3_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.3priceForeground"
             value="0,0,0"/>
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.level2.L4"
-            label="4th Price Level"
+            label="%themeElementCategory.label.4priceLevel"
             parentId="net.sourceforge.eclipsetrader.level2"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L4"
             id="LEVEL_4_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.4priceBackground"
             value="0,255,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L4"
             id="LEVEL_4_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.4priceForeground"
             value="0,0,0"/>
       <themeElementCategory
             id="net.sourceforge.eclipsetrader.level2.L5"
-            label="5th Price Level"
+            label="%themeElementCategory.label.5priceLevel"
             parentId="net.sourceforge.eclipsetrader.level2"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L5"
             id="LEVEL_5_BACKGROUND"
-            label="Background"
+            label="%colorDefinition.label.5priceBackground"
             value="255,255,0"/>
       <colorDefinition
             categoryId="net.sourceforge.eclipsetrader.level2.L5"
             id="LEVEL_5_FOREGROUND"
-            label="Foreground"
+            label="%colorDefinition.label.5priceForeground"
             value="0,0,0"/>
    </extension>
    <extension
@@ -328,19 +328,19 @@
                class="net.sourceforge.eclipsetrader.trading.actions.NewAlertAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.newAlert"
-               label="New Alert"
+               label="%action.label.newAlert"
                menubarPath="additions"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
-               label="Open Level2"
+               label="%action.label.openLevel2"
                menubarPath="top"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.SecurityPatternSearchAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.searchPattern"
-               label="Search Pattern"
+               label="%action.label.searchPattern"
                menubarPath="search"/>
       </viewerContribution>
       <viewerContribution
@@ -350,13 +350,13 @@
                class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
-               label="Open Level2"
+               label="%action.label.openLevel2"
                menubarPath="top"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.SecurityPatternSearchAction"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.searchPattern"
-               label="Search Pattern"
+               label="%action.label.searchPattern"
                menubarPath="additions"/>
       </viewerContribution>
    </extension>
@@ -367,52 +367,52 @@
             class="net.sourceforge.eclipsetrader.trading.views.AccountsView"
             icon="icons/eview16/coins.png"
             id="net.sourceforge.eclipsetrader.views.accounts"
-            name="Accounts"/>
+            name="%view.name.accounts"/>
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.Level2View"
             icon="icons/eview16/application_view_detail.png"
             id="net.sourceforge.eclipsetrader.trading.level2"
-            name="Level II"/>
+            name="%view.name.level2"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.PatternSearchView"
             icon="icons/eview16/searchres.gif"
             id="net.sourceforge.eclipsetrader.patternSearch"
-            name="Pattern Search"/>
+            name="%view.name.patternSearch"/>
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.TransactionsView"
             icon="icons/eview16/book.png"
             id="net.sourceforge.eclipsetrader.views.transactions"
-            name="Transactions"/>
+            name="%view.name.transactions"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.PortfolioView"
             icon="icons/eview16/money.png"
             id="net.sourceforge.eclipsetrader.views.portfolio"
-            name="Portfolio"/>
+            name="%view.name.portfolio"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.TestRunnerView"
             icon="icons/eview16/computer.png"
             id="net.sourceforge.eclipsetrader.trading.test"
-            name="Trading System Test"/>
+            name="%view.name.tradingSystemTest"/>
       <view
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.TradingSystemView"
             icon="icons/eview16/server_database.png"
             id="net.sourceforge.eclipsetrader.views.system"
-            name="Trading Systems"/>
+            name="%view.name.tradingSystems"/>
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.WatchlistView"
             icon="icons/eview16/table.png"
             id="net.sourceforge.eclipsetrader.watchlist"
-            name="Watch List"/>
+            name="%view.name.watchlist"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
@@ -422,26 +422,26 @@
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
-               label="Open Level2"
+               label="%action.label.openLevel2"
                menubarPath="top"
                style="push"
-               tooltip="Open Level2"/>
+               tooltip="%action.tooltip.openLevel2"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.PatternSearchAction"
                id="net.sourceforge.eclipsetrader.trading.pattern"
-               label="Search Pattern..."
+               label="%action.label.searchPattern3"
                menubarPath="search"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.DeleteWatchlistAction"
                id="net.sourceforge.eclipsetrader.trading.deleteWatchlist"
-               label="Delete Watchlist"
+               label="%action.label.deleteWatchlist"
                menubarPath="bottom"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.trading.actions.WatchlistSettingsAction"
                id="net.sourceforge.eclipsetrader.trading.watchlistSettings"
-               label="Settings..."
+               label="%action.label.settings"
                menubarPath="bottom"
                style="push"/>
       </viewContribution>
@@ -452,10 +452,10 @@
                class="net.sourceforge.eclipsetrader.trading.actions.OpenLevel2Action"
                enablesFor="1"
                id="net.sourceforge.eclipsetrader.trading.openLevel2"
-               label="Open Level2"
+               label="%action.label.openLevel2"
                menubarPath="top"
                style="push"
-               tooltip="Open Level2"/>
+               tooltip="%action.tooltip.openLevel2"/>
       </viewContribution>
       <viewContribution
             id="tradingSystemView"
@@ -465,10 +465,10 @@
                disabledIcon="icons/dtool16/refresh.gif"
                icon="icons/etool16/refresh.gif"
                id="net.sourceforge.eclipsetrader.trading.updateSignals"
-               label="Update Signals"
+               label="%action.label.updateSignals"
                style="push"
                toolbarPath="group4"
-               tooltip="Update Signals"/>
+               tooltip="%action.tooltip.updateSignals"/>
       </viewContribution>
    </extension>
    <extension
@@ -511,42 +511,42 @@
       <alert
             class="net.sourceforge.eclipsetrader.trading.alerts.TargetPrice"
             id="net.sourceforge.eclipsetrader.alert.targetprice"
-            name="Target Price">
+            name="%alert.name.targetPrice">
          <preferencePage
                class="net.sourceforge.eclipsetrader.trading.alerts.TargetPricePreferences"
-               name="General"/>
+               name="%preferencePage.name.general"/>
       </alert>
       <alert
             class="net.sourceforge.eclipsetrader.trading.alerts.PriceChange"
             id="net.sourceforge.eclipsetrader.alert.pricechange"
-            name="Price Change (%)">
+            name="%alert.name.priceChange">
          <preferencePage
                class="net.sourceforge.eclipsetrader.trading.alerts.PriceChangePreferences"
-               name="General"/>
+               name="%preferencePage.name.general2"/>
       </alert>
       <alert
             class="net.sourceforge.eclipsetrader.trading.alerts.PriceAlert"
             id="net.sourceforge.eclipsetrader.alert.pricealert"
-            name="Price Alert">
+            name="%alert.name.priceAlert">
          <preferencePage
                class="net.sourceforge.eclipsetrader.trading.alerts.PriceAlertPreferences"
-               name="General"/>
+               name="%preferencePage.name.general3"/>
       </alert>
       <alert
             class="net.sourceforge.eclipsetrader.trading.alerts.MovingAverageCrossover"
             id="net.sourceforge.eclipsetrader.alert.macrossover"
-            name="Moving Average Crossover">
+            name="%alert.name.macrossover">
          <preferencePage
                class="net.sourceforge.eclipsetrader.trading.alerts.MovingAverageCrossoverPreferences"
-               name="General"/>
+               name="%preferencePage.name.general4"/>
       </alert>
       <alert
             class="net.sourceforge.eclipsetrader.trading.alerts.RSICrossover"
             id="net.sourceforge.eclipsetrader.alert.rsicrossover"
-            name="RSI Crossover">
+            name="%alert.name.rsicrossover">
          <preferencePage
                class="net.sourceforge.eclipsetrader.trading.alerts.RSICrossoverPreferences"
-               name="General"/>
+               name="%preferencePage.name.general5"/>
       </alert>
    </extension>
    <extension
@@ -554,11 +554,11 @@
       <system
             class="net.sourceforge.eclipsetrader.trading.systems.PatternTrading"
             id="net.sourceforge.eclipsetrader.system.patternTrading"
-            name="Pattern Trading">
+            name="%system.name.patternTrading">
          <preferencePage
                class="net.sourceforge.eclipsetrader.trading.systems.PatternTradingPreferences"
-               description="Set the pattern search parameters"
-               name="Pattern"/>
+               description="%preferencePage.description.patternTrading"
+               name="%preferencePage.name.patternTrading"/>
       </system>
    </extension>
    <extension
@@ -566,11 +566,11 @@
       <provider
             class="net.sourceforge.eclipsetrader.trading.internal.SimpleAccountProvider"
             id="net.sourceforge.eclipsetrader.accounts.simple"
-            name="Simple Account">
+            name="%provider.name.simple">
          <preferencePage
                class="net.sourceforge.eclipsetrader.trading.wizards.accounts.CommissionsPage"
-               description="Set the commissions required for transactions"
-               name="Commissions"/>
+               description="%preferencePage.description.commissions"
+               name="%preferencePage.name.commissions"/>
       </provider>
    </extension>
 
