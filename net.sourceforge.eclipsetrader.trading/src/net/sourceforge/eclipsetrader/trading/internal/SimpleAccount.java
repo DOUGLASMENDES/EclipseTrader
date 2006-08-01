@@ -11,10 +11,8 @@
 
 package net.sourceforge.eclipsetrader.trading.internal;
 
-import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.db.Transaction;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 
 public class SimpleAccount extends Account
@@ -59,26 +57,6 @@ public class SimpleAccount extends Account
     public double getMinimumCommission()
     {
         return getPreferenceStore().getDouble(PREFS_MINIMUMCOMMISSION); //$NON-NLS-1$
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.Account#getBalance()
-     */
-    public double getBalance()
-    {
-        double result = getInitialBalance();
-
-        Object[] objs = getTransactions().toArray();
-        for (int i = 0; i < objs.length; i++)
-        {
-            Transaction transaction = (Transaction)objs[i];
-            double amount = transaction.getAmount();
-            if (getCurrency() != null && !getCurrency().equals(transaction.getSecurity().getCurrency()))
-                amount = CurrencyConverter.getInstance().convert(amount, getCurrency(), transaction.getSecurity().getCurrency());
-            result += amount;
-        }
-        
-        return result;
     }
 
     /* (non-Javadoc)

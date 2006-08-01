@@ -157,7 +157,10 @@ public abstract class Account extends PersistentObject implements Cloneable
     public void setTransactions(List transactions)
     {
         Assert.isNotNull(transactions);
+        if (this.transactions != null)
+            this.transactions.removeCollectionObserver(transactionsObserver);
         this.transactions = new ObservableList(transactions);
+        this.transactions.addCollectionObserver(transactionsObserver);
     }
 
     /**
@@ -175,7 +178,7 @@ public abstract class Account extends PersistentObject implements Cloneable
             Transaction transaction = (Transaction)objs[i];
             double amount = transaction.getAmount();
             if (getCurrency() != null && !getCurrency().equals(transaction.getSecurity().getCurrency()))
-                amount = CurrencyConverter.getInstance().convert(amount, getCurrency(), transaction.getSecurity().getCurrency());
+                amount = CurrencyConverter.getInstance().convert(amount, transaction.getSecurity().getCurrency(), getCurrency());
             result += amount;
         }
         
