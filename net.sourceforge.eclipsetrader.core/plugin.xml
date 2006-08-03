@@ -5,6 +5,7 @@
    <extension-point id="news" name="%extension-point.name.News" schema="schema/news.exsd"/>
    <extension-point id="patterns" name="%extension-point.name.Patterns" schema="schema/patterns.exsd"/>
    <extension-point id="accountProviders" name="%extension-point.name.AccountProviders" schema="schema/accountProviders.exsd"/>
+   <extension-point id="loggingPreferences" name="Logging Preferences" schema="schema/loggingPreferences.exsd"/>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -92,6 +93,10 @@
         class="net.sourceforge.eclipsetrader.core.ui.preferences.CurrencyPreferencesPage"
         id="net.sourceforge.eclipsetrader.currency"
         name="%page.name.Currencies"/>
+  <page
+        class="net.sourceforge.eclipsetrader.core.ui.preferences.LoggerPreferencesPage"
+        id="net.sourceforge.eclipsetrader.core.logging"
+        name="Logging"/>
    </extension>
    <extension
          point="org.eclipse.ui.themes">
@@ -164,6 +169,16 @@
                menubarPath="additions"
                style="push"/>
       </viewContribution>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.loggingPreferences">
+      <logger
+            defaultValue="info"
+            description="Apache HttpClient"
+            name="org.apache.commons.httpclient"/>
+      <layout
+            description="Extended"
+            pattern="%%d{ABSOLUTE} %5p %c:%L - %m%n"/>
    </extension>
 
 </plugin>

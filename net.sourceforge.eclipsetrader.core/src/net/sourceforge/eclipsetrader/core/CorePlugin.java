@@ -11,18 +11,25 @@
 
 package net.sourceforge.eclipsetrader.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.DefaultAccount;
 import net.sourceforge.eclipsetrader.core.db.PersistentPreferenceStore;
+import net.sourceforge.eclipsetrader.core.internal.LogListener;
 import net.sourceforge.eclipsetrader.core.internal.Messages;
 import net.sourceforge.eclipsetrader.core.internal.XMLRepository;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -49,6 +56,7 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String FEED_EXTENSION_POINT = PLUGIN_ID + ".feeds"; //$NON-NLS-1$
     public static final String PATTERN_EXTENSION_POINT = PLUGIN_ID + ".patterns"; //$NON-NLS-1$
     public static final String ACCOUNT_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".accountProviders"; //$NON-NLS-1$
+    public static final String LOGGER_PREFERENCES_EXTENSION_POINT = PLUGIN_ID + ".loggingPreferences"; //$NON-NLS-1$
     public static final String FEED_RUNNING = "FEED_RUNNING"; //$NON-NLS-1$
     public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY"; //$NON-NLS-1$
     public static final String PREFS_PROXY_HOST_ADDRESS = "PROXY_HOST_ADDRESS"; //$NON-NLS-1$
@@ -114,6 +122,13 @@ public class CorePlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
+
+        System.setProperty("workspace_loc", Platform.getLocation().toPortableString());
+        configureLogging();
+        
+        LogListener logListener = new LogListener();
+        Platform.addLogListener(logListener);
+        getLog().addLogListener(logListener);
         
         IPreferenceStore preferenceStore = getPreferenceStore();
         preferenceStore.setDefault(FEED_RUNNING, false);
@@ -126,6 +141,46 @@ public class CorePlugin extends AbstractUIPlugin
         CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(feedPropertyListener);
         
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().addPerspectiveListener(perspectiveListener);
+    }
+    
+    public void configureLogging()
+    {
+        try
+        {
+            Properties properties = new Properties();
+
+            IExtensionRegistry registry = Platform.getExtensionRegistry();
+            IExtensionPoint extensionPoint = registry.getExtensionPoint(CorePlugin.LOGGER_PREFERENCES_EXTENSION_POINT);
+
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement element = members[i]; 
+                if (element.getName().equals("logger"))
+                {
+                    if (element.getAttribute("defaultValue") != null)
+                        properties.put("log4j.logger." + element.getAttribute("name"), element.getAttribute("defaultValue"));
+                }
+            }
+            
+            try {
+                URL url = CorePlugin.getDefault().getBundle().getResource("log4j.properties"); //$NON-NLS-1$
+                properties.load(url.openStream());
+
+                File file = CorePlugin.getDefault().getStateLocation().append("log4j.properties").toFile();
+                if (file.exists())
+                    properties.load(new FileInputStream(file));
+            } catch(Exception e) {
+                CorePlugin.logException(e);
+            }
+            
+            PropertyConfigurator.configure(properties);
+        }
+        catch (Exception e)
+        {
+            BasicConfigurator.configure();
+            logException(e);
+        }
     }
 
     /* (non-Javadoc)
@@ -142,7 +197,6 @@ public class CorePlugin extends AbstractUIPlugin
         CorePlugin.getDefault().getPreferenceStore().removePropertyChangeListener(feedPropertyListener);
         
         super.stop(context);
-        
         plugin = null;
     }
 
@@ -154,7 +208,17 @@ public class CorePlugin extends AbstractUIPlugin
     public static Repository getRepository()
     {
         if (repository == null)
-            repository = new XMLRepository();
+        {
+            try
+            {
+                Class clazz = Class.forName("net.sourceforge.eclipsetrader.core.RepositoryImpl");
+                repository = (Repository)clazz.newInstance();
+            }
+            catch (Exception e)
+            {
+                repository = new XMLRepository();
+            }
+        }
         return repository;
     }
 
@@ -382,6 +446,5 @@ public class CorePlugin extends AbstractUIPlugin
     {
         String msg = e.getMessage() == null ? e.toString() : e.getMessage();
         getDefault().getLog().log(new Status(Status.ERROR, PLUGIN_ID, 0, msg, e));
-        e.printStackTrace();
     }
 }
