@@ -19,12 +19,14 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IFeed;
+import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 
@@ -89,9 +91,12 @@ public class Feed implements IFeed, Runnable
         stopping = true;
         if (thread != null)
         {
-            try {
+            try
+            {
                 thread.join();
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
             thread = null;
@@ -104,6 +109,10 @@ public class Feed implements IFeed, Runnable
     public void snapshot()
     {
         update();
+
+        boolean updateHistory = YahooPlugin.getDefault().getPreferenceStore().getBoolean(YahooPlugin.PREFS_UPDATE_HISTORY);
+        if (updateHistory)
+            updateHistory();
     }
 
     /* (non-Javadoc)
@@ -113,7 +122,7 @@ public class Feed implements IFeed, Runnable
     {
         long nextRun = System.currentTimeMillis() + 2 * 1000;
 
-        while(!stopping)
+        while (!stopping)
         {
             if (System.currentTimeMillis() >= nextRun)
             {
@@ -121,9 +130,12 @@ public class Feed implements IFeed, Runnable
                 nextRun = System.currentTimeMillis() + 10 * 1000;
             }
 
-            try {
+            try
+            {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
                 break;
             }
@@ -134,8 +146,8 @@ public class Feed implements IFeed, Runnable
     {
         // Builds the url for quotes download
         StringBuffer url = new StringBuffer("http://quote.yahoo.com/download/javasoft.beans?symbols=");
-        for (Iterator iter = map.values().iterator(); iter.hasNext(); )
-            url = url.append((String)iter.next() + "+");
+        for (Iterator iter = map.values().iterator(); iter.hasNext();)
+            url = url.append((String) iter.next() + "+");
         if (url.charAt(url.length() - 1) == '+')
             url.deleteCharAt(url.length() - 1);
         url.append("&format=sl1d1t1c1ohgvbap");
@@ -146,7 +158,7 @@ public class Feed implements IFeed, Runnable
         {
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            
+
             IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
             if (store.getBoolean(CorePlugin.PREFS_ENABLE_HTTP_PROXY))
             {
@@ -158,14 +170,14 @@ public class Feed implements IFeed, Runnable
             HttpMethod method = new GetMethod(url.toString());
             method.setFollowRedirects(true);
             client.executeMethod(method);
-            
+
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((line = in.readLine()) != null)
             {
                 String[] item = line.split(",");
                 if (line.indexOf(";") != -1)
                     item = line.split(";");
-                
+
                 Double open = null, high = null, low = null, close = null;
                 Quote quote = new Quote();
 
@@ -188,7 +200,8 @@ public class Feed implements IFeed, Runnable
                     c.setTimeZone(TimeZone.getDefault());
                     quote.setDate(c.getTime());
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     System.out.println(e.getMessage() + ": " + line);
                 }
                 // 1 = Last price or N/A
@@ -216,14 +229,16 @@ public class Feed implements IFeed, Runnable
                 // 11 = Close Price
                 if (item[11].equalsIgnoreCase("N/A") == false)
                     close = new Double(numberFormat.parse(item[11]).doubleValue());
-                
+
                 // 0 = Code
                 String symbol = stripQuotes(item[0]);
-                for (Iterator iter = map.keySet().iterator(); iter.hasNext(); )
+                for (Iterator iter = map.keySet().iterator(); iter.hasNext();)
                 {
-                    Security security = (Security)iter.next();
-                    if (symbol.equalsIgnoreCase((String)map.get(security)))
+                    Security security = (Security) iter.next();
+                    if (symbol.equalsIgnoreCase((String) map.get(security)))
+                    {
                         security.setQuote(quote, open, high, low, close);
+                    }
                 }
             }
             in.close();
@@ -242,5 +257,72 @@ public class Feed implements IFeed, Runnable
         if (s.endsWith("\""))
             s = s.substring(0, s.length() - 1);
         return s;
+    }
+
+    protected void updateHistory()
+    {
+        for (Iterator iter = map.keySet().iterator(); iter.hasNext();)
+        {
+            Security security = (Security) iter.next();
+            updateHistory(security, security.getQuote());
+        }
+    }
+
+    /**
+     * Updates security's history with quote data if:
+     * <li>security's history is not empty
+     * <li>quote's date is one day after the last history bar
+     * <li>current time is after the end of the financial day as per the security's end date.
+     * 
+     * @param security
+     * @param quote
+     */
+    protected void updateHistory(Security security, Quote quote)
+    {
+        // update only if quote's date is the last history date + 1, and the current time is later than the end time in security settings
+        List history = security.getHistory();
+        if (quote.getDate() != null && (!history.isEmpty()))
+        {
+            Calendar quoteCalendar = Calendar.getInstance();
+            quoteCalendar.setTime(quote.getDate());
+            quoteCalendar = new GregorianCalendar(quoteCalendar.get(Calendar.YEAR), quoteCalendar.get(Calendar.MONTH), quoteCalendar.get(Calendar.DAY_OF_MONTH));
+
+            Bar lastBar = (Bar) history.get(history.size() - 1);
+
+            Calendar nextBarDate = Calendar.getInstance();
+            nextBarDate.setTime(lastBar.getDate());
+            nextBarDate.add(Calendar.DATE, 1);
+            nextBarDate.set(Calendar.HOUR_OF_DAY, 0);
+            nextBarDate.set(Calendar.MINUTE, 0);
+            nextBarDate.set(Calendar.SECOND, 0);
+            nextBarDate.set(Calendar.MILLISECOND, 0);
+
+            if (!nextBarDate.getTime().equals(quoteCalendar.getTime()))
+                return;
+
+            Calendar securityEndTime = Calendar.getInstance();
+            securityEndTime.setTime(quote.getDate());
+            securityEndTime.set(Calendar.HOUR_OF_DAY, security.getEndTime() / 60);
+            securityEndTime.set(Calendar.MINUTE, security.getEndTime() % 60);
+            securityEndTime.set(Calendar.SECOND, 0);
+            securityEndTime.set(Calendar.MILLISECOND, 0);
+
+            Calendar today = Calendar.getInstance();
+
+            if (nextBarDate.getTime().equals(quoteCalendar.getTime()) && today.after(securityEndTime))
+            {
+                Bar bar = new Bar();
+                bar.setDate(quoteCalendar.getTime());
+                bar.setOpen(security.getOpen().doubleValue());
+                bar.setHigh(security.getHigh().doubleValue());
+                bar.setLow(security.getLow().doubleValue());
+                bar.setClose(quote.getLast());
+                bar.setVolume(quote.getVolume());
+                history.add(bar);
+
+                CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
+                CorePlugin.getRepository().save(security);
+            }
+        }
     }
 }

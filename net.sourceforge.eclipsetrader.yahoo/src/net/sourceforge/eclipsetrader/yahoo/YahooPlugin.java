@@ -19,6 +19,7 @@ public class YahooPlugin extends AbstractUIPlugin
 {
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.yahoo";
     public static final String PREFS_SHOW_SUBSCRIBERS_ONLY = "SHOW_SUBSCRIBERS_ONLY";
+    public static final String PREFS_UPDATE_HISTORY = "UPDATE_HISTORY";
     private static YahooPlugin plugin;
 
     /**

@@ -41,14 +41,19 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="net.sourceforge.eclipsetrader.plugins"
-            class="net.sourceforge.eclipsetrader.yahoo.preferences.NewsPreferencesPage"
-            id="net.sourceforge.eclipsetrader.yahoo.news"
+            class="net.sourceforge.eclipsetrader.yahoo.preferences.PluginPreferencesPage"
+            id="net.sourceforge.eclipsetrader.yahoo.quote"
             name="Yahoo! Finance"/>
       <page
-            category="net.sourceforge.eclipsetrader.plugins"
+            category="net.sourceforge.eclipsetrader.news"
+            class="net.sourceforge.eclipsetrader.yahoo.preferences.NewsPreferencesPage"
+            id="net.sourceforge.eclipsetrader.yahoo.news"
+            name="Yahoo! US"/>
+      <page
+            category="net.sourceforge.eclipsetrader.news"
             class="net.sourceforge.eclipsetrader.yahoo.preferences.FrenchNewsPreferencesPage"
             id="net.sourceforge.eclipsetrader.yahoo.news.france"
-            name="Yahoo! Finance France"/>
+            name="Yahoo! France"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.core.feeds">
