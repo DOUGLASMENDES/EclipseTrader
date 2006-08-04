@@ -20,12 +20,12 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystemGroup;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,6 +39,7 @@ class TradingSystemRepository
     Map tsGroupMap = new HashMap();
     private Integer tsNextId = new Integer(1);
     Map tsMap = new HashMap();
+    private Logger logger = Logger.getLogger(getClass());
 
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
 
@@ -75,8 +76,8 @@ class TradingSystemRepository
                         group.setRepository(this.repository);
                     }
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                logger.error(e.toString(), e);
             }
         }
     }
@@ -158,7 +159,7 @@ class TradingSystemRepository
             repository.saveDocument(document, "", "ts.xml");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.toString(), e);
         }
     }
 
@@ -286,7 +287,7 @@ class TradingSystemRepository
                         system.setDate(dateTimeFormat.parse(value.getNodeValue()));
                     }
                     catch (Exception e) {
-                        CorePlugin.logException(e);
+                        logger.warn(e.toString(), e);
                     }
                 }
                 else if (nodeName.equalsIgnoreCase("signal")) //$NON-NLS-1$
