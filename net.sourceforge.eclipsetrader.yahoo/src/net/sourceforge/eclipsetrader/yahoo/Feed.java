@@ -289,16 +289,8 @@ public class Feed implements IFeed, Runnable
 
             Bar lastBar = (Bar) history.get(history.size() - 1);
 
-            Calendar nextBarDate = Calendar.getInstance();
-            nextBarDate.setTime(lastBar.getDate());
-            nextBarDate.add(Calendar.DATE, 1);
-            nextBarDate.set(Calendar.HOUR_OF_DAY, 0);
-            nextBarDate.set(Calendar.MINUTE, 0);
-            nextBarDate.set(Calendar.SECOND, 0);
-            nextBarDate.set(Calendar.MILLISECOND, 0);
-
-            if (!nextBarDate.getTime().equals(quoteCalendar.getTime()))
-                return;
+            Calendar lastBarDate = Calendar.getInstance();
+            lastBarDate.setTime(lastBar.getDate());
 
             Calendar securityEndTime = Calendar.getInstance();
             securityEndTime.setTime(quote.getDate());
@@ -309,8 +301,9 @@ public class Feed implements IFeed, Runnable
 
             Calendar today = Calendar.getInstance();
 
-            if (nextBarDate.getTime().equals(quoteCalendar.getTime()) && today.after(securityEndTime))
+            if (quoteCalendar.getTime().after(lastBarDate.getTime()) && today.after(securityEndTime))
             {
+
                 Bar bar = new Bar();
                 bar.setDate(quoteCalendar.getTime());
                 bar.setOpen(security.getOpen().doubleValue());
@@ -322,6 +315,7 @@ public class Feed implements IFeed, Runnable
 
                 CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
                 CorePlugin.getRepository().save(security);
+
             }
         }
     }
