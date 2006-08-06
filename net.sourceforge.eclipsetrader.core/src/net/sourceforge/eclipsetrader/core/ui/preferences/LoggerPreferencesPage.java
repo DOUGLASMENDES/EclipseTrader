@@ -15,8 +15,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -125,7 +129,14 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
 
         rootLogger = createLevelCombo(group, "General", (String)properties.get("log4j.rootLogger"), false);
 
-        IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+        List list = Arrays.asList(extensionPoint.getConfigurationElements());
+        Collections.sort(list, new Comparator() {
+            public int compare(Object arg0, Object arg1)
+            {
+                return ((IConfigurationElement)arg0).getAttribute("description").compareTo(((IConfigurationElement)arg1).getAttribute("description"));
+            }
+        });
+        IConfigurationElement[] members = (IConfigurationElement[])list.toArray(new IConfigurationElement[list.size()]);
         for (int i = 0; i < members.length; i++)
         {
             IConfigurationElement element = members[i]; 
