@@ -163,6 +163,12 @@
                toolbarPath="group6"
                tooltip="%refreshCurrenciesActionTooltip"/>
          <action
+               class="net.sourceforge.eclipsetrader.core.ui.actions.SetExchangeRateAction"
+               id="net.sourceforge.eclipsetrader.setExchangeRate"
+               label="Set Exchange Rate..."
+               menubarPath="additions"
+               style="push"/>
+         <action
                class="net.sourceforge.eclipsetrader.core.ui.actions.ConvertCurrencyAction"
                id="net.sourceforge.eclipsetrader.currencyConversion"
                label="%convertCurrencyAction"
