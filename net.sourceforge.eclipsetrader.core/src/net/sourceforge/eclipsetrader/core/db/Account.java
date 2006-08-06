@@ -178,7 +178,7 @@ public abstract class Account extends PersistentObject implements Cloneable
             Transaction transaction = (Transaction)objs[i];
             double amount = transaction.getAmount();
             if (getCurrency() != null && !getCurrency().equals(transaction.getSecurity().getCurrency()))
-                amount = CurrencyConverter.getInstance().convert(amount, transaction.getSecurity().getCurrency(), getCurrency());
+                amount = CurrencyConverter.getInstance().convert(transaction.getDate(), amount, transaction.getSecurity().getCurrency(), getCurrency());
             result += amount;
         }
         

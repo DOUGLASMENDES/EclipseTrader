@@ -17,8 +17,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Currency;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +43,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -52,11 +57,39 @@ import org.w3c.dom.NodeList;
 public class CurrencyConverter extends Observable
 {
     private static CurrencyConverter instance = new CurrencyConverter();
-    private List currencies = new ArrayList();
-    private Map map = new HashMap();
-    private NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+    List currencies = new ArrayList();
+    Map map = new HashMap();
+    Map historyMap = new HashMap();
+    NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
+    Logger logger = Logger.getLogger(getClass());
+    
+    private class History
+    {
+        Date date;
+        Double ratio;
+        
+        public History()
+        {
+        }
 
-    private CurrencyConverter()
+        public History(Date date, Double ratio)
+        {
+            this.date = date;
+            this.ratio = ratio;
+        }
+
+        public boolean equals(Object obj)
+        {
+            if (obj instanceof Date)
+                return date.equals((Date)obj);
+            if (obj instanceof History)
+                return date.equals(((History)obj).date);
+            return false;
+        }
+    }
+
+    CurrencyConverter()
     {
         File file = new File(Platform.getLocation().toFile(), "currencies.xml"); //$NON-NLS-1$
         if (file.exists() == true)
@@ -74,23 +107,58 @@ public class CurrencyConverter extends Observable
                 {
                     Node item = childNodes.item(i);
                     String nodeName = item.getNodeName();
-                    Node valueNode = item.getFirstChild();
-                    if (valueNode != null)
+
+                    if (nodeName.equalsIgnoreCase("currency")) //$NON-NLS-1$
                     {
-                        if (nodeName.equalsIgnoreCase("currency")) //$NON-NLS-1$
+                        Node valueNode = item.getFirstChild();
+                        if (valueNode != null)
                             currencies.add(valueNode.getNodeValue());
-                        else if (nodeName.equalsIgnoreCase("conversion")) //$NON-NLS-1$
+                    }
+                    else if (nodeName.equalsIgnoreCase("conversion")) //$NON-NLS-1$
+                    {
+                        String symbol = ((Node)item).getAttributes().getNamedItem("symbol").getNodeValue(); //$NON-NLS-1$
+                        
+                        Node valueNode = null;
+                        if (((Node)item).getAttributes().getNamedItem("ratio") != null) //$NON-NLS-1$
+                            valueNode = ((Node)item).getAttributes().getNamedItem("ratio"); //$NON-NLS-1$
+                        if (valueNode == null)
+                            valueNode = item.getFirstChild();
+                        if (valueNode != null)
                         {
-                            String symbol = ((Node)item).getAttributes().getNamedItem("symbol").getNodeValue();
                             Double value = new Double(Double.parseDouble(valueNode.getNodeValue()));
                             map.put(symbol, value);
                         }
+                        readHistory(symbol, item.getChildNodes());
                     }
                 }
             } catch (Exception e) {
-                CorePlugin.logException(e);
+                logger.error(e, e);
             }
         }
+    }
+    
+    private void readHistory(String symbol, NodeList nodeList)
+    {
+        List list = new ArrayList();
+        for (int i = 0; i < nodeList.getLength(); i++)
+        {
+            Node item = nodeList.item(i);
+            String nodeName = item.getNodeName();
+            if (nodeName.equalsIgnoreCase("history")) //$NON-NLS-1$
+            {
+                History history = new History();
+                try {
+                    history.date = dateFormat.parse(item.getAttributes().getNamedItem("date").getNodeValue());
+                    history.ratio = new Double(item.getAttributes().getNamedItem("ratio").getNodeValue());
+                } catch (Exception e) {
+                    logger.warn(e);
+                }
+                if (history.date != null && history.ratio != null && !list.contains(history))
+                    list.add(history);
+            }
+        }
+
+        historyMap.put(symbol, list);
     }
 
     public static CurrencyConverter getInstance()
@@ -105,6 +173,12 @@ public class CurrencyConverter extends Observable
             file.delete();
         currencies.clear();
         map.clear();
+        historyMap.clear();
+    }
+    
+    public void dispose()
+    {
+        save();
     }
 
     public List getCurrencies()
@@ -121,33 +195,62 @@ public class CurrencyConverter extends Observable
     {
         if (from == null || to == null || from.equals(to))
             return amount;
-        return convert(amount, from.getCurrencyCode(), to.getCurrencyCode());
+        return convert(null, amount, from.getCurrencyCode(), to.getCurrencyCode());
+    }
+
+    public double convert(Date date, double amount, Currency from, Currency to)
+    {
+        if (from == null || to == null || from.equals(to))
+            return amount;
+        return convert(date, amount, from.getCurrencyCode(), to.getCurrencyCode());
     }
 
     public double convert(Double amount, Currency from, Currency to)
     {
         if (from == null || to == null || from.equals(to))
             return amount.doubleValue();
-        return convert(amount.doubleValue(), from.getCurrencyCode(), to.getCurrencyCode());
+        return convert(null, amount.doubleValue(), from.getCurrencyCode(), to.getCurrencyCode());
+    }
+
+    public double convert(Date date, Double amount, Currency from, Currency to)
+    {
+        if (from == null || to == null || from.equals(to))
+            return amount.doubleValue();
+        return convert(date, amount.doubleValue(), from.getCurrencyCode(), to.getCurrencyCode());
     }
 
     public double convert(double amount, String from, String to)
+    {
+        return convert(null, amount, from, to);
+    }
+
+    public double convert(Date date, double amount, String from, String to)
     {
         double result = amount;
 
         if (from == null || to == null || from.equals(to))
             return result;
         
-        Double ratio = (Double)map.get(from + to);
-        if (ratio == null)
+        Double ratio = null;
+        if (date != null)
         {
-            ratio = (Double)map.get(to + from);
-            if (ratio != null)
-                result = amount / ratio.doubleValue();
+            ratio = getExchangeRatio(date, from, to);
+            if (ratio == null)
+            {
+                Double r = getExchangeRatio(date, to, from);
+                if (r != null)
+                    ratio = new Double(1 / r.doubleValue());
+            }
         }
-        else
+        if (ratio == null)
+            ratio = getExchangeRatio(from, to);
+
+        if (ratio != null)
             result = amount * ratio.doubleValue();
         
+        if (date != null && ratio != null)
+            setExchangeRatio(date, from, to, ratio.doubleValue());
+
         return result;
     }
     
@@ -210,6 +313,80 @@ public class CurrencyConverter extends Observable
         }
     }
     
+    public Double getExchangeRatio(String from, String to)
+    {
+        Double ratio = (Double)map.get(from + to);
+        if (ratio == null)
+        {
+            Double r = (Double)map.get(to + from);
+            if (r != null)
+                ratio = new Double(1 / r.doubleValue());
+        }
+        return ratio;
+    }
+    
+    public void setExchangeRatio(Date date, String from, String to, double ratio)
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        date = calendar.getTime();
+        
+        List list = (ArrayList)historyMap.get(from + to);
+        if (list == null)
+            list = new ArrayList();
+        History history = new History(date, new Double(ratio));
+        int index = list.indexOf(history);
+        if (index != -1)
+        {
+            History old = (History)list.get(index);
+            if (!old.ratio.equals(history.ratio))
+            {
+                list.set(index, history);
+                setChanged();
+            }
+        }
+        else
+        {
+            list.add(history);
+            setChanged();
+        }
+        historyMap.put(from + to, list);
+        notifyObservers();
+    }
+    
+    public Double getExchangeRatio(Date date, String from, String to)
+    {
+        Double ratio = null;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        date = calendar.getTime();
+
+        List list = (ArrayList)historyMap.get(from + to);
+        if (list != null)
+        {
+            for (int i = 0; i < list.size(); i++)
+            {
+                History history = (History)list.get(i);
+                if (history.date.equals(date))
+                {
+                    ratio = history.ratio;
+                    break;
+                }
+            }
+        }
+        
+        return ratio;
+    }
+    
     private void save()
     {
         try {
@@ -230,7 +407,8 @@ public class CurrencyConverter extends Observable
                 String symbol = (String)iter.next();
                 Element node = document.createElement("conversion");
                 node.setAttribute("symbol", symbol);
-                node.appendChild(document.createTextNode(String.valueOf((Double)map.get(symbol))));
+                node.setAttribute("ratio", String.valueOf((Double)map.get(symbol)));
+                saveHistory(node, symbol);
                 root.appendChild(node);
             }
 
@@ -253,7 +431,37 @@ public class CurrencyConverter extends Observable
             out.flush();
             out.close();
         } catch (Exception e) {
-            CorePlugin.logException(e);
+            logger.error(e, e);
+        }
+    }
+    
+    private void saveHistory(Node root, String symbol)
+    {
+        Document document = root.getOwnerDocument();
+        List list = (List)historyMap.get(symbol);
+        if (list != null)
+        {
+            java.util.Collections.sort(list, new Comparator() {
+                public int compare(Object o1, Object o2)
+                {
+                    History d1 = (History) o1;
+                    History d2 = (History) o2;
+                    if (d1.date.after(d2.date) == true)
+                        return 1;
+                    else if (d1.date.before(d2.date) == true)
+                        return -1;
+                    return 0;
+                }
+            });
+
+            for (Iterator iter = list.iterator(); iter.hasNext(); )
+            {
+                History history = (History)iter.next();
+                Element node = document.createElement("history");
+                node.setAttribute("date", dateFormat.format(history.date));
+                node.setAttribute("ratio", String.valueOf(history.ratio));
+                root.appendChild(node);
+            }
         }
     }
 
@@ -290,11 +498,11 @@ public class CurrencyConverter extends Observable
                 if (line.indexOf(";") != -1)
                     item = line.split(";");
                 
-                // 2 = Date
-                // 3 = Time
                 // 1 = Last price or N/A
                 if (item[1].equalsIgnoreCase("N/A") == false)
                     result = new Double(numberFormat.parse(item[1]).doubleValue());
+                // 2 = Date
+                // 3 = Time
                 // 4 = Change
                 // 5 = Open
                 // 6 = Maximum
@@ -309,9 +517,14 @@ public class CurrencyConverter extends Observable
             in.close();
         }
         catch (Exception e) {
-            CorePlugin.logException(e);
+            logger.error(e, e);
         }
 
         return result;
+    }
+
+    public Double downloadQuote(String symbol, Date date)
+    {
+        return null;
     }
 }
