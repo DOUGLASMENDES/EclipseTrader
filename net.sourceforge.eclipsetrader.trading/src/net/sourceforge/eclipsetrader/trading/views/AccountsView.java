@@ -27,6 +27,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
@@ -90,7 +91,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
-public class AccountsView extends ViewPart implements ICollectionObserver
+public class AccountsView extends ViewPart implements Observer, ICollectionObserver
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.accounts";
     public static final String PREFS_ACCOUNT_COLUMNS_SIZE = "ACCOUNT_COLUMNS_SIZE";
@@ -427,6 +428,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
                 updateSelection();
                 CorePlugin.getRepository().allAccountGroups().addCollectionObserver(AccountsView.this);
                 CorePlugin.getRepository().allAccounts().addCollectionObserver(AccountsView.this);
+                CurrencyConverter.getInstance().addObserver(AccountsView.this);
             }
         });
     }
@@ -444,6 +446,7 @@ public class AccountsView extends ViewPart implements ICollectionObserver
      */
     public void dispose()
     {
+        CurrencyConverter.getInstance().deleteObserver(AccountsView.this);
         CorePlugin.getRepository().allAccountGroups().removeCollectionObserver(AccountsView.this);
         CorePlugin.getRepository().allAccounts().removeCollectionObserver(AccountsView.this);
         super.dispose();
@@ -623,6 +626,36 @@ public class AccountsView extends ViewPart implements ICollectionObserver
         updateSelection();
     }
     
+    /* (non-Javadoc)
+     * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+     */
+    public void update(Observable o, Object arg)
+    {
+        tree.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                if (!tree.isDisposed())
+                {
+                    TreeItem[] childs = tree.getItems();
+                    for (int i = 0; i < childs.length; i++)
+                        updateTree(childs[i]);
+                }
+            }
+        });
+    }
+    
+    void updateTree(TreeItem treeItem)
+    {
+        if (treeItem instanceof AccountTreeItem)
+            ((AccountTreeItem)treeItem).update(null, null);
+        else
+        {
+            TreeItem[] childs = treeItem.getItems();
+            for (int i = 0; i < childs.length; i++)
+                updateTree(childs[i]);
+        }
+    }
+
     public Tree getTree()
     {
         return tree;
