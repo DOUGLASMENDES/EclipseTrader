@@ -459,6 +459,14 @@
                class="net.sourceforge.eclipsetrader.charts.indicators.UOPreferencePage"
                title="%preferencePage.title.UO"/>
       </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.charts.indicators.MAChannels"
+            id="net.sourceforge.eclipsetrader.indicators.mach"
+            name="%indicator.name.MACH">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.indicators.MAChannelsPreferencePage"
+               title="%preferencePage.title.MACH"/>
+      </indicator>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.charts.objects">
