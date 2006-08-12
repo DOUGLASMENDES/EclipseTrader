@@ -54,6 +54,7 @@ public class CorePlugin extends AbstractUIPlugin
 {
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.core"; //$NON-NLS-1$
     public static final String FEED_EXTENSION_POINT = PLUGIN_ID + ".feeds"; //$NON-NLS-1$
+    public static final String TRADING_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".tradingProviders"; //$NON-NLS-1$
     public static final String PATTERN_EXTENSION_POINT = PLUGIN_ID + ".patterns"; //$NON-NLS-1$
     public static final String ACCOUNT_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".accountProviders"; //$NON-NLS-1$
     public static final String LOGGER_PREFERENCES_EXTENSION_POINT = PLUGIN_ID + ".loggingPreferences"; //$NON-NLS-1$
@@ -195,6 +196,8 @@ public class CorePlugin extends AbstractUIPlugin
 
         getPreferenceStore().setValue(FEED_RUNNING, false);
         CorePlugin.getDefault().getPreferenceStore().removePropertyChangeListener(feedPropertyListener);
+        
+        CurrencyConverter.getInstance().dispose();
         
         super.stop(context);
         plugin = null;
@@ -370,6 +373,33 @@ public class CorePlugin extends AbstractUIPlugin
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    public static TradingProvider createTradeSourcePlugin(String id)
+    {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(TRADING_PROVIDERS_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement item = members[i];
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
+                {
+                    try {
+                        TradingProvider obj = (TradingProvider)members[i].createExecutableExtension("class"); //$NON-NLS-1$
+                        obj.setName(item.getAttribute("name"));
+                        return obj;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 }
             }
         }

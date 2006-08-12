@@ -23,6 +23,7 @@ import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
+import net.sourceforge.eclipsetrader.core.db.Order;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
@@ -44,6 +45,7 @@ public class Repository
     private ObservableList events;
     private ObservableList tradingSystems;
     private ObservableList tradingSystemGroups;
+    private ObservableList orders;
     private Map newsMap = new HashMap();
 
     public Repository()
@@ -71,6 +73,7 @@ public class Repository
         events = null;
         tradingSystems = null;
         tradingSystemGroups = null;
+        orders = null;
         newsMap = new HashMap();
     }
     
@@ -157,6 +160,13 @@ public class Repository
         if (accountGroups == null)
             accountGroups = new ObservableList();
         return accountGroups;
+    }
+    
+    public ObservableList allOrders()
+    {
+        if (orders == null)
+            orders = new ObservableList();
+        return orders;
     }
     
     public Security getSecurity(String code)
@@ -281,6 +291,13 @@ public class Repository
                     group.getAccounts().add(account);
             }
         }
+
+        if (obj instanceof Order)
+        {
+            Order order = (Order)obj;
+            if (!allOrders().contains(order))
+                allOrders().add(order);
+        }
     }
     
     public void delete(PersistentObject obj)
@@ -312,8 +329,15 @@ public class Repository
             TradingSystem[] systems = (TradingSystem[])getTradingSystems().toArray(new TradingSystem[0]);
             for (int i = 0; i < systems.length; i++)
             {
-                if (systems[i].getSecurity().equals(obj))
+                if (obj.equals(systems[i].getSecurity()))
                     delete(systems[i]);
+            }
+            
+            Order[] orders = (Order[])allOrders().toArray(new Order[0]);
+            for (int i = 0; i < orders.length; i++)
+            {
+                if (obj.equals(orders[i].getSecurity()))
+                    delete(orders[i]);
             }
 
             allSecurities().remove(obj);
@@ -336,16 +360,16 @@ public class Repository
 
         if (obj instanceof Account)
         {
-            allAccounts().remove(obj);
-            if (((Account)obj).getGroup() != null)
-                ((Account)obj).getGroup().getAccounts().remove(obj);
-            
             TradingSystem[] systems = (TradingSystem[])getTradingSystems().toArray(new TradingSystem[0]);
             for (int i = 0; i < systems.length; i++)
             {
-                if (systems[i].getAccount().equals(obj))
+                if (obj.equals(systems[i].getAccount()))
                     delete(systems[i]);
             }
+
+            allAccounts().remove(obj);
+            if (((Account)obj).getGroup() != null)
+                ((Account)obj).getGroup().getAccounts().remove(obj);
         }
 
         if (obj instanceof AccountGroup)
@@ -365,6 +389,12 @@ public class Repository
 
             allAccountGroups().remove(group);
         }
+        
+        if (obj instanceof Order)
+            allOrders().remove(obj);
+        
+        if (obj instanceof TradingSystem)
+            getTradingSystems().remove(obj);
     }
     
     public List loadHistory(Integer id)

@@ -47,6 +47,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
+import net.sourceforge.eclipsetrader.core.db.Order;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.PersistentPreferenceStore;
 import net.sourceforge.eclipsetrader.core.db.Security;
@@ -64,6 +65,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -83,6 +85,7 @@ public class XMLRepository extends Repository
     private Map accountMap = new HashMap();
     private Integer eventNextId = new Integer(1);
     private TradingSystemRepository tradingRepository;
+    private Integer orderNextId = new Integer(1);
     private Logger logger = Logger.getLogger(getClass());
 
     public XMLRepository()
@@ -253,6 +256,36 @@ public class XMLRepository extends Repository
                 logger.error(e.toString(), e);
             }
         }
+
+        file = new File(Platform.getLocation().toFile(), "orders.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+        {
+            logger.info("Loading orders");
+            try
+            {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(file);
+                
+                Node firstNode = document.getFirstChild();
+                orderNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getNodeValue()); //$NON-NLS-1$
+
+                NodeList childNodes = firstNode.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++)
+                {
+                    Node item = childNodes.item(i);
+                    String nodeName = item.getNodeName();
+                    if (nodeName.equalsIgnoreCase("order")) //$NON-NLS-1$
+                    {
+                        Order obj = loadOrder(item.getChildNodes());
+                        obj.setRepository(this);
+                        allOrders().add(obj);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error(e.toString(), e);
+            }
+        }
         
         eventNextId = new Integer(allEvents().size() + 1);
         
@@ -268,6 +301,7 @@ public class XMLRepository extends Repository
         saveWatchlists();
         saveNews();
         saveEvents();
+        saveOrders();
         tradingRepository.saveTradingSystems();
         super.dispose();
     }
@@ -292,6 +326,9 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "events.xml"); //$NON-NLS-1$
         if (file.exists() == true)
             file.delete();
+        file = new File(Platform.getLocation().toFile(), "orders.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
         
         for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
         {
@@ -314,6 +351,7 @@ public class XMLRepository extends Repository
         accountNextId = new Integer(1);
         accountMap = new HashMap();
         eventNextId = new Integer(1);
+        orderNextId = new Integer(1);
         tradingRepository.clear();
 
         super.clear();
@@ -433,6 +471,16 @@ public class XMLRepository extends Repository
         {
             tradingRepository.save((TradingSystemGroup) obj);
             tradingRepository.saveTradingSystems();
+        }
+        
+        if (obj instanceof Order)
+        {
+            if (obj.getId() == null)
+            {
+                obj.setId(orderNextId);
+                orderNextId = getNextId(orderNextId);
+            }
+            saveOrders();
         }
         
         super.save(obj);
@@ -1880,6 +1928,138 @@ public class XMLRepository extends Repository
         event.clearChanged();
         
         return event;
+    }
+
+    private Order loadOrder(NodeList node)
+    {
+        Order order = new Order(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+
+        order.setSecurity(getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue()));
+        if (order.getSecurity() == null)
+            logger.warn("Cannot load security (id=" + ((Node)node).getAttributes().getNamedItem("security").getNodeValue() + ")");
+        
+        String pluginId = ((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue();
+        order.setProvider(CorePlugin.createTradeSourcePlugin(pluginId));
+        if (order.getProvider() == null)
+            logger.warn("Cannot load trade source '" + pluginId + "' for order (id=" + String.valueOf(order.getId()) + ")");
+        order.setPluginId(pluginId);
+
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            Node item = node.item(i);
+            String nodeName = item.getNodeName();
+            Node value = item.getFirstChild();
+            if (value != null)
+            {
+                if (nodeName.equalsIgnoreCase("date") == true)
+                {
+                    try {
+                        order.setDate(dateTimeFormat.parse(value.getNodeValue()));
+                    } catch (Exception e) {
+                        logger.warn(e.toString());
+                    }
+                }
+                else if (nodeName.equals("exchange")) //$NON-NLS-1$
+                    order.setExchange(value.getNodeValue());
+                else if (nodeName.equals("orderId")) //$NON-NLS-1$
+                    order.setOrderId(value.getNodeValue());
+                else if (nodeName.equals("side")) //$NON-NLS-1$
+                    order.setSide(Integer.parseInt(value.getNodeValue()));
+                else if (nodeName.equals("type")) //$NON-NLS-1$
+                    order.setType(Integer.parseInt(value.getNodeValue()));
+                else if (nodeName.equals("quantity")) //$NON-NLS-1$
+                    order.setQuantity(Integer.parseInt(value.getNodeValue()));
+                else if (nodeName.equals("price")) //$NON-NLS-1$
+                    order.setPrice(new Double(value.getNodeValue()).doubleValue());
+                else if (nodeName.equals("stopPrice")) //$NON-NLS-1$
+                    order.setStopPrice(new Double(value.getNodeValue()).doubleValue());
+                else if (nodeName.equals("filledQuantity")) //$NON-NLS-1$
+                    order.setFilledQuantity(Integer.parseInt(value.getNodeValue()));
+                else if (nodeName.equals("averagePrice")) //$NON-NLS-1$
+                    order.setAveragePrice(new Double(value.getNodeValue()).doubleValue());
+                else if (nodeName.equals("status")) //$NON-NLS-1$
+                    order.setStatus(Integer.parseInt(value.getNodeValue()));
+            }
+            if (nodeName.equalsIgnoreCase("param") == true)
+            {
+                NamedNodeMap map = item.getAttributes();
+                order.getParams().put(map.getNamedItem("key").getNodeValue(), map.getNamedItem("value").getNodeValue());
+            }
+        }
+        
+        order.clearChanged();
+        
+        return order;
+    }
+    
+    private void saveOrders()
+    {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+
+            Element root = document.getDocumentElement();
+            root.setAttribute("nextId", String.valueOf(orderNextId));
+            
+            for (Iterator iter = allOrders().iterator(); iter.hasNext(); )
+            {
+                Order order = (Order)iter.next(); 
+
+                Element element = document.createElement("order");
+                element.setAttribute("id", String.valueOf(order.getId()));
+                element.setAttribute("pluginId", order.getPluginId());
+                element.setAttribute("security", String.valueOf(order.getSecurity().getId()));
+                root.appendChild(element);
+
+                Element node = document.createElement("date");
+                node.appendChild(document.createTextNode(dateTimeFormat.format(order.getDate())));
+                element.appendChild(node);
+                node = document.createElement("exchange");
+                node.appendChild(document.createTextNode(order.getExchange()));
+                element.appendChild(node);
+                node = document.createElement("orderId");
+                node.appendChild(document.createTextNode(order.getOrderId()));
+                element.appendChild(node);
+                node = document.createElement("side");
+                node.appendChild(document.createTextNode(String.valueOf(order.getSide())));
+                element.appendChild(node);
+                node = document.createElement("type");
+                node.appendChild(document.createTextNode(String.valueOf(order.getType())));
+                element.appendChild(node);
+                node = document.createElement("quantity");
+                node.appendChild(document.createTextNode(String.valueOf(order.getQuantity())));
+                element.appendChild(node);
+                node = document.createElement("price");
+                node.appendChild(document.createTextNode(String.valueOf(order.getPrice())));
+                element.appendChild(node);
+                node = document.createElement("stopPrice");
+                node.appendChild(document.createTextNode(String.valueOf(order.getStopPrice())));
+                element.appendChild(node);
+                node = document.createElement("filledQuantity");
+                node.appendChild(document.createTextNode(String.valueOf(order.getFilledQuantity())));
+                element.appendChild(node);
+                node = document.createElement("averagePrice");
+                node.appendChild(document.createTextNode(String.valueOf(order.getAveragePrice())));
+                element.appendChild(node);
+                node = document.createElement("status");
+                node.appendChild(document.createTextNode(String.valueOf(order.getStatus())));
+                element.appendChild(node);
+
+                for (Iterator paramIter = order.getParams().keySet().iterator(); paramIter.hasNext(); )
+                {
+                    String key = (String)paramIter.next();
+                    node = document.createElement("param");
+                    node.setAttribute("key", key);
+                    node.setAttribute("value", (String)order.getParams().get(key));
+                    element.appendChild(node);
+                }
+            }
+            
+            saveDocument(document, "", "orders.xml");
+
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        }
     }
     
     private void saveEvents()
