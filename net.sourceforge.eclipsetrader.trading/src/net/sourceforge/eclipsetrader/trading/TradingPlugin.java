@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -13,6 +14,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -28,6 +31,25 @@ public class TradingPlugin extends AbstractUIPlugin
     public static final String ORDERSVIEW_COLUMNS_EXTENSION_POINT = PLUGIN_ID + ".ordersViewColumns";
     private static TradingPlugin plugin;
     private DataCollector dataCollector;
+    private IPropertyChangeListener feedPropertyListener = new IPropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            if (event.getProperty().equals(CorePlugin.FEED_RUNNING))
+            {
+                if (((Boolean)event.getNewValue()).booleanValue())
+                {
+                    if (dataCollector == null)
+                        dataCollector = new DataCollector();
+                }
+                else
+                {
+                    if (dataCollector != null)
+                        dataCollector.dispose();
+                    dataCollector = null;
+                }
+            }
+        }
+    };
 
     /**
      * The constructor.
@@ -43,7 +65,7 @@ public class TradingPlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
-        dataCollector = new DataCollector();
+        CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(feedPropertyListener);
     }
 
     /**
@@ -51,7 +73,7 @@ public class TradingPlugin extends AbstractUIPlugin
      */
     public void stop(BundleContext context) throws Exception
     {
-        dataCollector.dispose();
+        CorePlugin.getDefault().getPreferenceStore().removePropertyChangeListener(feedPropertyListener);
         super.stop(context);
         plugin = null;
     }
