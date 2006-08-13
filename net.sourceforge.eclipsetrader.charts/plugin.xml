@@ -512,6 +512,14 @@
                class="net.sourceforge.eclipsetrader.charts.objects.FanLinesPreferences"
                title="%preferencePage.title.fibonacciFan"/>
       </object>
+      <object
+            class="net.sourceforge.eclipsetrader.charts.objects.ParallelLine"
+            id="net.sourceforge.eclipsetrader.objects.parallelLines"
+            name="%object.name.parallelLines">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.charts.objects.ParallelLinePreferences"
+               title="%preferencePage.title.parallelLines"/>
+      </object>      
    </extension>
 
 </plugin>
