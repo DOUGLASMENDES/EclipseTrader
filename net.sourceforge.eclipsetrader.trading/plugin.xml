@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="alerts" name="%extension-point.name.alerts" schema="schema/alerts.exsd"/>
    <extension-point id="systems" name="%extension-point.name.systems" schema="schema/systems.exsd"/>
+   <extension-point id="ordersViewColumns" name="Orders View Columns" schema="schema/ordersViewColumns.exsd"/>
    <extension
          point="org.eclipse.ui.activities">
       <activityPatternBinding
@@ -413,6 +414,12 @@
             icon="icons/eview16/table.png"
             id="net.sourceforge.eclipsetrader.watchlist"
             name="%view.name.watchlist"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.OrdersView"
+            icon="icons/eview16/report.png"
+            id="net.sourceforge.eclipsetrader.trading.orders"
+            name="Orders"/>
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
@@ -470,6 +477,18 @@
                toolbarPath="group4"
                tooltip="%action.tooltip.updateSignals"/>
       </viewContribution>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.accountProviders">
+      <provider
+            class="net.sourceforge.eclipsetrader.trading.internal.SimpleAccountProvider"
+            id="net.sourceforge.eclipsetrader.accounts.simple"
+            name="%provider.name.simple">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.trading.wizards.accounts.CommissionsPage"
+               description="%preferencePage.description.commissions"
+               name="%preferencePage.name.commissions"/>
+      </provider>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.core.patterns">
@@ -550,6 +569,48 @@
       </alert>
    </extension>
    <extension
+         point="net.sourceforge.eclipsetrader.trading.ordersViewColumns">
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.AveragePriceColumn"
+            id="ordersView.averagePrice"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.DateTimeColumn"
+            id="ordersView.dateTime"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.FilledQuantityColumn"
+            id="ordersView.filledQuantity"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.OrderIdColumn"
+            id="ordersView.orderId"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.PriceColumn"
+            id="ordersView.price"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.QuantityColumn"
+            id="ordersView.quantity"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.SecurityColumn"
+            id="ordersView.security"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.SideColumn"
+            id="ordersView.side"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.StatusColumn"
+            id="ordersView.status"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.StopPriceColumn"
+            id="ordersView.stopPrice"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.SymbolColumn"
+            id="ordersView.symbol"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.TradingProviderColumn"
+            id="ordersView.tradingProvider"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.TypeColumn"
+            id="ordersView.type"/>
+   </extension>
+   <extension
          point="net.sourceforge.eclipsetrader.trading.systems">
       <system
             class="net.sourceforge.eclipsetrader.trading.systems.PatternTrading"
@@ -560,18 +621,6 @@
                description="%preferencePage.description.patternTrading"
                name="%preferencePage.name.patternTrading"/>
       </system>
-   </extension>
-   <extension
-         point="net.sourceforge.eclipsetrader.core.accountProviders">
-      <provider
-            class="net.sourceforge.eclipsetrader.trading.internal.SimpleAccountProvider"
-            id="net.sourceforge.eclipsetrader.accounts.simple"
-            name="%provider.name.simple">
-         <preferencePage
-               class="net.sourceforge.eclipsetrader.trading.wizards.accounts.CommissionsPage"
-               description="%preferencePage.description.commissions"
-               name="%preferencePage.name.commissions"/>
-      </provider>
    </extension>
 
 </plugin>

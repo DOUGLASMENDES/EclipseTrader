@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -26,6 +25,7 @@ public class TradingPlugin extends AbstractUIPlugin
     public static final String ALERTS_EXTENSION_POINT = PLUGIN_ID + ".alerts";
     public static final String SYSTEMS_EXTENSION_POINT = PLUGIN_ID + ".systems";
     public static final String SYSTEM_WIZARDS_EXTENSION_POINT = PLUGIN_ID + ".systemWizard";
+    public static final String ORDERSVIEW_COLUMNS_EXTENSION_POINT = PLUGIN_ID + ".ordersViewColumns";
     private static TradingPlugin plugin;
     private DataCollector dataCollector;
 
@@ -223,6 +223,30 @@ public class TradingPlugin extends AbstractUIPlugin
         }
         
         return new IConfigurationElement[0];
+    }
+    
+    public static IOrdersLabelProvider createOrdersLabelProvider(String id)
+    {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(ORDERSVIEW_COLUMNS_EXTENSION_POINT);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement item = members[i];
+                if (item.getAttribute("id").equals(id))
+                {
+                    try {
+                        return (IOrdersLabelProvider)members[i].createExecutableExtension("class");
+                    } catch(Exception e) {
+                        logException(e);
+                    }
+                }
+            }
+        }
+        
+        return null;
     }
 
     public static void logException(Exception e)
