@@ -32,10 +32,12 @@ public class Bars extends IndicatorPlugin
     public static final RGB DEFAULT_NEGATIVE_BAR = new RGB(192, 0, 0);
     public static final RGB DEFAULT_POSITIVE_CANDLE = new RGB(255, 255, 255);
     public static final RGB DEFAULT_NEGATIVE_CANDLE = new RGB(0, 0, 0);
+    public static final RGB DEFAULT_LINE_CANDLE = new RGB(0, 0, 0);
     private int barType = DEFAULT_BARTYPE;
     private Color positiveBar = new Color(null, DEFAULT_POSITIVE_BAR);
     private Color negativeBar = new Color(null, DEFAULT_NEGATIVE_BAR);
     private Color neutralBar = new Color(null, DEFAULT_NEUTRAL_BAR);
+    private Color lineCandle = new Color(null, DEFAULT_LINE_CANDLE);
     private Color positiveCandle = new Color(null, DEFAULT_POSITIVE_CANDLE);
     private Color negativeCandle = new Color(null, DEFAULT_NEGATIVE_CANDLE);
 
@@ -67,7 +69,7 @@ public class Bars extends IndicatorPlugin
         }
         else if (barType == PlotLine.CANDLE)
         {
-            line.setColor(negativeCandle);
+            line.setColor(lineCandle);
 
             for (Iterator iter = getBarData().iterator(); iter.hasNext(); )
             {
@@ -95,7 +97,8 @@ public class Bars extends IndicatorPlugin
         positiveBar = settings.getColor("positiveBar", positiveBar);
         negativeBar = settings.getColor("negativeBar", negativeBar);
         neutralBar = settings.getColor("neutralBar", neutralBar);
-        positiveCandle = settings.getColor("positiveColor", positiveCandle);
-        negativeCandle = settings.getColor("negativeColor", negativeCandle);
+        lineCandle = settings.getColor("lineCandle", lineCandle);
+        positiveCandle = settings.getColor("positiveCandle", positiveCandle);
+        negativeCandle = settings.getColor("negativeCandle", negativeCandle);
     }
 }

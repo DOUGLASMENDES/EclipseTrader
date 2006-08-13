@@ -28,6 +28,7 @@ public class BarsPreferences extends IndicatorPluginPreferencePage
     private ColorSelector positiveBar;
     private ColorSelector negativeBar;
     private ColorSelector neutralBar;
+    private ColorSelector lineCandle;
     private ColorSelector positiveCandle;
     private ColorSelector negativeCandle;
 
@@ -74,6 +75,12 @@ public class BarsPreferences extends IndicatorPluginPreferencePage
         neutralBar.setColorValue(getSettings().getColor("neutralBar", Bars.DEFAULT_NEUTRAL_BAR).getRGB());
 
         label = new Label(content, SWT.NONE);
+        label.setText("Candle Lines");
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        lineCandle = new ColorSelector(content);
+        lineCandle.setColorValue(getSettings().getColor("lineCandle", Bars.DEFAULT_LINE_CANDLE).getRGB());
+
+        label = new Label(content, SWT.NONE);
         label.setText("Positive Candles");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         positiveCandle = new ColorSelector(content);
@@ -95,6 +102,7 @@ public class BarsPreferences extends IndicatorPluginPreferencePage
         getSettings().set("positiveBar", positiveBar.getColorValue());
         getSettings().set("negativeBar", negativeBar.getColorValue());
         getSettings().set("neutralBar", neutralBar.getColorValue());
+        getSettings().set("lineCandle", lineCandle.getColorValue());
         getSettings().set("positiveCandle", positiveCandle.getColorValue());
         getSettings().set("negativeCandle", negativeCandle.getColorValue());
     }
