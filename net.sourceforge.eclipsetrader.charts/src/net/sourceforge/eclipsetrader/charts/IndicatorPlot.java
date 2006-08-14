@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.charts;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -295,8 +296,32 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         this.objectSelection = null;
     }
     
-    public Indicator getIndicatorAt(Point point)
+    /**
+     * Returns a possibly empty array of all chart elements at the given position.
+     * 
+     * @param point - position
+     * @return an array of ObjectPlugin and Indicator objects
+     */
+    public Object[] getElementsAt(Point point)
     {
+        List selection = new ArrayList();
+
+        selection.addAll(Arrays.asList(getIndicatorAt(point)));
+        selection.addAll(Arrays.asList(getObjectAt(point.x, point.y)));
+        
+        return selection.toArray();
+    }
+    
+    /**
+     * Returns a possibly empty array of all chart indicators at the given position.
+     * 
+     * @param point - position
+     * @return an array of indicators
+     */
+    public Indicator[] getIndicatorAt(Point point)
+    {
+        List selection = new ArrayList();
+        
         if (scaler != null && barData.size() != 0)
         {
             for (int ii = indicators.size() - 1; ii >= 0; ii--)
@@ -329,7 +354,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                                 pointArray[pa++] = indicatorScaler.convertToY(plotLine.getData(i));
                             }
                             if (PixelTools.isPointOnLine(point.x, point.y, pointArray))
-                                return indicator;
+                                selection.add(indicator);
                             break;
                         }
                         case PlotLine.HORIZONTAL:
@@ -353,7 +378,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                                 int y1 = indicatorScaler.convertToY(plotLine.getBar(i).getHigh());
                                 int y2 = indicatorScaler.convertToY(plotLine.getBar(i).getLow());
                                 if (point.y >= y1 && point.y <= y2 && point.x >= (x - 2) && point.x <= (x + 2))
-                                    return indicator;
+                                    selection.add(indicator);
                             }
                             break;
                         }
@@ -362,7 +387,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             }
         }
         
-        return null;
+        return (Indicator[])selection.toArray(new Indicator[selection.size()]);
     }
     
     public ObjectPlugin getObjectSelection()
@@ -375,17 +400,26 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         this.selection = null;
         this.objectSelection = selection;
     }
-    
-    public ObjectPlugin getObjectAt(int x, int y)
+
+    /**
+     * Returns a possibly empty array of all drawing objects at the given position.
+     * 
+     * @param x - x position
+     * @param y - y position
+     * @return an array of objects
+     */
+    public ObjectPlugin[] getObjectAt(int x, int y)
     {
+        List selection = new ArrayList();
+        
         for (int i = objects.size() - 1; i >= 0; i--)
         {
             ObjectPlugin object = (ObjectPlugin)objects.get(i);
             if (object.isOverLine(x, y))
-                return object;
+                selection.add(object);
         }
         
-        return null;
+        return (ObjectPlugin[])selection.toArray(new ObjectPlugin[selection.size()]);
     }
     
     public void redrawAll()

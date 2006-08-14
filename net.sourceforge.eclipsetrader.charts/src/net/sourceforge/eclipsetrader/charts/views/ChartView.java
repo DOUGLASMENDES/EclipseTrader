@@ -74,6 +74,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -159,6 +160,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private Action pasteAction;
     private Action pasteSpecialAction;
     private Action deleteAction;
+    private Logger logger = Logger.getLogger(getClass());
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
@@ -1242,6 +1244,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
          */
         public void plotSelected(PlotSelectionEvent e)
         {
+            logger.debug("enter plotSelected");
             if (e.indicator != null || e.object != null)
             {
                 for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
@@ -1280,10 +1283,12 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     if (((IIndicatorPlugin)indicator.getData()).getOutput() == e.indicator)
                     {
                         getSite().getSelectionProvider().setSelection(new IndicatorSelection(indicator));
+                        logger.debug("indicator " + indicator.getPluginId() + " selected");
                         return;
                     }
                 }
                 getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
+                logger.debug("indicator " + e.indicator.getClass().getName() + " not found");
             }
             else if (e.object != null)
             {
@@ -1293,13 +1298,18 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     if (object.getData() == e.object)
                     {
                         getSite().getSelectionProvider().setSelection(new ObjectSelection(object));
+                        logger.debug("object " + object.getPluginId() + " selected");
                         return;
                     }
                 }
                 getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
+                logger.debug("object " + e.object.getClass().getName() + " selected");
             }
             else
+            {
                 getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
+                logger.debug("nothing selected");
+            }
         }
         
         public Plot getPlot()

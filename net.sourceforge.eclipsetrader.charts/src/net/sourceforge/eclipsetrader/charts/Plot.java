@@ -445,66 +445,74 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
     public void mouseDown(MouseEvent e)
     {
         PlotMouseEvent plotMouseEvent = createPlotMouseEvent(e);
-
-        ObjectPlugin object = indicatorPlot.getObjectAt(plotMouseEvent.x, plotMouseEvent.y);
-        if (object != null)
+        
+        Object[] selection = indicatorPlot.getElementsAt(new Point(plotMouseEvent.x, plotMouseEvent.y));
+        if (selection.length != 0)
         {
-            if (object != indicatorPlot.getObjectSelection())
+            int index = -1;
+            for (int i = 0; i < selection.length; i++)
             {
-                indicatorPlot.setObjectSelection(object);
+                if (selection[i] == indicatorPlot.getObjectSelection())
+                    index = i;
+                if (selection[i] == indicatorPlot.getSelection())
+                    index = i;
+            }
+            if (index == -1 || e.button == 1)
+                index++;
+            if (index >= selection.length)
+                index = 0;
+
+            if (selection[index] instanceof ObjectPlugin)
+            {
+                if (selection[index] != indicatorPlot.getObjectSelection())
+                {
+                    indicatorPlot.setObjectSelection((ObjectPlugin)selection[index]);
+                    indicatorPlot.redrawAll();
+                }
+
+                Event event = new Event();
+                event.x = e.x - indicatorPlot.getPlotLocation().x;
+                event.y = e.y;
+                event.type = SWT.Selection;
+                event.display = getDisplay();
+                event.widget = this;
+                PlotSelectionEvent selectionEvent = new PlotSelectionEvent(event);
+                selectionEvent.plot = this;
+                selectionEvent.object = (ObjectPlugin)selection[index];
+                for (Iterator iter = selectionListeners.iterator(); iter.hasNext(); )
+                    ((PlotSelectionListener)iter.next()).plotSelected(selectionEvent);
+
+                if (e.button == 1)
+                {
+                    buttonDown = true;
+                    ((ObjectPlugin)selection[index]).mouseDown(plotMouseEvent);
+                }
+                else if (currentCursor != null)
+                {
+                    indicatorPlot.setCursor(null);
+                    currentCursor = null;
+                }
+            }
+            else if (selection[index] instanceof Indicator && selection[index] != getIndicatorPlot().getSelection())
+            {
+                indicatorPlot.setSelection((Indicator)selection[index]);
                 indicatorPlot.redrawAll();
-            }
 
-            Event event = new Event();
-            event.x = e.x - indicatorPlot.getPlotLocation().x;
-            event.y = e.y;
-            event.type = SWT.Selection;
-            event.display = getDisplay();
-            event.widget = this;
-            PlotSelectionEvent selectionEvent = new PlotSelectionEvent(event);
-            selectionEvent.plot = this;
-            selectionEvent.object = object;
-            for (Iterator iter = selectionListeners.iterator(); iter.hasNext(); )
-                ((PlotSelectionListener)iter.next()).plotSelected(selectionEvent);
-
-            if (e.button == 1)
-            {
-                buttonDown = true;
-                object.mouseDown(plotMouseEvent);
-            }
-            else if (currentCursor != null)
-            {
-                indicatorPlot.setCursor(null);
-                currentCursor = null;
+                Event event = new Event();
+                event.x = e.x - indicatorPlot.getPlotLocation().x;
+                event.y = e.y;
+                event.type = SWT.Selection;
+                event.display = getDisplay();
+                event.widget = this;
+                PlotSelectionEvent selectionEvent = new PlotSelectionEvent(event);
+                selectionEvent.plot = this;
+                selectionEvent.indicator = (Indicator)selection[index];
+                for (Iterator iter = selectionListeners.iterator(); iter.hasNext(); )
+                    ((PlotSelectionListener)iter.next()).plotSelected(selectionEvent);
             }
             return;
         }
-        else
-        {
-            Indicator indicator = indicatorPlot.getIndicatorAt(new Point(e.x - indicatorPlot.getPlotLocation().x, e.y));
-            if (indicator != null)
-            {
-                if (indicator != getIndicatorPlot().getSelection())
-                {
-                    indicatorPlot.setSelection(indicator);
-                    indicatorPlot.redrawAll();
 
-                    Event event = new Event();
-                    event.x = e.x - indicatorPlot.getPlotLocation().x;
-                    event.y = e.y;
-                    event.type = SWT.Selection;
-                    event.display = getDisplay();
-                    event.widget = this;
-                    PlotSelectionEvent selectionEvent = new PlotSelectionEvent(event);
-                    selectionEvent.plot = this;
-                    selectionEvent.indicator = indicator;
-                    for (Iterator iter = selectionListeners.iterator(); iter.hasNext(); )
-                        ((PlotSelectionListener)iter.next()).plotSelected(selectionEvent);
-                }
-                return;
-            }
-        }
-        
         if (e.button == 1)
         {
             if (getIndicatorPlot().getSelection() != null || indicatorPlot.getObjectSelection() != null)

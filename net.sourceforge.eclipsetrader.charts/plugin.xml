@@ -84,9 +84,6 @@
                label="%editObjectAction"
                menubarPath="top"
                style="push">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.charts.events.IndicatorSelection"/>
-            </enablement>
          </action>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
@@ -184,9 +181,6 @@
                label="%editObjectAction"
                menubarPath="group1"
                style="push">
-            <enablement>
-               <objectClass name="net.sourceforge.eclipsetrader.charts.events.IndicatorSelection"/>
-            </enablement>
          </action>
          <action
                class="net.sourceforge.eclipsetrader.charts.actions.NewIndicatorAction"
