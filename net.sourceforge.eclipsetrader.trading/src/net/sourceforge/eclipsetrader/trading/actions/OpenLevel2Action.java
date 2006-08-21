@@ -17,6 +17,7 @@ import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 import net.sourceforge.eclipsetrader.trading.views.Level2View;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
@@ -45,8 +46,25 @@ public class OpenLevel2Action implements IViewActionDelegate
         if (security != null)
         {
             IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+
+            PreferenceStore preferences = new PreferenceStore(Level2View.getPreferenceStoreLocation(security).toOSString());
             try {
-                page.showView(Level2View.VIEW_ID, String.valueOf(security.getId()), IWorkbenchPage.VIEW_ACTIVATE);
+                preferences.load();
+            } catch(Exception e) {
+            }
+
+            // Builds a random secondary id, if a new view needs to be opened
+            String secondaryId = preferences.getString("secondaryId");
+            if (secondaryId.equals(""))
+            {
+                String values = "abcdefghijklmnopqrstuvwxyz";
+                for (int i = 0; i < 8; i++)
+                    secondaryId += values.charAt((int)(Math.random() * values.length()));
+            }
+            
+            try {
+                Level2View view = (Level2View)page.showView(Level2View.VIEW_ID, secondaryId, IWorkbenchPage.VIEW_ACTIVATE);
+                view.setSecurity(security);
             } catch (PartInitException e) {
                 CorePlugin.logException(e);
             }

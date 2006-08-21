@@ -22,16 +22,27 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.Level2FeedMonitor;
 import net.sourceforge.eclipsetrader.core.db.Level2;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.actions.ToggleLevelColorsAction;
 import net.sourceforge.eclipsetrader.trading.actions.TogglePriceGroupingAction;
 import net.sourceforge.eclipsetrader.trading.internal.CellTicker;
 import net.sourceforge.eclipsetrader.trading.internal.Trendbar;
 
+import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
@@ -49,6 +60,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.themes.ITheme;
@@ -57,7 +71,14 @@ import org.eclipse.ui.themes.IThemeManager;
 public class Level2View extends ViewPart implements Observer
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.trading.level2";
+    /**
+     * @deprecated use the instance area preference store instead
+     */
     public static final String PREFERENCES_ID = "LEVEL2_PREFS_";
+    public static final String PREFS_SECURITY = "security";
+    public static final String PREFS_SECONDARY_ID = "secondaryId";
+    public static final String PREFS_GROUP_PRICES = "groupPrices";
+    public static final String PREFS_COLOR_LEVELS = "colorLevels";
     public static final String TRENDBAR_INDICATOR = "TRENDBAR_INDICATOR";
     public static final String LEVEL_1_BACKGROUND = "LEVEL_1_BACKGROUND";
     public static final String LEVEL_2_BACKGROUND = "LEVEL_2_BACKGROUND";
@@ -69,18 +90,20 @@ public class Level2View extends ViewPart implements Observer
     public static final String LEVEL_3_FOREGROUND = "LEVEL_3_FOREGROUND";
     public static final String LEVEL_4_FOREGROUND = "LEVEL_4_FOREGROUND";
     public static final String LEVEL_5_FOREGROUND = "LEVEL_5_FOREGROUND";
-    private Security security;
-    private Composite info;
-    private Label time;
-    private Label volume;
-    private Label last;
-    private Label high;
-    private Label change;
-    private Label low;
-    private Trendbar trendbar;
-    private Table table;
-    private boolean groupPrices = false;
-    private boolean colorLevels = true;
+    static boolean DEFAULT_GROUP_PRICES = false;
+    static boolean DEFAULT_COLOR_LEVELS = true;
+    Security security;
+    Composite info;
+    Label time;
+    Label volume;
+    Label last;
+    Label high;
+    Label change;
+    Label low;
+    Trendbar trendbar;
+    Table table;
+    boolean groupPrices = DEFAULT_GROUP_PRICES;
+    boolean colorLevels = DEFAULT_COLOR_LEVELS;
     private NumberFormat numberFormatter = NumberFormat.getInstance();
     private NumberFormat priceFormatter = NumberFormat.getInstance();
     private NumberFormat priceFormatter2 = NumberFormat.getInstance();
@@ -93,6 +116,9 @@ public class Level2View extends ViewPart implements Observer
     private Color[] bandBackground = new Color[5];
     private Color[] bandForeground = new Color[5];
     private ITheme theme;
+    PreferenceStore preferences;
+    Action toggleLevelColorsAction;
+    Action togglePriceGroupingAction;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
@@ -136,6 +162,52 @@ public class Level2View extends ViewPart implements Observer
             updateTable();
         }
     };
+    DropTargetListener dropTargetListener = new DropTargetListener() {
+        public void dragEnter(DropTargetEvent event)
+        {
+            event.detail = DND.DROP_COPY;
+            event.currentDataType = null;
+            
+            TransferData[] data = event.dataTypes;
+            if (event.currentDataType == null)
+            {
+                for (int i = 0; i < data.length; i++)
+                {
+                    if (SecurityTransfer.getInstance().isSupportedType(data[i]))
+                    {
+                        event.currentDataType = data[i];
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void dragOver(DropTargetEvent event)
+        {
+            event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+        }
+
+        public void dragOperationChanged(DropTargetEvent event)
+        {
+        }
+
+        public void dragLeave(DropTargetEvent event)
+        {
+        }
+
+        public void dropAccept(DropTargetEvent event)
+        {
+        }
+
+        public void drop(DropTargetEvent event)
+        {
+            if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
+            {
+                Security[] securities = (Security[]) event.data;
+                setSecurity(securities[0]);
+            }
+        }
+    };
 
     public Level2View()
     {
@@ -159,12 +231,55 @@ public class Level2View extends ViewPart implements Observer
         percentFormatter.setMinimumFractionDigits(2);
         percentFormatter.setMaximumFractionDigits(2);
     }
+    
+    public static IPath getPreferenceStoreLocation(Security security)
+    {
+        return TradingPlugin.getDefault().getStateLocation().append("level2." + String.valueOf(security.getId()) + ".prefs");
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+     */
+    public void init(IViewSite site, IMemento memento) throws PartInitException
+    {
+        super.init(site, memento);
+
+        toggleLevelColorsAction = new ToggleLevelColorsAction(this);
+        togglePriceGroupingAction = new TogglePriceGroupingAction(this);
+
+        Integer id = null;
+        if (memento != null)
+            id = memento.getInteger(PREFS_SECURITY);
+
+        if (id == null)
+            try {
+                id = new Integer(getViewSite().getSecondaryId());
+            } catch(Exception e) {
+            }
+
+        if (id != null)
+            security = (Security)CorePlugin.getRepository().load(Security.class, id);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
+    public void saveState(IMemento memento)
+    {
+        if (security != null)
+            memento.putInteger(PREFS_SECURITY, security.getId().intValue());
+        super.saveState(memento);
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     public void createPartControl(Composite parent)
     {
+        DropTarget target = new DropTarget(parent, DND.DROP_COPY|DND.DROP_MOVE);
+        target.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
+        target.addDropListener(dropTargetListener);
+        
         Composite content = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = gridLayout.marginHeight = 0;
@@ -282,32 +397,28 @@ public class Level2View extends ViewPart implements Observer
             }
         });
         
-        security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(getViewSite().getSecondaryId()));
-
-        String defaultPrefs = String.valueOf(groupPrices) + "," + String.valueOf(colorLevels); 
-        TradingPlugin.getDefault().getPluginPreferences().setDefault(PREFERENCES_ID + String.valueOf(security.getId()), defaultPrefs);
-        
-        String[] prefs = TradingPlugin.getDefault().getPluginPreferences().getString(PREFERENCES_ID + String.valueOf(security.getId())).split(",");
-        if (prefs.length > 0)
-            groupPrices = prefs[0].equals("true");
-        if (prefs.length > 1)
-            colorLevels = prefs[1].equals("true");
-        
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
-        menuManager.add(new ToggleLevelColorsAction(this));
-        menuManager.add(new TogglePriceGroupingAction(this));
+        menuManager.add(toggleLevelColorsAction);
+        menuManager.add(togglePriceGroupingAction);
         getViewSite().getActionBars().updateActionBars();
-        
-        content.getDisplay().asyncExec(new Runnable() {
-            public void run()
-            {
-                updateInfo();
-                updateTable();
-                security.getQuoteMonitor().addObserver(Level2View.this);
-                security.getLevel2Monitor().addObserver(Level2View.this);
-                Level2FeedMonitor.monitor(security);
-            }
-        });
+
+        if (security != null)
+        {
+            setPartName(security.getDescription());
+            loadPreferences();
+            content.getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
+                    updateInfo();
+                    updateTable();
+
+                    security.deleteObserver(Level2View.this);
+                    security.getQuoteMonitor().addObserver(Level2View.this);
+                    security.getLevel2Monitor().addObserver(Level2View.this);
+                    Level2FeedMonitor.monitor(security);
+                }
+            });
+        }
     }
 
     /* (non-Javadoc)
@@ -325,21 +436,106 @@ public class Level2View extends ViewPart implements Observer
     {
         if (security != null)
         {
-            Level2FeedMonitor.cancelMonitor(security);
             security.deleteObserver(this);
             security.getQuoteMonitor().deleteObserver(this);
             security.getLevel2Monitor().deleteObserver(this);
+            Level2FeedMonitor.cancelMonitor(security);
+
+            savePreferences();
         }
+        
         if (theme != null)
             theme.removePropertyChangeListener(themeChangeListener);
+        
         background.dispose();
         negativeForeground.dispose();
         positiveForeground.dispose();
         emptyBackground.dispose();
+        
         super.dispose();
     }
+
+    protected void loadPreferences()
+    {
+        preferences = new PreferenceStore(getPreferenceStoreLocation(security).toOSString());
+        preferences.setDefault(PREFS_SECONDARY_ID, "");
+        preferences.setDefault(PREFS_GROUP_PRICES, DEFAULT_GROUP_PRICES);
+        preferences.setDefault(PREFS_COLOR_LEVELS, DEFAULT_COLOR_LEVELS);
+
+        try {
+            preferences.load();
+        } catch(Exception e) {
+            // Reads the preferences from the old-style preference store
+            String[] prefs = TradingPlugin.getDefault().getPluginPreferences().getString(PREFERENCES_ID + String.valueOf(security.getId())).split(",");
+            if (prefs.length > 0)
+                preferences.setValue(PREFS_GROUP_PRICES, prefs[0].equals("true"));
+            if (prefs.length > 1)
+                preferences.setValue(PREFS_COLOR_LEVELS, prefs[1].equals("true"));
+            TradingPlugin.getDefault().getPluginPreferences().setValue(PREFERENCES_ID + String.valueOf(security.getId()), "");
+        }                
+
+        groupPrices = preferences.getBoolean(PREFS_GROUP_PRICES);
+        colorLevels = preferences.getBoolean(PREFS_COLOR_LEVELS);
+
+        // Save the secondary id value immediately, so subsequent level2 requests for the same
+        // security will open this view
+        preferences.setValue(PREFS_SECONDARY_ID, getViewSite().getSecondaryId());
+        try {
+            preferences.save();
+        } catch(Exception e) {
+            Logger.getLogger(getClass()).warn(e);
+        }
+
+        toggleLevelColorsAction.setChecked(colorLevels);
+        togglePriceGroupingAction.setChecked(groupPrices);
+    }
+
+    protected void savePreferences()
+    {
+        preferences.setFilename(getPreferenceStoreLocation(security).toOSString());
+        preferences.setValue(PREFS_GROUP_PRICES, groupPrices);
+        preferences.setValue(PREFS_COLOR_LEVELS, colorLevels);
+
+        try {
+            preferences.save();
+        } catch(Exception e) {
+            Logger.getLogger(getClass()).warn(e);
+        }
+    }
     
-    private void updateInfo()
+    public void setSecurity(Security newSecurity)
+    {
+        if (security == null)
+        {
+            security = newSecurity;
+            loadPreferences();
+        }
+        else
+        {
+            security.deleteObserver(this);
+            security.getQuoteMonitor().deleteObserver(this);
+            security.getLevel2Monitor().deleteObserver(this);
+            Level2FeedMonitor.cancelMonitor(security);
+
+            preferences.setValue(PREFS_SECONDARY_ID, "");
+            savePreferences();
+            
+            security = newSecurity;
+            
+            preferences.setValue(PREFS_SECONDARY_ID, getViewSite().getSecondaryId());
+            savePreferences();
+        }
+        
+        updateInfo();
+        updateTable();
+
+        security.addObserver(this);
+        security.getQuoteMonitor().addObserver(this);
+        security.getLevel2Monitor().addObserver(this);
+        Level2FeedMonitor.monitor(security);
+    }
+    
+    void updateInfo()
     {
         if (!getPartName().equals(security.getDescription()))
             setPartName(security.getDescription());
@@ -375,7 +571,7 @@ public class Level2View extends ViewPart implements Observer
         info.layout(true, true);
     }
     
-    private void updateTable()
+    void updateTable()
     {
         int bidLevel = -1, askLevel = -1;
         String bidValue = "", askValue = "";
@@ -523,10 +719,6 @@ public class Level2View extends ViewPart implements Observer
     public void setGroupPrices(boolean groupPrices)
     {
         this.groupPrices = groupPrices;
-        
-        String prefs = String.valueOf(groupPrices) + "," + String.valueOf(colorLevels); 
-        TradingPlugin.getDefault().getPluginPreferences().setValue(PREFERENCES_ID + String.valueOf(security.getId()), prefs);
-
         updateTable();
     }
 
@@ -538,10 +730,6 @@ public class Level2View extends ViewPart implements Observer
     public void setColorLevels(boolean colorLevels)
     {
         this.colorLevels = colorLevels;
-        
-        String prefs = String.valueOf(groupPrices) + "," + String.valueOf(colorLevels); 
-        TradingPlugin.getDefault().getPluginPreferences().setValue(PREFERENCES_ID + String.valueOf(security.getId()), prefs);
-
         updateTable();
     }
 
@@ -570,46 +758,6 @@ public class Level2View extends ViewPart implements Observer
                 }
             });
         }
-    }
-    
-    public Table getTable()
-    {
-        return table;
-    }
-
-    public Security getSecurity()
-    {
-        return security;
-    }
-
-    public Label getChange()
-    {
-        return change;
-    }
-
-    public Label getHigh()
-    {
-        return high;
-    }
-
-    public Label getLast()
-    {
-        return last;
-    }
-
-    public Label getLow()
-    {
-        return low;
-    }
-
-    public Label getTime()
-    {
-        return time;
-    }
-
-    public Label getVolume()
-    {
-        return volume;
     }
     
     private class Level2TableItem extends TableItem implements DisposeListener
