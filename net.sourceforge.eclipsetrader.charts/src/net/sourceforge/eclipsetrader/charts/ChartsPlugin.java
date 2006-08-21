@@ -18,6 +18,7 @@ public class ChartsPlugin extends AbstractUIPlugin
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts";
     public static final String INDICATORS_EXTENSION_POINT = PLUGIN_ID + ".indicators";
     public static final String OBJECTS_EXTENSION_POINT = PLUGIN_ID + ".objects";
+    public static final String PREFS_HIDE_TABS = "HIDE_TABS";
     private static ChartsPlugin plugin;
     private static NumberFormat numberFormat;
     private static NumberFormat percentageFormat;

@@ -117,6 +117,14 @@
       </viewerContribution>
    </extension>
    <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.preferencePages.Appearance"
+            class="net.sourceforge.eclipsetrader.charts.preferences.ChartAppearancePrefereces"
+            id="net.sourceforge.eclipsetrader.charts.appearance"
+            name="Charts"/>
+   </extension>
+   <extension
          point="org.eclipse.ui.startup">
       <startup class="net.sourceforge.eclipsetrader.charts.internal.EarlyStartup"/>
    </extension>

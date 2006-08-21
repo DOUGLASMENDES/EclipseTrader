@@ -91,6 +91,9 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Listener;
@@ -116,6 +119,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -130,6 +134,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     public static final int PERIOD_LASTYEAR = 2;
     public static final int PERIOD_LAST2YEARS = 3;
     public static final int PERIOD_CUSTOM = -1;
+    public static final int HIDE_TABS_NEVER = 0;
+    public static final int HIDE_TABS_ONLYONE = 1;
     private Chart chart;
     private SashForm sashForm;
     private DatePlot datePlot;
@@ -905,9 +911,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         datePlot.hideLabel();
     }
 
-    public class ChartTabFolder extends CTabFolder implements ICollectionObserver
+    public class ChartTabFolder extends CTabFolder implements ICollectionObserver, IPropertyChangeListener
     {
         private ChartRow chartRow;
+        private int autoHideTabs = HIDE_TABS_NEVER;
 
         public ChartTabFolder(Composite parent, int style, ChartRow row)
         {
@@ -916,6 +923,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             this.addDisposeListener(new DisposeListener() {
                 public void widgetDisposed(DisposeEvent e)
                 {
+                    ChartsPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(ChartTabFolder.this);
+                    PlatformUI.getPreferenceStore().removePropertyChangeListener(ChartTabFolder.this);
                     ChartTabFolder.this.chartRow.getTabs().removeCollectionObserver(ChartTabFolder.this);
                 }
             });
@@ -924,7 +933,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             addCTabFolder2Listener(ChartView.this);
             setMaximizeVisible(true);
             setMinimizeVisible(false);
-            setSimple(PlatformUI.getPreferenceStore().getBoolean("SHOW_TRADITIONAL_STYLE_TABS")); //$NON-NLS-1$
+            setSimple(PlatformUI.getPreferenceStore().getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS)); //$NON-NLS-1$
             addSelectionListener(new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e)
                 {
@@ -966,9 +975,30 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     }
                 }
             });
+            
+            PlatformUI.getPreferenceStore().addPropertyChangeListener(this);
+            IPreferenceStore pluginPreferences = ChartsPlugin.getDefault().getPreferenceStore();
+            pluginPreferences.addPropertyChangeListener(this);
+            autoHideTabs = pluginPreferences.getInt(ChartsPlugin.PREFS_HIDE_TABS);
 
             for (int t = 0; t < this.chartRow.getTabs().size(); t++)
-                itemAdded(row.getTabs().get(t));
+            {
+                ChartTab chartTab = (ChartTab)row.getTabs().get(t);
+                new ChartTabItem(this, SWT.NONE, chartTab);
+                chartTab.clearChanged();
+            }
+
+            updateTabsVisibility();
+            setSelection(getItem(0));
+        }
+        
+        protected void updateTabsVisibility()
+        {
+            if (autoHideTabs == HIDE_TABS_NEVER)
+                setTabHeight(-1);
+            else if (autoHideTabs == HIDE_TABS_ONLYONE)
+                setTabHeight(getItemCount() == 1 ? 0 : -1);
+            layout();
         }
         
         public ChartRow getChartRow()
@@ -993,6 +1023,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             
             if (getItemCount() == 1)
                 setSelection(getItem(0));
+
+            updateTabsVisibility();
         }
 
         /* (non-Javadoc)
@@ -1005,6 +1037,23 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             {
                 if (((ChartTabItem)items[i]).getChartTab().equals(o))
                     ((ChartTabItem)items[i]).dispose();
+            }
+
+            updateTabsVisibility();
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+         */
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            String property = event.getProperty(); 
+            if (property.equals(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS))
+                setSimple(((Boolean)event.getNewValue()).booleanValue());
+            else if (property.equals(ChartsPlugin.PREFS_HIDE_TABS))
+            {
+                autoHideTabs = ((Integer)event.getNewValue()).intValue();
+                updateTabsVisibility();
             }
         }
     }
