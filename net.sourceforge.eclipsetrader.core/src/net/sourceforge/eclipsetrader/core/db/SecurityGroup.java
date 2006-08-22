@@ -11,15 +11,18 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
-import java.util.Iterator;
+import java.util.Currency;
 
 import net.sourceforge.eclipsetrader.core.ObservableList;
 
 public class SecurityGroup extends PersistentObject
 {
-    private String description;
-    private ObservableList groups = new ObservableList();
-    private ObservableList securities;
+    String code = "";
+    String description = "";
+    Currency currency;
+    SecurityGroup group;
+    ObservableList groups = new ObservableList();
+    ObservableList securities = new ObservableList();
 
     public SecurityGroup()
     {
@@ -28,6 +31,16 @@ public class SecurityGroup extends PersistentObject
     public SecurityGroup(Integer id)
     {
         super(id);
+    }
+
+    public String getCode()
+    {
+        return code;
+    }
+
+    public void setCode(String code)
+    {
+        this.code = code;
     }
 
     public String getDescription()
@@ -39,6 +52,28 @@ public class SecurityGroup extends PersistentObject
     {
         this.description = description;
         setChanged();
+    }
+
+    public Currency getCurrency()
+    {
+        if (currency == null && group != null)
+            return group.getCurrency();
+        return currency;
+    }
+
+    public void setCurrency(Currency currency)
+    {
+        this.currency = currency;
+    }
+
+    public SecurityGroup getGroup()
+    {
+        return group;
+    }
+
+    public void setGroup(SecurityGroup group)
+    {
+        this.group = group;
     }
 
     public ObservableList getGroups()
@@ -53,16 +88,6 @@ public class SecurityGroup extends PersistentObject
 
     public ObservableList getSecurities()
     {
-        if (securities == null)
-        {
-            securities = new ObservableList();
-            for (Iterator iter = getRepository().allSecurities().iterator(); iter.hasNext(); )
-            {
-                Security security = (Security) iter.next();
-                if (this.equals(security.getGroup()))
-                    securities.add(security);
-            }
-        }
         return securities;
     }
 

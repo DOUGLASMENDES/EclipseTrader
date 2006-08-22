@@ -74,6 +74,7 @@ import org.w3c.dom.NodeList;
 public class XMLRepository extends Repository
 {
     private Integer securitiesNextId = new Integer(1);
+    private Integer securitiesGroupNextId = new Integer(1);
     private Map securitiesMap = new HashMap();
     private Map chartsMap = new HashMap();
     private Integer watchlistsNextId = new Integer(1);
@@ -102,6 +103,8 @@ public class XMLRepository extends Repository
 
                 Node firstNode = document.getFirstChild();
                 securitiesNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getNodeValue()); //$NON-NLS-1$
+                if (firstNode.getAttributes().getNamedItem("nextGroupId") != null)
+                    securitiesGroupNextId = new Integer(firstNode.getAttributes().getNamedItem("nextGroupId").getNodeValue()); //$NON-NLS-1$
 
                 NodeList childNodes = firstNode.getChildNodes();
                 for (int i = 0; i < childNodes.getLength(); i++)
@@ -967,7 +970,7 @@ public class XMLRepository extends Repository
 
     private SecurityGroup loadSecurityGroup(NodeList node)
     {
-        SecurityGroup group = new SecurityGroup();
+        SecurityGroup group = new SecurityGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
         
         for (int i = 0; i < node.getLength(); i++)
         {
@@ -976,8 +979,30 @@ public class XMLRepository extends Repository
             Node value = item.getFirstChild();
             if (value != null)
             {
-                if (nodeName.equals("description")) //$NON-NLS-1$
+                if (nodeName.equals("code")) //$NON-NLS-1$
+                    group.setCode(value.getNodeValue());
+                else if (nodeName.equals("description")) //$NON-NLS-1$
                     group.setDescription(value.getNodeValue());
+                else if (nodeName.equals("currency")) //$NON-NLS-1$
+                    group.setCurrency(Currency.getInstance(value.getNodeValue()));
+            }
+            if (nodeName.equals("security")) //$NON-NLS-1$
+            {
+                Security obj = loadSecurity(item.getChildNodes());
+                obj.setGroup(group);
+                obj.setRepository(this);
+                obj.clearChanged();
+                securitiesMap.put(obj.getId(), obj);
+                allSecurities().add(obj);
+                group.getSecurities().add(obj);
+            }
+            else if (nodeName.equals("group")) //$NON-NLS-1$
+            {
+                SecurityGroup obj = loadSecurityGroup(item.getChildNodes());
+                obj.setGroup(group);
+                obj.setRepository(this);
+                obj.clearChanged();
+                group.getGroups().add(obj);
             }
         }
         
@@ -1137,6 +1162,168 @@ public class XMLRepository extends Repository
         return security;
     }
     
+    private void saveSecurityGroup(SecurityGroup group, Document document, Element root)
+    {
+        Element element = document.createElement("group");
+        element.setAttribute("id", String.valueOf(group.getId()));
+        root.appendChild(element);
+
+        Element node = document.createElement("code");
+        node.appendChild(document.createTextNode(group.getCode()));
+        element.appendChild(node);
+        node = document.createElement("description");
+        node.appendChild(document.createTextNode(group.getDescription()));
+        element.appendChild(node);
+        if (group.getCurrency() != null)
+        {
+            node = document.createElement("currency");
+            node.appendChild(document.createTextNode(group.getCurrency().getCurrencyCode()));
+            element.appendChild(node);
+        }
+        
+        for (Iterator iter = group.getSecurities().iterator(); iter.hasNext(); )
+            saveSecurity((Security)iter.next(), document, root);
+        
+        for (Iterator iter = group.getSecurities().iterator(); iter.hasNext(); )
+            saveSecurityGroup((SecurityGroup)iter.next(), document, element);
+    }
+    
+    private void saveSecurity(Security security, Document document, Element root)
+    {
+        Element element = document.createElement("security");
+        element.setAttribute("id", String.valueOf(security.getId()));
+        root.appendChild(element);
+        
+        Element node = document.createElement("code");
+        node.appendChild(document.createTextNode(security.getCode()));
+        element.appendChild(node);
+        node = document.createElement("description");
+        node.appendChild(document.createTextNode(security.getDescription()));
+        element.appendChild(node);
+        if (security.getCurrency() != null)
+        {
+            node = document.createElement("currency");
+            node.appendChild(document.createTextNode(security.getCurrency().getCurrencyCode()));
+            element.appendChild(node);
+        }
+        
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setGroupingUsed(false);
+        nf.setMinimumIntegerDigits(2);
+        nf.setMinimumFractionDigits(0);
+        nf.setMaximumFractionDigits(0);
+        
+        Element collectorNode = document.createElement("dataCollector");
+        collectorNode.setAttribute("enable", String.valueOf(security.isEnableDataCollector()));
+        element.appendChild(collectorNode);
+        node = document.createElement("begin");
+        node.appendChild(document.createTextNode(nf.format(security.getBeginTime() / 60) + ":" + nf.format(security.getBeginTime() % 60)));
+        collectorNode.appendChild(node);
+        node = document.createElement("end");
+        node.appendChild(document.createTextNode(nf.format(security.getEndTime() / 60) + ":" + nf.format(security.getEndTime() % 60)));
+        collectorNode.appendChild(node);
+        node = document.createElement("weekdays");
+        node.appendChild(document.createTextNode(String.valueOf(security.getWeekDays())));
+        collectorNode.appendChild(node);
+        node = document.createElement("keepdays");
+        node.appendChild(document.createTextNode(String.valueOf(security.getKeepDays())));
+        collectorNode.appendChild(node);
+
+        if (security.getQuoteFeed() != null || security.getHistoryFeed() != null)
+        {
+            Node feedsNode = document.createElement("feeds");
+            element.appendChild(feedsNode);
+            if (security.getQuoteFeed() != null)
+            {
+                node = document.createElement("quote");
+                node.setAttribute("id", security.getQuoteFeed().getId());
+                if (security.getQuoteFeed().getExchange() != null)
+                    node.setAttribute("exchange", security.getQuoteFeed().getExchange());
+                node.appendChild(document.createTextNode(security.getQuoteFeed().getSymbol()));
+                feedsNode.appendChild(node);
+            }
+            if (security.getLevel2Feed() != null)
+            {
+                node = document.createElement("level2");
+                node.setAttribute("id", security.getLevel2Feed().getId());
+                if (security.getLevel2Feed().getExchange() != null)
+                    node.setAttribute("exchange", security.getLevel2Feed().getExchange());
+                node.appendChild(document.createTextNode(security.getLevel2Feed().getSymbol()));
+                feedsNode.appendChild(node);
+            }
+            if (security.getHistoryFeed() != null)
+            {
+                node = document.createElement("history");
+                node.setAttribute("id", security.getHistoryFeed().getId());
+                if (security.getHistoryFeed().getExchange() != null)
+                    node.setAttribute("exchange", security.getHistoryFeed().getExchange());
+                node.appendChild(document.createTextNode(security.getHistoryFeed().getSymbol()));
+                feedsNode.appendChild(node);
+            }
+        }
+        
+        if (security.getQuote() != null)
+        {
+            Quote quote = security.getQuote();
+            Node quoteNode = document.createElement("quote");
+
+            if (quote.getDate() != null)
+            {
+                node = document.createElement("date");
+                node.appendChild(document.createTextNode(dateTimeFormat.format(quote.getDate())));
+                quoteNode.appendChild(node);
+            }
+            node = document.createElement("last");
+            node.appendChild(document.createTextNode(String.valueOf(quote.getLast())));
+            quoteNode.appendChild(node);
+            node = document.createElement("bid");
+            node.appendChild(document.createTextNode(String.valueOf(quote.getBid())));
+            quoteNode.appendChild(node);
+            node = document.createElement("ask");
+            node.appendChild(document.createTextNode(String.valueOf(quote.getAsk())));
+            quoteNode.appendChild(node);
+            node = document.createElement("bidSize");
+            node.appendChild(document.createTextNode(String.valueOf(quote.getBidSize())));
+            quoteNode.appendChild(node);
+            node = document.createElement("askSize");
+            node.appendChild(document.createTextNode(String.valueOf(quote.getAskSize())));
+            quoteNode.appendChild(node);
+            node = document.createElement("volume");
+            node.appendChild(document.createTextNode(String.valueOf(quote.getVolume())));
+            quoteNode.appendChild(node);
+            
+            element.appendChild(quoteNode);
+        }
+
+        Node dataNode = document.createElement("data");
+        element.appendChild(dataNode);
+        
+        if (security.getOpen() != null)
+        {
+            node = document.createElement("open");
+            node.appendChild(document.createTextNode(String.valueOf(security.getOpen())));
+            dataNode.appendChild(node);
+        }
+        if (security.getHigh() != null)
+        {
+            node = document.createElement("high");
+            node.appendChild(document.createTextNode(String.valueOf(security.getHigh())));
+            dataNode.appendChild(node);
+        }
+        if (security.getLow() != null)
+        {
+            node = document.createElement("low");
+            node.appendChild(document.createTextNode(String.valueOf(security.getLow())));
+            dataNode.appendChild(node);
+        }
+        if (security.getClose() != null)
+        {
+            node = document.createElement("close");
+            node.appendChild(document.createTextNode(String.valueOf(security.getClose())));
+            dataNode.appendChild(node);
+        }
+    }
+    
     private void saveSecurities()
     {
         try {
@@ -1145,156 +1332,19 @@ public class XMLRepository extends Repository
 
             Element root = document.getDocumentElement();
             root.setAttribute("nextId", String.valueOf(securitiesNextId));
+            root.setAttribute("nextGroupId", String.valueOf(securitiesGroupNextId));
             
             for (Iterator iter = allSecurityGroups().iterator(); iter.hasNext(); )
             {
                 SecurityGroup group = (SecurityGroup)iter.next();
-
-                Element element = document.createElement("group");
-                element.setAttribute("id", String.valueOf(group.getId()));
-                root.appendChild(element);
-
-                Element node = document.createElement("description");
-                node.appendChild(document.createTextNode(group.getDescription()));
-                element.appendChild(node);
+                saveSecurityGroup(group, document, root);
             }
             
             for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
             {
-                Security security = (Security)iter.next(); 
-
-                Element element = document.createElement("security");
-                element.setAttribute("id", String.valueOf(security.getId()));
-                root.appendChild(element);
-                
-                Element node = document.createElement("code");
-                node.appendChild(document.createTextNode(security.getCode()));
-                element.appendChild(node);
-                node = document.createElement("description");
-                node.appendChild(document.createTextNode(security.getDescription()));
-                element.appendChild(node);
-                if (security.getCurrency() != null)
-                {
-                    node = document.createElement("currency");
-                    node.appendChild(document.createTextNode(security.getCurrency().getCurrencyCode()));
-                    element.appendChild(node);
-                }
-                
-                NumberFormat nf = NumberFormat.getInstance();
-                nf.setGroupingUsed(false);
-                nf.setMinimumIntegerDigits(2);
-                nf.setMinimumFractionDigits(0);
-                nf.setMaximumFractionDigits(0);
-                
-                Element collectorNode = document.createElement("dataCollector");
-                collectorNode.setAttribute("enable", String.valueOf(security.isEnableDataCollector()));
-                element.appendChild(collectorNode);
-                node = document.createElement("begin");
-                node.appendChild(document.createTextNode(nf.format(security.getBeginTime() / 60) + ":" + nf.format(security.getBeginTime() % 60)));
-                collectorNode.appendChild(node);
-                node = document.createElement("end");
-                node.appendChild(document.createTextNode(nf.format(security.getEndTime() / 60) + ":" + nf.format(security.getEndTime() % 60)));
-                collectorNode.appendChild(node);
-                node = document.createElement("weekdays");
-                node.appendChild(document.createTextNode(String.valueOf(security.getWeekDays())));
-                collectorNode.appendChild(node);
-                node = document.createElement("keepdays");
-                node.appendChild(document.createTextNode(String.valueOf(security.getKeepDays())));
-                collectorNode.appendChild(node);
-
-                if (security.getQuoteFeed() != null || security.getHistoryFeed() != null)
-                {
-                    Node feedsNode = document.createElement("feeds");
-                    element.appendChild(feedsNode);
-                    if (security.getQuoteFeed() != null)
-                    {
-                        node = document.createElement("quote");
-                        node.setAttribute("id", security.getQuoteFeed().getId());
-                        if (security.getQuoteFeed().getExchange() != null)
-                            node.setAttribute("exchange", security.getQuoteFeed().getExchange());
-                        node.appendChild(document.createTextNode(security.getQuoteFeed().getSymbol()));
-                        feedsNode.appendChild(node);
-                    }
-                    if (security.getLevel2Feed() != null)
-                    {
-                        node = document.createElement("level2");
-                        node.setAttribute("id", security.getLevel2Feed().getId());
-                        if (security.getLevel2Feed().getExchange() != null)
-                            node.setAttribute("exchange", security.getLevel2Feed().getExchange());
-                        node.appendChild(document.createTextNode(security.getLevel2Feed().getSymbol()));
-                        feedsNode.appendChild(node);
-                    }
-                    if (security.getHistoryFeed() != null)
-                    {
-                        node = document.createElement("history");
-                        node.setAttribute("id", security.getHistoryFeed().getId());
-                        if (security.getHistoryFeed().getExchange() != null)
-                            node.setAttribute("exchange", security.getHistoryFeed().getExchange());
-                        node.appendChild(document.createTextNode(security.getHistoryFeed().getSymbol()));
-                        feedsNode.appendChild(node);
-                    }
-                }
-                
-                if (security.getQuote() != null)
-                {
-                    Quote quote = security.getQuote();
-                    Node quoteNode = document.createElement("quote");
-
-                    if (quote.getDate() != null)
-                    {
-                        node = document.createElement("date");
-                        node.appendChild(document.createTextNode(dateTimeFormat.format(quote.getDate())));
-                        quoteNode.appendChild(node);
-                    }
-                    node = document.createElement("last");
-                    node.appendChild(document.createTextNode(String.valueOf(quote.getLast())));
-                    quoteNode.appendChild(node);
-                    node = document.createElement("bid");
-                    node.appendChild(document.createTextNode(String.valueOf(quote.getBid())));
-                    quoteNode.appendChild(node);
-                    node = document.createElement("ask");
-                    node.appendChild(document.createTextNode(String.valueOf(quote.getAsk())));
-                    quoteNode.appendChild(node);
-                    node = document.createElement("bidSize");
-                    node.appendChild(document.createTextNode(String.valueOf(quote.getBidSize())));
-                    quoteNode.appendChild(node);
-                    node = document.createElement("askSize");
-                    node.appendChild(document.createTextNode(String.valueOf(quote.getAskSize())));
-                    quoteNode.appendChild(node);
-                    node = document.createElement("volume");
-                    node.appendChild(document.createTextNode(String.valueOf(quote.getVolume())));
-                    quoteNode.appendChild(node);
-                    
-                    element.appendChild(quoteNode);
-                }
-
-                Node dataNode = document.createElement("data");
-                element.appendChild(dataNode);
-                
-                if (security.getOpen() != null)
-                {
-                    node = document.createElement("open");
-                    node.appendChild(document.createTextNode(String.valueOf(security.getOpen())));
-                    dataNode.appendChild(node);
-                }
-                if (security.getHigh() != null)
-                {
-                    node = document.createElement("high");
-                    node.appendChild(document.createTextNode(String.valueOf(security.getHigh())));
-                    dataNode.appendChild(node);
-                }
-                if (security.getLow() != null)
-                {
-                    node = document.createElement("low");
-                    node.appendChild(document.createTextNode(String.valueOf(security.getLow())));
-                    dataNode.appendChild(node);
-                }
-                if (security.getClose() != null)
-                {
-                    node = document.createElement("close");
-                    node.appendChild(document.createTextNode(String.valueOf(security.getClose())));
-                    dataNode.appendChild(node);
-                }
+                Security security = (Security)iter.next();
+                if (security.getGroup() == null)
+                    saveSecurity(security, document, root);
             }
 
             saveDocument(document, "", "securities.xml");

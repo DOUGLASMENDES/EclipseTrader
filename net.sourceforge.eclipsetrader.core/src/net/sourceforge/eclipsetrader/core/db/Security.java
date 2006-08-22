@@ -32,29 +32,29 @@ public class Security extends PersistentObject
     public static final int THU = 0x0010;
     public static final int FRI = 0x0020;
     public static final int SAT = 0x0040;
-    private String code = "";
-    private String description = "";
-    private Currency currency;
-    private SecurityGroup group;
-    private FeedSource quoteFeed;
-    private FeedSource level2Feed;
-    private FeedSource historyFeed;
-    private ObservableList history;
-    private ObservableList intradayHistory;
-    private Quote quote;
-    private Level2Bid level2Bid;
-    private Level2Ask level2Ask;
-    private Double close;
-    private Double open;
-    private Double low;
-    private Double high;
-    private CObservable quoteMonitor = new CObservable();
-    private CObservable level2Monitor = new CObservable();
-    private boolean enableDataCollector = false;
-    private int beginTime = 0;
-    private int endTime = 0;
-    private int weekDays = MON|TUE|WED|THU|FRI;
-    private int keepDays = 1;
+    String code = "";
+    String description = "";
+    Currency currency;
+    SecurityGroup group;
+    FeedSource quoteFeed;
+    FeedSource level2Feed;
+    FeedSource historyFeed;
+    ObservableList history;
+    ObservableList intradayHistory;
+    Quote quote;
+    Level2Bid level2Bid;
+    Level2Ask level2Ask;
+    Double close;
+    Double open;
+    Double low;
+    Double high;
+    CObservable quoteMonitor = new CObservable();
+    CObservable level2Monitor = new CObservable();
+    boolean enableDataCollector = false;
+    int beginTime = 0;
+    int endTime = 0;
+    int weekDays = MON|TUE|WED|THU|FRI;
+    int keepDays = 1;
 
     public Security()
     {
@@ -91,6 +91,8 @@ public class Security extends PersistentObject
 
     public Currency getCurrency()
     {
+        if (currency == null && group != null)
+            return group.getCurrency();
         return currency;
     }
 

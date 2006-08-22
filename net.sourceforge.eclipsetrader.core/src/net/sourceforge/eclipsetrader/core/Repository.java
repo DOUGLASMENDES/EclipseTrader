@@ -307,8 +307,11 @@ public class Repository
 
         if (obj instanceof SecurityGroup)
         {
-            for (Iterator iter = ((SecurityGroup)obj).getSecurities().iterator(); iter.hasNext(); )
-                ((Security)iter.next()).setGroup(null);
+            SecurityGroup group = (SecurityGroup)obj;
+            for (Iterator iter = group.getSecurities().iterator(); iter.hasNext(); )
+                delete((Security)iter.next());
+            for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
+                delete((SecurityGroup)iter.next());
             allSecurityGroups().remove(obj);
         }
         
