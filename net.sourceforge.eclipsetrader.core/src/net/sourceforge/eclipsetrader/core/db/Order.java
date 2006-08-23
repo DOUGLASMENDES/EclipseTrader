@@ -38,6 +38,7 @@ public class Order extends PersistentObject
     public static final int STATUS_PENDING_NEW = 6;
     String pluginId = "";
     TradingProvider provider;
+    Account account;
     String exchange = "";
     String orderId = "";
     Date date = Calendar.getInstance().getTime();
@@ -79,6 +80,16 @@ public class Order extends PersistentObject
     public void setProvider(TradingProvider source)
     {
         this.provider = source;
+    }
+
+    public Account getAccount()
+    {
+        return account;
+    }
+
+    public void setAccount(Account account)
+    {
+        this.account = account;
     }
 
     public double getAveragePrice()
