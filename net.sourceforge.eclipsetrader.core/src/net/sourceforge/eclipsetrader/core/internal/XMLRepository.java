@@ -1775,6 +1775,11 @@ public class XMLRepository extends Repository
                         else if (nodeName.equals("expenses")) //$NON-NLS-1$
                             transaction.setExpenses(Double.parseDouble(value.getNodeValue()));
                     }
+                    if (nodeName.equalsIgnoreCase("param") == true)
+                    {
+                        NamedNodeMap map = item.getAttributes();
+                        transaction.getParams().put(map.getNamedItem("key").getNodeValue(), map.getNamedItem("value").getNodeValue());
+                    }
                 }
                 if (transaction.getSecurity() != null)
                     transactions.add(transaction);
@@ -1908,6 +1913,15 @@ public class XMLRepository extends Repository
         node = document.createElement("expenses");
         node.appendChild(document.createTextNode(String.valueOf(transaction.getExpenses())));
         element.appendChild(node);
+
+        for (Iterator paramIter = transaction.getParams().keySet().iterator(); paramIter.hasNext(); )
+        {
+            String key = (String)paramIter.next();
+            node = document.createElement("param");
+            node.setAttribute("key", key);
+            node.setAttribute("value", (String)transaction.getParams().get(key));
+            element.appendChild(node);
+        }
     }
     
     private void saveAccounts()
@@ -2029,6 +2043,12 @@ public class XMLRepository extends Repository
                     order.setAveragePrice(new Double(value.getNodeValue()).doubleValue());
                 else if (nodeName.equals("status")) //$NON-NLS-1$
                     order.setStatus(Integer.parseInt(value.getNodeValue()));
+                else if (nodeName.equals("account")) //$NON-NLS-1$
+                {
+                    order.setAccount((Account)this.accountMap.get(new Integer(value.getNodeValue())));
+                    if (order.getAccount() != null)
+                        logger.warn("Cannot load account (id=" + value.getNodeValue() + ")");
+                }
             }
             if (nodeName.equalsIgnoreCase("param") == true)
             {
@@ -2094,6 +2114,12 @@ public class XMLRepository extends Repository
                 node = document.createElement("status");
                 node.appendChild(document.createTextNode(String.valueOf(order.getStatus())));
                 element.appendChild(node);
+                if (order.getAccount() != null)
+                {
+                    node = document.createElement("account");
+                    node.appendChild(document.createTextNode(String.valueOf(order.getAccount().getId())));
+                    element.appendChild(node);
+                }
 
                 for (Iterator paramIter = order.getParams().keySet().iterator(); paramIter.hasNext(); )
                 {
