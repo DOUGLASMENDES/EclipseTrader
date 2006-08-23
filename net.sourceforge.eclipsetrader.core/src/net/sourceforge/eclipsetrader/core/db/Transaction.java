@@ -12,6 +12,8 @@
 package net.sourceforge.eclipsetrader.core.db;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Transaction extends PersistentObject
 {
@@ -20,6 +22,7 @@ public class Transaction extends PersistentObject
     private double price = 0;
     private int quantity = 0;
     private double expenses = 0;
+    Map params = new HashMap();
 
     public Transaction()
     {
@@ -100,5 +103,25 @@ public class Transaction extends PersistentObject
             return -(amount + getExpenses());
         else
             return amount - getExpenses();
+    }
+
+    public Map getParams()
+    {
+        return params;
+    }
+
+    public void setParams(Map params)
+    {
+        this.params = params;
+    }
+    
+    public void setParam(String key, String value)
+    {
+        params.put(key, value);
+    }
+    
+    public String getParam(String key)
+    {
+        return (String)params.get(key);
     }
 }
