@@ -21,6 +21,7 @@ import java.util.Observable;
 
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.AccountGroup;
+import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Order;
@@ -39,6 +40,7 @@ public class Repository
     private ObservableList securityGroups;
     private ObservableList securities;
     private ObservableList watchlists;
+    private ObservableList charts;
     private ObservableList news;
     private ObservableList accounts;
     private ObservableList accountGroups;
@@ -66,6 +68,7 @@ public class Repository
     {
         securityGroups = null;
         securities = null;
+        charts = null;
         watchlists = null;
         news = null;
         accounts = null;
@@ -96,6 +99,25 @@ public class Repository
         if (watchlists == null)
             watchlists = new ObservableList();
         return watchlists;
+    }
+    
+    public ObservableList allCharts()
+    {
+        if (charts == null)
+            charts = new ObservableList();
+        return charts;
+    }
+    
+    public List allCharts(Security security)
+    {
+        List list = new ArrayList();
+        Chart[] charts = (Chart[])allCharts().toArray(new Chart[0]);
+        for (int i = 0; i < charts.length; i++)
+        {
+            if (charts[i].getSecurity().equals(security))
+                list.add(charts[i]);
+        }
+        return list;
     }
     
     public ObservableList allNews()
@@ -242,6 +264,12 @@ public class Repository
                 allSecurities().add(obj);
         }
 
+        if (obj instanceof Chart)
+        {
+            if (!allCharts().contains(obj))
+                allCharts().add(obj);
+        }
+
         if (obj instanceof Watchlist)
         {
             if (!allWatchlists().contains(obj))
@@ -329,6 +357,13 @@ public class Repository
                 }
             }
             
+            Chart[] charts = (Chart[])allCharts().toArray(new Chart[0]);
+            for (int i = 0; i < charts.length; i++)
+            {
+                if (charts[i].getSecurity().equals(obj))
+                    allCharts().remove(charts[i]);
+            }
+            
             TradingSystem[] systems = (TradingSystem[])getTradingSystems().toArray(new TradingSystem[0]);
             for (int i = 0; i < systems.length; i++)
             {
@@ -345,6 +380,9 @@ public class Repository
 
             allSecurities().remove(obj);
         }
+
+        if (obj instanceof Chart)
+            allCharts().remove(obj);
 
         if (obj instanceof Watchlist)
             allWatchlists().remove(obj);

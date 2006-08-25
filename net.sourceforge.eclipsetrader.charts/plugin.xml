@@ -101,7 +101,7 @@
                id="net.sourceforge.eclipsetrader.actions.openChart"
                label="%openChartAction"
                menubarPath="top"
-               style="push"/>
+               style="pulldown"/>
       </viewerContribution>
       <viewerContribution
             id="securitiesView"
@@ -113,7 +113,7 @@
                id="net.sourceforge.eclipsetrader.actions.openChart"
                label="%openChartAction"
                menubarPath="top"
-               style="push"/>
+               style="pulldown"/>
       </viewerContribution>
    </extension>
    <extension
@@ -230,6 +230,12 @@
                style="push"
                toolbarPath="objects"
                tooltip="%fibolineTooltip"/>
+         <action
+               class="net.sourceforge.eclipsetrader.charts.actions.DeleteChartAction"
+               id="net.sourceforge.eclipsetrader.charts.delete"
+               label="Delete Chart"
+               menubarPath="bottom"
+               style="push"/>
       </viewContribution>
       <viewContribution
             id="securitiesView"

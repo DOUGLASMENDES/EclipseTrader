@@ -59,6 +59,7 @@ public class RSI extends IndicatorPlugin
         PlotLine in = new PlotLine(getBarData(), input);
 
         PlotLine rsi = new PlotLine();
+        rsi.setScaleFlag(true);
 
         int loop;
         for (loop = period; loop < in.getSize(); loop++)
@@ -92,6 +93,9 @@ public class RSI extends IndicatorPlugin
         if (smoothing > 1)
         {
             PlotLine ma = getMA(rsi, smoothingType, smoothing);
+            ma.setScaleFlag(true);
+            ma.setHigh(100);
+            ma.setLow(0);
             ma.setColor(color);
             ma.setType(lineType);
             ma.setLabel(label);
@@ -110,6 +114,9 @@ public class RSI extends IndicatorPlugin
         if (buyLine != 0)
         {
             PlotLine bline = new PlotLine();
+            bline.setScaleFlag(true);
+            bline.setHigh(100);
+            bline.setLow(0);
             bline.setColor(buyLineColor);
             bline.setType(PlotLine.HORIZONTAL);
             bline.append(buyLine);
@@ -119,6 +126,9 @@ public class RSI extends IndicatorPlugin
         if (sellLine != 0)
         {
             PlotLine sline = new PlotLine();
+            sline.setScaleFlag(true);
+            sline.setHigh(100);
+            sline.setLow(0);
             sline.setColor(sellLineColor);
             sline.setType(PlotLine.HORIZONTAL);
             sline.append(sellLine);

@@ -76,6 +76,7 @@ public class XMLRepository extends Repository
     private Integer securitiesNextId = new Integer(1);
     private Integer securitiesGroupNextId = new Integer(1);
     private Map securitiesMap = new HashMap();
+    private Integer chartsNextId = new Integer(1);
     private Map chartsMap = new HashMap();
     private Integer watchlistsNextId = new Integer(1);
     private Map watchlistsMap = new HashMap();
@@ -160,6 +161,57 @@ public class XMLRepository extends Repository
                 logger.error(e.toString(), e);
             }
         }
+
+        file = new File(Platform.getLocation().toFile(), "charts.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+        {
+            logger.info("Loading charts");
+            try
+            {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(file);
+
+                Node firstNode = document.getFirstChild();
+                chartsNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getNodeValue()); //$NON-NLS-1$
+
+                NodeList childNodes = firstNode.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++)
+                {
+                    Node item = childNodes.item(i);
+                    String nodeName = item.getNodeName();
+                    if (nodeName.equalsIgnoreCase("chart")) //$NON-NLS-1$
+                    {
+                        Chart obj = loadChart(item.getChildNodes());
+                        obj.setRepository(this);
+                        chartsMap.put(obj.getId(), obj);
+                        allCharts().add(obj);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error(e.toString(), e);
+            }
+        }
+
+        boolean needToSave = false;
+        for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
+        {
+            Security security = (Security)iter.next();
+            file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(security.getId()) + ".xml");
+            if (file.exists())
+            {
+                Chart obj = loadChart(security.getId());
+                if (obj.getId().intValue() > chartsNextId.intValue())
+                    chartsNextId = getNextId(obj.getId());
+                obj.setRepository(this);
+                chartsMap.put(obj.getId(), obj);
+                allCharts().add(obj);
+                file.delete();
+                needToSave = true;
+            }
+        }
+        if (needToSave)
+            saveCharts();
 
         file = new File(Platform.getLocation().toFile(), "news.xml"); //$NON-NLS-1$
         if (file.exists() == true)
@@ -302,6 +354,8 @@ public class XMLRepository extends Repository
     {
         saveSecurities();
         saveWatchlists();
+        saveCharts();
+        saveAccounts();
         saveNews();
         saveEvents();
         saveOrders();
@@ -318,6 +372,9 @@ public class XMLRepository extends Repository
         if (file.exists() == true)
             file.delete();
         file = new File(Platform.getLocation().toFile(), "watchlists.xml"); //$NON-NLS-1$
+        if (file.exists() == true)
+            file.delete();
+        file = new File(Platform.getLocation().toFile(), "charts.xml"); //$NON-NLS-1$
         if (file.exists() == true)
             file.delete();
         file = new File(Platform.getLocation().toFile(), "news.xml"); //$NON-NLS-1$
@@ -345,7 +402,9 @@ public class XMLRepository extends Repository
         }
         
         securitiesNextId = new Integer(1);
+        securitiesGroupNextId = new Integer(1);
         securitiesMap = new HashMap();
+        chartsNextId = new Integer(1);
         chartsMap = new HashMap();
         watchlistsNextId = new Integer(1);
         watchlistsMap = new HashMap();
@@ -429,8 +488,13 @@ public class XMLRepository extends Repository
         
         if (obj instanceof Chart)
         {
+            if (obj.getId() == null)
+            {
+                obj.setId(chartsNextId);
+                chartsNextId = getNextId(chartsNextId);
+            }
             chartsMap.put(obj.getId(), obj);
-            saveChart((Chart)obj);
+            saveCharts();
         }
         
         if (obj instanceof Watchlist)
@@ -518,6 +582,11 @@ public class XMLRepository extends Repository
         {
             watchlistsMap.remove(obj.getId());
             saveWatchlists();
+        }
+        if (obj instanceof Chart)
+        {
+            chartsMap.remove(obj.getId());
+            saveCharts();
         }
         if (obj instanceof Account)
         {
@@ -716,118 +785,126 @@ public class XMLRepository extends Repository
         }
     }
     
-    private void saveChart(Chart chart)
+    private void saveCharts()
     {
-        chart.setRepository(this);
-
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, "chart", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
-
-            if (chart.getId() != null)
+            root.setAttribute("nextId", String.valueOf(chartsNextId));
+            
+            for (Iterator iter = chartsMap.values().iterator(); iter.hasNext(); )
             {
-                Element node = document.createElement("title");
-                node.appendChild(document.createTextNode(chart.getTitle()));
-                root.appendChild(node);
-                node = document.createElement("compression");
-                node.appendChild(document.createTextNode(String.valueOf(chart.getCompression())));
-                root.appendChild(node);
-                node = document.createElement("period");
-                node.appendChild(document.createTextNode(String.valueOf(chart.getPeriod())));
-                root.appendChild(node);
-                node = document.createElement("autoScale");
-                node.appendChild(document.createTextNode(String.valueOf(chart.isAutoScale())));
-                root.appendChild(node);
-                if (chart.getBeginDate() != null)
-                {
-                    node = document.createElement("begin");
-                    node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getBeginDate())));
-                    root.appendChild(node);
-                }
-                if (chart.getEndDate() != null)
-                {
-                    node = document.createElement("end");
-                    node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getEndDate())));
-                    root.appendChild(node);
-                }
+                Chart chart = (Chart)iter.next();
+                saveChart(chart, root, document);
             }
 
-            for (int r = 0; r < chart.getRows().size(); r++)
-            {
-                ChartRow row = (ChartRow)chart.getRows().get(r);
-                row.setId(new Integer(r));
-                row.setParent(chart);
-                row.setRepository(this);
-
-                Element rowNode = document.createElement("row");
-                root.appendChild(rowNode);
-
-                for (int t = 0; t < row.getTabs().size(); t++)
-                {
-                    ChartTab tab = (ChartTab)row.getTabs().get(t);
-                    tab.setId(new Integer(t));
-                    tab.setParent(row);
-                    tab.setRepository(this);
-
-                    Element tabNode = document.createElement("tab");
-                    tabNode.setAttribute("label", tab.getLabel());
-                    rowNode.appendChild(tabNode);
-
-                    for (int i = 0; i < tab.getIndicators().size(); i++)
-                    {
-                        ChartIndicator indicator = (ChartIndicator)tab.getIndicators().get(i);
-                        indicator.setId(new Integer(i));
-                        indicator.setParent(tab);
-                        indicator.setRepository(this);
-
-                        Element indicatorNode = document.createElement("indicator");
-                        indicatorNode.setAttribute("pluginId", indicator.getPluginId());
-                        tabNode.appendChild(indicatorNode);
-
-                        for (Iterator iter = indicator.getParameters().keySet().iterator(); iter.hasNext(); )
-                        {
-                            String key = (String)iter.next();
-
-                            Element node = document.createElement("param");
-                            node.setAttribute("key", key);
-                            node.setAttribute("value", (String)indicator.getParameters().get(key));
-                            indicatorNode.appendChild(node);
-                        }
-                    }
-
-                    for (int i = 0; i < tab.getObjects().size(); i++)
-                    {
-                        ChartObject object = (ChartObject)tab.getObjects().get(i);
-                        object.setId(new Integer(i));
-                        object.setParent(tab);
-                        object.setRepository(this);
-
-                        Element indicatorNode = document.createElement("object");
-                        indicatorNode.setAttribute("pluginId", object.getPluginId());
-                        tabNode.appendChild(indicatorNode);
-
-                        for (Iterator iter = object.getParameters().keySet().iterator(); iter.hasNext(); )
-                        {
-                            String key = (String)iter.next();
-
-                            Element node = document.createElement("param");
-                            node.setAttribute("key", key);
-                            node.setAttribute("value", (String)object.getParameters().get(key));
-                            indicatorNode.appendChild(node);
-                        }
-                    }
-                }
-            }
-
-            if (chart.getId() != null)
-                saveDocument(document, "charts", String.valueOf(chart.getId()) + ".xml");
-            else
-                saveDocument(document, "charts", "default.xml");
+            saveDocument(document, "", "charts.xml");
 
         } catch (Exception e) {
             logger.error(e.toString(), e);
+        }
+    }
+    
+    private void saveChart(Chart chart, Element root, Document document)
+    {
+        Element element = document.createElement("chart");
+        element.setAttribute("id", String.valueOf(chart.getId()));
+        root.appendChild(element);
+
+        Element node = document.createElement("title");
+        node.appendChild(document.createTextNode(chart.getTitle()));
+        element.appendChild(node);
+        node = document.createElement("security");
+        node.appendChild(document.createTextNode(String.valueOf(chart.getSecurity().getId())));
+        element.appendChild(node);
+        node = document.createElement("compression");
+        node.appendChild(document.createTextNode(String.valueOf(chart.getCompression())));
+        element.appendChild(node);
+        node = document.createElement("period");
+        node.appendChild(document.createTextNode(String.valueOf(chart.getPeriod())));
+        element.appendChild(node);
+        node = document.createElement("autoScale");
+        node.appendChild(document.createTextNode(String.valueOf(chart.isAutoScale())));
+        element.appendChild(node);
+        if (chart.getBeginDate() != null)
+        {
+            node = document.createElement("begin");
+            node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getBeginDate())));
+            element.appendChild(node);
+        }
+        if (chart.getEndDate() != null)
+        {
+            node = document.createElement("end");
+            node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getEndDate())));
+            element.appendChild(node);
+        }
+        for (int r = 0; r < chart.getRows().size(); r++)
+        {
+            ChartRow row = (ChartRow)chart.getRows().get(r);
+            row.setId(new Integer(r));
+            row.setParent(chart);
+            row.setRepository(this);
+
+            Element rowNode = document.createElement("row");
+            element.appendChild(rowNode);
+
+            for (int t = 0; t < row.getTabs().size(); t++)
+            {
+                ChartTab tab = (ChartTab)row.getTabs().get(t);
+                tab.setId(new Integer(t));
+                tab.setParent(row);
+                tab.setRepository(this);
+
+                Element tabNode = document.createElement("tab");
+                tabNode.setAttribute("label", tab.getLabel());
+                rowNode.appendChild(tabNode);
+
+                for (int i = 0; i < tab.getIndicators().size(); i++)
+                {
+                    ChartIndicator indicator = (ChartIndicator)tab.getIndicators().get(i);
+                    indicator.setId(new Integer(i));
+                    indicator.setParent(tab);
+                    indicator.setRepository(this);
+
+                    Element indicatorNode = document.createElement("indicator");
+                    indicatorNode.setAttribute("pluginId", indicator.getPluginId());
+                    tabNode.appendChild(indicatorNode);
+
+                    for (Iterator iter = indicator.getParameters().keySet().iterator(); iter.hasNext(); )
+                    {
+                        String key = (String)iter.next();
+
+                        node = document.createElement("param");
+                        node.setAttribute("key", key);
+                        node.setAttribute("value", (String)indicator.getParameters().get(key));
+                        indicatorNode.appendChild(node);
+                    }
+                }
+
+                for (int i = 0; i < tab.getObjects().size(); i++)
+                {
+                    ChartObject object = (ChartObject)tab.getObjects().get(i);
+                    object.setId(new Integer(i));
+                    object.setParent(tab);
+                    object.setRepository(this);
+
+                    Element indicatorNode = document.createElement("object");
+                    indicatorNode.setAttribute("pluginId", object.getPluginId());
+                    tabNode.appendChild(indicatorNode);
+
+                    for (Iterator iter = object.getParameters().keySet().iterator(); iter.hasNext(); )
+                    {
+                        String key = (String)iter.next();
+
+                        node = document.createElement("param");
+                        node.setAttribute("key", key);
+                        node.setAttribute("value", (String)object.getParameters().get(key));
+                        indicatorNode.appendChild(node);
+                    }
+                }
+            }
         }
     }
     
@@ -963,6 +1040,134 @@ public class XMLRepository extends Repository
         
         if (chart.getTitle().length() == 0)
             chart.setTitle(chart.getSecurity().getDescription());
+        chart.clearChanged();
+        
+        return chart;
+    }
+    
+    private Chart loadChart(NodeList node)
+    {
+        Chart chart = new Chart(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        chart.setRepository(this);
+        
+        for (int r = 0; r < node.getLength(); r++)
+        {
+            Node item = node.item(r);
+            Node valueNode = item.getFirstChild();
+            String nodeName = item.getNodeName();
+            
+            if (valueNode != null)
+            {
+                if (nodeName.equalsIgnoreCase("title") == true)
+                    chart.setTitle(valueNode.getNodeValue());
+                else if (nodeName.equals("security")) //$NON-NLS-1$
+                {
+                    chart.setSecurity((Security)load(Security.class, new Integer(Integer.parseInt(valueNode.getNodeValue()))));
+                    if (chart.getSecurity() == null)
+                        logger.warn("Cannot load security (id=" + valueNode.getNodeValue() + ")");
+                }
+                else if (nodeName.equalsIgnoreCase("title") == true)
+                    chart.setTitle(valueNode.getNodeValue());
+                else if (nodeName.equalsIgnoreCase("compression") == true)
+                    chart.setCompression(Integer.parseInt(valueNode.getNodeValue()));
+                else if (nodeName.equalsIgnoreCase("period") == true)
+                    chart.setPeriod(Integer.parseInt(valueNode.getNodeValue()));
+                else if (nodeName.equalsIgnoreCase("autoScale") == true)
+                    chart.setAutoScale(new Boolean(valueNode.getNodeValue()).booleanValue());
+                else if (nodeName.equalsIgnoreCase("begin") == true)
+                {
+                    try {
+                        chart.setBeginDate(dateTimeFormat.parse(valueNode.getNodeValue()));
+                    } catch (Exception e) {
+                        logger.warn(e.toString());
+                    }
+                }
+                else if (nodeName.equalsIgnoreCase("end") == true)
+                {
+                    try {
+                        chart.setEndDate(dateTimeFormat.parse(valueNode.getNodeValue()));
+                    } catch (Exception e) {
+                        logger.warn(e.toString());
+                    }
+                }
+            }
+            if (nodeName.equalsIgnoreCase("row")) //$NON-NLS-1$
+            {
+                ChartRow row = new ChartRow(new Integer(r));
+                row.setRepository(this);
+                row.setParent(chart);
+                
+                NodeList tabList = item.getChildNodes();
+                for (int t = 0; t < tabList.getLength(); t++)
+                {
+                    item = tabList.item(t);
+                    nodeName = item.getNodeName();
+                    if (nodeName.equalsIgnoreCase("tab")) //$NON-NLS-1$
+                    {
+                        ChartTab tab = new ChartTab(new Integer(t));
+                        tab.setRepository(this);
+                        tab.setParent(row);
+                        tab.setLabel(((Node)item).getAttributes().getNamedItem("label").getNodeValue());
+
+                        NodeList indicatorList = item.getChildNodes();
+                        for (int i = 0; i < indicatorList.getLength(); i++)
+                        {
+                            item = indicatorList.item(i);
+                            nodeName = item.getNodeName();
+                            if (nodeName.equalsIgnoreCase("indicator")) //$NON-NLS-1$
+                            {
+                                ChartIndicator indicator = new ChartIndicator(new Integer(i));
+                                indicator.setRepository(this);
+                                indicator.setParent(tab);
+                                indicator.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+
+                                NodeList parametersList = item.getChildNodes();
+                                for (int p = 0; p < parametersList.getLength(); p++)
+                                {
+                                    item = parametersList.item(p);
+                                    nodeName = item.getNodeName();
+                                    if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
+                                    {
+                                        String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
+                                        String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                        indicator.getParameters().put(key, value);
+                                    }
+                                }
+                                
+                                tab.getIndicators().add(indicator);
+                            }
+                            else if (nodeName.equalsIgnoreCase("object")) //$NON-NLS-1$
+                            {
+                                ChartObject object = new ChartObject(new Integer(i));
+                                object.setRepository(this);
+                                object.setParent(tab);
+                                object.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+
+                                NodeList parametersList = item.getChildNodes();
+                                for (int p = 0; p < parametersList.getLength(); p++)
+                                {
+                                    item = parametersList.item(p);
+                                    nodeName = item.getNodeName();
+                                    if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
+                                    {
+                                        String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
+                                        String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                        object.getParameters().put(key, value);
+                                    }
+                                }
+                                
+                                tab.getObjects().add(object);
+                            }
+                        }
+
+                        row.getTabs().add(tab);
+                    }
+                }
+                
+                chart.getRows().add(row);
+            }
+        }
+
         chart.clearChanged();
         
         return chart;

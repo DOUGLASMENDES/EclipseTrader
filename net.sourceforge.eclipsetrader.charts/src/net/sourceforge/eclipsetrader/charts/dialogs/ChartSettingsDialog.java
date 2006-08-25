@@ -126,20 +126,18 @@ public class ChartSettingsDialog extends PreferenceDialog
     protected void okPressed()
     {
         super.okPressed();
+
         if (generalPage.getClearData())
         {
             chart.getSecurity().getHistory().clear();
             chart.setChanged();
             CorePlugin.getRepository().saveHistory(chart.getSecurity().getId(), chart.getSecurity().getHistory());
         }
-        CorePlugin.getRepository().save(chart);
+        
         if (generalPage.getSaveAsDefault())
-        {
-            Integer id = chart.getId();
-            chart.setId(null);
-            CorePlugin.getRepository().save(chart);
-            chart.setId(id);
-        }
+            ChartsPlugin.saveDefaultChart(chart);
+
+        CorePlugin.getRepository().save(chart);
         chart.notifyObservers();
     }
 

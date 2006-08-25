@@ -338,14 +338,15 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         actionBars.setGlobalActionHandler("pasteSpecial", pasteSpecialAction = new PasteSpecialAction(this)); //$NON-NLS-1$
         actionBars.setGlobalActionHandler("delete", deleteAction = new DeleteAction(this)); //$NON-NLS-1$
 
-        try {
-            security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(Integer.parseInt(getViewSite().getSecondaryId())));
-            chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
-            autoScale = chart.isAutoScale();
-            
-            setPartName(chart.getTitle());
-            updateActionBars();
+        Integer id = new Integer(Integer.parseInt(getViewSite().getSecondaryId()));
+        chart = (Chart)CorePlugin.getRepository().load(Chart.class, id);
+        security = chart.getSecurity();
+        setPartName(chart.getTitle());
+        setTitleToolTip(security.getDescription());
+        autoScale = chart.isAutoScale();
+        updateActionBars();
 
+        try {
             sashForm.getDisplay().asyncExec(new Runnable() {
                 public void run()
                 {
@@ -494,10 +495,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     {
         chart.setCompression(interval);
         CorePlugin.getRepository().save(chart);
-        
-        datePlot.setInterval(interval);
-        updateView();
-        updateActionBars();
     }
     
     public void setAutoScale(boolean autoScale)
@@ -505,9 +502,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         this.autoScale = autoScale;
         chart.setAutoScale(autoScale);
         CorePlugin.getRepository().save(chart);
-        
-        updateView();
-        updateActionBars();
     }
 
     public int getPeriod()
@@ -519,9 +513,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     {
         chart.setPeriod(period);
         CorePlugin.getRepository().save(chart);
-
-        updateView();
-        updateActionBars();
     }
 
     public void setPeriod(Date beginDate, Date endDate)
@@ -530,9 +521,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         chart.setBeginDate(beginDate);
         chart.setEndDate(endDate);
         CorePlugin.getRepository().save(chart);
-
-        updateView();
-        updateActionBars();
     }
 
     public void setNewChartObject(ChartObject object)
@@ -609,6 +597,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     
     private void updateView()
     {
+        datePlot.setInterval(chart.getCompression());
         if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
             datePlot.setBarData(new BarData(security.getIntradayHistory()).getCompressed(datePlot.getInterval()));
         else
@@ -665,7 +654,11 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             public void run()
             {
                 if (!datePlot.isDisposed())
+                {
+                    setPartName(chart.getTitle());
+                    updateActionBars();
                     updateView();
+                }
             }
         });
     }
