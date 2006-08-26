@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sourceforge.eclipsetrader.core.TradingProvider;
+import net.sourceforge.eclipsetrader.core.ITradingProvider;
 
 
 public class Order extends PersistentObject
@@ -37,7 +37,7 @@ public class Order extends PersistentObject
     public static final int STATUS_PENDING_CANCEL = 5;
     public static final int STATUS_PENDING_NEW = 6;
     String pluginId = "";
-    TradingProvider provider;
+    ITradingProvider provider;
     Account account;
     String exchange = "";
     String orderId = "";
@@ -72,12 +72,12 @@ public class Order extends PersistentObject
         this.pluginId = pluginId;
     }
 
-    public TradingProvider getProvider()
+    public ITradingProvider getProvider()
     {
         return provider;
     }
 
-    public void setProvider(TradingProvider source)
+    public void setProvider(ITradingProvider source)
     {
         this.provider = source;
     }

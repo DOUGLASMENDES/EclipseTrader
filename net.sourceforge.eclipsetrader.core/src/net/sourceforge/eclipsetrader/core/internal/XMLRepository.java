@@ -1503,12 +1503,18 @@ public class XMLRepository extends Repository
                 feedsNode.setAttribute("exchange", source.getExchange());
             element.appendChild(feedsNode);
 
-            node = document.createElement("symbol");
-            node.appendChild(document.createTextNode(source.getSymbol()));
-            feedsNode.appendChild(node);
-            node = document.createElement("account");
-            node.appendChild(document.createTextNode(String.valueOf(source.getAccountId())));
-            feedsNode.appendChild(node);
+            if (!source.getSymbol().equals(""))
+            {
+                node = document.createElement("symbol");
+                node.appendChild(document.createTextNode(source.getSymbol()));
+                feedsNode.appendChild(node);
+            }
+            if (source.getAccountId() != null)
+            {
+                node = document.createElement("account");
+                node.appendChild(document.createTextNode(String.valueOf(source.getAccountId())));
+                feedsNode.appendChild(node);
+            }
             node = document.createElement("quantity");
             node.appendChild(document.createTextNode(String.valueOf(source.getQuantity())));
             feedsNode.appendChild(node);

@@ -402,7 +402,7 @@ public class CorePlugin extends AbstractUIPlugin
         return null;
     }
     
-    public static TradingProvider createTradeSourcePlugin(String id)
+    public static ITradingProvider createTradeSourcePlugin(String id)
     {
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry.getExtensionPoint(TRADING_PROVIDERS_EXTENSION_POINT);
@@ -415,7 +415,7 @@ public class CorePlugin extends AbstractUIPlugin
                 if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                 {
                     try {
-                        TradingProvider obj = (TradingProvider)members[i].createExecutableExtension("class"); //$NON-NLS-1$
+                        ITradingProvider obj = (ITradingProvider)members[i].createExecutableExtension("class"); //$NON-NLS-1$
                         obj.setName(item.getAttribute("name"));
                         return obj;
                     } catch(Exception e) {

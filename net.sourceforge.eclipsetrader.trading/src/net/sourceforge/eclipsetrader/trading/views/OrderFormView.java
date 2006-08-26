@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.TradingProvider;
+import net.sourceforge.eclipsetrader.core.ITradingProvider;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Order;
 import net.sourceforge.eclipsetrader.core.db.Security;
@@ -364,7 +364,7 @@ public class OrderFormView extends ViewPart
             for (Iterator iter = list.iterator(); iter.hasNext(); )
             {
                 Account item = (Account)iter.next();
-                if (source.getAccountId().equals(item.getId()))
+                if (source.getAccountId() != null && source.getAccountId().equals(item.getId()))
                     account.setText(item.getDescription());
             }
             accountSelection();
@@ -388,11 +388,12 @@ public class OrderFormView extends ViewPart
     {
         try {
             IConfigurationElement item = (IConfigurationElement)((List)provider.getData()).get(provider.getSelectionIndex());
-            TradingProvider plugin = (TradingProvider)item.createExecutableExtension("class"); //$NON-NLS-1$
+            ITradingProvider plugin = (ITradingProvider)item.createExecutableExtension("class"); //$NON-NLS-1$
 
             Order order = new Order();
             order.setSecurity((Security)((List)security.getData()).get(security.getSelectionIndex()));
-            order.setAccount((Account)((List)account.getData()).get(account.getSelectionIndex()));
+            if (account.getSelectionIndex() != -1)
+                order.setAccount((Account)((List)account.getData()).get(account.getSelectionIndex()));
             order.setSide(((Integer)side.getData(side.getText())).intValue());
             order.setType(((Integer)type.getData(type.getText())).intValue());
             order.setQuantity(quantity.getSelection());
@@ -454,7 +455,8 @@ public class OrderFormView extends ViewPart
         {
             String text = combo.getText();
             
-            combo.remove(label);
+            if (combo.indexOf(label) != -1)
+                combo.remove(label);
             combo.setData(label, null);
             
             combo.setText(text);

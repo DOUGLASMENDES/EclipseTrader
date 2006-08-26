@@ -13,7 +13,7 @@ package net.sourceforge.eclipsetrader.core;
 
 import net.sourceforge.eclipsetrader.core.db.Order;
 
-public class TradingProvider
+public class TradingProvider implements ITradingProvider
 {
     String name = "";
 
@@ -21,24 +21,39 @@ public class TradingProvider
     {
     }
 
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#getName()
+     */
     public String getName()
     {
         return name;
     }
 
-    protected void setName(String name)
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#setName(java.lang.String)
+     */
+    public void setName(String name)
     {
         this.name = name;
     }
 
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#sendNew(net.sourceforge.eclipsetrader.core.db.Order)
+     */
     public void sendNew(Order order)
     {
     }
 
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#sendCancelRequest(net.sourceforge.eclipsetrader.core.db.Order)
+     */
     public void sendCancelRequest(Order order)
     {
     }
 
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#sendReplaceRequest(net.sourceforge.eclipsetrader.core.db.Order)
+     */
     public void sendReplaceRequest(Order order)
     {
     }
