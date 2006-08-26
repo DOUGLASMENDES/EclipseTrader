@@ -286,50 +286,66 @@ public class TransactionsView extends ViewPart implements ICollectionObserver
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.ICollectionObserver#itemAdded(java.lang.Object)
      */
-    public void itemAdded(Object o)
+    public void itemAdded(final Object o)
     {
-        TableItem[] items = table.getItems();
-        for (int i = 0; i < items.length; i++)
-        {
-            if (comparator.compare(o, items[i].getData()) < 0)
+        table.getDisplay().asyncExec(new Runnable() {
+            public void run()
             {
-                new TransactionTableItem((Transaction)o, table, SWT.NONE, i);
-                for (i = 0; i < table.getItemCount(); i++)
+                if (!table.isDisposed())
                 {
-                    table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
-                    table.getItem(i).setForeground(((i & 1) == 1) ? oddForeground : evenForeground);
+                    TableItem[] items = table.getItems();
+                    for (int i = 0; i < items.length; i++)
+                    {
+                        if (comparator.compare(o, items[i].getData()) < 0)
+                        {
+                            new TransactionTableItem((Transaction)o, table, SWT.NONE, i);
+                            for (i = 0; i < table.getItemCount(); i++)
+                            {
+                                table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+                                table.getItem(i).setForeground(((i & 1) == 1) ? oddForeground : evenForeground);
+                            }
+                            for (i = 1; i < table.getColumnCount(); i++)
+                                table.getColumn(i).pack();
+                            return;
+                        }
+                    }
+                    new TransactionTableItem((Transaction)o, table, SWT.NONE);
+                    for (int i = 0; i < table.getItemCount(); i++)
+                    {
+                        table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+                        table.getItem(i).setForeground(((i & 1) == 1) ? oddForeground : evenForeground);
+                    }
+                    for (int i = 1; i < table.getColumnCount(); i++)
+                        table.getColumn(i).pack();
                 }
-                for (i = 1; i < table.getColumnCount(); i++)
-                    table.getColumn(i).pack();
-                return;
             }
-        }
-        new TransactionTableItem((Transaction)o, table, SWT.NONE);
-        for (int i = 0; i < table.getItemCount(); i++)
-        {
-            table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
-            table.getItem(i).setForeground(((i & 1) == 1) ? oddForeground : evenForeground);
-        }
-        for (int i = 1; i < table.getColumnCount(); i++)
-            table.getColumn(i).pack();
+        });
     }
 
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.ICollectionObserver#itemRemoved(java.lang.Object)
      */
-    public void itemRemoved(Object o)
+    public void itemRemoved(final Object o)
     {
-        TableItem[] items = table.getItems();
-        for (int i = 0; i < items.length; i++)
-        {
-            if (o.equals(items[i].getData()))
-                items[i].dispose();
-        }
-        for (int i = 0; i < table.getItemCount(); i++)
-        {
-            table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
-            table.getItem(i).setForeground(((i & 1) == 1) ? oddForeground : evenForeground);
-        }
+        table.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                if (!table.isDisposed())
+                {
+                    TableItem[] items = table.getItems();
+                    for (int i = 0; i < items.length; i++)
+                    {
+                        if (o.equals(items[i].getData()))
+                            items[i].dispose();
+                    }
+                    for (int i = 0; i < table.getItemCount(); i++)
+                    {
+                        table.getItem(i).setBackground(((i & 1) == 1) ? oddBackground : evenBackground);
+                        table.getItem(i).setForeground(((i & 1) == 1) ? oddForeground : evenForeground);
+                    }
+                }
+            }
+        });
     }
 
     public Account getAccount()

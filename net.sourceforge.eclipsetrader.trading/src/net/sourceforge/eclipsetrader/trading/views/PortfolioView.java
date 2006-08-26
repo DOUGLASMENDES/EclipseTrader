@@ -723,22 +723,30 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
         {
             if (o instanceof Transaction)
             {
-                int index = 0;
-                PositionTreeItem treeItem = null;
-                for (Iterator iter = account.getPortfolio().iterator(); iter.hasNext(); index++)
-                {
-                    PortfolioPosition position = (PortfolioPosition)iter.next();
-                    if (index < getItemCount())
+                getDisplay().asyncExec(new Runnable() {
+                    public void run()
                     {
-                        treeItem = (PositionTreeItem)getItem(index);
-                        treeItem.init(position);
+                        if (!isDisposed())
+                        {
+                            int index = 0;
+                            PositionTreeItem treeItem = null;
+                            for (Iterator iter = account.getPortfolio().iterator(); iter.hasNext(); index++)
+                            {
+                                PortfolioPosition position = (PortfolioPosition)iter.next();
+                                if (index < getItemCount())
+                                {
+                                    treeItem = (PositionTreeItem)getItem(index);
+                                    treeItem.init(position);
+                                }
+                                else
+                                    treeItem = new PositionTreeItem(position, AccountTreeItem.this, SWT.NONE);
+                            }
+                            while(getItemCount() > index)
+                                getItem(index).dispose();
+                            updateItemColors();
+                        }
                     }
-                    else
-                        treeItem = new PositionTreeItem(position, this, SWT.NONE);
-                }
-                while(getItemCount() > index)
-                    getItem(index).dispose();
-                updateItemColors();
+                });
             }
         }
 
@@ -749,22 +757,30 @@ public class PortfolioView extends ViewPart implements ICollectionObserver
         {
             if (o instanceof Transaction)
             {
-                int index = 0;
-                PositionTreeItem treeItem = null;
-                for (Iterator iter = account.getPortfolio().iterator(); iter.hasNext(); index++)
-                {
-                    PortfolioPosition position = (PortfolioPosition)iter.next();
-                    if (index < getItemCount())
+                getDisplay().asyncExec(new Runnable() {
+                    public void run()
                     {
-                        treeItem = (PositionTreeItem)getItem(index);
-                        treeItem.init(position);
+                        if (!isDisposed())
+                        {
+                            int index = 0;
+                            PositionTreeItem treeItem = null;
+                            for (Iterator iter = account.getPortfolio().iterator(); iter.hasNext(); index++)
+                            {
+                                PortfolioPosition position = (PortfolioPosition)iter.next();
+                                if (index < getItemCount())
+                                {
+                                    treeItem = (PositionTreeItem)getItem(index);
+                                    treeItem.init(position);
+                                }
+                                else
+                                    treeItem = new PositionTreeItem(position, AccountTreeItem.this, SWT.NONE);
+                            }
+                            while(getItemCount() > index)
+                                getItem(index).dispose();
+                            updateItemColors();
+                        }
                     }
-                    else
-                        treeItem = new PositionTreeItem(position, this, SWT.NONE);
-                }
-                while(getItemCount() > index)
-                    getItem(index).dispose();
-                updateItemColors();
+                });
             }
         }
 
