@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -39,6 +40,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -143,16 +145,19 @@ public class CorePlugin extends AbstractUIPlugin
         
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().addPerspectiveListener(perspectiveListener);
     }
-    
+
+    /**
+     * Log4j configurator
+     */
     public void configureLogging()
     {
         try
         {
-            Properties properties = new Properties();
+            PreferenceStore preferences = new PreferenceStore();
 
+            // Set the default values from extension registry
             IExtensionRegistry registry = Platform.getExtensionRegistry();
             IExtensionPoint extensionPoint = registry.getExtensionPoint(CorePlugin.LOGGER_PREFERENCES_EXTENSION_POINT);
-
             IConfigurationElement[] members = extensionPoint.getConfigurationElements();
             for (int i = 0; i < members.length; i++)
             {
@@ -160,21 +165,38 @@ public class CorePlugin extends AbstractUIPlugin
                 if (element.getName().equals("logger"))
                 {
                     if (element.getAttribute("defaultValue") != null)
-                        properties.put("log4j.logger." + element.getAttribute("name"), element.getAttribute("defaultValue"));
+                    {
+                        String[] item = element.getAttribute("name").split(";");
+                        for (int x = 0; x < item.length; x++)
+                            preferences.setDefault("log4j.logger." + item[x], element.getAttribute("defaultValue"));
+                    }
                 }
             }
             
+            // Set the default values from the bundle's properties file
             try {
                 URL url = CorePlugin.getDefault().getBundle().getResource("log4j.properties"); //$NON-NLS-1$
+                Properties properties = new Properties();
                 properties.load(url.openStream());
+                for (Iterator iter = properties.keySet().iterator(); iter.hasNext(); )
+                {
+                    String key = (String)iter.next();
+                    preferences.setDefault(key, (String)properties.get(key));
+                }
 
+                // Read the values from the user's configuration
                 File file = CorePlugin.getDefault().getStateLocation().append("log4j.properties").toFile();
                 if (file.exists())
-                    properties.load(new FileInputStream(file));
+                    preferences.load(new FileInputStream(file));
             } catch(Exception e) {
                 CorePlugin.logException(e);
             }
-            
+
+            // Configure log4j
+            Properties properties = new Properties();
+            String[] names = preferences.preferenceNames();
+            for (int i = 0; i < names.length; i++)
+                properties.put(names[i], preferences.getString(names[i]));
             PropertyConfigurator.configure(properties);
         }
         catch (Exception e)

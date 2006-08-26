@@ -13,7 +13,6 @@ package net.sourceforge.eclipsetrader.core.ui.preferences;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +30,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -52,17 +52,17 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
     Map loggers = new HashMap();
     IExtensionRegistry registry;
     IExtensionPoint extensionPoint;
-    Properties properties;
+    PreferenceStore preferences = new PreferenceStore();
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
     public void init(IWorkbench workbench)
     {
+        preferences.setFilename(CorePlugin.getDefault().getStateLocation().append("log4j.properties").toOSString());
+
         registry = Platform.getExtensionRegistry();
         extensionPoint = registry.getExtensionPoint(CorePlugin.LOGGER_PREFERENCES_EXTENSION_POINT);
-
-        properties = new Properties();
         IConfigurationElement[] members = extensionPoint.getConfigurationElements();
         for (int i = 0; i < members.length; i++)
         {
@@ -70,17 +70,27 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
             if (element.getName().equals("logger"))
             {
                 if (element.getAttribute("defaultValue") != null)
-                    properties.put("log4j.logger." + element.getAttribute("logger"), element.getAttribute("defaultValue"));
+                {
+                    String[] item = element.getAttribute("name").split(";");
+                    for (int x = 0; x < item.length; x++)
+                        preferences.setDefault("log4j.logger." + item[x], element.getAttribute("defaultValue"));
+                }
             }
         }
         
         try {
             URL url = CorePlugin.getDefault().getBundle().getResource("log4j.properties"); //$NON-NLS-1$
+            Properties properties = new Properties();
             properties.load(url.openStream());
+            for (Iterator iter = properties.keySet().iterator(); iter.hasNext(); )
+            {
+                String key = (String)iter.next();
+                preferences.setDefault(key, (String)properties.get(key));
+            }
 
             File file = CorePlugin.getDefault().getStateLocation().append("log4j.properties").toFile();
             if (file.exists())
-                properties.load(new FileInputStream(file));
+                preferences.load(new FileInputStream(file));
         } catch(Exception e) {
             CorePlugin.logException(e);
         }
@@ -97,8 +107,8 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
         gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         
-        String rootValue = (String)properties.get("log4j.rootLogger");
-        String currentPattern = (String)properties.get("log4j.appender.stdout.layout.ConversionPattern");
+        String rootValue = preferences.getString("log4j.rootLogger");
+        String currentPattern = preferences.getString("log4j.appender.stdout.layout.ConversionPattern");
 
         console = new Button(content, SWT.CHECK);
         console.setText("Write to console");
@@ -127,7 +137,7 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
         gridLayout.verticalSpacing = 3;
         group.setLayout(gridLayout);
 
-        rootLogger = createLevelCombo(group, "General", (String)properties.get("log4j.rootLogger"), false);
+        rootLogger = createLevelCombo(group, "General", preferences.getString("log4j.rootLogger"));
 
         List list = Arrays.asList(extensionPoint.getConfigurationElements());
         Collections.sort(list, new Comparator() {
@@ -142,7 +152,8 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
             IConfigurationElement element = members[i]; 
             if (element.getName().equals("logger") && loggers.get(element.getAttribute("name")) == null)
             {
-                Combo combo = createLevelCombo(group, element.getAttribute("description"), (String)properties.get("log4j.logger." + element.getAttribute("name")));
+                String[] item = element.getAttribute("name").split(";");
+                Combo combo = createLevelCombo(group, element.getAttribute("description"), preferences.getString("log4j.logger." + item[0]));
                 combo.setData("logger", element.getAttribute("name"));
                 loggers.put(element.getAttribute("name"), combo);
             }
@@ -166,13 +177,11 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
      */
     public boolean performOk()
     {
-        Properties properties = new Properties();
-
         String pattern = (String)format.getData(String.valueOf(format.getSelectionIndex()));
         if (pattern != null)
         {
-            properties.put("log4j.appender.stdout.layout.ConversionPattern", pattern);
-            properties.put("log4j.appender.file.layout.ConversionPattern", pattern);
+            preferences.setValue("log4j.appender.stdout.layout.ConversionPattern", pattern);
+            preferences.setValue("log4j.appender.file.layout.ConversionPattern", pattern);
         }
         
         String root = (String)rootLogger.getData(String.valueOf(rootLogger.getSelectionIndex()));
@@ -180,21 +189,22 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
             root += ", stdout";
         if (file.getSelection())
             root += ", file";
-        properties.put("log4j.rootLogger", root);
+        preferences.setValue("log4j.rootLogger", root);
 
         for (Iterator iter = loggers.keySet().iterator(); iter.hasNext(); )
         {
             String logger = (String)iter.next();
             Combo combo = (Combo)loggers.get(logger);
             if (combo.getData(String.valueOf(combo.getSelectionIndex())) != null)
-                properties.put("log4j.logger." + logger, combo.getData(String.valueOf(combo.getSelectionIndex())));
+            {
+                String[] item = logger.split(";");
+                for (int x = 0; x < item.length; x++)
+                    preferences.setValue("log4j.logger." + item[x], (String)combo.getData(String.valueOf(combo.getSelectionIndex())));
+            }
         }
         
         try {
-            FileOutputStream os = new FileOutputStream(CorePlugin.getDefault().getStateLocation().append("log4j.properties").toFile());
-            properties.store(os, null);
-            os.flush();
-            os.close();
+            preferences.save();
         } catch(Exception e) {
             CorePlugin.logException(e);
         }
@@ -206,19 +216,12 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
 
     public static Combo createLevelCombo(Composite parent, String text, String value)
     {
-        return createLevelCombo(parent, text, value, true);
-    }
-
-    public static Combo createLevelCombo(Composite parent, String text, String value, boolean hasDefault)
-    {
         Label label = new Label(parent, SWT.NONE);
         label.setText(text);
         label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         Combo level = new Combo(parent, SWT.READ_ONLY);
         level.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-        if (hasDefault)
-            level.add("Default");
         level.setData(String.valueOf(level.getItemCount()), "off");
         level.add("Off");
         level.setData(String.valueOf(level.getItemCount()), "fatal");
@@ -242,8 +245,6 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
                     level.select(i);
             }
         }
-        if (hasDefault && level.getSelectionIndex() == -1)
-            level.select(0);
         
         return level;
     }
