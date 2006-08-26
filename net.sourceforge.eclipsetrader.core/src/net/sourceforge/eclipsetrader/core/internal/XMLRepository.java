@@ -58,6 +58,7 @@ import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.columns.Column;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystemGroup;
 
@@ -1302,6 +1303,31 @@ public class XMLRepository extends Repository
                     }
                 }
             }
+            else if (nodeName.equalsIgnoreCase("tradeSource")) //$NON-NLS-1$
+            {
+                TradeSource source = new TradeSource();
+                source.setTradingProviderId(item.getAttributes().getNamedItem("id").getNodeValue()); //$NON-NLS-1$
+                Node attribute = item.getAttributes().getNamedItem("exchange"); //$NON-NLS-1$
+                if (attribute != null)
+                    source.setExchange(attribute.getNodeValue());
+                NodeList quoteList = item.getChildNodes();
+                for (int q = 0; q < quoteList.getLength(); q++)
+                {
+                    item = quoteList.item(q);
+                    nodeName = item.getNodeName();
+                    value = item.getFirstChild();
+                    if (value != null)
+                    {
+                        if (nodeName.equalsIgnoreCase("symbol")) //$NON-NLS-1$
+                            source.setSymbol(value.getNodeValue());
+                        else if (nodeName.equalsIgnoreCase("account")) //$NON-NLS-1$
+                            source.setAccountId(new Integer(value.getNodeValue()));
+                        else if (nodeName.equalsIgnoreCase("quantity")) //$NON-NLS-1$
+                            source.setQuantity(Integer.parseInt(value.getNodeValue()));
+                    }
+                }
+                security.setTradeSource(source);
+            }
             else if (nodeName.equalsIgnoreCase("quote")) //$NON-NLS-1$
             {
                 Quote quote = new Quote();
@@ -1434,7 +1460,7 @@ public class XMLRepository extends Repository
         node.appendChild(document.createTextNode(String.valueOf(security.getKeepDays())));
         collectorNode.appendChild(node);
 
-        if (security.getQuoteFeed() != null || security.getHistoryFeed() != null)
+        if (security.getQuoteFeed() != null || security.getLevel2Feed() != null || security.getHistoryFeed() != null)
         {
             Node feedsNode = document.createElement("feeds");
             element.appendChild(feedsNode);
@@ -1465,6 +1491,27 @@ public class XMLRepository extends Repository
                 node.appendChild(document.createTextNode(security.getHistoryFeed().getSymbol()));
                 feedsNode.appendChild(node);
             }
+        }
+        
+        if (security.getTradeSource() != null)
+        {
+            TradeSource source = security.getTradeSource();
+            
+            Element feedsNode = document.createElement("tradeSource");
+            feedsNode.setAttribute("id", source.getTradingProviderId());
+            if (source.getExchange() != null)
+                feedsNode.setAttribute("exchange", source.getExchange());
+            element.appendChild(feedsNode);
+
+            node = document.createElement("symbol");
+            node.appendChild(document.createTextNode(source.getSymbol()));
+            feedsNode.appendChild(node);
+            node = document.createElement("account");
+            node.appendChild(document.createTextNode(String.valueOf(source.getAccountId())));
+            feedsNode.appendChild(node);
+            node = document.createElement("quantity");
+            node.appendChild(document.createTextNode(String.valueOf(source.getQuantity())));
+            feedsNode.appendChild(node);
         }
         
         if (security.getQuote() != null)

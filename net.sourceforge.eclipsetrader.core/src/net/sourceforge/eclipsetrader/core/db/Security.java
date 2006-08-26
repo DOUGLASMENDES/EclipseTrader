@@ -18,6 +18,7 @@ import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.ObservableList;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
+import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
 import net.sourceforge.eclipsetrader.core.internal.CObservable;
 
 
@@ -39,6 +40,7 @@ public class Security extends PersistentObject
     FeedSource quoteFeed;
     FeedSource level2Feed;
     FeedSource historyFeed;
+    TradeSource tradeSource;
     ObservableList history;
     ObservableList intradayHistory;
     Quote quote;
@@ -155,6 +157,20 @@ public class Security extends PersistentObject
         if (this.level2Feed == null && level2Feed != null)
             setChanged();
         this.level2Feed = level2Feed;
+    }
+
+    public TradeSource getTradeSource()
+    {
+        return tradeSource;
+    }
+
+    public void setTradeSource(TradeSource tradeSource)
+    {
+        if (this.tradeSource != null && !this.tradeSource.equals(tradeSource))
+            setChanged();
+        if (this.tradeSource == null && tradeSource != null)
+            setChanged();
+        this.tradeSource = tradeSource;
     }
 
     public List getHistory()

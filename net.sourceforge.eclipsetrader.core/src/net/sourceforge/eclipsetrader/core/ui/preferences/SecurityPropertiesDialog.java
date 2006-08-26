@@ -62,6 +62,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         node.add(new PreferenceNode("level2", new Level2FeedPage())); //$NON-NLS-1$
         node.add(new PreferenceNode("history", new HistoryFeedPage())); //$NON-NLS-1$
         
+        getPreferenceManager().addToRoot(new PreferenceNode("trading", new TradeSourcePage())); //$NON-NLS-1$
         getPreferenceManager().addToRoot(new PreferenceNode("intraday", new DataCollectorPage())); //$NON-NLS-1$
     }
 
@@ -319,6 +320,44 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         {
             if (isValid())
                 security.setHistoryFeed(options.getFeed());
+            return super.performOk();
+        }
+    }
+    
+    private class TradeSourcePage extends PreferencePage
+    {
+        TradeSourceOptions options = new TradeSourceOptions(); //$NON-NLS-1$
+
+        public TradeSourcePage()
+        {
+            super("Trading");
+            noDefaultAndApplyButton();
+            setValid(false);
+        }
+
+        /* (non-Javadoc)
+         * @see net.sourceforge.eclipsetrader.core.ui.preferences.SecurityPropertiesDialog.FeedPage#createContents(org.eclipse.swt.widgets.Composite)
+         */
+        protected Control createContents(Composite parent)
+        {
+            Composite content = options.createControls(parent, security.getTradeSource());
+
+            GridLayout gridLayout = new GridLayout(2, false);
+            gridLayout.marginWidth = gridLayout.marginHeight = 0;
+            content.setLayout(gridLayout);
+            
+            setValid(true);
+            
+            return content;
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.preference.PreferencePage#performOk()
+         */
+        public boolean performOk()
+        {
+            if (isValid())
+                security.setTradeSource(options.getSource());
             return super.performOk();
         }
     }

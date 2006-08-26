@@ -20,6 +20,7 @@ import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.preferences.FeedOptions;
 import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
+import net.sourceforge.eclipsetrader.core.ui.preferences.TradeSourceOptions;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -41,6 +42,7 @@ public class SecurityWizard extends Wizard
     private FeedOptions quoteFeedOptions = new FeedOptions("quote"); //$NON-NLS-1$
     private FeedOptions level2FeedOptions = new FeedOptions("level2"); //$NON-NLS-1$
     private FeedOptions historyFeedOptions = new FeedOptions("history"); //$NON-NLS-1$
+    private TradeSourceOptions tradeSourceOptions = new TradeSourceOptions();
     private IntradayDataOptions intradayOptions = new IntradayDataOptions();
 
     public SecurityWizard()
@@ -95,6 +97,16 @@ public class SecurityWizard extends Wizard
         page = new WizardPage("") { //$NON-NLS-1$
             public void createControl(Composite parent)
             {
+                setControl(tradeSourceOptions.createControls(parent, null));
+            }
+        };
+        page.setTitle("Trading");
+        page.setDescription("Set the trading options");
+        addPage(page);
+        
+        page = new WizardPage("") { //$NON-NLS-1$
+            public void createControl(Composite parent)
+            {
                 setControl(intradayOptions.createControls(parent, null));
             }
         };
@@ -131,6 +143,7 @@ public class SecurityWizard extends Wizard
         security.setLevel2Feed(level2FeedOptions.getFeed());
         security.setHistoryFeed(historyFeedOptions.getFeed());
         
+        security.setTradeSource(tradeSourceOptions.getSource());
         intradayOptions.saveSettings(security);
         
         CorePlugin.getRepository().save(security);
