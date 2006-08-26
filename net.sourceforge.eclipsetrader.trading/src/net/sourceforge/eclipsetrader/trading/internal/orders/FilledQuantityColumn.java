@@ -51,6 +51,8 @@ public class FilledQuantityColumn implements IOrdersLabelProvider
      */
     public String getText(Order order)
     {
+        if (order.getFilledQuantity() == 0)
+            return "";
         return numberFormat.format(order.getFilledQuantity());
     }
 }

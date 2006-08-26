@@ -51,6 +51,8 @@ public class AveragePriceColumn implements IOrdersLabelProvider
      */
     public String getText(Order order)
     {
+        if (order.getAveragePrice() == 0)
+            return "";
         return numberFormat.format(order.getAveragePrice());
     }
 }

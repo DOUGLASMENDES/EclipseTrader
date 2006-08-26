@@ -51,6 +51,8 @@ public class StopPriceColumn implements IOrdersLabelProvider
      */
     public String getText(Order order)
     {
+        if (order.getStopPrice() == 0)
+            return "";
         return numberFormat.format(order.getStopPrice());
     }
 }
