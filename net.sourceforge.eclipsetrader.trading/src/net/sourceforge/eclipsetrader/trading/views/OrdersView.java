@@ -12,6 +12,7 @@
 package net.sourceforge.eclipsetrader.trading.views;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -205,27 +206,42 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         
         TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
         tabItem.setText("All");
-        all = new OrdersTable(tabFolder, 0);
+        all = new OrdersTable(tabFolder, new ArrayList());
         tabItem.setControl(all.getControl());
 
         tabItem = new TabItem(tabFolder, SWT.NONE);
         tabItem.setText("Pending");
-        pending = new OrdersTable(tabFolder, Order.STATUS_PENDING_NEW);
+        Integer[] pendingFilter = { 
+                new Integer(Order.STATUS_NEW), 
+                new Integer(Order.STATUS_PARTIAL), 
+                new Integer(Order.STATUS_PENDING_CANCEL), 
+                new Integer(Order.STATUS_PENDING_NEW) 
+            };
+        pending = new OrdersTable(tabFolder, Arrays.asList(pendingFilter));
         tabItem.setControl(pending.getControl());
         
         tabItem = new TabItem(tabFolder, SWT.NONE);
         tabItem.setText("Filled");
-        filled = new OrdersTable(tabFolder, Order.STATUS_FILLED);
+        Integer[] filledFilter = { 
+                new Integer(Order.STATUS_FILLED) 
+            };
+        filled = new OrdersTable(tabFolder, Arrays.asList(filledFilter));
         tabItem.setControl(filled.getControl());
         
         tabItem = new TabItem(tabFolder, SWT.NONE);
         tabItem.setText("Canceled");
-        canceled = new OrdersTable(tabFolder, Order.STATUS_CANCELED);
+        Integer[] canceledFilter = { 
+                new Integer(Order.STATUS_CANCELED) 
+            };
+        canceled = new OrdersTable(tabFolder, Arrays.asList(canceledFilter));
         tabItem.setControl(canceled.getControl());
         
         tabItem = new TabItem(tabFolder, SWT.NONE);
         tabItem.setText("Rejected");
-        rejected = new OrdersTable(tabFolder, Order.STATUS_REJECTED);
+        Integer[] rejectedFilter = { 
+                new Integer(Order.STATUS_REJECTED) 
+            };
+        rejected = new OrdersTable(tabFolder, Arrays.asList(rejectedFilter));
         tabItem.setControl(rejected.getControl());
 
         tabFolder.addSelectionListener(new SelectionAdapter() {
@@ -262,7 +278,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         Order[] selection = getSelectedOrders();
         for (int i = 0; i < selection.length; i++)
         {
-            if (selection[i].getStatus() == Order.STATUS_NEW || selection[i].getStatus() == Order.STATUS_PARTIAL)
+            if (selection[i].getStatus() != Order.STATUS_CANCELED && selection[i].getStatus() != Order.STATUS_FILLED)
                 cancelEnable = true;
         }
         cancelRequest.setEnabled(cancelEnable);
@@ -313,16 +329,16 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     class OrdersTable implements ICollectionObserver, Observer
     {
         Table table;
-        int filter;
+        List filter = new ArrayList();
         List list = new ArrayList();
         Comparator comparator = new Comparator() {
             public int compare(Object arg0, Object arg1)
             {
-                return ((Order)arg0).getDate().compareTo(((Order)arg1).getDate());
+                return ((Order)arg1).getDate().compareTo(((Order)arg0).getDate());
             }
         };
 
-        public OrdersTable(Composite parent, int filter)
+        public OrdersTable(Composite parent, List filter)
         {
             this.filter = filter;
 
@@ -366,9 +382,10 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
             for (Iterator iter = CorePlugin.getRepository().allOrders().iterator(); iter.hasNext(); )
             {
                 Order order = (Order)iter.next();
-                if (filter == 0 || filter == order.getStatus())
+                if (filter.size() == 0 || filter.contains(new Integer(order.getStatus())))
                     list.add(order);
             }
+            Collections.sort(list, comparator);
 
             updateTable();
             CorePlugin.getRepository().allOrders().addCollectionObserver(this);
@@ -427,7 +444,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
                 tableItem.setText(index, label.getText(order));
             }
 
-            if (filter == 0)
+            if (filter.size() == 0)
             {
                 switch(order.getStatus())
                 {
@@ -464,7 +481,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
                     if (index != -1 && !table.isDisposed())
                     {
                         TableItem tableItem = table.getItem(index);
-                        if (filter != 0 && order.getStatus() != filter)
+                        if (filter.size() != 0 && !filter.contains(new Integer(order.getStatus())))
                         {
                             tableItem.dispose();
                             list.remove(order);
@@ -473,7 +490,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
                             update(tableItem, order);
                     }
                     
-                    if (filter == 0)
+                    if (filter.size() == 0)
                     {
                         switch(order.getStatus())
                         {
@@ -509,7 +526,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         {
             final Order order = (Order)o;
 
-            if (filter == 0 || order.getStatus() == filter)
+            if (filter.size() == 0 || filter.contains(new Integer(order.getStatus())))
             {
                 list.add(order);
                 Collections.sort(list, comparator);

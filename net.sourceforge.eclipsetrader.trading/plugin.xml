@@ -416,6 +416,12 @@
             name="%view.name.watchlist"/>
       <view
             category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.trading.views.OrderFormView"
+            icon="icons/eview16/table_edit.png"
+            id="net.sourceforge.eclipsetrader.trading.trade"
+            name="Order Form"/>
+      <view
+            category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.trading.views.OrdersView"
             icon="icons/eview16/report.png"
             id="net.sourceforge.eclipsetrader.trading.orders"
@@ -609,6 +615,9 @@
       <column
             class="net.sourceforge.eclipsetrader.trading.internal.orders.TypeColumn"
             id="ordersView.type"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.AccountColumn"
+            id="ordersView.account"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.trading.systems">
