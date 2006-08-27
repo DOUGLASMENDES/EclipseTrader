@@ -2299,6 +2299,8 @@ public class XMLRepository extends Repository
                     order.setFilledQuantity(Integer.parseInt(value.getNodeValue()));
                 else if (nodeName.equals("averagePrice")) //$NON-NLS-1$
                     order.setAveragePrice(new Double(value.getNodeValue()).doubleValue());
+                else if (nodeName.equals("validity")) //$NON-NLS-1$
+                    order.setValidity(Integer.parseInt(value.getNodeValue()));
                 else if (nodeName.equals("status")) //$NON-NLS-1$
                     order.setStatus(Integer.parseInt(value.getNodeValue()));
                 else if (nodeName.equals("account")) //$NON-NLS-1$
@@ -2368,6 +2370,9 @@ public class XMLRepository extends Repository
                 element.appendChild(node);
                 node = document.createElement("averagePrice");
                 node.appendChild(document.createTextNode(String.valueOf(order.getAveragePrice())));
+                element.appendChild(node);
+                node = document.createElement("validity");
+                node.appendChild(document.createTextNode(String.valueOf(order.getValidity())));
                 element.appendChild(node);
                 node = document.createElement("status");
                 node.appendChild(document.createTextNode(String.valueOf(order.getStatus())));

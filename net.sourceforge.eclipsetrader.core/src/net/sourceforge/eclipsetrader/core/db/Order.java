@@ -29,6 +29,10 @@ public class Order extends PersistentObject
     public static final int TYPE_LIMIT = 2;
     public static final int TYPE_STOP = 3;
     public static final int TYPE_STOPLIMIT = 4;
+    public static final int VALID_DAY = 1;
+    public static final int VALID_IMMEDIATE_OR_CANCEL = 2;
+    public static final int VALID_OPENING = 3;
+    public static final int VALID_CLOSING = 4;
     public static final int STATUS_NEW = 0;
     public static final int STATUS_PARTIAL = 1;
     public static final int STATUS_FILLED = 2;
@@ -50,6 +54,7 @@ public class Order extends PersistentObject
     double stopPrice;
     int filledQuantity;
     double averagePrice;
+    int validity;
     int status;
     Map params = new HashMap();
 
@@ -218,6 +223,16 @@ public class Order extends PersistentObject
     public void setExchange(String exchange)
     {
         this.exchange = exchange;
+    }
+
+    public int getValidity()
+    {
+        return validity;
+    }
+
+    public void setValidity(int validity)
+    {
+        this.validity = validity;
     }
 
     public Map getParams()
