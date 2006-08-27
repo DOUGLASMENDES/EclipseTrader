@@ -11,13 +11,25 @@
 
 package net.sourceforge.eclipsetrader.trading.internal.orders;
 
-import org.eclipse.swt.SWT;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderValidity;
 import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
+
+import org.eclipse.swt.SWT;
 
 public class ValidityColumn implements IOrdersLabelProvider
 {
+    static Map labels = new HashMap();
+    static {
+        labels.put(OrderValidity.DAY, "Day");
+        labels.put(OrderValidity.IMMEDIATE_OR_CANCEL, "Imm. or Cancel");
+        labels.put(OrderValidity.AT_OPENING, "At Opening");
+        labels.put(OrderValidity.AT_CLOSING, "At Closing");
+        labels.put(OrderValidity.GOOD_TILL_CANCEL, "Good Till Cancel");
+    }
 
     public ValidityColumn()
     {
@@ -44,18 +56,7 @@ public class ValidityColumn implements IOrdersLabelProvider
      */
     public String getText(Order order)
     {
-        switch(order.getValidity())
-        {
-            case Order.VALID_DAY:
-                return "Day";
-            case Order.VALID_IMMEDIATE_OR_CANCEL:
-                return "Imm. or cancel";
-            case Order.VALID_OPENING:
-                return "At Opening";
-            case Order.VALID_CLOSING:
-                return "At Closing";
-            default:
-                return String.valueOf(order.getValidity());
-        }
+        String text = (String)labels.get(order.getValidity());
+        return text != null ? text : "";
     }
 }

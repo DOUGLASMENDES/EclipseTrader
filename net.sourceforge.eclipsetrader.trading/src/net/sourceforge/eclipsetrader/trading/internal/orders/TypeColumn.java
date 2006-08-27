@@ -11,13 +11,24 @@
 
 package net.sourceforge.eclipsetrader.trading.internal.orders;
 
-import org.eclipse.swt.SWT;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderType;
 import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
+
+import org.eclipse.swt.SWT;
 
 public class TypeColumn implements IOrdersLabelProvider
 {
+    static Map labels = new HashMap();
+    static {
+        labels.put(OrderType.LIMIT, "Limit");
+        labels.put(OrderType.MARKET, "Market");
+        labels.put(OrderType.STOP, "Stop");
+        labels.put(OrderType.STOPLIMIT, "Stop Limit");
+    }
 
     public TypeColumn()
     {
@@ -44,18 +55,7 @@ public class TypeColumn implements IOrdersLabelProvider
      */
     public String getText(Order order)
     {
-        switch(order.getType())
-        {
-            case Order.TYPE_LIMIT:
-                return "Limit";
-            case Order.TYPE_MARKET:
-                return "Market";
-            case Order.TYPE_STOP:
-                return "Stop";
-            case Order.TYPE_STOPLIMIT:
-                return "Stop Limit";
-            default:
-                return String.valueOf(order.getType());
-        }
+        String text = (String)labels.get(order.getType());
+        return text != null ? text : "";
     }
 }

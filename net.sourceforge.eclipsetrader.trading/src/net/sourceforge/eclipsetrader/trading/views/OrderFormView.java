@@ -16,13 +16,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ITradingProvider;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderSide;
+import net.sourceforge.eclipsetrader.core.db.OrderStatus;
+import net.sourceforge.eclipsetrader.core.db.OrderType;
+import net.sourceforge.eclipsetrader.core.db.OrderValidity;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
@@ -63,6 +69,10 @@ public class OrderFormView extends ViewPart
     Combo account;
     Combo validity;
     Label total;
+    static Map sideLabels = new HashMap();
+    static Map typeLabels = new HashMap();
+    static Map validityLabels = new HashMap();
+    static Map statusLabels = new HashMap();
     private NumberFormat pf = NumberFormat.getInstance();
     private NumberFormat nf = NumberFormat.getInstance();
     private Logger logger = Logger.getLogger(getClass());
@@ -311,21 +321,22 @@ public class OrderFormView extends ViewPart
         }
         else
             provider.setData(new ArrayList());
-        
-        side.add("Buy");
-        side.setData("Buy", new Integer(Order.SIDE_BUY));
-        side.add("Sell");
-        side.setData("Sell", new Integer(Order.SIDE_SELL));
+
+        list = new ArrayList();
+        list.add(OrderSide.BUY);
+        list.add(OrderSide.SELL);
+        populateValues(side, list, sideLabels);
         side.select(0);
         
-        type.add("Limit");
-        type.setData("Limit", new Integer(Order.TYPE_LIMIT));
-        type.add("Market");
-        type.setData("Market", new Integer(Order.TYPE_MARKET));
+        list = new ArrayList();
+        list.add(OrderType.LIMIT);
+        list.add(OrderType.MARKET);
+        populateValues(type, list, typeLabels);
         type.select(0);
         
-        validity.add("Day");
-        validity.setData("Day", new Integer(Order.VALID_DAY));
+        list = new ArrayList();
+        list.add(OrderValidity.DAY);
+        populateValues(validity, list, validityLabels);
         validity.select(0);
         
         list = CorePlugin.getRepository().allAccounts();
@@ -412,14 +423,14 @@ public class OrderFormView extends ViewPart
             order.setSecurity((Security)((List)security.getData()).get(security.getSelectionIndex()));
             if (account.getSelectionIndex() != -1)
                 order.setAccount((Account)((List)account.getData()).get(account.getSelectionIndex()));
-            order.setSide(((Integer)side.getData(side.getText())).intValue());
-            order.setType(((Integer)type.getData(type.getText())).intValue());
+            order.setSide((OrderSide)side.getData(side.getText()));
+            order.setType((OrderType)type.getData(type.getText()));
             order.setQuantity(quantity.getSelection());
-            if (order.getType() != Order.TYPE_MARKET)
+            if (!OrderType.MARKET.equals(order.getType()))
                 order.setPrice(price.getSelection() / Math.pow(10, price.getDigits()));
             if (exchange.isEnabled())
                 order.setExchange((String)exchange.getData(exchange.getText()));
-            order.setValidity(((Integer)validity.getData(validity.getText())).intValue());
+            order.setValidity((OrderValidity)validity.getData(validity.getText()));
             
             plugin.sendNew(order);
         
@@ -452,7 +463,7 @@ public class OrderFormView extends ViewPart
             
             exchange.getParent().getParent().layout();
             
-            String value = item.getAttribute("sellShort");
+/*            String value = item.getAttribute("sellShort");
             updateOption(side, "Sell Short", Order.SIDE_SELLSHORT, value != null && value.equals("true"));
 
             value = item.getAttribute("immediateOrCancel");
@@ -460,7 +471,7 @@ public class OrderFormView extends ViewPart
             value = item.getAttribute("opening");
             updateOption(validity, "At Opening", Order.VALID_OPENING, "true".equals(value));
             value = item.getAttribute("closing");
-            updateOption(validity, "At Closing", Order.VALID_CLOSING, "true".equals(value));
+            updateOption(validity, "At Closing", Order.VALID_CLOSING, "true".equals(value));*/
         }
         
         updateTotal();
@@ -529,16 +540,7 @@ public class OrderFormView extends ViewPart
         if (value == null)
             value = new Integer(-1);
 
-        switch(value.intValue())
-        {
-            case Order.TYPE_LIMIT:
-                price.setEnabled(true);
-                break;
-            default:
-                price.setEnabled(false);
-                break;
-        }
-
+        price.setEnabled(OrderType.LIMIT.equals(value));
         updateTotal();
     }
     
@@ -570,5 +572,45 @@ public class OrderFormView extends ViewPart
     
     void validitySelection()
     {
+    }
+    
+    void populateValues(Combo combo, List list, Map labels)
+    {
+        for (Iterator iter = list.iterator(); iter.hasNext(); )
+        {
+            Object value = iter.next();
+            String text = (String)labels.get(value);
+            if (text != null)
+            {
+                combo.add(text);
+                combo.setData(text, value);
+            }
+        }
+    }
+
+    static {
+        sideLabels.put(OrderSide.BUY, "Buy");
+        sideLabels.put(OrderSide.SELL, "Sell");
+        sideLabels.put(OrderSide.SELLSHORT, "Sell Short");
+        sideLabels.put(OrderSide.BUYCOVER, "Buy Cover");
+
+        typeLabels.put(OrderType.LIMIT, "Limit");
+        typeLabels.put(OrderType.MARKET, "Market");
+        typeLabels.put(OrderType.STOP, "Stop");
+        typeLabels.put(OrderType.STOPLIMIT, "Stop Limit");
+
+        validityLabels.put(OrderValidity.DAY, "Day");
+        validityLabels.put(OrderValidity.IMMEDIATE_OR_CANCEL, "Imm. or Cancel");
+        validityLabels.put(OrderValidity.AT_OPENING, "At Opening");
+        validityLabels.put(OrderValidity.AT_CLOSING, "At Closing");
+        validityLabels.put(OrderValidity.GOOD_TILL_CANCEL, "Good Till Cancel");
+
+        statusLabels.put(OrderStatus.NEW, "New");
+        statusLabels.put(OrderStatus.PARTIAL, "Partial");
+        statusLabels.put(OrderStatus.FILLED, "Filled");
+        statusLabels.put(OrderStatus.CANCELED, "Canceled");
+        statusLabels.put(OrderStatus.REJECTED, "Rejected");
+        statusLabels.put(OrderStatus.PENDING_CANCEL, "Pending Cancel");
+        statusLabels.put(OrderStatus.PENDING_NEW, "Pending New");
     }
 }

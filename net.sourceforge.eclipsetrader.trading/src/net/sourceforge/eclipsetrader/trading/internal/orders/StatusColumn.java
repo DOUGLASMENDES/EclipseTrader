@@ -11,13 +11,27 @@
 
 package net.sourceforge.eclipsetrader.trading.internal.orders;
 
-import org.eclipse.swt.SWT;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderStatus;
 import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
+
+import org.eclipse.swt.SWT;
 
 public class StatusColumn implements IOrdersLabelProvider
 {
+    static Map labels = new HashMap();
+    static {
+        labels.put(OrderStatus.NEW, "New");
+        labels.put(OrderStatus.PARTIAL, "Partial");
+        labels.put(OrderStatus.FILLED, "Filled");
+        labels.put(OrderStatus.CANCELED, "Canceled");
+        labels.put(OrderStatus.REJECTED, "Rejected");
+        labels.put(OrderStatus.PENDING_CANCEL, "Pending Cancel");
+        labels.put(OrderStatus.PENDING_NEW, "Pending New");
+    }
 
     public StatusColumn()
     {
@@ -44,24 +58,7 @@ public class StatusColumn implements IOrdersLabelProvider
      */
     public String getText(Order order)
     {
-        switch(order.getStatus())
-        {
-            case Order.STATUS_NEW:
-                return "New";
-            case Order.STATUS_PARTIAL:
-                return "Partial";
-            case Order.STATUS_FILLED:
-                return "Filled";
-            case Order.STATUS_CANCELED:
-                return "Cancelled";
-            case Order.STATUS_REJECTED:
-                return "Rejected";
-            case Order.STATUS_PENDING_CANCEL:
-                return "Cancel Pending";
-            case Order.STATUS_PENDING_NEW:
-                return "Pending";
-            default:
-                return String.valueOf(order.getStatus());
-        }
+        String text = (String)labels.get(order.getStatus());
+        return text != null ? text : "";
     }
 }

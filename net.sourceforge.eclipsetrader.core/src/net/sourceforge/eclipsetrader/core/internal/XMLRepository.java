@@ -48,6 +48,10 @@ import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderSide;
+import net.sourceforge.eclipsetrader.core.db.OrderStatus;
+import net.sourceforge.eclipsetrader.core.db.OrderType;
+import net.sourceforge.eclipsetrader.core.db.OrderValidity;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.PersistentPreferenceStore;
 import net.sourceforge.eclipsetrader.core.db.Security;
@@ -2286,9 +2290,9 @@ public class XMLRepository extends Repository
                 else if (nodeName.equals("orderId")) //$NON-NLS-1$
                     order.setOrderId(value.getNodeValue());
                 else if (nodeName.equals("side")) //$NON-NLS-1$
-                    order.setSide(Integer.parseInt(value.getNodeValue()));
+                    order.setSide(new OrderSide(Integer.parseInt(value.getNodeValue())));
                 else if (nodeName.equals("type")) //$NON-NLS-1$
-                    order.setType(Integer.parseInt(value.getNodeValue()));
+                    order.setType(new OrderType(Integer.parseInt(value.getNodeValue())));
                 else if (nodeName.equals("quantity")) //$NON-NLS-1$
                     order.setQuantity(Integer.parseInt(value.getNodeValue()));
                 else if (nodeName.equals("price")) //$NON-NLS-1$
@@ -2300,9 +2304,9 @@ public class XMLRepository extends Repository
                 else if (nodeName.equals("averagePrice")) //$NON-NLS-1$
                     order.setAveragePrice(new Double(value.getNodeValue()).doubleValue());
                 else if (nodeName.equals("validity")) //$NON-NLS-1$
-                    order.setValidity(Integer.parseInt(value.getNodeValue()));
+                    order.setValidity(new OrderValidity(Integer.parseInt(value.getNodeValue())));
                 else if (nodeName.equals("status")) //$NON-NLS-1$
-                    order.setStatus(Integer.parseInt(value.getNodeValue()));
+                    order.setStatus(new OrderStatus(Integer.parseInt(value.getNodeValue())));
                 else if (nodeName.equals("account")) //$NON-NLS-1$
                 {
                     order.setAccount((Account)this.accountMap.get(new Integer(value.getNodeValue())));
@@ -2371,9 +2375,12 @@ public class XMLRepository extends Repository
                 node = document.createElement("averagePrice");
                 node.appendChild(document.createTextNode(String.valueOf(order.getAveragePrice())));
                 element.appendChild(node);
-                node = document.createElement("validity");
-                node.appendChild(document.createTextNode(String.valueOf(order.getValidity())));
-                element.appendChild(node);
+                if (order.getValidity() != null)
+                {
+                    node = document.createElement("validity");
+                    node.appendChild(document.createTextNode(String.valueOf(order.getValidity())));
+                    element.appendChild(node);
+                }
                 node = document.createElement("status");
                 node.appendChild(document.createTextNode(String.valueOf(order.getStatus())));
                 element.appendChild(node);

@@ -21,25 +21,6 @@ import net.sourceforge.eclipsetrader.core.ITradingProvider;
 
 public class Order extends PersistentObject
 {
-    public static final int SIDE_BUY = 1;
-    public static final int SIDE_SELL = 2;
-    public static final int SIDE_SELLSHORT = 3;
-    public static final int SIDE_BUYCOVER = 4;
-    public static final int TYPE_MARKET = 1;
-    public static final int TYPE_LIMIT = 2;
-    public static final int TYPE_STOP = 3;
-    public static final int TYPE_STOPLIMIT = 4;
-    public static final int VALID_DAY = 1;
-    public static final int VALID_IMMEDIATE_OR_CANCEL = 2;
-    public static final int VALID_OPENING = 3;
-    public static final int VALID_CLOSING = 4;
-    public static final int STATUS_NEW = 0;
-    public static final int STATUS_PARTIAL = 1;
-    public static final int STATUS_FILLED = 2;
-    public static final int STATUS_CANCELED = 3;
-    public static final int STATUS_REJECTED = 4;
-    public static final int STATUS_PENDING_CANCEL = 5;
-    public static final int STATUS_PENDING_NEW = 6;
     String pluginId = "";
     ITradingProvider provider;
     Account account;
@@ -47,15 +28,15 @@ public class Order extends PersistentObject
     String orderId = "";
     Date date = Calendar.getInstance().getTime();
     Security security;
-    int side;
-    int type;
+    OrderSide side;
+    OrderType type;
     int quantity;
     double price;
     double stopPrice;
     int filledQuantity;
     double averagePrice;
-    int validity;
-    int status;
+    OrderValidity validity;
+    OrderStatus status = OrderStatus.NEW;
     Map params = new HashMap();
 
     public Order()
@@ -173,24 +154,24 @@ public class Order extends PersistentObject
         this.security = security;
     }
 
-    public int getSide()
+    public OrderSide getSide()
     {
         return side;
     }
 
-    public void setSide(int side)
+    public void setSide(OrderSide side)
     {
         this.side = side;
     }
 
-    public int getStatus()
+    public OrderStatus getStatus()
     {
         return status;
     }
 
-    public void setStatus(int status)
+    public void setStatus(OrderStatus status)
     {
-        if (this.status != status)
+        if (!this.status.equals(status))
             setChanged();
         this.status = status;
     }
@@ -205,12 +186,12 @@ public class Order extends PersistentObject
         this.stopPrice = stopPrice;
     }
 
-    public int getType()
+    public OrderType getType()
     {
         return type;
     }
 
-    public void setType(int type)
+    public void setType(OrderType type)
     {
         this.type = type;
     }
@@ -225,12 +206,12 @@ public class Order extends PersistentObject
         this.exchange = exchange;
     }
 
-    public int getValidity()
+    public OrderValidity getValidity()
     {
         return validity;
     }
 
-    public void setValidity(int validity)
+    public void setValidity(OrderValidity validity)
     {
         this.validity = validity;
     }
@@ -251,7 +232,7 @@ public class Order extends PersistentObject
             provider.sendCancelRequest(this);
         else
         {
-            setStatus(STATUS_CANCELED);
+            setStatus(OrderStatus.CANCELED);
             getRepository().save(this);
         }
     }

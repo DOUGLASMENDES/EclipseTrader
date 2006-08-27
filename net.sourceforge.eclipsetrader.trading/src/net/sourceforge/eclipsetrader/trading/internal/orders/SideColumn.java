@@ -11,13 +11,24 @@
 
 package net.sourceforge.eclipsetrader.trading.internal.orders;
 
-import org.eclipse.swt.SWT;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderSide;
 import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
+
+import org.eclipse.swt.SWT;
 
 public class SideColumn implements IOrdersLabelProvider
 {
+    static Map labels = new HashMap();
+    static {
+        labels.put(OrderSide.BUY, "Buy");
+        labels.put(OrderSide.SELL, "Sell");
+        labels.put(OrderSide.SELLSHORT, "Sell Short");
+        labels.put(OrderSide.BUYCOVER, "Buy Cover");
+    }
 
     public SideColumn()
     {
@@ -44,18 +55,7 @@ public class SideColumn implements IOrdersLabelProvider
      */
     public String getText(Order order)
     {
-        switch(order.getSide())
-        {
-            case Order.SIDE_BUY:
-                return "Buy";
-            case Order.SIDE_SELL:
-                return "Sell";
-            case Order.SIDE_SELLSHORT:
-                return "Sell Short";
-            case Order.SIDE_BUYCOVER:
-                return "Buy Cover";
-            default:
-                return String.valueOf(order.getSide());
-        }
+        String text = (String)labels.get(order.getSide());
+        return text != null ? text : "";
     }
 }
