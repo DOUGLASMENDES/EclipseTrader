@@ -44,4 +44,12 @@ public class OrderStatus
             return false;
         return value == ((OrderStatus)o).value;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        return value;
+    }
 }

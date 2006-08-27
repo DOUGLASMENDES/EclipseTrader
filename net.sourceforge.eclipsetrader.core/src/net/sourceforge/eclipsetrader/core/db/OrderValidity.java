@@ -42,4 +42,12 @@ public class OrderValidity
             return false;
         return value == ((OrderValidity)o).value;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        return value;
+    }
 }

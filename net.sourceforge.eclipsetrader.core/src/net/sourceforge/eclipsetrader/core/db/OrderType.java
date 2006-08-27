@@ -41,4 +41,12 @@ public class OrderType
             return false;
         return value == ((OrderType)o).value;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        return value;
+    }
 }
