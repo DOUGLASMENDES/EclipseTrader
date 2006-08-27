@@ -618,6 +618,9 @@
       <column
             class="net.sourceforge.eclipsetrader.trading.internal.orders.AccountColumn"
             id="ordersView.account"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.ValidityColumn"
+            id="ordersView.validity"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.trading.systems">

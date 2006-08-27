@@ -61,6 +61,7 @@ public class OrderFormView extends ViewPart
     Spinner price;
     Button send;
     Combo account;
+    Combo validity;
     Label total;
     private NumberFormat pf = NumberFormat.getInstance();
     private NumberFormat nf = NumberFormat.getInstance();
@@ -131,14 +132,14 @@ public class OrderFormView extends ViewPart
     public void createPartControl(Composite parent)
     {
         Composite content = new Composite(parent, SWT.NONE);
-        content.setLayout(new GridLayout(9, false));
+        content.setLayout(new GridLayout(11, false));
         
         Label label = new Label(content, SWT.NONE);
         label.setText("Account");
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-
+        
         account = new Combo(content, SWT.READ_ONLY);
-        account.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 8, 1));
+        account.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 10, 1));
         account.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -155,7 +156,7 @@ public class OrderFormView extends ViewPart
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         row.setLayout(gridLayout);
-        row.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 8, 1));
+        row.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 10, 1));
 
         security = new Combo(row, SWT.READ_ONLY);
         security.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
@@ -187,7 +188,7 @@ public class OrderFormView extends ViewPart
         label = new Label(content, SWT.NONE);
         label.setText("Side");
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-
+        
         side = new Combo(content, SWT.READ_ONLY);
         side.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         side.addSelectionListener(new SelectionAdapter() {
@@ -236,6 +237,18 @@ public class OrderFormView extends ViewPart
             public void widgetSelected(SelectionEvent e)
             {
                 updateTotal();
+            }
+        });
+
+        label = new Label(content, SWT.NONE);
+        label.setText("Validity");
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        validity = new Combo(content, SWT.READ_ONLY);
+        validity.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        validity.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                validitySelection();
             }
         });
         
@@ -311,6 +324,10 @@ public class OrderFormView extends ViewPart
         type.setData("Market", new Integer(Order.TYPE_MARKET));
         type.select(0);
         
+        validity.add("Day");
+        validity.setData("Day", new Integer(Order.VALID_DAY));
+        validity.select(0);
+        
         list = CorePlugin.getRepository().allAccounts();
         Collections.sort(list, new Comparator() {
             public int compare(Object arg0, Object arg1)
@@ -325,6 +342,7 @@ public class OrderFormView extends ViewPart
         }
         account.setData(list);
         
+        exchange.setEnabled(exchange.getItemCount() != 0);
         updateButtonEnablement();
     }
 
@@ -401,6 +419,7 @@ public class OrderFormView extends ViewPart
                 order.setPrice(price.getSelection() / Math.pow(10, price.getDigits()));
             if (exchange.isEnabled())
                 order.setExchange((String)exchange.getData(exchange.getText()));
+            order.setValidity(((Integer)validity.getData(validity.getText())).intValue());
             
             plugin.sendNew(order);
         
@@ -435,6 +454,13 @@ public class OrderFormView extends ViewPart
             
             String value = item.getAttribute("sellShort");
             updateOption(side, "Sell Short", Order.SIDE_SELLSHORT, value != null && value.equals("true"));
+
+            value = item.getAttribute("immediateOrCancel");
+            updateOption(validity, "Imm. or cancel", Order.VALID_IMMEDIATE_OR_CANCEL, "true".equals(value));
+            value = item.getAttribute("opening");
+            updateOption(validity, "At Opening", Order.VALID_OPENING, "true".equals(value));
+            value = item.getAttribute("closing");
+            updateOption(validity, "At Closing", Order.VALID_CLOSING, "true".equals(value));
         }
         
         updateTotal();
@@ -540,5 +566,9 @@ public class OrderFormView extends ViewPart
         double value = quantity.getSelection() * (price.getSelection() / Math.pow(10, price.getDigits()));
         total.setText(nf.format(value));
         total.getParent().layout();
+    }
+    
+    void validitySelection()
+    {
     }
 }
