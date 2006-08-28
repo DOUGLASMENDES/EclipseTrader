@@ -182,7 +182,7 @@
       <logger
             defaultValue="info"
             description="Apache HttpClient"
-            name="org.apache.commons.httpclient"/>
+            name="org.apache.commons.httpclient;httpclient"/>
       <layout
             description="Extended"
             pattern="%%d{ABSOLUTE} %5p %c:%L - %m%n"/>
