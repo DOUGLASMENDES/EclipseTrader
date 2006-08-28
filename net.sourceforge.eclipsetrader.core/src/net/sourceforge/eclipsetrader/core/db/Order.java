@@ -24,7 +24,7 @@ public class Order extends PersistentObject
     String pluginId = "";
     ITradingProvider provider;
     Account account;
-    String exchange = "";
+    OrderRoute exchange;
     String orderId = "";
     Date date = Calendar.getInstance().getTime();
     Security security;
@@ -196,12 +196,12 @@ public class Order extends PersistentObject
         this.type = type;
     }
 
-    public String getExchange()
+    public OrderRoute getExchange()
     {
         return exchange;
     }
 
-    public void setExchange(String exchange)
+    public void setExchange(OrderRoute exchange)
     {
         this.exchange = exchange;
     }

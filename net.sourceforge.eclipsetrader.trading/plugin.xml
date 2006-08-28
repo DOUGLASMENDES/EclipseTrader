@@ -621,6 +621,9 @@
       <column
             class="net.sourceforge.eclipsetrader.trading.internal.orders.ValidityColumn"
             id="ordersView.validity"/>
+      <column
+            class="net.sourceforge.eclipsetrader.trading.internal.orders.ExchangeColumn"
+            id="ordersView.exchange"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.trading.systems">

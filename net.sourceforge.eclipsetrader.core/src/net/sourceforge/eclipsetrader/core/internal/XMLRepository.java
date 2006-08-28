@@ -48,6 +48,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderRoute;
 import net.sourceforge.eclipsetrader.core.db.OrderSide;
 import net.sourceforge.eclipsetrader.core.db.OrderStatus;
 import net.sourceforge.eclipsetrader.core.db.OrderType;
@@ -2286,7 +2287,7 @@ public class XMLRepository extends Repository
                     }
                 }
                 else if (nodeName.equals("exchange")) //$NON-NLS-1$
-                    order.setExchange(value.getNodeValue());
+                    order.setExchange(new OrderRoute(item.getAttributes().getNamedItem("id").getNodeValue(), value.getNodeValue()));
                 else if (nodeName.equals("orderId")) //$NON-NLS-1$
                     order.setOrderId(value.getNodeValue());
                 else if (nodeName.equals("side")) //$NON-NLS-1$
@@ -2348,9 +2349,13 @@ public class XMLRepository extends Repository
                 Element node = document.createElement("date");
                 node.appendChild(document.createTextNode(dateTimeFormat.format(order.getDate())));
                 element.appendChild(node);
-                node = document.createElement("exchange");
-                node.appendChild(document.createTextNode(order.getExchange()));
-                element.appendChild(node);
+                if (order.getExchange() != null)
+                {
+                    node = document.createElement("exchange");
+                    node.setAttribute("id", order.getExchange().getId());
+                    node.appendChild(document.createTextNode(order.getExchange().toString()));
+                    element.appendChild(node);
+                }
                 node = document.createElement("orderId");
                 node.appendChild(document.createTextNode(order.getOrderId()));
                 element.appendChild(node);

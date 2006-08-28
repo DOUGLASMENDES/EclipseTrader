@@ -11,6 +11,9 @@
 
 package net.sourceforge.eclipsetrader.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.eclipsetrader.core.db.Order;
 
 public class TradingProvider implements ITradingProvider
@@ -35,6 +38,38 @@ public class TradingProvider implements ITradingProvider
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#getSides()
+     */
+    public List getSides()
+    {
+        return new ArrayList();
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#getTypes()
+     */
+    public List getTypes()
+    {
+        return new ArrayList();
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#getValidity()
+     */
+    public List getValidity()
+    {
+        return new ArrayList();
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#getRoutes()
+     */
+    public List getRoutes()
+    {
+        return new ArrayList();
     }
 
     /* (non-Javadoc)

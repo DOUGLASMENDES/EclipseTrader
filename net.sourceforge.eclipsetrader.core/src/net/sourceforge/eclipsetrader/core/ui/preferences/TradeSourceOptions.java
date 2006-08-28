@@ -18,7 +18,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.ITradingProvider;
 import net.sourceforge.eclipsetrader.core.db.Account;
+import net.sourceforge.eclipsetrader.core.db.OrderRoute;
 import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -65,7 +67,8 @@ public class TradeSourceOptions
         provider.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                updateExchanges();
+                providerSelection();
+                updateEnablement();
             }
         });
 
@@ -128,13 +131,6 @@ public class TradeSourceOptions
             }
         }
         
-        provider.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e)
-            {
-                updateExchanges();
-            }
-        });
-        
         List list = CorePlugin.getRepository().allAccounts();
         Collections.sort(list, new Comparator() {
             public int compare(Object arg0, Object arg1)
@@ -164,10 +160,10 @@ public class TradeSourceOptions
                 if (provider.getData(String.valueOf(i)) != null && provider.getData(String.valueOf(i)).equals(tradeSource.getTradingProviderId()))
                 {
                     provider.select(i);
-                    updateExchanges();
                     break;
                 }
             }
+            providerSelection();
 
             items = exchange.getItems();
             for (int i = 0; i < items.length; i++)
@@ -193,17 +189,19 @@ public class TradeSourceOptions
             
             quantity.setSelection(tradeSource.getQuantity());
         }
+        
+        updateEnablement();
 
         return content;
     }
 
-    protected void updateExchanges()
+    protected void providerSelection()
     {
         exchange.removeAll();
         exchange.add(""); //$NON-NLS-1$
 
-        String feedId = (String)provider.getData(String.valueOf(provider.getSelectionIndex()));
-        if (feedId != null)
+        String providerId = (String)provider.getData(String.valueOf(provider.getSelectionIndex()));
+        if (providerId != null)
         {
             IExtensionRegistry registry = Platform.getExtensionRegistry();
             IExtensionPoint extensionPoint = registry.getExtensionPoint(CorePlugin.TRADING_PROVIDERS_EXTENSION_POINT);
@@ -213,37 +211,45 @@ public class TradeSourceOptions
                 for (Iterator iter = plugins.iterator(); iter.hasNext(); )
                 {
                     IConfigurationElement element = (IConfigurationElement)iter.next();
-                    if (!element.getAttribute("id").equals(feedId)) //$NON-NLS-1$
-                        continue;
-                    
-                    IConfigurationElement[] children = element.getChildren();
-                    for (int i = 0; i < children.length; i++)
+                    if (element.getAttribute("id").equals(providerId)) //$NON-NLS-1$
                     {
-                        if (children[i].getName().equals("route")) //$NON-NLS-1$
+                        ITradingProvider source = CorePlugin.createTradeSourcePlugin(element.getAttribute("id"));
+                        for (Iterator iter2 = source.getRoutes().iterator(); iter2.hasNext(); )
                         {
-                            exchange.setData(String.valueOf(exchange.getItemCount()), children[i].getAttribute("id")); //$NON-NLS-1$
-                            exchange.add(children[i].getAttribute("name")); //$NON-NLS-1$
+                            OrderRoute route = (OrderRoute)iter2.next();
+                            exchange.add(route.toString());
+                            exchange.setData(route.toString(), route);
                         }
+                        break;
                     }
                 }
             }
         }
-        
-        exchange.setEnabled(exchange.getItemCount() > 1);
+    }
+    
+    void updateEnablement()
+    {
+        boolean enable = (provider.getData(String.valueOf(provider.getSelectionIndex())) != null);
+        exchange.setEnabled(enable && exchange.getItemCount() > 1);
+        symbol.setEnabled(enable);
+        account.setEnabled(enable);
+        quantity.setEnabled(enable);
     }
 
     public TradeSource getSource()
     {
         if (provider.getSelectionIndex() <= 0)
             return null;
+        
         TradeSource newFeed = new TradeSource();
         newFeed.setTradingProviderId((String)provider.getData(String.valueOf(provider.getSelectionIndex())));
         if (exchange.getSelectionIndex() >= 1)
-            newFeed.setExchange((String)exchange.getData(String.valueOf(exchange.getSelectionIndex())));
+            newFeed.setExchange(((OrderRoute)exchange.getData(exchange.getText())).getId());
         newFeed.setSymbol(symbol.getText());
         if (account.getSelectionIndex() >= 1)
             newFeed.setAccountId((Integer)account.getData(String.valueOf(account.getSelectionIndex())));
         newFeed.setQuantity(quantity.getSelection());
+        
         return newFeed;
     }
 }

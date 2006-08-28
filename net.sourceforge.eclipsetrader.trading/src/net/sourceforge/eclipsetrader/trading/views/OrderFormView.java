@@ -25,6 +25,7 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ITradingProvider;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Order;
+import net.sourceforge.eclipsetrader.core.db.OrderRoute;
 import net.sourceforge.eclipsetrader.core.db.OrderSide;
 import net.sourceforge.eclipsetrader.core.db.OrderStatus;
 import net.sourceforge.eclipsetrader.core.db.OrderType;
@@ -322,22 +323,7 @@ public class OrderFormView extends ViewPart
         else
             provider.setData(new ArrayList());
 
-        list = new ArrayList();
-        list.add(OrderSide.BUY);
-        list.add(OrderSide.SELL);
-        populateValues(side, list, sideLabels);
         side.select(0);
-        
-        list = new ArrayList();
-        list.add(OrderType.LIMIT);
-        list.add(OrderType.MARKET);
-        populateValues(type, list, typeLabels);
-        type.select(0);
-        
-        list = new ArrayList();
-        list.add(OrderValidity.DAY);
-        populateValues(validity, list, validityLabels);
-        validity.select(0);
         
         list = CorePlugin.getRepository().allAccounts();
         Collections.sort(list, new Comparator() {
@@ -429,7 +415,7 @@ public class OrderFormView extends ViewPart
             if (!OrderType.MARKET.equals(order.getType()))
                 order.setPrice(price.getSelection() / Math.pow(10, price.getDigits()));
             if (exchange.isEnabled())
-                order.setExchange((String)exchange.getData(exchange.getText()));
+                order.setExchange((OrderRoute)exchange.getData(exchange.getText()));
             order.setValidity((OrderValidity)validity.getData(validity.getText()));
             
             plugin.sendNew(order);
@@ -446,60 +432,28 @@ public class OrderFormView extends ViewPart
         if (index >= 0 && index < list.size())
         {
             IConfigurationElement item = (IConfigurationElement)list.get(index);
-            IConfigurationElement[] childs = item.getChildren();
-            exchange.removeAll();
-            for (int i = 0; i < childs.length; i++)
-            {
-                if (childs[i].getName().equals("route"))
-                {
-                    exchange.add(childs[i].getAttribute("name"));
-                    exchange.setData(childs[i].getAttribute("name"), childs[i].getAttribute("id"));
-                }
-            }
             
+            ITradingProvider source = CorePlugin.createTradeSourcePlugin(item.getAttribute("id"));
+            populateValues(side, source.getSides(), sideLabels);
+            populateValues(type, source.getTypes(), typeLabels);
+            populateValues(validity, source.getValidity(), validityLabels);
+            
+            exchange.removeAll();
+            for (Iterator iter = source.getRoutes().iterator(); iter.hasNext(); )
+            {
+                OrderRoute route = (OrderRoute)iter.next();
+                exchange.add(route.toString());
+                exchange.setData(route.toString(), route);
+            }
             exchange.setEnabled(exchange.getItemCount() != 0);
             if (exchange.getItemCount() != 0)
                 exchange.select(0);
-            
-            exchange.getParent().getParent().layout();
-            
-/*            String value = item.getAttribute("sellShort");
-            updateOption(side, "Sell Short", Order.SIDE_SELLSHORT, value != null && value.equals("true"));
 
-            value = item.getAttribute("immediateOrCancel");
-            updateOption(validity, "Imm. or cancel", Order.VALID_IMMEDIATE_OR_CANCEL, "true".equals(value));
-            value = item.getAttribute("opening");
-            updateOption(validity, "At Opening", Order.VALID_OPENING, "true".equals(value));
-            value = item.getAttribute("closing");
-            updateOption(validity, "At Closing", Order.VALID_CLOSING, "true".equals(value));*/
+            exchange.getParent().getParent().layout();
         }
         
         updateTotal();
         updateButtonEnablement();
-    }
-    
-    void updateOption(Combo combo, String label, int value, boolean enabled)
-    {
-        if (enabled)
-        {
-            if (combo.indexOf(label) == -1)
-            {
-                combo.add(label);
-                combo.setData(label, new Integer(value));
-            }
-        }
-        else
-        {
-            String text = combo.getText();
-            
-            if (combo.indexOf(label) != -1)
-                combo.remove(label);
-            combo.setData(label, null);
-            
-            combo.setText(text);
-            if (combo.getSelectionIndex() == -1)
-                combo.select(0);
-        }
     }
     
     void securitySelection()
@@ -523,23 +477,12 @@ public class OrderFormView extends ViewPart
     
     void sideSelection()
     {
-        Integer value = (Integer)side.getData(String.valueOf(side.getSelectionIndex()));
-        if (value == null)
-            value = new Integer(-1);
-        
-        switch(value.intValue())
-        {
-        }
-
         updateTotal();
     }
     
     void typeSelection()
     {
-        Integer value = (Integer)type.getData(String.valueOf(type.getSelectionIndex()));
-        if (value == null)
-            value = new Integer(-1);
-
+        OrderType value = (OrderType)type.getData(type.getText());
         price.setEnabled(OrderType.LIMIT.equals(value));
         updateTotal();
     }
@@ -576,6 +519,9 @@ public class OrderFormView extends ViewPart
     
     void populateValues(Combo combo, List list, Map labels)
     {
+        int index = combo.getSelectionIndex();
+        
+        combo.removeAll();
         for (Iterator iter = list.iterator(); iter.hasNext(); )
         {
             Object value = iter.next();
@@ -586,6 +532,11 @@ public class OrderFormView extends ViewPart
                 combo.setData(text, value);
             }
         }
+        
+        if (index != -1 && index < combo.getItemCount())
+            combo.select(index);
+        else
+            combo.select(0);
     }
 
     static {

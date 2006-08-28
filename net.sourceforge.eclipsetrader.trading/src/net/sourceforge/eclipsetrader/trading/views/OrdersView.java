@@ -141,7 +141,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
                 Order[] selection = getSelectedOrders();
                 for (int i = 0; i < selection.length; i++)
                 {
-                    if (OrderStatus.CANCELED.equals(selection[i].getStatus()))
+                    if (!OrderStatus.CANCELED.equals(selection[i].getStatus()))
                         selection[i].cancelRequest();
                 }
             }
@@ -531,6 +531,8 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
                         if (!table.isDisposed())
                         {
                             TableItem tableItem = new TableItem(table, SWT.NONE, list.indexOf(order));
+                            table.showItem(tableItem);
+
                             update(tableItem, order);
                             order.addObserver(OrdersTable.this);
 
