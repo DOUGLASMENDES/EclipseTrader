@@ -757,16 +757,17 @@ public class WatchlistTableViewer extends AbstractLayout
                 {
                     if (isDisposed())
                         return;
+                    
                     int column = 1;
-                    for (Iterator iter2 = watchlistItem.getValues().iterator(); iter2.hasNext(); )
+                    String[] value = (String[])watchlistItem.getValues().toArray(new String[0]);
+                    for (int i = 0; i < value.length; i++, column++)
                     {
-                        String value = (String)iter2.next();
-                        if (!value.equals(getText(column)))
+                        if (!value[i].equals(getText(column)))
                         {
-                            setText(column, value);
-                            if (value.startsWith("+"))
+                            setText(column, value[i]);
+                            if (value[i].startsWith("+"))
                                 setForeground(column, positiveForeground);
-                            else if (value.startsWith("-"))
+                            else if (value[i].startsWith("-"))
                                 setForeground(column, negativeForeground);
                             else
                                 setForeground(column, null);
@@ -774,7 +775,6 @@ public class WatchlistTableViewer extends AbstractLayout
                             if (!((Column)table.getColumn(column).getData()).isEditable())
                                 ticker.tick(column);
                         }
-                        column++;
                     }
                 }
             });
