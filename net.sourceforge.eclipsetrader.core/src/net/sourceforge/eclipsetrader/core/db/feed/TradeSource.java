@@ -81,6 +81,9 @@ public class TradeSource
         if (obj == null || !(obj instanceof TradeSource))
             return false;
         TradeSource that = (TradeSource)obj;
-        return this.tradingProviderId.equals(that.tradingProviderId) && this.symbol.equals(that.symbol) && this.exchange.equals(that.exchange) && this.accountId.equals(that.accountId);
+        return this.tradingProviderId.equals(that.tradingProviderId) && 
+            this.symbol.equals(that.symbol) && 
+            this.exchange.equals(that.exchange) && 
+            (this.accountId != null && this.accountId.equals(that.accountId));
     }
 }
