@@ -28,10 +28,12 @@ public class MA extends IndicatorPlugin
     public static final String DEFAULT_LABEL = "MA";
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
+    public static final int DEFAULT_INPUT = BarData.CLOSE;
     public static final int DEFAULT_PERIOD = 14;
     public static final int DEFAULT_TYPE = SMA;
     private String label = DEFAULT_LABEL;
     private int lineType = DEFAULT_LINETYPE;
+    private int input = DEFAULT_INPUT;
     private int type = DEFAULT_TYPE;
     private int period = DEFAULT_PERIOD;
     private Color color = new Color(null, DEFAULT_COLOR);
@@ -45,7 +47,7 @@ public class MA extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine ma = getMA(new PlotLine(getBarData(), BarData.CLOSE), type, period);
+        PlotLine ma = getMA(new PlotLine(getBarData(), input), type, period);
         if (getBarData().getMax() > ma.getHigh())
             ma.setHigh(getBarData().getMax());
         if (getBarData().getMin() < ma.getLow())
@@ -63,6 +65,7 @@ public class MA extends IndicatorPlugin
     {
         label = settings.getString("label", label);
         lineType = settings.getInteger("lineType", lineType).intValue();
+        input = settings.getInteger("input", input).intValue();
         period = settings.getInteger("period", period).intValue();
         type = settings.getInteger("type", type).intValue();
         color = settings.getColor("color", color);

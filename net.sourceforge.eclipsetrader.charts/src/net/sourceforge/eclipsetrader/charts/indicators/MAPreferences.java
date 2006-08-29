@@ -40,6 +40,7 @@ public class MAPreferences extends IndicatorPluginPreferencePage
         addLabelField(content, "label", "Label", MA.DEFAULT_LABEL);
         addLineTypeSelector(content, "lineType", "Line Type", MA.DEFAULT_LINETYPE);
         addColorSelector(content, "color", "Color", MA.DEFAULT_COLOR);
+        addInputSelector(content, "input", "Input", MA.DEFAULT_INPUT, true);
         addIntegerValueSelector(content, "period", "Period", 1, 9999, MA.DEFAULT_PERIOD);
         addMovingAverageSelector(content, "type", "Type", MA.DEFAULT_TYPE);
     }

@@ -170,6 +170,23 @@ public abstract class IndicatorPluginPreferencePage
         return colorSelector;
     }
     
+    public Combo addInputSelector(Composite parent, String id, String text, int defaultValue, boolean volume)
+    {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText(text);
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        Combo combo = new Combo(parent, SWT.READ_ONLY);
+        combo.add("OPEN");
+        combo.add("HIGH");
+        combo.add("LOW");
+        combo.add("CLOSE");
+        if (volume)
+            combo.add("VOLUME");
+        combo.select(getSettings().getInteger(id, defaultValue).intValue());
+        controls.put(id, combo);
+        return combo;
+    }
+    
     public Combo addLineTypeSelector(Composite parent, String id, String text, int defaultValue)
     {
         Label label = new Label(parent, SWT.NONE);
