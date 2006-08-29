@@ -47,21 +47,21 @@ import org.eclipse.swt.widgets.Text;
 
 public class TransactionDialog extends TitleAreaDialog
 {
-    private Account account;
-    private Security security;
-    private int defaultQuantity = 1;
-    private Transaction transaction;
-    private Text dateText;
-    private Combo accountCombo;
-    private Combo securityCombo;
-    private Button buyButton;
-    private Button sellButton;
-    private Spinner quantitySpinner;
-    private Spinner priceSpinner;
-    private Spinner expensesSpinner;
-    private Text totalText;
-    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    private NumberFormat nf = NumberFormat.getInstance();
+    Account account;
+    Security security;
+    int defaultQuantity = 1;
+    Transaction transaction;
+    Text dateText;
+    Combo accountCombo;
+    Combo securityCombo;
+    Button buyButton;
+    Button sellButton;
+    Spinner quantitySpinner;
+    Spinner priceSpinner;
+    Spinner expensesSpinner;
+    Text totalText;
+    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    NumberFormat nf = NumberFormat.getInstance();
 
     public TransactionDialog(Account account, Shell parentShell)
     {
@@ -253,7 +253,6 @@ public class TransactionDialog extends TitleAreaDialog
             quantitySpinner.setSelection(Math.abs(transaction.getQuantity()));
             priceSpinner.setSelection((int)Math.round(transaction.getPrice() * Math.pow(10, priceSpinner.getDigits())));
             expensesSpinner.setSelection((int)Math.round(transaction.getExpenses() * Math.pow(10, expensesSpinner.getDigits())));
-            totalText.setText(nf.format(transaction.getAmount()));
         }
         else
         {
@@ -268,14 +267,13 @@ public class TransactionDialog extends TitleAreaDialog
         {
             securityCombo.setText(security.getDescription());
             if (security.getQuote() != null)
-            {
                 priceSpinner.setSelection((int)Math.round(security.getQuote().getLast() * Math.pow(10, priceSpinner.getDigits())));
-                updateTotals();
-            }
             quantitySpinner.setFocus();
         }
         else
             securityCombo.setFocus();
+
+        updateTotals();
         
         dateText.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e)
@@ -300,6 +298,7 @@ public class TransactionDialog extends TitleAreaDialog
     public int open(Transaction transaction)
     {
         this.transaction = transaction;
+        this.security = transaction.getSecurity();
         return super.open();
     }
 
@@ -341,14 +340,17 @@ public class TransactionDialog extends TitleAreaDialog
         super.okPressed();
     }
     
-    private void updateTotals()
+    void updateTotals()
     {
         int quantity = quantitySpinner.getSelection();
         double price = priceSpinner.getSelection() / Math.pow(10, priceSpinner.getDigits());
         double total = quantity * price;
 
         double expenses = account.getExpenses(security, quantity, price); 
-        expensesSpinner.setSelection((int)Math.round(expenses * Math.pow(10, expensesSpinner.getDigits())));
+        if (transaction != null)
+            expenses = transaction.getExpenses();
+        else
+            expensesSpinner.setSelection((int)Math.round(expenses * Math.pow(10, expensesSpinner.getDigits())));
         if (buyButton.getSelection())
             total += expenses;
         else
