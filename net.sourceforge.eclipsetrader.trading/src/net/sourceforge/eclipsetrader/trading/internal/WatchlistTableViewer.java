@@ -104,6 +104,7 @@ public class WatchlistTableViewer extends AbstractLayout
     private Color positiveForeground;
     private Color alertHilightBackground;
     private boolean showTotals = false;
+    private boolean singleClick = true;
     int sortColumn = -1;
     int sortDirection = 0;
     Action toggleShowTotals;
@@ -239,20 +240,39 @@ public class WatchlistTableViewer extends AbstractLayout
         table.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                updateSelection();
+            	if (singleClick)
+            	{
+                    updateSelection();
+            	}
             }
         });
         table.addMouseListener(new MouseAdapter() {
 
 			public void mouseDown(MouseEvent e)
             {
-            	selectedColumn = getColumn(e);
-                if (table.getItem(new Point(e.x, e.y)) == null)
-                {
-                    table.deselectAll();
+				if (singleClick)
+				{
+	            	selectedColumn = getColumn(e);
+	                if (table.getItem(new Point(e.x, e.y)) == null)
+	                {
+	                    table.deselectAll();
+	                }
                     updateSelection();
-                }
+				}
             }
+			
+			public void mouseDoubleClick(MouseEvent e)
+			{
+				if (!singleClick)
+				{
+	            	selectedColumn = getColumn(e);
+	                if (table.getItem(new Point(e.x, e.y)) == null)
+	                {
+	                    table.deselectAll();
+	                }
+                    updateSelection();
+				}
+			}
         });
         // TODO This is a workaround for the sort column background color
         table.addListener(SWT.EraseItem, new Listener() {
@@ -683,7 +703,7 @@ public class WatchlistTableViewer extends AbstractLayout
             column = columns[i];
             x += column.getWidth();
             i++;
-        } while (x < e.x);
+        } while (x < e.x && i < columns.length);
 
         if (column.getData() instanceof Column)
             return (Column) column.getData();
