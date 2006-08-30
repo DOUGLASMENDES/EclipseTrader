@@ -23,7 +23,9 @@ import net.sourceforge.eclipsetrader.core.Level2FeedMonitor;
 import net.sourceforge.eclipsetrader.core.db.Level2;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
+import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
+import net.sourceforge.eclipsetrader.trading.actions.ToggleFollowSelectionAction;
 import net.sourceforge.eclipsetrader.trading.actions.ToggleLevelColorsAction;
 import net.sourceforge.eclipsetrader.trading.actions.TogglePriceGroupingAction;
 import net.sourceforge.eclipsetrader.trading.internal.CellTicker;
@@ -36,6 +38,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -61,14 +64,16 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
 
-public class Level2View extends ViewPart implements Observer
+public class Level2View extends ViewPart implements Observer, ISelectionListener
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.trading.level2";
     /**
@@ -79,6 +84,7 @@ public class Level2View extends ViewPart implements Observer
     public static final String PREFS_SECONDARY_ID = "secondaryId";
     public static final String PREFS_GROUP_PRICES = "groupPrices";
     public static final String PREFS_COLOR_LEVELS = "colorLevels";
+    public static final String PREFS_FOLLOW_SELECTION = "followSelection";
     public static final String TRENDBAR_INDICATOR = "TRENDBAR_INDICATOR";
     public static final String LEVEL_1_BACKGROUND = "LEVEL_1_BACKGROUND";
     public static final String LEVEL_2_BACKGROUND = "LEVEL_2_BACKGROUND";
@@ -92,6 +98,7 @@ public class Level2View extends ViewPart implements Observer
     public static final String LEVEL_5_FOREGROUND = "LEVEL_5_FOREGROUND";
     static boolean DEFAULT_GROUP_PRICES = false;
     static boolean DEFAULT_COLOR_LEVELS = true;
+    static boolean DEFAULT_FOLLOW_SELECTION = false;
     Security security;
     Composite info;
     Label time;
@@ -104,6 +111,7 @@ public class Level2View extends ViewPart implements Observer
     Table table;
     boolean groupPrices = DEFAULT_GROUP_PRICES;
     boolean colorLevels = DEFAULT_COLOR_LEVELS;
+    boolean followSelection = DEFAULT_FOLLOW_SELECTION;
     private NumberFormat numberFormatter = NumberFormat.getInstance();
     private NumberFormat priceFormatter = NumberFormat.getInstance();
     private NumberFormat priceFormatter2 = NumberFormat.getInstance();
@@ -119,6 +127,7 @@ public class Level2View extends ViewPart implements Observer
     PreferenceStore preferences;
     Action toggleLevelColorsAction;
     Action togglePriceGroupingAction;
+    Action toggleFollowSelectionAction;
     private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
@@ -246,6 +255,7 @@ public class Level2View extends ViewPart implements Observer
 
         toggleLevelColorsAction = new ToggleLevelColorsAction(this);
         togglePriceGroupingAction = new TogglePriceGroupingAction(this);
+        toggleFollowSelectionAction = new ToggleFollowSelectionAction(this);
 
         Integer id = null;
         if (memento != null)
@@ -400,6 +410,7 @@ public class Level2View extends ViewPart implements Observer
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
         menuManager.add(toggleLevelColorsAction);
         menuManager.add(togglePriceGroupingAction);
+        menuManager.add(toggleFollowSelectionAction);
         getViewSite().getActionBars().updateActionBars();
 
         if (security != null)
@@ -419,6 +430,7 @@ public class Level2View extends ViewPart implements Observer
                 }
             });
         }
+        getSite().getPage().addSelectionListener(this);
     }
 
     /* (non-Javadoc)
@@ -451,6 +463,7 @@ public class Level2View extends ViewPart implements Observer
         negativeForeground.dispose();
         positiveForeground.dispose();
         emptyBackground.dispose();
+        getSite().getPage().removeSelectionListener(this);
         
         super.dispose();
     }
@@ -461,6 +474,7 @@ public class Level2View extends ViewPart implements Observer
         preferences.setDefault(PREFS_SECONDARY_ID, "");
         preferences.setDefault(PREFS_GROUP_PRICES, DEFAULT_GROUP_PRICES);
         preferences.setDefault(PREFS_COLOR_LEVELS, DEFAULT_COLOR_LEVELS);
+        preferences.setDefault(PREFS_FOLLOW_SELECTION, DEFAULT_FOLLOW_SELECTION);
 
         try {
             preferences.load();
@@ -471,11 +485,14 @@ public class Level2View extends ViewPart implements Observer
                 preferences.setValue(PREFS_GROUP_PRICES, prefs[0].equals("true"));
             if (prefs.length > 1)
                 preferences.setValue(PREFS_COLOR_LEVELS, prefs[1].equals("true"));
+            if (prefs.length > 2)
+            	preferences.setValue(PREFS_FOLLOW_SELECTION, prefs[2].equals("true"));
             TradingPlugin.getDefault().getPluginPreferences().setValue(PREFERENCES_ID + String.valueOf(security.getId()), "");
         }                
 
         groupPrices = preferences.getBoolean(PREFS_GROUP_PRICES);
         colorLevels = preferences.getBoolean(PREFS_COLOR_LEVELS);
+        followSelection = preferences.getBoolean(PREFS_FOLLOW_SELECTION);
 
         // Save the secondary id value immediately, so subsequent level2 requests for the same
         // security will open this view
@@ -488,6 +505,7 @@ public class Level2View extends ViewPart implements Observer
 
         toggleLevelColorsAction.setChecked(colorLevels);
         togglePriceGroupingAction.setChecked(groupPrices);
+        toggleFollowSelectionAction.setChecked(followSelection);
     }
 
     protected void savePreferences()
@@ -495,6 +513,7 @@ public class Level2View extends ViewPart implements Observer
         preferences.setFilename(getPreferenceStoreLocation(security).toOSString());
         preferences.setValue(PREFS_GROUP_PRICES, groupPrices);
         preferences.setValue(PREFS_COLOR_LEVELS, colorLevels);
+        preferences.setValue(PREFS_FOLLOW_SELECTION, followSelection);
 
         try {
             preferences.save();
@@ -758,6 +777,28 @@ public class Level2View extends ViewPart implements Observer
                 }
             });
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.ISelectionListener#selectionChanged(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
+     */
+    public void selectionChanged(IWorkbenchPart part, ISelection selection)
+    {
+        if (followSelection)
+        {
+            if (selection instanceof SecuritySelection)
+                setSecurity(((SecuritySelection) selection).getSecurity());
+        }
+    }
+
+    public boolean isFollowSelection()
+    {
+        return followSelection;
+    }
+
+    public void setFollowSelection(boolean followSelection)
+    {
+        this.followSelection = followSelection;
     }
     
     private class Level2TableItem extends TableItem implements DisposeListener
