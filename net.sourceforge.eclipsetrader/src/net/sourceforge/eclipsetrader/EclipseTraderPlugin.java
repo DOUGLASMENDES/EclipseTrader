@@ -47,7 +47,6 @@ public class EclipseTraderPlugin extends AbstractUIPlugin
     {
         super.start(context);
         getPreferenceStore().setDefault(PROMPT_ON_EXIT, true);
-        copyWorkspaceFile("defaultChart.xml");
         copyWorkspaceFile("currencies.xml");
         copyWorkspaceFile("securities.xml");
         copyWorkspaceFile("watchlists.xml");

@@ -13,7 +13,10 @@ package net.sourceforge.eclipsetrader.charts;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
@@ -26,6 +29,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;
@@ -33,9 +37,11 @@ import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -73,6 +79,7 @@ public class ChartsPlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
+        copyFileToStateLocation("defaultChart.xml");
     }
 
     /**
@@ -457,6 +464,31 @@ public class ChartsPlugin extends AbstractUIPlugin
 
         } catch (Exception e) {
             logger.error(e.toString(), e);
+        }
+    }
+
+    private void copyFileToStateLocation(String file)
+    {
+        File f = ChartsPlugin.getDefault().getStateLocation().append(file).toFile();
+        if (!f.exists())
+        {
+            try
+            {
+                byte[] buffer = new byte[10240];
+                OutputStream os = new FileOutputStream(f);
+                InputStream is = FileLocator.openStream(getBundle(), new Path("data/" + file), false);
+                int readed = 0;
+                do
+                {
+                    readed = is.read(buffer);
+                    os.write(buffer, 0, readed);
+                } while (readed == buffer.length);
+                os.close();
+                is.close();
+            }
+            catch (Exception e) {
+                CorePlugin.logException(e);
+            }
         }
     }
 }
