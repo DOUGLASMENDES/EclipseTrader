@@ -16,10 +16,14 @@
         <topic label="Extension Points Reference">
             <topic label="net.sourceforge.eclipsetrader.charts.indicators" href="reference/extension-points/net_sourceforge_eclipsetrader_charts_indicators.html"/>
             <topic label="net.sourceforge.eclipsetrader.charts.objects" href="reference/extension-points/net_sourceforge_eclipsetrader_charts_objects.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.accountProviders" href="reference/extension-points/net_sourceforge_eclipsetrader_core_accountProviders.html"/>
             <topic label="net.sourceforge.eclipsetrader.core.feeds" href="reference/extension-points/net_sourceforge_eclipsetrader_core_feeds.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.loggingPreferences" href="reference/extension-points/net_sourceforge_eclipsetrader_core_loggingPreferences.html"/>
             <topic label="net.sourceforge.eclipsetrader.core.news" href="reference/extension-points/net_sourceforge_eclipsetrader_core_news.html"/>
             <topic label="net.sourceforge.eclipsetrader.core.patterns" href="reference/extension-points/net_sourceforge_eclipsetrader_core_patterns.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.tradingProviders" href="reference/extension-points/net_sourceforge_eclipsetrader_core_tradingProviders.html"/>
             <topic label="net.sourceforge.eclipsetrader.trading.alerts" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_alerts.html"/>
+            <topic label="net.sourceforge.eclipsetrader.trading.ordersViewColumns" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_ordersViewColumns.html"/>
             <topic label="net.sourceforge.eclipsetrader.trading.systems" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_systems.html"/>
         </topic>
     </topic>

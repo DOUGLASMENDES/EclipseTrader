@@ -11,6 +11,7 @@
         <topic label="Patterns" href="guide/patterns.html"/>
         <topic label="Accounts" href="guide/accounts.html"/>
         <topic label="Portfolio" href="guide/portfolio.html"/>
+        <topic label="Trading" href="guide/trading.html"/>
     </topic>
     <topic label="Tasks">
 	    <topic label="Running EclipseTrader" href="guide/01.html" />
@@ -45,6 +46,10 @@
 		    <topic label="Deleting transactions" href="guide/account07.html" />
 		    <topic label="Using the portfolio" href="guide/account03.html" />
 	    </topic>
+	    <topic label="Working with trading orders">
+		    <topic label="Submit an order" href="guide/order01.html" />
+		    <topic label="Tracking orders" href="guide/order02.html" />
+	    </topic>
 	    <topic label="Working with trading systems">
 		    <topic label="Creating a trading system" href="guide/ts01.html" />
 		    <topic label="Using the trading systems" href="guide/ts03.html" />
@@ -69,20 +74,26 @@
 	    <topic label="Charts" href="guide/charts.html">
 		    <topic label="Indicators">
 		        <topic label="Accumulation Distribution - AD" href="guide/indicators/ad.html"/>
+		        <topic label="Adaptice Stochastic - AdaptSTOCH" href="guide/indicators/adaptstoch.html"/>
 		        <topic label="Average True Range - ATR" href="guide/indicators/atr.html"/>
 		        <topic label="Bollinger Bands - BB" href="guide/indicators/bb.html"/>
 		        <topic label="Commodity Channel Index - CCI" href="guide/indicators/cci.html"/>
 		        <topic label="Detrended Price Oscillator - DPO" href="guide/indicators/dpo.html"/>
 		        <topic label="Directional Movement Index - DMI" href="guide/indicators/dmi.html"/>
-		        <topic label="Elder's Market Thermometer - THERM" href="guide/indicators/therm.html"/>
 		        <topic label="Force Index - FI" href="guide/indicators/fi.html"/>
+		        <topic label="Market Thermometer - THERM" href="guide/indicators/therm.html"/>
 		        <topic label="Moving Average - MA" href="guide/indicators/ma.html"/>
+		        <topic label="Moving Average Channels - MACH" href="guide/indicators/mach.html"/>
 		        <topic label="Moving Average Convergence Divergence - MACD" href="guide/indicators/macd.html"/>
 		        <topic label="Moving Avergate Oscillator - MAOSC" href="guide/indicators/maosc.html"/>
 		        <topic label="Parabolic SAR - SAR" href="guide/indicators/sar.html"/>
 		        <topic label="Rate Of Change - ROC" href="guide/indicators/roc.html"/>
 		        <topic label="Relative Strength Index - RSI" href="guide/indicators/rsi.html"/>
+		        <topic label="Standard Deviation - SD" href="guide/indicators/sd.html"/>
 		        <topic label="Stochastic - STOCH" href="guide/indicators/stoch.html"/>
+		        <topic label="Tushar Chande's Vidya - VIDYA" href="guide/indicators/vidya.html"/>
+		        <topic label="Ultimate Oscillator - UO" href="guide/indicators/uo.html"/>
+		        <topic label="Volume Flow Indicator - VFI" href="guide/indicators/vfi.html"/>
 		        <topic label="Volume Trends - VT" href="guide/indicators/vt.html"/>
 		    </topic>
 		    <topic label="Objects">

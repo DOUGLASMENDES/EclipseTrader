@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- default platform documentation stylesheets -->
+<style>@import url("../book.css");</style>
+<!-- default schema documentation stylesheets -->
+<style>@import url("../schema.css");</style>
+</HEAD>
+<BODY>
+<H1>Moving Average Channels - MACH</H1>
+<p>
+
+<p>
+Upper and lower moving average channels (also called straight envelopes) are drawn at a certain percentage above and below the moving average. The channels are drawn according to the formula:
+<li>Upper channel line = MA + MA * Channel coefficient</li>
+<li>Lower channel line = MA - MA * Channel coefficient</li>
+</p>
+<p>
+  A well-drawn channel contains the bulk of prices, with only a few extremes poking out. Adjust the coefficient until the channel contains
+approximately 95 percent of all prices for the past several months.
+</p>
+<p>
+  Different trading vehicles and timeframes require different channel
+widths. Volatile markets require wider channels and higher coefficients.
+The longer the timeframe, the wider the channel; weekly channels tend to
+be twice as wide as dailies.
+</p>
+
+<p align="left">
+<img src="mach.gif"></p>
+
+<p><b>Parameters</b></p> 
+
+<ul>
+	<li>Name: The text that identifies the indicator</li>
+	<li>Color: Indicator's color</li>
+	<li>Selected Periods: The period used for the Moving Average</li>
+	<li>Channel Coefficient: Percentage used to calculate upper and lower channels</li>
+	<li>Moving Average Type: The type of Moving Average to use</li>
+</ul>
+
+<br>
+<p><img src="../cpy.gif"></p>
+<p></p>
+
+</BODY>
+</HTML>
