@@ -17,7 +17,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="net.sourceforge.eclipsetrader.application"
-            name="%product.name.eclipseTrader">
+            name="EclipseTrader">
          <property
                name="preferenceCustomization"
                value="plugin_customization.ini"/>

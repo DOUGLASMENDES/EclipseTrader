@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Borsa Italiana
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.borsaitalia; singleton:=true
-Bundle-Version: 0.25.0
+Bundle-Version: 0.26.0
 Bundle-Activator: net.sourceforge.eclipsetrader.borsaitalia.BorsaitaliaPlugin
 Bundle-Vendor: EclipseTrader.Plugins
 Bundle-Localization: plugin

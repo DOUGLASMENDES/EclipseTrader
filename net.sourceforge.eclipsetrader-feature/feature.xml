@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsetrader"
       label="EclipseTrader"
-      version="0.25.0"
+      version="0.26.0"
       provider-name="Sourceforge.net"
       plugin="net.sourceforge.eclipsetrader"
       image="eclipse_update_120.jpg">
