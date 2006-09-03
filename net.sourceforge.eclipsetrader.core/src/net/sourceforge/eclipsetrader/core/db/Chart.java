@@ -56,6 +56,11 @@ public class Chart extends PersistentObject implements Observer
 
     public void setSecurity(Security security)
     {
+        if (security != null && !security.equals(this.security))
+            setChanged();
+        else if (security == null && this.security != null)
+            setChanged();
+
         if (this.security != null)
             this.security.deleteObserver(this);
         this.security = security;
