@@ -72,12 +72,15 @@ import net.sourceforge.eclipsetrader.core.db.ChartObject;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
+import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -92,14 +95,22 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Listener;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
@@ -117,8 +128,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -126,7 +139,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  */
-public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, Observer
+public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, Observer, ISelectionListener
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.chart"; //$NON-NLS-1$
     public static final int PERIOD_ALL = 0;
@@ -144,6 +157,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private Security security;
     private int oldMouseX = -1, oldMouseY = -1;
     private boolean autoScale = false;
+    private boolean followSelection = false;
     private ChartObject newChartObject;
     private Action viewAll = new SetViewAllAction(this);
     private Action viewLast2Years = new SetLast2YearsPeriodAction(this);
@@ -161,12 +175,67 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private Action minute30Action = new Set30MinuteIntervalAction(this);
     private Action minute60Action = new Set60MinuteIntervalAction(this);
     private Action autoScaleAction = new AutoScaleAction(this);
+    Action toggleFollowSelectionAction;
     private Action cutAction;
     private Action copyAction;
     private Action pasteAction;
     private Action pasteSpecialAction;
     private Action deleteAction;
+    PreferenceStore preferences;
     private Logger logger = Logger.getLogger(getClass());
+    DropTargetListener dropTargetListener = new DropTargetListener() {
+        public void dragEnter(DropTargetEvent event)
+        {
+            event.detail = DND.DROP_COPY;
+            event.currentDataType = null;
+            
+            TransferData[] data = event.dataTypes;
+            if (event.currentDataType == null)
+            {
+                for (int i = 0; i < data.length; i++)
+                {
+                    if (SecurityTransfer.getInstance().isSupportedType(data[i]))
+                    {
+                        event.currentDataType = data[i];
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void dragOver(DropTargetEvent event)
+        {
+            event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+        }
+
+        public void dragOperationChanged(DropTargetEvent event)
+        {
+        }
+
+        public void dragLeave(DropTargetEvent event)
+        {
+        }
+
+        public void dropAccept(DropTargetEvent event)
+        {
+        }
+
+        public void drop(DropTargetEvent event)
+        {
+            if (SecurityTransfer.getInstance().isSupportedType(event.currentDataType))
+            {
+                Security[] securities = (Security[]) event.data;
+                setSecurity(securities[0]);
+            }
+        }
+    };
+    public static final String PREFS_FOLLOW_SELECTION = "followSelection";
+    static boolean DEFAULT_FOLLOW_SELECTION = false;
+    
+    public static IPath getPreferenceStoreLocation(Chart chart)
+    {
+        return ChartsPlugin.getDefault().getStateLocation().append("chart." + String.valueOf(chart.getId()) + ".prefs");
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
@@ -246,6 +315,15 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         menuManager.appendToGroup("group3", new Separator()); //$NON-NLS-1$
         menuManager.appendToGroup("group3", autoScaleAction); //$NON-NLS-1$
         
+        toggleFollowSelectionAction = new Action("Follow Security Selection", Action.AS_CHECK_BOX) {
+            public void run()
+            {
+                followSelection = toggleFollowSelectionAction.isChecked();
+                preferences.setValue(PREFS_FOLLOW_SELECTION, followSelection);
+            }
+        };
+        menuManager.appendToGroup("group3", toggleFollowSelectionAction); //$NON-NLS-1$
+        
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
         toolBarManager.add(new Separator("group1")); //$NON-NLS-1$
@@ -269,6 +347,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
      */
     public void createPartControl(Composite parent)
     {
+        DropTarget target = new DropTarget(parent, DND.DROP_COPY|DND.DROP_MOVE);
+        target.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
+        target.addDropListener(dropTargetListener);
+        
         Composite content = new Composite(parent, SWT.H_SCROLL);
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = gridLayout.marginHeight = 2;
@@ -324,6 +406,9 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         
         getSite().setSelectionProvider(new ChartSelectionProvider());
         getSite().getSelectionProvider().setSelection(new NullSelection());
+
+        getSite().getPage().addSelectionListener(this);
+
         IActionBars actionBars = getViewSite().getActionBars();
         actionBars.setGlobalActionHandler("settings", new Action() { //$NON-NLS-1$
             public void run()
@@ -340,10 +425,20 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
 
         Integer id = new Integer(Integer.parseInt(getViewSite().getSecondaryId()));
         chart = (Chart)CorePlugin.getRepository().load(Chart.class, id);
+        
+        preferences = new PreferenceStore(getPreferenceStoreLocation(chart).toOSString());
+        preferences.setDefault(PREFS_FOLLOW_SELECTION, DEFAULT_FOLLOW_SELECTION);
+        try {
+            preferences.load();
+        } catch(Exception e) {
+        }
+        
         security = chart.getSecurity();
         setPartName(chart.getTitle());
         setTitleToolTip(security.getDescription());
+
         autoScale = chart.isAutoScale();
+        followSelection = preferences.getBoolean(PREFS_FOLLOW_SELECTION);
         updateActionBars();
 
         try {
@@ -451,11 +546,20 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
      */
     public void dispose()
     {
+        getSite().getPage().removeSelectionListener(this);
         if (chart != null)
         {
             chart.deleteObserver(ChartView.this);
             chart.getRows().removeCollectionObserver(ChartView.this);
         }
+
+        try {
+            if (preferences != null)
+                preferences.save();
+        } catch(Exception e) {
+            Logger.getLogger(getClass()).warn(e);
+        }
+        
         super.dispose();
     }
     
@@ -479,6 +583,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         monthlyAction.setChecked(chart.getCompression() == BarData.INTERVAL_MONTHLY);
         
         autoScaleAction.setChecked(autoScale);
+        toggleFollowSelectionAction.setChecked(followSelection);
     }
     
     public Chart getChart()
@@ -592,6 +697,17 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 if (autoScale)
                     ((Plot)items[i].getControl()).updateScale();
             }
+        }
+    }
+    
+    public void setSecurity(Security security)
+    {
+        if (!security.equals(this.security))
+        {
+            chart.setSecurity(security);
+            this.security = security;
+            setTitleToolTip(security.getDescription());
+            CorePlugin.getRepository().save(chart);
         }
     }
     
@@ -902,6 +1018,18 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             plot.updateSummary();
         }
         datePlot.hideLabel();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.ISelectionListener#selectionChanged(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
+     */
+    public void selectionChanged(IWorkbenchPart part, ISelection selection)
+    {
+        if (followSelection)
+        {
+            if (selection instanceof SecuritySelection)
+                setSecurity(((SecuritySelection) selection).getSecurity());
+        }
     }
 
     public class ChartTabFolder extends CTabFolder implements ICollectionObserver, IPropertyChangeListener
