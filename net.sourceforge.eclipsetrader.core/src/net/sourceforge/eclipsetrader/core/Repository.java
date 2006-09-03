@@ -340,11 +340,19 @@ public class Repository
                 delete((Security)iter.next());
             for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
                 delete((SecurityGroup)iter.next());
+            
+            if (group.getGroup() != null)
+                group.getGroup().getGroups().remove(group);
+            
             allSecurityGroups().remove(obj);
         }
         
         if (obj instanceof Security)
         {
+            Security security = (Security)obj;
+            if (security.getGroup() != null)
+                security.getGroup().getSecurities().remove(security);
+            
             for (Iterator iter = allWatchlists().iterator(); iter.hasNext(); )
             {
                 Watchlist watchlist = (Watchlist)iter.next();

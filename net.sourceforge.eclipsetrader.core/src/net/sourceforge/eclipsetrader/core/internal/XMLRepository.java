@@ -79,21 +79,21 @@ import org.w3c.dom.NodeList;
  */
 public class XMLRepository extends Repository
 {
-    private Integer securitiesNextId = new Integer(1);
-    private Integer securitiesGroupNextId = new Integer(1);
-    private Map securitiesMap = new HashMap();
-    private Integer chartsNextId = new Integer(1);
-    private Map chartsMap = new HashMap();
-    private Integer watchlistsNextId = new Integer(1);
-    private Map watchlistsMap = new HashMap();
-    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
-    private Integer accountGroupNextId = new Integer(1);
-    private Map accountGroupMap = new HashMap();
-    private Integer accountNextId = new Integer(1);
-    private Map accountMap = new HashMap();
-    private Integer eventNextId = new Integer(1);
-    private TradingSystemRepository tradingRepository;
-    private Integer orderNextId = new Integer(1);
+    Integer securitiesNextId = new Integer(1);
+    Integer securitiesGroupNextId = new Integer(1);
+    Map securitiesMap = new HashMap();
+    Integer chartsNextId = new Integer(1);
+    Map chartsMap = new HashMap();
+    Integer watchlistsNextId = new Integer(1);
+    Map watchlistsMap = new HashMap();
+    SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
+    Integer accountGroupNextId = new Integer(1);
+    Map accountGroupMap = new HashMap();
+    Integer accountNextId = new Integer(1);
+    Map accountMap = new HashMap();
+    Integer eventNextId = new Integer(1);
+    TradingSystemRepository tradingRepository;
+    Integer orderNextId = new Integer(1);
     private Logger logger = Logger.getLogger(getClass());
 
     public XMLRepository()
@@ -489,6 +489,16 @@ public class XMLRepository extends Repository
                 securitiesNextId = getNextId(securitiesNextId);
             }
             securitiesMap.put(obj.getId(), obj);
+            saveSecurities();
+        }
+        
+        if (obj instanceof SecurityGroup)
+        {
+            if (obj.getId() == null)
+            {
+                obj.setId(securitiesGroupNextId);
+                securitiesGroupNextId = getNextId(securitiesGroupNextId);
+            }
             saveSecurities();
         }
         
@@ -1214,6 +1224,7 @@ public class XMLRepository extends Repository
                 obj.setRepository(this);
                 obj.clearChanged();
                 group.getGroups().add(obj);
+                allSecurityGroups().add(obj);
             }
         }
         
@@ -1418,9 +1429,9 @@ public class XMLRepository extends Repository
         }
         
         for (Iterator iter = group.getSecurities().iterator(); iter.hasNext(); )
-            saveSecurity((Security)iter.next(), document, root);
+            saveSecurity((Security)iter.next(), document, element);
         
-        for (Iterator iter = group.getSecurities().iterator(); iter.hasNext(); )
+        for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
             saveSecurityGroup((SecurityGroup)iter.next(), document, element);
     }
     
@@ -1600,7 +1611,8 @@ public class XMLRepository extends Repository
             for (Iterator iter = allSecurityGroups().iterator(); iter.hasNext(); )
             {
                 SecurityGroup group = (SecurityGroup)iter.next();
-                saveSecurityGroup(group, document, root);
+                if (group.getGroup() == null)
+                    saveSecurityGroup(group, document, root);
             }
             
             for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )

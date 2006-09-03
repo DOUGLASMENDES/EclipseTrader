@@ -114,6 +114,10 @@ public class Security extends PersistentObject
 
     public void setGroup(SecurityGroup group)
     {
+        if (group != null && !group.equals(this.group))
+            setChanged();
+        else if (group == null && this.group != null)
+            setChanged();
         this.group = group;
     }
 
