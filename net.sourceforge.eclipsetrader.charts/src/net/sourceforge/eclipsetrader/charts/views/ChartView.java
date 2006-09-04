@@ -1110,7 +1110,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             }
 
             updateTabsVisibility();
-            setSelection(getItem(0));
+            if (getItemCount() != 0)
+                setSelection(getItem(0));
         }
         
         protected void updateTabsVisibility()
@@ -1142,8 +1143,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             new ChartTabItem(this, SWT.NONE, (ChartTab)o);
             ((ChartTab)o).clearChanged();
             
-            if (getItemCount() == 1)
-                setSelection(getItem(0));
+            setSelection(getItem(getItemCount() - 1));
 
             updateTabsVisibility();
         }
