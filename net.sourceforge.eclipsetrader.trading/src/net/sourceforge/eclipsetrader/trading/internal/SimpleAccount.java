@@ -64,13 +64,16 @@ public class SimpleAccount extends Account
      */
     public double getExpenses(Security security, int quantity, double price)
     {
-        double expenses = 0;
+        double expenses = getFixedCommissions();
         
-        Quote quote = security.getQuote();
-        if (quote != null)
+        if (security != null)
         {
-            double value = Math.abs(quantity) * quote.getLast();
-            expenses = getFixedCommissions() + (value / 100.0 * getVariableCommissions());
+            Quote quote = security.getQuote();
+            if (quote != null)
+            {
+                double value = Math.abs(quantity) * quote.getLast();
+                expenses += value / 100.0 * getVariableCommissions();
+            }
         }
         if (expenses < getMinimumCommission())
             expenses = getMinimumCommission();
