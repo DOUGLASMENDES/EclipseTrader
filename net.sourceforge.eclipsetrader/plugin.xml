@@ -98,6 +98,11 @@
             class="net.sourceforge.eclipsetrader.preferences.StartupShutdownPreferencesPage"
             id="net.sourceforge.eclipsetrader.startupAndShutdown"
             name="%page.name.startupAndShutdown"/>
+      <page
+            category="net.sourceforge.eclipsetrader"
+            class="org.eclipse.ui.ExtensionFactory:perspectivesPreferencePage"
+            id="org.eclipse.ui.preferencePages.Perspectives"
+            name="Perspectives"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
