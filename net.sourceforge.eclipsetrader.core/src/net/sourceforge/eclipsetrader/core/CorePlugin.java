@@ -59,6 +59,7 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String TRADING_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".tradingProviders"; //$NON-NLS-1$
     public static final String PATTERN_EXTENSION_POINT = PLUGIN_ID + ".patterns"; //$NON-NLS-1$
     public static final String ACCOUNT_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".accountProviders"; //$NON-NLS-1$
+    public static final String LABEL_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".viewLabelProviders"; //$NON-NLS-1$
     public static final String LOGGER_PREFERENCES_EXTENSION_POINT = PLUGIN_ID + ".loggingPreferences"; //$NON-NLS-1$
     public static final String FEED_RUNNING = "FEED_RUNNING"; //$NON-NLS-1$
     public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY"; //$NON-NLS-1$

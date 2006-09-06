@@ -7,6 +7,7 @@
    <extension-point id="accountProviders" name="%extension-point.name.AccountProviders" schema="schema/accountProviders.exsd"/>
    <extension-point id="loggingPreferences" name="Logging Preferences" schema="schema/loggingPreferences.exsd"/>
    <extension-point id="tradingProviders" name="Trading Providers" schema="schema/tradingProviders.exsd"/>
+   <extension-point id="viewLabelProviders" name="View Label Providers" schema="schema/viewLabelProviders.exsd"/>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
