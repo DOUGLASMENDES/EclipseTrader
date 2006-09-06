@@ -9,22 +9,22 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.core.db.columns;
+package net.sourceforge.eclipsetrader.trading.internal.watchlist;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
-import net.sourceforge.eclipsetrader.core.db.feed.Quote;
-import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
-public class BidPrice extends Column
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class OpenPrice extends LabelProvider implements Comparator
 {
     private NumberFormat formatter = NumberFormat.getInstance();
 
-    public BidPrice()
+    public OpenPrice()
     {
-        super(Messages.BidPrice_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(4);
@@ -32,20 +32,24 @@ public class BidPrice extends Column
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#getText(WatchlistItem)
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getText(WatchlistItem item)
+    public String getText(Object element)
     {
-        if (item.getSecurity() == null)
-            return ""; //$NON-NLS-1$
-        Quote quote = item.getSecurity().getQuote();
-        if (quote != null && quote.getBid() != 0)
-            return formatter.format(CurrencyConverter.getInstance().convert(quote.getBid(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+        if (element instanceof WatchlistItem)
+        {
+            WatchlistItem item = (WatchlistItem)element;
+            if (item.getSecurity() == null)
+                return ""; //$NON-NLS-1$
+            if (item.getSecurity().getOpen() != null)
+                return formatter.format(CurrencyConverter.getInstance().convert(item.getSecurity().getOpen(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+        }
+
         return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object arg0, Object arg1)
     {
@@ -60,9 +64,8 @@ public class BidPrice extends Column
     {
         if (item.getSecurity() == null)
             return 0;
-        Quote quote = item.getSecurity().getQuote();
-        if (quote != null && quote.getBid() != 0)
-            return CurrencyConverter.getInstance().convert(quote.getBid(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+        if (item.getSecurity().getOpen() != null)
+            return CurrencyConverter.getInstance().convert(item.getSecurity().getOpen(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
         return 0;
     }
 }

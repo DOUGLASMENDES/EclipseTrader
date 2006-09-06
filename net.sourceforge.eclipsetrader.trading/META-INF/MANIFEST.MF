@@ -10,8 +10,17 @@ Require-Bundle: org.eclipse.ui,
  net.sourceforge.eclipsetrader.core
 Bundle-Vendor: EclipseTrader
 Export-Package: net.sourceforge.eclipsetrader.trading,
+ net.sourceforge.eclipsetrader.trading.actions,
  net.sourceforge.eclipsetrader.trading.alerts,
  net.sourceforge.eclipsetrader.trading.dialogs,
+ net.sourceforge.eclipsetrader.trading.internal,
+ net.sourceforge.eclipsetrader.trading.internal.orders,
+ net.sourceforge.eclipsetrader.trading.internal.watchlist,
+ net.sourceforge.eclipsetrader.trading.internal.wizards,
  net.sourceforge.eclipsetrader.trading.patterns,
- net.sourceforge.eclipsetrader.trading.systems
+ net.sourceforge.eclipsetrader.trading.systems,
+ net.sourceforge.eclipsetrader.trading.views,
+ net.sourceforge.eclipsetrader.trading.wizards,
+ net.sourceforge.eclipsetrader.trading.wizards.accounts,
+ net.sourceforge.eclipsetrader.trading.wizards.systems
 Eclipse-LazyStart: true

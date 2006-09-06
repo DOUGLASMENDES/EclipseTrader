@@ -9,43 +9,48 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.core.db.columns;
+package net.sourceforge.eclipsetrader.trading.internal.watchlist;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 
-import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
-import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
-public class LastPrice extends Column
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class Volume extends LabelProvider implements Comparator
 {
     private NumberFormat formatter = NumberFormat.getInstance();
 
-    public LastPrice()
+    public Volume()
     {
-        super(Messages.LastPrice_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
-        formatter.setMinimumFractionDigits(4);
-        formatter.setMaximumFractionDigits(4);
+        formatter.setMinimumFractionDigits(0);
+        formatter.setMaximumFractionDigits(0);
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#getText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getText(WatchlistItem item)
+    public String getText(Object element)
     {
-        if (item.getSecurity() == null)
-            return ""; //$NON-NLS-1$
-        Quote quote = item.getSecurity().getQuote();
-        if (quote != null && quote.getLast() != 0)
-            return formatter.format(CurrencyConverter.getInstance().convert(quote.getLast(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+        if (element instanceof WatchlistItem)
+        {
+            WatchlistItem item = (WatchlistItem)element;
+            if (item.getSecurity() == null)
+                return ""; //$NON-NLS-1$
+            Quote quote = item.getSecurity().getQuote();
+            if (quote != null)
+                return formatter.format(quote.getVolume());
+        }
+
         return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object arg0, Object arg1)
     {
@@ -56,13 +61,13 @@ public class LastPrice extends Column
         return 0;
     }
 
-    private double getValue(WatchlistItem item)
+    private long getValue(WatchlistItem item)
     {
         if (item.getSecurity() == null)
             return 0;
         Quote quote = item.getSecurity().getQuote();
-        if (quote != null && quote.getLast() != 0)
-            return CurrencyConverter.getInstance().convert(quote.getLast(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+        if (quote != null)
+            return quote.getVolume();
         return 0;
     }
 }

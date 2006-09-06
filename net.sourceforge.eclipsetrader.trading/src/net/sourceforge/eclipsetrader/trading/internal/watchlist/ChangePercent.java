@@ -9,22 +9,22 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.core.db.columns;
+package net.sourceforge.eclipsetrader.trading.internal.watchlist;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
-import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
-public class ChangePercent extends Column
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class ChangePercent extends LabelProvider implements Comparator
 {
     private NumberFormat formatter = NumberFormat.getInstance();
 
     public ChangePercent()
     {
-        super(Messages.ChangePercent_Label, RIGHT);
-
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(2);
@@ -32,27 +32,32 @@ public class ChangePercent extends Column
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#getText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getText(WatchlistItem item)
+    public String getText(Object element)
     {
-        if (item.getSecurity() == null)
-            return ""; //$NON-NLS-1$
-        Quote quote = item.getSecurity().getQuote();
-        if (quote != null && quote.getLast() != 0 && item.getSecurity().getClose() != null)
+        if (element instanceof WatchlistItem)
         {
-            double change = quote.getLast() - item.getSecurity().getClose().doubleValue();
-            double percentage = (change / item.getSecurity().getClose().doubleValue()) * 100.0;
+            WatchlistItem item = (WatchlistItem)element;
+            if (item.getSecurity() == null)
+                return ""; //$NON-NLS-1$
+            Quote quote = item.getSecurity().getQuote();
+            if (quote != null && quote.getLast() != 0 && item.getSecurity().getClose() != null)
+            {
+                double change = quote.getLast() - item.getSecurity().getClose().doubleValue();
+                double percentage = (change / item.getSecurity().getClose().doubleValue()) * 100.0;
 
-            if (change > 0)
-                return "+" + formatter.format(percentage) + "%"; //$NON-NLS-1$ //$NON-NLS-2$
-            return formatter.format(percentage) + "%"; //$NON-NLS-1$
+                if (change > 0)
+                    return "+" + formatter.format(percentage) + "%"; //$NON-NLS-1$ //$NON-NLS-2$
+                return formatter.format(percentage) + "%"; //$NON-NLS-1$
+            }
         }
+
         return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object arg0, Object arg1)
     {

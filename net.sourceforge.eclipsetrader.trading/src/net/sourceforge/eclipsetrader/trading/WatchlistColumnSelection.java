@@ -12,20 +12,20 @@
 
 package net.sourceforge.eclipsetrader.trading;
 
+import net.sourceforge.eclipsetrader.core.db.WatchlistColumn;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
-import net.sourceforge.eclipsetrader.core.db.columns.Column;
 
 public class WatchlistColumnSelection extends WatchlistItemSelection
 {
-    private Column selectedColumn;
+    private WatchlistColumn selectedColumn;
 
-    public WatchlistColumnSelection(WatchlistItem watchlistItem, Column selectedColumn)
+    public WatchlistColumnSelection(WatchlistItem watchlistItem, WatchlistColumn selectedColumn)
     {
         super(watchlistItem);
         this.selectedColumn = selectedColumn;
     }
 
-    public Column getSelectedColumn()
+    public WatchlistColumn getSelectedColumn()
     {
         return selectedColumn;
     }

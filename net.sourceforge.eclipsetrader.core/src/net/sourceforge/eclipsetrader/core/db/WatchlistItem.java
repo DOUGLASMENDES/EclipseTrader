@@ -12,12 +12,9 @@
 package net.sourceforge.eclipsetrader.core.db;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import net.sourceforge.eclipsetrader.core.db.columns.Column;
 
 /**
  */
@@ -28,7 +25,6 @@ public class WatchlistItem extends PersistentObject implements Observer
     Watchlist parent;
     Integer position;
     Double paidPrice;
-    List values;
     
     public WatchlistItem()
     {
@@ -127,13 +123,6 @@ public class WatchlistItem extends PersistentObject implements Observer
         setChanged();
     }
 
-    public List getValues()
-    {
-        if (values == null)
-            update();
-        return values;
-    }
-
     /* (non-Javadoc)
      * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
      */
@@ -143,16 +132,6 @@ public class WatchlistItem extends PersistentObject implements Observer
         notifyObservers();
     }
     
-    public void update()
-    {
-        values = new ArrayList();
-        for (Iterator iter = parent.getColumns().iterator(); iter.hasNext(); )
-        {
-            Column column = (Column)iter.next();
-            values.add(column.getText(this));
-        }
-    }
-
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.db.PersistentObject#setChanged()
      */
@@ -168,8 +147,6 @@ public class WatchlistItem extends PersistentObject implements Observer
      */
     public void notifyObservers()
     {
-        if (values != null && hasChanged())
-            update();
         super.notifyObservers();
         if (getParent() != null && getParent().getTotals() != this)
             getParent().getTotals().notifyObservers();

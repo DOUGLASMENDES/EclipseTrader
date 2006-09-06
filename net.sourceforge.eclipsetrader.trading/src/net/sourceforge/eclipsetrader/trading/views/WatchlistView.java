@@ -39,11 +39,13 @@ import net.sourceforge.eclipsetrader.trading.internal.WatchlistBoxViewer;
 import net.sourceforge.eclipsetrader.trading.internal.WatchlistTableViewer;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistSettingsDialog;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -63,12 +65,12 @@ import org.eclipse.ui.part.ViewPart;
 public class WatchlistView extends ViewPart implements ICollectionObserver, Observer
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.watchlist";
-    public static final String PREFS_SHOW_TOTALS = "SHOW_TOTALS_";
-    public static final String PREFS_SORTING = "SORT_";
-    public static final String PREFS_AUTO_SORT = "AUTOSORT_";
+    public static final String PREFS_SHOW_TOTALS = "SHOW_TOTALS";
+    public static final String PREFS_SORTING = "SORT";
     public static final int TABLE = 0;
     public static final int RIBBON = 1;
     Watchlist watchlist;
+    PreferenceStore preferenceStore = new PreferenceStore();
     Composite parent;
     AbstractLayout layout;
     Action tableLayout = new SetTableLayoutAction(this);
@@ -144,6 +146,14 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
      */
     public void init(IViewSite site) throws PartInitException
     {
+        preferenceStore = new PreferenceStore(TradingPlugin.getDefault().getStateLocation().append("watchlist." + site.getSecondaryId() + ".prefs").toOSString());
+        preferenceStore.setDefault(WatchlistView.PREFS_SORTING, "watchlist.description;0");
+        preferenceStore.setDefault(WatchlistView.PREFS_SHOW_TOTALS, false);
+        try {
+            preferenceStore.load();
+        } catch(Exception e) {
+        }
+        
         IMenuManager menuManager = site.getActionBars().getMenuManager();
         menuManager.add(new Separator("top")); //$NON-NLS-1$
         menuManager.add(new Separator()); //$NON-NLS-1$
@@ -258,7 +268,15 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
                     FeedMonitor.cancelMonitor(security);
             }
         }
+
         layout.dispose();
+
+        try {
+            preferenceStore.save();
+        } catch(Exception e) {
+            Logger.getLogger(getClass()).warn(e);
+        }
+
         super.dispose();
     }
     
@@ -272,6 +290,11 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         mgr.add(deleteAction);
     }
     
+    public PreferenceStore getPreferenceStore()
+    {
+        return preferenceStore;
+    }
+
     public void setLayout(int style)
     {
         if (layout != null)

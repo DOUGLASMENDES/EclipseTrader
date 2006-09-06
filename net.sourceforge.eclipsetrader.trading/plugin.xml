@@ -532,6 +532,118 @@
             name="Double Reversal Rule"/>
    </extension>
    <extension
+         point="net.sourceforge.eclipsetrader.core.viewLabelProviders">
+      <viewContribution
+            id="watchlist.standardColumns"
+            targetID="net.sourceforge.eclipsetrader.watchlist">
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.AskPrice"
+               id="watchlist.askPrice"
+               name="Ask Price"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.AskSize"
+               id="watchlist.askSize"
+               name="Ask Size"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Balance"
+               id="watchlist.balance"
+               name="Balance"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.BidPrice"
+               id="watchlist.bidPrice"
+               name="Bid Price"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.BidSize"
+               id="watchlist.bidSize"
+               name="Bid Size"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Change"
+               id="watchlist.change"
+               name="Change"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.ChangePercent"
+               id="watchlist.changePercent"
+               name="Change %"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.ClosePrice"
+               id="watchlist.closePrice"
+               name="Close"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Code"
+               id="watchlist.code"
+               name="Code"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Currency"
+               id="watchlist.currency"
+               name="Currency"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Date"
+               id="watchlist.date"
+               name="Date"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.DateTime"
+               id="watchlist.dateTime"
+               name="Date / Time"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Description"
+               id="watchlist.description"
+               name="Description"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.HighPrice"
+               id="watchlist.highPrice"
+               name="High"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.LastPrice"
+               id="watchlist.lastPrice"
+               name="Last"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.LowPrice"
+               id="watchlist.lowPrice"
+               name="Low"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.OpenPrice"
+               id="watchlist.openPrice"
+               name="Open"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.PaidPrice"
+               id="watchlist.paidPrice"
+               name="Paid"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Position"
+               id="watchlist.position"
+               name="Position"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Time"
+               id="watchlist.time"
+               name="Time"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.Volume"
+               id="watchlist.volume"
+               name="Volume"
+               orientation="right"/>
+      </viewContribution>
+   </extension>
+   <extension
          point="net.sourceforge.eclipsetrader.trading.alerts">
       <alert
             class="net.sourceforge.eclipsetrader.trading.alerts.TargetPrice"

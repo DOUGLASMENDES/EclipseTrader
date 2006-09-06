@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.ObservableList;
-import net.sourceforge.eclipsetrader.core.db.columns.Column;
 
 
 /**
@@ -30,17 +29,7 @@ public class Watchlist extends PersistentObject
     private String defaultFeed;
     private List columns = new ArrayList();
     private ObservableList items = new ObservableList();
-    private WatchlistItem totals = new WatchlistItem() {
-        public void update()
-        {
-            values = new ArrayList();
-            for (Iterator iter = parent.getColumns().iterator(); iter.hasNext(); )
-            {
-                Column column = (Column)iter.next();
-                values.add(column.getTotalsText(Watchlist.this));
-            }
-        }
-    };
+    private WatchlistItem totals = new WatchlistItem();
     
     public Watchlist()
     {
@@ -82,8 +71,6 @@ public class Watchlist extends PersistentObject
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
-        for (Iterator iter = items.iterator(); iter.hasNext(); )
-            ((WatchlistItem)iter.next()).update();
         setChanged();
     }
 
@@ -105,10 +92,7 @@ public class Watchlist extends PersistentObject
     public void setColumns(List columns)
     {
         this.columns = columns;
-        for (Iterator iter = items.iterator(); iter.hasNext(); )
-            ((WatchlistItem)iter.next()).update();
         setChanged();
-        totals.update();
     }
     
     public ObservableList getItems()
@@ -123,7 +107,6 @@ public class Watchlist extends PersistentObject
             ((WatchlistItem) iter.next()).setParent(this);
         this.items.addAll(items);
         setChanged();
-        totals.update();
     }
 
     public WatchlistItem getTotals()

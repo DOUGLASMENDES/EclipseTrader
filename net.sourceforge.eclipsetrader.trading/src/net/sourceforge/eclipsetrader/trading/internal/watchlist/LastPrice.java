@@ -9,22 +9,23 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.core.db.columns;
+package net.sourceforge.eclipsetrader.trading.internal.watchlist;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
-import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
-public class HighPrice extends Column
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class LastPrice extends LabelProvider implements Comparator
 {
     private NumberFormat formatter = NumberFormat.getInstance();
 
-    public HighPrice()
+    public LastPrice()
     {
-        super(Messages.HighPrice_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(4);
@@ -32,19 +33,25 @@ public class HighPrice extends Column
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#getText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getText(WatchlistItem item)
+    public String getText(Object element)
     {
-        if (item.getSecurity() == null)
-            return ""; //$NON-NLS-1$
-        if (item.getSecurity().getHigh() != null)
-            return formatter.format(CurrencyConverter.getInstance().convert(item.getSecurity().getHigh(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+        if (element instanceof WatchlistItem)
+        {
+            WatchlistItem item = (WatchlistItem)element;
+            if (item.getSecurity() == null)
+                return ""; //$NON-NLS-1$
+            Quote quote = item.getSecurity().getQuote();
+            if (quote != null && quote.getLast() != 0)
+                return formatter.format(CurrencyConverter.getInstance().convert(quote.getLast(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+        }
+
         return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object arg0, Object arg1)
     {
@@ -59,8 +66,9 @@ public class HighPrice extends Column
     {
         if (item.getSecurity() == null)
             return 0;
-        if (item.getSecurity().getHigh() != null)
-            return CurrencyConverter.getInstance().convert(item.getSecurity().getHigh(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
+        Quote quote = item.getSecurity().getQuote();
+        if (quote != null && quote.getLast() != 0)
+            return CurrencyConverter.getInstance().convert(quote.getLast(), item.getSecurity().getCurrency(), item.getParent().getCurrency());
         return 0;
     }
 }

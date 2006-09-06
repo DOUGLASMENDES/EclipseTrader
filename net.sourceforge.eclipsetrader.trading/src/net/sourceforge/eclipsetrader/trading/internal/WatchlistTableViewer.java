@@ -20,29 +20,34 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import net.sourceforge.eclipsetrader.core.IEditableLabelProvider;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.WatchlistColumn;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
-import net.sourceforge.eclipsetrader.core.db.columns.Column;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.transfers.WatchlistItemTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTable;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTableColumn;
 import net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem;
-import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.WatchlistColumnSelection;
 import net.sourceforge.eclipsetrader.trading.WatchlistItemSelection;
 import net.sourceforge.eclipsetrader.trading.actions.ToggleShowTotalsAction;
+import net.sourceforge.eclipsetrader.trading.internal.watchlist.ColumnRegistry;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistItemPropertiesDialog;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -60,6 +65,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
@@ -90,27 +96,27 @@ public class WatchlistTableViewer extends AbstractLayout
     public static final String POSITIVE_FOREGROUND = "TABLE_POSITIVE_FOREGROUND";
     public static final String NEGATIVE_FOREGROUND = "TABLE_NEGATIVE_FOREGROUND";
     public static final String ALERT_BACKGROUND = "TABLE_ALERT_BACKGROUND";
-    private List list = new ArrayList();
-    private Composite content;
-    private EditableTable table;
-    private Color evenForeground;
-    private Color evenBackground;
-    private Color oddForeground;
-    private Color oddBackground;
-    private Color totalsForeground;
-    private Color totalsBackground;
-    private Color tickBackground;
-    private Color negativeForeground;
-    private Color positiveForeground;
-    private Color alertHilightBackground;
-    private boolean showTotals = false;
-    private boolean singleClick = true;
+    List list = new ArrayList();
+    Composite content;
+    EditableTable table;
+    Color evenForeground;
+    Color evenBackground;
+    Color oddForeground;
+    Color oddBackground;
+    Color totalsForeground;
+    Color totalsBackground;
+    Color tickBackground;
+    Color negativeForeground;
+    Color positiveForeground;
+    Color alertHilightBackground;
+    boolean showTotals = false;
+    boolean singleClick = true;
     int sortColumn = -1;
     int sortDirection = 0;
     Action toggleShowTotals;
-    private Action propertiesAction;
-    private Column selectedColumn;
-    private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
+    Action propertiesAction;
+    WatchlistColumn selectedColumn;
+    IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
             if (event.getProperty().equals(IThemeManager.CHANGE_CURRENT_THEME))
@@ -147,21 +153,25 @@ public class WatchlistTableViewer extends AbstractLayout
             updateView();
         }
     };
-    private Comparator comparator = new Comparator() {
+    Comparator comparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
         {
-            Comparator c = ((Column) table.getColumn(sortColumn).getData());
-            if (sortDirection == 0)
-                return c.compare(arg0, arg1);
-            else
-                return c.compare(arg1, arg0);
+            Object provider = table.getColumn(sortColumn).getData("labelProvider");
+            if (provider instanceof Comparator)
+            {
+                if (sortDirection == 0)
+                    return ((Comparator)provider).compare(arg0, arg1);
+                else
+                    return ((Comparator)provider).compare(arg1, arg0);
+            }
+            return 0;
         }
     };
     SelectionListener columnSelectionListener = new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e)
         {
             TableColumn tableColumn = (TableColumn) e.widget;
-            Column column = (Column)tableColumn.getData();
+            WatchlistColumn column = (WatchlistColumn)tableColumn.getData();
             
             int index = table.indexOf(tableColumn);
             if (index == sortColumn)
@@ -179,20 +189,28 @@ public class WatchlistTableViewer extends AbstractLayout
 
             if (sortColumn != -1)
             {
-                String s = column.getClass().getName() + ";" + String.valueOf(sortDirection);
-                TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), s);
+                String s = column.getId() + ";" + String.valueOf(sortDirection);
+                getView().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING, s);
             }
             else
-                TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId(), "");
+                getView().getPreferenceStore().setValue(WatchlistView.PREFS_SORTING, "");
             updateView();
         }
     };
-    
+    ControlAdapter columnControlListener = new ControlAdapter() {
+        public void controlResized(ControlEvent e)
+        {
+            TableColumn tableColumn = (TableColumn)e.widget;
+            WatchlistColumn column = (WatchlistColumn)tableColumn.getData();
+            getView().getPreferenceStore().setValue(column.getId() + ".width", tableColumn.getWidth());
+        }
+    };
+   
     public WatchlistTableViewer(WatchlistView view)
     {
         super(view);
         
-        showTotals = TradingPlugin.getDefault().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId());
+        showTotals = getView().getPreferenceStore().getBoolean(WatchlistView.PREFS_SHOW_TOTALS);
         toggleShowTotals = new ToggleShowTotalsAction(this);
         toggleShowTotals.setChecked(showTotals);
 
@@ -395,7 +413,7 @@ public class WatchlistTableViewer extends AbstractLayout
 
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
         menuManager.remove(toggleShowTotals.getId());
-
+        
         if (content != null)
             content.dispose();
     }
@@ -405,7 +423,7 @@ public class WatchlistTableViewer extends AbstractLayout
         int index;
         TableColumn tableColumn;
 
-        String[] items = TradingPlugin.getDefault().getPreferenceStore().getString(WatchlistView.PREFS_SORTING + getViewSite().getSecondaryId()).split(";");
+        String[] items = getView().getPreferenceStore().getString(WatchlistView.PREFS_SORTING).split(";");
         if (items.length != 2)
             items = new String[] { "", "0" };
         sortDirection = new Integer(items[1]).intValue();
@@ -413,41 +431,53 @@ public class WatchlistTableViewer extends AbstractLayout
         index = 1;
         for (Iterator iter = getView().getWatchlist().getColumns().iterator(); iter.hasNext(); )
         {
-            Column column = (Column)iter.next();
+            WatchlistColumn column = (WatchlistColumn)iter.next();
+            String name = "";
             int style = SWT.LEFT;
-            if (column.getStyle() == Column.CENTER)
-                style = SWT.CENTER;
-            else if (column.getStyle() == Column.RIGHT)
-                style = SWT.RIGHT;
+            Image image = null;
+
+            ILabelProvider provider = ColumnRegistry.createLabelProvider(column.getId());
+            if (provider != null)
+            {
+                Logger.getLogger(getClass()).info("Adding column [" + column.getId() + "]");
+                name = ColumnRegistry.getName(column.getId());
+                style = ColumnRegistry.getOrientation(column.getId());
+                
+                if (provider instanceof ITableLabelProvider)
+                {
+                    name = ((ITableLabelProvider)provider).getColumnText(getView().getWatchlist(), index);
+                    image = ((ITableLabelProvider)provider).getColumnImage(getView().getWatchlist(), index);
+                }
+            }
+            else
+                Logger.getLogger(getClass()).warn("Missing column [" + column.getId() + "]");
             
             if (index < table.getColumnCount())
             {
                 tableColumn = table.getColumn(index);
                 tableColumn.setAlignment(style);
+                if (tableColumn.getData("labelProvider") != null)
+                    ((ILabelProvider)tableColumn.getData("labelProvider")).dispose();
             }
             else
             {
-                tableColumn = new EditableTableColumn(table, style) {
-                    public boolean isEditable()
+                tableColumn = new EditableTableColumn(table, style);
+                tableColumn.addControlListener(columnControlListener);
+                tableColumn.addDisposeListener(new DisposeListener() {
+                    public void widgetDisposed(DisposeEvent e)
                     {
-                        Column c = (Column)getData();
-                        return (c == null || !c.isEditable()) ? false : true; 
-                    }
-                };
-                tableColumn.addControlListener(new ControlAdapter() {
-                    public void controlResized(ControlEvent e)
-                    {
-                        Column c = (Column)e.widget.getData();
-                        if (c != null)
-                            c.setWidth(((TableColumn)e.widget).getWidth());
+                        if (e.widget.getData("labelProvider") != null)
+                            ((ILabelProvider)e.widget.getData("labelProvider")).dispose();
                     }
                 });
                 tableColumn.addSelectionListener(columnSelectionListener);
             }
-            tableColumn.setText(column.getLabel());
+            tableColumn.setText(name);
+            tableColumn.setImage(image);
             tableColumn.setData(column);
+            tableColumn.setData("labelProvider", provider);
 
-            if (column.getClass().getName().equals(items[0]))
+            if (column.getId().equals(items[0]))
                 sortColumn = index;
             
             index++;
@@ -472,13 +502,16 @@ public class WatchlistTableViewer extends AbstractLayout
 
         updateTableContents();
 
+        PreferenceStore preferences = getView().getPreferenceStore(); 
         for (int i = 1; i < table.getColumnCount(); i++)
         {
-            Column c = (Column)table.getColumn(i).getData();
-            if (c.getWidth() == 0)
-                table.getColumn(i).pack();
+            WatchlistColumn column = (WatchlistColumn)table.getColumn(i).getData();
+            preferences.setDefault(column.getId() + ".width", -1);
+            int size = preferences.getInt(column.getId() + ".width");
+            if (size != -1)
+                table.getColumn(i).setWidth(size);
             else
-                table.getColumn(i).setWidth(c.getWidth());
+                table.getColumn(i).pack();
         }
         if ("gtk".equals(SWT.getPlatform()))
             table.getColumn(table.getColumnCount() - 1).pack();
@@ -589,6 +622,8 @@ public class WatchlistTableViewer extends AbstractLayout
         TableItem[] items = table.getItems();
         for (int i = 0; i < items.length; i++)
         {
+            if (!(items[i] instanceof WatchlistTableItem))
+                continue;
             WatchlistTableItem tableItem = (WatchlistTableItem)items[i];
             if (tableItem.getWatchlistItem().equals(o))
             {
@@ -618,7 +653,7 @@ public class WatchlistTableViewer extends AbstractLayout
     public void setShowTotals(boolean showTotals)
     {
         this.showTotals = showTotals;
-        TradingPlugin.getDefault().getPreferenceStore().setValue(WatchlistView.PREFS_SHOW_TOTALS + getViewSite().getSecondaryId(), showTotals);
+        getView().getPreferenceStore().setValue(WatchlistView.PREFS_SHOW_TOTALS, showTotals);
     }
     
     /* (non-Javadoc)
@@ -688,7 +723,7 @@ public class WatchlistTableViewer extends AbstractLayout
         return table;
     }
 
-    protected Column getColumn(MouseEvent e)
+    protected WatchlistColumn getColumn(MouseEvent e)
     {
         TableColumn[] columns = table.getColumns();
 
@@ -705,8 +740,8 @@ public class WatchlistTableViewer extends AbstractLayout
             i++;
         } while (x < e.x && i < columns.length);
 
-        if (column.getData() instanceof Column)
-            return (Column) column.getData();
+        if (column.getData() instanceof WatchlistColumn)
+            return (WatchlistColumn) column.getData();
 
         return null;
     }
@@ -745,19 +780,7 @@ public class WatchlistTableViewer extends AbstractLayout
                 this.watchlistItem.deleteObserver(this);
             this.watchlistItem = watchlistItem;
             
-            int column = 1;
-            for (Iterator iter2 = watchlistItem.getValues().iterator(); iter2.hasNext(); )
-            {
-                String value = (String)iter2.next();
-                setText(column, value);
-                if (value.startsWith("+"))
-                    setForeground(column, positiveForeground);
-                else if (value.startsWith("-"))
-                    setForeground(column, negativeForeground);
-                else
-                    setForeground(column, null);
-                column++;
-            }
+            update(false);
             
             this.watchlistItem.addObserver(this);
         }
@@ -765,6 +788,44 @@ public class WatchlistTableViewer extends AbstractLayout
         WatchlistItem getWatchlistItem()
         {
             return watchlistItem;
+        }
+        
+        void update(boolean tick)
+        {
+            TableColumn[] columns = getParent().getColumns();
+            for (int i = 1; i < columns.length; i++)
+            {
+                ILabelProvider provider = (ILabelProvider)columns[i].getData("labelProvider"); 
+                if (provider == null)
+                    continue;
+
+                Image image = provider.getImage(watchlistItem);
+                if (!tick || image != getImage(i))
+                    setImage(i, image);
+
+                String value = provider.getText(watchlistItem);
+                if (!tick || !value.equals(getText(i)))
+                {
+                    setText(i, value);
+                    if (value.startsWith("+"))
+                        setForeground(i, positiveForeground);
+                    else if (value.startsWith("-"))
+                        setForeground(i, negativeForeground);
+                    else
+                        setForeground(i, null);
+                    
+                    if (tick)
+                    {
+                        if (provider instanceof IEditableLabelProvider)
+                        {
+                            if (!((IEditableLabelProvider)provider).isEditable(watchlistItem))
+                                ticker.tick(i);
+                        }
+                        else
+                            ticker.tick(i);
+                    }
+                }
+            }
         }
         
         /* (non-Javadoc)
@@ -775,27 +836,8 @@ public class WatchlistTableViewer extends AbstractLayout
             getDisplay().asyncExec(new Runnable() {
                 public void run()
                 {
-                    if (isDisposed())
-                        return;
-                    
-                    int column = 1;
-                    String[] value = (String[])watchlistItem.getValues().toArray(new String[0]);
-                    for (int i = 0; i < value.length; i++, column++)
-                    {
-                        if (!value[i].equals(getText(column)))
-                        {
-                            setText(column, value[i]);
-                            if (value[i].startsWith("+"))
-                                setForeground(column, positiveForeground);
-                            else if (value[i].startsWith("-"))
-                                setForeground(column, negativeForeground);
-                            else
-                                setForeground(column, null);
-                            
-                            if (!((Column)table.getColumn(column).getData()).isEditable())
-                                ticker.tick(column);
-                        }
-                    }
+                    if (!isDisposed())
+                        update(true);
                 }
             });
         }
@@ -805,7 +847,10 @@ public class WatchlistTableViewer extends AbstractLayout
          */
         public boolean canEdit(int index)
         {
-            return ((Column)table.getColumn(index).getData()).isEditable();
+            ILabelProvider provider = (ILabelProvider)getParent().getColumn(index).getData("labelProvider");
+            if (provider != null && (provider instanceof IEditableLabelProvider))
+                return ((IEditableLabelProvider)provider).isEditable(watchlistItem);
+            return false;
         }
 
         /* (non-Javadoc)
@@ -821,9 +866,9 @@ public class WatchlistTableViewer extends AbstractLayout
          */
         public void itemEdited(int index, String text)
         {
-            Column c = (Column)table.getColumn(index).getData();
-            if (c != null)
-                c.setText(watchlistItem, text);
+            ILabelProvider provider = (ILabelProvider)getParent().getColumn(index).getData("labelProvider");
+            if (provider != null && (provider instanceof IEditableLabelProvider))
+                ((IEditableLabelProvider)provider).setEditableText(watchlistItem, text);
         }
 
         /* (non-Javadoc)
@@ -840,13 +885,11 @@ public class WatchlistTableViewer extends AbstractLayout
     private class WatchlistTotalsTableItem extends TableItem implements DisposeListener, Observer, IEditableItem
     {
         private WatchlistItem watchlistItem;
-        private CellTicker ticker;
 
         WatchlistTotalsTableItem(Table parent, int style, int index, WatchlistItem watchlistItem)
         {
             super(parent, style, index);
             addDisposeListener(this);
-            ticker = new CellTicker(this, CellTicker.BACKGROUND);
             setWatchlistItem(watchlistItem);
         }
 
@@ -854,7 +897,6 @@ public class WatchlistTableViewer extends AbstractLayout
         {
             super(parent, style);
             addDisposeListener(this);
-            ticker = new CellTicker(this, CellTicker.BACKGROUND);
             setWatchlistItem(watchlistItem);
         }
 
@@ -870,23 +912,32 @@ public class WatchlistTableViewer extends AbstractLayout
             if (this.watchlistItem != null)
                 this.watchlistItem.deleteObserver(this);
             this.watchlistItem = watchlistItem;
-            
-            int column = 1;
-            for (Iterator iter2 = watchlistItem.getValues().iterator(); iter2.hasNext(); )
-            {
-                String value = (String)iter2.next();
-                setText(column, value);
-                column++;
-            }
+
+            update();
             
             this.watchlistItem.addObserver(this);
-
-            ticker.setBackground(tickBackground);
         }
         
         WatchlistItem getWatchlistItem()
         {
             return watchlistItem;
+        }
+        
+        void update()
+        {
+            TableColumn[] columns = getParent().getColumns();
+            for (int i = 1; i < columns.length; i++)
+            {
+                ILabelProvider provider = (ILabelProvider)columns[i].getData("labelProvider"); 
+
+                String value = provider.getText(watchlistItem.getParent());
+                if (!value.equals(getText(i)))
+                    setText(i, value);
+
+                Image image = provider.getImage(watchlistItem.getParent());
+                if (image != getImage(i))
+                    setImage(i, image);
+            }
         }
         
         /* (non-Javadoc)
@@ -897,16 +948,8 @@ public class WatchlistTableViewer extends AbstractLayout
             getDisplay().asyncExec(new Runnable() {
                 public void run()
                 {
-                    if (isDisposed())
-                        return;
-                    int column = 1;
-                    for (Iterator iter2 = watchlistItem.getValues().iterator(); iter2.hasNext(); )
-                    {
-                        String value = (String)iter2.next();
-                        if (!value.equals(getText(column)))
-                            setText(column, value);
-                        column++;
-                    }
+                    if (!isDisposed())
+                        update();
                 }
             });
         }
@@ -924,7 +967,7 @@ public class WatchlistTableViewer extends AbstractLayout
          */
         public boolean isEditable()
         {
-            return false;
+            return true;
         }
 
         /* (non-Javadoc)
@@ -941,7 +984,6 @@ public class WatchlistTableViewer extends AbstractLayout
         {
             if (watchlistItem != null)
                 watchlistItem.deleteObserver(this);
-            ticker.dispose();
         }
     }
 }

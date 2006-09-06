@@ -9,39 +9,45 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.core.db.columns;
+package net.sourceforge.eclipsetrader.trading.internal.watchlist;
 
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
-import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
-public class Date extends Column
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class Date extends LabelProvider implements Comparator
 {
     protected SimpleDateFormat formatter = CorePlugin.getDateFormat();
 
     public Date()
     {
-        super(Messages.Date_Label, RIGHT);
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#getText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getText(WatchlistItem item)
+    public String getText(Object element)
     {
-        if (item.getSecurity() == null)
-            return ""; //$NON-NLS-1$
-        Quote quote = item.getSecurity().getQuote();
-        if (quote != null && quote.getDate() != null)
-            return formatter.format(quote.getDate());
+        if (element instanceof WatchlistItem)
+        {
+            WatchlistItem item = (WatchlistItem)element;
+            if (item.getSecurity() == null)
+                return ""; //$NON-NLS-1$
+            Quote quote = item.getSecurity().getQuote();
+            if (quote != null && quote.getDate() != null)
+                return formatter.format(quote.getDate());
+        }
+
         return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object arg0, Object arg1)
     {

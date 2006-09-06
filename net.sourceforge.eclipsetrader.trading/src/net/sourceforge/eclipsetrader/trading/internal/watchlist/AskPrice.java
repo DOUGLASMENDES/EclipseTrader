@@ -9,22 +9,23 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.core.db.columns;
+package net.sourceforge.eclipsetrader.trading.internal.watchlist;
 
 import java.text.NumberFormat;
+import java.util.Comparator;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
-import net.sourceforge.eclipsetrader.core.db.internal.Messages;
 
-public class AskPrice extends Column
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class AskPrice extends LabelProvider implements Comparator
 {
     private NumberFormat formatter = NumberFormat.getInstance();
 
     public AskPrice()
     {
-        super(Messages.AskPrice_Label, RIGHT);
         formatter.setGroupingUsed(true);
         formatter.setMinimumIntegerDigits(1);
         formatter.setMinimumFractionDigits(4);
@@ -32,26 +33,31 @@ public class AskPrice extends Column
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#getText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getText(WatchlistItem item)
+    public String getText(Object element)
     {
-        if (item.getSecurity() == null)
-            return ""; //$NON-NLS-1$
-        Quote quote = item.getSecurity().getQuote();
-        if (quote != null && quote.getAsk() != 0)
-            return formatter.format(CurrencyConverter.getInstance().convert(quote.getAsk(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+        if (element instanceof WatchlistItem)
+        {
+            WatchlistItem item = (WatchlistItem)element;
+            if (item.getSecurity() == null)
+                return ""; //$NON-NLS-1$
+            Quote quote = item.getSecurity().getQuote();
+            if (quote != null && quote.getAsk() != 0)
+                return formatter.format(CurrencyConverter.getInstance().convert(quote.getAsk(), item.getSecurity().getCurrency(), item.getParent().getCurrency()));
+        }
+        
         return ""; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.db.columns.Column#compare(java.lang.Object, java.lang.Object)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(Object arg0, Object arg1)
+    public int compare(Object o1, Object o2)
     {
-        if (getValue((WatchlistItem)arg0) > getValue((WatchlistItem)arg1))
+        if (getValue((WatchlistItem)o1) > getValue((WatchlistItem)o2))
             return 1;
-        else if (getValue((WatchlistItem)arg0) < getValue((WatchlistItem)arg1))
+        else if (getValue((WatchlistItem)o1) < getValue((WatchlistItem)o2))
             return -1;
         return 0;
     }

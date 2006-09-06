@@ -59,8 +59,8 @@ import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 import net.sourceforge.eclipsetrader.core.db.Transaction;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
+import net.sourceforge.eclipsetrader.core.db.WatchlistColumn;
 import net.sourceforge.eclipsetrader.core.db.WatchlistItem;
-import net.sourceforge.eclipsetrader.core.db.columns.Column;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
@@ -1660,29 +1660,16 @@ public class XMLRepository extends Repository
                     nodeName = item.getNodeName();
                     if (nodeName.equalsIgnoreCase("column")) //$NON-NLS-1$
                     {
-                        String clazz = ((Node)item).getAttributes().getNamedItem("class").getNodeValue();
-                        try {
-                            Column column = (Column)Class.forName(clazz).newInstance();
-
-                            NodeList quoteList = item.getChildNodes();
-                            for (int q = 0; q < quoteList.getLength(); q++)
-                            {
-                                item = quoteList.item(q);
-                                nodeName = item.getNodeName();
-                                value = item.getFirstChild();
-                                if (value != null)
-                                {
-                                    if (nodeName.equalsIgnoreCase("label")) //$NON-NLS-1$
-                                        column.setLabel(value.getNodeValue());
-                                    else if (nodeName.equalsIgnoreCase("width")) //$NON-NLS-1$
-                                        column.setWidth(Integer.parseInt(value.getNodeValue()));
-                                }
-                            }
-
-                            list.add(column);
-                        } catch(Exception e) {
-                            logger.warn(e.toString());
+                        WatchlistColumn column = new WatchlistColumn();
+                        if (item.getAttributes().getNamedItem("id") != null)
+                            column.setId(item.getAttributes().getNamedItem("id").getNodeValue());
+                        else if (item.getAttributes().getNamedItem("class") != null)
+                        {
+                            String id = item.getAttributes().getNamedItem("class").getNodeValue();
+                            id = id.substring(id.lastIndexOf('.') + 1);
+                            column.setId("watchlist." + id.substring(0, 1).toLowerCase() + id.substring(1));
                         }
+                        list.add(column);
                     }
                 }
                 watchlist.setColumns(list);
@@ -1813,18 +1800,11 @@ public class XMLRepository extends Repository
 
                 for (Iterator iter2 = watchlist.getColumns().iterator(); iter2.hasNext(); )
                 {
-                    Column column = (Column)iter2.next();
+                    WatchlistColumn column = (WatchlistColumn)iter2.next();
 
                     Element columnNode = document.createElement("column");
-                    columnNode.setAttribute("class", column.getClass().getName());
+                    columnNode.setAttribute("id", column.getId());
                     columnsNode.appendChild(columnNode);
-
-                    node = document.createElement("label");
-                    node.appendChild(document.createTextNode(column.getLabel()));
-                    columnNode.appendChild(node);
-                    node = document.createElement("width");
-                    node.appendChild(document.createTextNode(String.valueOf(column.getWidth())));
-                    columnNode.appendChild(node);
                 }
 
                 Element itemsNode = document.createElement("items");

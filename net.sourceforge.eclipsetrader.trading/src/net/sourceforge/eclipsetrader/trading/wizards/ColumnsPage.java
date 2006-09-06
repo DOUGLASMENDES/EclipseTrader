@@ -15,10 +15,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.db.columns.Column;
+import net.sourceforge.eclipsetrader.core.db.WatchlistColumn;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
+import net.sourceforge.eclipsetrader.trading.internal.watchlist.ColumnRegistry;
 
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -173,18 +174,13 @@ public class ColumnsPage extends CommonPreferencePage
             }
         });
         
-        for (Iterator iter = Column.allColumns().iterator(); iter.hasNext(); )
+        IConfigurationElement[] providers = ColumnRegistry.getProviders();
+        for (int i = 0; i < providers.length; i++)
         {
-            Column c = (Column)iter.next();
-            try
-            {
-                TableItem item = new TableItem(available, SWT.NONE);
-                item.setText(0, c.getLabel());
-                item.setData(c.clone());
-            }
-            catch (CloneNotSupportedException e) {
-                CorePlugin.logException(e);
-            }
+            TableItem item = new TableItem(available, SWT.NONE);
+            if (providers[i].getAttribute("name") != null)
+                item.setText(0, providers[i].getAttribute("name"));
+            item.setData(providers[i]);
         }
         available.getColumn(0).pack();
     }
@@ -202,7 +198,11 @@ public class ColumnsPage extends CommonPreferencePage
 
         TableItem[] items = shown.getItems();
         for (int i = 0; i < items.length; i++)
-            list.add(items[i].getData());
+        {
+            WatchlistColumn column = new WatchlistColumn();
+            column.setId(((IConfigurationElement)items[i].getData()).getAttribute("id"));
+            list.add(column);
+        }
         
         return list;
     }
@@ -211,17 +211,21 @@ public class ColumnsPage extends CommonPreferencePage
     {
         for (Iterator iter = list.iterator(); iter.hasNext(); )
         {
-            Column column = (Column)iter.next();
+            WatchlistColumn column = (WatchlistColumn)iter.next();
             
-            TableItem item = new TableItem(shown, SWT.NONE);
-            item.setText(0, column.getLabel());
-            item.setData(column);
-
             TableItem[] items = available.getItems();
             for (int i = 0; i < items.length; i++)
             {
-                if (column.equals(items[i].getData()))
+                IConfigurationElement provider = (IConfigurationElement)items[i].getData();
+                if (column.getId().equals(provider.getAttribute("id")))
+                {
+                    TableItem item = new TableItem(shown, SWT.NONE);
+                    if (provider.getAttribute("name") != null)
+                        item.setText(0, provider.getAttribute("name"));
+                    item.setData(provider);
                     items[i].dispose();
+                    break;
+                }
             }
         }
     }
