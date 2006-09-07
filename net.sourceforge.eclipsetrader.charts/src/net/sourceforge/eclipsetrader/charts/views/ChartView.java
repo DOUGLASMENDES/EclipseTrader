@@ -1276,7 +1276,11 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
 
             ObjectPlugin plugin = (ObjectPlugin)object.getData();
             if (plugin != null)
+            {
                 plot.createNewObject(plugin, e);
+                getSite().getSelectionProvider().setSelection(new ObjectSelection(object));
+                logger.debug("object " + object.getPluginId() + " selected");
+            }
         }
 
         public void update()
@@ -1310,8 +1314,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 plot.updateScale();
             
             plot.setRedraw(true);
-            if (plot.getIndicatorPlot().getObjectSelection() != null)
-                getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
         }
         
         /* (non-Javadoc)
