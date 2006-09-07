@@ -16,11 +16,10 @@ import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Order;
 import net.sourceforge.eclipsetrader.core.db.OrderStatus;
-import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.viewers.LabelProvider;
 
-public class StatusColumn implements IOrdersLabelProvider
+public class StatusColumn extends LabelProvider
 {
     static Map labels = new HashMap();
     static {
@@ -38,27 +37,16 @@ public class StatusColumn implements IOrdersLabelProvider
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getHeaderText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getHeaderText()
+    public String getText(Object element)
     {
-        return "Status";
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getStyle()
-     */
-    public int getStyle()
-    {
-        return SWT.LEFT;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getText(net.sourceforge.eclipsetrader.core.db.Order)
-     */
-    public String getText(Order order)
-    {
-        String text = (String)labels.get(order.getStatus());
-        return text != null ? text : "";
+        if (element instanceof Order)
+        {
+            Order order = (Order)element;
+            String text = (String)labels.get(order.getStatus());
+            return text != null ? text : "";
+        }
+        return "";
     }
 }

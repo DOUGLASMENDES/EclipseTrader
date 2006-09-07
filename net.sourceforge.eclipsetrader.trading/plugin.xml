@@ -3,7 +3,6 @@
 <plugin>
    <extension-point id="alerts" name="%extension-point.name.alerts" schema="schema/alerts.exsd"/>
    <extension-point id="systems" name="%extension-point.name.systems" schema="schema/systems.exsd"/>
-   <extension-point id="ordersViewColumns" name="Orders View Columns" schema="schema/ordersViewColumns.exsd"/>
    <extension
          point="org.eclipse.ui.activities">
       <activityPatternBinding
@@ -642,6 +641,90 @@
                name="Volume"
                orientation="right"/>
       </viewContribution>
+      <viewContribution
+            id="orders.standardColumns"
+            targetID="net.sourceforge.eclipsetrader.trading.orders">
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.AveragePriceColumn"
+               id="ordersView.averagePrice"
+               name="Avg. Price"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.DateTimeColumn"
+               id="ordersView.dateTime"
+               name="Date / Time"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.FilledQuantityColumn"
+               id="ordersView.filledQuantity"
+               name="Filled Qty."
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.OrderIdColumn"
+               id="ordersView.orderId"
+               name="Order Id"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.PriceColumn"
+               id="ordersView.price"
+               name="Price"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.QuantityColumn"
+               id="ordersView.quantity"
+               name="Quantity"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.SecurityColumn"
+               id="ordersView.security"
+               name="Security"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.SideColumn"
+               id="ordersView.side"
+               name="Side"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.StatusColumn"
+               id="ordersView.status"
+               name="Status"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.StopPriceColumn"
+               id="ordersView.stopPrice"
+               name="Stop Price"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.SymbolColumn"
+               id="ordersView.symbol"
+               name="Symbol"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.TradingProviderColumn"
+               id="ordersView.tradingProvider"
+               name="Provider"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.TypeColumn"
+               id="ordersView.type"
+               name="Type"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.AccountColumn"
+               id="ordersView.account"
+               name="Account"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.ValidityColumn"
+               id="ordersView.validity"
+               name="Validity"
+               orientation="left"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.ExchangeColumn"
+               id="ordersView.exchange"
+               name="Exchange"
+               orientation="left"/>
+      </viewContribution>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.trading.alerts">
@@ -685,57 +768,6 @@
                class="net.sourceforge.eclipsetrader.trading.alerts.RSICrossoverPreferences"
                name="%preferencePage.name.general5"/>
       </alert>
-   </extension>
-   <extension
-         point="net.sourceforge.eclipsetrader.trading.ordersViewColumns">
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.AveragePriceColumn"
-            id="ordersView.averagePrice"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.DateTimeColumn"
-            id="ordersView.dateTime"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.FilledQuantityColumn"
-            id="ordersView.filledQuantity"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.OrderIdColumn"
-            id="ordersView.orderId"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.PriceColumn"
-            id="ordersView.price"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.QuantityColumn"
-            id="ordersView.quantity"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.SecurityColumn"
-            id="ordersView.security"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.SideColumn"
-            id="ordersView.side"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.StatusColumn"
-            id="ordersView.status"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.StopPriceColumn"
-            id="ordersView.stopPrice"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.SymbolColumn"
-            id="ordersView.symbol"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.TradingProviderColumn"
-            id="ordersView.tradingProvider"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.TypeColumn"
-            id="ordersView.type"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.AccountColumn"
-            id="ordersView.account"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.ValidityColumn"
-            id="ordersView.validity"/>
-      <column
-            class="net.sourceforge.eclipsetrader.trading.internal.orders.ExchangeColumn"
-            id="ordersView.exchange"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.trading.systems">

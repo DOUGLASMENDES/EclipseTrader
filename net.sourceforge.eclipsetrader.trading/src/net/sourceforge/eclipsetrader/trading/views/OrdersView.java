@@ -24,7 +24,7 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Order;
 import net.sourceforge.eclipsetrader.core.db.OrderStatus;
-import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
+import net.sourceforge.eclipsetrader.core.ui.LabelProvidersRegistry;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.dialogs.OrdersViewColumnsDialog;
 
@@ -37,6 +37,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -46,6 +48,7 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -78,7 +81,6 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     static final int FILLED_QUANTITY = 10;
     static final int AVERAGE_PRICE = 11;
     static final int STATUS = 12;
-    List columns = new ArrayList();
     TabFolder tabFolder;
     OrdersTable all;
     OrdersTable pending;
@@ -92,6 +94,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     private boolean ignoreResize = true;
     Action cancelRequest;
     Action editColumnsAction;
+    LabelProvidersRegistry registry = new LabelProvidersRegistry(VIEW_ID);
     private Logger logger = Logger.getLogger(getClass());
     private ControlListener columnControlListener = new ControlAdapter() {
         public void controlResized(ControlEvent e)
@@ -174,20 +177,6 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         
         menuManager.appendToGroup("top", editColumnsAction);
         toolBarManager.appendToGroup("end", cancelRequest);
-        
-        String value = TradingPlugin.getDefault().getPreferenceStore().getString(PREFS_ORDERS_COLUMNS);
-        String[] id = value.split(";");
-        for (int i = 0; i < id.length; i++)
-        {
-            IOrdersLabelProvider provider = TradingPlugin.createOrdersLabelProvider(id[i]);
-            if (provider != null)
-            {
-                columns.add(provider);
-                logger.debug("Adding column [" + id[i] + "]");
-            }
-            else
-                logger.warn("Cannot add column [" + id[i] + "]");
-        }
         
         super.init(site);
     }
@@ -309,16 +298,6 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     {
         if (event.getProperty().equals("ORDERSVIEW_COLUMNS"))
         {
-            columns.clear();
-            String value = TradingPlugin.getDefault().getPreferenceStore().getString(PREFS_ORDERS_COLUMNS);
-            String[] id = value.split(";");
-            for (int i = 0; i < id.length; i++)
-            {
-                IOrdersLabelProvider provider = TradingPlugin.createOrdersLabelProvider(id[i]);
-                if (provider != null)
-                    columns.add(provider);
-            }
-
             all.updateTable();
             pending.updateTable();
             filled.updateTable();
@@ -403,12 +382,42 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
             for (int i = table.getColumnCount() - 1; i >= 0; i--)
                 table.getColumn(i).dispose();
             
-            for (Iterator iter = columns.iterator(); iter.hasNext(); )
+            String value = TradingPlugin.getDefault().getPreferenceStore().getString(PREFS_ORDERS_COLUMNS);
+            String[] id = value.split(";");
+            for (int i = 0; i < id.length; i++)
             {
-                IOrdersLabelProvider label = (IOrdersLabelProvider)iter.next(); 
-                TableColumn tableColumn = new TableColumn(table, label.getStyle());
-                tableColumn.setText(label.getHeaderText());
+                String name = "";
+                int style = SWT.LEFT;
+                Image image = null;
+
+                ILabelProvider provider = registry.createLabelProvider(id[i]);
+                if (provider != null)
+                {
+                    logger.debug("Adding column [" + id[i] + "]");
+                    name = registry.getName(id[i]);
+                    style = registry.getOrientation(id[i]);
+                    
+                    if (provider instanceof ITableLabelProvider)
+                    {
+                        name = ((ITableLabelProvider)provider).getColumnText(null, i);
+                        image = ((ITableLabelProvider)provider).getColumnImage(null, i);
+                    }
+                }
+                else
+                    logger.warn("Cannot add column [" + id[i] + "]");
+
+                TableColumn tableColumn = new TableColumn(table, style);
+                tableColumn.setText(name);
+                tableColumn.setImage(image);
+                tableColumn.setData("labelProvider", provider);
                 tableColumn.addControlListener(columnControlListener);
+                tableColumn.addDisposeListener(new DisposeListener() {
+                    public void widgetDisposed(DisposeEvent e)
+                    {
+                        if (e.widget.getData("labelProvider") != null)
+                            ((ILabelProvider)e.widget.getData("labelProvider")).dispose();
+                    }
+                });
             }
             
             String[] sizes = TradingPlugin.getDefault().getPreferenceStore().getString(PREFS_COLUMNS_SIZE).split(";");
@@ -438,11 +447,17 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         
         void update(TableItem tableItem, Order order)
         {
-            int index = 0;
-            for (Iterator iter = columns.iterator(); iter.hasNext(); index++)
+            for (int i = 0; i < table.getColumnCount(); i++)
             {
-                IOrdersLabelProvider label = (IOrdersLabelProvider)iter.next();
-                tableItem.setText(index, label.getText(order));
+                TableColumn tableColumn = table.getColumn(i);
+                ILabelProvider label = (ILabelProvider)tableColumn.getData("labelProvider");
+                if (label != null)
+                {
+                    tableItem.setText(i, label.getText(order));
+                    Image image = label.getImage(order);
+                    if (image != tableItem.getImage(i))
+                        tableItem.setImage(image);
+                }
             }
 
             if (filter.size() == 0)

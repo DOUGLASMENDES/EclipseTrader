@@ -13,12 +13,11 @@ package net.sourceforge.eclipsetrader.trading.internal.orders;
 
 import java.text.NumberFormat;
 
-import org.eclipse.swt.SWT;
-
 import net.sourceforge.eclipsetrader.core.db.Order;
-import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
 
-public class PriceColumn implements IOrdersLabelProvider
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class PriceColumn extends LabelProvider
 {
     private NumberFormat numberFormat = NumberFormat.getInstance();
 
@@ -31,26 +30,15 @@ public class PriceColumn implements IOrdersLabelProvider
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getHeaderText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getHeaderText()
+    public String getText(Object element)
     {
-        return "Price";
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getStyle()
-     */
-    public int getStyle()
-    {
-        return SWT.RIGHT;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getText(net.sourceforge.eclipsetrader.core.db.Order)
-     */
-    public String getText(Order order)
-    {
-        return numberFormat.format(order.getPrice());
+        if (element instanceof Order)
+        {
+            Order order = (Order)element;
+            return numberFormat.format(order.getPrice());
+        }
+        return "";
     }
 }

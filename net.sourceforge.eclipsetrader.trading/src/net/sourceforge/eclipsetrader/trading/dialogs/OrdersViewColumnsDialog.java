@@ -17,14 +17,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
+import net.sourceforge.eclipsetrader.core.ui.LabelProvidersRegistry;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.views.OrdersView;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -210,20 +207,9 @@ public class OrdersViewColumnsDialog extends Dialog
         });
 
         List columns = new ArrayList();
-        IExtensionRegistry registry = Platform.getExtensionRegistry();
-        IExtensionPoint extensionPoint = registry.getExtensionPoint(TradingPlugin.ORDERSVIEW_COLUMNS_EXTENSION_POINT);
-        if (extensionPoint != null)
-        {
-            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
-            for (int i = 0; i < members.length; i++)
-            {
-                try {
-                    IOrdersLabelProvider obj = (IOrdersLabelProvider)members[i].createExecutableExtension("class");
-                    columns.add(new Element(obj.getHeaderText(), members[i].getAttribute("id")));
-                } catch(Exception e) {
-                }
-            }
-        }
+        IConfigurationElement[] members = new LabelProvidersRegistry(OrdersView.VIEW_ID).getProviders();
+        for (int i = 0; i < members.length; i++)
+            columns.add(new Element(members[i].getAttribute("name"), members[i].getAttribute("id")));
         Collections.sort(columns, new Comparator() {
             public int compare(Object arg0, Object arg1)
             {

@@ -11,12 +11,11 @@
 
 package net.sourceforge.eclipsetrader.trading.internal.orders;
 
-import org.eclipse.swt.SWT;
-
 import net.sourceforge.eclipsetrader.core.db.Order;
-import net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider;
 
-public class OrderIdColumn implements IOrdersLabelProvider
+import org.eclipse.jface.viewers.LabelProvider;
+
+public class OrderIdColumn extends LabelProvider
 {
 
     public OrderIdColumn()
@@ -24,26 +23,15 @@ public class OrderIdColumn implements IOrdersLabelProvider
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getHeaderText()
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
-    public String getHeaderText()
+    public String getText(Object element)
     {
-        return "Order Id";
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getStyle()
-     */
-    public int getStyle()
-    {
-        return SWT.LEFT;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.IOrdersLabelProvider#getText(net.sourceforge.eclipsetrader.core.db.Order)
-     */
-    public String getText(Order order)
-    {
-        return order.getOrderId();
+        if (element instanceof Order)
+        {
+            Order order = (Order)element;
+            return order.getOrderId();
+        }
+        return "";
     }
 }
