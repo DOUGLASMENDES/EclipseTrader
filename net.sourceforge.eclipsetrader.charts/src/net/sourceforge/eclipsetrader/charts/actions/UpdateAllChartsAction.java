@@ -13,7 +13,6 @@ package net.sourceforge.eclipsetrader.charts.actions;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
-import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.Security;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -66,14 +65,13 @@ public class UpdateAllChartsAction implements IWorkbenchWindowActionDelegate, IV
                 for (int i = 0; i < objs.length; i++)
                 {
                     Security security = (Security)objs[i];
-                    Chart chart = (Chart)CorePlugin.getRepository().load(Chart.class, security.getId());
-                    if (chart != null && security.getHistoryFeed() != null)
+                    if (security.getHistoryFeed() != null)
                     {
                         IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(security.getHistoryFeed().getId());
                         if (feed != null)
                         {
                             monitor.subTask("Updating " + security.getDescription());
-                            feed.updateHistory(chart.getSecurity(), IHistoryFeed.INTERVAL_DAILY);
+                            feed.updateHistory(security, IHistoryFeed.INTERVAL_DAILY);
                         }
                     }
                     monitor.worked(1);
