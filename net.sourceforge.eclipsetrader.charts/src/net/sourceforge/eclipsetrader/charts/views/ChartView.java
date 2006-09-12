@@ -700,13 +700,26 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         }
     }
     
-    public void setSecurity(Security security)
+    public void setSecurity(Security newSecurity)
     {
-        if (!security.equals(this.security))
+        if (!newSecurity.equals(security))
         {
-            chart.setSecurity(security);
-            this.security = security;
-            setTitleToolTip(security.getDescription());
+            security = newSecurity;
+            setTitleToolTip(newSecurity.getDescription());
+
+            chart.setSecurity(newSecurity);
+            for(Iterator iter1 = chart.getRows().iterator(); iter1.hasNext(); )
+            {
+                ChartRow row = (ChartRow)iter1.next();
+                for (Iterator iter2 = row.getTabs().iterator(); iter2.hasNext(); )
+                {
+                    ChartTab tab = (ChartTab)iter2.next();
+                    ChartObject[] obj = (ChartObject[])tab.getObjects().toArray(new ChartObject[tab.getObjects().size()]);
+                    for (int i = 0; i < obj.length; i++)
+                        tab.getObjects().remove(obj[i]);
+                }
+            }
+            
             CorePlugin.getRepository().save(chart);
         }
     }
