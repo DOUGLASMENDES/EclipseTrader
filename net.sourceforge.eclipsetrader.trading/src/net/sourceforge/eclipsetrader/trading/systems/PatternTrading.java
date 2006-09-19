@@ -15,7 +15,7 @@ import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IPattern;
-import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.Sentiment;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 import net.sourceforge.eclipsetrader.trading.TradingSystemPlugin;
@@ -26,7 +26,7 @@ public class PatternTrading extends TradingSystemPlugin
     public static final int DAILY = 0;
     public static final int WEEKLY = 1;
     public static final int MONTHLY = 2;
-    private IPattern pattern;
+    private String patternId;
     private int period = BarData.INTERVAL_WEEKLY;
     private int bars = 0;
 
@@ -42,21 +42,18 @@ public class PatternTrading extends TradingSystemPlugin
         if (period != BarData.INTERVAL_DAILY)
             barData = barData.getCompressed(period);
 
-        for (int i = 1; i < barData.size(); i++)
+        Sentiment sentiment = Sentiment.INVALID;
+        IPattern pattern = CorePlugin.createPatternPlugin(patternId);
+        for (int i = 0; i < barData.size(); i++)
         {
-            Bar[] recs = barData.toArray(i);
-            if (pattern.applies(recs))
-            {
-                if (pattern.getComplete() != 0 && (pattern.getComplete() >= barData.size() - i - bars || i + bars > barData.size()))
-                {
-                    if (pattern.isBullish())
-                        fireOpenLongSignal();
-                    else
-                        fireCloseLongSignal();
-                    return;
-                }
-            }
+            pattern.add(barData.get(i));
+            sentiment = pattern.getSentiment();
         }
+
+        if (sentiment.equals(Sentiment.BULLISH))
+            fireOpenLongSignal();
+        else if (sentiment.equals(Sentiment.BEARISH))
+            fireCloseLongSignal();
         
         setChanged();
         notifyObservers();
@@ -65,7 +62,7 @@ public class PatternTrading extends TradingSystemPlugin
     public void setParameters(Map parameters)
     {
         if (parameters.get("pattern") != null)
-            pattern = CorePlugin.createPatternPlugin((String)parameters.get("pattern"));
+            patternId = (String)parameters.get("pattern");
         if (parameters.get("period") != null)
         {
             switch(Integer.parseInt((String)parameters.get("period")))

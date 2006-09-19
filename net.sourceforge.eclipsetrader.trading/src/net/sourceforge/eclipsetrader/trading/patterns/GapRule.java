@@ -11,58 +11,67 @@
 
 package net.sourceforge.eclipsetrader.trading.patterns;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.eclipsetrader.core.IPattern;
+import net.sourceforge.eclipsetrader.core.Sentiment;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.Security;
 
 public class GapRule implements IPattern
 {
-    private int complete = 0;
-    private boolean bullish = false;
+    List bars = new ArrayList();
+    int minimumBars = 3;
+    int maximumBars = 3;
+    Sentiment sentiment = Sentiment.INVALID;
 
     public GapRule()
     {
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#applies(net.sourceforge.eclipsetrader.core.db.Bar[])
+     * @see net.sourceforge.eclipsetrader.core.IPattern#init(net.sourceforge.eclipsetrader.core.db.Security)
      */
-    public boolean applies(Bar[] recs)
+    public void init(Security security)
     {
-        if (recs.length <= 3)
-            return false;
-
-        if (recs[0].getHigh() < recs[1].getLow() // gap up
-                && closesInTopQuarter(recs[1]) && closesInTopQuarter(recs[2]))
-        {
-            complete = 2;
-            bullish = true;
-            return true;
-        }
-        else if (recs[1].getHigh() < recs[0].getLow() // gap down
-                && closesInBottomQuarter(recs[1]) && closesInBottomQuarter(recs[2]))
-        {
-            complete = 2;
-            bullish = false;
-            return true;
-        }
-
-        return false;
+        bars = new ArrayList();
+        sentiment = Sentiment.INVALID;
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#isBullish()
+     * @see net.sourceforge.eclipsetrader.core.IPattern#getSentiment(net.sourceforge.eclipsetrader.core.db.Bar)
      */
-    public boolean isBullish()
+    public void add(Bar bar)
     {
-        return bullish;
+        bars.add(bar);
+        if (bars.size() > maximumBars)
+            bars.remove(0);
+
+        if (bars.size() >= minimumBars)
+        {
+            sentiment = Sentiment.NEUTRAL;
+            Bar[] recs = (Bar[])bars.toArray(new Bar[bars.size()]);
+
+            if (recs[0].getHigh() < recs[1].getLow() // gap up
+                    && closesInTopQuarter(recs[1]) && closesInTopQuarter(recs[2]))
+            {
+                sentiment = Sentiment.BULLISH;
+            }
+            else if (recs[1].getHigh() < recs[0].getLow() // gap down
+                    && closesInBottomQuarter(recs[1]) && closesInBottomQuarter(recs[2]))
+            {
+                sentiment = Sentiment.BEARISH;
+            }
+        }
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#getComplete()
+     * @see net.sourceforge.eclipsetrader.core.IPattern#getSentiment()
      */
-    public int getComplete()
+    public Sentiment getSentiment()
     {
-        return complete;
+        return sentiment;
     }
 
     private boolean closesInTopQuarter(Bar rec)

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IPattern;
+import net.sourceforge.eclipsetrader.core.Sentiment;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.core.db.Security;
@@ -85,44 +86,43 @@ public abstract class PatternsSearchPage implements IPatternSearchPage
 
             Map lastComplete = new HashMap();
             
-            for (int i = 0; i < barData.size(); i++)
+            for (Iterator p = patterns.keySet().iterator(); p.hasNext(); )
             {
-                Bar[] recs = barData.toArray(i);
+                String name = (String) p.next();
+                IPattern pattern = (IPattern) patterns.get(name);
+                
+                pattern.init(security);
 
-                for (Iterator p = patterns.keySet().iterator(); p.hasNext(); )
+                for (int i = 0; i < barData.size(); i++)
                 {
-                    String name = (String) p.next();
-                    IPattern pattern = (IPattern) patterns.get(name);
-                    if (pattern.applies(recs))
+                    pattern.add(barData.get(i));
+                    if (pattern.getSentiment().equals(Sentiment.BULLISH) || pattern.getSentiment().equals(Sentiment.BEARISH))
                     {
-                        if (pattern.getComplete() != 0 && ((pattern.isBullish() && bullishOnly) || !bullishOnly))
+                        Bar complete = barData.get(i);
+                        
+                        Date last = (Date)lastComplete.get(pattern);
+                        if (last == null || !last.equals(complete.getDate()))
                         {
-                            Bar complete = recs[pattern.getComplete()];
-                            
-                            Date last = (Date)lastComplete.get(pattern);
-                            if (last == null || !last.equals(complete.getDate()))
-                            {
-                                PatternSearchItem item = new PatternSearchItem();
-                                item.setCode(security.getCode());
-                                item.setDescription(security.getDescription());
-                                item.setDate(complete.getDate());
-                                item.setPrice(complete.getClose());
-                                item.setPattern(name);
-                                item.setOpportunity(pattern.isBullish() ? "Bullish" : "Bearish");
+                            PatternSearchItem item = new PatternSearchItem();
+                            item.setCode(security.getCode());
+                            item.setDescription(security.getDescription());
+                            item.setDate(complete.getDate());
+                            item.setPrice(complete.getClose());
+                            item.setPattern(name);
+                            item.setOpportunity(pattern.getSentiment().equals(Sentiment.BULLISH) ? "Bullish" : "Bearish");
 
-                                if (!allOccurrences)
+                            if (!allOccurrences)
+                            {
+                                PatternSearchItem[] items = (PatternSearchItem[])getResults().toArray(new PatternSearchItem[0]);
+                                for (int x = 0; x < items.length; x++)
                                 {
-                                    PatternSearchItem[] items = (PatternSearchItem[])getResults().toArray(new PatternSearchItem[0]);
-                                    for (int x = 0; x < items.length; x++)
-                                    {
-                                        if (items[x].getCode().equals(item.getCode()) && items[x].getDescription().equals(item.getDescription()) && items[x].getPattern().equals(item.getPattern()))
-                                            getResults().remove(items[x]);
-                                    }
+                                    if (items[x].getCode().equals(item.getCode()) && items[x].getDescription().equals(item.getDescription()) && items[x].getPattern().equals(item.getPattern()))
+                                        getResults().remove(items[x]);
                                 }
-                                getResults().add(item);
-                                
-                                lastComplete.put(pattern, complete.getDate());
                             }
+                            getResults().add(item);
+                            
+                            lastComplete.put(pattern, complete.getDate());
                         }
                     }
                 }

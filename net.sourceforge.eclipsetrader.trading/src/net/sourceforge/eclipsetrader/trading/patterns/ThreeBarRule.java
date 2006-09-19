@@ -12,59 +12,61 @@
 
 package net.sourceforge.eclipsetrader.trading.patterns;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.eclipsetrader.core.IPattern;
+import net.sourceforge.eclipsetrader.core.Sentiment;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.Security;
 
 public class ThreeBarRule implements IPattern
 {
-    private int complete = 0;
-    private boolean bullish = false;
+    List bars = new ArrayList();
+    int minimumBars = 3;
+    int maximumBars = 3;
+    Sentiment sentiment = Sentiment.INVALID;
 
     public ThreeBarRule()
     {
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.trading.patterns.PatternPlugin#applies(net.sourceforge.eclipsetrader.core.db.Bar[])
+     * @see net.sourceforge.eclipsetrader.core.IPattern#init(net.sourceforge.eclipsetrader.core.db.Security)
      */
-    public boolean applies(Bar[] recs)
+    public void init(Security security)
     {
-        // On completion of two consecutive bars in which
-        // the price closes in the upper half of the range and the next bar closes
-        // in the top 25 percent of its range
-        if (recs.length < 3)
-            return false;
-
-        if (recs[0].getClose() >= (recs[0].getLow() + (recs[0].getHigh() - recs[0].getLow()) / 2) && recs[1].getClose() >= (recs[1].getLow() + (recs[1].getHigh() - recs[1].getLow()) / 2) && closesInTopQuarter(recs[2]))
-        {
-            complete = 2;
-            bullish = true;
-            return true;
-        }
-        else if (recs[0].getClose() <= (recs[0].getLow() + (recs[0].getHigh() - recs[0].getLow()) / 2) && recs[1].getClose() <= (recs[1].getLow() + (recs[1].getHigh() - recs[1].getLow()) / 2) && recs[2].getClose() <= (recs[2].getLow() + (recs[2].getHigh() - recs[2].getLow()) / 4))
-        {
-            complete = 2;
-            bullish = false;
-            return true;
-        }
-
-        return false;
+        bars = new ArrayList();
+        sentiment = Sentiment.INVALID;
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#getComplete()
+     * @see net.sourceforge.eclipsetrader.core.IPattern#add(net.sourceforge.eclipsetrader.core.db.Bar)
      */
-    public int getComplete()
+    public void add(Bar bar)
     {
-        return complete;
+        bars.add(bar);
+        if (bars.size() > maximumBars)
+            bars.remove(0);
+
+        if (bars.size() >= minimumBars)
+        {
+            sentiment = Sentiment.NEUTRAL;
+            Bar[] recs = (Bar[])bars.toArray(new Bar[bars.size()]);
+
+            if (recs[0].getClose() >= (recs[0].getLow() + (recs[0].getHigh() - recs[0].getLow()) / 2) && recs[1].getClose() >= (recs[1].getLow() + (recs[1].getHigh() - recs[1].getLow()) / 2) && closesInTopQuarter(recs[2]))
+                sentiment = Sentiment.BULLISH;
+            else if (recs[0].getClose() <= (recs[0].getLow() + (recs[0].getHigh() - recs[0].getLow()) / 2) && recs[1].getClose() <= (recs[1].getLow() + (recs[1].getHigh() - recs[1].getLow()) / 2) && recs[2].getClose() <= (recs[2].getLow() + (recs[2].getHigh() - recs[2].getLow()) / 4))
+                sentiment = Sentiment.BEARISH;
+        }
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#isBullish()
+     * @see net.sourceforge.eclipsetrader.core.IPattern#getSentiment()
      */
-    public boolean isBullish()
+    public Sentiment getSentiment()
     {
-        return bullish;
+        return sentiment;
     }
 
     private boolean closesInTopQuarter(Bar rec)

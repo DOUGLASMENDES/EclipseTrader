@@ -12,56 +12,61 @@
 
 package net.sourceforge.eclipsetrader.trading.patterns;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.eclipsetrader.core.IPattern;
+import net.sourceforge.eclipsetrader.core.Sentiment;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.Security;
 
 public class HighLowReversal implements IPattern
 {
-    private int complete = 0;
-    private boolean bullish = false;
-    private double difference = 0.05;
+    List bars = new ArrayList();
+    int minimumBars = 2;
+    int maximumBars = 2;
+    Sentiment sentiment = Sentiment.INVALID;
+    double difference = 0.05;
 
     public HighLowReversal()
     {
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#applies(net.sourceforge.eclipsetrader.core.db.Bar[])
+     * @see net.sourceforge.eclipsetrader.core.IPattern#init(net.sourceforge.eclipsetrader.core.db.Security)
      */
-    public boolean applies(Bar[] recs)
+    public void init(Security security)
     {
-        if (recs.length < 2)
-            return false;
-
-        complete = 1; // always 2 bars
-
-        if (recs[0].getClose() >= recs[0].getHigh() - difference && recs[1].getClose() <= recs[1].getLow() + difference)
-        {
-            bullish = false;
-            return true;
-        }
-        else if (recs[1].getClose() >= recs[1].getHigh() - difference && recs[0].getClose() <= recs[0].getLow() + difference)
-        {
-            bullish = true;
-            return true;
-        }
-
-        return false;
+        bars = new ArrayList();
+        sentiment = Sentiment.INVALID;
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#getComplete()
+     * @see net.sourceforge.eclipsetrader.core.IPattern#add(net.sourceforge.eclipsetrader.core.db.Bar)
      */
-    public int getComplete()
+    public void add(Bar bar)
     {
-        return complete;
+        bars.add(bar);
+        if (bars.size() > maximumBars)
+            bars.remove(0);
+
+        if (bars.size() >= minimumBars)
+        {
+            sentiment = Sentiment.NEUTRAL;
+            Bar[] recs = (Bar[])bars.toArray(new Bar[bars.size()]);
+
+            if (recs[0].getClose() >= recs[0].getHigh() - difference && recs[1].getClose() <= recs[1].getLow() + difference)
+                sentiment = Sentiment.BEARISH;
+            else if (recs[1].getClose() >= recs[1].getHigh() - difference && recs[0].getClose() <= recs[0].getLow() + difference)
+                sentiment = Sentiment.BULLISH;
+        }
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#isBullish()
+     * @see net.sourceforge.eclipsetrader.core.IPattern#getSentiment()
      */
-    public boolean isBullish()
+    public Sentiment getSentiment()
     {
-        return bullish;
+        return sentiment;
     }
 }

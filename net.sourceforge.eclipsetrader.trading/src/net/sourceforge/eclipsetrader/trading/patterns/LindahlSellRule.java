@@ -11,88 +11,99 @@
 
 package net.sourceforge.eclipsetrader.trading.patterns;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.eclipsetrader.core.IPattern;
+import net.sourceforge.eclipsetrader.core.Sentiment;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.Security;
 
 public class LindahlSellRule implements IPattern
 {
-    private int complete = 0;
-    private boolean bullish = false;
+    List bars = new ArrayList();
+    int minimumBars = 9;
+    int maximumBars = 9;
+    Sentiment sentiment = Sentiment.INVALID;
 
     public LindahlSellRule()
     {
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#applies(net.sourceforge.eclipsetrader.core.db.Bar[])
+     * @see net.sourceforge.eclipsetrader.core.IPattern#init(net.sourceforge.eclipsetrader.core.db.Security)
      */
-    public boolean applies(Bar[] recs)
+    public void init(Security security)
     {
-        bullish = false;
+        bars = new ArrayList();
+        sentiment = Sentiment.INVALID;
+    }
 
-        if (recs.length < 3)
-            return false;
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsetrader.core.IPattern#add(net.sourceforge.eclipsetrader.core.db.Bar)
+     */
+    public void add(Bar bar)
+    {
+        bars.add(bar);
+        if (bars.size() > maximumBars)
+            bars.remove(0);
 
-        int a = 0, b = 1, d = 1, e = 1;
-
-        double ahigh = recs[a].getHigh();
-        int size = Math.min(8, recs.length);
-
-        // a must be the absolute high
-        // b must take out the low of a
-        while (b < size)
+        if (bars.size() >= minimumBars)
         {
-            if (recs[a].getLow() > recs[b].getLow() && recs[b].getHigh() < ahigh)
-                break;
-            ++b;
-        }
+            sentiment = Sentiment.NEUTRAL;
+            Bar[] recs = (Bar[])bars.toArray(new Bar[bars.size()]);
 
-        // d must take out the high the preceeding bar
-        d = b + 1; // start at b
-        while (d < size)
-        {
-            if (recs[d].getHigh() < ahigh && recs[d - 1].getHigh() < ahigh && recs[d - 1].getHigh() < recs[d].getHigh())
-                break;
-            ++d;
-        }
+            int a = 0, b = 1, d = 1, e = 1;
 
-        // e must take out the low of the preceeding bar
-        // and close below the previous bar's close
-        // and close below its own open price
+            double ahigh = recs[a].getHigh();
+            int size = Math.min(8, recs.length);
 
-        e = d + 1;
-
-        while (e < size)
-        {
-            Bar rece = recs[e];
-            Bar recf = recs[e - 1];
-            if (rece.getLow() < recf.getLow() // take low of prev bare
-                    && rece.getClose() < recf.getClose() // close below prev bar
-                    && rece.getClose() < rece.getOpen() // close down
-                    && rece.getHigh() < ahigh && recf.getHigh() < ahigh)
+            // a must be the absolute high
+            // b must take out the low of a
+            while (b < size)
             {
-                complete = e;
-                return true;
+                if (recs[a].getLow() > recs[b].getLow() && recs[b].getHigh() < ahigh)
+                    break;
+                ++b;
             }
-            ++e;
+
+            // d must take out the high the preceeding bar
+            d = b + 1; // start at b
+            while (d < size)
+            {
+                if (recs[d].getHigh() < ahigh && recs[d - 1].getHigh() < ahigh && recs[d - 1].getHigh() < recs[d].getHigh())
+                    break;
+                ++d;
+            }
+
+            // e must take out the low of the preceeding bar
+            // and close below the previous bar's close
+            // and close below its own open price
+
+            e = d + 1;
+
+            while (e < size)
+            {
+                Bar rece = recs[e];
+                Bar recf = recs[e - 1];
+                if (rece.getLow() < recf.getLow() // take low of prev bare
+                        && rece.getClose() < recf.getClose() // close below prev bar
+                        && rece.getClose() < rece.getOpen() // close down
+                        && rece.getHigh() < ahigh && recf.getHigh() < ahigh)
+                {
+                    sentiment = Sentiment.BEARISH;
+                    return;
+                }
+                ++e;
+            }
         }
-
-        return false;
     }
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#isBullish()
+     * @see net.sourceforge.eclipsetrader.core.IPattern#getSentiment()
      */
-    public boolean isBullish()
+    public Sentiment getSentiment()
     {
-        return bullish;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.IPattern#getComplete()
-     */
-    public int getComplete()
-    {
-        return complete;
+        return sentiment;
     }
 }
