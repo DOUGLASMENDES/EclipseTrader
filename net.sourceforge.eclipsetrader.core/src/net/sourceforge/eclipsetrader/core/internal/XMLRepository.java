@@ -45,6 +45,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
+import net.sourceforge.eclipsetrader.core.db.Dividend;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Order;
@@ -57,6 +58,7 @@ import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.core.db.PersistentPreferenceStore;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
+import net.sourceforge.eclipsetrader.core.db.Split;
 import net.sourceforge.eclipsetrader.core.db.Transaction;
 import net.sourceforge.eclipsetrader.core.db.Watchlist;
 import net.sourceforge.eclipsetrader.core.db.WatchlistColumn;
@@ -1400,6 +1402,31 @@ public class XMLRepository extends Repository
                     }
                 }
             }
+            else if (nodeName.equalsIgnoreCase("split")) //$NON-NLS-1$
+            {
+                NamedNodeMap attributes = item.getAttributes();
+                Split split = new Split();
+                try {
+                    split.setDate(dateTimeFormat.parse(attributes.getNamedItem("date").getNodeValue()));
+                    split.setFromQuantity(Integer.parseInt(attributes.getNamedItem("fromQuantity").getNodeValue()));
+                    split.setToQuantity(Integer.parseInt(attributes.getNamedItem("toQuantity").getNodeValue()));
+                    security.getSplits().add(split);
+                } catch (Exception e) {
+                    logger.error(e.toString());
+                }
+            }
+            else if (nodeName.equalsIgnoreCase("dividend")) //$NON-NLS-1$
+            {
+                NamedNodeMap attributes = item.getAttributes();
+                Dividend dividend = new Dividend();
+                try {
+                    dividend.setDate(dateTimeFormat.parse(attributes.getNamedItem("date").getNodeValue()));
+                    dividend.setValue(new Double(Double.parseDouble(attributes.getNamedItem("value").getNodeValue())).doubleValue());
+                    security.getDividends().add(dividend);
+                } catch (Exception e) {
+                    logger.error(e.toString());
+                }
+            }
         }
         
         security.clearChanged();
@@ -1595,6 +1622,25 @@ public class XMLRepository extends Repository
             node = document.createElement("close");
             node.appendChild(document.createTextNode(String.valueOf(security.getClose())));
             dataNode.appendChild(node);
+        }
+        
+        for (Iterator iter = security.getSplits().iterator(); iter.hasNext(); )
+        {
+            Split split = (Split)iter.next();
+            node = document.createElement("split");
+            node.setAttribute("date", dateTimeFormat.format(split.getDate()));
+            node.setAttribute("fromQuantity", String.valueOf(split.getFromQuantity()));
+            node.setAttribute("toQuantity", String.valueOf(split.getToQuantity()));
+            element.appendChild(node);
+        }
+
+        for (Iterator iter = security.getDividends().iterator(); iter.hasNext(); )
+        {
+            Dividend dividend = (Dividend)iter.next();
+            node = document.createElement("dividend");
+            node.setAttribute("date", dateTimeFormat.format(dividend.getDate()));
+            node.setAttribute("value", String.valueOf(dividend.getValue()));
+            element.appendChild(node);
         }
     }
     

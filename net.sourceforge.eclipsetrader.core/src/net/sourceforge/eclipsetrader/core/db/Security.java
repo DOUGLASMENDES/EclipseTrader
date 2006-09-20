@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
@@ -57,6 +58,8 @@ public class Security extends PersistentObject
     int endTime = 0;
     int weekDays = MON|TUE|WED|THU|FRI;
     int keepDays = 1;
+    List splits = new ArrayList();
+    List dividends = new ArrayList();
 
     public Security()
     {
@@ -457,5 +460,25 @@ public class Security extends PersistentObject
     public void setKeepDays(int keepDays)
     {
         this.keepDays = keepDays;
+    }
+
+    public List getDividends()
+    {
+        return dividends;
+    }
+
+    public void setDividends(List dividends)
+    {
+        this.dividends = dividends;
+    }
+
+    public List getSplits()
+    {
+        return splits;
+    }
+
+    public void setSplits(List splits)
+    {
+        this.splits = splits;
     }
 }

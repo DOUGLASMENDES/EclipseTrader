@@ -64,6 +64,9 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         
         getPreferenceManager().addToRoot(new PreferenceNode("trading", new TradeSourcePage())); //$NON-NLS-1$
         getPreferenceManager().addToRoot(new PreferenceNode("intraday", new DataCollectorPage())); //$NON-NLS-1$
+
+        getPreferenceManager().addToRoot(new PreferenceNode("dividends", new DividendsPage(security))); //$NON-NLS-1$
+        getPreferenceManager().addToRoot(new PreferenceNode("splits", new SplitsPage(security))); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

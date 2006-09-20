@@ -37,11 +37,10 @@ import org.eclipse.swt.widgets.Text;
  */
 public class SecurityPage extends WizardPage
 {
-    private Text code;
-    private Text securityDescription;
-    private Text isin;
-    private Combo currency;
-    private Security security;
+    Text code;
+    Text securityDescription;
+    Combo currency;
+    Security security;
 
     public SecurityPage()
     {
@@ -153,16 +152,6 @@ public class SecurityPage extends WizardPage
     {
         this.currency.setText(currency.getCurrencyCode());
         validatePage();
-    }
-
-    public String getIsin()
-    {
-        return isin.getText();
-    }
-
-    public void setIsin(String isin)
-    {
-        this.isin.setText(isin);
     }
 
     public String getSecurityDescription()
