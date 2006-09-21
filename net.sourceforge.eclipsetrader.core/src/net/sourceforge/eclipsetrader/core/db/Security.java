@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.core.db;
 
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
@@ -198,6 +199,39 @@ public class Security extends PersistentObject
             });
         }
         return history;
+    }
+    
+    public List getAdjustedHistory()
+    {
+        List list = new ArrayList();
+
+        for (Iterator iter = getHistory().iterator(); iter.hasNext(); )
+        {
+            Bar bar = new Bar((Bar)iter.next());
+            double factor = 1.0;
+            for (Iterator iter2 = getSplits().iterator(); iter2.hasNext(); )
+            {
+                Split split = (Split)iter2.next();
+                if (bar.getDate().before(split.getDate()))
+                    factor *= (double)split.getToQuantity() / (double)split.getFromQuantity();
+            }
+            double dividends = 0.0;
+            for (Iterator iter2 = getDividends().iterator(); iter2.hasNext(); )
+            {
+                Dividend dividend = (Dividend)iter2.next();
+                if (bar.getDate().before(dividend.getDate()))
+                    dividends += dividend.getValue();
+            }
+
+            bar.setOpen((bar.getOpen() * factor) - dividends);
+            bar.setHigh((bar.getHigh() * factor) - dividends);
+            bar.setLow((bar.getLow() * factor) - dividends);
+            bar.setClose((bar.getClose() * factor) - dividends);
+            bar.setVolume((long)(bar.getVolume() / factor));
+            list.add(bar);
+        }
+        
+        return list;
     }
 
     public List getIntradayHistory()
