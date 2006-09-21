@@ -158,6 +158,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private int oldMouseX = -1, oldMouseY = -1;
     private boolean autoScale = false;
     private boolean followSelection = false;
+    private boolean showAdjustedValues = false;
     private ChartObject newChartObject;
     private Action viewAll = new SetViewAllAction(this);
     private Action viewLast2Years = new SetLast2YearsPeriodAction(this);
@@ -176,6 +177,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     private Action minute60Action = new Set60MinuteIntervalAction(this);
     private Action autoScaleAction = new AutoScaleAction(this);
     Action toggleFollowSelectionAction;
+    Action toggleAdjustedValuesAction;
     private Action cutAction;
     private Action copyAction;
     private Action pasteAction;
@@ -230,7 +232,9 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         }
     };
     public static final String PREFS_FOLLOW_SELECTION = "followSelection";
+    public static final String PREFS_SHOW_ADJUSTED_VALUES = "showAdjustedValues";
     static boolean DEFAULT_FOLLOW_SELECTION = false;
+    static boolean DEFAULT_SHOW_ADJUSTED_VALUES = false;
     
     public static IPath getPreferenceStoreLocation(Chart chart)
     {
@@ -314,6 +318,16 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
 
         menuManager.appendToGroup("group3", new Separator()); //$NON-NLS-1$
         menuManager.appendToGroup("group3", autoScaleAction); //$NON-NLS-1$
+        
+        toggleAdjustedValuesAction = new Action("Show adjusted values", Action.AS_CHECK_BOX) {
+            public void run()
+            {
+                showAdjustedValues = toggleAdjustedValuesAction.isChecked();
+                preferences.setValue(PREFS_SHOW_ADJUSTED_VALUES, showAdjustedValues);
+                updateView();
+            }
+        };
+        menuManager.appendToGroup("group3", toggleAdjustedValuesAction); //$NON-NLS-1$
         
         toggleFollowSelectionAction = new Action("Follow Security Selection", Action.AS_CHECK_BOX) {
             public void run()
@@ -428,6 +442,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         
         preferences = new PreferenceStore(getPreferenceStoreLocation(chart).toOSString());
         preferences.setDefault(PREFS_FOLLOW_SELECTION, DEFAULT_FOLLOW_SELECTION);
+        preferences.setDefault(PREFS_SHOW_ADJUSTED_VALUES, DEFAULT_SHOW_ADJUSTED_VALUES);
         try {
             preferences.load();
         } catch(Exception e) {
@@ -439,6 +454,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
 
         autoScale = chart.isAutoScale();
         followSelection = preferences.getBoolean(PREFS_FOLLOW_SELECTION);
+        showAdjustedValues = preferences.getBoolean(PREFS_SHOW_ADJUSTED_VALUES);
         updateActionBars();
 
         try {
@@ -452,7 +468,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     {
                         int period = chart.getPeriod();
                         int size = security.getHistory().size();
-                        BarData barData = new BarData(security.getHistory());
+                        BarData barData = new BarData(showAdjustedValues ? security.getAdjustedHistory() : security.getHistory());
                         
                         if (period != PERIOD_ALL && size != 0)
                         {
@@ -584,6 +600,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         
         autoScaleAction.setChecked(autoScale);
         toggleFollowSelectionAction.setChecked(followSelection);
+        toggleAdjustedValuesAction.setChecked(showAdjustedValues);
     }
     
     public Chart getChart()
@@ -733,7 +750,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         {
             int period = chart.getPeriod();
             int size = security.getHistory().size();
-            BarData barData = new BarData(security.getHistory());
+            BarData barData = new BarData(showAdjustedValues ? security.getAdjustedHistory() : security.getHistory());
             
             if (period != PERIOD_ALL && size != 0)
             {
