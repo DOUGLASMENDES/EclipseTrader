@@ -19,8 +19,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Dividend;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTable;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTableColumn;
 import net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem;
@@ -48,15 +50,20 @@ public class DividendsPage extends PreferencePage
     Button delete;
     Security security;
     NumberFormat numberFormatter = NumberFormat.getInstance();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
-    SimpleDateFormat dateParse = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
+    SimpleDateFormat dateFormat = CorePlugin.getDateFormat();
+    SimpleDateFormat dateParse = CorePlugin.getDateParse();
 
     public DividendsPage(Security security)
     {
-        super("Dividends");
+        super(Messages.DividendsPage_Title);
         noDefaultAndApplyButton();
         setValid(false);
         this.security = security;
+        
+        numberFormatter.setGroupingUsed(true);
+        numberFormatter.setMinimumIntegerDigits(1);
+        numberFormatter.setMinimumFractionDigits(4);
+        numberFormatter.setMaximumFractionDigits(4);
     }
 
     /* (non-Javadoc)
@@ -81,10 +88,10 @@ public class DividendsPage extends PreferencePage
             }
         });
         TableColumn column = new EditableTableColumn(table, SWT.NONE);
-        column.setText("Date");
+        column.setText(Messages.DividendsPage_Date);
         column.setWidth(70);
         column = new EditableTableColumn(table, SWT.NONE);
-        column.setText("Value");
+        column.setText(Messages.DividendsPage_Value);
         column.setWidth(70);
         
         Composite buttonsComposite = new Composite(content, SWT.NONE);
@@ -94,7 +101,7 @@ public class DividendsPage extends PreferencePage
         buttonsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
         
         add = new Button(buttonsComposite, SWT.PUSH);
-        add.setText("Add");
+        add.setText(Messages.DividendsPage_Add);
         setButtonLayoutData(add);
         add.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -105,7 +112,7 @@ public class DividendsPage extends PreferencePage
             }
         });
         delete = new Button(buttonsComposite, SWT.PUSH);
-        delete.setText("Delete");
+        delete.setText(Messages.DividendsPage_Delete);
         setButtonLayoutData(delete);
         delete.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -116,11 +123,6 @@ public class DividendsPage extends PreferencePage
                 delete.setEnabled(table.getSelectionCount() != 0);
             }
         });
-        
-        numberFormatter.setGroupingUsed(true);
-        numberFormatter.setMinimumIntegerDigits(1);
-        numberFormatter.setMinimumFractionDigits(4);
-        numberFormatter.setMaximumFractionDigits(4);
 
         if (security != null)
         {

@@ -333,7 +333,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
 
         public TradeSourcePage()
         {
-            super("Trading");
+            super(Messages.SecurityPropertiesDialog_TradeSourceTitle);
             noDefaultAndApplyButton();
             setValid(false);
         }

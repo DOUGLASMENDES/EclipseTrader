@@ -12,6 +12,7 @@
 package net.sourceforge.eclipsetrader.core.ui.preferences;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -27,9 +28,9 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class DataPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage
 {
     private Text securityHistoryRange;
-    private static final String LABEL_RANGE = "Security history range (in years)";
-    private static final String TOOLTIP_RANGE = "Max range used for the first download of a security historical prices.";
-    private static final String ERROR_MESSAGE_BAD_RANGE = "The range should be an integer between 1 and 50.";
+    private static final String LABEL_RANGE = Messages.DataPreferencesPage_HistoryRange;
+    private static final String TOOLTIP_RANGE = Messages.DataPreferencesPage_HistoryRangeTooltip;
+    private static final String ERROR_MESSAGE_BAD_RANGE = Messages.DataPreferencesPage_HistoryRangeError;
     private String previousValue = null;
 
     /* (non-Javadoc)
@@ -69,7 +70,7 @@ public class DataPreferencesPage extends PreferencePage implements IWorkbenchPre
         boolean isValid = true;
 
         String currentValue = securityHistoryRange.getText();
-        if (currentValue == null || "".equals(currentValue))
+        if (currentValue == null || "".equals(currentValue)) //$NON-NLS-1$
             currentValue = getPreviousRangeValue();
 
         int value = 0;
@@ -132,7 +133,7 @@ public class DataPreferencesPage extends PreferencePage implements IWorkbenchPre
             return this.previousValue;
 
         this.previousValue = CorePlugin.getDefault().getPreferenceStore().getString(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE);
-        if (this.previousValue == null || "".equals(this.previousValue))
+        if (this.previousValue == null || "".equals(this.previousValue)) //$NON-NLS-1$
             this.previousValue = CorePlugin.getDefault().getPreferenceStore().getDefaultString(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE);
 
         return this.previousValue;

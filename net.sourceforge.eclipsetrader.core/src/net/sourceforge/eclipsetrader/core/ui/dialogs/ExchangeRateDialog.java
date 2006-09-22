@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.Dialog;
@@ -63,7 +64,7 @@ public class ExchangeRateDialog extends Dialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Exchange Rate");
+        newShell.setText(Messages.ExchangeRateDialog_Title);
     }
 
     /* (non-Javadoc)
@@ -81,7 +82,7 @@ public class ExchangeRateDialog extends Dialog
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Date");
+        label.setText(Messages.ExchangeRateDialog_Date);
         label.setLayoutData(new GridData(60, SWT.DEFAULT));
 
         text = new Text(content, SWT.BORDER);
@@ -143,7 +144,7 @@ public class ExchangeRateDialog extends Dialog
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("to");
+        label.setText(Messages.ExchangeRateDialog_To);
         
         to = new Combo(content, SWT.READ_ONLY);
         to.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, false, false));
@@ -155,7 +156,7 @@ public class ExchangeRateDialog extends Dialog
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("=");
+        label.setText(Messages.ExchangeRateDialog_Equals);
         
         ratio = new Spinner(content, SWT.BORDER);
         ratio.setMinimum(1);
@@ -179,8 +180,8 @@ public class ExchangeRateDialog extends Dialog
 
         text.setText(dateFormat.format(Calendar.getInstance().getTime()));
         String locale = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        from.setText(locale.equals("EUR") ? "USD" : "EUR");
-        to.setText(locale.equals("EUR") ? "EUR" : "USD");
+        from.setText(locale.equals(Messages.ExchangeRateDialog_DefaultTo) ? Messages.ExchangeRateDialog_DefaultFrom : Messages.ExchangeRateDialog_DefaultTo);
+        to.setText(locale.equals(Messages.ExchangeRateDialog_DefaultTo) ? Messages.ExchangeRateDialog_DefaultTo : Messages.ExchangeRateDialog_DefaultFrom);
         update();
 
         return content;

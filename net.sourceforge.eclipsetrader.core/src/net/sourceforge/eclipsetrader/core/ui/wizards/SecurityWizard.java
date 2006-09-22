@@ -100,8 +100,8 @@ public class SecurityWizard extends Wizard
                 setControl(tradeSourceOptions.createControls(parent, null));
             }
         };
-        page.setTitle("Trading");
-        page.setDescription("Set the trading options");
+        page.setTitle(Messages.SecurityWizard_TradeSourceTitle);
+        page.setDescription(Messages.SecurityWizard_TradeSourceDescription);
         addPage(page);
         
         page = new WizardPage("") { //$NON-NLS-1$

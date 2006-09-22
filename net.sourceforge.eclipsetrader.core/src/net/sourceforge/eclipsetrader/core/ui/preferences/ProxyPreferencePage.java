@@ -11,6 +11,7 @@
 package net.sourceforge.eclipsetrader.core.ui.preferences;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -61,7 +62,7 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
         content.setLayout(gridLayout);
 
         Group group = new Group(content, SWT.NONE);
-        group.setText("Proxy settings");
+        group.setText(Messages.ProxyPreferencePage_Settings);
         GridLayout layout = new GridLayout();
         layout.numColumns = 2;
         group.setLayout(layout);
@@ -70,19 +71,19 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
         group.setLayoutData(gd);
 
         enableHttpProxy = new Button(group, SWT.CHECK);
-        enableHttpProxy.setText("Enable HTTP proxy connection");
+        enableHttpProxy.setText(Messages.ProxyPreferencePage_EnableHTTP);
         gd = new GridData();
         gd.horizontalSpan = 2;
         enableHttpProxy.setLayoutData(gd);
 
         httpProxyHostLabel = new Label(group, SWT.NONE);
-        httpProxyHostLabel.setText("HTTP proxy host address");
+        httpProxyHostLabel.setText(Messages.ProxyPreferencePage_HostAddress);
 
         httpProxyHostText = new Text(group, SWT.SINGLE | SWT.BORDER);
         httpProxyHostText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         httpProxyPortLabel = new Label(group, SWT.NONE);
-        httpProxyPortLabel.setText("HTTP proxy host port");
+        httpProxyPortLabel.setText(Messages.ProxyPreferencePage_HostPort);
 
         httpProxyPortText = new Text(group, SWT.SINGLE | SWT.BORDER);
         httpProxyPortText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -110,7 +111,7 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
                 {
                 }
                 ProxyPreferencePage.this.setValid(false);
-                setErrorMessage("Port must be a number in the range 0-65535");
+                setErrorMessage(Messages.ProxyPreferencePage_PortErrorMessage);
             }
         });
 

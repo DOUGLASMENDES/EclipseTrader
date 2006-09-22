@@ -19,8 +19,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.Split;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTable;
 import net.sourceforge.eclipsetrader.core.ui.widgets.EditableTableColumn;
 import net.sourceforge.eclipsetrader.core.ui.widgets.IEditableItem;
@@ -48,15 +50,20 @@ public class SplitsPage extends PreferencePage
     Button delete;
     Security security;
     NumberFormat numberFormatter = NumberFormat.getInstance();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
-    SimpleDateFormat dateParse = new SimpleDateFormat("dd/MM/yy"); //$NON-NLS-1$
+    SimpleDateFormat dateFormat = CorePlugin.getDateFormat();
+    SimpleDateFormat dateParse = CorePlugin.getDateParse();
 
     public SplitsPage(Security security)
     {
-        super("Splits");
+        super(Messages.SplitsPage_Title);
         noDefaultAndApplyButton();
         setValid(false);
         this.security = security;
+        
+        numberFormatter.setGroupingUsed(true);
+        numberFormatter.setMinimumIntegerDigits(1);
+        numberFormatter.setMinimumFractionDigits(0);
+        numberFormatter.setMaximumFractionDigits(0);
     }
 
     /* (non-Javadoc)
@@ -81,13 +88,13 @@ public class SplitsPage extends PreferencePage
             }
         });
         TableColumn column = new EditableTableColumn(table, SWT.NONE);
-        column.setText("Date");
+        column.setText(Messages.SplitsPage_Date);
         column.setWidth(70);
         column = new EditableTableColumn(table, SWT.NONE);
-        column.setText("From");
+        column.setText(Messages.SplitsPage_From);
         column.setWidth(70);
         column = new EditableTableColumn(table, SWT.NONE);
-        column.setText("To");
+        column.setText(Messages.SplitsPage_To);
         column.setWidth(70);
         
         Composite buttonsComposite = new Composite(content, SWT.NONE);
@@ -97,7 +104,7 @@ public class SplitsPage extends PreferencePage
         buttonsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
         
         add = new Button(buttonsComposite, SWT.PUSH);
-        add.setText("Add");
+        add.setText(Messages.SplitsPage_Add);
         setButtonLayoutData(add);
         add.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -109,7 +116,7 @@ public class SplitsPage extends PreferencePage
             }
         });
         delete = new Button(buttonsComposite, SWT.PUSH);
-        delete.setText("Delete");
+        delete.setText(Messages.SplitsPage_Delete);
         setButtonLayoutData(delete);
         delete.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -120,11 +127,6 @@ public class SplitsPage extends PreferencePage
                 delete.setEnabled(table.getSelectionCount() != 0);
             }
         });
-        
-        numberFormatter.setGroupingUsed(true);
-        numberFormatter.setMinimumIntegerDigits(1);
-        numberFormatter.setMinimumFractionDigits(0);
-        numberFormatter.setMaximumFractionDigits(0);
 
         if (security != null)
         {

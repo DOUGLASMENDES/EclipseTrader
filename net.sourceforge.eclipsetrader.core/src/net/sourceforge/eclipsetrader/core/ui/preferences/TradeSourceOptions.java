@@ -22,6 +22,7 @@ import net.sourceforge.eclipsetrader.core.ITradingProvider;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.OrderRoute;
 import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
+import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -58,7 +59,7 @@ public class TradeSourceOptions
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Trading provider");
+        label.setText(Messages.TradeSourceOptions_Provider);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         provider = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
         provider.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -73,7 +74,7 @@ public class TradeSourceOptions
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("Exchange");
+        label.setText(Messages.TradeSourceOptions_Exchange);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         exchange = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
         exchange.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -82,13 +83,13 @@ public class TradeSourceOptions
         exchange.setEnabled(false);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Symbol");
+        label.setText(Messages.TradeSourceOptions_Symbol);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         symbol = new Text(content, SWT.BORDER);
         symbol.setLayoutData(new GridData(100, SWT.DEFAULT));
 
         label = new Label(content, SWT.NONE);
-        label.setText("Account");
+        label.setText(Messages.TradeSourceOptions_Account);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         account = new Combo(content, SWT.SINGLE | SWT.READ_ONLY);
         account.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -96,7 +97,7 @@ public class TradeSourceOptions
         account.add(""); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Quantity");
+        label.setText(Messages.TradeSourceOptions_Quantity);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         quantity = new Spinner(content, SWT.BORDER);
         quantity.setMinimum(1);
@@ -213,7 +214,7 @@ public class TradeSourceOptions
                     IConfigurationElement element = (IConfigurationElement)iter.next();
                     if (element.getAttribute("id").equals(providerId)) //$NON-NLS-1$
                     {
-                        ITradingProvider source = CorePlugin.createTradeSourcePlugin(element.getAttribute("id"));
+                        ITradingProvider source = CorePlugin.createTradeSourcePlugin(element.getAttribute("id")); //$NON-NLS-1$
                         for (Iterator iter2 = source.getRoutes().iterator(); iter2.hasNext(); )
                         {
                             OrderRoute route = (OrderRoute)iter2.next();
