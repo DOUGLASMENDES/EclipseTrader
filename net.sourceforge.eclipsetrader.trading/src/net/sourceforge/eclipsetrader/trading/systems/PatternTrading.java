@@ -42,14 +42,13 @@ public class PatternTrading extends TradingSystemPlugin
         if (period != BarData.INTERVAL_DAILY)
             barData = barData.getCompressed(period);
 
-        Sentiment sentiment = Sentiment.INVALID;
         IPattern pattern = CorePlugin.createPatternPlugin(patternId);
+        pattern.init(getSecurity());
+        
         for (int i = 0; i < barData.size(); i++)
-        {
             pattern.add(barData.get(i));
-            sentiment = pattern.getSentiment();
-        }
 
+        Sentiment sentiment = pattern.getSentiment();
         if (sentiment.equals(Sentiment.BULLISH))
             fireOpenLongSignal();
         else if (sentiment.equals(Sentiment.BEARISH))
