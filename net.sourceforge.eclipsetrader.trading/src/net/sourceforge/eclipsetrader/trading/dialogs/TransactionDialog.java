@@ -84,6 +84,16 @@ public class TransactionDialog extends TitleAreaDialog
     }
 
     /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.TitleAreaDialog#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    protected Control createContents(Composite parent)
+    {
+        Control control = super.createContents(parent);
+        validateDialog();
+        return control;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     protected Control createDialogArea(Composite parent)
@@ -130,12 +140,16 @@ public class TransactionDialog extends TitleAreaDialog
         securityCombo.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                Security security = (Security)securityCombo.getData(securityCombo.getText());
-                if (security != null && security.getQuote() != null)
+                if (transaction == null)
                 {
-                    priceSpinner.setSelection((int)Math.round(security.getQuote().getLast() * Math.pow(10, priceSpinner.getDigits())));
-                    updateTotals();
+                    Security security = (Security)securityCombo.getData(securityCombo.getText());
+                    if (security != null && security.getQuote() != null)
+                    {
+                        priceSpinner.setSelection((int)Math.round(security.getQuote().getLast() * Math.pow(10, priceSpinner.getDigits())));
+                        updateTotals();
+                    }
                 }
+                validateDialog();
             }
         });
 
@@ -261,31 +275,23 @@ public class TransactionDialog extends TitleAreaDialog
             dateText.setText(df.format(Calendar.getInstance().getTime()));
             buyButton.setSelection(defaultQuantity >= 0);
             sellButton.setSelection(defaultQuantity < 0);
+            if (security != null)
+            {
+                securityCombo.setText(security.getDescription());
+                if (security.getQuote() != null)
+                    priceSpinner.setSelection((int)Math.round(security.getQuote().getLast() * Math.pow(10, priceSpinner.getDigits())));
+                quantitySpinner.setFocus();
+            }
+            else
+                securityCombo.setFocus();
         }
-        
-        if (security != null)
-        {
-            securityCombo.setText(security.getDescription());
-            if (security.getQuote() != null)
-                priceSpinner.setSelection((int)Math.round(security.getQuote().getLast() * Math.pow(10, priceSpinner.getDigits())));
-            quantitySpinner.setFocus();
-        }
-        else
-            securityCombo.setFocus();
 
         updateTotals();
         
         dateText.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e)
             {
-                try {
-                    df.parse(dateText.getText());
-                    setErrorMessage(null);
-                    getButton(IDialogConstants.OK_ID).setEnabled(true);
-                } catch(Exception e1) {
-                    setErrorMessage("Invalid date and time format");
-                    getButton(IDialogConstants.OK_ID).setEnabled(false);
-                }
+                validateDialog();
             }
         });
 
@@ -362,5 +368,32 @@ public class TransactionDialog extends TitleAreaDialog
     public void setDefaultQuantity(int defaultQuantity)
     {
         this.defaultQuantity = defaultQuantity;
+    }
+    
+    void validateDialog()
+    {
+        boolean enable = true;
+        setErrorMessage(null);
+        
+        try {
+            df.parse(dateText.getText());
+        } catch(Exception e1) {
+            setErrorMessage("Invalid date and time format");
+            enable = false;
+        }
+
+        if (securityCombo.getSelectionIndex() == -1)
+        {
+            setErrorMessage("Select a security");
+            enable = false;
+        }
+        
+        if (priceSpinner.getSelection() == 0)
+        {
+            setErrorMessage("Enter a price");
+            enable = false;
+        }
+        
+        getButton(IDialogConstants.OK_ID).setEnabled(enable);
     }
 }
