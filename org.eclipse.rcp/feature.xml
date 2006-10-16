@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.rcp"
       label="%featureName"
-      version="3.2.0.v20060609m-SVDNgVrNoh-MeGG"
+      version="3.2.1.r321_v20060801-2ekW2BxmcpPUOoq"
       provider-name="%providerName"
       plugin="org.eclipse.rcp"
       image="eclipse_update_120.jpg">
@@ -27,7 +27,7 @@
          id="com.ibm.icu"
          download-size="0"
          install-size="0"
-         version="3.4.4.1"
+         version="3.4.5"
          unpack="false"/>
 
    <plugin
@@ -48,7 +48,7 @@
          id="org.eclipse.core.expressions"
          download-size="0"
          install-size="0"
-         version="3.2.0.v20060605-1400"
+         version="3.2.1.r321_v20060721"
          unpack="false"/>
 
    <plugin
@@ -69,28 +69,28 @@
          id="org.eclipse.osgi"
          download-size="0"
          install-size="0"
-         version="3.2.0.v20060601"
+         version="3.2.1.R32x_v20060919"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help"
          download-size="0"
          install-size="0"
-         version="3.2.0.v20060602"
+         version="3.2.1.R321_v20060920"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.swt"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232o"
+         version="3.2.1.v3235e"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jface"
          download-size="0"
          install-size="0"
-         version="3.2.0.I20060605-1400"
+         version="3.2.1.M20060908-1000"
          unpack="false"/>
 
    <plugin
@@ -104,21 +104,21 @@
          id="org.eclipse.ui"
          download-size="0"
          install-size="0"
-         version="3.2.0.I20060605-1400"
+         version="3.2.1.M20060913-0800"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.workbench"
          download-size="0"
          install-size="0"
-         version="3.2.0.I20060605-1400"
+         version="3.2.1.M20060906-0800"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.configurator"
          download-size="0"
          install-size="0"
-         version="3.2.0.v20060605"
+         version="3.2.1.v20092006"
          unpack="false"/>
 
    <plugin
@@ -128,7 +128,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -139,7 +139,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -150,7 +150,7 @@
          arch="sparc"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -161,7 +161,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.0.HEAD"
+         version="3.2.0.R3_2_maintenance"
          fragment="true"
          unpack="false"/>
 
@@ -172,7 +172,7 @@
          arch="ppc"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -183,7 +183,7 @@
          arch="x86_64"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -193,7 +193,7 @@
          ws="carbon"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -204,7 +204,7 @@
          arch="ppc"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -215,7 +215,7 @@
          arch="PA_RISC"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -226,7 +226,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -237,7 +237,7 @@
          arch="ia64"
          download-size="0"
          install-size="0"
-         version="3.2.0.HEAD"
+         version="3.2.0.R3_2_maintenance"
          fragment="true"
          unpack="false"/>
 
@@ -248,7 +248,7 @@
          arch="sparc"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -259,7 +259,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.0.v3232m"
+         version="3.2.1.v3235"
          fragment="true"
          unpack="false"/>
 
@@ -270,7 +270,7 @@
          arch="ia64_32"
          download-size="0"
          install-size="0"
-         version="3.2.0.HEAD"
+         version="3.2.1"
          fragment="true"
          unpack="false"/>
 
@@ -299,15 +299,21 @@
          id="org.eclipse.equinox.preferences"
          download-size="0"
          install-size="0"
-         version="3.2.0.v20060601"
+         version="3.2.1.R32x_v20060717"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.registry"
          download-size="0"
          install-size="0"
-         version="3.2.0.v20060601"
+         version="3.2.1.R32x_v20060814"
          unpack="false"/>
+
+   <plugin
+         id="org.apache.lucene"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.help.appserver"
@@ -337,18 +343,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.tomcat"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.lucene"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.update.core"
          download-size="0"
          install-size="0"
@@ -368,6 +362,12 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="org.eclipse.tomcat"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ui.forms"
