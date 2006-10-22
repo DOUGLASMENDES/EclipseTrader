@@ -259,9 +259,7 @@ public class WatchlistTableViewer extends AbstractLayout
             public void widgetSelected(SelectionEvent e)
             {
             	if (singleClick)
-            	{
                     updateSelection();
-            	}
             }
         });
         table.addMouseListener(new MouseAdapter() {
@@ -274,8 +272,8 @@ public class WatchlistTableViewer extends AbstractLayout
 	                if (table.getItem(new Point(e.x, e.y)) == null)
 	                {
 	                    table.deselectAll();
+                        updateSelection();
 	                }
-                    updateSelection();
 				}
             }
 			
