@@ -48,9 +48,39 @@ import org.w3c.dom.NodeList;
  */
 public class SecurityPage extends WizardPage
 {
-    private Table table;
-    private Text search;
-    private NodeList childNodes;
+    Table table;
+    Text search;
+    NodeList childNodes;
+    Runnable searchJob = new Runnable() {
+        public void run()
+        {
+            String pattern = search.getText().toLowerCase();
+
+            table.setRedraw(false);
+            table.removeAll();
+            for (int i = 0; i < childNodes.getLength(); i++)
+            {
+                Node item = childNodes.item(i);
+                String nodeName = item.getNodeName();
+                if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
+                {
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue();
+                    String isin = item.getAttributes().getNamedItem("isin").getNodeValue().toLowerCase();
+                    String description = item.getFirstChild().getNodeValue().toLowerCase();
+                    if (CorePlugin.getRepository().getSecurity(code) != null)
+                        continue;
+                    if (pattern.length() == 0 || code.toLowerCase().indexOf(pattern) != -1 || isin.indexOf(pattern) != -1 || description.indexOf(pattern) != -1)
+                    {
+                        TableItem tableItem = new TableItem(table, SWT.NONE);
+                        tableItem.setText(0, code);
+                        tableItem.setText(1, item.getFirstChild().getNodeValue());
+                        tableItem.setData(item);
+                    }
+                }
+            }
+            table.setRedraw(true);
+        }
+    };
 
     public SecurityPage()
     {
@@ -94,30 +124,7 @@ public class SecurityPage extends WizardPage
         search.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e)
             {
-                table.setRedraw(false);
-                table.removeAll();
-                for (int i = 0; i < childNodes.getLength(); i++)
-                {
-                    Node item = childNodes.item(i);
-                    String nodeName = item.getNodeName();
-                    if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
-                    {
-                        String pattern = search.getText();
-                        String code = item.getAttributes().getNamedItem("code").getNodeValue();
-                        String isin = item.getAttributes().getNamedItem("isin").getNodeValue();
-                        String description = item.getFirstChild().getNodeValue();
-                        if (CorePlugin.getRepository().getSecurity(code) != null)
-                            continue;
-                        if (pattern.length() == 0 || code.indexOf(pattern) != -1 || isin.indexOf(pattern) != -1 || description.indexOf(pattern) != -1)
-                        {
-                            TableItem tableItem = new TableItem(table, SWT.NONE);
-                            tableItem.setText(0, code);
-                            tableItem.setText(1, item.getFirstChild().getNodeValue());
-                            tableItem.setData(item);
-                        }
-                    }
-                }
-                table.setRedraw(true);
+                search.getDisplay().timerExec(500, searchJob);
             }
         });
 
@@ -151,6 +158,8 @@ public class SecurityPage extends WizardPage
         
         for (int i = 0; i < table.getColumnCount(); i++)
             table.getColumn(i).pack();
+        
+        search.setFocus();
     }
     
     public List getSelectedSecurities()
