@@ -8,7 +8,7 @@
     <security code="ALC.PA" wkn="ALC.PA">ALCAN</security>
     <security code="CGE.PA" wkn="CGE.PA">ALCATEL</security>
     <security code="ALL.PA" wkn="ALL.PA">ALLIANZ N</security>
-    <security code="ALO.PA" wkn="ALO.PA">ALSTOM REGPT</security>
+    <security code="ALO.PA" wkn="ALO.PA">ALSTOM</security>
     <security code="ALD.PA" wkn="ALD.PA">ALTADIS</security>
     <security code="ATE.PA" wkn="ATE.PA">ALTEN</security>
     <security code="ALT.PA" wkn="ALT.PA">ALTRAN TECHNO</security>
@@ -48,7 +48,6 @@
     <security code="EAD.PA" wkn="EAD.PA">EUR AERO DEFENCE</security>
     <security code="RF.PA" wkn="RF.PA">EURAZEO</security>
     <security code="EDL.PA" wkn="EDL.PA">EURO DISNEY</security>
-    <security code="NXT.PA" wkn="NXT.PA">EURONEXT</security>
     <security code="TNU.PA" wkn="TNU.PA">EUROTUNNEL</security>
     <security code="EO.PA" wkn="EO.PA">FAURECIA</security>
     <security code="FFP.PA" wkn="FFP.PA">FFP</security>
