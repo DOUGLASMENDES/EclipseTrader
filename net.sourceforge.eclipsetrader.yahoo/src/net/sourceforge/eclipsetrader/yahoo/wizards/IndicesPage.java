@@ -45,9 +45,47 @@ import org.w3c.dom.NodeList;
  */
 public class IndicesPage extends WizardPage implements ISecurityPage
 {
-    private Tree tree;
-    private Text search;
-    private NodeList childNodes;
+    Tree tree;
+    Text search;
+    NodeList childNodes;
+    Runnable searchJob = new Runnable() {
+        public void run()
+        {
+            String pattern = search.getText().toLowerCase();
+            tree.setRedraw(false);
+            tree.removeAll();
+            for (int i = 0; i < childNodes.getLength(); i++)
+            {
+                Node item = childNodes.item(i);
+                String nodeName = item.getNodeName();
+                if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
+                {
+                    if (hasMatchingItems(item.getChildNodes(), pattern))
+                    {
+                        TreeItem parentItem = new TreeItem(tree, SWT.NONE);
+                        parentItem.setText(item.getAttributes().getNamedItem("name").getNodeValue());
+                        addMatchingItems(parentItem, item.getChildNodes(), pattern);
+                        if (pattern.length() != 0)
+                            parentItem.setExpanded(true);
+                    }
+                }
+                else if (nodeName.equalsIgnoreCase("index")) //$NON-NLS-1$
+                {
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue().toLowerCase();
+                    String description = item.getFirstChild().getNodeValue().toLowerCase();
+                    if (pattern.length() == 0 || code.indexOf(pattern) != -1 || description.indexOf(pattern) != -1)
+                    {
+                        if (CorePlugin.getRepository().getSecurity(code) != null)
+                            continue;
+                        TreeItem treeItem = new TreeItem(tree, SWT.NONE);
+                        treeItem.setText(item.getFirstChild().getNodeValue());
+                        treeItem.setData(item);
+                    }
+                }
+            }
+            tree.setRedraw(true);
+        }
+    };
 
     public IndicesPage()
     {
@@ -87,39 +125,7 @@ public class IndicesPage extends WizardPage implements ISecurityPage
         search.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e)
             {
-                String pattern = search.getText().toLowerCase();
-                tree.setRedraw(false);
-                tree.removeAll();
-                for (int i = 0; i < childNodes.getLength(); i++)
-                {
-                    Node item = childNodes.item(i);
-                    String nodeName = item.getNodeName();
-                    if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
-                    {
-                        if (hasMatchingItems(item.getChildNodes(), pattern))
-                        {
-                            TreeItem parentItem = new TreeItem(tree, SWT.NONE);
-                            parentItem.setText(item.getAttributes().getNamedItem("name").getNodeValue());
-                            addMatchingItems(parentItem, item.getChildNodes(), pattern);
-                            if (pattern.length() != 0)
-                                parentItem.setExpanded(true);
-                        }
-                    }
-                    else if (nodeName.equalsIgnoreCase("index")) //$NON-NLS-1$
-                    {
-                        String code = item.getAttributes().getNamedItem("code").getNodeValue().toLowerCase();
-                        String description = item.getFirstChild().getNodeValue().toLowerCase();
-                        if (pattern.length() == 0 || code.indexOf(pattern) != -1 || description.indexOf(pattern) != -1)
-                        {
-                            if (CorePlugin.getRepository().getSecurity(code) != null)
-                                continue;
-                            TreeItem treeItem = new TreeItem(tree, SWT.NONE);
-                            treeItem.setText(item.getFirstChild().getNodeValue());
-                            treeItem.setData(item);
-                        }
-                    }
-                }
-                tree.setRedraw(true);
+                search.getDisplay().timerExec(500, searchJob);
             }
         });
 
@@ -158,6 +164,8 @@ public class IndicesPage extends WizardPage implements ISecurityPage
         
         for (int i = 0; i < tree.getColumnCount(); i++)
             tree.getColumn(i).pack();
+
+        search.setFocus();
     }
     
     private void addCategory(TreeItem parentItem, NodeList list)
