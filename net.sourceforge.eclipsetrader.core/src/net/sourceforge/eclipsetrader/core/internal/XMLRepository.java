@@ -191,9 +191,12 @@ public class XMLRepository extends Repository
                     if (nodeName.equalsIgnoreCase("chart")) //$NON-NLS-1$
                     {
                         Chart obj = loadChart(item.getChildNodes());
-                        obj.setRepository(this);
-                        chartsMap.put(obj.getId(), obj);
-                        allCharts().add(obj);
+                        if (obj.getSecurity() != null)
+                        {
+                            obj.setRepository(this);
+                            chartsMap.put(obj.getId(), obj);
+                            allCharts().add(obj);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -209,13 +212,16 @@ public class XMLRepository extends Repository
             if (file.exists())
             {
                 Chart obj = loadChart(security.getId());
-                if (obj.getId().intValue() > chartsNextId.intValue())
-                    chartsNextId = getNextId(obj.getId());
-                obj.setRepository(this);
-                chartsMap.put(obj.getId(), obj);
-                allCharts().add(obj);
-                file.delete();
-                needToSave = true;
+                if (obj.getSecurity() != null)
+                {
+                    if (obj.getId().intValue() > chartsNextId.intValue())
+                        chartsNextId = getNextId(obj.getId());
+                    obj.setRepository(this);
+                    chartsMap.put(obj.getId(), obj);
+                    allCharts().add(obj);
+                    file.delete();
+                    needToSave = true;
+                }
             }
         }
         if (needToSave)

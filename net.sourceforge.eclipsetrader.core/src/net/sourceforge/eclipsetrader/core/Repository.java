@@ -369,7 +369,7 @@ public class Repository
             for (int i = 0; i < charts.length; i++)
             {
                 if (charts[i].getSecurity().equals(obj))
-                    allCharts().remove(charts[i]);
+                    delete(charts[i]);
             }
             
             TradingSystem[] systems = (TradingSystem[])getTradingSystems().toArray(new TradingSystem[0]);
