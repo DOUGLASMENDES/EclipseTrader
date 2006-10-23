@@ -46,22 +46,22 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
         content.setLayout(gridLayout);
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Codice Utente");
+        label.setText(Messages.GeneralPreferencesPage_UserName);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         userName = new Text(content, SWT.BORDER);
         userName.setText(DirectaWorldPlugin.getDefault().getPreferenceStore().getString(DirectaWorldPlugin.USERNAME_PREFS));
         userName.setLayoutData(new GridData(125, SWT.DEFAULT));
         
         label = new Label(content, SWT.NONE);
-        label.setText("Password");
+        label.setText(Messages.GeneralPreferencesPage_Password);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         password = new Text(content, SWT.BORDER|SWT.PASSWORD);
         password.setText(DirectaWorldPlugin.getDefault().getPreferenceStore().getString(DirectaWorldPlugin.PASSWORD_PREFS));
         password.setLayoutData(new GridData(125, SWT.DEFAULT));
         
         label = new Label(content, SWT.NONE);
-        label.setText("Attenzione! Le password sono salvate in testo leggibile.");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, true, 2, 1));
+        label.setText(Messages.GeneralPreferencesPage_WarningMessage);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.END, false, true, 2, 1));
 
         return content;
     }

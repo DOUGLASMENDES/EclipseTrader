@@ -16,6 +16,7 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
+import net.sourceforge.eclipsetrader.directaworld.Messages;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -30,7 +31,7 @@ import org.eclipse.ui.PlatformUI;
  */
 public class SecurityWizard extends Wizard implements INewWizard
 {
-    public static String WINDOW_TITLE = "Italian Security Wizard";
+    public static String WINDOW_TITLE = Messages.SecurityWizard_Title;
     private SecurityPage securityPage;
     private IntradayDataOptions options = new IntradayDataOptions();
 
@@ -61,14 +62,14 @@ public class SecurityWizard extends Wizard implements INewWizard
         securityPage = new SecurityPage();
         addPage(securityPage);
 
-        WizardPage page = new WizardPage("") {
+        WizardPage page = new WizardPage("") { //$NON-NLS-1$
             public void createControl(Composite parent)
             {
                 setControl(options.createControls(parent, null));
             }
         };
-        page.setTitle("Intraday Charts");
-        page.setDescription("Set the options to automatically build intraday charts");
+        page.setTitle(Messages.SecurityWizard_IntradayChartsTitle);
+        page.setDescription(Messages.SecurityWizard_IntradayChartsDescription);
         addPage(page);
 
         WizardDialog dlg = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this);

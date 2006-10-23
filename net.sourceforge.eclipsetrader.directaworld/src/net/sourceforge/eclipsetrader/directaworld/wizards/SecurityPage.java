@@ -23,6 +23,7 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin;
+import net.sourceforge.eclipsetrader.directaworld.Messages;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -64,8 +65,8 @@ public class SecurityPage extends WizardPage
                 String nodeName = item.getNodeName();
                 if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
                 {
-                    String code = item.getAttributes().getNamedItem("code").getNodeValue();
-                    String isin = item.getAttributes().getNamedItem("isin").getNodeValue().toLowerCase();
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue(); //$NON-NLS-1$
+                    String isin = item.getAttributes().getNamedItem("isin").getNodeValue().toLowerCase(); //$NON-NLS-1$
                     String description = item.getFirstChild().getNodeValue().toLowerCase();
                     if (CorePlugin.getRepository().getSecurity(code) != null)
                         continue;
@@ -84,9 +85,9 @@ public class SecurityPage extends WizardPage
 
     public SecurityPage()
     {
-        super("");
-        setTitle("Security");
-        setDescription("Select one of the available securities");
+        super(""); //$NON-NLS-1$
+        setTitle(Messages.SecurityPage_Title);
+        setDescription(Messages.SecurityPage_Description);
         setPageComplete(false);
     }
 
@@ -106,9 +107,9 @@ public class SecurityPage extends WizardPage
         gridData.heightHint = 250;
         table.setLayoutData(gridData);
         TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-        tableColumn.setText("Code");
+        tableColumn.setText(Messages.SecurityPage_CodeColumn);
         tableColumn = new TableColumn(table, SWT.NONE);
-        tableColumn.setText("Description");
+        tableColumn.setText(Messages.SecurityPage_DescriptionColumn);
         table.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -117,7 +118,7 @@ public class SecurityPage extends WizardPage
         });
         
         Label label = new Label(composite, SWT.NONE);
-        label.setText("Search");
+        label.setText(Messages.SecurityPage_Search);
         label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
         search = new Text(composite, SWT.BORDER);
         search.setLayoutData(new GridData(120, SWT.DEFAULT));
@@ -132,7 +133,7 @@ public class SecurityPage extends WizardPage
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(FileLocator.openStream(DirectaWorldPlugin.getDefault().getBundle(), new Path("data/securities.xml"), false));
+            Document document = builder.parse(FileLocator.openStream(DirectaWorldPlugin.getDefault().getBundle(), new Path("data/securities.xml"), false)); //$NON-NLS-1$
 
             Node firstNode = document.getFirstChild();
 
@@ -143,7 +144,7 @@ public class SecurityPage extends WizardPage
                 String nodeName = item.getNodeName();
                 if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
                 {
-                    String code = item.getAttributes().getNamedItem("code").getNodeValue();
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue(); //$NON-NLS-1$
                     if (CorePlugin.getRepository().getSecurity(code) != null)
                         continue;
                     TableItem tableItem = new TableItem(table, SWT.NONE);
@@ -171,18 +172,18 @@ public class SecurityPage extends WizardPage
         {
             Node item = (Node) table.getSelection()[i].getData();
             Security security = new Security();
-            security.setCode(item.getAttributes().getNamedItem("code").getNodeValue() + ".MI");
+            security.setCode(item.getAttributes().getNamedItem("code").getNodeValue() + ".MI"); //$NON-NLS-1$ //$NON-NLS-2$
             security.setDescription(item.getFirstChild().getNodeValue());
             security.setCurrency(Currency.getInstance(Locale.ITALY));
 
             FeedSource feed = new FeedSource();
-            feed.setId("net.sourceforge.eclipsetrader.directaworld");
-            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
+            feed.setId("net.sourceforge.eclipsetrader.directaworld"); //$NON-NLS-1$
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue()); //$NON-NLS-1$
             security.setQuoteFeed(feed);
             
             feed = new FeedSource();
-            feed.setId("net.sourceforge.eclipsetrader.borsaitalia");
-            feed.setSymbol(item.getAttributes().getNamedItem("isin").getNodeValue());
+            feed.setId("net.sourceforge.eclipsetrader.borsaitalia"); //$NON-NLS-1$
+            feed.setSymbol(item.getAttributes().getNamedItem("isin").getNodeValue()); //$NON-NLS-1$
             security.setHistoryFeed(feed);
             
             list.add(security);

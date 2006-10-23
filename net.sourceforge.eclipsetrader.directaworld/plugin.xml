@@ -5,13 +5,13 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.directaworld"
-            label="DirectaWorld"
+            label="%actionSet.label.0"
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.directaworld.actions.NewSecurityAction"
                icon="icons/it.gif"
                id="net.sourceforge.eclipsetrader.directaworld.newSecurity"
-               label="Italian Stock Security"
+               label="%action.label.0"
                menubarPath="file/newWizard/plugins"
                style="push"/>
       </actionSet>
@@ -28,13 +28,13 @@
             category="net.sourceforge.eclipsetrader.plugins"
             class="net.sourceforge.eclipsetrader.directaworld.GeneralPreferencesPage"
             id="net.sourceforge.eclipsetrader.directaworld.general"
-            name="DirectaWorld"/>
+            name="%page.name.0"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.core.feeds">
       <feed
-            id="net.sourceforge.eclipsetrader.directaworld"
-            name="DirectaWorld">
+            id="%feed.id.0"
+            name="%feed.name.0">
          <quote class="net.sourceforge.eclipsetrader.directaworld.Feed"/>
       </feed>
    </extension>

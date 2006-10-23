@@ -26,12 +26,12 @@ import org.eclipse.ui.PlatformUI;
 
 public class LoginDialog extends TitleAreaDialog
 {
-    private String userName = "";
-    private String password = "";
+    private String userName = ""; //$NON-NLS-1$
+    private String password = ""; //$NON-NLS-1$
     private Text text1;
     private Text text2;
     private Button button;
-    private Image image = DirectaWorldPlugin.getImageDescriptor("icons/key.gif").createImage();
+    private Image image = DirectaWorldPlugin.getImageDescriptor("icons/key.gif").createImage(); //$NON-NLS-1$
 
     public LoginDialog(String userName, String password)
     {
@@ -46,7 +46,7 @@ public class LoginDialog extends TitleAreaDialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("DirectaWorld");
+        newShell.setText(Messages.LoginDialog_Caption);
     }
 
     /* (non-Javadoc)
@@ -59,19 +59,19 @@ public class LoginDialog extends TitleAreaDialog
         composite.setLayout(new GridLayout(2, false));
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("Codice Utente:");
+        label.setText(Messages.LoginDialog_UserName);
         text1 = new Text(composite, SWT.BORDER);
         text1.setText(userName);
         text1.setLayoutData(new GridData(200, SWT.DEFAULT));
 
         label = new Label(composite, SWT.NONE);
-        label.setText("Password:");
+        label.setText(Messages.LoginDialog_Password);
         text2 = new Text(composite, SWT.BORDER|SWT.PASSWORD);
         text2.setLayoutData(new GridData(200, SWT.DEFAULT));
         
         label = new Label(composite, SWT.NONE);
         button = new Button(composite, SWT.CHECK);
-        button.setText("Salva la password");
+        button.setText(Messages.LoginDialog_SavePassword);
 
         return super.createDialogArea(parent);
     }
@@ -83,8 +83,8 @@ public class LoginDialog extends TitleAreaDialog
     {
         create();
         
-        setTitle("Realtime Server Login");
-        setMessage("Please enter your user id and password");
+        setTitle(Messages.LoginDialog_Title);
+        setMessage(Messages.LoginDialog_Description);
         setTitleImage(image);
 
         return super.open();
@@ -99,7 +99,7 @@ public class LoginDialog extends TitleAreaDialog
         password = text2.getText();
 
         DirectaWorldPlugin.getDefault().getPreferenceStore().setValue(DirectaWorldPlugin.USERNAME_PREFS, userName);
-        DirectaWorldPlugin.getDefault().getPreferenceStore().setValue(DirectaWorldPlugin.PASSWORD_PREFS, button.getSelection() ? password : "");
+        DirectaWorldPlugin.getDefault().getPreferenceStore().setValue(DirectaWorldPlugin.PASSWORD_PREFS, button.getSelection() ? password : ""); //$NON-NLS-1$
         
         image.dispose();
         super.okPressed();

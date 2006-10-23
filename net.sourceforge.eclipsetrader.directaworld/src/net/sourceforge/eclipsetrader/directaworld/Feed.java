@@ -37,11 +37,11 @@ public class Feed implements IFeed, Runnable
     private Map map = new HashMap();
     private Thread thread;
     private boolean stopping = false;
-    private String userName = "";
-    private String password = "";
+    private String userName = ""; //$NON-NLS-1$
+    private String password = ""; //$NON-NLS-1$
     private NumberFormat nf = NumberFormat.getInstance();
     private NumberFormat pf = NumberFormat.getInstance();
-    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
 
     public Feed()
     {
@@ -175,13 +175,13 @@ public class Feed implements IFeed, Runnable
         try
         {
             // Legge la pagina contenente gli ultimi prezzi
-            StringBuffer url = new StringBuffer("http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n");
+            StringBuffer url = new StringBuffer("http://registrazioni.directaworld.it/cgi-bin/qta?idx=alfa&modo=t&appear=n"); //$NON-NLS-1$
             i = 0;
             for (Iterator iter = map.values().iterator(); iter.hasNext(); )
-                url.append("&id" + (++i) + "=" + (String)iter.next());
+                url.append("&id" + (++i) + "=" + (String)iter.next()); //$NON-NLS-1$ //$NON-NLS-2$
             for (; i < 30; i++)
-                url.append("&id" + (i + 1) + "=");
-            url.append("&u=" + userName + "&p=" + password);
+                url.append("&id" + (i + 1) + "="); //$NON-NLS-1$ //$NON-NLS-2$
+            url.append("&u=" + userName + "&p=" + password); //$NON-NLS-1$ //$NON-NLS-2$
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
@@ -201,19 +201,19 @@ public class Feed implements IFeed, Runnable
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null)
             {
-                if (inputLine.indexOf("<!--QT START HERE-->") != -1)
+                if (inputLine.indexOf("<!--QT START HERE-->") != -1) //$NON-NLS-1$
                 {
                     while ((inputLine = in.readLine()) != null)
                     {
-                        if (inputLine.indexOf("<!--QT STOP HERE-->") != -1)
+                        if (inputLine.indexOf("<!--QT STOP HERE-->") != -1) //$NON-NLS-1$
                             break;
                         parseLine(inputLine);
                     }
                 }
-                else if (inputLine.indexOf("Sara' possibile ricaricare la pagina tra") != -1)
+                else if (inputLine.indexOf("Sara' possibile ricaricare la pagina tra") != -1) //$NON-NLS-1$
                 {
-                    int beginIndex = inputLine.indexOf("tra ") + 4;
-                    int endIndex = inputLine.indexOf("sec") - 1;
+                    int beginIndex = inputLine.indexOf("tra ") + 4; //$NON-NLS-1$
+                    int endIndex = inputLine.indexOf("sec") - 1; //$NON-NLS-1$
                     try {
                         requiredDelay = Integer.parseInt(inputLine.substring(beginIndex, endIndex)) + 1;
                     } catch (Exception e) {
@@ -232,7 +232,7 @@ public class Feed implements IFeed, Runnable
 
     public void parseLine(String line) throws ParseException
     {
-        String[] item = line.split(";");
+        String[] item = line.split(";"); //$NON-NLS-1$
 
         for (Iterator iter = map.keySet().iterator(); iter.hasNext(); )
         {
@@ -248,8 +248,8 @@ public class Feed implements IFeed, Runnable
                 quote.setVolume(nf.parse(item[4]).intValue());
                 try {
                     if (item[5].length() == 7)
-                        item[5] = item[5].charAt(0) + ":" + item[5].charAt(1) + item[5].charAt(3) + ":" + item[5].charAt(4) + item[5].charAt(6);
-                    quote.setDate(df.parse(item[6] + " " + item[5]));
+                        item[5] = item[5].charAt(0) + ":" + item[5].charAt(1) + item[5].charAt(3) + ":" + item[5].charAt(4) + item[5].charAt(6); //$NON-NLS-1$ //$NON-NLS-2$
+                    quote.setDate(df.parse(item[6] + " " + item[5])); //$NON-NLS-1$
                 }
                 catch (Exception e) {
                 }
