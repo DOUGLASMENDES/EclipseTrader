@@ -74,6 +74,7 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PREFS_UPDATE_HISTORY_ONCE = "UPDATE_HISTORY_ONCE"; //$NON-NLS-1$
     public static final String PREFS_UPDATE_HISTORY_LAST = "UPDATE_HISTORY_LAST"; //$NON-NLS-1$
     public static final String PREFS_UPDATE_NEWS = "UPDATE_NEWS"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_CURRENCIES = "UPDATE_CURRENCIES"; //$NON-NLS-1$
     private static CorePlugin plugin;
     private static Repository repository;
     private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat(Messages.CorePlugin_DateTimeFormat);
@@ -87,7 +88,7 @@ public class CorePlugin extends AbstractUIPlugin
         {
             if (event.getProperty().equals(CorePlugin.FEED_RUNNING))
             {
-                if (CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.FEED_RUNNING))
+                if (CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.FEED_RUNNING) && CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_CURRENCIES))
                 {
                     Job job = new Job(Messages.CorePlugin_UpdateCurrencies) {
                         protected IStatus run(IProgressMonitor monitor)

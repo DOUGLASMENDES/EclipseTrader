@@ -19,6 +19,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
@@ -29,6 +30,7 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
@@ -39,7 +41,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class CurrencyPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage
 {
-    private Table table;
+    Button autoUpdate;
+    Table table;
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
@@ -58,6 +61,11 @@ public class CurrencyPreferencesPage extends PreferencePage implements IWorkbenc
         gridLayout.numColumns = 2;
         gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
+        
+        autoUpdate = new Button(content, SWT.CHECK);
+        autoUpdate.setText("Update currencies when starting feed");
+        autoUpdate.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+        autoUpdate.setSelection(CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_CURRENCIES));
         
         table = new Table(content, SWT.FULL_SELECTION|SWT.SINGLE|SWT.CHECK);
         table.setHeaderVisible(true);
@@ -115,6 +123,8 @@ public class CurrencyPreferencesPage extends PreferencePage implements IWorkbenc
     public boolean performOk()
     {
         List enabled = new ArrayList();
+        
+        CorePlugin.getDefault().getPreferenceStore().setValue(CorePlugin.PREFS_UPDATE_CURRENCIES, autoUpdate.getSelection());
         
         TableItem[] items = table.getItems();
         for (int i = 0; i < items.length; i++)
