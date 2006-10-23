@@ -30,6 +30,7 @@ import org.osgi.framework.BundleContext;
 public class EclipseTraderPlugin extends AbstractUIPlugin
 {
     public static final String PROMPT_ON_EXIT = "PROMPT_ON_EXIT";
+    public static final String MINIMIZE_TO_TRAY = "MINIMIZE_TO_TRAY";
     private static EclipseTraderPlugin plugin;
 
     /**

@@ -29,6 +29,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class StartupShutdownPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage
 {
+    private Button minimizeToTray;
     private Button confirmExit;
     private Button updateHistoryData;
     private Button updateOnce;
@@ -77,6 +78,11 @@ public class StartupShutdownPreferencesPage extends PreferencePage implements IW
         updateNews.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         updateNews.setSelection(CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_NEWS));
         
+        minimizeToTray = new Button(content, SWT.CHECK);
+        minimizeToTray.setText("Minimize to system tray");
+        minimizeToTray.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        minimizeToTray.setSelection(EclipseTraderPlugin.getDefault().getPreferenceStore().getBoolean(EclipseTraderPlugin.MINIMIZE_TO_TRAY));
+        
         confirmExit = new Button(content, SWT.CHECK);
         confirmExit.setText("Confirm exit when closing");
         confirmExit.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
@@ -91,6 +97,7 @@ public class StartupShutdownPreferencesPage extends PreferencePage implements IW
     public boolean performOk()
     {
         EclipseTraderPlugin.getDefault().getPreferenceStore().setValue(EclipseTraderPlugin.PROMPT_ON_EXIT, confirmExit.getSelection());
+        EclipseTraderPlugin.getDefault().getPreferenceStore().setValue(EclipseTraderPlugin.MINIMIZE_TO_TRAY, minimizeToTray.getSelection());
         
         CorePlugin.getDefault().getPreferenceStore().setValue(CorePlugin.PREFS_UPDATE_HISTORY, updateHistoryData.getSelection());
         CorePlugin.getDefault().getPreferenceStore().setValue(CorePlugin.PREFS_UPDATE_HISTORY_ONCE, updateOnce.getSelection());
