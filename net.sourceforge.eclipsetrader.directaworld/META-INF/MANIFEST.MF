@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.directaworld; singleton:=true
-Bundle-Version: 0.26.0
+Bundle-Version: 0.27.0
 Bundle-Activator: net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin

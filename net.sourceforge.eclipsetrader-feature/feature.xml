@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsetrader"
       label="EclipseTrader"
-      version="0.26.0"
+      version="0.27.0"
       provider-name="Sourceforge.net"
       plugin="net.sourceforge.eclipsetrader"
       image="eclipse_update_120.jpg">
@@ -22,10 +22,6 @@
    <url>
       <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
-
-   <includes
-         id="org.eclipse.rcp"
-         version="0.0.0"/>
 
    <requires>
       <import feature="org.eclipse.rcp" version="3.2.0" match="compatible"/>
@@ -89,13 +85,6 @@
 
    <plugin
          id="net.sourceforge.eclipsetrader.directaworld"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.sourceforge.eclipsetrader.island"
          download-size="0"
          install-size="0"
          version="0.0.0"
