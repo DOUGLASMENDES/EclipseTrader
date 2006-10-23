@@ -352,7 +352,7 @@ public class TransactionDialog extends TitleAreaDialog
         double price = priceSpinner.getSelection() / Math.pow(10, priceSpinner.getDigits());
         double total = quantity * price;
 
-        double expenses = account.getExpenses(security, quantity, price); 
+        double expenses = account.getExpenses((Security)securityCombo.getData(securityCombo.getText()), quantity, price); 
         if (transaction != null)
             expenses = transaction.getExpenses();
         else
