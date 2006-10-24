@@ -2033,8 +2033,6 @@ public class XMLRepository extends Repository
 
     private Account loadAccount(NodeList node, AccountGroup group)
     {
-        int transactionId = 1;
-        
         Integer id = new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()));
         String pluginId = "";
         if (((Node)node).getAttributes().getNamedItem("pluginId") != null)
@@ -2051,7 +2049,8 @@ public class XMLRepository extends Repository
             Node value = item.getFirstChild();
             if (nodeName.equals("transaction")) //$NON-NLS-1$
             {
-                Transaction transaction = new Transaction(new Integer(transactionId++));
+                Transaction transaction = new Transaction(new Integer(Integer.parseInt(item.getAttributes().getNamedItem("id").getNodeValue())));
+                
                 NodeList childs = item.getChildNodes();
                 for (int ii = 0; ii < childs.getLength(); ii++)
                 {
@@ -2190,11 +2189,18 @@ public class XMLRepository extends Repository
             element.appendChild(node);
         }
 
-        int transactionId = 1;
+        int transactionId = 0;
         for (Iterator iter = account.getTransactions().iterator(); iter.hasNext(); )
         {
             Transaction transaction = (Transaction)iter.next();
-            transaction.setId(new Integer(transactionId++));
+            if (transaction.getId() != null)
+                transactionId = Math.max(transactionId, transaction.getId().intValue());
+        }
+        for (Iterator iter = account.getTransactions().iterator(); iter.hasNext(); )
+        {
+            Transaction transaction = (Transaction)iter.next();
+            if (transaction.getId() == null)
+                transaction.setId(new Integer(++transactionId));
             saveTransaction(transaction, document, element);
         }
     }
