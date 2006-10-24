@@ -83,13 +83,13 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
     public static final String TABLE_BACKGROUND = "TABLE_BACKGROUND"; //$NON-NLS-1$
     public static final String TABLE_FOREGROUND = "TABLE_FOREGROUND"; //$NON-NLS-1$
     public static final String TABLE_FONT = "TABLE_FONT"; //$NON-NLS-1$
-    private Table table;
-    private int sortColumn = 0;
-    private int sortDirection = 1;
-    private ITheme theme;
-    private Action deleteAction = new DeleteAction(this);
-    private Action propertiesAction;
-    private Comparator comparator = new Comparator() {
+    Table table;
+    int sortColumn = 0;
+    int sortDirection = 1;
+    ITheme theme;
+    Action deleteAction = new DeleteAction(this);
+    Action propertiesAction;
+    Comparator comparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
         {
             switch(sortColumn)
@@ -121,7 +121,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             return 0;
         }
     };
-    private IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
+    IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
             if (event.getProperty().equals(TABLE_BACKGROUND))
@@ -132,7 +132,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 table.setFont(theme.getFontRegistry().get(TABLE_FONT));
         }
     };
-    private ControlListener columnControlListener = new ControlAdapter() {
+    ControlListener columnControlListener = new ControlAdapter() {
         public void controlResized(ControlEvent e)
         {
             StringBuffer sizes = new StringBuffer();
@@ -141,7 +141,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             CorePlugin.getDefault().getPreferenceStore().setValue(PREFS_COLUMNS_SIZE, sizes.toString());
         }
     };
-    private SelectionListener columnSelectionListener = new SelectionAdapter() {
+    SelectionListener columnSelectionListener = new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e)
         {
             int index = table.indexOf((TableColumn)e.widget);

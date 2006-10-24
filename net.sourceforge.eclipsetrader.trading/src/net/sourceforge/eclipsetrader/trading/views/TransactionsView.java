@@ -62,20 +62,20 @@ import org.eclipse.ui.part.ViewPart;
 public class TransactionsView extends ViewPart implements ICollectionObserver
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.transactions";
-    private Account account;
-    private Table table;
-    private Color evenForeground = new Color(null, 0, 0, 0);
-    private Color evenBackground = new Color(null, 255, 255, 255);
-    private Color oddForeground = new Color(null, 0, 0, 0);
-    private Color oddBackground = new Color(null, 240, 240, 240);
-    private Color negativeForeground = new Color(null, 240, 0, 0);
-    private Color positiveForeground = new Color(null, 0, 192, 0);
-    private NumberFormat nf = NumberFormat.getInstance();
-    private NumberFormat pf = NumberFormat.getInstance();
-    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    private Action deleteAction = new DeleteTransactionAction(this);
-    private Action propertiesAction = new TransactionSettingsAction(this);
-    private Comparator comparator = new Comparator() {
+    Account account;
+    Table table;
+    Color evenForeground = new Color(null, 0, 0, 0);
+    Color evenBackground = new Color(null, 255, 255, 255);
+    Color oddForeground = new Color(null, 0, 0, 0);
+    Color oddBackground = new Color(null, 240, 240, 240);
+    Color negativeForeground = new Color(null, 240, 0, 0);
+    Color positiveForeground = new Color(null, 0, 192, 0);
+    NumberFormat nf = NumberFormat.getInstance();
+    NumberFormat pf = NumberFormat.getInstance();
+    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    Action deleteAction = new DeleteTransactionAction(this);
+    Action propertiesAction = new TransactionSettingsAction(this);
+    Comparator comparator = new Comparator() {
         public int compare(Object arg0, Object arg1)
         {
             return ((Transaction)arg0).getDate().compareTo(((Transaction)arg1).getDate());
