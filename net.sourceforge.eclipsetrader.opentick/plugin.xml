@@ -5,7 +5,8 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.opentick.actionSet"
-            label="OpenTick">
+            label="OpenTick"
+            visible="true">
          <action
                class="net.sourceforge.eclipsetrader.opentick.ui.actions.NewSecurityAction"
                icon="icons/us.gif"
