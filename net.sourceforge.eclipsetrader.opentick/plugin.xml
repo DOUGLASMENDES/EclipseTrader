@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="net.sourceforge.eclipsetrader.opentick.actionSet"
+            label="OpenTick">
+         <action
+               class="net.sourceforge.eclipsetrader.opentick.ui.actions.NewSecurityAction"
+               icon="icons/us.gif"
+               id="net.sourceforge.eclipsetrader.opentick.newSecurity"
+               label="OpenTick Stock Security"
+               menubarPath="file/newWizard/plugins"
+               style="push"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="net.sourceforge.eclipsetrader.plugins"
+            class="net.sourceforge.eclipsetrader.opentick.ui.preferences.GeneralPreferencesPage"
+            id="net.sourceforge.eclipsetrader.opentick.general"
+            name="OpenTick"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.feeds">
+      <feed
+            id="net.sourceforge.eclipsetrader.opentick"
+            name="OpenTick">
+         <quote class="net.sourceforge.eclipsetrader.opentick.Feed">
+            <exchange
+                  id="Q"
+                  name="Nasdaq NMS"/>
+            <exchange
+                  id="N"
+                  name="New York Stock Exchange"/>
+         </quote>
+         <level2 class="net.sourceforge.eclipsetrader.opentick.Level2Feed">
+            <exchange
+                  id="ar"
+                  name="ARCA"/>
+            <exchange
+                  id="bt"
+                  name="Bloomberg"/>
+            <exchange
+                  id="is"
+                  name="Island"/>
+         </level2>
+      </feed>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.loggingPreferences">
+      <logger
+            defaultValue="info"
+            description="OpenTick"
+            name="net.sourceforge.eclipsetrader.opentick"/>
+   </extension>
+
+</plugin>
