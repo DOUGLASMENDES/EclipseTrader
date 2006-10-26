@@ -21,11 +21,14 @@ import java.util.Observer;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 import net.sourceforge.eclipsetrader.core.ui.SelectionProvider;
 import net.sourceforge.eclipsetrader.core.ui.actions.PropertiesAction;
+import net.sourceforge.eclipsetrader.core.ui.dialogs.FeedSelectionDialog;
+import net.sourceforge.eclipsetrader.core.ui.dialogs.IntradayChartsDialog;
 import net.sourceforge.eclipsetrader.core.ui.internal.DeleteAction;
 import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.preferences.SecurityPropertiesDialog;
@@ -35,6 +38,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -160,6 +164,99 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             updateView();
         }
     };
+    Action changeQuoteFeedAction = new Action() {
+        public void run()
+        {
+            Security[] selection = getSelection();
+            FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "quote");
+            if (dlg.open() == Dialog.OK)
+            {
+                FeedSource source = dlg.getFeedSource();
+                for (int i = 0; i < selection.length; i++)
+                {
+                    if (source != null)
+                    {
+                        FeedSource newSource = new FeedSource();
+                        newSource.setId(source.getId());
+                        newSource.setExchange(source.getExchange());
+                        newSource.setSymbol(selection[i].getQuoteFeed() != null ? selection[i].getQuoteFeed().getSymbol() : "");
+                        selection[i].setQuoteFeed(newSource);
+                    }
+                    else
+                        selection[i].setQuoteFeed(null);
+                    CorePlugin.getRepository().save(selection[i]);
+                }
+            }
+        }
+    };
+    Action changeLevel2FeedAction = new Action() {
+        public void run()
+        {
+            Security[] selection = getSelection();
+            FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "level2");
+            if (dlg.open() == Dialog.OK)
+            {
+                FeedSource source = dlg.getFeedSource();
+                for (int i = 0; i < selection.length; i++)
+                {
+                    if (source != null)
+                    {
+                        FeedSource newSource = new FeedSource();
+                        newSource.setId(source.getId());
+                        newSource.setExchange(source.getExchange());
+                        newSource.setSymbol(selection[i].getLevel2Feed() != null ? selection[i].getLevel2Feed().getSymbol() : "");
+                        selection[i].setLevel2Feed(newSource);
+                    }
+                    else
+                        selection[i].setLevel2Feed(null);
+                    CorePlugin.getRepository().save(selection[i]);
+                }
+            }
+        }
+    };
+    Action changeHistoryFeedAction = new Action() {
+        public void run()
+        {
+            Security[] selection = getSelection();
+            FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "history");
+            if (dlg.open() == Dialog.OK)
+            {
+                FeedSource source = dlg.getFeedSource();
+                for (int i = 0; i < selection.length; i++)
+                {
+                    if (source != null)
+                    {
+                        FeedSource newSource = new FeedSource();
+                        newSource.setId(source.getId());
+                        newSource.setExchange(source.getExchange());
+                        newSource.setSymbol(selection[i].getHistoryFeed() != null ? selection[i].getHistoryFeed().getSymbol() : "");
+                        selection[i].setHistoryFeed(newSource);
+                    }
+                    else
+                        selection[i].setHistoryFeed(null);
+                    CorePlugin.getRepository().save(selection[i]);
+                }
+            }
+        }
+    };
+    Action changeIntradayOptionsAction = new Action() {
+        public void run()
+        {
+            IntradayChartsDialog dlg = new IntradayChartsDialog(table.getShell()) {
+                protected void okPressed()
+                {
+                    Security[] selection = getSelection();
+                    for (int i = 0; i < selection.length; i++)
+                    {
+                        intradayDataOptions.saveSettings(selection[i]);
+                        CorePlugin.getRepository().save(selection[i]);
+                    }
+                    super.okPressed();
+                }
+            };
+            dlg.open();
+        }
+    };
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
@@ -178,9 +275,22 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             }
         };
         
+        changeQuoteFeedAction.setText("Quote Feed");
+        changeLevel2FeedAction.setText("Level2 Feed");
+        changeHistoryFeedAction.setText("History Feed");
+        changeIntradayOptionsAction.setText("Intraday Charts");
+        
         IMenuManager menuManager = site.getActionBars().getMenuManager();
         menuManager.add(new Separator("top")); //$NON-NLS-1$
         menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        menuManager.add(new Separator());
+        MenuManager changeMenu = new MenuManager("Change", "change");
+        changeMenu.add(changeQuoteFeedAction);
+        changeMenu.add(changeLevel2FeedAction);
+        changeMenu.add(changeHistoryFeedAction);
+        changeMenu.add(new Separator());
+        changeMenu.add(changeIntradayOptionsAction);
+        menuManager.add(changeMenu);
         menuManager.add(new Separator("bottom")); //$NON-NLS-1$
         
         IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
@@ -297,6 +407,14 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             {
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
                 menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+                menuManager.add(new Separator());
+                MenuManager changeMenu = new MenuManager("Change", "change");
+                changeMenu.add(changeQuoteFeedAction);
+                changeMenu.add(changeLevel2FeedAction);
+                changeMenu.add(changeHistoryFeedAction);
+                changeMenu.add(new Separator());
+                changeMenu.add(changeIntradayOptionsAction);
+                menuManager.add(changeMenu);
                 menuManager.add(new Separator());
                 menuManager.add(deleteAction);
                 menuManager.add(new Separator("bottom")); //$NON-NLS-1$
@@ -444,6 +562,10 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             getSite().getSelectionProvider().setSelection(new NullSelection());
         deleteAction.setEnabled(security.length != 0);
         propertiesAction.setEnabled(security.length == 1);
+        changeQuoteFeedAction.setEnabled(security.length != 0);
+        changeLevel2FeedAction.setEnabled(security.length != 0);
+        changeHistoryFeedAction.setEnabled(security.length != 0);
+        changeIntradayOptionsAction.setEnabled(security.length != 0);
     }
     
     private class SecurityTableItem extends TableItem implements DisposeListener, Observer

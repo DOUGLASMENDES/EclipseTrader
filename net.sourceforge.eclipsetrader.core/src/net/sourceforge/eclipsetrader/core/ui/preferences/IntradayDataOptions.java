@@ -51,6 +51,32 @@ public class IntradayDataOptions
 
     public Composite createControls(Composite parent, Security security)
     {
+        Composite control = createControls(parent);
+        
+        if (security != null)
+        {
+            enable.setSelection(security.isEnableDataCollector());
+            time.set(Calendar.HOUR_OF_DAY, security.getBeginTime() / 60);
+            time.set(Calendar.MINUTE, security.getBeginTime() % 60);
+            beginTime.setText(timeFormat.format(time.getTime()));
+            time.set(Calendar.HOUR_OF_DAY, security.getEndTime() / 60);
+            time.set(Calendar.MINUTE, security.getEndTime() % 60);
+            endTime.setText(timeFormat.format(time.getTime()));
+            sun.setSelection((security.getWeekDays() & Security.SUN) != 0);
+            mon.setSelection((security.getWeekDays() & Security.MON) != 0);
+            tue.setSelection((security.getWeekDays() & Security.TUE) != 0);
+            wed.setSelection((security.getWeekDays() & Security.WED) != 0);
+            thu.setSelection((security.getWeekDays() & Security.THU) != 0);
+            fri.setSelection((security.getWeekDays() & Security.FRI) != 0);
+            sat.setSelection((security.getWeekDays() & Security.SAT) != 0);
+            keepDays.setText(String.valueOf(security.getKeepDays()));
+        }
+
+        return control;
+    }
+    
+    public Composite createControls(Composite parent)
+    {
         Composite content = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout(2, false);
         content.setLayout(gridLayout);
@@ -128,42 +154,21 @@ public class IntradayDataOptions
         keepDays = new Text(content, SWT.BORDER);
         keepDays.setLayoutData(new GridData(60, SWT.DEFAULT));
 
-        if (security != null)
-        {
-            enable.setSelection(security.isEnableDataCollector());
-            time.set(Calendar.HOUR_OF_DAY, security.getBeginTime() / 60);
-            time.set(Calendar.MINUTE, security.getBeginTime() % 60);
-            beginTime.setText(timeFormat.format(time.getTime()));
-            time.set(Calendar.HOUR_OF_DAY, security.getEndTime() / 60);
-            time.set(Calendar.MINUTE, security.getEndTime() % 60);
-            endTime.setText(timeFormat.format(time.getTime()));
-            sun.setSelection((security.getWeekDays() & Security.SUN) != 0);
-            mon.setSelection((security.getWeekDays() & Security.MON) != 0);
-            tue.setSelection((security.getWeekDays() & Security.TUE) != 0);
-            wed.setSelection((security.getWeekDays() & Security.WED) != 0);
-            thu.setSelection((security.getWeekDays() & Security.THU) != 0);
-            fri.setSelection((security.getWeekDays() & Security.FRI) != 0);
-            sat.setSelection((security.getWeekDays() & Security.SAT) != 0);
-            keepDays.setText(String.valueOf(security.getKeepDays()));
-        }
-        else
-        {
-            enable.setSelection(false);
-            time.set(Calendar.HOUR_OF_DAY, 9);
-            time.set(Calendar.MINUTE, 30);
-            beginTime.setText(timeFormat.format(time.getTime()));
-            time.set(Calendar.HOUR_OF_DAY, 17);
-            time.set(Calendar.MINUTE, 30);
-            endTime.setText(timeFormat.format(time.getTime()));
-            sun.setSelection(false);
-            mon.setSelection(true);
-            tue.setSelection(true);
-            wed.setSelection(true);
-            thu.setSelection(true);
-            fri.setSelection(true);
-            sat.setSelection(false);
-            keepDays.setText(String.valueOf(1));
-        }
+        enable.setSelection(false);
+        time.set(Calendar.HOUR_OF_DAY, 9);
+        time.set(Calendar.MINUTE, 30);
+        beginTime.setText(timeFormat.format(time.getTime()));
+        time.set(Calendar.HOUR_OF_DAY, 17);
+        time.set(Calendar.MINUTE, 30);
+        endTime.setText(timeFormat.format(time.getTime()));
+        sun.setSelection(false);
+        mon.setSelection(true);
+        tue.setSelection(true);
+        wed.setSelection(true);
+        thu.setSelection(true);
+        fri.setSelection(true);
+        sat.setSelection(false);
+        keepDays.setText(String.valueOf(1));
 
         return content;
     }
