@@ -58,7 +58,8 @@ public class UpdateChartAction implements IViewActionDelegate
                 Job job = new Job("Update chart data") {
                     protected IStatus run(IProgressMonitor monitor)
                     {
-                        monitor.beginTask("Updating " + chart.getSecurity().getDescription(), 1);
+                        monitor.beginTask("Updating " + chart.getSecurity().getDescription().replaceAll("&", "&&"), 1);
+                        monitor.subTask("Updating " + chart.getSecurity().getDescription().replaceAll("&", "&&"));
                         int interval = IHistoryFeed.INTERVAL_DAILY;
                         if (((ChartView)view).getInterval() < BarData.INTERVAL_DAILY)
                             interval = IHistoryFeed.INTERVAL_MINUTE;
