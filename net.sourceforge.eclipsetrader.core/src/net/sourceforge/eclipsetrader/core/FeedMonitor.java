@@ -99,6 +99,14 @@ public class FeedMonitor
         }
     }
     
+    public static int countInstances(Security security)
+    {
+        Integer count = (Integer)securityInstances.get(security);
+        if (count != null)
+            return count.intValue();
+        return 0;
+    }
+    
     public static synchronized void start()
     {
         for (Iterator iter = feedMap.keySet().iterator(); iter.hasNext(); )
