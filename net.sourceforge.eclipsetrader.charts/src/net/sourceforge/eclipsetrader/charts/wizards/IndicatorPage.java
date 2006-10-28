@@ -14,7 +14,9 @@ package net.sourceforge.eclipsetrader.charts.wizards;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
@@ -26,16 +28,22 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 public class IndicatorPage extends WizardPage
 {
-    private List list;
+    Tree tree;
+    Font groupFont;
 
     public IndicatorPage()
     {
@@ -57,60 +65,121 @@ public class IndicatorPage extends WizardPage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
 
-        list = new List(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);
+        tree = new Tree(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
         GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = list.getItemHeight() * 15;
-        list.setLayoutData(gridData);
-        list.addSelectionListener(new SelectionAdapter() {
+        gridData.heightHint = tree.getItemHeight() * 15;
+        tree.setLayoutData(gridData);
+        tree.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                setPageComplete(list.getSelectionIndex() != -1);
-                setPages();
+                String id = getIndicator();
+                setPageComplete(id != null);
+                if (id != null)
+                    setPages();
             }
         });
-
-        IExtensionRegistry registry = Platform.getExtensionRegistry();
-        IExtensionPoint extensionPoint = registry.getExtensionPoint(ChartsPlugin.INDICATORS_EXTENSION_POINT);
-        if (extensionPoint != null)
-        {
-            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
-            java.util.List plugins = Arrays.asList(members);
-            Collections.sort(plugins, new Comparator() {
-                public int compare(Object arg0, Object arg1)
-                {
-                    if ((arg0 instanceof IConfigurationElement) && (arg1 instanceof IConfigurationElement))
-                    {
-                        String s0 = ((IConfigurationElement) arg0).getAttribute("name"); //$NON-NLS-1$
-                        String s1 = ((IConfigurationElement) arg1).getAttribute("name"); //$NON-NLS-1$
-                        return s0.compareTo(s1);
-                    }
-                    return 0;
-                }
-            });
-
-            for (Iterator iter = plugins.iterator(); iter.hasNext(); )
+        Font font = tree.getFont();
+        FontData fontData = font.getFontData()[0];
+        groupFont = new Font(font.getDevice(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+        tree.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e)
             {
-                IConfigurationElement element = (IConfigurationElement)iter.next();
-                list.add(element.getAttribute("name")); //$NON-NLS-1$
-                list.setData(String.valueOf(list.getItemCount() - 1), element.getAttribute("id")); //$NON-NLS-1$
+                groupFont.dispose();
             }
-        }
+        });
+        
+        tree.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                IExtensionRegistry registry = Platform.getExtensionRegistry();
+                IExtensionPoint extensionPoint = registry.getExtensionPoint(ChartsPlugin.INDICATORS_EXTENSION_POINT);
+                if (extensionPoint != null)
+                {
+                    IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+                    java.util.List plugins = Arrays.asList(members);
+                    Collections.sort(plugins, new Comparator() {
+                        public int compare(Object arg0, Object arg1)
+                        {
+                            if ((arg0 instanceof IConfigurationElement) && (arg1 instanceof IConfigurationElement))
+                            {
+                                String s0 = ((IConfigurationElement) arg0).getAttribute("name"); //$NON-NLS-1$
+                                String s1 = ((IConfigurationElement) arg1).getAttribute("name"); //$NON-NLS-1$
+                                return s0.compareTo(s1);
+                            }
+                            return 0;
+                        }
+                    });
+
+                    // Creates the group items
+                    Map groups = new HashMap();
+                    for (Iterator iter = plugins.iterator(); iter.hasNext(); )
+                    {
+                        IConfigurationElement element = (IConfigurationElement)iter.next();
+                        if (element.getName().equals("group"))
+                        {
+                            TreeItem treeItem = new TreeItem(tree, SWT.NONE);
+                            treeItem.setText(element.getAttribute("name")); //$NON-NLS-1$
+                            treeItem.setFont(groupFont);
+                            groups.put(element.getAttribute("id"), treeItem);
+                        }
+                    }
+
+                    // Add the plugins under the respective groups, if defined
+                    TreeItem treeItem = null;
+                    for (Iterator iter = plugins.iterator(); iter.hasNext(); )
+                    {
+                        IConfigurationElement element = (IConfigurationElement)iter.next();
+                        if (element.getName().equals("indicator"))
+                        {
+                            TreeItem parentItem = (TreeItem)groups.get(element.getAttribute("group"));
+                            if (parentItem != null)
+                                treeItem = new TreeItem(parentItem, SWT.NONE);
+                            else
+                            {
+                                int index = tree.getItemCount();
+                                String name = element.getAttribute("name");
+                                TreeItem[] items = tree.getItems();
+                                for (int i = 0; i < items.length; i++)
+                                {
+                                    if (name.compareTo(items[i].getText()) < 0)
+                                    {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                treeItem = new TreeItem(tree, SWT.NONE, index);
+                            }
+                            treeItem.setText(element.getAttribute("name")); //$NON-NLS-1$
+                            treeItem.setData(element.getAttribute("id")); //$NON-NLS-1$
+                        }
+                    }
+
+                    // Removes the groups without childrens
+                    for (Iterator iter = groups.values().iterator(); iter.hasNext(); )
+                    {
+                        treeItem = (TreeItem)iter.next();
+                        if (treeItem.getItemCount() == 0)
+                            treeItem.dispose();
+                    }
+                }
+            }
+        });
     }
     
     public String getIndicator()
     {
-        return (String)list.getData(String.valueOf(list.getSelectionIndex()));
+        TreeItem[] selection = tree.getSelection();
+        if (selection.length == 1)
+            return (String)selection[0].getData();
+        return null;
     }
     
     public String getIndicatorName()
     {
-        return (String)list.getItem(list.getSelectionIndex());
-    }
-    
-    public void setIndicator(String name)
-    {
-        list.select(list.indexOf(name));
-        setPages();
+        TreeItem[] selection = tree.getSelection();
+        if (selection.length == 1)
+            return (String)selection[0].getText();
+        return "";
     }
     
     private void setPages()

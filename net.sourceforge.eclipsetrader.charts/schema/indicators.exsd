@@ -14,6 +14,7 @@
       <complexType>
          <sequence>
             <element ref="indicator" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="group" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -43,6 +44,11 @@
    </element>
 
    <element name="indicator">
+      <annotation>
+         <appInfo>
+            <meta.element labelAttribute="name"/>
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="preferencePage" minOccurs="1" maxOccurs="unbounded"/>
@@ -74,10 +80,22 @@
                </appInfo>
             </annotation>
          </attribute>
+         <attribute name="group" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
    <element name="preferencePage">
+      <annotation>
+         <appInfo>
+            <meta.element labelAttribute="title"/>
+         </appInfo>
+      </annotation>
       <complexType>
          <attribute name="title" type="string">
             <annotation>
@@ -106,6 +124,33 @@
                </documentation>
                <appInfo>
                   <meta.attribute kind="java"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="group">
+      <annotation>
+         <appInfo>
+            <meta.element labelAttribute="name"/>
+         </appInfo>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
                </appInfo>
             </annotation>
          </attribute>
