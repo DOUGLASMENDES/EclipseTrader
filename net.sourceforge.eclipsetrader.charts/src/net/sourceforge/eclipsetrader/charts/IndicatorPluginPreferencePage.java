@@ -99,8 +99,19 @@ public abstract class IndicatorPluginPreferencePage
             else if (control instanceof ColorSelector)
                 getSettings().set(key, ((ColorSelector) control).getColorValue());
             else if (control instanceof Spinner)
-                getSettings().set(key, ((Spinner) control).getSelection());
+            {
+                Spinner spinner = (Spinner) control;
+                if (spinner.getDigits() == 0)
+                    getSettings().set(key, spinner.getSelection());
+                else
+                    getSettings().set(key, (double)spinner.getSelection() / Math.pow(10, spinner.getDigits()));
+            }
         }
+    }
+    
+    protected void addControl(String id, Control control)
+    {
+        controls.put(id, control);
     }
 
     public Settings getSettings()
@@ -155,7 +166,7 @@ public abstract class IndicatorPluginPreferencePage
         Text lineLabel = new Text(parent, SWT.BORDER);
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         lineLabel.setText(getSettings().getString(id, defaultValue));
-        controls.put(id, lineLabel);
+        addControl(id, lineLabel);
         return lineLabel;
     }
     
@@ -183,7 +194,7 @@ public abstract class IndicatorPluginPreferencePage
         if (volume)
             combo.add("VOLUME");
         combo.select(getSettings().getInteger(id, defaultValue).intValue());
-        controls.put(id, combo);
+        addControl(id, combo);
         return combo;
     }
     
@@ -200,7 +211,7 @@ public abstract class IndicatorPluginPreferencePage
         lineType.add("Line");
         lineType.add("Invisible");
         lineType.select(getSettings().getInteger(id, defaultValue).intValue());
-        controls.put(id, lineType);
+        addControl(id, lineType);
         return lineType;
     }
     
@@ -227,6 +238,20 @@ public abstract class IndicatorPluginPreferencePage
         spinner.setMinimum(min);
         spinner.setMaximum(max);
         spinner.setSelection(getSettings().getInteger(id, defaultValue).intValue());
+        controls.put(id, spinner);
+        return spinner;
+    }
+    
+    public Spinner addDoubleValueSelector(Composite parent, String id, String text, int precision, double min, double max, double defaultValue)
+    {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText(text);
+        Spinner spinner = new Spinner(parent, SWT.BORDER);
+        spinner.setLayoutData(new GridData(25, SWT.DEFAULT));
+        spinner.setDigits(precision);
+        spinner.setMinimum((int)(min * Math.pow(10, precision)));
+        spinner.setMaximum((int)(max * Math.pow(10, precision)));
+        spinner.setSelection((int)(getSettings().getDouble(id, defaultValue).doubleValue() * Math.pow(10, precision)));
         controls.put(id, spinner);
         return spinner;
     }
