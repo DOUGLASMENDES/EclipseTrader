@@ -14,7 +14,6 @@ package net.sourceforge.eclipsetrader.charts;
 import java.text.NumberFormat;
 import java.util.List;
 
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -39,6 +38,9 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
     private NumberFormat nf = NumberFormat.getInstance();
     private Label label;
     private Color labelColor = new Color(null, 255, 255, 0);
+    private double marketValue = -1;
+    private Label marketValueLabel;
+    private Color marketValueColor = new Color(null, 255, 224, 0);
     private Color separatorColor = new Color(null, 0, 0, 0);
     private boolean needRepaint = true;
 
@@ -54,6 +56,10 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
         label = new Label(this, SWT.NONE);
         label.setBackground(labelColor);
         label.setBounds(0, 0, 0, 0);
+        
+        marketValueLabel = new Label(this, SWT.NONE);
+        marketValueLabel.setBackground(marketValueColor);
+        marketValueLabel.setBounds(0, 0, 0, 0);
         
         addControlListener(this);
         addDisposeListener(this);
@@ -197,6 +203,11 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
                 GC gc = new GC(image);
                 draw(gc);
                 gc.dispose();
+                if (marketValue != -1)
+                {
+                    int y = scaler.convertToY(marketValue);
+                    marketValueLabel.setBounds(1, y - 7, getSize().x - 1, 14);
+                }
                 needRepaint = false;
             }
             e.gc.drawImage(image, e.x, e.y, e.width, e.height, e.x, e.y, e.width, e.height);
@@ -234,5 +245,22 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
     public void hideLabel()
     {
         label.setBounds(0, 0, 0, 0);
+    }
+    
+    public void setMarketValue(double value)
+    {
+        marketValue = value;
+        if (scaler != null)
+        {
+            int y = scaler.convertToY(marketValue);
+            marketValueLabel.setText(" " + nf.format(marketValue));
+            marketValueLabel.setBounds(1, y - 7, getSize().x - 1, 14);
+        }
+    }
+    
+    public void hideMarketValue()
+    {
+        marketValueLabel.setBounds(0, 0, 0, 0);
+        marketValue = -1;
     }
 }

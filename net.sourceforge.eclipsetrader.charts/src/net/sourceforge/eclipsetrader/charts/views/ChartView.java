@@ -62,6 +62,7 @@ import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.internal.PasteAction;
 import net.sourceforge.eclipsetrader.charts.internal.PasteSpecialAction;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.FeedMonitor;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.Bar;
@@ -125,6 +126,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.IActionBars;
@@ -149,42 +151,50 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     public static final int PERIOD_CUSTOM = -1;
     public static final int HIDE_TABS_NEVER = 0;
     public static final int HIDE_TABS_ONLYONE = 1;
-    private Chart chart;
-    private SashForm sashForm;
-    private DatePlot datePlot;
-    private ScrollBar hBar;
-    private List tabGroups = new ArrayList();
-    private Security security;
-    private int oldMouseX = -1, oldMouseY = -1;
-    private boolean autoScale = false;
-    private boolean followSelection = false;
-    private boolean showAdjustedValues = false;
-    private ChartObject newChartObject;
-    private Action viewAll = new SetViewAllAction(this);
-    private Action viewLast2Years = new SetLast2YearsPeriodAction(this);
-    private Action viewLastYear = new SetLastYearPeriodAction(this);
-    private Action viewLast6Months = new SetLast6MonthsPeriodAction(this);
-    private Action viewCustom = new SetCustomPeriodAction(this);
-    private Action monthlyAction = new SetMonthlyIntervalAction(this);
-    private Action weeklyAction = new SetWeeklyIntervalAction(this);
-    private Action dailyAction = new Set1DayIntervalAction(this);
-    private Action minute1Action = new Set1MinuteIntervalAction(this);
-    private Action minute2Action = new Set2MinuteIntervalAction(this);
-    private Action minute5Action = new Set5MinuteIntervalAction(this);
-    private Action minute10Action = new Set10MinuteIntervalAction(this);
-    private Action minute15Action = new Set15MinuteIntervalAction(this);
-    private Action minute30Action = new Set30MinuteIntervalAction(this);
-    private Action minute60Action = new Set60MinuteIntervalAction(this);
-    private Action autoScaleAction = new AutoScaleAction(this);
+    public static final String PREFS_FOLLOW_SELECTION = "followSelection";
+    public static final String PREFS_SHOW_ADJUSTED_VALUES = "showAdjustedValues";
+    public static final String PREFS_SHOW_MARKETVALUE = "showMarketValue";
+    static boolean DEFAULT_FOLLOW_SELECTION = false;
+    static boolean DEFAULT_SHOW_ADJUSTED_VALUES = false;
+    static boolean DEFAULT_SHOW_MARKET_VALUE = false;
+    Chart chart;
+    SashForm sashForm;
+    DatePlot datePlot;
+    ScrollBar hBar;
+    List tabGroups = new ArrayList();
+    Security security;
+    int oldMouseX = -1, oldMouseY = -1;
+    boolean autoScale = false;
+    boolean followSelection = false;
+    boolean showAdjustedValues = false;
+    boolean showMarketValue = false;
+    ChartObject newChartObject;
+    Action viewAll = new SetViewAllAction(this);
+    Action viewLast2Years = new SetLast2YearsPeriodAction(this);
+    Action viewLastYear = new SetLastYearPeriodAction(this);
+    Action viewLast6Months = new SetLast6MonthsPeriodAction(this);
+    Action viewCustom = new SetCustomPeriodAction(this);
+    Action monthlyAction = new SetMonthlyIntervalAction(this);
+    Action weeklyAction = new SetWeeklyIntervalAction(this);
+    Action dailyAction = new Set1DayIntervalAction(this);
+    Action minute1Action = new Set1MinuteIntervalAction(this);
+    Action minute2Action = new Set2MinuteIntervalAction(this);
+    Action minute5Action = new Set5MinuteIntervalAction(this);
+    Action minute10Action = new Set10MinuteIntervalAction(this);
+    Action minute15Action = new Set15MinuteIntervalAction(this);
+    Action minute30Action = new Set30MinuteIntervalAction(this);
+    Action minute60Action = new Set60MinuteIntervalAction(this);
+    Action autoScaleAction = new AutoScaleAction(this);
     Action toggleFollowSelectionAction;
     Action toggleAdjustedValuesAction;
-    private Action cutAction;
-    private Action copyAction;
-    private Action pasteAction;
-    private Action pasteSpecialAction;
-    private Action deleteAction;
+    Action toggleMarketValueAction;
+    Action cutAction;
+    Action copyAction;
+    Action pasteAction;
+    Action pasteSpecialAction;
+    Action deleteAction;
     PreferenceStore preferences;
-    private Logger logger = Logger.getLogger(getClass());
+    Logger logger = Logger.getLogger(getClass());
     DropTargetListener dropTargetListener = new DropTargetListener() {
         public void dragEnter(DropTargetEvent event)
         {
@@ -231,10 +241,54 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             }
         }
     };
-    public static final String PREFS_FOLLOW_SELECTION = "followSelection";
-    public static final String PREFS_SHOW_ADJUSTED_VALUES = "showAdjustedValues";
-    static boolean DEFAULT_FOLLOW_SELECTION = false;
-    static boolean DEFAULT_SHOW_ADJUSTED_VALUES = false;
+    Runnable updateMarketValue = new Runnable() {
+        public void run()
+        {
+            if (!sashForm.isDisposed())
+            {
+                Control[] rows = sashForm.getChildren();
+                for (int r = 0; r < rows.length; r++)
+                {
+                    if (rows[r] instanceof ChartTabFolder)
+                    {
+                        CTabItem[] items = ((ChartTabFolder)rows[r]).getItems();
+                        for (int i = 0; i < items.length; i++)
+                        {
+                            if (items[i] instanceof ChartTabItem)
+                            {
+                                ChartTab tab = ((ChartTabItem)items[i]).getChartTab();
+                                ChartIndicator[] obj = (ChartIndicator[])tab.getIndicators().toArray(new ChartIndicator[tab.getIndicators().size()]);
+                                for (int x = 0; x < obj.length; x++)
+                                {
+                                    if (obj[x].getPluginId().equals("net.sourceforge.eclipsetrader.indicators.bars") || obj[x].getPluginId().equals("net.sourceforge.eclipsetrader.indicators.line"))
+                                    {
+                                        Plot plot = ((ChartTabItem)items[i]).getPlot();
+                                        if (showMarketValue && security.getQuote() != null)
+                                        {
+                                            plot.getScalePlot().setMarketValue(security.getQuote().getLast());
+                                            plot.getIndicatorPlot().setMarketValue(security.getQuote().getLast());
+                                        }
+                                        else
+                                        {
+                                            plot.getIndicatorPlot().hideMarketValue();
+                                            plot.getScalePlot().hideMarketValue();
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+    Observer quoteObserver = new Observer() {
+        public void update(Observable o, Object arg)
+        {
+            sashForm.getDisplay().timerExec(200, updateMarketValue);
+        }
+    };
     
     public static IPath getPreferenceStoreLocation(Chart chart)
     {
@@ -328,6 +382,27 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             }
         };
         menuManager.appendToGroup("group3", toggleAdjustedValuesAction); //$NON-NLS-1$
+        
+        toggleMarketValueAction = new Action("Show market value", Action.AS_CHECK_BOX) {
+            public void run()
+            {
+                showMarketValue = toggleMarketValueAction.isChecked();
+                preferences.setValue(PREFS_SHOW_MARKETVALUE, showMarketValue);
+                if (showMarketValue)
+                {
+                    security.getQuoteMonitor().addObserver(quoteObserver);
+                    quoteObserver.update(security, security.getQuote());
+                    FeedMonitor.monitor(security);
+                }
+                else
+                {
+                    security.getQuoteMonitor().deleteObserver(quoteObserver);
+                    FeedMonitor.cancelMonitor(security);
+                }
+                quoteObserver.update(security, security.getQuote());
+            }
+        };
+        menuManager.appendToGroup("group3", toggleMarketValueAction); //$NON-NLS-1$
         
         toggleFollowSelectionAction = new Action("Follow Security Selection", Action.AS_CHECK_BOX) {
             public void run()
@@ -443,6 +518,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         preferences = new PreferenceStore(getPreferenceStoreLocation(chart).toOSString());
         preferences.setDefault(PREFS_FOLLOW_SELECTION, DEFAULT_FOLLOW_SELECTION);
         preferences.setDefault(PREFS_SHOW_ADJUSTED_VALUES, DEFAULT_SHOW_ADJUSTED_VALUES);
+        preferences.setDefault(PREFS_SHOW_MARKETVALUE, DEFAULT_SHOW_MARKET_VALUE);
         try {
             preferences.load();
         } catch(Exception e) {
@@ -455,6 +531,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         autoScale = chart.isAutoScale();
         followSelection = preferences.getBoolean(PREFS_FOLLOW_SELECTION);
         showAdjustedValues = preferences.getBoolean(PREFS_SHOW_ADJUSTED_VALUES);
+        showMarketValue = preferences.getBoolean(PREFS_SHOW_MARKETVALUE);
         updateActionBars();
 
         try {
@@ -507,6 +584,13 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         chart.addObserver(ChartView.this);
                     } catch(Exception e) {
                         e.printStackTrace();
+                    }
+
+                    if (showMarketValue)
+                    {
+                        security.getQuoteMonitor().addObserver(quoteObserver);
+                        quoteObserver.update(security, security.getQuote());
+                        FeedMonitor.monitor(security);
                     }
 
                     boolean askInitialUpdate = false;
@@ -562,6 +646,11 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
      */
     public void dispose()
     {
+        if (showMarketValue)
+        {
+            security.getQuoteMonitor().deleteObserver(quoteObserver);
+            FeedMonitor.cancelMonitor(security);
+        }
         getSite().getPage().removeSelectionListener(this);
         if (chart != null)
         {
@@ -601,6 +690,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         autoScaleAction.setChecked(autoScale);
         toggleFollowSelectionAction.setChecked(followSelection);
         toggleAdjustedValuesAction.setChecked(showAdjustedValues);
+        toggleMarketValueAction.setChecked(showMarketValue);
     }
     
     public Chart getChart()
@@ -721,6 +811,12 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     {
         if (!newSecurity.equals(security))
         {
+            if (showMarketValue)
+            {
+                security.getQuoteMonitor().deleteObserver(quoteObserver);
+                FeedMonitor.cancelMonitor(security);
+            }
+            
             security = newSecurity;
             setTitleToolTip(newSecurity.getDescription());
 
@@ -735,6 +831,13 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     for (int i = 0; i < obj.length; i++)
                         tab.getObjects().remove(obj[i]);
                 }
+            }
+
+            if (showMarketValue)
+            {
+                security.getQuoteMonitor().addObserver(quoteObserver);
+                quoteObserver.update(security, security.getQuote());
+                FeedMonitor.monitor(security);
             }
             
             CorePlugin.getRepository().save(chart);
@@ -789,6 +892,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             for (int i = 0; i < items.length; i++)
                 ((ChartTabItem)items[i]).update();
         }
+
+        quoteObserver.update(security, security.getQuote());
     }
     
     /* (non-Javadoc)

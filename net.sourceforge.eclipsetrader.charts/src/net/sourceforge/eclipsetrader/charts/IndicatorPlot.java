@@ -59,6 +59,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
     private Indicator selection;
     private ObjectPlugin objectSelection;
     private boolean needRepaint = true;
+    private double marketValue = -1;
 
     public IndicatorPlot(Composite parent, int style)
     {
@@ -510,6 +511,12 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             }
             e.gc.drawImage(image, plotLocation.x, plotLocation.y);
 
+            if (marketValue != -1)
+            {
+                int y = scaler.convertToY(marketValue);
+                e.gc.drawLine(0, y, getSize().x, y);
+            }
+
             if (scaler != null && barData.size() != 0)
             {
                 for (Iterator iter = objects.iterator(); iter.hasNext(); )
@@ -816,5 +823,17 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
 
             gc.fillRectangle(x - 1, y, 3, zero - y);
         }
+    }
+    
+    public void setMarketValue(double value)
+    {
+        marketValue = value;
+        redraw();
+    }
+    
+    public void hideMarketValue()
+    {
+        marketValue = -1;
+        redraw();
     }
 }
