@@ -409,6 +409,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             {
                 followSelection = toggleFollowSelectionAction.isChecked();
                 preferences.setValue(PREFS_FOLLOW_SELECTION, followSelection);
+                setContentDescription(followSelection ? security.getDescription() : "");
             }
         };
         menuManager.appendToGroup("group3", toggleFollowSelectionAction); //$NON-NLS-1$
@@ -533,6 +534,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         showAdjustedValues = preferences.getBoolean(PREFS_SHOW_ADJUSTED_VALUES);
         showMarketValue = preferences.getBoolean(PREFS_SHOW_MARKETVALUE);
         updateActionBars();
+        setContentDescription(followSelection ? security.getDescription() : "");
 
         try {
             sashForm.getDisplay().asyncExec(new Runnable() {
@@ -819,6 +821,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             
             security = newSecurity;
             setTitleToolTip(newSecurity.getDescription());
+            setContentDescription(followSelection ? security.getDescription() : "");
 
             chart.setSecurity(newSecurity);
             for(Iterator iter1 = chart.getRows().iterator(); iter1.hasNext(); )
