@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="net.sourceforge.eclipsetrader.charts.indicators">
+      <group
+            id="net.sourceforge.eclipsetrader.ta-lib"
+            name="TA-Lib"/>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AD"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.ad"
+            name="Chaikin A/D Line (AD)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AD"
+               title="Chaikin A/D Line"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ADOSC"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.adosc"
+            name="Chaikin A/D Oscillator (ADOSC)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ADOSC"
+               title="Chaikin A/D Oscillator"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ADX"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.adx"
+            name="Average Directional Movement Index (ADX)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ADX"
+               title="Average Directional Movement Index"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ADXR"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.adx"
+            name="Average Directional Movement Index Rating (ADXR)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ADXR"
+               title="Average Directional Movement Index"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:APO"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.apo"
+            name="Absolute Price Oscillator (APO)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:APO"
+               title="Absolute Price Oscillator"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AROON"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.aroon"
+            name="Aroon (AROON)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AROON"
+               title="Aroon"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AROONOSC"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.aroonosc"
+            name="Aroon Oscillator (AROONOSC)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AROONOSC"
+               title="Aroon Oscillator"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AVGPRICE"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.avgprice"
+            name="Average Price (AVGPRICE)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AVGPRICE"
+               title="Average Price"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ATR"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.atr"
+            name="Average True Range (ATR)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ATR"
+               title="Average True Range"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:BBANDS"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.bbands"
+            name="Bollinger Bands (BBANDS)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:BBANDS"
+               title="Bollinger Bands"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:BOP"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.bop"
+            name="Balance Of Power (BOP)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:BOP"
+               title="Balance Of Power"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:CCI"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.cci"
+            name="Commodity Channel Index (CCI)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:CCI"
+               title="Commodity Channel Index"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:CMO"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.cmo"
+            name="Chande Momentum Oscillator (CMO)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:CMO"
+               title="Chande Momentum Oscillator"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:DX"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.dx"
+            name="Directional Movement Index (DX)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:DX"
+               title="Directional Movement Index"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:LINEARREG"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.linearreg"
+            name="Linear Regression (LINEARREG)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:LINEARREG"
+               title="Linear Regression"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:MA"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.ma"
+            name="Moving Average (MA)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:MA"
+               title="Moving Average"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:MACD"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.macd"
+            name="Moving Average Convergence/Divergence (MACD)">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:MACD"
+               title="Moving Average Convergence/Divergence"/>
+      </indicator>
+   </extension>
+
+</plugin>
