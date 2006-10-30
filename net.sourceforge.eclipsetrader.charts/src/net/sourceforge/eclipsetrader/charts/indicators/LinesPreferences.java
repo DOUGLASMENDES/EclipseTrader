@@ -44,20 +44,20 @@ public class LinesPreferences extends IndicatorPluginPreferencePage
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
-
+        
         Label label = new Label(content, SWT.NONE);
+        label.setText("Color");
+        colorSelector = new ColorSelector(content);
+        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB());
+
+        label = new Label(content, SWT.NONE);
         label.setText("Label");
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         lineLabel = new Text(content, SWT.BORDER);
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         lineLabel.setText(getSettings().getString("label", Lines.DEFAULT_LABEL));
-
-        lineType = createLineTypeCombo(content, "Line Type", getSettings().getInteger("lineType", Lines.DEFAULT_LINETYPE).intValue());
         
-        label = new Label(content, SWT.NONE);
-        label.setText("Color");
-        colorSelector = new ColorSelector(content);
-        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB());
+        addSecuritySelector(content, "securityId", "Security", 0);
 
         label = new Label(content, SWT.NONE);
         label.setText("Input");
@@ -67,6 +67,8 @@ public class LinesPreferences extends IndicatorPluginPreferencePage
         input.add("LOW");
         input.add("CLOSE");
         input.select(getSettings().getInteger("input", Lines.DEFAULT_INPUT).intValue());
+
+        lineType = createLineTypeCombo(content, "Line Type", getSettings().getInteger("lineType", Lines.DEFAULT_LINETYPE).intValue());
     }
 
     /* (non-Javadoc)
@@ -78,5 +80,6 @@ public class LinesPreferences extends IndicatorPluginPreferencePage
         getSettings().set("lineType", lineType.getSelectionIndex());
         getSettings().set("color", colorSelector.getColorValue());
         getSettings().set("input", input.getSelectionIndex());
+        super.performFinish();
     }
 }

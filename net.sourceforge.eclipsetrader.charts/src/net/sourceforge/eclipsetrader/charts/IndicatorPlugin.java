@@ -11,7 +11,11 @@
 
 package net.sourceforge.eclipsetrader.charts;
 
+import java.util.Date;
+
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.BarData;
+import net.sourceforge.eclipsetrader.core.db.Security;
 
 
 /**
@@ -41,6 +45,22 @@ public abstract class IndicatorPlugin implements IIndicatorPlugin
     
     public BarData getBarData()
     {
+        return barData;
+    }
+    
+    public BarData getBarData(int securityId)
+    {
+        Security security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(securityId));
+        if (security != null)
+        {
+            int compression = barData.getCompression();
+            Date begin = barData.getBegin();
+            Date end = barData.getEnd();
+            if (compression < BarData.INTERVAL_DAILY)
+                barData = new BarData(security.getIntradayHistory(), compression, begin, end);
+            else
+                barData = new BarData(security.getHistory(), compression, begin, end);
+        }
         return barData;
     }
     

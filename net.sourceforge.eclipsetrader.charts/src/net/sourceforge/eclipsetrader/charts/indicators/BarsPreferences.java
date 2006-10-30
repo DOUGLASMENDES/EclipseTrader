@@ -47,6 +47,8 @@ public class BarsPreferences extends IndicatorPluginPreferencePage
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
+        
+        addSecuritySelector(content, "securityId", "Security", 0);
 
         Label label = new Label(content, SWT.NONE);
         label.setText("Bar Type");
@@ -105,5 +107,6 @@ public class BarsPreferences extends IndicatorPluginPreferencePage
         getSettings().set("lineCandle", lineCandle.getColorValue());
         getSettings().set("positiveCandle", positiveCandle.getColorValue());
         getSettings().set("negativeCandle", negativeCandle.getColorValue());
+        super.performFinish();
     }
 }

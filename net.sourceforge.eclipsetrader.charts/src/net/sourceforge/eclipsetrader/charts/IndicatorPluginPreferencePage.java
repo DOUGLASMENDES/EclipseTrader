@@ -11,9 +11,16 @@
 
 package net.sourceforge.eclipsetrader.charts;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.db.Security;
 
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.wizard.WizardPage;
@@ -95,7 +102,13 @@ public abstract class IndicatorPluginPreferencePage
             if (control instanceof Text)
                 getSettings().set(key, ((Text) control).getText());
             else if (control instanceof Combo)
-                getSettings().set(key, ((Combo) control).getSelectionIndex());
+            {
+                Integer value = (Integer) ((Combo)control).getData(((Combo)control).getText());
+                if (value != null)
+                    getSettings().set(key, value.intValue());
+                else
+                    getSettings().set(key, ((Combo) control).getSelectionIndex());
+            }
             else if (control instanceof ColorSelector)
                 getSettings().set(key, ((ColorSelector) control).getColorValue());
             else if (control instanceof Spinner)
@@ -179,6 +192,41 @@ public abstract class IndicatorPluginPreferencePage
         colorSelector.setColorValue(getSettings().getColor(id, defaultValue).getRGB());
         controls.put(id, colorSelector);
         return colorSelector;
+    }
+    
+    public Combo addSecuritySelector(Composite parent, String id, String text, int defaultValue)
+    {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText(text);
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+        
+        Combo combo = new Combo(parent, SWT.READ_ONLY);
+        combo.add("<Default>");
+
+        List list = new ArrayList(CorePlugin.getRepository().allSecurities());
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2)
+            {
+                return ((Security)o1).getDescription().compareTo(((Security)o2).getDescription());
+            }
+        });
+        
+        int selection = getSettings().getInteger(id, defaultValue).intValue();
+        for (Iterator iter = list.iterator(); iter.hasNext(); )
+        {
+            Security security = (Security)iter.next();
+            combo.add(security.getDescription());
+            combo.setData(security.getDescription(), security.getId());
+            if (selection == security.getId().intValue())
+                combo.select(combo.getItemCount() - 1);
+        }
+        
+        if (combo.getSelectionIndex() == -1)
+            combo.select(0);
+        
+        addControl(id, combo);
+
+        return combo;
     }
     
     public Combo addInputSelector(Composite parent, String id, String text, int defaultValue, boolean volume)

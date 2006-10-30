@@ -29,6 +29,7 @@ public class Lines extends IndicatorPlugin
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_INPUT = BarData.CLOSE;
+    private int securityId = 0;
     private String label = DEFAULT_LABEL;
     private int input = DEFAULT_INPUT;
     private int lineType = DEFAULT_LINETYPE;
@@ -43,10 +44,11 @@ public class Lines extends IndicatorPlugin
      */
     public void calculate()
     {
-        PlotLine line = new PlotLine(getBarData(), input);
+        PlotLine line = new PlotLine(getBarData(securityId), input);
         line.setLabel(label);
         line.setType(PlotLine.LINE);
         line.setColor(color);
+        line.setScaleFlag(securityId != 0);
         getOutput().add(line);
     }
 
@@ -55,6 +57,7 @@ public class Lines extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
+        securityId = settings.getInteger("securityId", securityId).intValue();
         label = settings.getString("label", label);
         lineType = settings.getInteger("lineType", lineType).intValue();
         color = settings.getColor("color", color);
