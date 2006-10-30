@@ -30,17 +30,14 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.tictactec.ta.lib.MInteger;
 
-public class APO extends Factory
+public class OBV extends Factory
 {
-    private static final String DEFAULT_LABEL = "APO";
-    private static final int DEFAULT_LINETYPE = PlotLine.LINE;
-    private static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
+    public static final String DEFAULT_LABEL = "OBV";
+    public static final int DEFAULT_LINETYPE = PlotLine.LINE;
+    public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_INPUT = BarData.CLOSE;
-    private static final int DEFAULT_FAST_PERIOD = 3;
-    private static final int DEFAULT_SLOW_PERIOD = 10;
-    private static final int DEFAULT_MA_TYPE = 0;
 
-    public APO()
+    public OBV()
     {
     }
 
@@ -54,27 +51,29 @@ public class APO extends Factory
             private int lineType = DEFAULT_LINETYPE;
             private Color color = new Color(null, DEFAULT_COLOR);
             private int input = DEFAULT_INPUT;
-            private int fastPeriod = DEFAULT_FAST_PERIOD;
-            private int slowPeriod = DEFAULT_SLOW_PERIOD;
-            private int maType = DEFAULT_MA_TYPE;
 
             public void calculate()
             {
                 int startIdx = 0;
                 int endIdx = getBarData().size() - 1;
 
-                double[] inReal = getInput(getBarData(), input);
+                Object[] values = getInput(getBarData());
+                double[] inReal = (double[])values[input];
+                int[] inVolume = (int[])values[BarData.VOLUME];
                 
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().APO_Lookback(fastPeriod, slowPeriod, getTA_MAType(maType)));
+                int temp = Math.max(TALibPlugin.getCore().OBV_Lookback(), startIdx);
+                int allocationSize = (temp > endIdx) ? 0 : endIdx - temp + 1;
                 
-                TALibPlugin.getCore().APO(startIdx, endIdx, inReal, fastPeriod, slowPeriod, getTA_MAType(maType), outBegIdx, outNbElement, outReal);
+                int[] outInt = new int[allocationSize];
+                
+                TALibPlugin.getCore().OBV(startIdx, endIdx, inReal, inVolume, outBegIdx, outNbElement, outInt);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)
-                    line.append(outReal[i]);
+                    line.append(outInt[i]);
 
                 line.setLabel(label);
                 line.setType(lineType);
@@ -87,9 +86,7 @@ public class APO extends Factory
                 label = settings.getString("label", label);
                 lineType = settings.getInteger("lineType", lineType).intValue();
                 color = settings.getColor("color", color);
-                fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue();
-                slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue();
-                maType = settings.getInteger("maType", maType).intValue();
+                input = settings.getInteger("input", input).intValue();
             }
         };
 
@@ -114,11 +111,8 @@ public class APO extends Factory
 
                 addColorSelector(content, "color", "Color", DEFAULT_COLOR);
                 addLabelField(content, "label", "Label", DEFAULT_LABEL);
-
                 addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "fastPeriod", "Fast Period", 1, 9999, DEFAULT_FAST_PERIOD);
-                addIntegerValueSelector(content, "slowPeriod", "Slow Period", 1, 9999, DEFAULT_SLOW_PERIOD);
-                addMovingAverageSelector(content, "type", "MA Type", DEFAULT_MA_TYPE);
+                addInputSelector(content, "input", "Input", DEFAULT_INPUT, false);
             }
         };
 

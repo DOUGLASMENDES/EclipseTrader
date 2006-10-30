@@ -30,9 +30,9 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.tictactec.ta.lib.MInteger;
 
-public class APO extends Factory
+public class PPO extends Factory
 {
-    private static final String DEFAULT_LABEL = "APO";
+    private static final String DEFAULT_LABEL = "PPO";
     private static final int DEFAULT_LINETYPE = PlotLine.LINE;
     private static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -40,7 +40,7 @@ public class APO extends Factory
     private static final int DEFAULT_SLOW_PERIOD = 10;
     private static final int DEFAULT_MA_TYPE = 0;
 
-    public APO()
+    public PPO()
     {
     }
 
@@ -68,9 +68,9 @@ public class APO extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().APO_Lookback(fastPeriod, slowPeriod, getTA_MAType(maType)));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().PPO_Lookback(fastPeriod, slowPeriod, getTA_MAType(maType)));
                 
-                TALibPlugin.getCore().APO(startIdx, endIdx, inReal, fastPeriod, slowPeriod, getTA_MAType(maType), outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().PPO(startIdx, endIdx, inReal, fastPeriod, slowPeriod, getTA_MAType(maType), outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)
@@ -114,7 +114,6 @@ public class APO extends Factory
 
                 addColorSelector(content, "color", "Color", DEFAULT_COLOR);
                 addLabelField(content, "label", "Label", DEFAULT_LABEL);
-
                 addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
                 addIntegerValueSelector(content, "fastPeriod", "Fast Period", 1, 9999, DEFAULT_FAST_PERIOD);
                 addIntegerValueSelector(content, "slowPeriod", "Slow Period", 1, 9999, DEFAULT_SLOW_PERIOD);

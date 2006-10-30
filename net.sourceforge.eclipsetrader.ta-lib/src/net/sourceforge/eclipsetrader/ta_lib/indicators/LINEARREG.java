@@ -109,7 +109,6 @@ public class LINEARREG extends Factory
 
                 addColorSelector(content, "color", "Color", DEFAULT_COLOR);
                 addLabelField(content, "label", "Label", DEFAULT_LABEL);
-
                 addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
                 addInputSelector(content, "input", "Input", DEFAULT_INPUT, false);
                 addIntegerValueSelector(content, "period", "Period", 1, 9999, DEFAULT_PERIOD);
