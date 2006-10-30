@@ -714,6 +714,15 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     public void setAutoScale(boolean autoScale)
     {
         this.autoScale = autoScale;
+        
+        for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
+        {
+            CTabFolder folder = (CTabFolder)iter.next();
+            CTabItem[] items = folder.getItems();
+            for (int i = 0; i < items.length; i++)
+                ((Plot)items[i].getControl()).getIndicatorPlot().setAutoScale(autoScale);
+        }
+        
         chart.setAutoScale(autoScale);
         CorePlugin.getRepository().save(chart);
     }
@@ -847,7 +856,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         }
     }
     
-    private void updateView()
+    public void updateView()
     {
         datePlot.setInterval(chart.getCompression());
         if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
@@ -1350,6 +1359,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             plot.getIndicatorPlot().setPlotBounds(datePlot.getIndicatorPlot().getPlotBounds());
             plot.addPlotMouseListener(ChartView.this);
             plot.addPlotSelectionListener(ChartTabItem.this);
+            plot.getIndicatorPlot().setAutoScale(autoScale);
             setControl(plot);
             
             plot.getIndicatorPlot().addControlListener(new ControlAdapter() {

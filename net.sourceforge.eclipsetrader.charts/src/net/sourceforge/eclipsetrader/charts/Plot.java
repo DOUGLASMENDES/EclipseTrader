@@ -132,10 +132,13 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
                     line.setData(item);
                 }
             }
-            if (line.getHigh() > high)
-                high = line.getHigh();
-            if (line.getLow() < low)
-                low = line.getLow();
+            if (!line.getScaleFlag())
+            {
+                if (line.getHigh() > high)
+                    high = line.getHigh();
+                if (line.getLow() < low)
+                    low = line.getLow();
+            }
         }
         
         scaler.set(high, low);
