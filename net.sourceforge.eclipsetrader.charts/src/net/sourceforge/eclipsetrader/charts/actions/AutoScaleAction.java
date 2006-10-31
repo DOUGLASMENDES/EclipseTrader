@@ -33,6 +33,6 @@ public class AutoScaleAction extends Action
     public void run()
     {
         ((ChartView)view).setAutoScale(isChecked());
-        ((ChartView)view).updateView();
+        ((ChartView)view).redrawView();
     }
 }

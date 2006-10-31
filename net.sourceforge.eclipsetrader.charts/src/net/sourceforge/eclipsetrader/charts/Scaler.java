@@ -27,6 +27,7 @@ public class Scaler
     private double logRange = 0;
     private double range = 0;
     private double scaler = 0;
+    private int extendRange = 0;
     private List scaleList = new ArrayList();
 
     public Scaler()
@@ -105,6 +106,13 @@ public class Scaler
             this.logScale = logScale;
 
             range = this.scaleHigh - this.scaleLow;
+            if (extendRange != 0)
+            {
+                double diff = range / 100.0 * extendRange;
+                range += diff;
+                this.scaleHigh += diff / 2;
+                this.scaleLow -= diff / 2;
+            }
             scaler = this.height / this.range;
         }
     }
@@ -116,6 +124,13 @@ public class Scaler
             this.height = height;
 
             range = this.scaleHigh - this.scaleLow;
+            if (extendRange != 0)
+            {
+                double diff = range / 100.0 * extendRange;
+                range += diff;
+                this.scaleHigh += diff / 2;
+                this.scaleLow -= diff / 2;
+            }
             scaler = this.height / this.range;
         }
     }
@@ -128,6 +143,13 @@ public class Scaler
             this.scaleLow = scaleLow;
 
             range = this.scaleHigh - this.scaleLow;
+            if (extendRange != 0)
+            {
+                double diff = range / 100.0 * extendRange;
+                range += diff;
+                this.scaleHigh += diff / 2;
+                this.scaleLow -= diff / 2;
+            }
             scaler = this.height / this.range;
         }
     }
@@ -240,6 +262,16 @@ public class Scaler
         }
 
         return scaleArray;
+    }
+
+    public void setExtendRange(int extendRange)
+    {
+        this.extendRange = extendRange;
+    }
+
+    public int getExtendRange()
+    {
+        return extendRange;
     }
 
     /**

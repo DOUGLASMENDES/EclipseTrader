@@ -690,14 +690,45 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
                 }
             }
 
-            if (high != -99999999 && low != 99999999)
+            scaler.set(high, low);
+            if (drawCount <= 0)
             {
-                scaler.set(high, low);
-                if (drawCount <= 0)
+                indicatorPlot.redrawAll();
+                scalePlot.redrawAll();
+            }
+        }
+    }
+
+    public void resetScale()
+    {
+        BarData barData = datePlot.getBarData();
+        if (barData.size() != 0)
+        {
+            double high = -99999999;
+            double low = 99999999;
+            
+            for (Iterator iter = indicatorPlot.getIndicators().iterator(); iter.hasNext(); )
+            {
+                Indicator indicator = (Indicator)iter.next();
+                
+                for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
                 {
-                    indicatorPlot.redrawAll();
-                    scalePlot.redrawAll();
+                    PlotLine plotLine = (PlotLine)iter2.next();
+                    if (!plotLine.getScaleFlag())
+                    {
+                        if (plotLine.getHigh() > high)
+                            high = plotLine.getHigh();
+                        if (plotLine.getLow() < low)
+                            low = plotLine.getLow();
+                    }
                 }
+            }
+
+            scaler.set(high, low);
+            if (drawCount <= 0)
+            {
+                indicatorPlot.redrawAll();
+                scalePlot.redrawAll();
             }
         }
     }

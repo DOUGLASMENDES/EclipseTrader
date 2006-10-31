@@ -51,6 +51,7 @@ public class DatePlot extends Composite
     private Color labelColor = new Color(null, 255, 255, 0);
     private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
     private SimpleDateFormat tf = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
+    private int extendPeriod = 15;
     
     private class TickItem
     {
@@ -200,6 +201,11 @@ public class DatePlot extends Composite
         this.hilight = hilightColor == null ? null : new Color(null, hilightColor.getRGB());
     }
 
+    public void setExtendPeriod(int extendPeriod)
+    {
+        this.extendPeriod = extendPeriod;
+    }
+
     public int mapToScreen(Date date)
     {
         if (date == null)
@@ -320,6 +326,49 @@ public class DatePlot extends Composite
 
             x += indicatorPlot.getGridWidth();
         }
+        
+        currentDate = Calendar.getInstance();
+        currentDate.set(Calendar.HOUR, 0);
+        currentDate.set(Calendar.MINUTE, 0);
+        currentDate.set(Calendar.SECOND, 0);
+        currentDate.set(Calendar.MILLISECOND, 0);
+        if (dateList.size() != 0)
+        {
+            currentDate.setTime(((TickItem)dateList.get(dateList.size() - 1)).date);
+            currentDate.add(Calendar.DATE, 1);
+        }
+        
+        for (int i = 0; i < extendPeriod; i++)
+        {
+            if (currentDate.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY && currentDate.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY)
+            {
+                TickItem item = new TickItem(currentDate.getTime());
+
+                if (oldDate == null || currentDate.get(Calendar.DAY_OF_YEAR) != oldDate.get(Calendar.DAY_OF_YEAR))
+                {
+                    if (oldDate == null)
+                    {
+                        oldDate = Calendar.getInstance();
+                        oldDate.setTime(currentDate.getTime());
+                    }
+                    
+                    if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+                        item.tick = true;
+                    if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
+                        item.flag = true;
+                    item.text = monthYearFormatter.format(currentDate.getTime());
+
+                    oldDate.setTime(currentDate.getTime());
+                }
+                
+                dateList.add(item);
+                map.put(item.date, new Integer(x));
+                
+                x += indicatorPlot.getGridWidth();
+            }
+
+            currentDate.add(Calendar.DATE, 1);
+        }
     }
     
     private void getWeeklyDate()
@@ -367,6 +416,52 @@ public class DatePlot extends Composite
 
             x += indicatorPlot.getGridWidth();
         }
+        
+        currentDate = Calendar.getInstance();
+        currentDate.set(Calendar.HOUR, 0);
+        currentDate.set(Calendar.MINUTE, 0);
+        currentDate.set(Calendar.SECOND, 0);
+        currentDate.set(Calendar.MILLISECOND, 0);
+        if (dateList.size() != 0)
+        {
+            currentDate.setTime(((TickItem)dateList.get(dateList.size() - 1)).date);
+            currentDate.add(Calendar.DATE, 7);
+        }
+        
+        for (int i = 0; i < extendPeriod; i++)
+        {
+            TickItem item = new TickItem(currentDate.getTime());
+
+            if (oldDate == null || currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+            {
+                if (oldDate == null)
+                {
+                    oldDate = Calendar.getInstance();
+                    oldDate.setTime(currentDate.getTime());
+                }
+                
+                if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+                {
+                    item.tick = true;
+                    item.text = monthFormatter.format(currentDate.getTime()).substring(0, 1).toUpperCase();
+                }
+                if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
+                {
+                    item.tick = true;
+                    item.flag = true;
+                    item.text = monthYearFormatter.format(currentDate.getTime());
+                }
+
+                oldDate.setTime(currentDate.getTime());
+            }
+            
+            dateList.add(item);
+            map.put(item.date, new Integer(x));
+            
+            x += indicatorPlot.getGridWidth();
+
+            currentDate.add(Calendar.DATE, 7);
+        }
     }
     
     private void getMonthlyDate()
@@ -409,6 +504,49 @@ public class DatePlot extends Composite
             map.put(item.date, new Integer(x));
 
             x += indicatorPlot.getGridWidth();
+        }
+        
+        currentDate = Calendar.getInstance();
+        currentDate.set(Calendar.HOUR, 0);
+        currentDate.set(Calendar.MINUTE, 0);
+        currentDate.set(Calendar.SECOND, 0);
+        currentDate.set(Calendar.MILLISECOND, 0);
+        if (dateList.size() != 0)
+        {
+            currentDate.setTime(((TickItem)dateList.get(dateList.size() - 1)).date);
+            currentDate.add(Calendar.MONTH, 1);
+        }
+        
+        for (int i = 0; i < extendPeriod; i++)
+        {
+            TickItem item = new TickItem(currentDate.getTime());
+
+            if (oldDate == null || currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+            {
+                if (oldDate == null)
+                {
+                    oldDate = Calendar.getInstance();
+                    oldDate.setTime(currentDate.getTime());
+                }
+                
+                if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+                    item.tick = true;
+                if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
+                {
+                    item.tick = true;
+                    item.flag = true;
+                    item.text = yearFormatter.format(currentDate.getTime());
+                }
+
+                oldDate.setTime(currentDate.getTime());
+            }
+            
+            dateList.add(item);
+            map.put(item.date, new Integer(x));
+            
+            x += indicatorPlot.getGridWidth();
+
+            currentDate.add(Calendar.MONTH, 1);
         }
     }
     

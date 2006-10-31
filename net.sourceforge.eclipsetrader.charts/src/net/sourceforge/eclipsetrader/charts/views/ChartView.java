@@ -289,6 +289,29 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             sashForm.getDisplay().timerExec(200, updateMarketValue);
         }
     };
+    IPropertyChangeListener pluginPropertiesChangeListener = new IPropertyChangeListener() {
+
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            if (event.getProperty().equals(ChartsPlugin.PREFS_EXTEND_SCALE))
+            {
+                int range = ((Integer)event.getNewValue()).intValue();
+                for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
+                {
+                    CTabFolder folder = (CTabFolder)iter.next();
+                    CTabItem[] items = folder.getItems();
+                    for (int i = 0; i < items.length; i++)
+                        ((Plot)items[i].getControl()).getScaler().setExtendRange(range);
+                }
+                redrawView();
+            }
+            else if (event.getProperty().equals(ChartsPlugin.PREFS_EXTEND_PERIOD))
+            {
+                datePlot.setExtendPeriod(((Integer)event.getNewValue()).intValue());
+                updateView();
+            }
+        }
+    };
     
     public static IPath getPreferenceStoreLocation(Chart chart)
     {
@@ -536,6 +559,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         updateActionBars();
         setContentDescription(followSelection ? security.getDescription() : "");
 
+        IPreferenceStore pluginPreferences = ChartsPlugin.getDefault().getPreferenceStore();
+        datePlot.setExtendPeriod(pluginPreferences.getInt(ChartsPlugin.PREFS_EXTEND_PERIOD));
+        pluginPreferences.addPropertyChangeListener(pluginPropertiesChangeListener);
+        
         try {
             sashForm.getDisplay().asyncExec(new Runnable() {
                 public void run()
@@ -648,6 +675,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
      */
     public void dispose()
     {
+        ChartsPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(pluginPropertiesChangeListener);
+
         if (showMarketValue)
         {
             security.getQuoteMonitor().deleteObserver(quoteObserver);
@@ -853,6 +882,22 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             }
             
             CorePlugin.getRepository().save(chart);
+        }
+    }
+    
+    public void redrawView()
+    {
+        for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
+        {
+            CTabFolder folder = (CTabFolder)iter.next();
+            CTabItem[] items = folder.getItems();
+            for (int i = 0; i < items.length; i++)
+            {
+                if (autoScale)
+                    ((Plot)items[i].getControl()).updateScale();
+                else
+                    ((Plot)items[i].getControl()).resetScale();
+            }
         }
     }
     
@@ -1356,6 +1401,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
 
             plot = new Plot(getParent(), SWT.NONE);
             plot.setDatePlot(datePlot);
+            plot.getScaler().setExtendRange(ChartsPlugin.getDefault().getPreferenceStore().getInt(ChartsPlugin.PREFS_EXTEND_SCALE));
             plot.getIndicatorPlot().setPlotBounds(datePlot.getIndicatorPlot().getPlotBounds());
             plot.addPlotMouseListener(ChartView.this);
             plot.addPlotSelectionListener(ChartTabItem.this);

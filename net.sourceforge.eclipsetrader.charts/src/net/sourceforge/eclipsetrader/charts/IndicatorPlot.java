@@ -576,6 +576,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         if (plotLine.getScaleFlag())
         {
             scaler = new Scaler();
+            scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
             if (isAutoScale())
                 computeScale(scaler, plotLine);
@@ -628,6 +629,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         if (plotLine.getScaleFlag())
         {
             scaler = new Scaler();
+            scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
             if (isAutoScale())
                 computeScale(scaler, plotLine);
@@ -652,6 +654,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         if (plotLine.getScaleFlag())
         {
             scaler = new Scaler();
+            scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
             if (isAutoScale())
                 computeScale(scaler, plotLine);
@@ -719,6 +722,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         if (plotLine.getScaleFlag())
         {
             scaler = new Scaler();
+            scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
             if (isAutoScale())
                 computeScale(scaler, plotLine);
@@ -779,6 +783,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         if (plotLine.getScaleFlag())
         {
             scaler = new Scaler();
+            scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
             if (isAutoScale())
                 computeScale(scaler, plotLine);
@@ -819,6 +824,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         if (plotLine.getScaleFlag())
         {
             scaler = new Scaler();
+            scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
             if (isAutoScale())
                 computeScale(scaler, plotLine);
