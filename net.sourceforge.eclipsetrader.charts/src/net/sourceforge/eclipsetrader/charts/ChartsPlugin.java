@@ -60,8 +60,8 @@ public class ChartsPlugin extends AbstractUIPlugin
     public static final String INDICATORS_EXTENSION_POINT = PLUGIN_ID + ".indicators";
     public static final String OBJECTS_EXTENSION_POINT = PLUGIN_ID + ".objects";
     public static final String PREFS_HIDE_TABS = "HIDE_TABS";
-    public static final String PREFS_EXTEND_SCALE = "HIDE_EXTEND_SCALE";
-    public static final String PREFS_EXTEND_PERIOD = "HIDE_EXTEND_PERIOD";
+    public static final String PREFS_EXTEND_SCALE = "EXTEND_SCALE";
+    public static final String PREFS_EXTEND_PERIOD = "EXTEND_PERIOD";
     private static ChartsPlugin plugin;
     private static NumberFormat numberFormat;
     private static NumberFormat percentageFormat;
