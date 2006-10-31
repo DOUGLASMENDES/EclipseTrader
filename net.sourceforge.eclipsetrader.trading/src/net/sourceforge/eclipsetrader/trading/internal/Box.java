@@ -11,9 +11,17 @@
 
 package net.sourceforge.eclipsetrader.trading.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -21,22 +29,49 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 
-public class Box extends Composite implements PaintListener
+public class Box extends Canvas implements PaintListener
 {
-    private Composite row1;
-    private Label name;
-    private Label time;
-    private Composite row2;
-    private Label value;
-    private Label change;
-    private Label icon;
-    private Color background = new Color(null, 255, 255, 255);
-    private Color foreground = new Color(null, 0, 0, 0);
-    private Color negativeForeground = new Color(null, 240, 0, 0);
-    private Color positiveForeground = new Color(null, 0, 192, 0);
+    Composite row1;
+    Label name;
+    Label time;
+    Composite row2;
+    Label value;
+    Label change;
+    Label icon;
+    Color background = new Color(null, 255, 255, 255);
+    Color foreground = new Color(null, 0, 0, 0);
+    Color negativeForeground = new Color(null, 240, 0, 0);
+    Color positiveForeground = new Color(null, 0, 192, 0);
+    List selectionListeners = new ArrayList();
+    MouseListener mouseListener = new MouseAdapter() {
+
+        public void mouseDown(MouseEvent e)
+        {
+            Event event = new Event();
+            event.display = e.display;
+            event.x = e.x;
+            event.y = e.y;
+            event.item = Box.this;
+            event.widget = Box.this;
+            event.time = e.time;
+
+            SelectionEvent selection = new SelectionEvent(event);
+            
+            SelectionListener[] listeners = (SelectionListener[])selectionListeners.toArray(new SelectionListener[selectionListeners.size()]);
+            for (int i = 0; i < listeners.length; i++)
+                listeners[i].widgetSelected(selection);
+        }
+
+        public void mouseUp(MouseEvent e)
+        {
+        }
+    };
 
     public Box(Composite parent, int style)
     {
@@ -104,6 +139,15 @@ public class Box extends Composite implements PaintListener
         
         icon = new Label(composite, SWT.NONE);
         icon.setBackground(background);
+        
+        row1.addMouseListener(mouseListener);
+        name.addMouseListener(mouseListener);
+        time.addMouseListener(mouseListener);
+        row2.addMouseListener(mouseListener);
+        value.addMouseListener(mouseListener);
+        change.addMouseListener(mouseListener);
+        icon.addMouseListener(mouseListener);
+        addMouseListener(mouseListener);
     }
 
     /* (non-Javadoc)
@@ -118,6 +162,31 @@ public class Box extends Composite implements PaintListener
         super.dispose();
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.widgets.Control#setMenu(org.eclipse.swt.widgets.Menu)
+     */
+    public void setMenu(Menu menu)
+    {
+        row1.setMenu(menu);
+        name.setMenu(menu);
+        time.setMenu(menu);
+        row2.setMenu(menu);
+        value.setMenu(menu);
+        change.setMenu(menu);
+        icon.setMenu(menu);
+        super.setMenu(menu);
+    }
+    
+    public void addSelectionListener(SelectionListener listener)
+    {
+        selectionListeners.add(listener);
+    }
+    
+    public void removeSelectionListener(SelectionListener listener)
+    {
+        selectionListeners.remove(listener);
+    }
+
     public void setChange(String change)
     {
         this.change.setText(change);
