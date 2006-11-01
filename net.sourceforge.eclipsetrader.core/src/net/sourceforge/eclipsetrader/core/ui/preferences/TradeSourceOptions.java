@@ -145,6 +145,8 @@ public class TradeSourceOptions
             account.add(s.getDescription());
             account.setData(String.valueOf(account.getItemCount() - 1), s.getId());
         }
+        
+        updateEnablement();
 
         return content;
     }
@@ -169,7 +171,8 @@ public class TradeSourceOptions
             items = exchange.getItems();
             for (int i = 0; i < items.length; i++)
             {
-                if (exchange.getData(String.valueOf(i)) != null && exchange.getData(String.valueOf(i)).equals(tradeSource.getExchange()))
+                OrderRoute route = (OrderRoute)exchange.getData(exchange.getItem(i));
+                if (route != null && route.getId().equals(tradeSource.getExchange()))
                 {
                     exchange.select(i);
                     break;
@@ -228,7 +231,7 @@ public class TradeSourceOptions
         }
     }
     
-    void updateEnablement()
+    protected void updateEnablement()
     {
         boolean enable = (provider.getData(String.valueOf(provider.getSelectionIndex())) != null);
         exchange.setEnabled(enable && exchange.getItemCount() > 1);
