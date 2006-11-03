@@ -498,36 +498,52 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
      */
     public void itemAdded(Object o)
     {
-        Security security = (Security)o;
-
-        TableItem items[] = table.getItems();
-        for (int i = 0; i < items.length; i++)
-        {
-            Security arg1 = ((SecurityTableItem)items[i]).getSecurity();
-            if (comparator.compare(security, arg1) < 0)
+        final Security security = (Security)o;
+        table.getDisplay().asyncExec(new Runnable() {
+            public void run()
             {
-                new SecurityTableItem(table, SWT.NONE, i, security);
-                updateSelection();
-                return;
-            }
-        }
+                if (!table.isDisposed())
+                {
+                    TableItem items[] = table.getItems();
+                    for (int i = 0; i < items.length; i++)
+                    {
+                        Security arg1 = ((SecurityTableItem)items[i]).getSecurity();
+                        if (comparator.compare(security, arg1) < 0)
+                        {
+                            new SecurityTableItem(table, SWT.NONE, i, security);
+                            updateSelection();
+                            return;
+                        }
+                    }
 
-        new SecurityTableItem(table, SWT.NONE, security);
-        updateSelection();
-    }
+                    new SecurityTableItem(table, SWT.NONE, security);
+                    updateSelection();
+                }
+            }
+        });
+   }
 
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.ICollectionObserver#itemRemoved(java.lang.Object)
      */
     public void itemRemoved(Object o)
     {
-        TableItem items[] = table.getItems();
-        for (int i = 0; i < items.length; i++)
-        {
-            if (o.equals(((SecurityTableItem) items[i]).getSecurity()))
-                items[i].dispose();
-        }
-        updateSelection();
+        final Security security = (Security)o;
+        table.getDisplay().asyncExec(new Runnable() {
+            public void run()
+            {
+                if (!table.isDisposed())
+                {
+                    TableItem items[] = table.getItems();
+                    for (int i = 0; i < items.length; i++)
+                    {
+                        if (security.equals(((SecurityTableItem) items[i]).getSecurity()))
+                            items[i].dispose();
+                    }
+                    updateSelection();
+                }
+            }
+        });
     }
 
     public void updateView()
