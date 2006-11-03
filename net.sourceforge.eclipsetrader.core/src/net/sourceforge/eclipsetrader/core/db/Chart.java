@@ -17,6 +17,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.core.ObservableList;
+import net.sourceforge.eclipsetrader.core.db.visitors.IChartVisitor;
 
 public class Chart extends PersistentObject implements Observer
 {
@@ -131,6 +132,22 @@ public class Chart extends PersistentObject implements Observer
     {
         this.rows = rows;
     }
+    
+    public void add(ChartRow row)
+    {
+        row.setParent(this);
+        getRows().add(row);
+    }
+    
+    public void add(int index, ChartRow row)
+    {
+        row.setParent(this);
+        getRows().add(index, row);
+
+        ChartRow[] rows = (ChartRow[])getRows().toArray(new ChartRow[getRows().size()]);
+        for (int i = 0; i < rows.length; i++)
+            rows[i].setId(new Integer(i));
+    }
 
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.db.PersistentObject#clearChanged()
@@ -160,29 +177,13 @@ public class Chart extends PersistentObject implements Observer
         setChanged();
         notifyObservers();
     }
-
-    public void dump()
+    
+    public void accept(IChartVisitor visitor)
     {
-        System.out.println("Chart - " + getId() + ", Rows = " + getRows().size());
-        for (int r = 0; r < getRows().size(); r++)
-        {
-            ChartRow row = (ChartRow)(ChartRow)getRows().get(r);
-            System.out.println("   Row" + r + ", Tabs = " + row.getTabs().size());
-            for (int t = 0; t < row.getTabs().size(); t++)
-            {
-                ChartTab tab = (ChartTab)row.getTabs().get(t);
-                System.out.println("      Tab" + t + " (" + tab.getLabel() + "), Indicators=" + tab.getIndicators().size());
-                for (int i = 0; i < tab.getIndicators().size(); i++)
-                {
-                    ChartIndicator indicator = (ChartIndicator)tab.getIndicators().get(i);
-                    System.out.println("         Indicator" + i + " (" + indicator.getPluginId() + "), Parameters=" + indicator.getParameters().size());
-                    for (Iterator iter = indicator.getParameters().keySet().iterator(); iter.hasNext(); )
-                    {
-                        String key = (String)iter.next();
-                        System.out.println("            " + key + "=" + (String)indicator.getParameters().get(key));
-                    }
-                }
-            }
-        }
+        visitor.visit(this);
+
+        ChartRow[] rows = (ChartRow[])getRows().toArray(new ChartRow[getRows().size()]);
+        for (int i = 0; i < rows.length; i++)
+            rows[i].accept(visitor);
     }
 }

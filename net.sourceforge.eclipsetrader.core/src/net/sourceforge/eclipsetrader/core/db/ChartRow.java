@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.core.db;
 import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.ObservableList;
+import net.sourceforge.eclipsetrader.core.db.visitors.IChartVisitor;
 
 public class ChartRow extends PersistentObject
 {
@@ -48,6 +49,12 @@ public class ChartRow extends PersistentObject
     {
         this.tabs = rows;
     }
+    
+    public void add(ChartTab tab)
+    {
+        tab.setParent(this);
+        getTabs().add(tab);
+    }
 
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.db.PersistentObject#clearChanged()
@@ -77,5 +84,14 @@ public class ChartRow extends PersistentObject
         for (Iterator iter = getTabs().iterator(); iter.hasNext(); )
             ((ChartTab)iter.next()).notifyObservers();
         super.notifyObservers();
+    }
+    
+    public void accept(IChartVisitor visitor)
+    {
+        visitor.visit(this);
+
+        ChartTab[] tabs = (ChartTab[])getTabs().toArray(new ChartTab[getTabs().size()]);
+        for (int i = 0; i < tabs.length; i++)
+            tabs[i].accept(visitor);
     }
 }

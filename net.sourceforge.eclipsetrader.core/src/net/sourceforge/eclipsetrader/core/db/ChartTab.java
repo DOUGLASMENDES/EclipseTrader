@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.core.db;
 import java.util.Iterator;
 
 import net.sourceforge.eclipsetrader.core.ObservableList;
+import net.sourceforge.eclipsetrader.core.db.visitors.IChartVisitor;
 
 public class ChartTab extends PersistentObject
 {
@@ -101,5 +102,18 @@ public class ChartTab extends PersistentObject
         for (Iterator iter = getIndicators().iterator(); iter.hasNext(); )
             ((ChartIndicator)iter.next()).notifyObservers();
         super.notifyObservers();
+    }
+    
+    public void accept(IChartVisitor visitor)
+    {
+        visitor.visit(this);
+        
+        ChartIndicator[] indicators = (ChartIndicator[])getIndicators().toArray(new ChartIndicator[getIndicators().size()]);
+        for (int i = 0; i < indicators.length; i++)
+            visitor.visit(indicators[i]);
+
+        ChartObject[] objects = (ChartObject[])getObjects().toArray(new ChartObject[getObjects().size()]);
+        for (int i = 0; i < objects.length; i++)
+            visitor.visit(objects[i]);
     }
 }
