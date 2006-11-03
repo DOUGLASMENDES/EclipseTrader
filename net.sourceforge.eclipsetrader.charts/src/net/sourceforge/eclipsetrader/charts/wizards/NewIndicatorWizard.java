@@ -38,13 +38,14 @@ public class NewIndicatorWizard extends Wizard
     {
     }
 
-    public Chart open(Chart chart)
+    public int open(Chart chart)
     {
         WizardDialog dlg = create(chart);
-        if (dlg.open() == WizardDialog.OK)
+        int result = dlg.open();
+        if (result == WizardDialog.OK)
             CorePlugin.getRepository().save(chart);
 
-        return this.chart;
+        return result;
     }
     
     public WizardDialog create(Chart chart)

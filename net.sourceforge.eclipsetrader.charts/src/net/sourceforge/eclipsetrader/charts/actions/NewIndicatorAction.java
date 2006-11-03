@@ -19,6 +19,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
@@ -55,6 +56,8 @@ public class NewIndicatorAction implements IViewActionDelegate
         
         if (view != null)
         {
+            int rows = view.getChart().getRows().size();
+            
             NewIndicatorWizard dlg = new NewIndicatorWizard();
             ISelection selection = window.getActivePage().getSelection();
             if (selection instanceof TabSelection)
@@ -64,7 +67,8 @@ public class NewIndicatorAction implements IViewActionDelegate
                 dlg.setDefaultRow(row.getParent().getRows().indexOf(row) + 1);
                 dlg.setDefaultTab(tab.getLabel());
             }
-            dlg.open(view.getChart());
+            if (dlg.open(view.getChart()) == WizardDialog.OK && view.getChart().getRows().size() != rows)
+                view.resetViewLayout();
         }
     }
 

@@ -114,6 +114,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -154,6 +155,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     public static final String PREFS_FOLLOW_SELECTION = "followSelection";
     public static final String PREFS_SHOW_ADJUSTED_VALUES = "showAdjustedValues";
     public static final String PREFS_SHOW_MARKETVALUE = "showMarketValue";
+    public static final String PREFS_WEIGHTS = "weights";
     static boolean DEFAULT_FOLLOW_SELECTION = false;
     static boolean DEFAULT_SHOW_ADJUSTED_VALUES = false;
     static boolean DEFAULT_SHOW_MARKET_VALUE = false;
@@ -195,6 +197,16 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     Action deleteAction;
     PreferenceStore preferences;
     Logger logger = Logger.getLogger(getClass());
+    ControlListener sashResizeListener = new ControlAdapter() {
+        public void controlResized(ControlEvent e)
+        {
+            String values = "";
+            int[] weights = sashForm.getWeights();
+            for (int i = 0; i < weights.length; i++)
+                values += (i == 0 ? "" : ";") + String.valueOf(weights[i]);
+            preferences.setValue(PREFS_WEIGHTS, values);
+        }
+    };
     DropTargetListener dropTargetListener = new DropTargetListener() {
         public void dragEnter(DropTargetEvent event)
         {
@@ -562,7 +574,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         IPreferenceStore pluginPreferences = ChartsPlugin.getDefault().getPreferenceStore();
         datePlot.setExtendPeriod(pluginPreferences.getInt(ChartsPlugin.PREFS_EXTEND_PERIOD));
         pluginPreferences.addPropertyChangeListener(pluginPropertiesChangeListener);
-        
+
         try {
             sashForm.getDisplay().asyncExec(new Runnable() {
                 public void run()
@@ -614,6 +626,30 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
+                    
+                    String[] values = preferences.getString(PREFS_WEIGHTS).split(";");
+                    int weights[] = new int[values.length];
+                    if (weights.length == tabGroups.size())
+                    {
+                        for (int i = 0; i < weights.length; i++)
+                            weights[i] = Integer.parseInt(values[i]);
+                    }
+                    else
+                    {
+                        weights = new int[tabGroups.size()];
+                        int w = 100 / (weights.length + 2);
+                        weights[0] = 100 - w * (weights.length - 1);
+                        for (int i = 1; i < weights.length; i++)
+                            weights[i] = w;
+                    }
+                    sashForm.setWeights(weights);
+
+                    Control[] controls = sashForm.getChildren();
+                    for (int i = 0; i < controls.length; i++)
+                    {
+                        if (controls[i] instanceof ChartTabFolder)
+                            controls[i].addControlListener(sashResizeListener);
+                    }
 
                     if (showMarketValue)
                     {
@@ -655,6 +691,16 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                             }
                         }
                     }
+                }
+            });
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            sashForm.getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
                 }
             });
         } catch(Exception e) {
@@ -901,6 +947,45 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         }
     }
     
+    public void resetViewLayout()
+    {
+        Control[] controls = sashForm.getChildren();
+        for (int i = 0; i < controls.length; i++)
+        {
+            if (controls[i] instanceof ChartTabFolder)
+                controls[i].removeControlListener(sashResizeListener);
+        }
+
+        try {
+            sashForm.getDisplay().asyncExec(new Runnable() {
+                public void run()
+                {
+                    int[] weights = new int[tabGroups.size()];
+                    int w = 100 / (weights.length + 2);
+                    weights[0] = 100 - w * (weights.length - 1);
+                    for (int i = 1; i < weights.length; i++)
+                        weights[i] = w;
+                    sashForm.setWeights(weights);
+                    sashForm.layout();
+
+                    Control[] controls = sashForm.getChildren();
+                    for (int i = 0; i < controls.length; i++)
+                    {
+                        if (controls[i] instanceof ChartTabFolder)
+                            controls[i].addControlListener(sashResizeListener);
+                    }
+
+                    String values = "";
+                    for (int i = 0; i < weights.length; i++)
+                        values += (i == 0 ? "" : ";") + String.valueOf(weights[i]);
+                    preferences.setValue(PREFS_WEIGHTS, values);
+                }
+            });
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public void updateView()
     {
         datePlot.setInterval(chart.getCompression());
@@ -979,14 +1064,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         final ChartTabFolder folder = new ChartTabFolder(sashForm, SWT.TOP|SWT.FLAT|SWT.BORDER, (ChartRow)o);
         tabGroups.add(folder);
         ((ChartRow)o).clearChanged();
-
-        int weights[] = new int[tabGroups.size()];
-        int w = 100 / (weights.length + 2);
-        weights[0] = 100 - w * (weights.length - 1);
-        for (int i = 1; i < weights.length; i++)
-            weights[i] = w;
-        sashForm.setWeights(weights);
-        sashForm.layout(true);
     }
 
     /* (non-Javadoc)
@@ -1233,7 +1310,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         {
             super(parent, style|SWT.CLOSE);
             this.chartRow = row;
-            this.addDisposeListener(new DisposeListener() {
+            addDisposeListener(new DisposeListener() {
                 public void widgetDisposed(DisposeEvent e)
                 {
                     ChartsPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(ChartTabFolder.this);
