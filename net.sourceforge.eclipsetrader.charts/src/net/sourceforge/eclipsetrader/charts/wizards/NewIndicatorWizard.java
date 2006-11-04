@@ -21,6 +21,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.PlatformUI;
@@ -53,7 +54,12 @@ public class NewIndicatorWizard extends Wizard
         this.chart = chart;
         setWindowTitle("New Indicator Wizard");
         
-        indicatorPage = new IndicatorPage();
+        indicatorPage = new IndicatorPage() {
+            protected List getAdditionalPages()
+            {
+                return additionalPages;
+            }
+        };
         addPage(indicatorPage);
 
         indicatorLocationPage = new IndicatorLocationPage(chart);
@@ -63,6 +69,26 @@ public class NewIndicatorWizard extends Wizard
         dlg.create();
         
         return dlg;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
+     */
+    public IWizardPage getNextPage(IWizardPage currentPage)
+    {
+        IWizardPage nextPage = super.getNextPage(currentPage);
+        
+        if (nextPage == null)
+        {
+            int index = additionalPages.indexOf(currentPage);
+            if (index < (additionalPages.size() - 1))
+            {
+                nextPage = (IWizardPage)additionalPages.get(index + 1);
+                nextPage.setWizard(this);
+            }
+        }
+
+        return nextPage;
     }
 
     /* (non-Javadoc)
@@ -116,11 +142,6 @@ public class NewIndicatorWizard extends Wizard
         return true;
     }
     
-    List getAdditionalPages()
-    {
-        return additionalPages;
-    }
-
     IndicatorPage getIndicatorPage()
     {
         return indicatorPage;

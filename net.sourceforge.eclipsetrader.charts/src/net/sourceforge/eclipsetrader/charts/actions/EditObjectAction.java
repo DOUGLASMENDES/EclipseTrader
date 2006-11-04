@@ -16,6 +16,7 @@ import net.sourceforge.eclipsetrader.charts.dialogs.ObjectSettingsDialog;
 import net.sourceforge.eclipsetrader.charts.events.IndicatorSelection;
 import net.sourceforge.eclipsetrader.charts.events.ObjectSelection;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;
 
@@ -54,7 +55,8 @@ public class EditObjectAction implements IViewActionDelegate
             {
                 ChartIndicator indicator = ((IndicatorSelection)selection).getIndicator();
                 IndicatorSettingsDialog dlg = new IndicatorSettingsDialog(indicator, window.getShell());
-                dlg.open();
+                if (dlg.open() == IndicatorSettingsDialog.OK)
+                    CorePlugin.getRepository().save(indicator.getParent().getParent().getParent());
             }
             else if (selection instanceof ObjectSelection)
             {

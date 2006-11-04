@@ -11,13 +11,10 @@
 
 package net.sourceforge.eclipsetrader.charts.wizards;
 
-import java.util.List;
-
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -163,21 +160,6 @@ public class IndicatorLocationPage extends WizardPage
         setPageComplete(true);
     }
     
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
-     */
-    public IWizardPage getNextPage()
-    {
-        List pages = ((NewIndicatorWizard)getWizard()).getAdditionalPages();
-        if (pages.size() != 0)
-        {
-            IWizardPage page = (IWizardPage)pages.get(0);
-            page.setWizard(getWizard());
-            return page;
-        }
-        return null;
-    }
-
     private void validatePage()
     {
         if (newTab.getSelection() || newRow.getSelection())

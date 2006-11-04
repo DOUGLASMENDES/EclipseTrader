@@ -119,10 +119,14 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.eclipse.ui.preferencePages.Appearance"
-            class="net.sourceforge.eclipsetrader.charts.preferences.ChartAppearancePrefereces"
-            id="net.sourceforge.eclipsetrader.charts.appearance"
+            class="net.sourceforge.eclipsetrader.charts.preferences.ChartsPrefereces"
+            id="net.sourceforge.eclipsetrader.charts.general"
             name="Charts"/>
+      <page
+            category="net.sourceforge.eclipsetrader.charts.general"
+            class="net.sourceforge.eclipsetrader.charts.preferences.DefaultConfigurationPage"
+            id="net.sourceforge.eclipsetrader.charts.default"
+            name="Default Settings"/>
    </extension>
    <extension
          point="org.eclipse.ui.startup">

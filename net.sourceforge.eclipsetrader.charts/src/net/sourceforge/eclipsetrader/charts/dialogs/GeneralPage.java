@@ -172,7 +172,7 @@ public class GeneralPage extends PreferencePage
             end.add(dateFormat.format(bar.getDate()));
             if (first == -1 && chart.getBeginDate() != null && (bar.getDate().equals(chart.getBeginDate()) || bar.getDate().after(chart.getBeginDate())))
                 first = i;
-            if (last == -1 && chart.getEndDate() != null && (bar.getDate().equals(chart.getEndDate()) || bar.getDate().after(chart.getEndDate())))
+            if (chart.getEndDate() != null && (bar.getDate().equals(chart.getEndDate()) || chart.getEndDate().after(bar.getDate())))
                 last = i;
         }
         begin.select(first != -1 ? first : 0);

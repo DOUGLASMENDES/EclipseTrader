@@ -16,6 +16,7 @@ Export-Package: net.sourceforge.eclipsetrader.charts,
  net.sourceforge.eclipsetrader.charts.indicators,
  net.sourceforge.eclipsetrader.charts.internal,
  net.sourceforge.eclipsetrader.charts.objects,
+ net.sourceforge.eclipsetrader.charts.preferences,
  net.sourceforge.eclipsetrader.charts.views,
  net.sourceforge.eclipsetrader.charts.wizards
 Eclipse-LazyStart: true

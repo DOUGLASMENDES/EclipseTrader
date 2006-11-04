@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-public class IndicatorPage extends WizardPage
+public abstract class IndicatorPage extends WizardPage
 {
     Tree tree;
     Font groupFont;
@@ -73,9 +73,9 @@ public class IndicatorPage extends WizardPage
             public void widgetSelected(SelectionEvent e)
             {
                 String id = getIndicator();
-                setPageComplete(id != null);
                 if (id != null)
                     setPages();
+                setPageComplete(id != null);
             }
         });
         Font font = tree.getFont();
@@ -182,9 +182,11 @@ public class IndicatorPage extends WizardPage
         return "";
     }
     
+    protected abstract java.util.List getAdditionalPages();
+    
     private void setPages()
     {
-        java.util.List pages = ((NewIndicatorWizard)getWizard()).getAdditionalPages();
+        java.util.List pages = getAdditionalPages();
         for (Iterator iter = pages.iterator(); iter.hasNext(); )
             ((IWizardPage)iter.next()).dispose();
         pages.clear();
@@ -204,7 +206,7 @@ public class IndicatorPage extends WizardPage
                         preferencePage.setTitle(plugin.getAttribute("name"));
                         preferencePage.setDescription(item.getAttribute("description"));
                         PluginParametersPage page = new PluginParametersPage((IndicatorPluginPreferencePage)preferencePage);
-                        ((NewIndicatorWizard)getWizard()).getAdditionalPages().add(page);
+                        pages.add(page);
                     }
                 }
             } catch(Exception e) {

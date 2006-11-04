@@ -11,12 +11,9 @@
 
 package net.sourceforge.eclipsetrader.charts.wizards;
 
-import java.util.List;
-
 import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
 import net.sourceforge.eclipsetrader.charts.Settings;
 
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 
@@ -40,22 +37,6 @@ public class PluginParametersPage extends WizardPage
     {
         page.createControl(parent);
         setControl(page.getControl());
-    }
-    
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
-     */
-    public IWizardPage getNextPage()
-    {
-        List pages = ((NewIndicatorWizard)getWizard()).getAdditionalPages();
-        int index = pages.indexOf(this);
-        if (index < (pages.size() - 1))
-        {
-            IWizardPage page = (IWizardPage)pages.get(index + 1);
-            page.setWizard(getWizard());
-            return page;
-        }
-        return null;
     }
 
     /* (non-Javadoc)
