@@ -45,29 +45,29 @@ public class VolumePreferences extends IndicatorPluginPreferencePage
         setControl(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Label");
+        label.setText(Messages.VolumePreferences_Label);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         lineLabel = new Text(content, SWT.BORDER);
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        lineLabel.setText(getSettings().getString("label", Volume.DEFAULT_LABEL));
+        lineLabel.setText(getSettings().getString("label", Volume.DEFAULT_LABEL)); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Positive");
+        label.setText(Messages.VolumePreferences_Positive);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         positiveColor = new ColorSelector(content);
-        positiveColor.setColorValue(getSettings().getColor("positive", Volume.DEFAULT_POSITIVE).getRGB());
+        positiveColor.setColorValue(getSettings().getColor("positive", Volume.DEFAULT_POSITIVE).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Negative");
+        label.setText(Messages.VolumePreferences_Negative);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         negativeColor = new ColorSelector(content);
-        negativeColor.setColorValue(getSettings().getColor("negative", Volume.DEFAULT_NEGATIVE).getRGB());
+        negativeColor.setColorValue(getSettings().getColor("negative", Volume.DEFAULT_NEGATIVE).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Neutral");
+        label.setText(Messages.VolumePreferences_Neutral);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         neutralColor = new ColorSelector(content);
-        neutralColor.setColorValue(getSettings().getColor("neutral", Volume.DEFAULT_NEUTRAL).getRGB());
+        neutralColor.setColorValue(getSettings().getColor("neutral", Volume.DEFAULT_NEUTRAL).getRGB()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -75,9 +75,9 @@ public class VolumePreferences extends IndicatorPluginPreferencePage
      */
     public void performFinish()
     {
-        getSettings().set("label", lineLabel.getText());
-        getSettings().set("positive", positiveColor.getColorValue());
-        getSettings().set("negative", negativeColor.getColorValue());
-        getSettings().set("neutral", neutralColor.getColorValue());
+        getSettings().set("label", lineLabel.getText()); //$NON-NLS-1$
+        getSettings().set("positive", positiveColor.getColorValue()); //$NON-NLS-1$
+        getSettings().set("negative", negativeColor.getColorValue()); //$NON-NLS-1$
+        getSettings().set("neutral", neutralColor.getColorValue()); //$NON-NLS-1$
     }
 }

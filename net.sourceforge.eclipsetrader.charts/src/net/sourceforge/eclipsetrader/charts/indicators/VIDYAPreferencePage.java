@@ -37,10 +37,10 @@ public class VIDYAPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", VIDYA.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", VIDYA.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", VIDYA.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "period", "Vidya period", 1, 9999, VIDYA.DEFAULT_PERIOD);
-        addIntegerValueSelector(content, "volPeriod", "Volatility Period", 1, 9999, VIDYA.DEFAULT_VOLPERIOD);
+        addColorSelector(content, "color", Messages.VIDYAPreferencePage_Color, VIDYA.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.VIDYAPreferencePage_Label, VIDYA.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.VIDYAPreferencePage_LineType, VIDYA.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "period", Messages.VIDYAPreferencePage_VidyaPeriod, 1, 9999, VIDYA.DEFAULT_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "volPeriod", Messages.VIDYAPreferencePage_VolatilityPeriod, 1, 9999, VIDYA.DEFAULT_VOLPERIOD); //$NON-NLS-1$
     }
 }

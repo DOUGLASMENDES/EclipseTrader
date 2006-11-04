@@ -37,11 +37,11 @@ public class MAPreferences extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
 
-        addLabelField(content, "label", "Label", MA.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", MA.DEFAULT_LINETYPE);
-        addColorSelector(content, "color", "Color", MA.DEFAULT_COLOR);
-        addInputSelector(content, "input", "Input", MA.DEFAULT_INPUT, true);
-        addIntegerValueSelector(content, "period", "Period", 1, 9999, MA.DEFAULT_PERIOD);
-        addMovingAverageSelector(content, "type", "Type", MA.DEFAULT_TYPE);
+        addLabelField(content, "label", Messages.MAPreferences_Label, MA.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.MAPreferences_LineType, MA.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addColorSelector(content, "color", Messages.MAPreferences_Color, MA.DEFAULT_COLOR); //$NON-NLS-1$
+        addInputSelector(content, "input", Messages.MAPreferences_Input, MA.DEFAULT_INPUT, true); //$NON-NLS-1$
+        addIntegerValueSelector(content, "period", Messages.MAPreferences_Period, 1, 9999, MA.DEFAULT_PERIOD); //$NON-NLS-1$
+        addMovingAverageSelector(content, "type", Messages.MAPreferences_Type, MA.DEFAULT_TYPE); //$NON-NLS-1$
     }
 }

@@ -37,12 +37,12 @@ public class MAOSCPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", MAOSC.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", MAOSC.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", MAOSC.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "fastPeriod", "Fast Period", 1, 9999, MAOSC.DEFAULT_FAST_PERIOD);
-        addIntegerValueSelector(content, "slowPeriod", "Slow Period", 1, 9999, MAOSC.DEFAULT_SLOW_PERIOD);
-        addMovingAverageSelector(content, "fastMaType", "Fast MA Type", MAOSC.DEFAULT_FAST_MA_TYPE);
-        addMovingAverageSelector(content, "slowMaType", "Slow MA Type", MAOSC.DEFAULT_SLOW_MA_TYPE);
+        addColorSelector(content, "color", Messages.MAOSCPreferencePage_Color, MAOSC.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.MAOSCPreferencePage_Label, MAOSC.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.MAOSCPreferencePage_LineType, MAOSC.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "fastPeriod", Messages.MAOSCPreferencePage_FastPeriod, 1, 9999, MAOSC.DEFAULT_FAST_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "slowPeriod", Messages.MAOSCPreferencePage_SlowPeriod, 1, 9999, MAOSC.DEFAULT_SLOW_PERIOD); //$NON-NLS-1$
+        addMovingAverageSelector(content, "fastMaType", Messages.MAOSCPreferencePage_FastMAType, MAOSC.DEFAULT_FAST_MA_TYPE); //$NON-NLS-1$
+        addMovingAverageSelector(content, "slowMaType", Messages.MAOSCPreferencePage_SlowMAType, MAOSC.DEFAULT_SLOW_MA_TYPE); //$NON-NLS-1$
     }
 }

@@ -37,10 +37,10 @@ public class ATRPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", ATR.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", ATR.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", ATR.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "smoothing", "Smoothing", 1, 9999, ATR.DEFAULT_SMOOTHING);
-        addMovingAverageSelector(content, "maType", "Smoothing Type", ATR.DEFAULT_MA_TYPE);
+        addColorSelector(content, "color", Messages.ATRPreferencePage_Color, ATR.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.ATRPreferencePage_Label, ATR.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.ATRPreferencePage_LineType, ATR.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "smoothing", Messages.ATRPreferencePage_Smoothing, 1, 9999, ATR.DEFAULT_SMOOTHING); //$NON-NLS-1$
+        addMovingAverageSelector(content, "maType", Messages.ATRPreferencePage_SmoothingType, ATR.DEFAULT_MA_TYPE); //$NON-NLS-1$
     }
 }

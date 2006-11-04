@@ -40,19 +40,19 @@ public class VTPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", VT.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", VT.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", VT.DEFAULT_LINETYPE);
+        addColorSelector(content, "color", Messages.VTPreferencePage_Color, VT.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.VTPreferencePage_Label, VT.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.VTPreferencePage_LineType, VT.DEFAULT_LINETYPE); //$NON-NLS-1$
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Method");
+        label.setText(Messages.VTPreferencePage_Method);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         method = new Combo(content, SWT.READ_ONLY);
-        method.add("NVI");
-        method.add("OBV");
-        method.add("PVI");
-        method.add("PVT");
-        method.setText(getSettings().getString("method", VT.DEFAULT_METHOD));
+        method.add(Messages.VTPreferencePage_NVI);
+        method.add(Messages.VTPreferencePage_OBV);
+        method.add(Messages.VTPreferencePage_PVI);
+        method.add(Messages.VTPreferencePage_PVT);
+        method.setText(getSettings().getString("method", VT.DEFAULT_METHOD)); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -60,7 +60,7 @@ public class VTPreferencePage extends IndicatorPluginPreferencePage
      */
     public void performFinish()
     {
-        getSettings().set("method", method.getText());
+        getSettings().set("method", method.getText()); //$NON-NLS-1$
         super.performFinish();
     }
 }

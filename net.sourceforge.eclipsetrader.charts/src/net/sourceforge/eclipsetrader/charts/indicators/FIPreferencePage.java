@@ -37,10 +37,10 @@ public class FIPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", FI.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", FI.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", FI.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "smoothing", "Smoothing", 1, 9999, FI.DEFAULT_SMOOTHING);
-        addMovingAverageSelector(content, "maType", "Smoothing Type", FI.DEFAULT_MA_TYPE);
+        addColorSelector(content, "color", Messages.FIPreferencePage_Color, FI.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.FIPreferencePage_Label, FI.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.FIPreferencePage_LineType, FI.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "smoothing", Messages.FIPreferencePage_Smoothing, 1, 9999, FI.DEFAULT_SMOOTHING); //$NON-NLS-1$
+        addMovingAverageSelector(content, "maType", Messages.FIPreferencePage_SmoothingType, FI.DEFAULT_MA_TYPE); //$NON-NLS-1$
     }
 }

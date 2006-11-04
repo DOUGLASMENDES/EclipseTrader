@@ -37,10 +37,10 @@ public class DPOPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", DPO.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", DPO.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", DPO.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "period", "Period", 1, 9999, DPO.DEFAULT_PERIOD);
-        addMovingAverageSelector(content, "maType", "MA Type", DPO.DEFAULT_MA_TYPE);
+        addColorSelector(content, "color", Messages.DPOPreferencePage_Color, DPO.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.DPOPreferencePage_Label, DPO.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.DPOPreferencePage_LineType, DPO.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "period", Messages.DPOPreferencePage_Period, 1, 9999, DPO.DEFAULT_PERIOD); //$NON-NLS-1$
+        addMovingAverageSelector(content, "maType", Messages.DPOPreferencePage_MAType, DPO.DEFAULT_MA_TYPE); //$NON-NLS-1$
     }
 }

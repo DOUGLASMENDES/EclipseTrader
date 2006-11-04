@@ -57,83 +57,83 @@ public class StochasticPreferencePage extends IndicatorPluginPreferencePage
         setControl(content);
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("%D Color");
+        label.setText(Messages.StochasticPreferencePage_DColor);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         dcolor = new ColorSelector(content);
-        dcolor.setColorValue(getSettings().getColor("dcolor", Stochastic.DEFAULT_DCOLOR).getRGB());
+        dcolor.setColorValue(getSettings().getColor("dcolor", Stochastic.DEFAULT_DCOLOR).getRGB()); //$NON-NLS-1$
 
-        dlineType = createLineTypeCombo(content, "%D Line Type", getSettings().getInteger("dlineType", Stochastic.DEFAULT_DLINETYPE).intValue());
+        dlineType = createLineTypeCombo(content, Messages.StochasticPreferencePage_DLineType, getSettings().getInteger("dlineType", Stochastic.DEFAULT_DLINETYPE).intValue()); //$NON-NLS-2$
 
         label = new Label(content, SWT.NONE);
-        label.setText("%D Label");
+        label.setText(Messages.StochasticPreferencePage_DLabel);
         dlabel = new Text(content, SWT.BORDER);
         dlabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        dlabel.setText(getSettings().getString("dlabel", Stochastic.DEFAULT_DLABEL));
+        dlabel.setText(getSettings().getString("dlabel", Stochastic.DEFAULT_DLABEL)); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("%D Period");
+        label.setText(Messages.StochasticPreferencePage_DPeriod);
         dperiod = new Spinner(content, SWT.BORDER);
         dperiod.setLayoutData(new GridData(25, SWT.DEFAULT));
         dperiod.setMinimum(1);
         dperiod.setMaximum(99);
-        dperiod.setSelection(getSettings().getInteger("dperiod", Stochastic.DEFAULT_DPERIOD).intValue());
+        dperiod.setSelection(getSettings().getInteger("dperiod", Stochastic.DEFAULT_DPERIOD).intValue()); //$NON-NLS-1$
         
         label = new Label(content, SWT.NONE);
-        label.setText("%K Color");
+        label.setText(Messages.StochasticPreferencePage_KColor);
         kcolor = new ColorSelector(content);
-        kcolor.setColorValue(getSettings().getColor("kcolor", Stochastic.DEFAULT_KCOLOR).getRGB());
+        kcolor.setColorValue(getSettings().getColor("kcolor", Stochastic.DEFAULT_KCOLOR).getRGB()); //$NON-NLS-1$
 
-        klineType = createLineTypeCombo(content, "%K Line Type", getSettings().getInteger("klineType", Stochastic.DEFAULT_KLINETYPE).intValue());
+        klineType = createLineTypeCombo(content, Messages.StochasticPreferencePage_KLineType, getSettings().getInteger("klineType", Stochastic.DEFAULT_KLINETYPE).intValue()); //$NON-NLS-2$
 
         label = new Label(content, SWT.NONE);
-        label.setText("%K Label");
+        label.setText(Messages.StochasticPreferencePage_KLabel);
         klabel = new Text(content, SWT.BORDER);
         klabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        klabel.setText(getSettings().getString("klabel", Stochastic.DEFAULT_KLABEL));
+        klabel.setText(getSettings().getString("klabel", Stochastic.DEFAULT_KLABEL)); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("%K Period");
+        label.setText(Messages.StochasticPreferencePage_KPeriod);
         kperiod = new Spinner(content, SWT.BORDER);
         kperiod.setLayoutData(new GridData(25, SWT.DEFAULT));
         kperiod.setMinimum(1);
         kperiod.setMaximum(99);
-        kperiod.setSelection(getSettings().getInteger("kperiod", Stochastic.DEFAULT_KPERIOD).intValue());
+        kperiod.setSelection(getSettings().getInteger("kperiod", Stochastic.DEFAULT_KPERIOD).intValue()); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, "MA Type", getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue());
+        maType = createMovingAverageCombo(content, Messages.StochasticPreferencePage_MAType, getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue()); //$NON-NLS-2$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Period");
+        label.setText(Messages.StochasticPreferencePage_Period);
         period = new Spinner(content, SWT.BORDER);
         period.setLayoutData(new GridData(25, SWT.DEFAULT));
         period.setMinimum(1);
         period.setMaximum(99);
-        period.setSelection(getSettings().getInteger("period", Stochastic.DEFAULT_PERIOD).intValue());
+        period.setSelection(getSettings().getInteger("period", Stochastic.DEFAULT_PERIOD).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Buy Line Color");
+        label.setText(Messages.StochasticPreferencePage_BuyLineColor);
         buyColor = new ColorSelector(content);
-        buyColor.setColorValue(getSettings().getColor("buyColor", Stochastic.DEFAULT_BUYCOLOR).getRGB());
+        buyColor.setColorValue(getSettings().getColor("buyColor", Stochastic.DEFAULT_BUYCOLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Buy Line");
+        label.setText(Messages.StochasticPreferencePage_BuyLine);
         buyLine = new Spinner(content, SWT.BORDER);
         buyLine.setLayoutData(new GridData(25, SWT.DEFAULT));
         buyLine.setMinimum(1);
         buyLine.setMaximum(99);
-        buyLine.setSelection(getSettings().getInteger("buyLine", Stochastic.DEFAULT_BUYLINE).intValue());
+        buyLine.setSelection(getSettings().getInteger("buyLine", Stochastic.DEFAULT_BUYLINE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Sell Line Color");
+        label.setText(Messages.StochasticPreferencePage_SellLineColor);
         sellColor = new ColorSelector(content);
-        sellColor.setColorValue(getSettings().getColor("sellColor", Stochastic.DEFAULT_SELLCOLOR).getRGB());
+        sellColor.setColorValue(getSettings().getColor("sellColor", Stochastic.DEFAULT_SELLCOLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Sell Line");
+        label.setText(Messages.StochasticPreferencePage_SellLine);
         sellLine = new Spinner(content, SWT.BORDER);
         sellLine.setLayoutData(new GridData(25, SWT.DEFAULT));
         sellLine.setMinimum(1);
         sellLine.setMaximum(99);
-        sellLine.setSelection(getSettings().getInteger("sellLine", Stochastic.DEFAULT_SELLLINE).intValue());
+        sellLine.setSelection(getSettings().getInteger("sellLine", Stochastic.DEFAULT_SELLLINE).intValue()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -141,19 +141,19 @@ public class StochasticPreferencePage extends IndicatorPluginPreferencePage
      */
     public void performFinish()
     {
-        getSettings().set("dcolor", dcolor.getColorValue());
-        getSettings().set("kcolor", kcolor.getColorValue());
-        getSettings().set("buyColor", buyColor.getColorValue());
-        getSettings().set("sellColor", sellColor.getColorValue());
-        getSettings().set("dlineType", dlineType.getSelectionIndex());
-        getSettings().set("dlabel", dlabel.getText());
-        getSettings().set("dperiod", dperiod.getSelection());
-        getSettings().set("klineType", klineType.getSelectionIndex());
-        getSettings().set("klabel", klabel.getText());
-        getSettings().set("kperiod", kperiod.getSelection());
-        getSettings().set("period", period.getSelection());
-        getSettings().set("buyLine", buyLine.getSelection());
-        getSettings().set("sellLine", sellLine.getSelection());
-        getSettings().set("maType", maType.getSelectionIndex());
+        getSettings().set("dcolor", dcolor.getColorValue()); //$NON-NLS-1$
+        getSettings().set("kcolor", kcolor.getColorValue()); //$NON-NLS-1$
+        getSettings().set("buyColor", buyColor.getColorValue()); //$NON-NLS-1$
+        getSettings().set("sellColor", sellColor.getColorValue()); //$NON-NLS-1$
+        getSettings().set("dlineType", dlineType.getSelectionIndex()); //$NON-NLS-1$
+        getSettings().set("dlabel", dlabel.getText()); //$NON-NLS-1$
+        getSettings().set("dperiod", dperiod.getSelection()); //$NON-NLS-1$
+        getSettings().set("klineType", klineType.getSelectionIndex()); //$NON-NLS-1$
+        getSettings().set("klabel", klabel.getText()); //$NON-NLS-1$
+        getSettings().set("kperiod", kperiod.getSelection()); //$NON-NLS-1$
+        getSettings().set("period", period.getSelection()); //$NON-NLS-1$
+        getSettings().set("buyLine", buyLine.getSelection()); //$NON-NLS-1$
+        getSettings().set("sellLine", sellLine.getSelection()); //$NON-NLS-1$
+        getSettings().set("maType", maType.getSelectionIndex()); //$NON-NLS-1$
     }
 }

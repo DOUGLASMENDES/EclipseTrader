@@ -49,36 +49,36 @@ public class CommodityChannelIndexPreferencePage extends IndicatorPluginPreferen
         setControl(content);
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.CommodityChannelIndexPreferencePage_Color);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         color = new ColorSelector(content);
-        color.setColorValue(getSettings().getColor("color", CommodityChannelIndex.DEFAULT_COLOR).getRGB());
+        color.setColorValue(getSettings().getColor("color", CommodityChannelIndex.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Label");
+        label.setText(Messages.CommodityChannelIndexPreferencePage_Label);
         lineLabel = new Text(content, SWT.BORDER);
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        lineLabel.setText(getSettings().getString("label", CommodityChannelIndex.DEFAULT_LABEL));
+        lineLabel.setText(getSettings().getString("label", CommodityChannelIndex.DEFAULT_LABEL)); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, "Line Type", getSettings().getInteger("lineType", CommodityChannelIndex.DEFAULT_LINETYPE).intValue());
+        lineType = createLineTypeCombo(content, Messages.CommodityChannelIndexPreferencePage_LineType, getSettings().getInteger("lineType", CommodityChannelIndex.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Period");
+        label.setText(Messages.CommodityChannelIndexPreferencePage_Period);
         period = new Spinner(content, SWT.BORDER);
         period.setLayoutData(new GridData(25, SWT.DEFAULT));
         period.setMinimum(1);
         period.setMaximum(99);
-        period.setSelection(getSettings().getInteger("period", CommodityChannelIndex.DEFAULT_PERIOD).intValue());
+        period.setSelection(getSettings().getInteger("period", CommodityChannelIndex.DEFAULT_PERIOD).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Smoothing");
+        label.setText(Messages.CommodityChannelIndexPreferencePage_Smoothing);
         smoothing = new Spinner(content, SWT.BORDER);
         smoothing.setLayoutData(new GridData(25, SWT.DEFAULT));
         smoothing.setMinimum(1);
         smoothing.setMaximum(99);
-        smoothing.setSelection(getSettings().getInteger("smoothing", CommodityChannelIndex.DEFAULT_SMOOTHING).intValue());
+        smoothing.setSelection(getSettings().getInteger("smoothing", CommodityChannelIndex.DEFAULT_SMOOTHING).intValue()); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, "Smoothing Type", getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue());
+        maType = createMovingAverageCombo(content, Messages.CommodityChannelIndexPreferencePage_SmoothingType, getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue()); //$NON-NLS-2$
     }
 
     /* (non-Javadoc)
@@ -86,11 +86,11 @@ public class CommodityChannelIndexPreferencePage extends IndicatorPluginPreferen
      */
     public void performFinish()
     {
-        getSettings().set("color", color.getColorValue());
-        getSettings().set("label", lineLabel.getText());
-        getSettings().set("lineType", lineType.getSelectionIndex());
-        getSettings().set("period", period.getSelection());
-        getSettings().set("smoothing", smoothing.getSelection());
-        getSettings().set("maType", maType.getSelectionIndex());
+        getSettings().set("color", color.getColorValue()); //$NON-NLS-1$
+        getSettings().set("label", lineLabel.getText()); //$NON-NLS-1$
+        getSettings().set("lineType", lineType.getSelectionIndex()); //$NON-NLS-1$
+        getSettings().set("period", period.getSelection()); //$NON-NLS-1$
+        getSettings().set("smoothing", smoothing.getSelection()); //$NON-NLS-1$
+        getSettings().set("maType", maType.getSelectionIndex()); //$NON-NLS-1$
     }
 }

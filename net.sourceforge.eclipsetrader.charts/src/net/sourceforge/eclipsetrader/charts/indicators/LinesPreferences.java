@@ -46,29 +46,29 @@ public class LinesPreferences extends IndicatorPluginPreferencePage
         setControl(content);
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.LinesPreferences_Color);
         colorSelector = new ColorSelector(content);
-        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB());
+        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Label");
+        label.setText(Messages.LinesPreferences_Label);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         lineLabel = new Text(content, SWT.BORDER);
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        lineLabel.setText(getSettings().getString("label", Lines.DEFAULT_LABEL));
+        lineLabel.setText(getSettings().getString("label", Lines.DEFAULT_LABEL)); //$NON-NLS-1$
         
-        addSecuritySelector(content, "securityId", "Security", 0);
+        addSecuritySelector(content, "securityId", Messages.LinesPreferences_Security, 0); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Input");
+        label.setText(Messages.LinesPreferences_Input);
         input = new Combo(content, SWT.READ_ONLY);
-        input.add("OPEN");
-        input.add("HIGH");
-        input.add("LOW");
-        input.add("CLOSE");
-        input.select(getSettings().getInteger("input", Lines.DEFAULT_INPUT).intValue());
+        input.add("OPEN"); //$NON-NLS-1$
+        input.add("HIGH"); //$NON-NLS-1$
+        input.add("LOW"); //$NON-NLS-1$
+        input.add("CLOSE"); //$NON-NLS-1$
+        input.select(getSettings().getInteger("input", Lines.DEFAULT_INPUT).intValue()); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, "Line Type", getSettings().getInteger("lineType", Lines.DEFAULT_LINETYPE).intValue());
+        lineType = createLineTypeCombo(content, Messages.LinesPreferences_LineType, getSettings().getInteger("lineType", Lines.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
     }
 
     /* (non-Javadoc)
@@ -76,10 +76,10 @@ public class LinesPreferences extends IndicatorPluginPreferencePage
      */
     public void performFinish()
     {
-        getSettings().set("label", lineLabel.getText());
-        getSettings().set("lineType", lineType.getSelectionIndex());
-        getSettings().set("color", colorSelector.getColorValue());
-        getSettings().set("input", input.getSelectionIndex());
+        getSettings().set("label", lineLabel.getText()); //$NON-NLS-1$
+        getSettings().set("lineType", lineType.getSelectionIndex()); //$NON-NLS-1$
+        getSettings().set("color", colorSelector.getColorValue()); //$NON-NLS-1$
+        getSettings().set("input", input.getSelectionIndex()); //$NON-NLS-1$
         super.performFinish();
     }
 }

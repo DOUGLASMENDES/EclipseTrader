@@ -48,51 +48,51 @@ public class BarsPreferences extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addSecuritySelector(content, "securityId", "Security", 0);
+        addSecuritySelector(content, "securityId", Messages.BarsPreferences_Security, 0); //$NON-NLS-1$
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Bar Type");
+        label.setText(Messages.BarsPreferences_Type);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         barType = new Combo(content, SWT.READ_ONLY);
-        barType.add("Bars");
-        barType.add("Candles");
-        barType.select(getSettings().getInteger("barType", Bars.DEFAULT_BARTYPE).intValue() - PlotLine.BAR);
+        barType.add(Messages.BarsPreferences_Bars);
+        barType.add(Messages.BarsPreferences_Candles);
+        barType.select(getSettings().getInteger("barType", Bars.DEFAULT_BARTYPE).intValue() - PlotLine.BAR); //$NON-NLS-1$
         
         label = new Label(content, SWT.NONE);
-        label.setText("Positive Bars");
+        label.setText(Messages.BarsPreferences_PositiveBars);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         positiveBar = new ColorSelector(content);
-        positiveBar.setColorValue(getSettings().getColor("positiveBar", Bars.DEFAULT_POSITIVE_BAR).getRGB());
+        positiveBar.setColorValue(getSettings().getColor("positiveBar", Bars.DEFAULT_POSITIVE_BAR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Negative Bars");
+        label.setText(Messages.BarsPreferences_NegativeBars);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         negativeBar = new ColorSelector(content);
-        negativeBar.setColorValue(getSettings().getColor("negativeBar", Bars.DEFAULT_NEGATIVE_BAR).getRGB());
+        negativeBar.setColorValue(getSettings().getColor("negativeBar", Bars.DEFAULT_NEGATIVE_BAR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Neutral Bars");
+        label.setText(Messages.BarsPreferences_NeutralBars);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         neutralBar = new ColorSelector(content);
-        neutralBar.setColorValue(getSettings().getColor("neutralBar", Bars.DEFAULT_NEUTRAL_BAR).getRGB());
+        neutralBar.setColorValue(getSettings().getColor("neutralBar", Bars.DEFAULT_NEUTRAL_BAR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Candle Lines");
+        label.setText(Messages.BarsPreferences_CandleLines);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         lineCandle = new ColorSelector(content);
-        lineCandle.setColorValue(getSettings().getColor("lineCandle", Bars.DEFAULT_LINE_CANDLE).getRGB());
+        lineCandle.setColorValue(getSettings().getColor("lineCandle", Bars.DEFAULT_LINE_CANDLE).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Positive Candles");
+        label.setText(Messages.BarsPreferences_PositiveCandle);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         positiveCandle = new ColorSelector(content);
-        positiveCandle.setColorValue(getSettings().getColor("positiveCandle", Bars.DEFAULT_POSITIVE_CANDLE).getRGB());
+        positiveCandle.setColorValue(getSettings().getColor("positiveCandle", Bars.DEFAULT_POSITIVE_CANDLE).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Negative Candles");
+        label.setText(Messages.BarsPreferences_NegativeCandle);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         negativeCandle = new ColorSelector(content);
-        negativeCandle.setColorValue(getSettings().getColor("negativeCandle", Bars.DEFAULT_NEGATIVE_CANDLE).getRGB());
+        negativeCandle.setColorValue(getSettings().getColor("negativeCandle", Bars.DEFAULT_NEGATIVE_CANDLE).getRGB()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -100,13 +100,13 @@ public class BarsPreferences extends IndicatorPluginPreferencePage
      */
     public void performFinish()
     {
-        getSettings().set("barType", barType.getSelectionIndex() + PlotLine.BAR);
-        getSettings().set("positiveBar", positiveBar.getColorValue());
-        getSettings().set("negativeBar", negativeBar.getColorValue());
-        getSettings().set("neutralBar", neutralBar.getColorValue());
-        getSettings().set("lineCandle", lineCandle.getColorValue());
-        getSettings().set("positiveCandle", positiveCandle.getColorValue());
-        getSettings().set("negativeCandle", negativeCandle.getColorValue());
+        getSettings().set("barType", barType.getSelectionIndex() + PlotLine.BAR); //$NON-NLS-1$
+        getSettings().set("positiveBar", positiveBar.getColorValue()); //$NON-NLS-1$
+        getSettings().set("negativeBar", negativeBar.getColorValue()); //$NON-NLS-1$
+        getSettings().set("neutralBar", neutralBar.getColorValue()); //$NON-NLS-1$
+        getSettings().set("lineCandle", lineCandle.getColorValue()); //$NON-NLS-1$
+        getSettings().set("positiveCandle", positiveCandle.getColorValue()); //$NON-NLS-1$
+        getSettings().set("negativeCandle", negativeCandle.getColorValue()); //$NON-NLS-1$
         super.performFinish();
     }
 }

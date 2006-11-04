@@ -16,13 +16,10 @@ import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 public class MACDPreferences extends IndicatorPluginPreferencePage
 {
-    private Combo input;
 
     public MACDPreferences()
     {
@@ -40,38 +37,21 @@ public class MACDPreferences extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "MACD Color", MACD.DEFAULT_COLOR);
-        addIntegerValueSelector(content, "fastPeriod", "Fast Period", 1, 9999, MACD.DEFAULT_FAST_PERIOD);
-        addIntegerValueSelector(content, "slowPeriod", "Slow Period", 1, 9999, MACD.DEFAULT_SLOW_PERIOD);
-        addLabelField(content, "label", "MACD Label", MACD.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "MACD Line Type", MACD.DEFAULT_LINETYPE);
-        addMovingAverageSelector(content, "maType", "MACD MA Type", MACD.DEFAULT_MA_TYPE);
-
-        Label label = new Label(content, SWT.NONE);
-        label.setText("MACD Input");
-        input = new Combo(content, SWT.READ_ONLY);
-        input.add("OPEN");
-        input.add("HIGH");
-        input.add("LOW");
-        input.add("CLOSE");
-        input.select(getSettings().getInteger("input", MACD.DEFAULT_INPUT).intValue());
+        addColorSelector(content, "color", Messages.MACDPreferences_Color, MACD.DEFAULT_COLOR); //$NON-NLS-1$
+        addIntegerValueSelector(content, "fastPeriod", Messages.MACDPreferences_FastPeriod, 1, 9999, MACD.DEFAULT_FAST_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "slowPeriod", Messages.MACDPreferences_SlowPeriod, 1, 9999, MACD.DEFAULT_SLOW_PERIOD); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.MACDPreferences_Label, MACD.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.MACDPreferences_LineType, MACD.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addMovingAverageSelector(content, "maType", Messages.MACDPreferences_MAType, MACD.DEFAULT_MA_TYPE); //$NON-NLS-1$
+        addInputSelector(content, "input", Messages.MACDPreferences_Input, MACD.DEFAULT_INPUT, false); //$NON-NLS-1$
         
-        addColorSelector(content, "triggerColor", "Trigger Color", MACD.DEFAULT_TRIGGER_COLOR);
-        addIntegerValueSelector(content, "triggerPeriod", "Trigger Period", 1, 9999, MACD.DEFAULT_TRIGGER_PERIOD);
-        addLabelField(content, "triggerLabel", "Trigger Label", MACD.DEFAULT_TRIGGER_LABEL);
-        addLineTypeSelector(content, "triggerLineType", "Trigger Line Type", MACD.DEFAULT_TRIGGER_LINETYPE);
+        addColorSelector(content, "triggerColor", Messages.MACDPreferences_TriggerColor, MACD.DEFAULT_TRIGGER_COLOR); //$NON-NLS-1$
+        addIntegerValueSelector(content, "triggerPeriod", Messages.MACDPreferences_TriggerPeriod, 1, 9999, MACD.DEFAULT_TRIGGER_PERIOD); //$NON-NLS-1$
+        addLabelField(content, "triggerLabel", Messages.MACDPreferences_TriggerLabel, MACD.DEFAULT_TRIGGER_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "triggerLineType", Messages.MACDPreferences_TriggerLineType, MACD.DEFAULT_TRIGGER_LINETYPE); //$NON-NLS-1$
         
-        addColorSelector(content, "oscColor", "Osc Color", MACD.DEFAULT_OSC_COLOR);
-        addLabelField(content, "oscLabel", "Osc Label", MACD.DEFAULT_OSC_LABEL);
-        addLineTypeSelector(content, "oscLineType", "Osc Line Type", MACD.DEFAULT_OSC_LINETYPE);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage#performFinish()
-     */
-    public void performFinish()
-    {
-        getSettings().set("input", input.getSelectionIndex());
-        super.performFinish();
+        addColorSelector(content, "oscColor", Messages.MACDPreferences_OscColor, MACD.DEFAULT_OSC_COLOR); //$NON-NLS-1$
+        addLabelField(content, "oscLabel", Messages.MACDPreferences_OscLabel, MACD.DEFAULT_OSC_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "oscLineType", Messages.MACDPreferences_OscLineType, MACD.DEFAULT_OSC_LINETYPE); //$NON-NLS-1$
     }
 }

@@ -38,11 +38,11 @@ public class VFIPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", VFI.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", VFI.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", VFI.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "period", "Period", 1, 9999, VFI.DEFAULT_PERIOD);
-        addIntegerValueSelector(content, "smoothing", "Smoothing", 1, 9999, VFI.DEFAULT_SMOOTHING);
-        addMovingAverageSelector(content, "maType", "Smoothing Type", VFI.DEFAULT_MA_TYPE);
+        addColorSelector(content, "color", Messages.VFIPreferencePage_Color, VFI.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.VFIPreferencePage_Label, VFI.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.VFIPreferencePage_LineType, VFI.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "period", Messages.VFIPreferencePage_Period, 1, 9999, VFI.DEFAULT_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "smoothing", Messages.VFIPreferencePage_Smoothing, 1, 9999, VFI.DEFAULT_SMOOTHING); //$NON-NLS-1$
+        addMovingAverageSelector(content, "maType", Messages.VFIPreferencePage_SmoothingType, VFI.DEFAULT_MA_TYPE); //$NON-NLS-1$
     }
 }

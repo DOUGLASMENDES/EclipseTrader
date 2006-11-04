@@ -46,25 +46,25 @@ public class AccumulationDistributionPreferencePage extends IndicatorPluginPrefe
         setControl(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Label");
+        label.setText(Messages.AccumulationDistributionPreferencePage_Label);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         lineLabel = new Text(content, SWT.BORDER);
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-        lineLabel.setText(getSettings().getString("label", AccumulationDistribution.DEFAULT_LABEL));
+        lineLabel.setText(getSettings().getString("label", AccumulationDistribution.DEFAULT_LABEL)); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, "Line Type", getSettings().getInteger("lineType", AccumulationDistribution.DEFAULT_LINETYPE).intValue());
+        lineType = createLineTypeCombo(content, Messages.AccumulationDistributionPreferencePage_LineType, getSettings().getInteger("lineType", AccumulationDistribution.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
         
         label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.AccumulationDistributionPreferencePage_Color);
         colorSelector = new ColorSelector(content);
-        colorSelector.setColorValue(getSettings().getColor("color", AccumulationDistribution.DEFAULT_COLOR).getRGB());
+        colorSelector.setColorValue(getSettings().getColor("color", AccumulationDistribution.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Method");
+        label.setText(Messages.AccumulationDistributionPreferencePage_Method);
         method = new Combo(content, SWT.READ_ONLY);
-        method.add("AD");
-        method.add("WAD");
-        method.select(getSettings().getInteger("method", AccumulationDistribution.DEFAULT_METHOD).intValue());
+        method.add("AD"); //$NON-NLS-1$
+        method.add("WAD"); //$NON-NLS-1$
+        method.select(getSettings().getInteger("method", AccumulationDistribution.DEFAULT_METHOD).intValue()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -72,9 +72,9 @@ public class AccumulationDistributionPreferencePage extends IndicatorPluginPrefe
      */
     public void performFinish()
     {
-        getSettings().set("label", lineLabel.getText());
-        getSettings().set("lineType", lineType.getSelectionIndex());
-        getSettings().set("color", colorSelector.getColorValue());
-        getSettings().set("method", method.getSelectionIndex());
+        getSettings().set("label", lineLabel.getText()); //$NON-NLS-1$
+        getSettings().set("lineType", lineType.getSelectionIndex()); //$NON-NLS-1$
+        getSettings().set("color", colorSelector.getColorValue()); //$NON-NLS-1$
+        getSettings().set("method", method.getSelectionIndex()); //$NON-NLS-1$
     }
 }

@@ -37,11 +37,11 @@ public class UOPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", UO.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", UO.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", UO.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "shortPeriod", "Short Period", 1, 9999, UO.DEFAULT_SHORT_PERIOD);
-        addIntegerValueSelector(content, "mediumPeriod", "Medium Period", 1, 9999, UO.DEFAULT_MEDIUM_PERIOD);
-        addIntegerValueSelector(content, "longPeriod", "Long Period", 1, 9999, UO.DEFAULT_LONG_PERIOD);
+        addColorSelector(content, "color", Messages.UOPreferencePage_Color, UO.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.UOPreferencePage_Label, UO.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.UOPreferencePage_LineType, UO.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "shortPeriod", Messages.UOPreferencePage_ShortPeriod, 1, 9999, UO.DEFAULT_SHORT_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "mediumPeriod", Messages.UOPreferencePage_MediumPeriod, 1, 9999, UO.DEFAULT_MEDIUM_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "longPeriod", Messages.UOPreferencePage_LongPeriod, 1, 9999, UO.DEFAULT_LONG_PERIOD); //$NON-NLS-1$
     }
 }

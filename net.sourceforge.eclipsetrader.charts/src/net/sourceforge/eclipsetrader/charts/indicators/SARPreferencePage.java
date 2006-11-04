@@ -51,30 +51,30 @@ public class SARPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", SAR.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", SAR.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", SAR.DEFAULT_LINETYPE);
+        addColorSelector(content, "color", Messages.SARPreferencePage_Color, SAR.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.SARPreferencePage_Label, SAR.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.SARPreferencePage_LineType, SAR.DEFAULT_LINETYPE); //$NON-NLS-1$
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Initial");
+        label.setText(Messages.SARPreferencePage_Initial);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         initial = new Text(content, SWT.BORDER);
         initial.setLayoutData(new GridData(80, SWT.DEFAULT));
-        initial.setText(nf.format(getSettings().getDouble("initial", SAR.DEFAULT_INITIAL)));
+        initial.setText(nf.format(getSettings().getDouble("initial", SAR.DEFAULT_INITIAL))); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Add");
+        label.setText(Messages.SARPreferencePage_Add);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         add = new Text(content, SWT.BORDER);
         add.setLayoutData(new GridData(80, SWT.DEFAULT));
-        add.setText(nf.format(getSettings().getDouble("add", SAR.DEFAULT_ADD)));
+        add.setText(nf.format(getSettings().getDouble("add", SAR.DEFAULT_ADD))); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Limit");
+        label.setText(Messages.SARPreferencePage_Limit);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         limit = new Text(content, SWT.BORDER);
         limit.setLayoutData(new GridData(80, SWT.DEFAULT));
-        limit.setText(nf.format(getSettings().getDouble("limit", SAR.DEFAULT_LIMIT)));
+        limit.setText(nf.format(getSettings().getDouble("limit", SAR.DEFAULT_LIMIT))); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -84,9 +84,9 @@ public class SARPreferencePage extends IndicatorPluginPreferencePage
     {
         try
         {
-            getSettings().set("initial", nf.parse(initial.getText()).doubleValue());
-            getSettings().set("add", nf.parse(add.getText()).doubleValue());
-            getSettings().set("limit", nf.parse(limit.getText()).doubleValue());
+            getSettings().set("initial", nf.parse(initial.getText()).doubleValue()); //$NON-NLS-1$
+            getSettings().set("add", nf.parse(add.getText()).doubleValue()); //$NON-NLS-1$
+            getSettings().set("limit", nf.parse(limit.getText()).doubleValue()); //$NON-NLS-1$
         }
         catch (ParseException e) {
             CorePlugin.logException(e);

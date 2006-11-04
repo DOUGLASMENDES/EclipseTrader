@@ -37,22 +37,22 @@ public class AdaptiveStochPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addIntegerValueSelector(content, "period", "Period", 1, 9999, AdaptiveStoch.DEFAULT_PERIOD);
-        addIntegerValueSelector(content, "minLookback", "Min Lookback Period", 1, 9999, AdaptiveStoch.DEFAULT_MIN_LOOKBACK);
-        addIntegerValueSelector(content, "maxLookback", "Max Lookback Period", 1, 9999, AdaptiveStoch.DEFAULT_MAX_LOOKBACK);
-        addColorSelector(content, "kcolor", "%K Color", AdaptiveStoch.DEFAULT_KCOLOR);
-        addLineTypeSelector(content, "klineType", "%K Line Type", AdaptiveStoch.DEFAULT_KLINETYPE);
-        addLabelField(content, "klabel", "%K Label", AdaptiveStoch.DEFAULT_KLABEL);
-        addMovingAverageSelector(content, "kMaType", "%K Smoothing Type", AdaptiveStoch.DEFAULT_K_MATYPE);
-        addIntegerValueSelector(content, "kperiod", "%K Period", 1, 9999, AdaptiveStoch.DEFAULT_KPERIOD);
-        addColorSelector(content, "dcolor", "%D Color", AdaptiveStoch.DEFAULT_DCOLOR);
-        addLineTypeSelector(content, "dlineType", "%D Line Type", AdaptiveStoch.DEFAULT_DLINETYPE);
-        addLabelField(content, "dlabel", "%D Label", AdaptiveStoch.DEFAULT_DLABEL);
-        addMovingAverageSelector(content, "dMaType", "%D Smoothing Type", AdaptiveStoch.DEFAULT_D_MATYPE);
-        addIntegerValueSelector(content, "dperiod", "%D Period", 1, 9999, AdaptiveStoch.DEFAULT_DPERIOD);
-        addColorSelector(content, "buyColor", "Buy Color", AdaptiveStoch.DEFAULT_BUYCOLOR);
-        addColorSelector(content, "sellColor", "Sell Color", AdaptiveStoch.DEFAULT_SELLCOLOR);
-        addIntegerValueSelector(content, "buyLine", "Buy Line", 0, 100, AdaptiveStoch.DEFAULT_BUYLINE);
-        addIntegerValueSelector(content, "sellLine", "Sell Line", 0, 100, AdaptiveStoch.DEFAULT_SELLLINE);
+        addIntegerValueSelector(content, "period", Messages.AdaptiveStochPreferencePage_Period, 1, 9999, AdaptiveStoch.DEFAULT_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "minLookback", Messages.AdaptiveStochPreferencePage_MinLookbackPeriod, 1, 9999, AdaptiveStoch.DEFAULT_MIN_LOOKBACK); //$NON-NLS-1$
+        addIntegerValueSelector(content, "maxLookback", Messages.AdaptiveStochPreferencePage_MaxLookbackPeriod, 1, 9999, AdaptiveStoch.DEFAULT_MAX_LOOKBACK); //$NON-NLS-1$
+        addColorSelector(content, "kcolor", Messages.AdaptiveStochPreferencePage_KColor, AdaptiveStoch.DEFAULT_KCOLOR); //$NON-NLS-1$
+        addLineTypeSelector(content, "klineType", Messages.AdaptiveStochPreferencePage_KLineType, AdaptiveStoch.DEFAULT_KLINETYPE); //$NON-NLS-1$
+        addLabelField(content, "klabel", Messages.AdaptiveStochPreferencePage_KLabel, AdaptiveStoch.DEFAULT_KLABEL); //$NON-NLS-1$
+        addMovingAverageSelector(content, "kMaType", Messages.AdaptiveStochPreferencePage_KSMotthingType, AdaptiveStoch.DEFAULT_K_MATYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "kperiod", Messages.AdaptiveStochPreferencePage_KPeriod, 1, 9999, AdaptiveStoch.DEFAULT_KPERIOD); //$NON-NLS-1$
+        addColorSelector(content, "dcolor", Messages.AdaptiveStochPreferencePage_DColor, AdaptiveStoch.DEFAULT_DCOLOR); //$NON-NLS-1$
+        addLineTypeSelector(content, "dlineType", Messages.AdaptiveStochPreferencePage_DLineType, AdaptiveStoch.DEFAULT_DLINETYPE); //$NON-NLS-1$
+        addLabelField(content, "dlabel", Messages.AdaptiveStochPreferencePage_DLabel, AdaptiveStoch.DEFAULT_DLABEL); //$NON-NLS-1$
+        addMovingAverageSelector(content, "dMaType", Messages.AdaptiveStochPreferencePage_DSmoothingType, AdaptiveStoch.DEFAULT_D_MATYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "dperiod", Messages.AdaptiveStochPreferencePage_DPeriod, 1, 9999, AdaptiveStoch.DEFAULT_DPERIOD); //$NON-NLS-1$
+        addColorSelector(content, "buyColor", Messages.AdaptiveStochPreferencePage_BuyColor, AdaptiveStoch.DEFAULT_BUYCOLOR); //$NON-NLS-1$
+        addColorSelector(content, "sellColor", Messages.AdaptiveStochPreferencePage_SellColor, AdaptiveStoch.DEFAULT_SELLCOLOR); //$NON-NLS-1$
+        addIntegerValueSelector(content, "buyLine", Messages.AdaptiveStochPreferencePage_BuyLine, 0, 100, AdaptiveStoch.DEFAULT_BUYLINE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "sellLine", Messages.AdaptiveStochPreferencePage_SellLine, 0, 100, AdaptiveStoch.DEFAULT_SELLLINE); //$NON-NLS-1$
     }
 }

@@ -37,18 +37,18 @@ public class DMIPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addIntegerValueSelector(content, "period", "Period", 1, 9999, DMI.DEFAULT_PERIOD);
-        addIntegerValueSelector(content, "smoothing", "Smoothing", 1, 9999, DMI.DEFAULT_SMOOTHING);
-        addMovingAverageSelector(content, "maType", "Smoothing Type", DMI.DEFAULT_MA_TYPE);
-        addColorSelector(content, "pdiColor", "+DM Color", DMI.DEFAULT_PDI_COLOR);
-        addLabelField(content, "pdiLabel", "+DM Label", DMI.DEFAULT_PDI_LABEL);
-        addLineTypeSelector(content, "pdiLineType", "+DM Line Type", DMI.DEFAULT_PDI_LINETYPE);
-        addColorSelector(content, "mdiColor", "-DM Color", DMI.DEFAULT_MDI_COLOR);
-        addLabelField(content, "mdiLabel", "-DM Label", DMI.DEFAULT_MDI_LABEL);
-        addLineTypeSelector(content, "mdiLineType", "-DM Line Type", DMI.DEFAULT_MDI_LINETYPE);
-        addColorSelector(content, "adxColor", "ADX Color", DMI.DEFAULT_ADX_COLOR);
-        addLabelField(content, "adxLabel", "ADX Label", DMI.DEFAULT_ADX_LABEL);
-        addLineTypeSelector(content, "adxLineType", "ADX Line Type", DMI.DEFAULT_ADX_LINETYPE);
+        addIntegerValueSelector(content, "period", Messages.DMIPreferencePage_Period, 1, 9999, DMI.DEFAULT_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "smoothing", Messages.DMIPreferencePage_Smoothing, 1, 9999, DMI.DEFAULT_SMOOTHING); //$NON-NLS-1$
+        addMovingAverageSelector(content, "maType", Messages.DMIPreferencePage_SmoothingType, DMI.DEFAULT_MA_TYPE); //$NON-NLS-1$
+        addColorSelector(content, "pdiColor", Messages.DMIPreferencePage_PDMColor, DMI.DEFAULT_PDI_COLOR); //$NON-NLS-1$
+        addLabelField(content, "pdiLabel", Messages.DMIPreferencePage_PDMLabel, DMI.DEFAULT_PDI_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "pdiLineType", Messages.DMIPreferencePage_PDMLineType, DMI.DEFAULT_PDI_LINETYPE); //$NON-NLS-1$
+        addColorSelector(content, "mdiColor", Messages.DMIPreferencePage_MDMColor, DMI.DEFAULT_MDI_COLOR); //$NON-NLS-1$
+        addLabelField(content, "mdiLabel", Messages.DMIPreferencePage_MDMLabel, DMI.DEFAULT_MDI_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "mdiLineType", Messages.DMIPreferencePage_MDMLineType, DMI.DEFAULT_MDI_LINETYPE); //$NON-NLS-1$
+        addColorSelector(content, "adxColor", Messages.DMIPreferencePage_ADXColor, DMI.DEFAULT_ADX_COLOR); //$NON-NLS-1$
+        addLabelField(content, "adxLabel", Messages.DMIPreferencePage_ADXLabel, DMI.DEFAULT_ADX_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "adxLineType", Messages.DMIPreferencePage_ADXLineType, DMI.DEFAULT_ADX_LINETYPE); //$NON-NLS-1$
     }
 
 }

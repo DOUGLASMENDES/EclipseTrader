@@ -16,13 +16,10 @@ import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 public class SDPreferencePage extends IndicatorPluginPreferencePage
 {
-    private Combo input;
 
     public SDPreferencePage()
     {
@@ -40,27 +37,10 @@ public class SDPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", SD.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", SD.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", SD.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "period", "Period", 1, 9999, SD.DEFAULT_PERIOD);
-
-        Label label = new Label(content, SWT.NONE);
-        label.setText("Input");
-        input = new Combo(content, SWT.READ_ONLY);
-        input.add("OPEN");
-        input.add("HIGH");
-        input.add("LOW");
-        input.add("CLOSE");
-        input.select(getSettings().getInteger("input", SD.DEFAULT_INPUT).intValue());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage#performFinish()
-     */
-    public void performFinish()
-    {
-        getSettings().set("input", input.getSelectionIndex());
-        super.performFinish();
+        addColorSelector(content, "color", Messages.SDPreferencePage_Color, SD.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.SDPreferencePage_Label, SD.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.SDPreferencePage_LineType, SD.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "period", Messages.SDPreferencePage_Period, 1, 9999, SD.DEFAULT_PERIOD); //$NON-NLS-1$
+        addInputSelector(content, "input", Messages.SDPreferencePage_Input, SD.DEFAULT_INPUT, false); //$NON-NLS-1$
     }
 }

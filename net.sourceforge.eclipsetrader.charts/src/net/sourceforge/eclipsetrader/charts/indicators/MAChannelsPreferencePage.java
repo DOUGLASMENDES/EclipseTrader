@@ -58,28 +58,28 @@ public class MAChannelsPreferencePage extends IndicatorPluginPreferencePage
         setControl(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.MAChannelsPreferencePage_Color);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         color = new ColorSelector(content);
-        color.setColorValue(getSettings().getColor("color", MAChannels.DEFAULT_COLOR).getRGB());
+        color.setColorValue(getSettings().getColor("color", MAChannels.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, "Line Type", getSettings().getInteger("lineType", MAChannels.DEFAULT_LINETYPE).intValue());
+        lineType = createLineTypeCombo(content, Messages.MAChannelsPreferencePage_LineType, getSettings().getInteger("lineType", MAChannels.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Period");
+        label.setText(Messages.MAChannelsPreferencePage_Period);
         period = new Spinner(content, SWT.BORDER);
         period.setLayoutData(new GridData(25, SWT.DEFAULT));
         period.setMinimum(2);
         period.setMaximum(999);
-        period.setSelection(getSettings().getInteger("period", MAChannels.DEFAULT_PERIOD).intValue());
+        period.setSelection(getSettings().getInteger("period", MAChannels.DEFAULT_PERIOD).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Channel coefficient, %");
+        label.setText(Messages.MAChannelsPreferencePage_Coefficient);
         percentage = new Text(content, SWT.BORDER);
         percentage.setLayoutData(new GridData(25, SWT.DEFAULT));
-        percentage.setText(nf.format(getSettings().getDouble("percentage", MAChannels.DEFAULT_PERCENTAGE)));
+        percentage.setText(nf.format(getSettings().getDouble("percentage", MAChannels.DEFAULT_PERCENTAGE))); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, "Smoothing Type", getSettings().getInteger("maType", MAChannels.DEFAULT_MATYPE).intValue());
+        maType = createMovingAverageCombo(content, Messages.MAChannelsPreferencePage_SmoothingType, getSettings().getInteger("maType", MAChannels.DEFAULT_MATYPE).intValue()); //$NON-NLS-2$
     }
 
     /* (non-Javadoc)
@@ -87,12 +87,12 @@ public class MAChannelsPreferencePage extends IndicatorPluginPreferencePage
      */
     public void performFinish()
     {
-        getSettings().set("color", color.getColorValue());
-        getSettings().set("lineType", lineType.getSelectionIndex());
-        getSettings().set("period", period.getSelection());
-        getSettings().set("maType", maType.getSelectionIndex());
+        getSettings().set("color", color.getColorValue()); //$NON-NLS-1$
+        getSettings().set("lineType", lineType.getSelectionIndex()); //$NON-NLS-1$
+        getSettings().set("period", period.getSelection()); //$NON-NLS-1$
+        getSettings().set("maType", maType.getSelectionIndex()); //$NON-NLS-1$
         try {
-            getSettings().set("percentage", nf.parse(percentage.getText()).doubleValue());
+            getSettings().set("percentage", nf.parse(percentage.getText()).doubleValue()); //$NON-NLS-1$
         } catch (ParseException e) {
             logger.warn(e);
         }

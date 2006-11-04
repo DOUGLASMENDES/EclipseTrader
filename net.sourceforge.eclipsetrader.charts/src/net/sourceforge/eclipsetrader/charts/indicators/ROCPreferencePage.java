@@ -16,13 +16,10 @@ import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 public class ROCPreferencePage extends IndicatorPluginPreferencePage
 {
-    private Combo input;
 
     public ROCPreferencePage()
     {
@@ -40,29 +37,12 @@ public class ROCPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
-        addColorSelector(content, "color", "Color", ROC.DEFAULT_COLOR);
-        addLabelField(content, "label", "Label", ROC.DEFAULT_LABEL);
-        addLineTypeSelector(content, "lineType", "Line Type", ROC.DEFAULT_LINETYPE);
-        addIntegerValueSelector(content, "period", "Period", 1, 9999, ROC.DEFAULT_PERIOD);
-        addIntegerValueSelector(content, "smoothing", "Smoothing", 0, 9999, ROC.DEFAULT_SMOOTHING);
-        addMovingAverageSelector(content, "maType", "Smoothing Type", ROC.DEFAULT_MA_TYPE);
-
-        Label label = new Label(content, SWT.NONE);
-        label.setText("Input");
-        input = new Combo(content, SWT.READ_ONLY);
-        input.add("OPEN");
-        input.add("HIGH");
-        input.add("LOW");
-        input.add("CLOSE");
-        input.select(getSettings().getInteger("input", ROC.DEFAULT_INPUT).intValue());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage#performFinish()
-     */
-    public void performFinish()
-    {
-        getSettings().set("input", input.getSelectionIndex());
-        super.performFinish();
+        addColorSelector(content, "color", Messages.ROCPreferencePage_Color, ROC.DEFAULT_COLOR); //$NON-NLS-1$
+        addLabelField(content, "label", Messages.ROCPreferencePage_Label, ROC.DEFAULT_LABEL); //$NON-NLS-1$
+        addLineTypeSelector(content, "lineType", Messages.ROCPreferencePage_LineType, ROC.DEFAULT_LINETYPE); //$NON-NLS-1$
+        addIntegerValueSelector(content, "period", Messages.ROCPreferencePage_Period, 1, 9999, ROC.DEFAULT_PERIOD); //$NON-NLS-1$
+        addIntegerValueSelector(content, "smoothing", Messages.ROCPreferencePage_Smoothing, 0, 9999, ROC.DEFAULT_SMOOTHING); //$NON-NLS-1$
+        addMovingAverageSelector(content, "maType", Messages.ROCPreferencePage_SmoothingType, ROC.DEFAULT_MA_TYPE); //$NON-NLS-1$
+        addInputSelector(content, "input", Messages.ROCPreferencePage_Input, ROC.DEFAULT_INPUT, false); //$NON-NLS-1$
     }
 }
