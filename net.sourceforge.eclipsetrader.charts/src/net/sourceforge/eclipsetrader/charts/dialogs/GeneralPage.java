@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.charts.dialogs;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Chart;
@@ -47,7 +48,7 @@ public class GeneralPage extends PreferencePage
 
     public GeneralPage(Chart chart)
     {
-        super("General");
+        super(Messages.GeneralPage_Title);
         this.chart = chart;
         noDefaultAndApplyButton();
     }
@@ -64,21 +65,21 @@ public class GeneralPage extends PreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Title");
+        label.setText(Messages.GeneralPage_ChartTitle);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         chartTitle = new Text(content, SWT.BORDER);
         chartTitle.setText(chart.getTitle());
         chartTitle.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
 
         label = new Label(content, SWT.NONE);
-        label.setText("Period");
+        label.setText(Messages.GeneralPage_Period);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         period = new Combo(content, SWT.READ_ONLY);
-        period.add("All");
-        period.add("2 Years");
-        period.add("1 Year");
-        period.add("6 Months");
-        period.add("Custom");
+        period.add(Messages.Period_All);
+        period.add(Messages.Period_2Years);
+        period.add(Messages.Period_1Year);
+        period.add(Messages.Period_6Months);
+        period.add(Messages.Period_Custom);
         switch(chart.getPeriod())
         {
             case ChartView.PERIOD_ALL:
@@ -106,30 +107,30 @@ public class GeneralPage extends PreferencePage
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("Begin Date");
+        label.setText(Messages.GeneralPage_BeginDate);
         begin = new Combo(content, SWT.READ_ONLY);
         begin.setVisibleItemCount(25);
         begin.setEnabled(period.getSelectionIndex() == 4);
 
         label = new Label(content, SWT.NONE);
-        label.setText("End Date");
+        label.setText(Messages.GeneralPage_EndDate);
         end = new Combo(content, SWT.READ_ONLY);
         end.setVisibleItemCount(25);
         end.setEnabled(period.getSelectionIndex() == 4);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Interval");
+        label.setText(Messages.GeneralPage_Interval);
         interval = new Combo(content, SWT.READ_ONLY);
-        interval.add("Monthly");
-        interval.add("Weekly");
-        interval.add("Daily");
-        interval.add("1 Hour");
-        interval.add("30 Min.");
-        interval.add("15 Min.");
-        interval.add("10 Min.");
-        interval.add("5 Min.");
-        interval.add("2 Min.");
-        interval.add("1 Min.");
+        interval.add(Messages.Interval_Monthly);
+        interval.add(Messages.Interval_Weekly);
+        interval.add(Messages.Interval_Daily);
+        interval.add(Messages.Interval_1Hour);
+        interval.add(Messages.Interval_30Min);
+        interval.add(Messages.Interval_15Min);
+        interval.add(Messages.Interval_10Min);
+        interval.add(Messages.Interval_5Min);
+        interval.add(Messages.Interval_2Min);
+        interval.add(Messages.Interval_1Min);
         interval.select(10 - chart.getCompression());
 
         label = new Label(content, SWT.NONE);
@@ -138,7 +139,7 @@ public class GeneralPage extends PreferencePage
         List history = chart.getSecurity().getHistory();
         
         label = new Label(content, SWT.NONE);
-        label.setText("First Date");
+        label.setText(Messages.GeneralPage_FirstDate);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         Text text = new Text(content, SWT.BORDER);
         if (history.size() != 0)
@@ -147,7 +148,7 @@ public class GeneralPage extends PreferencePage
         text.setEnabled(false);
         
         label = new Label(content, SWT.NONE);
-        label.setText("Last Date");
+        label.setText(Messages.GeneralPage_LastDate);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         text = new Text(content, SWT.BORDER);
         if (history.size() != 0)
@@ -156,11 +157,11 @@ public class GeneralPage extends PreferencePage
         text.setEnabled(false);
         
         clearDataButton = new Button(content, SWT.CHECK);
-        clearDataButton.setText("Clear chart data");
+        clearDataButton.setText(Messages.GeneralPage_ClearData);
         clearDataButton.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false, 2, 1));
 
         saveAsDefaultButton = new Button(content, SWT.CHECK);
-        saveAsDefaultButton.setText("Save as default");
+        saveAsDefaultButton.setText(Messages.GeneralPage_SaveDefault);
         saveAsDefaultButton.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false, 2, 1));
 
         int first = -1, last = -1;

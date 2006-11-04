@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 
@@ -24,7 +25,7 @@ public class Set1MinuteIntervalAction extends Action
 
     public Set1MinuteIntervalAction(ChartView view)
     {
-        super("1 Min.", AS_RADIO_BUTTON);
+        super(Messages.Interval_1Min, AS_RADIO_BUTTON);
         this.view = view;
     }
 

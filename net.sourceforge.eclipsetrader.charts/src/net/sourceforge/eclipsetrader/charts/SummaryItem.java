@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.Color;
 
 public abstract class SummaryItem
 {
-    private String text = "";
+    private String text = ""; //$NON-NLS-1$
     private Color foreground = new Color(null, 0, 0, 0);
 
     public SummaryItem(Summary parent, int style)

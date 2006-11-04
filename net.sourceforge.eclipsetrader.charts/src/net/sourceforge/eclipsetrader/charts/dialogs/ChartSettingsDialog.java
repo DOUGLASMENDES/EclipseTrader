@@ -16,6 +16,7 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
@@ -44,7 +45,7 @@ public class ChartSettingsDialog extends PreferenceDialog
         this.chart = chart;
         
         generalPage = new GeneralPage(chart);
-        PreferenceNode generalNode = new PreferenceNode("general", generalPage);
+        PreferenceNode generalNode = new PreferenceNode("general", generalPage); //$NON-NLS-1$
         getPreferenceManager().addToRoot(generalNode);
         
         for (int r = 0; r < chart.getRows().size(); r++)
@@ -55,7 +56,7 @@ public class ChartSettingsDialog extends PreferenceDialog
             {
                 ChartTab tab = (ChartTab)row.getTabs().get(t);
 
-                PreferenceNode tabNode = new PreferenceNode("tab" + t, new TabsPage(tab));
+                PreferenceNode tabNode = new PreferenceNode("tab" + t, new TabsPage(tab)); //$NON-NLS-1$
                 getPreferenceManager().addToRoot(tabNode);
             
                 for (int i = 0; i < tab.getIndicators().size(); i++)
@@ -69,36 +70,36 @@ public class ChartSettingsDialog extends PreferenceDialog
                     }
                     
                     IConfigurationElement plugin = getIndicatorPlugin(indicator.getPluginId());
-                    IConfigurationElement[] members = plugin.getChildren("preferencePage");
+                    IConfigurationElement[] members = plugin.getChildren("preferencePage"); //$NON-NLS-1$
                     if (members.length != 0)
                     {
                         PreferenceNode indicatorNode = null;
 
                         IConfigurationElement item = members[0];
                         try {
-                            Object obj = item.createExecutableExtension("class");
+                            Object obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                             if (obj instanceof IndicatorPluginPreferencePage)
                             {
                                 ((IndicatorPluginPreferencePage)obj).setSettings(settings);
                                 IndicatorPage page = new IndicatorPage(indicator, (IndicatorPluginPreferencePage)obj);
-                                if (item.getAttribute("title") != null)
-                                    page.setTitle(item.getAttribute("title"));
+                                if (item.getAttribute("title") != null) //$NON-NLS-1$
+                                    page.setTitle(item.getAttribute("title")); //$NON-NLS-1$
 
-                                indicatorNode = new PreferenceNode("indicator", page);
+                                indicatorNode = new PreferenceNode("indicator", page); //$NON-NLS-1$
                                 tabNode.add(indicatorNode);
                             }
 
                             for (int p = 1; p < members.length; p++)
                             {
-                                obj = item.createExecutableExtension("class");
+                                obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                                 if (obj instanceof IndicatorPluginPreferencePage)
                                 {
                                     ((IndicatorPluginPreferencePage)obj).setSettings(settings);
                                     IndicatorPage page = new IndicatorPage(indicator, (IndicatorPluginPreferencePage)obj);
-                                    if (item.getAttribute("title") != null)
-                                        page.setTitle(item.getAttribute("title"));
+                                    if (item.getAttribute("title") != null) //$NON-NLS-1$
+                                        page.setTitle(item.getAttribute("title")); //$NON-NLS-1$
 
-                                    PreferenceNode node = new PreferenceNode("prefs" + p, page);
+                                    PreferenceNode node = new PreferenceNode("prefs" + p, page); //$NON-NLS-1$
                                     indicatorNode.add(node);
                                 }
                             }
@@ -117,7 +118,7 @@ public class ChartSettingsDialog extends PreferenceDialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Chart Settings");
+        newShell.setText(Messages.ChartSettingsDialog_Title);
     }
 
     /* (non-Javadoc)
@@ -151,7 +152,7 @@ public class ChartSettingsDialog extends PreferenceDialog
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                     return item;
             }
         }

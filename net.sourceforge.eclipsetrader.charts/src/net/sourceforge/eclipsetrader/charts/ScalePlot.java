@@ -141,13 +141,13 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
             {
                 int y = scaler.convertToY(((Double) scaleArray.get(loop)).doubleValue());
                 double value = ((Double) scaleArray.get(loop)).doubleValue();
-                String s = "";
+                String s = ""; //$NON-NLS-1$
                 
                 if (Math.abs(value) > 1000000)
                 {
                     nf.setMinimumFractionDigits(0);
                     nf.setMaximumFractionDigits(0);
-                    s = nf.format(value / 1000000) + "m";
+                    s = nf.format(value / 1000000) + "m"; //$NON-NLS-1$
                 }
                 else if (Math.abs(value) > 100)
                 {
@@ -236,8 +236,8 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
         {
             String s = nf.format(Scaler.roundToTick(scaler.convertToValue(y)));
             if (s.length() >= 9)
-                s = s.substring(0, s.length() - 4) + "k";
-            label.setText(" " + s);
+                s = s.substring(0, s.length() - 4) + "k"; //$NON-NLS-1$
+            label.setText(" " + s); //$NON-NLS-1$
             label.setBounds(1, y - 7, getSize().x - 1, 14);
         }
     }
@@ -253,7 +253,7 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
         if (scaler != null)
         {
             int y = scaler.convertToY(marketValue);
-            marketValueLabel.setText(" " + nf.format(marketValue));
+            marketValueLabel.setText(" " + nf.format(marketValue)); //$NON-NLS-1$
             marketValueLabel.setBounds(1, y - 7, getSize().x - 1, 14);
         }
     }

@@ -33,7 +33,7 @@ public class PasteSpecialAction extends Action implements IPartListener
     public PasteSpecialAction(ChartView view)
     {
         this.view = view;
-        setText("Paste in new Tab");
+        setText(Messages.PasteSpecialAction_PasteSpecial);
         view.getSite().getWorkbenchWindow().getPartService().addPartListener(this);
     }
 

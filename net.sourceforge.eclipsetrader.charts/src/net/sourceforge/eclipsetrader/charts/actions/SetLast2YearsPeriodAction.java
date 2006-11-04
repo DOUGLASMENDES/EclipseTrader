@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 
 import org.eclipse.jface.action.Action;
@@ -23,7 +24,7 @@ public class SetLast2YearsPeriodAction extends Action
 
     public SetLast2YearsPeriodAction(ChartView view)
     {
-        super("Last 2 Years", AS_RADIO_BUTTON);
+        super(Messages.Period_2Years, AS_RADIO_BUTTON);
         this.view = view;
     }
 

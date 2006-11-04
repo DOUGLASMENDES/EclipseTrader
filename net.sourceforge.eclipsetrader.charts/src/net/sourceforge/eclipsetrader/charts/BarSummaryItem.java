@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.charts;
 
 import java.text.NumberFormat;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 
 import org.eclipse.swt.SWT;
@@ -38,23 +39,23 @@ public class BarSummaryItem extends SummaryItem
         
         change = new Label(parent, SWT.NONE);
         change.setBackground(parent.getBackground());
-        change.setText("CH=" + pcf.format(0) + "%");
+        change.setText(Messages.BarSummaryItem_CH + pcf.format(0) + "%"); //$NON-NLS-2$
         
         open = new Label(parent, SWT.NONE);
         open.setBackground(parent.getBackground());
-        open.setText("O=" + pf.format(0));
+        open.setText(Messages.BarSummaryItem_O + pf.format(0));
 
         high = new Label(parent, SWT.NONE);
         high.setBackground(parent.getBackground());
-        high.setText("H=" + pf.format(0));
+        high.setText(Messages.BarSummaryItem_H + pf.format(0));
         
         low = new Label(parent, SWT.NONE);
         low.setBackground(parent.getBackground());
-        low.setText("L=" + pf.format(0));
+        low.setText(Messages.BarSummaryItem_L + pf.format(0));
         
         close = new Label(parent, SWT.NONE);
         close.setBackground(parent.getBackground());
-        close.setText("C=" + pf.format(0));
+        close.setText(Messages.BarSummaryItem_C + pf.format(0));
     }
     
     /* (non-Javadoc)
@@ -78,7 +79,7 @@ public class BarSummaryItem extends SummaryItem
 
         if (previousChange != ch)
         {
-            change.setText("CH=" + pcf.format(ch) + "%");
+            change.setText(Messages.BarSummaryItem_CH + pcf.format(ch) + "%"); //$NON-NLS-2$
             if (ch > 0)
                 change.setForeground(positive);
             else if (ch < 0)
@@ -87,10 +88,10 @@ public class BarSummaryItem extends SummaryItem
                 change.setForeground(getForeground());
             previousChange = ch;
         }
-        open.setText("O=" + pf.format(bar.getOpen()));
-        high.setText("H=" + pf.format(bar.getHigh()));
-        low.setText("L=" + pf.format(bar.getLow()));
-        close.setText("C=" + pf.format(bar.getClose()));
+        open.setText(Messages.BarSummaryItem_O + pf.format(bar.getOpen()));
+        high.setText(Messages.BarSummaryItem_H + pf.format(bar.getHigh()));
+        low.setText(Messages.BarSummaryItem_L + pf.format(bar.getLow()));
+        close.setText(Messages.BarSummaryItem_C + pf.format(bar.getClose()));
     }
     
     public void setData(Bar bar)
@@ -99,23 +100,23 @@ public class BarSummaryItem extends SummaryItem
         {
             if (previousChange != 0)
             {
-                change.setText("CH=" + pcf.format(0) + "%");
+                change.setText(Messages.BarSummaryItem_CH + pcf.format(0) + "%"); //$NON-NLS-2$
                 change.setForeground(getForeground());
                 previousChange = 0;
             }
-            open.setText("O=" + pf.format(bar.getOpen()));
-            high.setText("H=" + pf.format(bar.getHigh()));
-            low.setText("L=" + pf.format(bar.getLow()));
-            close.setText("C=" + pf.format(bar.getClose()));
+            open.setText(Messages.BarSummaryItem_O + pf.format(bar.getOpen()));
+            high.setText(Messages.BarSummaryItem_H + pf.format(bar.getHigh()));
+            low.setText(Messages.BarSummaryItem_L + pf.format(bar.getLow()));
+            close.setText(Messages.BarSummaryItem_C + pf.format(bar.getClose()));
         }
         else
         {
-            change.setText("CH=");
+            change.setText(Messages.BarSummaryItem_CH);
             change.setForeground(getForeground());
-            open.setText("O=");
-            high.setText("H=");
-            low.setText("L=");
-            close.setText("C=");
+            open.setText(Messages.BarSummaryItem_19);
+            high.setText(Messages.BarSummaryItem_20);
+            low.setText(Messages.BarSummaryItem_21);
+            close.setText(Messages.BarSummaryItem_22);
         }
     }
 

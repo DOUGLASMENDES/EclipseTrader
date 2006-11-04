@@ -16,6 +16,7 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.ObjectPluginPreferencePage;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;
 
@@ -44,33 +45,33 @@ public class ObjectSettingsDialog extends PreferenceDialog
         }
         
         IConfigurationElement plugin = ChartsPlugin.getObjectPlugin(indicator.getPluginId());
-        IConfigurationElement[] members = plugin.getChildren("preferencePage");
+        IConfigurationElement[] members = plugin.getChildren("preferencePage"); //$NON-NLS-1$
         if (members.length != 0)
         {
             IConfigurationElement item = members[0];
             try {
-                Object obj = item.createExecutableExtension("class");
+                Object obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                 if (obj instanceof ObjectPluginPreferencePage)
                 {
                     ((ObjectPluginPreferencePage)obj).setSettings(settings);
                     ObjectPage page = new ObjectPage(indicator, (ObjectPluginPreferencePage)obj);
-                    if (item.getAttribute("title") != null)
-                        page.setTitle(item.getAttribute("title"));
+                    if (item.getAttribute("title") != null) //$NON-NLS-1$
+                        page.setTitle(item.getAttribute("title")); //$NON-NLS-1$
 
-                    getPreferenceManager().addToRoot(new PreferenceNode("indicator", page));
+                    getPreferenceManager().addToRoot(new PreferenceNode("indicator", page)); //$NON-NLS-1$
                 }
 
                 for (int p = 1; p < members.length; p++)
                 {
-                    obj = item.createExecutableExtension("class");
+                    obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                     if (obj instanceof ObjectPluginPreferencePage)
                     {
                         ((ObjectPluginPreferencePage)obj).setSettings(settings);
                         ObjectPage page = new ObjectPage(indicator, (ObjectPluginPreferencePage)obj);
-                        if (item.getAttribute("title") != null)
-                            page.setTitle(item.getAttribute("title"));
+                        if (item.getAttribute("title") != null) //$NON-NLS-1$
+                            page.setTitle(item.getAttribute("title")); //$NON-NLS-1$
 
-                        getPreferenceManager().addToRoot(new PreferenceNode("prefs" + p, page));
+                        getPreferenceManager().addToRoot(new PreferenceNode("prefs" + p, page)); //$NON-NLS-1$
                     }
                 }
             } catch(Exception e) {
@@ -85,7 +86,7 @@ public class ObjectSettingsDialog extends PreferenceDialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Object Settings");
+        newShell.setText(Messages.ObjectSettingsDialog_Title);
     }
 
     /* (non-Javadoc)

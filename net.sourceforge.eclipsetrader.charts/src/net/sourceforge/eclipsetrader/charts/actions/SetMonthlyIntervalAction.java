@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 
@@ -24,7 +25,7 @@ public class SetMonthlyIntervalAction extends Action
 
     public SetMonthlyIntervalAction(ChartView view)
     {
-        super("Monthly", AS_RADIO_BUTTON);
+        super(Messages.Interval_Monthly, AS_RADIO_BUTTON);
         this.view = view;
     }
 

@@ -35,7 +35,7 @@ public class PasteAction extends Action implements IPartListener
     {
         this.view = view;
         view.getSite().getWorkbenchWindow().getPartService().addPartListener(this);
-        setText("&Paste");
+        setText(Messages.PasteAction_Paste);
         ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
         setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE_DISABLED));
         setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));

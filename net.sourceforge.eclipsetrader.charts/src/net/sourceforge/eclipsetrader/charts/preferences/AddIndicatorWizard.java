@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.wizards.IndicatorPage;
 import net.sourceforge.eclipsetrader.charts.wizards.PluginParametersPage;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
@@ -42,7 +43,7 @@ public class AddIndicatorWizard extends Wizard
     
     protected WizardDialog create()
     {
-        setWindowTitle("Add Indicator");
+        setWindowTitle(Messages.AddIndicatorWizard_Title);
         setForcePreviousAndNextButtons(true);
         
         indicatorPage = new IndicatorPage() {

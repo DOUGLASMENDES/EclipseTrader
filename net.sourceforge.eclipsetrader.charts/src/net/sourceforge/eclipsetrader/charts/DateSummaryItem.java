@@ -14,6 +14,8 @@ package net.sourceforge.eclipsetrader.charts;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Label;
@@ -21,7 +23,7 @@ import org.eclipse.swt.widgets.Label;
 public class DateSummaryItem extends SummaryItem
 {
     private Label date;
-    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat df = CorePlugin.getDateFormat();
 
     public DateSummaryItem(Summary parent, int style)
     {
@@ -29,7 +31,7 @@ public class DateSummaryItem extends SummaryItem
 
         date = new Label(parent, SWT.NONE);
         date.setBackground(parent.getBackground());
-        date.setText("--/--/----");
+        date.setText("--/--/----"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -46,7 +48,7 @@ public class DateSummaryItem extends SummaryItem
         if (value != null)
             date.setText(df.format(value));
         else
-            date.setText("--/--/----");
+            date.setText("--/--/----"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

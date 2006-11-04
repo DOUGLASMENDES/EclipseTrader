@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -49,7 +50,7 @@ public class CustomPeriodDialog extends Dialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Custom Period");
+        newShell.setText(Messages.CustomPeriodDialog_Title);
     }
 
     /* (non-Javadoc)
@@ -67,12 +68,12 @@ public class CustomPeriodDialog extends Dialog
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         
         Label label = new Label(content, SWT.NONE);
-        label.setText("Begin Date");
+        label.setText(Messages.CustomPeriodDialog_BeginDate);
         begin = new Combo(content, SWT.READ_ONLY);
         begin.setVisibleItemCount(25);
         
         label = new Label(content, SWT.NONE);
-        label.setText("End Date");
+        label.setText(Messages.CustomPeriodDialog_EndDate);
         end = new Combo(content, SWT.READ_ONLY);
         end.setVisibleItemCount(25);
         

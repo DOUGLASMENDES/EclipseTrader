@@ -17,6 +17,7 @@ import java.util.Date;
 
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.dialogs.IndicatorSettingsDialog;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Chart;
@@ -90,14 +91,14 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         content.setLayout(gridLayout);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Period");
+        label.setText(Messages.DefaultConfigurationPage_Period);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         period = new Combo(content, SWT.READ_ONLY);
-        period.add("All");
-        period.add("2 Years");
-        period.add("1 Year");
-        period.add("6 Months");
-        period.add("Custom");
+        period.add(Messages.Period_All);
+        period.add(Messages.Period_2Years);
+        period.add(Messages.Period_1Year);
+        period.add(Messages.Period_6Months);
+        period.add(Messages.Period_Custom);
         switch(chart.getPeriod())
         {
             case ChartView.PERIOD_ALL:
@@ -125,7 +126,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("Begin Date");
+        label.setText(Messages.DefaultConfigurationPage_BeginDate);
         begin = new Text(content, SWT.BORDER);
         if (chart.getBeginDate() != null)
             begin.setText(CorePlugin.getDateFormat().format(chart.getBeginDate()));
@@ -139,7 +140,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("End Date");
+        label.setText(Messages.DefaultConfigurationPage_EndDate);
         end = new Text(content, SWT.BORDER);
         if (chart.getEndDate() != null)
             end.setText(CorePlugin.getDateFormat().format(chart.getEndDate()));
@@ -153,22 +154,22 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         });
 
         label = new Label(content, SWT.NONE);
-        label.setText("Interval");
+        label.setText(Messages.DefaultConfigurationPage_Interval);
         interval = new Combo(content, SWT.READ_ONLY);
-        interval.add("Monthly");
-        interval.add("Weekly");
-        interval.add("Daily");
-        interval.add("1 Hour");
-        interval.add("30 Min.");
-        interval.add("15 Min.");
-        interval.add("10 Min.");
-        interval.add("5 Min.");
-        interval.add("2 Min.");
-        interval.add("1 Min.");
+        interval.add(Messages.Interval_Monthly);
+        interval.add(Messages.Interval_Weekly);
+        interval.add(Messages.Interval_Daily);
+        interval.add(Messages.Interval_1Hour);
+        interval.add(Messages.Interval_30Min);
+        interval.add(Messages.Interval_15Min);
+        interval.add(Messages.Interval_10Min);
+        interval.add(Messages.Interval_5Min);
+        interval.add(Messages.Interval_2Min);
+        interval.add(Messages.Interval_1Min);
         interval.select(10 - chart.getCompression());
         
         label = new Label(content, SWT.NONE);
-        label.setText("Layout");
+        label.setText(Messages.DefaultConfigurationPage_Layout);
         label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         Composite group = new Composite(content, SWT.NONE);
@@ -205,7 +206,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         buttonsComposite.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
         
         addRow = new Button(buttonsComposite, SWT.PUSH);
-        addRow.setText("Add Row");
+        addRow.setText(Messages.DefaultConfigurationPage_AddRow);
         addRow.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         addRow.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -230,15 +231,15 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         });
         
         addTab = new Button(buttonsComposite, SWT.PUSH);
-        addTab.setText("Add Tab");
+        addTab.setText(Messages.DefaultConfigurationPage_AddTab);
         addTab.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         addTab.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                InputDialog dlg = new InputDialog(tree.getShell(), "Add Tab", "Type the name of the tab:", "", new IInputValidator() {
+                InputDialog dlg = new InputDialog(tree.getShell(), Messages.DefaultConfigurationPage_AddTabDialogTitle, Messages.DefaultConfigurationPage_AddTabDialogMessage, "", new IInputValidator() { //$NON-NLS-3$ //$NON-NLS-1$
                     public String isValid(String newText)
                     {
-                        return newText.length() == 0 ? "" : null;
+                        return newText.length() == 0 ? "" : null; //$NON-NLS-1$
                     }
                 });
                 if (dlg.open() == InputDialog.OK)
@@ -262,7 +263,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         });
         
         addIndicator = new Button(buttonsComposite, SWT.PUSH);
-        addIndicator.setText("Add Indicator");
+        addIndicator.setText(Messages.DefaultConfigurationPage_AddIndicator);
         addIndicator.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         addIndicator.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -285,7 +286,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         });
         
         settings = new Button(buttonsComposite, SWT.PUSH);
-        settings.setText("Settings");
+        settings.setText(Messages.DefaultConfigurationPage_Settings);
         GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
         gridData.verticalIndent = 5;
         settings.setLayoutData(gridData);
@@ -298,10 +299,10 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
                     if (selection[0].getData() instanceof ChartTab)
                     {
                         ChartTab tab = (ChartTab)selection[0].getData();
-                        InputDialog dlg = new InputDialog(tree.getShell(), "Tab Settings", "Type the name of the tab:", tab.getLabel(), new IInputValidator() {
+                        InputDialog dlg = new InputDialog(tree.getShell(), Messages.DefaultConfigurationPage_TabSettingsDialogTitle, Messages.DefaultConfigurationPage_TabSettingsDialogMessage, tab.getLabel(), new IInputValidator() {
                             public String isValid(String newText)
                             {
-                                return newText.length() == 0 ? "" : null;
+                                return newText.length() == 0 ? "" : null; //$NON-NLS-1$
                             }
                         });
                         if (dlg.open() == InputDialog.OK)
@@ -321,7 +322,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         });
         
         remove = new Button(buttonsComposite, SWT.PUSH);
-        remove.setText("Remove");
+        remove.setText(Messages.DefaultConfigurationPage_Remove);
         gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
         gridData.verticalIndent = 5;
         remove.setLayoutData(gridData);
@@ -414,7 +415,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
             public void visit(ChartRow row)
             {
                 TreeItem treeItem = new TreeItem(tree, SWT.NONE);
-                treeItem.setText("ROW " + String.valueOf(tree.getItemCount()));
+                treeItem.setText(Messages.DefaultConfigurationPage_Row + String.valueOf(tree.getItemCount())); 
                 treeItem.setData(row);
                 if (row.equals(data))
                     tree.setSelection(treeItem);
@@ -441,7 +442,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
                 IConfigurationElement plugin = getIndicatorPlugin(indicator.getPluginId());
                 
                 TreeItem treeItem = new TreeItem(parentItem, SWT.NONE);
-                treeItem.setText(plugin.getAttribute("name"));
+                treeItem.setText(plugin.getAttribute("name")); //$NON-NLS-1$
                 treeItem.setData(indicator);
                 if (indicator.equals(data))
                     tree.setSelection(treeItem);
@@ -510,7 +511,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                     return item;
             }
         }

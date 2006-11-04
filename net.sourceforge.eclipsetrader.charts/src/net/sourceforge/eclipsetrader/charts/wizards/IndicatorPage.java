@@ -20,6 +20,7 @@ import java.util.Map;
 
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -47,9 +48,9 @@ public abstract class IndicatorPage extends WizardPage
 
     public IndicatorPage()
     {
-        super("");
-        setTitle("Indicator");
-        setDescription("Select the indicator to add");
+        super(""); //$NON-NLS-1$
+        setTitle(Messages.IndicatorPage_Title);
+        setDescription(Messages.IndicatorPage_Description);
         setPageComplete(false);
     }
 
@@ -115,12 +116,12 @@ public abstract class IndicatorPage extends WizardPage
                     for (Iterator iter = plugins.iterator(); iter.hasNext(); )
                     {
                         IConfigurationElement element = (IConfigurationElement)iter.next();
-                        if (element.getName().equals("group"))
+                        if (element.getName().equals("group")) //$NON-NLS-1$
                         {
                             TreeItem treeItem = new TreeItem(tree, SWT.NONE);
                             treeItem.setText(element.getAttribute("name")); //$NON-NLS-1$
                             treeItem.setFont(groupFont);
-                            groups.put(element.getAttribute("id"), treeItem);
+                            groups.put(element.getAttribute("id"), treeItem); //$NON-NLS-1$
                         }
                     }
 
@@ -129,15 +130,15 @@ public abstract class IndicatorPage extends WizardPage
                     for (Iterator iter = plugins.iterator(); iter.hasNext(); )
                     {
                         IConfigurationElement element = (IConfigurationElement)iter.next();
-                        if (element.getName().equals("indicator"))
+                        if (element.getName().equals("indicator")) //$NON-NLS-1$
                         {
-                            TreeItem parentItem = (TreeItem)groups.get(element.getAttribute("group"));
+                            TreeItem parentItem = (TreeItem)groups.get(element.getAttribute("group")); //$NON-NLS-1$
                             if (parentItem != null)
                                 treeItem = new TreeItem(parentItem, SWT.NONE);
                             else
                             {
                                 int index = tree.getItemCount();
-                                String name = element.getAttribute("name");
+                                String name = element.getAttribute("name"); //$NON-NLS-1$
                                 TreeItem[] items = tree.getItems();
                                 for (int i = 0; i < items.length; i++)
                                 {
@@ -179,7 +180,7 @@ public abstract class IndicatorPage extends WizardPage
         TreeItem[] selection = tree.getSelection();
         if (selection.length == 1)
             return (String)selection[0].getText();
-        return "";
+        return ""; //$NON-NLS-1$
     }
     
     protected abstract java.util.List getAdditionalPages();
@@ -192,19 +193,19 @@ public abstract class IndicatorPage extends WizardPage
         pages.clear();
         
         IConfigurationElement plugin = ChartsPlugin.getIndicatorPlugin(getIndicator());
-        IConfigurationElement[] members = plugin.getChildren("preferencePage");
+        IConfigurationElement[] members = plugin.getChildren("preferencePage"); //$NON-NLS-1$
         if (members.length != 0)
         {
             IConfigurationElement item = members[0];
             try {
                 for (int p = 0; p < members.length; p++)
                 {
-                    Object obj = item.createExecutableExtension("class");
+                    Object obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                     if (obj instanceof IndicatorPluginPreferencePage)
                     {
                         IndicatorPluginPreferencePage preferencePage = (IndicatorPluginPreferencePage)obj;
-                        preferencePage.setTitle(plugin.getAttribute("name"));
-                        preferencePage.setDescription(item.getAttribute("description"));
+                        preferencePage.setTitle(plugin.getAttribute("name")); //$NON-NLS-1$
+                        preferencePage.setDescription(item.getAttribute("description")); //$NON-NLS-1$
                         PluginParametersPage page = new PluginParametersPage((IndicatorPluginPreferencePage)preferencePage);
                         pages.add(page);
                     }
@@ -214,6 +215,6 @@ public abstract class IndicatorPage extends WizardPage
             }
         }
         
-        getNextPage().setTitle(plugin.getAttribute("name"));
+        getNextPage().setTitle(plugin.getAttribute("name")); //$NON-NLS-1$
     }
 }

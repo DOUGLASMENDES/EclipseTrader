@@ -33,7 +33,7 @@ public class CopyAction extends Action implements ISelectionChangedListener
     public CopyAction(ChartView view)
     {
         this.view = view;
-        setText("&Copy");
+        setText(Messages.CopyAction_Copy);
         ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
         setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
         setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
@@ -51,8 +51,8 @@ public class CopyAction extends Action implements ISelectionChangedListener
         clipboard.setContents(new ChartIndicator[] { indicator }, new Transfer[] { ChartIndicatorTransfer.getInstance() });          
         clipboard.dispose();
         
-        view.getViewSite().getActionBars().getGlobalActionHandler("paste").setEnabled(true);
-        view.getViewSite().getActionBars().getGlobalActionHandler("pasteSpecial").setEnabled(true);
+        view.getViewSite().getActionBars().getGlobalActionHandler("paste").setEnabled(true); //$NON-NLS-1$
+        view.getViewSite().getActionBars().getGlobalActionHandler("pasteSpecial").setEnabled(true); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

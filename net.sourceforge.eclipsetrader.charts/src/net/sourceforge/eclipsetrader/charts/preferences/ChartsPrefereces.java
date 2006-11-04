@@ -21,6 +21,7 @@ import java.util.Map;
 
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.dialogs.ChartSettingsDialog;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Chart;
@@ -91,35 +92,35 @@ public class ChartsPrefereces extends PreferencePage implements IWorkbenchPrefer
         group.setLayout(new GridLayout(3, false));
         
         Label label = new Label(group, SWT.NONE);
-        label.setText("Extend scale by");
+        label.setText(Messages.ChartsPrefereces_ExtendScale);
         extendScale = new Spinner(group, SWT.BORDER);
         extendScale.setMinimum(0);
         extendScale.setMaximum(100);
         extendScale.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
         label = new Label(group, SWT.NONE);
-        label.setText("%");
+        label.setText("%"); //$NON-NLS-1$
         
         label = new Label(group, SWT.NONE);
-        label.setText("Extend charts by");
+        label.setText(Messages.ChartsPrefereces_ExtendCharts);
         extendPeriod = new Spinner(group, SWT.BORDER);
         extendPeriod.setMinimum(0);
         extendPeriod.setMaximum(9999);
         extendPeriod.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
         label = new Label(group, SWT.NONE);
-        label.setText("periods");
+        label.setText(Messages.ChartsPrefereces_Periods);
 
         group = new Group(content, SWT.NONE);
-        ((Group)group).setText("Hide tabs");
+        ((Group)group).setText(Messages.ChartsPrefereces_HideTabs);
         group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         group.setLayout(new GridLayout(2, false));
         
         never = new Button(group, SWT.RADIO);
-        never.setText("Never");
+        never.setText(Messages.ChartsPrefereces_Never);
         onlyOne = new Button(group, SWT.RADIO);
-        onlyOne.setText("When only one tab is shown");
+        onlyOne.setText(Messages.ChartsPrefereces_OnlyOneTab);
 
         label = new Label(content, SWT.NONE);
-        label.setText("All Charts");
+        label.setText(Messages.ChartsPrefereces_AllCharts);
         label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         tree = new Tree(content, SWT.SINGLE|SWT.FULL_SELECTION|SWT.BORDER);
@@ -154,7 +155,7 @@ public class ChartsPrefereces extends PreferencePage implements IWorkbenchPrefer
         buttonsComposite.setLayout(gridLayout);
         buttonsComposite.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
         
-        settings = createButton(buttonsComposite, "Settings");
+        settings = createButton(buttonsComposite, Messages.ChartsPrefereces_Settings);
         settings.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -162,14 +163,14 @@ public class ChartsPrefereces extends PreferencePage implements IWorkbenchPrefer
             }
         });
         
-        delete = createButton(buttonsComposite, "Delete");
+        delete = createButton(buttonsComposite, Messages.ChartsPrefereces_Delete);
         delete.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
                 TreeItem[] selection = tree.getSelection();
                 if (selection.length != 0 && selection[0].getData() instanceof Chart)
                 {
-                    if (MessageDialog.openConfirm(tree.getShell(), "Delete Chart", "Do you really want to delete the selected chart ?"))
+                    if (MessageDialog.openConfirm(tree.getShell(), Messages.ChartsPrefereces_DeleteConfirmTitle, Messages.ChartsPrefereces_DeleteConfirmMessage))
                     {
                         CorePlugin.getRepository().delete((Chart)selection[0].getData());
                         updateTree();

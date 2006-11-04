@@ -16,6 +16,7 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.charts.ChartsPlugin;
 import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
 import net.sourceforge.eclipsetrader.charts.Settings;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -41,33 +42,33 @@ public class IndicatorSettingsDialog extends PreferenceDialog
         }
         
         IConfigurationElement plugin = ChartsPlugin.getIndicatorPlugin(indicator.getPluginId());
-        IConfigurationElement[] members = plugin.getChildren("preferencePage");
+        IConfigurationElement[] members = plugin.getChildren("preferencePage"); //$NON-NLS-1$
         if (members.length != 0)
         {
             IConfigurationElement item = members[0];
             try {
-                Object obj = item.createExecutableExtension("class");
+                Object obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                 if (obj instanceof IndicatorPluginPreferencePage)
                 {
                     ((IndicatorPluginPreferencePage)obj).setSettings(settings);
                     IndicatorPage page = new IndicatorPage(indicator, (IndicatorPluginPreferencePage)obj);
-                    if (item.getAttribute("title") != null)
-                        page.setTitle(item.getAttribute("title"));
+                    if (item.getAttribute("title") != null) //$NON-NLS-1$
+                        page.setTitle(item.getAttribute("title")); //$NON-NLS-1$
 
-                    getPreferenceManager().addToRoot(new PreferenceNode("indicator", page));
+                    getPreferenceManager().addToRoot(new PreferenceNode("indicator", page)); //$NON-NLS-1$
                 }
 
                 for (int p = 1; p < members.length; p++)
                 {
-                    obj = item.createExecutableExtension("class");
+                    obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                     if (obj instanceof IndicatorPluginPreferencePage)
                     {
                         ((IndicatorPluginPreferencePage)obj).setSettings(settings);
                         IndicatorPage page = new IndicatorPage(indicator, (IndicatorPluginPreferencePage)obj);
-                        if (item.getAttribute("title") != null)
-                            page.setTitle(item.getAttribute("title"));
+                        if (item.getAttribute("title") != null) //$NON-NLS-1$
+                            page.setTitle(item.getAttribute("title")); //$NON-NLS-1$
 
-                        getPreferenceManager().addToRoot(new PreferenceNode("prefs" + p, page));
+                        getPreferenceManager().addToRoot(new PreferenceNode("prefs" + p, page)); //$NON-NLS-1$
                     }
                 }
             } catch(Exception e) {
@@ -82,6 +83,6 @@ public class IndicatorSettingsDialog extends PreferenceDialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText("Indicator Settings");
+        newShell.setText(Messages.IndicatorSettingsDialog_Title);
     }
 }

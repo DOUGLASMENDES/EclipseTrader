@@ -11,6 +11,8 @@
 
 package net.sourceforge.eclipsetrader.charts.dialogs;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
+
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,7 +24,7 @@ public class RowPage extends PreferencePage
 
     public RowPage()
     {
-        super("Row");
+        super(Messages.RowPage_Title);
     }
 
     /* (non-Javadoc)

@@ -35,7 +35,7 @@ public class DeleteAction extends Action implements ISelectionChangedListener
     public DeleteAction(ChartView view)
     {
         view.getSite().getSelectionProvider().addSelectionChangedListener(this);
-        setText("&Delete");
+        setText(Messages.DeleteAction_Delete);
         ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
         setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
         setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
@@ -48,7 +48,7 @@ public class DeleteAction extends Action implements ISelectionChangedListener
     public void run()
     {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (MessageDialog.openConfirm(window.getShell(), "Delete Object", "Do you really want to delete the selected object ?"))
+        if (MessageDialog.openConfirm(window.getShell(), Messages.DeleteAction_ConfirmDialogTitle, Messages.DeleteAction_ConfirmDialogMessage))
         {
             ChartTab tab = null;
             if (selection instanceof IndicatorSelection)

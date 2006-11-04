@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class Indicator
 {
-    private String name = "";
+    private String name = ""; //$NON-NLS-1$
     private boolean enabled = true;
     private List lines = new ArrayList();
     private double high = -99999999;

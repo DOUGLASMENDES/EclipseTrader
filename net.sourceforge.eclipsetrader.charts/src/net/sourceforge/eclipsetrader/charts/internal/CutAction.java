@@ -35,7 +35,7 @@ public class CutAction extends Action implements ISelectionChangedListener
     public CutAction(ChartView view)
     {
         this.view = view;
-        setText("Cu&t");
+        setText(Messages.CutAction_Cut);
         ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
         setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
         setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
@@ -57,8 +57,8 @@ public class CutAction extends Action implements ISelectionChangedListener
         tab.getIndicators().remove(indicator);
         CorePlugin.getRepository().save(tab.getParent().getParent());
         
-        view.getViewSite().getActionBars().getGlobalActionHandler("paste").setEnabled(true);
-        view.getViewSite().getActionBars().getGlobalActionHandler("pasteSpecial").setEnabled(true);
+        view.getViewSite().getActionBars().getGlobalActionHandler("paste").setEnabled(true); //$NON-NLS-1$
+        view.getViewSite().getActionBars().getGlobalActionHandler("pasteSpecial").setEnabled(true); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

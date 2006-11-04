@@ -23,7 +23,7 @@ public class PluginParametersPage extends WizardPage
 
     public PluginParametersPage(IndicatorPluginPreferencePage page)
     {
-        super("");
+        super(""); //$NON-NLS-1$
         this.page = page;
         this.page.setContainer(this);
         setTitle(page.getTitle());

@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.wizards;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
@@ -42,10 +43,10 @@ public class IndicatorLocationPage extends WizardPage
 
     public IndicatorLocationPage(Chart chart)
     {
-        super("");
+        super(""); //$NON-NLS-1$
         this.chart = chart;
-        setTitle("Indicator Location");
-        setDescription("Select where the new indicator will be positioned");
+        setTitle(Messages.IndicatorLocationPage_Title);
+        setDescription(Messages.IndicatorLocationPage_Description);
     }
 
     /* (non-Javadoc)
@@ -63,14 +64,14 @@ public class IndicatorLocationPage extends WizardPage
         Label label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         stacked = new Button(content, SWT.RADIO);
-        stacked.setText("Stacked on");
+        stacked.setText(Messages.IndicatorLocationPage_Stacked);
         stacked.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
                 stackedTab.setEnabled(true);
                 rowNumber.setEnabled(false);
                 tabLabel.setEnabled(false);
-                tabLabel.setText("");
+                tabLabel.setText(""); //$NON-NLS-1$
                 validatePage();
             }
         });
@@ -93,7 +94,7 @@ public class IndicatorLocationPage extends WizardPage
         label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         newTab = new Button(content, SWT.RADIO);
-        newTab.setText("New tab on row");
+        newTab.setText(Messages.IndicatorLocationPage_NewTab);
         newTab.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -103,9 +104,9 @@ public class IndicatorLocationPage extends WizardPage
                 if (tabLabel.getText().length() == 0)
                 {
                     String name = ((NewIndicatorWizard)getWizard()).getIndicatorPage().getIndicatorName();
-                    if (name.indexOf(" - ") != -1)
+                    if (name.indexOf(" - ") != -1) //$NON-NLS-1$
                     {
-                        name = name.substring(name.indexOf(" - ") + 3);
+                        name = name.substring(name.indexOf(" - ") + 3); //$NON-NLS-1$
                         tabLabel.setText(name);
                     }
                 }
@@ -120,7 +121,7 @@ public class IndicatorLocationPage extends WizardPage
         label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         newRow = new Button(content, SWT.RADIO);
-        newRow.setText("On a new row");
+        newRow.setText(Messages.IndicatorLocationPage_NewRow);
         newRow.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false, 2, 1));
         newRow.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -131,9 +132,9 @@ public class IndicatorLocationPage extends WizardPage
                 if (tabLabel.getText().length() == 0)
                 {
                     String name = ((NewIndicatorWizard)getWizard()).getIndicatorPage().getIndicatorName();
-                    if (name.indexOf(" - ") != -1)
+                    if (name.indexOf(" - ") != -1) //$NON-NLS-1$
                     {
-                        name = name.substring(name.indexOf(" - ") + 3);
+                        name = name.substring(name.indexOf(" - ") + 3); //$NON-NLS-1$
                         tabLabel.setText(name);
                     }
                 }
@@ -142,7 +143,7 @@ public class IndicatorLocationPage extends WizardPage
         });
         
         label = new Label(content, SWT.NONE);
-        label.setText("New tab label");
+        label.setText(Messages.IndicatorLocationPage_TabLabel);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         tabLabel = new Text(content, SWT.BORDER);
         tabLabel.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 2, 1));

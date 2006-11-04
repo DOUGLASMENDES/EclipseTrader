@@ -14,6 +14,7 @@ package net.sourceforge.eclipsetrader.charts.actions;
 import java.util.Date;
 
 import net.sourceforge.eclipsetrader.charts.dialogs.CustomPeriodDialog;
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Chart;
@@ -29,7 +30,7 @@ public class SetCustomPeriodAction extends Action
 
     public SetCustomPeriodAction(ChartView view)
     {
-        super("Custom...", AS_RADIO_BUTTON);
+        super(Messages.Period_Custom + "...", AS_RADIO_BUTTON); //$NON-NLS-1$
         this.view = view;
     }
 

@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 
 import org.eclipse.jface.action.Action;
@@ -23,7 +24,7 @@ public class SetViewAllAction extends Action
 
     public SetViewAllAction(ChartView view)
     {
-        super("All", AS_RADIO_BUTTON);
+        super(Messages.Period_All, AS_RADIO_BUTTON);
         this.view = view;
     }
 

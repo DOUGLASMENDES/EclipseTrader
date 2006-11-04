@@ -57,7 +57,7 @@ public class DatePlot extends Composite
     {
         public boolean flag = false;
         public boolean tick = false;
-        public String text = "";
+        public String text = ""; //$NON-NLS-1$
         public Date date;
         
         public TickItem(Date date)
@@ -600,7 +600,7 @@ public class DatePlot extends Composite
                     {
                         item.tick = true;
                         item.flag = false;
-                        item.text = date.get(Calendar.HOUR_OF_DAY) + ":00";
+                        item.text = date.get(Calendar.HOUR_OF_DAY) + ":00"; //$NON-NLS-1$
                     }
                 }
             }
@@ -629,9 +629,9 @@ public class DatePlot extends Composite
         if (index >= 0 && index < dateList.size())
         {
             if (interval < BarData.INTERVAL_DAILY)
-                label.setText(" " + tf.format(((TickItem)dateList.get(index)).date) + " ");
+                label.setText(" " + tf.format(((TickItem)dateList.get(index)).date) + " "); //$NON-NLS-1$ //$NON-NLS-2$
             else
-                label.setText(" " + df.format(((TickItem)dateList.get(index)).date) + " ");
+                label.setText(" " + df.format(((TickItem)dateList.get(index)).date) + " "); //$NON-NLS-1$ //$NON-NLS-2$
             label.pack();
             label.setBounds(x - label.getBounds().width / 2, 1, label.getBounds().width, 14);
         }

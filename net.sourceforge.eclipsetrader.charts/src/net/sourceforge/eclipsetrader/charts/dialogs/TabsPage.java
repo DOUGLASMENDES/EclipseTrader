@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.dialogs;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
 import org.eclipse.jface.preference.PreferencePage;
@@ -46,7 +47,7 @@ public class TabsPage extends PreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Label");
+        label.setText(Messages.TabsPage_Label);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         tabLabel = new Text(content, SWT.BORDER);
         tabLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));

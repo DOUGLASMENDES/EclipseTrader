@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 
 import org.eclipse.jface.action.Action;
@@ -23,7 +24,7 @@ public class SetLast6MonthsPeriodAction extends Action
 
     public SetLast6MonthsPeriodAction(ChartView view)
     {
-        super("Last 6 Months", AS_RADIO_BUTTON);
+        super(Messages.Period_6Months, AS_RADIO_BUTTON);
         this.view = view;
     }
 

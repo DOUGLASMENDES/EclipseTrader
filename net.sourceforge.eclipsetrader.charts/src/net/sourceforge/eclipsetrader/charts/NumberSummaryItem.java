@@ -28,7 +28,7 @@ public class NumberSummaryItem extends SummaryItem
 
         number = new Label(parent, SWT.NONE);
         number.setBackground(parent.getBackground());
-        number.setText(getText() + "=" + pf.format(0));
+        number.setText(getText() + "=" + pf.format(0)); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -42,7 +42,7 @@ public class NumberSummaryItem extends SummaryItem
 
     public void setData(double value)
     {
-        number.setText(getText() + "=" + pf.format(value));
+        number.setText(getText() + "=" + pf.format(value)); //$NON-NLS-1$
     }
 
     public void setData(Double value)
@@ -52,10 +52,10 @@ public class NumberSummaryItem extends SummaryItem
             String s = pf.format(value);
             if (s.length() >= 9)
                 s = s.substring(0, s.length() - 5);
-            number.setText(getText() + "=" + s);
+            number.setText(getText() + "=" + s); //$NON-NLS-1$
         }
         else
-            number.setText(getText() + "=");
+            number.setText(getText() + "="); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

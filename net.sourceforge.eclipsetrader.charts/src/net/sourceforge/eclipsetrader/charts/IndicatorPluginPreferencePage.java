@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 
@@ -201,7 +202,7 @@ public abstract class IndicatorPluginPreferencePage
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         
         Combo combo = new Combo(parent, SWT.READ_ONLY);
-        combo.add("<Default>");
+        combo.add(Messages.InputSecurity_Default);
 
         List list = new ArrayList(CorePlugin.getRepository().allSecurities());
         Collections.sort(list, new Comparator() {
@@ -235,12 +236,12 @@ public abstract class IndicatorPluginPreferencePage
         label.setText(text);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         Combo combo = new Combo(parent, SWT.READ_ONLY);
-        combo.add("OPEN");
-        combo.add("HIGH");
-        combo.add("LOW");
-        combo.add("CLOSE");
+        combo.add(Messages.InputField_Open);
+        combo.add(Messages.InputField_High);
+        combo.add(Messages.InputField_Low);
+        combo.add(Messages.InputField_Close);
         if (volume)
-            combo.add("VOLUME");
+            combo.add(Messages.InputField_Volume);
         combo.select(getSettings().getInteger(id, defaultValue).intValue());
         addControl(id, combo);
         return combo;
@@ -252,12 +253,12 @@ public abstract class IndicatorPluginPreferencePage
         label.setText(text);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         Combo lineType = new Combo(parent, SWT.READ_ONLY);
-        lineType.add("Dot");
-        lineType.add("Dash");
-        lineType.add("Histogram");
-        lineType.add("Histogram Bar");
-        lineType.add("Line");
-        lineType.add("Invisible");
+        lineType.add(Messages.LineType_Dot);
+        lineType.add(Messages.LineType_Dash);
+        lineType.add(Messages.LineType_Histogram);
+        lineType.add(Messages.LineType_HistogramBar);
+        lineType.add(Messages.LineType_Line);
+        lineType.add(Messages.LineType_Invisible);
         lineType.select(getSettings().getInteger(id, defaultValue).intValue());
         addControl(id, lineType);
         return lineType;
@@ -268,10 +269,10 @@ public abstract class IndicatorPluginPreferencePage
         Label label = new Label(parent, SWT.NONE);
         label.setText(text);
         Combo maType = new Combo(parent, SWT.READ_ONLY);
-        maType.add("SIMPLE");
-        maType.add("EXPONENTIAL");
-        maType.add("WEIGHTED");
-        maType.add("WILLIAM'S");
+        maType.add(Messages.MAType_Simple);
+        maType.add(Messages.MAType_Exponential);
+        maType.add(Messages.MAType_Weighted);
+        maType.add(Messages.MAType_Williams);
         maType.select(getSettings().getInteger(id, defaultValue).intValue());
         controls.put(id, maType);
         return maType;
@@ -309,12 +310,12 @@ public abstract class IndicatorPluginPreferencePage
         Label label = new Label(parent, SWT.NONE);
         label.setText(text);
         Combo lineType = new Combo(parent, SWT.READ_ONLY);
-        lineType.add("Dot");
-        lineType.add("Dash");
-        lineType.add("Histogram");
-        lineType.add("Histogram Bar");
-        lineType.add("Line");
-        lineType.add("Invisible");
+        lineType.add(Messages.LineType_Dot);
+        lineType.add(Messages.LineType_Dash);
+        lineType.add(Messages.LineType_Histogram);
+        lineType.add(Messages.LineType_HistogramBar);
+        lineType.add(Messages.LineType_Line);
+        lineType.add(Messages.LineType_Invisible);
         lineType.select(value);
         return lineType;
     }
@@ -324,10 +325,10 @@ public abstract class IndicatorPluginPreferencePage
         Label label = new Label(parent, SWT.NONE);
         label.setText(text);
         Combo maType = new Combo(parent, SWT.READ_ONLY);
-        maType.add("SIMPLE");
-        maType.add("EXPONENTIAL");
-        maType.add("WEIGHTED");
-        maType.add("WILLIAM'S");
+        maType.add(Messages.MAType_Simple);
+        maType.add(Messages.MAType_Exponential);
+        maType.add(Messages.MAType_Weighted);
+        maType.add(Messages.MAType_Williams);
         maType.select(value);
         return maType;
     }

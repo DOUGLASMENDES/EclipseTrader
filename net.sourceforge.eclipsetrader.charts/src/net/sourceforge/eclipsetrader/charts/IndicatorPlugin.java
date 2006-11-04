@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.charts;
 
 import java.util.Date;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.core.db.Security;
@@ -114,7 +115,7 @@ public abstract class IndicatorPlugin implements IIndicatorPlugin
     public static PlotLine getEMA(PlotLine d, int period)
     {
         PlotLine ema = new PlotLine();
-        ema.setLabel("EMA");
+        ema.setLabel(Messages.IndicatorPlugin_EMA);
 
         if (period >= d.getSize())
             return ema;
@@ -145,7 +146,7 @@ public abstract class IndicatorPlugin implements IIndicatorPlugin
     public static PlotLine getSMA(PlotLine d, int period)
     {
         PlotLine sma = new PlotLine();
-        sma.setLabel("SMA");
+        sma.setLabel(Messages.IndicatorPlugin_SMA);
 
         int size = d.getSize();
 
@@ -194,7 +195,7 @@ public abstract class IndicatorPlugin implements IIndicatorPlugin
     public static PlotLine getWMA(PlotLine d, int period)
     {
         PlotLine wma = new PlotLine();
-        wma.setLabel("WMA");
+        wma.setLabel(Messages.IndicatorPlugin_WMA);
 
         if (period >= d.getSize())
             return wma;
@@ -224,7 +225,7 @@ public abstract class IndicatorPlugin implements IIndicatorPlugin
     public static PlotLine getWilderMA(PlotLine d, int period)
     {
         PlotLine wilderma = new PlotLine();
-        wilderma.setLabel("WilderMA");
+        wilderma.setLabel(Messages.IndicatorPlugin_WilderMA);
 
         if (period >= d.getSize())
             return wilderma;

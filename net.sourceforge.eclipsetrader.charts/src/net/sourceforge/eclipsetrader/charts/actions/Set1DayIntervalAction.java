@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 
@@ -24,7 +25,7 @@ public class Set1DayIntervalAction extends Action
 
     public Set1DayIntervalAction(ChartView view)
     {
-        super("Daily", AS_RADIO_BUTTON);
+        super(Messages.Interval_Daily, AS_RADIO_BUTTON);
         this.view = view;
     }
 
