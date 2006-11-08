@@ -68,11 +68,14 @@ public class Messages extends NLS
     public static String LoggerPreferencesPage_Warn;
     public static String LoggerPreferencesPage_WriteToConsole;
     public static String LoggerPreferencesPage_WriteToFile;
+    public static String ProxyPreferencePage_EnableAuthentication;
     public static String ProxyPreferencePage_EnableHTTP;
     public static String ProxyPreferencePage_HostAddress;
     public static String ProxyPreferencePage_HostPort;
+    public static String ProxyPreferencePage_Password;
     public static String ProxyPreferencePage_PortErrorMessage;
     public static String ProxyPreferencePage_Settings;
+    public static String ProxyPreferencePage_Username;
     public static String SecuritiesView_Code;
     public static String SecuritiesView_Description;
     public static String SecuritiesView_Currency;

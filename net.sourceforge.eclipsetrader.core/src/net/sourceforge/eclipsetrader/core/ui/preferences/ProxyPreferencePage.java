@@ -42,6 +42,11 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
     private Text httpProxyPortText;
     private Label httpProxyHostLabel;
     private Label httpProxyPortLabel;
+    private Button enableProxyAuthentication;
+    private Text httpProxyUserText;
+    private Text httpProxyPasswordText;
+    private Label httpProxyUserLabel;
+    private Label httpProxyPasswordLabel;
 
     /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#init(IWorkbench)
@@ -63,30 +68,30 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
 
         Group group = new Group(content, SWT.NONE);
         group.setText(Messages.ProxyPreferencePage_Settings);
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 2;
-        group.setLayout(layout);
-        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 2;
-        group.setLayoutData(gd);
+        group.setLayout(new GridLayout(2, false));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
         enableHttpProxy = new Button(group, SWT.CHECK);
         enableHttpProxy.setText(Messages.ProxyPreferencePage_EnableHTTP);
-        gd = new GridData();
-        gd.horizontalSpan = 2;
-        enableHttpProxy.setLayoutData(gd);
+        enableHttpProxy.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        enableHttpProxy.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                updateControlsEnablement();
+            }
+        });
 
         httpProxyHostLabel = new Label(group, SWT.NONE);
         httpProxyHostLabel.setText(Messages.ProxyPreferencePage_HostAddress);
 
-        httpProxyHostText = new Text(group, SWT.SINGLE | SWT.BORDER);
-        httpProxyHostText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        httpProxyHostText = new Text(group, SWT.BORDER);
+        httpProxyHostText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
         httpProxyPortLabel = new Label(group, SWT.NONE);
         httpProxyPortLabel.setText(Messages.ProxyPreferencePage_HostPort);
 
-        httpProxyPortText = new Text(group, SWT.SINGLE | SWT.BORDER);
-        httpProxyPortText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        httpProxyPortText = new Text(group, SWT.BORDER);
+        httpProxyPortText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         // Validation of port field
         httpProxyPortText.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e)
@@ -115,28 +120,50 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
             }
         });
 
-        enableHttpProxy.addSelectionListener(new SelectionAdapter() {
+        enableProxyAuthentication = new Button(group, SWT.CHECK);
+        enableProxyAuthentication.setText(Messages.ProxyPreferencePage_EnableAuthentication);
+        enableProxyAuthentication.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        enableProxyAuthentication.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                boolean enable = enableHttpProxy.getSelection();
-                httpProxyPortLabel.setEnabled(enable);
-                httpProxyHostLabel.setEnabled(enable);
-                httpProxyPortText.setEnabled(enable);
-                httpProxyHostText.setEnabled(enable);
+                updateControlsEnablement();
             }
         });
 
+        httpProxyUserLabel = new Label(group, SWT.NONE);
+        httpProxyUserLabel.setText(Messages.ProxyPreferencePage_Username);
+
+        httpProxyUserText = new Text(group, SWT.BORDER);
+        httpProxyUserText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+        httpProxyPasswordLabel = new Label(group, SWT.NONE);
+        httpProxyPasswordLabel.setText(Messages.ProxyPreferencePage_Password);
+
+        httpProxyPasswordText = new Text(group, SWT.PASSWORD|SWT.BORDER);
+        httpProxyPasswordText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+        performDefaults();
+        
+        return content;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+     */
+    protected void performDefaults()
+    {
         IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+        
         enableHttpProxy.setSelection(store.getBoolean(CorePlugin.PREFS_ENABLE_HTTP_PROXY));
         httpProxyHostText.setText(store.getString(CorePlugin.PREFS_PROXY_HOST_ADDRESS));
         httpProxyPortText.setText(store.getString(CorePlugin.PREFS_PROXY_PORT_ADDRESS));
-
-        httpProxyPortLabel.setEnabled(enableHttpProxy.getSelection());
-        httpProxyHostLabel.setEnabled(enableHttpProxy.getSelection());
-        httpProxyPortText.setEnabled(enableHttpProxy.getSelection());
-        httpProxyHostText.setEnabled(enableHttpProxy.getSelection());
+        enableProxyAuthentication.setSelection(store.getBoolean(CorePlugin.PREFS_ENABLE_PROXY_AUTHENTICATION));
+        httpProxyUserText.setText(store.getString(CorePlugin.PREFS_PROXY_USER));
+        httpProxyPasswordText.setText(store.getString(CorePlugin.PREFS_PROXY_PASSWORD));
         
-        return content;
+        updateControlsEnablement();
+
+        super.performDefaults();
     }
 
     /* (non-Javadoc)
@@ -149,7 +176,23 @@ public class ProxyPreferencePage extends PreferencePage implements IWorkbenchPre
         store.setValue(CorePlugin.PREFS_ENABLE_HTTP_PROXY, enableHttpProxy.getSelection());
         store.setValue(CorePlugin.PREFS_PROXY_HOST_ADDRESS, httpProxyHostText.getText());
         store.setValue(CorePlugin.PREFS_PROXY_PORT_ADDRESS, httpProxyPortText.getText());
+        store.setValue(CorePlugin.PREFS_ENABLE_PROXY_AUTHENTICATION, enableProxyAuthentication.getSelection());
+        store.setValue(CorePlugin.PREFS_PROXY_USER, httpProxyUserText.getText());
+        store.setValue(CorePlugin.PREFS_PROXY_PASSWORD, httpProxyPasswordText.getText());
         
         return super.performOk();
+    }
+    
+    protected void updateControlsEnablement()
+    {
+        httpProxyPortLabel.setEnabled(enableHttpProxy.getSelection());
+        httpProxyHostLabel.setEnabled(enableHttpProxy.getSelection());
+        httpProxyPortText.setEnabled(enableHttpProxy.getSelection());
+        httpProxyHostText.setEnabled(enableHttpProxy.getSelection());
+        enableProxyAuthentication.setEnabled(enableHttpProxy.getSelection());
+        httpProxyUserLabel.setEnabled(enableProxyAuthentication.getSelection() && enableProxyAuthentication.isEnabled());
+        httpProxyPasswordLabel.setEnabled(enableProxyAuthentication.getSelection() && enableProxyAuthentication.isEnabled());
+        httpProxyUserText.setEnabled(enableProxyAuthentication.getSelection() && enableProxyAuthentication.isEnabled());
+        httpProxyPasswordText.setEnabled(enableProxyAuthentication.getSelection() && enableProxyAuthentication.isEnabled());
     }
 }
