@@ -298,7 +298,13 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     Observer quoteObserver = new Observer() {
         public void update(Observable o, Object arg)
         {
-            sashForm.getDisplay().timerExec(200, updateMarketValue);
+            sashForm.getDisplay().syncExec(new Runnable() {
+                public void run()
+                {
+                    if (!sashForm.isDisposed())
+                        sashForm.getDisplay().timerExec(200, updateMarketValue);
+                }
+            });
         }
     };
     IPropertyChangeListener pluginPropertiesChangeListener = new IPropertyChangeListener() {
