@@ -10,7 +10,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AD"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.ad"
-            name="Chaikin A/D Line (AD)">
+            name="Chaikin A/D Line - AD">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AD"
                title="Chaikin A/D Line"/>
@@ -19,7 +19,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ADOSC"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.adosc"
-            name="Chaikin A/D Oscillator (ADOSC)">
+            name="Chaikin A/D Oscillator - ADOSC">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ADOSC"
                title="Chaikin A/D Oscillator"/>
@@ -28,7 +28,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ADX"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.adx"
-            name="Average Directional Movement Index (ADX)">
+            name="Average Directional Movement Index - ADX">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ADX"
                title="Average Directional Movement Index"/>
@@ -37,7 +37,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ADXR"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.adx"
-            name="Average Directional Movement Index Rating (ADXR)">
+            name="Average Directional Movement Index Rating - ADXR">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ADXR"
                title="Average Directional Movement Index"/>
@@ -46,7 +46,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:APO"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.apo"
-            name="Absolute Price Oscillator (APO)">
+            name="Absolute Price Oscillator - APO">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:APO"
                title="Absolute Price Oscillator"/>
@@ -55,7 +55,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AROON"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.aroon"
-            name="Aroon (AROON)">
+            name="Aroon - AROON">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AROON"
                title="Aroon"/>
@@ -64,7 +64,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AROONOSC"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.aroonosc"
-            name="Aroon Oscillator (AROONOSC)">
+            name="Aroon Oscillator - AROONOSC">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AROONOSC"
                title="Aroon Oscillator"/>
@@ -73,7 +73,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:AVGPRICE"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.avgprice"
-            name="Average Price (AVGPRICE)">
+            name="Average Price - AVGPRICE">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:AVGPRICE"
                title="Average Price"/>
@@ -82,7 +82,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ATR"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.atr"
-            name="Average True Range (ATR)">
+            name="Average True Range - ATR">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ATR"
                title="Average True Range"/>
@@ -91,7 +91,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:BBANDS"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.bbands"
-            name="Bollinger Bands (BBANDS)">
+            name="Bollinger Bands - BBANDS">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:BBANDS"
                title="Bollinger Bands"/>
@@ -100,7 +100,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:BOP"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.bop"
-            name="Balance Of Power (BOP)">
+            name="Balance Of Power - BOP">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:BOP"
                title="Balance Of Power"/>
@@ -109,7 +109,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:CCI"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.cci"
-            name="Commodity Channel Index (CCI)">
+            name="Commodity Channel Index - CCI">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:CCI"
                title="Commodity Channel Index"/>
@@ -118,7 +118,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:CMO"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.cmo"
-            name="Chande Momentum Oscillator (CMO)">
+            name="Chande Momentum Oscillator - CMO">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:CMO"
                title="Chande Momentum Oscillator"/>
@@ -127,7 +127,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:DX"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.dx"
-            name="Directional Movement Index (DX)">
+            name="Directional Movement Index - DX">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:DX"
                title="Directional Movement Index"/>
@@ -136,7 +136,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:LINEARREG"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.linearreg"
-            name="Linear Regression (LINEARREG)">
+            name="Linear Regression - LINEARREG">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:LINEARREG"
                title="Linear Regression"/>
@@ -145,7 +145,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:MA"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.ma"
-            name="Moving Average (MA)">
+            name="Moving Average - MA">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:MA"
                title="Moving Average"/>
@@ -154,16 +154,25 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:MACD"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.macd"
-            name="Moving Average Convergence/Divergence (MACD)">
+            name="Moving Average Convergence/Divergence - MACD">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:MACD"
                title="Moving Average Convergence/Divergence"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:MFI"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.mfi"
+            name="Money Flow Index - MFI">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:MFI"
+               title="Money Flow Index"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:MOM"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.mom"
-            name="Momentum (MOM)">
+            name="Momentum - MOM">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:MOM"
                title="Momentum"/>
@@ -172,7 +181,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:NATR"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.natr"
-            name="Normalized Average True Range (NATR)">
+            name="Normalized Average True Range - NATR">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:NATR"
                title="Normalized Average True Range"/>
@@ -181,7 +190,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:OBV"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.obv"
-            name="On Balance Volume (OBV)">
+            name="On Balance Volume - OBV">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:OBV"
                title="On Balance Volume"/>
@@ -190,7 +199,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:PPO"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.ppo"
-            name="Percentage Price Oscillator (PPO)">
+            name="Percentage Price Oscillator - PPO">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:PPO"
                title="Percentage Price Oscillator"/>
@@ -199,7 +208,7 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ROC"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.roc"
-            name="Rate of Change (ROC)">
+            name="Rate of Change - ROC">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ROC"
                title="Rate of Change"/>
@@ -208,25 +217,88 @@
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:RSI"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.rsi"
-            name="Relative Strength Index (RSI)">
+            name="Relative Strength Index - RSI">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:RSI"
                title="Relative Strength Index"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:SAR"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.sar"
+            name="Parabolic SAR - SAR">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:SAR"
+               title="Parabolic SAR"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:STOCH"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.stoch"
+            name="Stochastic - STOCH">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:STOCH"
+               title="Stochastic"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:STOCHRSI"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.stochrsi"
+            name="Stochastic Relative Strength Index - STOCHRSI">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:STOCHRSI"
+               title="Stochastic Relative Strength Index"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:SUM"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.sum"
+            name="Summation - SUM">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:SUM"
+               title="Summation"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:TRANGE"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.trange"
+            name="True Range - TRANGE">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:TRANGE"
+               title="True Range"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:TRIX"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.trix"
-            name="1-day Rate-Of-Change of a Triple Smooth EMA (TRIX)">
+            name="1-day Rate-Of-Change of a Triple Smooth EMA - TRIX">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:TRIX"
                title="1-day Rate-Of-Change of a Triple Smooth EMA"/>
       </indicator>
       <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:TSF"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.tsf"
+            name="Time Series Forecast - TSF">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:TSF"
+               title="Time Series Forecast"/>
+      </indicator>
+      <indicator
+            class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:TYPPRICE"
+            group="net.sourceforge.eclipsetrader.ta-lib"
+            id="net.sourceforge.eclipsetrader.ta-lib.typprice"
+            name="Typical Price - TYPPRICE">
+         <preferencePage
+               class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:TYPPRICE"
+               title="Typical Price"/>
+      </indicator>
+      <indicator
             class="net.sourceforge.eclipsetrader.ta_lib.IndicatorsFactory:ULTOSC"
             group="net.sourceforge.eclipsetrader.ta-lib"
             id="net.sourceforge.eclipsetrader.ta-lib.ultosc"
-            name="Ultimate Oscillator (ULTOSC)">
+            name="Ultimate Oscillator - ULTOSC">
          <preferencePage
                class="net.sourceforge.eclipsetrader.ta_lib.IndicatorPreferencesFactory:ULTOSC"
                title="Ultimate Oscillator"/>
