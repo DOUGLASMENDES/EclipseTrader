@@ -331,7 +331,8 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                 Indicator indicator = (Indicator)indicators.get(ii);
 
                 Scaler indicatorScaler = new Scaler();
-                indicatorScaler.set(scaler.getHeight(), scaler.getHigh(), scaler.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+                indicatorScaler.setExtendRange(scaler.getExtendRange());
+                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
                 
                 for (int ll = indicator.getLines().size() - 1; ll >= 0; ll--)
                 {
@@ -345,10 +346,11 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                             if (plotLine.getScaleFlag())
                             {
                                 indicatorScaler = new Scaler();
+                                indicatorScaler.setExtendRange(scaler.getExtendRange());
                                 indicatorScaler.set(scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
-                                if (isAutoScale())
-                                    computeScale(indicatorScaler, plotLine);
                             }
+                            if (isAutoScale())
+                                computeScale(indicatorScaler, plotLine);
                             int ofs = barData.size() - plotLine.getSize();
                             int x = getMarginWidth() + getGridWidth() / 2 + ofs * getGridWidth();
                             int[] pointArray = new int[plotLine.getSize() * 2];
@@ -373,10 +375,11 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                             if (plotLine.getScaleFlag())
                             {
                                 indicatorScaler = new Scaler();
+                                indicatorScaler.setExtendRange(scaler.getExtendRange());
                                 indicatorScaler.set(scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
-                                if (isAutoScale())
-                                    computeScale(indicatorScaler, plotLine);
                             }
+                            if (isAutoScale())
+                                computeScale(indicatorScaler, plotLine);
                             int ofs = barData.size() - plotLine.getSize();
                             int x = getMarginWidth() + getGridWidth() / 2 + ofs * getGridWidth();
                             for (int i = 0; i < plotLine.getSize(); i++, x += getGridWidth())
@@ -459,7 +462,37 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                 Indicator indicator = (Indicator)iter.next();
                 
                 Scaler indicatorScaler = new Scaler();
-                indicatorScaler.set(scaler.getHeight(), scaler.getHigh(), scaler.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+                indicatorScaler.setExtendRange(scaler.getExtendRange());
+
+                for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
+                {
+                    PlotLine plotLine = (PlotLine)iter2.next();
+                    switch(plotLine.getType())
+                    {
+                        case PlotLine.HISTOGRAM:
+                            drawHistogram(gc, plotLine, indicatorScaler);
+                            break;
+                        case PlotLine.HISTOGRAM_BAR:
+                            drawHistogramBars(gc, plotLine, indicatorScaler);
+                            break;
+                        case PlotLine.BAR:
+                            drawBars(gc, plotLine, indicatorScaler, selection == indicator);
+                            break;
+                        case PlotLine.CANDLE:
+                            drawCandles(gc, plotLine, indicatorScaler, selection == indicator);
+                            break;
+                    }
+                }
+            }
+            
+            for (Iterator iter = indicators.iterator(); iter.hasNext(); )
+            {
+                Indicator indicator = (Indicator)iter.next();
+                
+                Scaler indicatorScaler = new Scaler();
+                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
+                indicatorScaler.setExtendRange(scaler.getExtendRange());
 
                 for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
                 {
@@ -473,18 +506,6 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                             break;
                         case PlotLine.HORIZONTAL:
                             drawHorizontalLine(gc, plotLine, indicatorScaler);
-                            break;
-                        case PlotLine.HISTOGRAM:
-                            drawHistogram(gc, plotLine, indicatorScaler);
-                            break;
-                        case PlotLine.HISTOGRAM_BAR:
-                            drawHistogramBars(gc, plotLine, indicatorScaler);
-                            break;
-                        case PlotLine.BAR:
-                            drawBars(gc, plotLine, indicatorScaler, selection == indicator);
-                            break;
-                        case PlotLine.CANDLE:
-                            drawCandles(gc, plotLine, indicatorScaler, selection == indicator);
                             break;
                     }
                 }
@@ -578,9 +599,9 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             scaler = new Scaler();
             scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
-            if (isAutoScale())
-                computeScale(scaler, plotLine);
         }
+        if (isAutoScale())
+            computeScale(scaler, plotLine);
 
         int ofs = barData.size() - plotLine.getSize();
         int x = getMarginWidth() + getGridWidth() / 2 + ofs * getGridWidth();
@@ -631,9 +652,9 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             scaler = new Scaler();
             scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
-            if (isAutoScale())
-                computeScale(scaler, plotLine);
         }
+        if (isAutoScale())
+            computeScale(scaler, plotLine);
 
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setForeground(plotLine.getColor());
@@ -656,9 +677,9 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             scaler = new Scaler();
             scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
-            if (isAutoScale())
-                computeScale(scaler, plotLine);
         }
+        if (isAutoScale())
+            computeScale(scaler, plotLine);
 
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setForeground(plotLine.getColor());
@@ -724,9 +745,9 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             scaler = new Scaler();
             scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
-            if (isAutoScale())
-                computeScale(scaler, plotLine);
         }
+        if (isAutoScale())
+            computeScale(scaler, plotLine);
 
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setForeground(plotLine.getColor());
@@ -785,9 +806,9 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             scaler = new Scaler();
             scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
-            if (isAutoScale())
-                computeScale(scaler, plotLine);
         }
+        if (isAutoScale())
+            computeScale(scaler, plotLine);
 
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setBackground(plotLine.getColor());
@@ -826,9 +847,9 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             scaler = new Scaler();
             scaler.setExtendRange(this.scaler.getExtendRange());
             scaler.set(this.scaler.getHeight(), plotLine.getHigh(), plotLine.getLow(), this.scaler.getLogScaleHigh(), this.scaler.getLogRange(), this.scaler.getLogFlag());
-            if (isAutoScale())
-                computeScale(scaler, plotLine);
         }
+        if (isAutoScale())
+            computeScale(scaler, plotLine);
 
         gc.setLineStyle(SWT.LINE_SOLID);
 

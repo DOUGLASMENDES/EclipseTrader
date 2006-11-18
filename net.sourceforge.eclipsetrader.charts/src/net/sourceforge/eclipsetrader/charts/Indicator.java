@@ -62,12 +62,15 @@ public class Indicator
 
     public void add(PlotLine plotLine)
     {
-        lines.add(plotLine);
+        if (lines.size() == 0 || !plotLine.getScaleFlag())
+        {
+            if (plotLine.getHigh() > high)
+                high = plotLine.getHigh();
+            if (plotLine.getLow() < low)
+                low = plotLine.getLow();
+        }
 
-        if (plotLine.getHigh() > high)
-            high = plotLine.getHigh();
-        if (plotLine.getLow() < low)
-            low = plotLine.getLow();
+        lines.add(plotLine);
     }
     
     public void clear()
