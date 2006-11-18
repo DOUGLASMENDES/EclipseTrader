@@ -11,18 +11,25 @@
 
 package net.sourceforge.eclipsetrader.charts.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.core.db.Chart;
+import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
+import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.visitors.ChartVisitorAdapter;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
@@ -48,32 +55,69 @@ public class UpdateChartAction implements IViewActionDelegate
     {
         if (view instanceof ChartView)
         {
-            String id = "";
             final Chart chart = ((ChartView)view).getChart();
-            if (chart.getSecurity().getHistoryFeed() != null)
-                id = chart.getSecurity().getHistoryFeed().getId();
-            final IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(id);
-            if (feed != null)
-            {
-                Job job = new Job("Update chart data") {
-                    protected IStatus run(IProgressMonitor monitor)
+
+            final List securities = new ArrayList();
+            chart.accept(new ChartVisitorAdapter() {
+                public void visit(Chart chart)
+                {
+                    securities.add(chart.getSecurity());
+                }
+
+                public void visit(ChartIndicator indicator)
+                {
+                    String securityId = (String)indicator.getParameters().get("securityId");
+                    if (securityId != null)
                     {
-                        monitor.beginTask("Updating " + chart.getSecurity().getDescription().replaceAll("&", "&&"), 1);
-                        monitor.subTask("Updating " + chart.getSecurity().getDescription().replaceAll("&", "&&"));
+                        Security security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(securityId));
+                        if (security != null)
+                            securities.add(security);
+                    }
+                }
+            });
+            
+            Job job = new Job("Update chart data") {
+                protected IStatus run(IProgressMonitor monitor)
+                {
+                    monitor.beginTask("Update chart data", securities.size());
+
+                    for (int i = 0; i < securities.size(); i++)
+                    {
+                        Security security = (Security)securities.get(i);
+                        monitor.subTask("Updating " + security.getDescription().replaceAll("&", "&&"));
+                        
                         int interval = IHistoryFeed.INTERVAL_DAILY;
                         if (((ChartView)view).getInterval() < BarData.INTERVAL_DAILY)
                             interval = IHistoryFeed.INTERVAL_MINUTE;
-                        feed.updateHistory(chart.getSecurity(), interval);
+                        
+                        String id = "";
+                        if (security.getHistoryFeed() != null)
+                            id = security.getHistoryFeed().getId();
+                        IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(id);
+                        if (feed != null)
+                        {
+                            Observer observer = new Observer() {
+                                public void update(Observable o, Object arg)
+                                {
+                                    chart.setChanged();
+                                }
+                            };
+                            security.addObserver(observer);
+                            feed.updateHistory(security, interval);
+                            security.deleteObserver(observer);
+                        }
+                        
                         monitor.worked(1);
-                        monitor.done();
-                        return Status.OK_STATUS;
                     }
-                };
-                job.setUser(true);
-                job.schedule();
-            }
-            else
-                MessageDialog.openError(view.getSite().getShell(), "Chart Update", "History feed invalid or not set !");
+                    
+                    chart.notifyObservers();
+                    monitor.done();
+
+                    return Status.OK_STATUS;
+                }
+            };
+            job.setUser(true);
+            job.schedule();
         }
     }
 
