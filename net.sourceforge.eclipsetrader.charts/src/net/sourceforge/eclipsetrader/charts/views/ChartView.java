@@ -73,6 +73,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartObject;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.visitors.ChartVisitorAdapter;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
@@ -142,7 +143,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  */
-public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, Observer, ISelectionListener
+public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, ISelectionListener
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.chart"; //$NON-NLS-1$
     public static final int PERIOD_ALL = 0;
@@ -303,6 +304,26 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 {
                     if (!sashForm.isDisposed())
                         sashForm.getDisplay().timerExec(200, updateMarketValue);
+                }
+            });
+        }
+    };
+    List observedSecurities = new ArrayList();
+    Runnable updateViewRunnable = new Runnable() {
+        public void run()
+        {
+            if (!sashForm.isDisposed())
+                updateView();
+        }
+    };
+    Observer chartUpdateObserver = new Observer() {
+        public void update(Observable o, Object arg)
+        {
+            sashForm.getDisplay().syncExec(new Runnable() {
+                public void run()
+                {
+                    if (!sashForm.isDisposed())
+                        sashForm.getDisplay().timerExec(200, updateViewRunnable);
                 }
             });
         }
@@ -628,10 +649,11 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         for (int r = 0; r < chart.getRows().size(); r++)
                             itemAdded(chart.getRows().get(r));
                         chart.getRows().addCollectionObserver(ChartView.this);
-                        chart.addObserver(ChartView.this);
+                        chart.addObserver(chartUpdateObserver);
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
+                    updateObservers();
                     
                     String[] values = preferences.getString(PREFS_WEIGHTS).split(";");
                     int weights[] = new int[values.length];
@@ -737,9 +759,15 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         getSite().getPage().removeSelectionListener(this);
         if (chart != null)
         {
-            chart.deleteObserver(ChartView.this);
+            chart.deleteObserver(chartUpdateObserver);
             chart.getRows().removeCollectionObserver(ChartView.this);
         }
+        for (Iterator iter = observedSecurities.iterator(); iter.hasNext(); )
+        {
+            Security security = (Security)iter.next();
+            security.deleteObserver(chartUpdateObserver);
+        }
+        observedSecurities.clear();
 
         try {
             if (preferences != null)
@@ -992,6 +1020,38 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         }
     }
     
+    protected void updateObservers()
+    {
+        for (Iterator iter = observedSecurities.iterator(); iter.hasNext(); )
+        {
+            Security security = (Security)iter.next();
+            security.deleteObserver(chartUpdateObserver);
+        }
+        observedSecurities.clear();
+        
+        chart.accept(new ChartVisitorAdapter() {
+            public void visit(Chart chart)
+            {
+                chart.getSecurity().addObserver(chartUpdateObserver);
+                observedSecurities.add(chart.getSecurity());
+            }
+
+            public void visit(ChartIndicator indicator)
+            {
+                String securityId = (String)indicator.getParameters().get("securityId");
+                if (securityId != null)
+                {
+                    Security security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(securityId));
+                    if (security != null)
+                    {
+                        security.addObserver(chartUpdateObserver);
+                        observedSecurities.add(security);
+                    }
+                }
+            }
+        });
+    }
+    
     public void updateView()
     {
         datePlot.setInterval(chart.getCompression());
@@ -1052,7 +1112,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         sashForm.getDisplay().asyncExec(new Runnable() {
             public void run()
             {
-                if (!datePlot.isDisposed())
+                if (!sashForm.isDisposed())
                 {
                     setPartName(chart.getTitle());
                     updateActionBars();
@@ -1629,6 +1689,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
 
                     plot.addIndicator(plugin.getOutput());
                 }
+                updateObservers();
 
                 indicators.add(indicator);
                 if (autoScale)
