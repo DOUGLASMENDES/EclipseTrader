@@ -26,9 +26,18 @@ public class NumberSummaryItem extends SummaryItem
     {
         super(parent, style);
 
+        Color background = parent.getBackground();
+        Color foreground = parent.getForeground();
+
         number = new Label(parent, SWT.NONE);
-        number.setBackground(parent.getBackground());
+        number.setBackground(background);
+        number.setForeground(foreground);
         number.setText(getText() + "=" + pf.format(0)); //$NON-NLS-1$
+        
+        if (background != null)
+            background.dispose();
+        if (foreground != null)
+            foreground.dispose();
     }
 
     /* (non-Javadoc)

@@ -29,9 +29,18 @@ public class DateSummaryItem extends SummaryItem
     {
         super(parent, style);
 
+        Color background = parent.getBackground();
+        Color foreground = parent.getForeground();
+
         date = new Label(parent, SWT.NONE);
-        date.setBackground(parent.getBackground());
+        date.setBackground(background);
+        date.setForeground(foreground);
         date.setText("--/--/----"); //$NON-NLS-1$
+        
+        if (background != null)
+            background.dispose();
+        if (foreground != null)
+            foreground.dispose();
     }
 
     /* (non-Javadoc)

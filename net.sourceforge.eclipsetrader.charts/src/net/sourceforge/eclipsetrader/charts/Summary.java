@@ -20,13 +20,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 /**
  */
 public class Summary extends Composite implements DisposeListener, PaintListener
 {
-    private Color foreground = new Color(null, 0, 0, 0);
-    private Color background = new Color(null, 255, 255, 255);
     
     public Summary(Composite parent, int style)
     {
@@ -42,7 +41,6 @@ public class Summary extends Composite implements DisposeListener, PaintListener
         rowLayout.marginBottom = 0;
         rowLayout.spacing = 5;
         setLayout(rowLayout);
-        setBackground(background);
         
         addPaintListener(this);
         addDisposeListener(this);
@@ -63,8 +61,14 @@ public class Summary extends Composite implements DisposeListener, PaintListener
      */
     public void paintControl(PaintEvent e)
     {
-        e.gc.setForeground(foreground);
+        Color foreground = getForeground();
+
+        if (foreground != null)
+            e.gc.setForeground(foreground);
         e.gc.drawLine(0, getClientArea().height - 1, getClientArea().width, getClientArea().height - 1); 
+
+        if (foreground != null)
+            foreground.dispose();
     }
 
     /* (non-Javadoc)
@@ -72,9 +76,27 @@ public class Summary extends Composite implements DisposeListener, PaintListener
      */
     public void widgetDisposed(DisposeEvent e)
     {
-        if (background != null && !background.isDisposed())
-            background.dispose();
-        if (foreground != null && !foreground.isDisposed())
-            foreground.dispose();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.widgets.Control#setBackground(org.eclipse.swt.graphics.Color)
+     */
+    public void setBackground(Color color)
+    {
+        Control[] childs = getChildren();
+        for (int i = 0; i < childs.length; i++)
+            childs[i].setBackground(color);
+        super.setBackground(color);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.widgets.Control#setForeground(org.eclipse.swt.graphics.Color)
+     */
+    public void setForeground(Color color)
+    {
+        Control[] childs = getChildren();
+        for (int i = 0; i < childs.length; i++)
+            childs[i].setForeground(color);
+        super.setForeground(color);
     }
 }

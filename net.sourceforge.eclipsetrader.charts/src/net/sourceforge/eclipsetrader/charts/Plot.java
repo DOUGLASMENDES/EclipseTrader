@@ -19,9 +19,14 @@ import net.sourceforge.eclipsetrader.charts.events.PlotMouseEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotMouseListener;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionListener;
+import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -33,6 +38,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 
 /**
  */
@@ -42,8 +50,6 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
     private DateSummaryItem dateSummary;
     private IndicatorPlot indicatorPlot;
     private ScalePlot scalePlot;
-    private Color foreground = new Color(null, 0, 0, 0);
-    private Color background = new Color(null, 255, 255, 224);
     private Color selectionColor = new Color(null, 224, 0, 0);
     private int scaleWidth = 75;
     private Scaler scaler = new Scaler();
@@ -56,10 +62,88 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
     private Cursor handCursor = new Cursor(null, SWT.CURSOR_HAND);
     private Cursor currentCursor;
     private boolean selection = false;
+    ITheme theme;
+    IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            String property = event.getProperty();
+            if (property.equals(IThemeManager.CHANGE_CURRENT_THEME))
+            {
+                IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+
+                if (theme != null)
+                    theme.removePropertyChangeListener(themeChangeListener);
+                theme = themeManager.getCurrentTheme();
+                theme.addPropertyChangeListener(themeChangeListener);
+
+                summary.setBackground(theme.getColorRegistry().get(property));
+                summary.setForeground(theme.getColorRegistry().get(property));
+
+                indicatorPlot.setBackground(theme.getColorRegistry().get(ChartView.THEME_CHART_BACKGROUND));
+                scalePlot.setForeground(theme.getColorRegistry().get(ChartView.THEME_SCALE_FOREGROUND));
+                scalePlot.setBackground(theme.getColorRegistry().get(ChartView.THEME_SCALE_BACKGROUND));
+                scalePlot.setSeparatorColor(theme.getColorRegistry().get(ChartView.THEME_SCALE_FOREGROUND));
+
+                summary.layout();
+                indicatorPlot.redrawAll();
+                scalePlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_CHART_BACKGROUND))
+            {
+                indicatorPlot.setBackground(theme.getColorRegistry().get(property));
+                indicatorPlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_CHART_GRID_COLOR))
+            {
+                indicatorPlot.setGridColor(theme.getColorRegistry().get(property));
+                indicatorPlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_SCALE_FOREGROUND))
+            {
+                scalePlot.setForeground(theme.getColorRegistry().get(property));
+                scalePlot.setSeparatorColor(theme.getColorRegistry().get(property));
+                scalePlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_SCALE_BACKGROUND))
+            {
+                scalePlot.setBackground(theme.getColorRegistry().get(property));
+                scalePlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_SUMMARY_BACKGROUND))
+            {
+                summary.setBackground(theme.getColorRegistry().get(property));
+                summary.layout();
+            }
+            else if (property.equals(ChartView.THEME_SUMMARY_FOREGROUND))
+            {
+                summary.setForeground(theme.getColorRegistry().get(property));
+                summary.layout();
+            }
+        }
+    };
+    DisposeListener disposeListener = new DisposeListener() {
+        public void widgetDisposed(DisposeEvent e)
+        {
+            IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+            themeManager.removePropertyChangeListener(themeChangeListener);
+            if (theme != null)
+                theme.removePropertyChangeListener(themeChangeListener);
+            if (crossCursor != null)
+                crossCursor.dispose();
+            if (handCursor != null)
+                handCursor.dispose();
+        }
+    };
 
     public Plot(Composite parent, int style)
     {
         super(parent, style);
+        addDisposeListener(disposeListener);
+
+        IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+        themeManager.addPropertyChangeListener(themeChangeListener);
+        theme = themeManager.getCurrentTheme();
+        theme.addPropertyChangeListener(themeChangeListener);
 
         GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 2;
@@ -69,12 +153,14 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
 
         summary = new Summary(this, SWT.NONE);
         summary.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 2, 1));
+        summary.setForeground(theme.getColorRegistry().get(ChartView.THEME_SUMMARY_FOREGROUND));
+        summary.setBackground(theme.getColorRegistry().get(ChartView.THEME_SUMMARY_BACKGROUND));
         dateSummary = new DateSummaryItem(summary, SWT.NONE);
         
         indicatorPlot = new IndicatorPlot(this, SWT.NONE);
         indicatorPlot.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
-        indicatorPlot.setForeground(foreground);
-        indicatorPlot.setBackground(background);
+        indicatorPlot.setBackground(theme.getColorRegistry().get(ChartView.THEME_CHART_BACKGROUND));
+        indicatorPlot.setGridColor(theme.getColorRegistry().get(ChartView.THEME_CHART_GRID_COLOR));
         indicatorPlot.setScaler(scaler);
         indicatorPlot.addMouseListener(this);
         indicatorPlot.addMouseMoveListener(this);
@@ -86,9 +172,9 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
         gridData.horizontalAlignment = GridData.FILL;
         gridData.verticalAlignment = GridData.FILL;
         scalePlot.setLayoutData(gridData);
-        scalePlot.setForeground(foreground);
-        scalePlot.setBackground(background);
-        scalePlot.setSeparatorColor(foreground);
+        scalePlot.setForeground(theme.getColorRegistry().get(ChartView.THEME_SCALE_FOREGROUND));
+        scalePlot.setBackground(theme.getColorRegistry().get(ChartView.THEME_SCALE_BACKGROUND));
+        scalePlot.setSeparatorColor(theme.getColorRegistry().get(ChartView.THEME_SCALE_FOREGROUND));
         scalePlot.setScaler(scaler);
 
         pack();
@@ -105,7 +191,7 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
         if (selection)
             scalePlot.setSeparatorColor(selectionColor);
         else
-            scalePlot.setSeparatorColor(foreground);
+            scalePlot.setSeparatorColor(theme.getColorRegistry().get(ChartView.THEME_SCALE_FOREGROUND));
     }
 
     public void addIndicator(Indicator indicator)

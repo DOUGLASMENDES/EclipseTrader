@@ -36,26 +36,31 @@ public class BarSummaryItem extends SummaryItem
     public BarSummaryItem(Summary parent, int style)
     {
         super(parent, style);
+
+        Color background = parent.getBackground();
         
         change = new Label(parent, SWT.NONE);
-        change.setBackground(parent.getBackground());
+        change.setBackground(background);
         change.setText(Messages.BarSummaryItem_CH + pcf.format(0) + "%"); //$NON-NLS-2$
         
         open = new Label(parent, SWT.NONE);
-        open.setBackground(parent.getBackground());
+        open.setBackground(background);
         open.setText(Messages.BarSummaryItem_O + pf.format(0));
 
         high = new Label(parent, SWT.NONE);
-        high.setBackground(parent.getBackground());
+        high.setBackground(background);
         high.setText(Messages.BarSummaryItem_H + pf.format(0));
         
         low = new Label(parent, SWT.NONE);
-        low.setBackground(parent.getBackground());
+        low.setBackground(background);
         low.setText(Messages.BarSummaryItem_L + pf.format(0));
         
         close = new Label(parent, SWT.NONE);
-        close.setBackground(parent.getBackground());
+        close.setBackground(background);
         close.setText(Messages.BarSummaryItem_C + pf.format(0));
+        
+        if (background != null)
+            background.dispose();
     }
     
     /* (non-Javadoc)

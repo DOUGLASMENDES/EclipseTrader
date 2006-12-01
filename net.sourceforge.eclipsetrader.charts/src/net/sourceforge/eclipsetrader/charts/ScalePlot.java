@@ -125,6 +125,14 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
     public void draw(GC gc)
     {
         Rectangle bounds = image.getBounds(); 
+        Color background = getBackground();
+        Color foreground = getForeground();
+        
+        if (background != null)
+            gc.setBackground(background);
+        if (foreground != null)
+            gc.setForeground(foreground);
+
         gc.fillRectangle(bounds);
 
         nf.setGroupingUsed(true);
@@ -189,6 +197,11 @@ public class ScalePlot extends Canvas implements ControlListener, DisposeListene
                 }
             }
         }
+
+        if (background != null)
+            background.dispose();
+        if (foreground != null)
+            foreground.dispose();
     }
 
     /* (non-Javadoc)

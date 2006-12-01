@@ -140,12 +140,24 @@ import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 
 /**
  */
 public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, ISelectionListener
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.chart"; //$NON-NLS-1$
+    public static final String THEME_CHART_BACKGROUND = "CHART_BACKGROUND";
+    public static final String THEME_CHART_GRID_COLOR = "CHART_GRID_COLOR";
+    public static final String THEME_SCALE_BACKGROUND = "CHART_SCALE_BACKGROUND";
+    public static final String THEME_SCALE_FOREGROUND = "CHART_SCALE_FOREGROUND";
+    public static final String THEME_SUMMARY_BACKGROUND = "CHART_SUMMARY_BACKGROUND";
+    public static final String THEME_SUMMARY_FOREGROUND = "CHART_SUMMARY_FOREGROUND";
+    public static final String THEME_PERIOD_BACKGROUND = "CHART_PERIOD_BACKGROUND";
+    public static final String THEME_PERIOD_FOREGROUND = "CHART_PERIOD_FOREGROUND";
+    public static final String THEME_PERIOD_MARKERS = "CHART_PERIOD_MARKERS";
+    public static final String THEME_CHART_SELECTION_COLOR = "CHART_SELECTION_COLOR";
     public static final int PERIOD_ALL = 0;
     public static final int PERIOD_LAST6MONTHS = 1;
     public static final int PERIOD_LASTYEAR = 2;
@@ -197,7 +209,44 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     Action pasteSpecialAction;
     Action deleteAction;
     PreferenceStore preferences;
+    ITheme theme;
     Logger logger = Logger.getLogger(getClass());
+    IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent event)
+        {
+            String property = event.getProperty();
+            if (property.equals(IThemeManager.CHANGE_CURRENT_THEME))
+            {
+                IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+
+                if (theme != null)
+                    theme.removePropertyChangeListener(themeChangeListener);
+                theme = themeManager.getCurrentTheme();
+                theme.addPropertyChangeListener(themeChangeListener);
+
+                datePlot.setBackground(theme.getColorRegistry().get(property));
+                datePlot.setForeground(theme.getColorRegistry().get(property));
+                datePlot.setHilight(theme.getColorRegistry().get(property));
+
+                datePlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_PERIOD_BACKGROUND))
+            {
+                datePlot.setBackground(theme.getColorRegistry().get(property));
+                datePlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_PERIOD_FOREGROUND))
+            {
+                datePlot.setForeground(theme.getColorRegistry().get(property));
+                datePlot.redrawAll();
+            }
+            else if (property.equals(ChartView.THEME_PERIOD_MARKERS))
+            {
+                datePlot.setHilight(theme.getColorRegistry().get(property));
+                datePlot.redrawAll();
+            }
+        }
+    };
     ControlListener sashResizeListener = new ControlAdapter() {
         public void controlResized(ControlEvent e)
         {
@@ -503,6 +552,11 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         target.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
         target.addDropListener(dropTargetListener);
         
+        IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+        themeManager.addPropertyChangeListener(themeChangeListener);
+        theme = themeManager.getCurrentTheme();
+        theme.addPropertyChangeListener(themeChangeListener);
+
         Composite content = new Composite(parent, SWT.H_SCROLL);
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = gridLayout.marginHeight = 2;
@@ -529,6 +583,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         gridData.horizontalAlignment = GridData.FILL;
         gridData.verticalAlignment = GridData.FILL;
         datePlot.setLayoutData(gridData);
+        datePlot.setForeground(theme.getColorRegistry().get(ChartView.THEME_PERIOD_FOREGROUND));
+        datePlot.setBackground(theme.getColorRegistry().get(ChartView.THEME_PERIOD_BACKGROUND));
         
         datePlot.getIndicatorPlot().addControlListener(new ControlAdapter() {
             public void controlResized(ControlEvent e)
@@ -645,6 +701,15 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         datePlot.setBarData(barData);
                     }
 
+/*                    Calendar day = Calendar.getInstance();
+                    for (Iterator iter = datePlot.getBarData().iterator(); iter.hasNext(); )
+                    {
+                        Bar bar = (Bar)iter.next();
+                        day.setTime(bar.getDate());
+                        System.out.println("day.set(" + day.get(Calendar.YEAR) + ", " + day.get(Calendar.MONTH) + ", " + day.get(Calendar.DAY_OF_MONTH) + ", 0, 0, 0);");
+                        System.out.println("barData.append(new Bar(day.getTime(), " + bar.getOpen() + ", " + bar.getHigh() + ", " + bar.getLow() + ", " + bar.getClose() + ", " + bar.getVolume() + "));");
+                    }*/
+
                     try {
                         for (int r = 0; r < chart.getRows().size(); r++)
                             itemAdded(chart.getRows().get(r));
@@ -749,6 +814,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
      */
     public void dispose()
     {
+        theme.removePropertyChangeListener(themeChangeListener);
         ChartsPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(pluginPropertiesChangeListener);
 
         if (showMarketValue)

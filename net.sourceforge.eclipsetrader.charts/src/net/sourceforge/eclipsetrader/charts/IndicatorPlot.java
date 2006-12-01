@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Event;
  */
 public class IndicatorPlot extends Canvas implements ControlListener, DisposeListener, PaintListener
 {
-    private Image image;
+    protected Image image;
     private BarData barData = new BarData();
     private int gridWidth = 5;
     private int marginWidth = 2;
@@ -53,7 +53,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
     private Scaler scaler;
     private boolean autoScale = false;
     private NumberFormat nf = NumberFormat.getInstance();
-    private Color grid = new Color(null, 224, 224, 224);
+    private Color gridColor = new Color(null, 224, 224, 224);
     private Color selectionMarks = new Color(null, 0, 0, 255);
     private List indicators = new ArrayList();
     private List objects = new ArrayList();
@@ -64,11 +64,18 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
 
     public IndicatorPlot(Composite parent, int style)
     {
-        super(parent, style|SWT.DOUBLE_BUFFERED);
+        super(parent, style|SWT.DOUBLE_BUFFERED|SWT.NO_BACKGROUND);
         
         addControlListener(this);
         addDisposeListener(this);
         addPaintListener(this);
+    }
+
+    public void setGridColor(Color newGridColor)
+    {
+        if (gridColor != null)
+            gridColor.dispose();
+        gridColor = new Color(newGridColor.getDevice(), newGridColor.getRGB());
     }
 
     public BarData getBarData()
@@ -273,6 +280,21 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                 
                 if (scaler != null)
                     scaler.set(getSize().y);
+
+                GC gc = new GC(image);
+                draw(gc);
+                gc.dispose();
+            }
+        }
+        else if (image == null)
+        {
+            Rectangle rect = getBounds();
+            if (rect.height != 0 && rect.width != 0)
+            {
+                image = new Image(getDisplay(), rect.width, rect.height);
+                
+                if (scaler != null)
+                    scaler.set(rect.height);
 
                 GC gc = new GC(image);
                 draw(gc);
@@ -565,6 +587,8 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             ((ObjectPlugin)iter.next()).dispose();
         if (image != null && !image.isDisposed())
             image.dispose();
+        if (gridColor != null)
+            gridColor.dispose();
     }
     
     private void drawGrid(GC gc, Rectangle bounds)
@@ -573,8 +597,8 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             return;
         List scaleArray = scaler.getScaleArray();
 
-        if (grid != null)
-            gc.setForeground(grid);
+        if (gridColor != null)
+            gc.setForeground(gridColor);
         int dashes[] = { 3, 3 };
         gc.setLineDash(dashes);
 

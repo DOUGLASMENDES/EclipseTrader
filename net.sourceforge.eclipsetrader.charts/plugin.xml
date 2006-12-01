@@ -135,6 +135,7 @@
    <extension
          point="org.eclipse.ui.themes">
       <themeElementCategory
+            class="net.sourceforge.eclipsetrader.charts.preferences.ThemePreview"
             id="net.sourceforge.eclipsetrader.charts"
             label="%theme.category.charts.label"/>
       <colorDefinition
@@ -152,6 +153,41 @@
             id="CHART_SCALE_FOREGROUND"
             label="%theme.color.scale.foreground.label"
             value="0,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_GRID_COLOR"
+            label="Grid"
+            value="224,224,224"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_SELECTION_COLOR"
+            label="Selection"
+            value="224,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_SUMMARY_BACKGROUND"
+            label="Summary Background"
+            value="255,255,255"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_SUMMARY_FOREGROUND"
+            label="Summary Foreground"
+            value="0,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_PERIOD_BACKGROUND"
+            label="Period Background"
+            value="255,255,255"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_PERIOD_FOREGROUND"
+            label="Period Foreground"
+            value="0,0,0"/>
+      <colorDefinition
+            categoryId="net.sourceforge.eclipsetrader.charts"
+            id="CHART_PERIOD_MARKERS"
+            label="Period Markers"
+            value="224,0,0"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">

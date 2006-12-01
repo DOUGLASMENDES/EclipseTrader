@@ -27,6 +27,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -38,8 +40,6 @@ public class DatePlot extends Composite
 {
     private IndicatorPlot indicatorPlot;
     private ScalePlot scalePlot;
-    private Color foreground = new Color(null, 0, 0, 0);
-    private Color background = new Color(null, 255, 255, 255);
     private Color hilight = new Color(null, 255, 0, 0);
     private int scaleWidth = 75;
     private int interval = BarData.INTERVAL_DAILY;
@@ -49,6 +49,8 @@ public class DatePlot extends Composite
     private BarData barData;
     private Label label;
     private Color labelColor = new Color(null, 255, 255, 0);
+    private Color background;
+    private Color foreground;
     private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
     private SimpleDateFormat tf = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
     private int extendPeriod = 15;
@@ -79,27 +81,26 @@ public class DatePlot extends Composite
         indicatorPlot = new IndicatorPlot(this, SWT.NONE) {
             public void paintControl(PaintEvent e)
             {
-                super.paintControl(e);
-
-                Color foreground = getForeground();
-                if (foreground != null)
-                    e.gc.setForeground(foreground);
-                e.gc.drawLine(0, 0, getBounds().width, 0);
-                if (foreground != null)
-                    foreground.dispose();
+                if (image != null && !image.isDisposed())
+                {
+                    if (foreground != null)
+                        e.gc.setForeground(foreground);
+                    
+                    Point plotLocation = getPlotLocation();
+                    e.gc.drawImage(image, plotLocation.x, plotLocation.y);
+                    e.gc.drawLine(0, 0, getBounds().width, 0);
+                }
             }
-
+            
             public void draw(GC gc)
             {
-                Color background = getBackground();
-                Color foreground = getForeground();
-                Color hilight = getHilight();
-
                 if (background != null)
                     gc.setBackground(background);
+                if (foreground != null)
+                    gc.setForeground(foreground);
 
-                gc.fillRectangle(0, 0, getPlotBounds().x, getPlotBounds().y);
-                
+                gc.fillRectangle(image.getBounds());
+
                 int x = getMarginWidth() + getGridWidth() / 2;
                 for(Iterator iter = dateList.iterator(); iter.hasNext(); )
                 {
@@ -108,43 +109,38 @@ public class DatePlot extends Composite
                     {
                         if (item.flag && hilight != null)
                             gc.setForeground(hilight);
-                        else if (foreground != null)
-                            gc.setForeground(foreground);
                         gc.drawLine (x, 1, x, 6);
                         gc.drawString(item.text, x - 1, 7, true);
+                        if (item.flag && hilight != null && foreground != null)
+                            gc.setForeground(foreground);
                     }
                     else
-                    {
-                        if (foreground != null)
-                            gc.setForeground(foreground);
                         gc.drawLine (x, 1, x, 3);
-                    }
                     
                     x += getGridWidth();
                 }
-
-                if (foreground != null)
-                    foreground.dispose();
-                if (background != null)
-                    background.dispose();
-                if (hilight != null)
-                    hilight.dispose();
             }
         };
         indicatorPlot.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
-        indicatorPlot.setForeground(foreground);
-        indicatorPlot.setBackground(background);
 
         scalePlot = new ScalePlot(this, SWT.NONE) {
             public void draw(GC gc)
             {
+                Rectangle bounds = getBounds(); 
+                Color background = getBackground();
                 Color foreground = getForeground();
-
+                
+                if (background != null)
+                    gc.setBackground(background);
                 if (foreground != null)
                     gc.setForeground(foreground);
-                gc.drawLine(0, 0, getBounds().width, 0);
-                gc.drawLine(0, 0, 0, getBounds().height);
+
+                gc.fillRectangle(bounds);
+                gc.drawLine(0, 0, bounds.width, 0);
+//                gc.drawLine(0, 0, 0, bounds.height);
                 
+                if (background != null)
+                    background.dispose();
                 if (foreground != null)
                     foreground.dispose();
             }
@@ -155,8 +151,6 @@ public class DatePlot extends Composite
         gridData.horizontalAlignment = GridData.FILL;
         gridData.verticalAlignment = GridData.FILL;
         scalePlot.setLayoutData(gridData);
-        scalePlot.setForeground(foreground);
-        scalePlot.setBackground(background);
         
         label = new Label(indicatorPlot, SWT.CENTER);
         label.setBackground(labelColor);
@@ -189,16 +183,28 @@ public class DatePlot extends Composite
     {
         this.scaleWidth = scaleWidth;
         ((GridData)scalePlot.getLayoutData()).widthHint = this.scaleWidth;
+        pack();
     }
 
-    public Color getHilight()
+    public void setBackground(Color color)
     {
-        return hilight == null ? null : new Color(null, hilight.getRGB());
+        if (background != null)
+            background.dispose();
+        background = color == null ? null : new Color(getDisplay(), color.getRGB());
+    }
+
+    public void setForeground(Color color)
+    {
+        if (foreground != null)
+            foreground.dispose();
+        foreground = color == null ? null : new Color(getDisplay(), color.getRGB());
     }
 
     public void setHilight(Color hilightColor)
     {
-        this.hilight = hilightColor == null ? null : new Color(null, hilightColor.getRGB());
+        if (hilight != null)
+            hilight.dispose();
+        hilight = hilightColor == null ? null : new Color(getDisplay(), hilightColor.getRGB());
     }
 
     public void setExtendPeriod(int extendPeriod)
@@ -645,5 +651,12 @@ public class DatePlot extends Composite
     public List getDateList()
     {
         return dateList;
+    }
+    
+    public void redrawAll()
+    {
+        indicatorPlot.redrawAll();
+        scalePlot.redrawAll();
+        redraw();
     }
 }
