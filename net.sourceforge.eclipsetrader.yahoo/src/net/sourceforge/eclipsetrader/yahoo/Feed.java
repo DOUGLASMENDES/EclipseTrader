@@ -35,6 +35,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 public class Feed implements IFeed, Runnable
@@ -46,6 +47,7 @@ public class Feed implements IFeed, Runnable
     private SimpleDateFormat usDateParser = new SimpleDateFormat("MM/dd/yyyy");
     private SimpleDateFormat usTimeParser = new SimpleDateFormat("h:mma");
     private NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+    private Logger logger = Logger.getLogger(getClass());
 
     public Feed()
     {
@@ -151,6 +153,7 @@ public class Feed implements IFeed, Runnable
         if (url.charAt(url.length() - 1) == '+')
             url.deleteCharAt(url.length() - 1);
         url.append("&format=sl1d1t1c1ohgvbap");
+        logger.debug(url.toString());
 
         // Read the last prices
         String line = "";
@@ -245,8 +248,7 @@ public class Feed implements IFeed, Runnable
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage() + ": " + line);
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 
