@@ -83,6 +83,15 @@ public class WatchlistItemPropertiesDialog extends PreferenceDialog
         newShell.setText(watchlistItem.getSecurity().getDescription() + " Properties");
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferenceDialog#handleSave()
+     */
+    protected void handleSave()
+    {
+        watchlistItem.notifyObservers();
+        super.handleSave();
+    }
+
     private class GeneralPage extends PreferencePage
     {
         private Text position;
@@ -133,7 +142,7 @@ public class WatchlistItemPropertiesDialog extends PreferenceDialog
                 }
             });
             if (watchlistItem.getPaidPrice() != null)
-                position.setText(priceFormatter.format(watchlistItem.getPaidPrice()));
+                price.setText(priceFormatter.format(watchlistItem.getPaidPrice()));
             
             setValid(true);
             
@@ -383,6 +392,7 @@ public class WatchlistItemPropertiesDialog extends PreferenceDialog
                     ((AlertPlugin)alert.getData()).init(parameters);
                     ((AlertPlugin)alert.getData()).setLastSeen(alert.getLastSeen());
                     watchlistItem.getAlerts().add(alert);
+                    watchlistItem.setChanged();
                 }
             }
             

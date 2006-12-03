@@ -111,7 +111,7 @@ public class ItemPreferencePage extends PreferencePage
             }
         });
         if (watchlistItem.getPaidPrice() != null)
-            position.setText(priceFormatter.format(watchlistItem.getPaidPrice()));
+            price.setText(priceFormatter.format(watchlistItem.getPaidPrice()));
 
         Group section = new Group(content, SWT.NONE);
         section.setText("Alerts");
@@ -300,7 +300,10 @@ public class ItemPreferencePage extends PreferencePage
                 ((AlertPlugin)alert.getData()).init(parameters);
                 ((AlertPlugin)alert.getData()).setLastSeen(alert.getLastSeen());
                 watchlistItem.getAlerts().add(alert);
+                watchlistItem.setChanged();
             }
+            
+            watchlistItem.notifyObservers();
         }
         
         return super.performOk();
