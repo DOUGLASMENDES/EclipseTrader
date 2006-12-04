@@ -105,7 +105,8 @@ public class ExecutorStartup implements IStartup
     {
         try {
             BanzaiTradingProvider application = (BanzaiTradingProvider)new BanzaiTradingProvider().create();
-            application.initiator.stop();
+            if (application.initiator != null)
+                application.initiator.stop();
         }
         catch(Exception e) {
             log.error("error stopping initiator", e);

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: QuickFIX/J
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.fix;singleton:=true
-Bundle-Version: 1.0.4.M20061031-1904
+Bundle-Version: 1.0.4.M20061204-0938
 Bundle-Activator: net.sourceforge.eclipsetrader.fix.FixPlugin
 Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
