@@ -640,6 +640,11 @@
                id="watchlist.volume"
                name="Volume"
                orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.MarketValue"
+               id="watchlist.marketValue"
+               name="Market Val."
+               orientation="right"/>
       </viewContribution>
       <viewContribution
             id="orders.standardColumns"
