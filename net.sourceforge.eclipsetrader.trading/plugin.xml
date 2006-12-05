@@ -645,6 +645,11 @@
                id="watchlist.marketValue"
                name="Market Val."
                orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.watchlist.BookValue"
+               id="watchlist.bookValue"
+               name="Book Val."
+               orientation="right"/>
       </viewContribution>
       <viewContribution
             id="orders.standardColumns"
