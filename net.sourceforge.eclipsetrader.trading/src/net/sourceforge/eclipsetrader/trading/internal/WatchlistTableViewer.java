@@ -114,6 +114,7 @@ public class WatchlistTableViewer extends AbstractLayout
     int sortColumn = -1;
     int sortDirection = 0;
     Action toggleShowTotals;
+    Action autoResizeAction;
     Action propertiesAction;
     WatchlistColumn selectedColumn;
     IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
@@ -216,6 +217,21 @@ public class WatchlistTableViewer extends AbstractLayout
 
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
         menuManager.appendToGroup("toggles", toggleShowTotals);
+        
+        autoResizeAction = new Action() {
+            public void run()
+            {
+                TableColumn[] column = table.getColumns();
+                for (int i = 0; i < column.length; i++)
+                {
+                    if (column[i].getResizable())
+                        column[i].pack();
+                }
+            }
+        };
+        autoResizeAction.setId("autoResizeColumns");
+        autoResizeAction.setText("Resize columns");
+        menuManager.appendToGroup("layout", autoResizeAction);
         
         propertiesAction = new Action() {
             public void run()
@@ -411,6 +427,7 @@ public class WatchlistTableViewer extends AbstractLayout
 
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
         menuManager.remove(toggleShowTotals.getId());
+        menuManager.remove(autoResizeAction.getId());
         
         if (content != null)
             content.dispose();

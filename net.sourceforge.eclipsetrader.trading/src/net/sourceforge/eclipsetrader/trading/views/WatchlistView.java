@@ -156,7 +156,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         
         IMenuManager menuManager = site.getActionBars().getMenuManager();
         menuManager.add(new Separator("top")); //$NON-NLS-1$
-        menuManager.add(new Separator()); //$NON-NLS-1$
+        menuManager.add(new Separator("layout")); //$NON-NLS-1$
         IMenuManager layoutMenu = new MenuManager("Layout", "layout");
         layoutMenu.add(tableLayout);
         layoutMenu.add(ribbonLayout);
