@@ -484,8 +484,8 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                 Indicator indicator = (Indicator)iter.next();
                 
                 Scaler indicatorScaler = new Scaler();
-                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
                 indicatorScaler.setExtendRange(scaler.getExtendRange());
+                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
 
                 for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
                 {
@@ -513,8 +513,8 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                 Indicator indicator = (Indicator)iter.next();
                 
                 Scaler indicatorScaler = new Scaler();
-                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
                 indicatorScaler.setExtendRange(scaler.getExtendRange());
+                indicatorScaler.set(scaler.getHeight(), indicator.getHigh(), indicator.getLow(), scaler.getLogScaleHigh(), scaler.getLogRange(), scaler.getLogFlag());
 
                 for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
                 {
