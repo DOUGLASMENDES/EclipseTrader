@@ -18,6 +18,7 @@ public class OrderValidity
     public static OrderValidity AT_OPENING = new OrderValidity(3);
     public static OrderValidity AT_CLOSING = new OrderValidity(4);
     public static OrderValidity GOOD_TILL_CANCEL = new OrderValidity(5);
+    public static OrderValidity GOOD_TILL_DATE = new OrderValidity(6);
     int value;
 
     public OrderValidity(int value)

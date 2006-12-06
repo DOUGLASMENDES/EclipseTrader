@@ -162,7 +162,9 @@ public class BanzaiTradingProvider implements Application, ITradingProvider, IEx
     public List getValidity()
     {
         OrderValidity[] items = {
-            OrderValidity.DAY
+            OrderValidity.DAY,
+            OrderValidity.GOOD_TILL_CANCEL,
+            OrderValidity.GOOD_TILL_DATE
         };
         return Arrays.asList(items);
     }

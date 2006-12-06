@@ -12,10 +12,13 @@
 package net.sourceforge.eclipsetrader.trading.views;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +49,8 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -55,6 +60,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 public class OrderFormView extends ViewPart
@@ -69,6 +75,7 @@ public class OrderFormView extends ViewPart
     Button send;
     Combo account;
     Combo validity;
+    Text expire;
     Label total;
     static Map sideLabels = new HashMap();
     static Map typeLabels = new HashMap();
@@ -76,6 +83,8 @@ public class OrderFormView extends ViewPart
     static Map statusLabels = new HashMap();
     private NumberFormat pf = NumberFormat.getInstance();
     private NumberFormat nf = NumberFormat.getInstance();
+    SimpleDateFormat dateFormat = CorePlugin.getDateFormat();
+    SimpleDateFormat dateParse = CorePlugin.getDateParse();
     private Logger logger = Logger.getLogger(getClass());
     DropTargetListener dropTargetListener = new DropTargetListener() {
         public void dragEnter(DropTargetEvent event)
@@ -187,6 +196,7 @@ public class OrderFormView extends ViewPart
             public void widgetSelected(SelectionEvent e)
             {
                 providerSelection();
+                validitySelection();
             }
         });
 
@@ -255,21 +265,11 @@ public class OrderFormView extends ViewPart
         label.setText("Validity");
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         validity = new Combo(content, SWT.READ_ONLY);
-        validity.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        validity.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
         validity.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
                 validitySelection();
-            }
-        });
-        
-        send = new Button(content, SWT.PUSH);
-        send.setText("Send Order");
-        send.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-        send.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e)
-            {
-                sendOrder();
             }
         });
 
@@ -283,6 +283,16 @@ public class OrderFormView extends ViewPart
         total = new Label(content, SWT.NONE);
         total.setText("0,00");
         total.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+        
+        send = new Button(content, SWT.PUSH);
+        send.setText("Send Order");
+        send.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+        send.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                sendOrder();
+            }
+        });
 
         DropTarget target = new DropTarget(content, DND.DROP_COPY);
         target.setTransfer(new Transfer[] { SecurityTransfer.getInstance() });
@@ -417,6 +427,8 @@ public class OrderFormView extends ViewPart
             if (exchange.isEnabled())
                 order.setExchange((OrderRoute)exchange.getData(exchange.getText()));
             order.setValidity((OrderValidity)validity.getData(validity.getText()));
+            if (expire != null)
+                order.setExpire(dateFormat.parse(expire.getText()));
             
             plugin.sendNew(order);
         
@@ -515,6 +527,40 @@ public class OrderFormView extends ViewPart
     
     void validitySelection()
     {
+        OrderValidity v = (OrderValidity)validity.getData(validity.getText());
+        if (v.equals(OrderValidity.GOOD_TILL_DATE))
+        {
+            if (expire == null)
+            {
+                expire = new Text(validity.getParent(), SWT.BORDER);
+                expire.setLayoutData(new GridData(80, SWT.DEFAULT));
+                expire.addFocusListener(new FocusAdapter() {
+                    public void focusLost(FocusEvent e)
+                    {
+                        try {
+                            Date d = dateParse.parse(expire.getText());
+                            expire.setText(dateFormat.format(d));
+                        } catch(Exception e1) {
+                        }
+                    }
+                });
+                Calendar c = Calendar.getInstance();
+                c.add(Calendar.DATE, 30);
+                expire.setText(dateFormat.format(c.getTime()));
+                expire.moveBelow(validity);
+
+                ((GridData)validity.getLayoutData()).horizontalSpan = 1;
+                
+                validity.getParent().layout();
+            }
+        }
+        else if (expire != null)
+        {
+            expire.dispose();
+            expire = null;
+            ((GridData)validity.getLayoutData()).horizontalSpan = 2;
+            validity.getParent().layout();
+        }
     }
     
     void populateValues(Combo combo, List list, Map labels)
@@ -555,6 +601,7 @@ public class OrderFormView extends ViewPart
         validityLabels.put(OrderValidity.AT_OPENING, "At Opening");
         validityLabels.put(OrderValidity.AT_CLOSING, "At Closing");
         validityLabels.put(OrderValidity.GOOD_TILL_CANCEL, "Good Till Cancel");
+        validityLabels.put(OrderValidity.GOOD_TILL_DATE, "Good Till Date");
 
         statusLabels.put(OrderStatus.NEW, "New");
         statusLabels.put(OrderStatus.PARTIAL, "Partial");

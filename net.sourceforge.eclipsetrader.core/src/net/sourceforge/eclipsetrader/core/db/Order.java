@@ -35,6 +35,7 @@ public class Order extends PersistentObject
     double stopPrice;
     int filledQuantity;
     double averagePrice;
+    Date expire;
     OrderValidity validity;
     OrderStatus status = OrderStatus.NEW;
     Map params = new HashMap();
@@ -204,6 +205,16 @@ public class Order extends PersistentObject
     public void setExchange(OrderRoute exchange)
     {
         this.exchange = exchange;
+    }
+
+    public Date getExpire()
+    {
+        return expire;
+    }
+
+    public void setExpire(Date expire)
+    {
+        this.expire = expire;
     }
 
     public OrderValidity getValidity()
