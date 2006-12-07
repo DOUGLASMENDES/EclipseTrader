@@ -41,6 +41,7 @@ public class FI extends IndicatorPlugin
     public void calculate()
     {
         PlotLine fi = new PlotLine();
+        
         int loop;
         double force = 0;
         for (loop = 1; loop < getBarData().size(); loop++)
@@ -51,20 +52,14 @@ public class FI extends IndicatorPlugin
         }
 
         if (smoothing > 1)
-        {
-            PlotLine ma = getMA(fi, maType, smoothing);
-            ma.setColor(color);
-            ma.setType(lineType);
-            ma.setLabel(label);
-            getOutput().add(ma);
-        }
-        else
-        {
-            fi.setColor(color);
-            fi.setType(lineType);
-            fi.setLabel(label);
-            getOutput().add(fi);
-        }
+            fi = getMA(fi, maType, smoothing);
+
+        fi.setColor(color);
+        fi.setType(lineType);
+        fi.setLabel(label);
+        getOutput().add(fi);
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

@@ -81,6 +81,7 @@ public class AccumulationDistribution extends IndicatorPlugin
         }
 
         getOutput().add(line);
+        getOutput().setScaleFlag(true);
     }
 
     private void calculateWAD()

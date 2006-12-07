@@ -68,20 +68,14 @@ public class CommodityChannelIndex extends IndicatorPlugin
         }
 
         if (smoothing > 1)
-        {
-            PlotLine ma = getMA(cci, maType, smoothing);
-            ma.setColor(color);
-            ma.setType(lineType);
-            ma.setLabel(label);
-            getOutput().add(ma);
-        }
-        else
-        {
-            cci.setColor(color);
-            cci.setType(lineType);
-            cci.setLabel(label);
-            getOutput().add(cci);
-        }
+            cci = getMA(cci, maType, smoothing);
+
+        cci.setColor(color);
+        cci.setType(lineType);
+        cci.setLabel(label);
+        getOutput().add(cci);
+        
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

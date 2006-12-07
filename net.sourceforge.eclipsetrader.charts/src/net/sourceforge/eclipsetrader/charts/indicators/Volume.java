@@ -61,6 +61,7 @@ public class Volume extends IndicatorPlugin
         }
         
         getOutput().add(line);
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

@@ -48,8 +48,8 @@ public class Lines extends IndicatorPlugin
         line.setLabel(label);
         line.setType(PlotLine.LINE);
         line.setColor(color);
-        line.setScaleFlag(securityId != 0);
         getOutput().add(line);
+        getOutput().setScaleFlag(securityId != 0);
     }
 
     /* (non-Javadoc)

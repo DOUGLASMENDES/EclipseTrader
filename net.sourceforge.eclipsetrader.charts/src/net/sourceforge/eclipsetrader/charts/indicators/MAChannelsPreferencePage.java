@@ -57,6 +57,8 @@ public class MAChannelsPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
 
+        addBooleanSelector(content, "scaleFlag", Messages.IndicatorPreferences_ScaleFlag, MAChannels.DEFAULT_SCALE_FLAG); //$NON-NLS-1$
+
         Label label = new Label(content, SWT.NONE);
         label.setText(Messages.MAChannelsPreferencePage_Color);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
@@ -96,5 +98,6 @@ public class MAChannelsPreferencePage extends IndicatorPluginPreferencePage
         } catch (ParseException e) {
             logger.warn(e);
         }
+        super.performFinish();
     }
 }

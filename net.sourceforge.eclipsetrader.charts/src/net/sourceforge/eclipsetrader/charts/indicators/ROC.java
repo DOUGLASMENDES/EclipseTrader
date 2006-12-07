@@ -54,20 +54,14 @@ public class ROC extends IndicatorPlugin
             roc.append(((in.getData(loop) - in.getData(loop - period)) / in.getData(loop - period)) * 100);
 
         if (smoothing > 1)
-        {
-            PlotLine ma = getMA(roc, maType, smoothing);
-            ma.setColor(color);
-            ma.setType(lineType);
-            ma.setLabel(label);
-            getOutput().add(ma);
-        }
-        else
-        {
-            roc.setColor(color);
-            roc.setType(lineType);
-            roc.setLabel(label);
-            getOutput().add(roc);
-        }
+            roc = getMA(roc, maType, smoothing);
+
+        roc.setColor(color);
+        roc.setType(lineType);
+        roc.setLabel(label);
+        getOutput().add(roc);
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

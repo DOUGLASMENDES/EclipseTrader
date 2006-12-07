@@ -28,7 +28,7 @@ import net.sourceforge.eclipsetrader.core.db.BarData;
  */
 public class MAChannels extends IndicatorPlugin
 {
-
+    public static final boolean DEFAULT_SCALE_FLAG = false;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_PERIOD = 20;
@@ -39,6 +39,7 @@ public class MAChannels extends IndicatorPlugin
     private int period = DEFAULT_PERIOD;
     private int maType = DEFAULT_MATYPE;
     private double percentage = DEFAULT_PERCENTAGE;
+    private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
     public MAChannels()
     {
@@ -75,6 +76,7 @@ public class MAChannels extends IndicatorPlugin
         getOutput().add(mau);
         getOutput().add(mal);
 
+        getOutput().setScaleFlag(scaleFlag);
     }
 
     /* (non-Javadoc)
@@ -82,6 +84,7 @@ public class MAChannels extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
         color = settings.getColor("color", color);
         lineType = settings.getInteger("lineType", lineType).intValue();
         period = settings.getInteger("period", period).intValue();

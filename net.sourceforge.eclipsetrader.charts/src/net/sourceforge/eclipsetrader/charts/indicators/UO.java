@@ -91,6 +91,8 @@ public class UO extends IndicatorPlugin
         uo.setType(lineType);
         uo.setLabel(label);
         getOutput().add(uo);
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

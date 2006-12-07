@@ -39,7 +39,6 @@ public class MACD extends IndicatorPlugin
     public static final String DEFAULT_OSC_LABEL = DEFAULT_LABEL + " Osc.";
     public static final int DEFAULT_OSC_LINETYPE = PlotLine.HISTOGRAM_BAR;
     public static final int DEFAULT_INPUT = BarData.CLOSE;
-    public static final boolean DEFAULT_OSC_SCALE = true;
     private String label = DEFAULT_LABEL;
     private Color color = new Color(null, DEFAULT_COLOR);
     private int fastPeriod = DEFAULT_FAST_PERIOD;
@@ -54,7 +53,6 @@ public class MACD extends IndicatorPlugin
     private Color oscColor = new Color(null, DEFAULT_OSC_COLOR);
     private String oscLabel = DEFAULT_OSC_LABEL;
     private int oscLineType = DEFAULT_OSC_LINETYPE;
-    private boolean oscScaleFlag = DEFAULT_OSC_SCALE;
 
     public MACD()
     {
@@ -84,17 +82,24 @@ public class MACD extends IndicatorPlugin
             fmaLoop--;
             smaLoop--;
         }
+        
+        double v = Math.max(Math.abs(macd.getHigh()), Math.abs(macd.getLow()));
+        macd.setHigh(v);
+        macd.setLow(-v);
 
         PlotLine signal = getMA(macd, maType, triggerPeriod);
         signal.setColor(triggerColor);
         signal.setType(triggerLineType);
         signal.setLabel(triggerLabel);
+        
+        v = Math.max(Math.abs(signal.getHigh()), Math.abs(signal.getLow()));
+        signal.setHigh(v);
+        signal.setLow(-v);
 
         PlotLine osc = new PlotLine();
         osc.setColor(oscColor);
         osc.setType(oscLineType);
         osc.setLabel(oscLabel);
-        osc.setScaleFlag(oscScaleFlag);
 
         int floop = macd.getSize() - 1;
         int sloop = signal.getSize() - 1;
@@ -106,15 +111,15 @@ public class MACD extends IndicatorPlugin
             sloop--;
         }
         
-        if (!oscScaleFlag)
-        {
-            osc.setLow(-1);
-            osc.setHigh(1);
-        }
-
+        v = Math.max(Math.abs(osc.getHigh()), Math.abs(osc.getLow()));
+        osc.setHigh(v);
+        osc.setLow(-v);
+        
         getOutput().add(osc);
         getOutput().add(macd);
         getOutput().add(signal);
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

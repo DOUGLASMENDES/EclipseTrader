@@ -117,6 +117,8 @@ public class MarketThermometer extends IndicatorPlugin
             thermLoop--;
             maLoop--;
         }
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

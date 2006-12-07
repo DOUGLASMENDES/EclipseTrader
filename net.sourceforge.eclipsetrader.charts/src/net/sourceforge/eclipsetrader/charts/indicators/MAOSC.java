@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.RGB;
 
 public class MAOSC extends IndicatorPlugin
 {
+    public static final boolean DEFAULT_SCALE_FLAG = false;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final String DEFAULT_LABEL = "MAOSC";
     public static final int DEFAULT_LINETYPE = PlotLine.HISTOGRAM;
@@ -36,6 +37,7 @@ public class MAOSC extends IndicatorPlugin
     private int slowPeriod = DEFAULT_SLOW_PERIOD;
     private int fastMaType = DEFAULT_FAST_MA_TYPE;
     private int slowMaType = DEFAULT_SLOW_MA_TYPE;
+    private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
     public MAOSC()
     {
@@ -67,6 +69,7 @@ public class MAOSC extends IndicatorPlugin
         }
 
         getOutput().add(osc);
+        getOutput().setScaleFlag(scaleFlag);
     }
 
     /* (non-Javadoc)
@@ -74,6 +77,7 @@ public class MAOSC extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
         color = settings.getColor("color", color);
         label = settings.getString("label", label);
         lineType = settings.getInteger("lineType", lineType).intValue();

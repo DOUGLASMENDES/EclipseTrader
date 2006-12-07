@@ -169,6 +169,8 @@ public class AdaptiveStoch extends IndicatorPlugin
             sline.append(sellLine);
             getOutput().add(sline);
         }
+
+        getOutput().setScaleFlag(true);
     }
 
     private PlotLine getHighest(PlotLine line, int period)

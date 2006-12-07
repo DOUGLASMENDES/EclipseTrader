@@ -28,6 +28,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -110,6 +111,8 @@ public abstract class IndicatorPluginPreferencePage
                 else
                     getSettings().set(key, ((Combo) control).getSelectionIndex());
             }
+            else if (control instanceof Button)
+                getSettings().set(key, ((Button)control).getSelection());
             else if (control instanceof ColorSelector)
                 getSettings().set(key, ((ColorSelector) control).getColorValue());
             else if (control instanceof Spinner)
@@ -182,6 +185,19 @@ public abstract class IndicatorPluginPreferencePage
         lineLabel.setText(getSettings().getString(id, defaultValue));
         addControl(id, lineLabel);
         return lineLabel;
+    }
+    
+    public Button addBooleanSelector(Composite parent, String id, String text, boolean defaultValue)
+    {
+        Label label = new Label(parent, SWT.NONE);
+        label.setLayoutData(new GridData(125, SWT.DEFAULT));
+
+        Button button = new Button(parent, SWT.CHECK);
+        button.setText(text);
+        button.setSelection(getSettings().getBoolean(id, defaultValue));
+        controls.put(id, button);
+        
+        return button;
     }
     
     public ColorSelector addColorSelector(Composite parent, String id, String text, RGB defaultValue)

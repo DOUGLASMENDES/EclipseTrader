@@ -62,6 +62,7 @@ public class DPO extends IndicatorPlugin
         }
         
         getOutput().add(dpo);
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

@@ -87,36 +87,20 @@ public class RSI extends IndicatorPlugin
 
             rsi.append(t);
         }
-        rsi.setHigh(100);
-        rsi.setLow(0);
 
         if (smoothing > 1)
-        {
-            PlotLine ma = getMA(rsi, smoothingType, smoothing);
-            ma.setScaleFlag(true);
-            ma.setHigh(100);
-            ma.setLow(0);
-            ma.setColor(color);
-            ma.setType(lineType);
-            ma.setLabel(label);
-            ma.setHigh(100);
-            ma.setLow(0);
-            getOutput().add(ma);
-        }
-        else
-        {
-            rsi.setColor(color);
-            rsi.setType(lineType);
-            rsi.setLabel(label);
-            getOutput().add(rsi);
-        }
+            rsi = getMA(rsi, smoothingType, smoothing);
+
+        rsi.setHigh(100);
+        rsi.setLow(0);
+        rsi.setColor(color);
+        rsi.setType(lineType);
+        rsi.setLabel(label);
+        getOutput().add(rsi);
 
         if (buyLine != 0)
         {
             PlotLine bline = new PlotLine();
-            bline.setScaleFlag(true);
-            bline.setHigh(100);
-            bline.setLow(0);
             bline.setColor(buyLineColor);
             bline.setType(PlotLine.HORIZONTAL);
             bline.append(buyLine);
@@ -126,14 +110,13 @@ public class RSI extends IndicatorPlugin
         if (sellLine != 0)
         {
             PlotLine sline = new PlotLine();
-            sline.setScaleFlag(true);
-            sline.setHigh(100);
-            sline.setLow(0);
             sline.setColor(sellLineColor);
             sline.setType(PlotLine.HORIZONTAL);
             sline.append(sellLine);
             getOutput().add(sline);
         }
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

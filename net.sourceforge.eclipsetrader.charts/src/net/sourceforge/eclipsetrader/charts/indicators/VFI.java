@@ -94,20 +94,14 @@ public class VFI extends IndicatorPlugin
         }
 
         if (smoothing > 1)
-        {
-            PlotLine ma = getMA(vfi, maType, smoothing);
-            ma.setColor(color);
-            ma.setType(lineType);
-            ma.setLabel(label);
-            getOutput().add(ma);
-        }
-        else
-        {
-            vfi.setColor(color);
-            vfi.setType(lineType);
-            vfi.setLabel(label);
-            getOutput().add(vfi);
-        }
+            vfi = getMA(vfi, maType, smoothing);
+
+        vfi.setColor(color);
+        vfi.setType(lineType);
+        vfi.setLabel(label);
+        getOutput().add(vfi);
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

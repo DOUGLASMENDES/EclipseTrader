@@ -42,6 +42,7 @@ public class ATR extends IndicatorPlugin
     public void calculate()
     {
         PlotLine tr = new PlotLine();
+
         int loop;
         for (loop = 0; loop < getBarData().size(); loop++)
         {
@@ -67,20 +68,14 @@ public class ATR extends IndicatorPlugin
         }
 
         if (smoothing > 1)
-        {
-            PlotLine ma = getMA(tr, maType, smoothing);
-            ma.setColor(color);
-            ma.setType(lineType);
-            ma.setLabel(label);
-            getOutput().add(ma);
-        }
-        else
-        {
-            tr.setColor(color);
-            tr.setType(lineType);
-            tr.setLabel(label);
-            getOutput().add(tr);
-        }
+            tr = getMA(tr, maType, smoothing);
+
+        tr.setColor(color);
+        tr.setType(lineType);
+        tr.setLabel(label);
+        getOutput().add(tr);
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

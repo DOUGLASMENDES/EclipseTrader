@@ -21,6 +21,7 @@ import net.sourceforge.eclipsetrader.charts.Settings;
 
 public class BollingerBands extends IndicatorPlugin
 {
+    public static final boolean DEFAULT_SCALE_FLAG = false;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_DEVIATION = 2;
@@ -31,6 +32,7 @@ public class BollingerBands extends IndicatorPlugin
     private int deviation = DEFAULT_DEVIATION;
     private int period = DEFAULT_PERIOD;
     private int maType = DEFAULT_MATYPE;
+    private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
     public BollingerBands()
     {
@@ -86,6 +88,8 @@ public class BollingerBands extends IndicatorPlugin
 
         getOutput().add(bbu);
         getOutput().add(bbl);
+
+        getOutput().setScaleFlag(scaleFlag);
     }
 
     /* (non-Javadoc)
@@ -93,6 +97,7 @@ public class BollingerBands extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
         color = settings.getColor("color", color);
         lineType = settings.getInteger("lineType", lineType).intValue();
         period = settings.getInteger("period", period).intValue();

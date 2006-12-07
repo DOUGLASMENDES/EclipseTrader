@@ -46,6 +46,8 @@ public class VT extends IndicatorPlugin
             calculatePVI();
         else
             calculatePVT();
+        
+        getOutput().setScaleFlag(true);
     }
 
     private void calculateOBV()

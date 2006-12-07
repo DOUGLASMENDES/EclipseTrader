@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.RGB;
 public class MA extends IndicatorPlugin
 {
     public static final String DEFAULT_LABEL = "MA";
+    public static final boolean DEFAULT_SCALE_FLAG = false;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -37,6 +38,7 @@ public class MA extends IndicatorPlugin
     private int type = DEFAULT_TYPE;
     private int period = DEFAULT_PERIOD;
     private Color color = new Color(null, DEFAULT_COLOR);
+    private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
     public MA()
     {
@@ -56,6 +58,7 @@ public class MA extends IndicatorPlugin
         ma.setType(lineType);
         ma.setColor(color);
         getOutput().add(ma);
+        getOutput().setScaleFlag(scaleFlag);
     }
 
     /* (non-Javadoc)
@@ -63,6 +66,7 @@ public class MA extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
         label = settings.getString("label", label);
         lineType = settings.getInteger("lineType", lineType).intValue();
         input = settings.getInteger("input", input).intValue();

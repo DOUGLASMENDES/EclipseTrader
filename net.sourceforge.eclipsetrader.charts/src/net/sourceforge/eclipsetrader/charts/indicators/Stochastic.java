@@ -125,6 +125,8 @@ public class Stochastic extends IndicatorPlugin
             sline.append(sellLine);
             getOutput().add(sline);
         }
+
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

@@ -74,6 +74,7 @@ public class Messages extends NLS
     public static String FIPreferencePage_LineType;
     public static String FIPreferencePage_Smoothing;
     public static String FIPreferencePage_SmoothingType;
+    public static String IndicatorPreferences_ScaleFlag;
     public static String LinesPreferences_Color;
     public static String LinesPreferences_Input;
     public static String LinesPreferences_Label;

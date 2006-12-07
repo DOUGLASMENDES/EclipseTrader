@@ -145,6 +145,8 @@ public class DMI extends IndicatorPlugin
         pdi.setType(pdiLineType);
         pdi.setLabel(pdiLabel);
         getOutput().add(pdi);
+
+        getOutput().setScaleFlag(true);
     }
 
     private void getADX(int type, int period)

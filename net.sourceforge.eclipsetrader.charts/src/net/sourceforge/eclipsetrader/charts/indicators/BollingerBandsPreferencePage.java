@@ -46,6 +46,8 @@ public class BollingerBandsPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
 
+        addBooleanSelector(content, "scaleFlag", Messages.IndicatorPreferences_ScaleFlag, BollingerBands.DEFAULT_SCALE_FLAG); //$NON-NLS-1$
+
         Label label = new Label(content, SWT.NONE);
         label.setText(Messages.BollingerBandsPreferencePage_Color);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
@@ -83,5 +85,6 @@ public class BollingerBandsPreferencePage extends IndicatorPluginPreferencePage
         getSettings().set("period", period.getSelection()); //$NON-NLS-1$
         getSettings().set("deviation", deviation.getSelection()); //$NON-NLS-1$
         getSettings().set("maType", maType.getSelectionIndex()); //$NON-NLS-1$
+        super.performFinish();
     }
 }

@@ -37,6 +37,7 @@ public class MAOSCPreferencePage extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
         
+        addBooleanSelector(content, "scaleFlag", Messages.IndicatorPreferences_ScaleFlag, MAOSC.DEFAULT_SCALE_FLAG); //$NON-NLS-1$
         addColorSelector(content, "color", Messages.MAOSCPreferencePage_Color, MAOSC.DEFAULT_COLOR); //$NON-NLS-1$
         addLabelField(content, "label", Messages.MAOSCPreferencePage_Label, MAOSC.DEFAULT_LABEL); //$NON-NLS-1$
         addLineTypeSelector(content, "lineType", Messages.MAOSCPreferencePage_LineType, MAOSC.DEFAULT_LINETYPE); //$NON-NLS-1$

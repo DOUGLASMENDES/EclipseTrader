@@ -179,6 +179,7 @@ public class SAR extends IndicatorPlugin
         }
 
         getOutput().add(d);
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)

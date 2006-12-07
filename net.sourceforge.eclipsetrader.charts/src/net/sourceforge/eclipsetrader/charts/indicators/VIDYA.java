@@ -57,6 +57,8 @@ public class VIDYA extends IndicatorPlugin
         out.setType(lineType);
         out.setLabel(label);
         getOutput().add(out);
+
+        getOutput().setScaleFlag(true);
     }
 
     void calcVidya(PlotLine outSignal, PlotLine inSignal, int iCmoPeriod, int iVidyaPeriod)

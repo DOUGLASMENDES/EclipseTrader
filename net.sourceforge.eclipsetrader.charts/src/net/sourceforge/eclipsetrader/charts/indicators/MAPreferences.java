@@ -37,6 +37,7 @@ public class MAPreferences extends IndicatorPluginPreferencePage
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setControl(content);
 
+        addBooleanSelector(content, "scaleFlag", Messages.IndicatorPreferences_ScaleFlag, MA.DEFAULT_SCALE_FLAG); //$NON-NLS-1$
         addLabelField(content, "label", Messages.MAPreferences_Label, MA.DEFAULT_LABEL); //$NON-NLS-1$
         addLineTypeSelector(content, "lineType", Messages.MAPreferences_LineType, MA.DEFAULT_LINETYPE); //$NON-NLS-1$
         addColorSelector(content, "color", Messages.MAPreferences_Color, MA.DEFAULT_COLOR); //$NON-NLS-1$

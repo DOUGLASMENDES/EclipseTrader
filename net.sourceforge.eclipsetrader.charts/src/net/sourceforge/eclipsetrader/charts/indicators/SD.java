@@ -69,6 +69,7 @@ public class SD extends IndicatorPlugin
         }
 
         getOutput().add(sd);
+        getOutput().setScaleFlag(true);
     }
 
     /* (non-Javadoc)
