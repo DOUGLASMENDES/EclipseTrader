@@ -26,6 +26,7 @@ public class Indicator
     private List lines = new ArrayList();
     private double high = -99999999;
     private double low = 99999999;
+    private boolean scaleFlag = false;
 
     public Indicator()
     {
@@ -118,5 +119,15 @@ public class Indicator
     public void setLow(double low)
     {
         this.low = low;
+    }
+
+    public boolean getScaleFlag()
+    {
+        return scaleFlag;
+    }
+
+    public void setScaleFlag(boolean scaleFlag)
+    {
+        this.scaleFlag = scaleFlag;
     }
 }

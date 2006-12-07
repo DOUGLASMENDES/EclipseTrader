@@ -20,6 +20,7 @@ import net.sourceforge.eclipsetrader.charts.events.PlotMouseListener;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionEvent;
 import net.sourceforge.eclipsetrader.charts.events.PlotSelectionListener;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
+import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -726,11 +727,13 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
             for (Iterator iter = indicatorPlot.getIndicators().iterator(); iter.hasNext(); )
             {
                 Indicator indicator = (Indicator)iter.next();
+                if (indicator.getScaleFlag() && high != -99999999)
+                    continue;
                 
                 for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
                 {
                     PlotLine plotLine = (PlotLine)iter2.next();
-                    if (plotLine.getScaleFlag())
+                    if (plotLine.getScaleFlag() && high != -99999999)
                         continue;
 
                     switch(plotLine.getType())
@@ -747,10 +750,11 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
                             {
                                 if (x >= 0 && x < plotLine.getSize())
                                 {
-                                    if (plotLine.getData(x) > high)
-                                        high = plotLine.getData(x);
-                                    if (plotLine.getData(x) < low)
-                                        low = plotLine.getData(x);
+                                    double value = plotLine.getData(x); 
+                                    if (value > high)
+                                        high = value;
+                                    if (value < low)
+                                        low = value;
                                 }
                             }
                             break;
@@ -764,10 +768,11 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
                             {
                                 if (x >= 0 && x < plotLine.getSize())
                                 {
-                                    if (plotLine.getBar(x).getHigh() > high)
-                                        high = plotLine.getBar(x).getHigh();
-                                    if (plotLine.getBar(x).getLow() < low)
-                                        low = plotLine.getBar(x).getLow();
+                                    Bar bar = plotLine.getBar(x); 
+                                    if (bar.getHigh() > high)
+                                        high = bar.getHigh();
+                                    if (bar.getLow() < low)
+                                        low = bar.getLow();
                                 }
                             }
                             break;
@@ -796,11 +801,13 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
             for (Iterator iter = indicatorPlot.getIndicators().iterator(); iter.hasNext(); )
             {
                 Indicator indicator = (Indicator)iter.next();
+                if (indicator.getScaleFlag() && high != -99999999)
+                    continue;
                 
                 for (Iterator iter2 = indicator.iterator(); iter2.hasNext(); )
                 {
                     PlotLine plotLine = (PlotLine)iter2.next();
-                    if (!plotLine.getScaleFlag())
+                    if (!plotLine.getScaleFlag() || high == -99999999)
                     {
                         if (plotLine.getHigh() > high)
                             high = plotLine.getHigh();
