@@ -80,6 +80,8 @@ public class PPO extends Factory
                 line.setType(lineType);
                 line.setColor(color);
                 getOutput().add(line);
+
+                getOutput().setScaleFlag(true);
             }
 
             public void setParameters(Settings settings)

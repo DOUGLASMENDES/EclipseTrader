@@ -38,6 +38,7 @@ public class MA extends Factory
     private static final int DEFAULT_INPUT = BarData.CLOSE;
     private static final int DEFAULT_PERIOD = 14;
     private static final int DEFAULT_TYPE = 0;
+    private static final boolean DEFAULT_SCALE_FLAG = false;
 
     public MA()
     {
@@ -55,6 +56,7 @@ public class MA extends Factory
             private int type = DEFAULT_TYPE;
             private int period = DEFAULT_PERIOD;
             private Color color = new Color(null, DEFAULT_COLOR);
+            private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
             public void calculate()
             {
@@ -82,6 +84,8 @@ public class MA extends Factory
                 line.setType(lineType);
                 line.setColor(color);
                 getOutput().add(line);
+
+                getOutput().setScaleFlag(scaleFlag);
             }
 
             public void setParameters(Settings settings)
@@ -92,6 +96,7 @@ public class MA extends Factory
                 period = settings.getInteger("period", period).intValue();
                 type = settings.getInteger("type", type).intValue();
                 color = settings.getColor("color", color);
+                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
             }
         };
 
@@ -116,6 +121,7 @@ public class MA extends Factory
 
                 addColorSelector(content, "color", "Color", DEFAULT_COLOR);
                 addLabelField(content, "label", "Label", DEFAULT_LABEL);
+                addBooleanSelector(content, "scaleFlag", "Use own scale", DEFAULT_SCALE_FLAG);
 
                 addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
                 addInputSelector(content, "input", "Input", DEFAULT_INPUT, true);

@@ -37,6 +37,7 @@ public class LINEARREG extends Factory
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_INPUT = BarData.CLOSE;
     public static final int DEFAULT_PERIOD = 14;
+    private static final boolean DEFAULT_SCALE_FLAG = false;
 
     public LINEARREG()
     {
@@ -53,6 +54,7 @@ public class LINEARREG extends Factory
             private Color color = new Color(null, DEFAULT_COLOR);
             private int input = DEFAULT_INPUT;
             private int period = DEFAULT_PERIOD;
+            private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
             public void calculate()
             {
@@ -76,6 +78,8 @@ public class LINEARREG extends Factory
                 line.setType(lineType);
                 line.setColor(color);
                 getOutput().add(line);
+
+                getOutput().setScaleFlag(scaleFlag);
             }
 
             public void setParameters(Settings settings)
@@ -85,6 +89,7 @@ public class LINEARREG extends Factory
                 color = settings.getColor("color", color);
                 input = settings.getInteger("input", input).intValue();
                 period = settings.getInteger("period", period).intValue();
+                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
             }
         };
 
@@ -109,6 +114,8 @@ public class LINEARREG extends Factory
 
                 addColorSelector(content, "color", "Color", DEFAULT_COLOR);
                 addLabelField(content, "label", "Label", DEFAULT_LABEL);
+                addBooleanSelector(content, "scaleFlag", "Use own scale", DEFAULT_SCALE_FLAG);
+
                 addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
                 addInputSelector(content, "input", "Input", DEFAULT_INPUT, false);
                 addIntegerValueSelector(content, "period", "Period", 1, 9999, DEFAULT_PERIOD);

@@ -86,6 +86,8 @@ public class AROON extends Factory
                 lineUp.setType(lineType);
                 lineUp.setColor(color);
                 getOutput().add(lineUp);
+
+                getOutput().setScaleFlag(true);
             }
 
             public void setParameters(Settings settings)

@@ -40,6 +40,7 @@ public class BBANDS extends Factory
     private static final double DEFAULT_UPPER_DEVIATION = 2;
     private static final double DEFAULT_LOWER_DEVIATION = 2;
     private static final int DEFAULT_MA_TYPE = 0;
+    private static final boolean DEFAULT_SCALE_FLAG = false;
 
     public BBANDS()
     {
@@ -59,6 +60,7 @@ public class BBANDS extends Factory
             private double upperDeviation = DEFAULT_UPPER_DEVIATION;
             private double lowerDeviation = DEFAULT_LOWER_DEVIATION;
             private int maType = DEFAULT_MA_TYPE;
+            private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
             public void calculate()
             {
@@ -101,6 +103,8 @@ public class BBANDS extends Factory
                 getOutput().add(upperLine);
                 getOutput().add(middleLine);
                 getOutput().add(lowerLine);
+
+                getOutput().setScaleFlag(scaleFlag);
             }
 
             public void setParameters(Settings settings)
@@ -113,6 +117,7 @@ public class BBANDS extends Factory
                 maType = settings.getInteger("maType", maType).intValue();
                 upperDeviation = settings.getDouble("upperDeviation", upperDeviation).doubleValue();
                 lowerDeviation = settings.getDouble("lowerDeviation", lowerDeviation).doubleValue();
+                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
             }
         };
 
@@ -137,6 +142,7 @@ public class BBANDS extends Factory
 
                 addColorSelector(content, "color", "Color", DEFAULT_COLOR);
                 addLabelField(content, "label", "Label", DEFAULT_LABEL);
+                addBooleanSelector(content, "scaleFlag", "Use own scale", DEFAULT_SCALE_FLAG);
 
                 addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
                 addInputSelector(content, "input", "Input", DEFAULT_INPUT, false);

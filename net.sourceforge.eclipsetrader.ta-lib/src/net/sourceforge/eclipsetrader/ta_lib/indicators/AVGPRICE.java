@@ -35,6 +35,7 @@ public class AVGPRICE extends Factory
     public static final String DEFAULT_LABEL = "AVGPRICE";
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
+    private static final boolean DEFAULT_SCALE_FLAG = false;
 
     public AVGPRICE()
     {
@@ -49,6 +50,7 @@ public class AVGPRICE extends Factory
             private String label = DEFAULT_LABEL;
             private int lineType = DEFAULT_LINETYPE;
             private Color color = new Color(null, DEFAULT_COLOR);
+            private boolean scaleFlag = DEFAULT_SCALE_FLAG;
 
             public void calculate()
             {
@@ -76,6 +78,8 @@ public class AVGPRICE extends Factory
                 line.setType(lineType);
                 line.setColor(color);
                 getOutput().add(line);
+
+                getOutput().setScaleFlag(scaleFlag);
             }
 
             public void setParameters(Settings settings)
@@ -83,6 +87,7 @@ public class AVGPRICE extends Factory
                 label = settings.getString("label", label);
                 lineType = settings.getInteger("lineType", lineType).intValue();
                 color = settings.getColor("color", color);
+                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
             }
         };
 
@@ -107,6 +112,7 @@ public class AVGPRICE extends Factory
 
                 addColorSelector(content, "color", "Color", DEFAULT_COLOR);
                 addLabelField(content, "label", "Label", DEFAULT_LABEL);
+                addBooleanSelector(content, "scaleFlag", "Use own scale", DEFAULT_SCALE_FLAG);
 
                 addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
             }

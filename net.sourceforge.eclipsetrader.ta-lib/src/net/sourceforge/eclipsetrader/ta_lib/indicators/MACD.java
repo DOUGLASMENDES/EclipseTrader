@@ -105,6 +105,8 @@ public class MACD extends Factory
                 signal.setType(signalLineType);
                 signal.setColor(signalColor);
                 getOutput().add(signal);
+
+                getOutput().setScaleFlag(true);
             }
 
             public void setParameters(Settings settings)

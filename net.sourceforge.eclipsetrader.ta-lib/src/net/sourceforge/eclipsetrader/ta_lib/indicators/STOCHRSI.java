@@ -96,6 +96,8 @@ public class STOCHRSI extends Factory
                 line.setType(dlineType);
                 line.setColor(dcolor);
                 getOutput().add(line);
+
+                getOutput().setScaleFlag(true);
             }
 
             public void setParameters(Settings settings)
