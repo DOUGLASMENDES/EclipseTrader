@@ -1,9 +1,9 @@
 net.sourceforge.eclipsetrader.charts
 net.sourceforge.eclipsetrader.core
 net.sourceforge.eclipsetrader.core.db
-net.sourceforge.eclipsetrader.core.db.columns
 net.sourceforge.eclipsetrader.core.db.feed
 net.sourceforge.eclipsetrader.core.db.internal
 net.sourceforge.eclipsetrader.core.db.trading
+net.sourceforge.eclipsetrader.core.db.visitors
 net.sourceforge.eclipsetrader.news
 net.sourceforge.eclipsetrader.trading

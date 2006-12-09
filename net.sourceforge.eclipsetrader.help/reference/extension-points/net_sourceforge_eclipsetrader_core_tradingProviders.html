@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Trading Providers</title>
+<style>@import url("file:/home/marco/eclipse/plugins/org.eclipse.sdk_3.2.1.r321_v20060705/book.css");</style>
+<style>@import url("file:/home/marco/eclipse/configuration/org.eclipse.osgi/bundles/17/1/.cp/schema.css");</style>
+</HEAD>
+<BODY>
+<H1><CENTER>Trading Providers</CENTER></H1>
+<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>net.sourceforge.eclipsetrader.core.tradingProviders<p></p>
+<h6 class=CaptionFigColumn id=header>Since: </h6>1.0
+<p></p>
+
+<p>
+<h6 class=CaptionFigColumn id=header>Description: </h6>Extension point used to define trading providers.</p>
+<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.provider">provider</a>+)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.provider">provider</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST provider</p>
+<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>class&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>id</b> - a unique name that will be used to identify this source</li>
+<li><b>name</b> - a translatable name that will be used in the UI for this source</li>
+<li><b>class</b> - name of the fully qualified class that implements net.sourceforge.eclipsetrader.core.ITradingProvider</li>
+</ul>
+<br><h6 class=CaptionFigColumn id=header>Examples: </h6>The following is an example of the extension point:
+
+<p><pre>
+   <p class=code id=tag>&lt;extension
+         point=<p class=code id=cstring>&quot;net.sourceforge.eclipsetrader.core.tradingProviders&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;source
+            class=<p class=code id=cstring>&quot;net.sourceforge.eclipsetrader.providers.Trading&quot;</p><p class=code id=tag>
+            id=<p class=code id=cstring>&quot;net.sourceforge.eclipsetrader.provider&quot;</p><p class=code id=tag>
+            name=<p class=code id=cstring>&quot;Trading Provider&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;/source&gt;</p>
+   <p class=code id=tag>&lt;/extension&gt;</p>
+</pre></p>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>API Information: </h6><p>The value of the indicator's class attribute must be a fully qualified name of the class that implements <code>net.sourceforge.eclipsetrader.core.ITradingProvider</code>. Implementations may subclass <code>net.sourceforge.eclipsetrader.core.TradingProvider</code>.</p>
+<p></p>
+
+<br>
+<p class=note id=copyright>
+Copyright &copy; 2004-2006 Marco Maccaferri and others.<br>
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at <a href="http://www.eclipse.org/legal/epl-v10.html">http://www.eclipse.org/legal/epl-v10.html</a>
+<p></p>
+
+</p>
+</BODY>
+</HTML>
