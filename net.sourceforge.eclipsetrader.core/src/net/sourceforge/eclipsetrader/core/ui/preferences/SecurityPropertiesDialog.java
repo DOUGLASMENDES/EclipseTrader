@@ -67,6 +67,8 @@ public class SecurityPropertiesDialog extends PreferenceDialog
 
         getPreferenceManager().addToRoot(new PreferenceNode("dividends", new DividendsPage(security))); //$NON-NLS-1$
         getPreferenceManager().addToRoot(new PreferenceNode("splits", new SplitsPage(security))); //$NON-NLS-1$
+
+        getPreferenceManager().addToRoot(new PreferenceNode("notes", new CommentsPage())); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -399,6 +401,49 @@ public class SecurityPropertiesDialog extends PreferenceDialog
         {
             if (isValid())
                 return options.saveSettings(security);
+            return super.performOk();
+        }
+    }
+
+    private class CommentsPage extends PreferencePage
+    {
+        private Text text;
+
+        public CommentsPage()
+        {
+            super("Notes");
+            noDefaultAndApplyButton();
+            setValid(false);
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+         */
+        protected Control createContents(Composite parent)
+        {
+            Composite content = new Composite(parent, SWT.NONE);
+            GridLayout gridLayout = new GridLayout(1, false);
+            gridLayout.marginWidth = gridLayout.marginHeight = 0;
+            content.setLayout(gridLayout);
+            content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+            text = new Text(content, SWT.BORDER|SWT.MULTI);
+            text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            text.setText(security.getComment());
+            
+            setValid(true);
+
+            return content;
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.preference.PreferencePage#performOk()
+         */
+        public boolean performOk()
+        {
+            if (isValid())
+                security.setComment(text.getText());
+
             return super.performOk();
         }
     }

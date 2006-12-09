@@ -1258,6 +1258,8 @@ public class XMLRepository extends Repository
                     security.setDescription(value.getNodeValue());
                 else if (nodeName.equals("currency")) //$NON-NLS-1$
                     security.setCurrency(Currency.getInstance(value.getNodeValue()));
+                else if (nodeName.equals("comment")) //$NON-NLS-1$
+                    security.setComment(value.getNodeValue());
             }
             if (nodeName.equals("dataCollector")) //$NON-NLS-1$
             {
@@ -1629,6 +1631,10 @@ public class XMLRepository extends Repository
             node.appendChild(document.createTextNode(String.valueOf(security.getClose())));
             dataNode.appendChild(node);
         }
+
+        node = document.createElement("comment");
+        node.appendChild(document.createTextNode(security.getComment()));
+        element.appendChild(node);
         
         for (Iterator iter = security.getSplits().iterator(); iter.hasNext(); )
         {

@@ -61,6 +61,7 @@ public class Security extends PersistentObject
     int keepDays = 1;
     List splits = new ArrayList();
     List dividends = new ArrayList();
+    String comment = "";
 
     public Security()
     {
@@ -514,5 +515,15 @@ public class Security extends PersistentObject
     public void setSplits(List splits)
     {
         this.splits = splits;
+    }
+
+    public String getComment()
+    {
+        return comment;
+    }
+
+    public void setComment(String comment)
+    {
+        this.comment = comment;
     }
 }
