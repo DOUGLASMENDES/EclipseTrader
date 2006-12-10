@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-
 /**
  */
 public class BarData
@@ -245,6 +244,11 @@ public class BarData
     public double getMin()
     {
         return this.min;
+    }
+    
+    public List getBars()
+    {
+        return barList;
     }
     
     public BarData getPeriod(Date begin, Date end)
