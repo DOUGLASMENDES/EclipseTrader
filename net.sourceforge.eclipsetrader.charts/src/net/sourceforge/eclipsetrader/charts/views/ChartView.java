@@ -726,16 +726,17 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     {
                         for (int i = 0; i < weights.length; i++)
                             weights[i] = Integer.parseInt(values[i]);
+                        sashForm.setWeights(weights);
                     }
-                    else
+                    else if (tabGroups.size() != 0)
                     {
                         weights = new int[tabGroups.size()];
                         int w = 100 / (weights.length + 2);
                         weights[0] = 100 - w * (weights.length - 1);
                         for (int i = 1; i < weights.length; i++)
                             weights[i] = w;
+                        sashForm.setWeights(weights);
                     }
-                    sashForm.setWeights(weights);
 
                     Control[] controls = sashForm.getChildren();
                     for (int i = 0; i < controls.length; i++)
