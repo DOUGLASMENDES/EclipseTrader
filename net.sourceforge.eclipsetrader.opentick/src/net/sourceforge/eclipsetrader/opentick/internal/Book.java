@@ -21,7 +21,10 @@ import net.sourceforge.eclipsetrader.core.db.Level2Bid;
 
 public class Book
 {
+    public static final int MAXIMUM_DEPTH = 15;
     List list = new ArrayList();
+    Level2Bid bid = new Level2Bid();
+    Level2Ask ask = new Level2Ask();
     Comparator comparator = new Comparator() {
         public int compare(Object o1, Object o2)
         {
@@ -188,23 +191,41 @@ public class Book
     
     public Level2Bid getLevel2Bid()
     {
-        Level2Bid level2 = new Level2Bid();
-        for (int i = 0; i < list.size(); i++)
+        bid.clear();
+
+        int index = 0;
+        for (; index < list.size() && bid.getGrouped().size() < MAXIMUM_DEPTH; index++)
+        {
+            if (((Order)list.get(index)).side == 'B')
+                bid.add(((Order)list.get(index)).price, ((Order)list.get(index)).size);
+        }
+        
+        for (int i = list.size() - 1; i >= index; i--)
         {
             if (((Order)list.get(i)).side == 'B')
-                level2.add(((Order)list.get(i)).price, ((Order)list.get(i)).size);
+                list.remove(i);
         }
-        return level2;
+        
+        return bid;
     }
     
     public Level2Ask getLevel2Ask()
     {
-        Level2Ask level2 = new Level2Ask();
-        for (int i = 0; i < list.size(); i++)
+        ask.clear();
+
+        int index = 0;
+        for (; index < list.size() && ask.getGrouped().size() < MAXIMUM_DEPTH; index++)
+        {
+            if (((Order)list.get(index)).side == 'S')
+                ask.add(((Order)list.get(index)).price, ((Order)list.get(index)).size);
+        }
+        
+        for (int i = list.size() - 1; i >= index; i--)
         {
             if (((Order)list.get(i)).side == 'S')
-                level2.add(((Order)list.get(i)).price, ((Order)list.get(i)).size);
+                list.remove(i);
         }
-        return level2;
+        
+        return ask;
     }
 }
