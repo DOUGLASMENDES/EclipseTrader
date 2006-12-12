@@ -665,6 +665,11 @@
                name="Date / Time"
                orientation="left"/>
          <provider
+               class="net.sourceforge.eclipsetrader.trading.internal.orders.ExpireDateColumn"
+               id="ordersView.expireDate"
+               name="Expire"
+               orientation="right"/>
+         <provider
                class="net.sourceforge.eclipsetrader.trading.internal.orders.FilledQuantityColumn"
                id="ordersView.filledQuantity"
                name="Filled Qty."

@@ -20,6 +20,7 @@ public class OrderStatus
     public static OrderStatus REJECTED = new OrderStatus(4);
     public static OrderStatus PENDING_CANCEL = new OrderStatus(5);
     public static OrderStatus PENDING_NEW = new OrderStatus(6);
+    public static OrderStatus EXPIRED = new OrderStatus(7);
     int value;
 
     public OrderStatus(int value)

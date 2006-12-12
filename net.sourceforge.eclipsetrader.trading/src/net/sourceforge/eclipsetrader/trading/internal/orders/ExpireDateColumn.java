@@ -11,29 +11,18 @@
 
 package net.sourceforge.eclipsetrader.trading.internal.orders;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Order;
-import net.sourceforge.eclipsetrader.core.db.OrderStatus;
 
 import org.eclipse.jface.viewers.LabelProvider;
 
-public class StatusColumn extends LabelProvider
+public class ExpireDateColumn extends LabelProvider
 {
-    static Map labels = new HashMap();
-    static {
-        labels.put(OrderStatus.NEW, "New");
-        labels.put(OrderStatus.PARTIAL, "Partial");
-        labels.put(OrderStatus.FILLED, "Filled");
-        labels.put(OrderStatus.CANCELED, "Canceled");
-        labels.put(OrderStatus.REJECTED, "Rejected");
-        labels.put(OrderStatus.PENDING_CANCEL, "Pending Cancel");
-        labels.put(OrderStatus.PENDING_NEW, "Pending New");
-        labels.put(OrderStatus.EXPIRED, "Expired");
-    }
+    private SimpleDateFormat dateFormat = CorePlugin.getDateFormat();
 
-    public StatusColumn()
+    public ExpireDateColumn()
     {
     }
 
@@ -45,8 +34,8 @@ public class StatusColumn extends LabelProvider
         if (element instanceof Order)
         {
             Order order = (Order)element;
-            String text = (String)labels.get(order.getStatus());
-            return text != null ? text : "";
+            if (order.getExpire() != null)
+                return dateFormat.format(order.getDate());
         }
         return "";
     }
