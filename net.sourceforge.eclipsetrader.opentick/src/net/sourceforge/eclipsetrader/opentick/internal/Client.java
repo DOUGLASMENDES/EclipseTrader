@@ -32,7 +32,6 @@ import com.opentick.OTBookCancel;
 import com.opentick.OTBookChange;
 import com.opentick.OTBookDelete;
 import com.opentick.OTBookExecute;
-import com.opentick.OTBookLevel;
 import com.opentick.OTBookOrder;
 import com.opentick.OTBookPurge;
 import com.opentick.OTBookReplace;
@@ -215,11 +214,6 @@ public class Client
                 Security security = (Security)bookStreams.get(String.valueOf(execute.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
-        }
-
-        public void onRealtimeBookLevel(OTBookLevel level)
-        {
-            logger.debug(level);
         }
 
         public void onRealtimeBookOrder(OTBookOrder order)
@@ -416,7 +410,7 @@ public class Client
             if (exchange == null || exchange.length() == 0)
                 exchange = "Q";
             
-            int id = client.requestTickStream(new OTDataEntity(exchange, symbol), OTConstants.OT_TICK_LEVEL1);
+            int id = client.requestTickStream(new OTDataEntity(exchange, symbol), OTConstants.OT_TICK_TYPE_LEVEL1);
             tickStreams.put(String.valueOf(id), security);
 
             logger.debug(String.valueOf(id) + " / Request tick stream " + symbol + "." + exchange);
