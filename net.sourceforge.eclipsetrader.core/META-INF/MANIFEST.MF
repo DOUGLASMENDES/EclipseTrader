@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Core
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.core; singleton:=true
-Bundle-Version: 0.27.0
+Bundle-Version: 0.28.0
 Bundle-Activator: net.sourceforge.eclipsetrader.core.CorePlugin
 Bundle-Vendor: EclipseTrader
 Bundle-Localization: plugin

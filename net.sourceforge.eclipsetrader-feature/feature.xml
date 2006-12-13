@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsetrader"
       label="EclipseTrader"
-      version="0.27.0"
+      version="0.28.0"
       provider-name="Sourceforge.net"
       plugin="net.sourceforge.eclipsetrader"
       image="eclipse_update_120.jpg">
@@ -99,6 +99,13 @@
 
    <plugin
          id="net.sourceforge.eclipsetrader.opentick"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.ta_lib"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -9,7 +9,7 @@
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.opentick.ui.actions.NewSecurityAction"
-               icon="icons/us.gif"
+               icon="icons/ot.gif"
                id="net.sourceforge.eclipsetrader.opentick.newSecurity"
                label="OpenTick Stock Security"
                menubarPath="file/newWizard/plugins"
