@@ -68,6 +68,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -740,23 +741,21 @@ public class WatchlistTableViewer extends AbstractLayout
 
     protected WatchlistColumn getColumn(MouseEvent e)
     {
-        TableColumn[] columns = table.getColumns();
-
-        if (columns.length == 0)
-            return null;
-
-        TableColumn column;
-        int i = 0;
-        int x = 0;
-        do
+        Point p = new Point(e.x, e.y);
+        TableItem item = table.getItem(p);
+        if (item != null)
         {
-            column = columns[i];
-            x += column.getWidth();
-            i++;
-        } while (x < e.x && i < columns.length);
-
-        if (column.getData() instanceof WatchlistColumn)
-            return (WatchlistColumn) column.getData();
+            for (int i = 0; i < table.getColumnCount(); i++)
+            {
+                Rectangle rect = item.getBounds(i);
+                if (rect.contains(p))
+                {
+                    TableColumn column = table.getColumn(i);
+                    if (column.getData() instanceof WatchlistColumn)
+                        return (WatchlistColumn) column.getData();
+                }
+            }
+        }
 
         return null;
     }
