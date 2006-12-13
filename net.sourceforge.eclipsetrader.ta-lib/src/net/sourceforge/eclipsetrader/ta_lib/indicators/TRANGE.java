@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class TRANGE extends Factory
 {
-    private static final String DEFAULT_LABEL = "TRANGE";
+    private static final String DEFAULT_LABEL = Messages.TRANGE_DefaultLabel;
     private static final int DEFAULT_LINETYPE = PlotLine.LINE;
     private static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
 
@@ -81,9 +81,9 @@ public class TRANGE extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
             }
         };
 
@@ -106,9 +106,9 @@ public class TRANGE extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
+                addColorSelector(content, "color", Messages.TRANGE_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.TRANGE_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.TRANGE_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
             }
         };
 

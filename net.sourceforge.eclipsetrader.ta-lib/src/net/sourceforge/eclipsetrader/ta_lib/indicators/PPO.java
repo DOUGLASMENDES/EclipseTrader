@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class PPO extends Factory
 {
-    private static final String DEFAULT_LABEL = "PPO";
+    private static final String DEFAULT_LABEL = Messages.PPO_DefaultLabel;
     private static final int DEFAULT_LINETYPE = PlotLine.LINE;
     private static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -86,12 +86,12 @@ public class PPO extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue();
-                slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue();
-                maType = settings.getInteger("maType", maType).intValue();
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue(); //$NON-NLS-1$
+                slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue(); //$NON-NLS-1$
+                maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -114,12 +114,12 @@ public class PPO extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "fastPeriod", "Fast Period", 1, 9999, DEFAULT_FAST_PERIOD);
-                addIntegerValueSelector(content, "slowPeriod", "Slow Period", 1, 9999, DEFAULT_SLOW_PERIOD);
-                addMovingAverageSelector(content, "type", "MA Type", DEFAULT_MA_TYPE);
+                addColorSelector(content, "color", Messages.PPO_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.PPO_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.PPO_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "fastPeriod", Messages.PPO_FastPeriod, 1, 9999, DEFAULT_FAST_PERIOD); //$NON-NLS-1$
+                addIntegerValueSelector(content, "slowPeriod", Messages.PPO_SlowPeriod, 1, 9999, DEFAULT_SLOW_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "type", Messages.PPO_MAType, DEFAULT_MA_TYPE); //$NON-NLS-1$
             }
         };
 

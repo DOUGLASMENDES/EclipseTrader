@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class MFI extends Factory
 {
-    public static final String DEFAULT_LABEL = "MFI";
+    public static final String DEFAULT_LABEL = Messages.MFI_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_PERIOD = 14;
@@ -84,10 +84,10 @@ public class MFI extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                period = settings.getInteger("period", period).intValue();
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -110,10 +110,10 @@ public class MFI extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "period", "Period", 1, 9999, DEFAULT_PERIOD);
+                addColorSelector(content, "color", Messages.MFI_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.MFI_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.MFI_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "period", Messages.MFI_Period, 1, 9999, DEFAULT_PERIOD); //$NON-NLS-1$
             }
         };
 

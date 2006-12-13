@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class BBANDS extends Factory
 {
-    private static final String DEFAULT_LABEL = "BBANDS";
+    private static final String DEFAULT_LABEL = Messages.BBANDS_DefaultLabel;
     private static final int DEFAULT_LINETYPE = PlotLine.LINE;
     private static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -90,15 +90,15 @@ public class BBANDS extends Factory
                 
                 upperLine.setColor(color);
                 upperLine.setType(lineType);
-                upperLine.setLabel(label + " UP");
+                upperLine.setLabel(label + Messages.BBANDS_DefaultLabelUp);
                 
                 middleLine.setColor(color);
                 middleLine.setType(PlotLine.DOT);
-                middleLine.setLabel("MID");
+                middleLine.setLabel(Messages.BBANDS_DefaultLabelMid);
                 
                 lowerLine.setColor(color);
                 lowerLine.setType(lineType);
-                lowerLine.setLabel("LOW");
+                lowerLine.setLabel(Messages.BBANDS_DefaultLabelLow);
 
                 getOutput().add(upperLine);
                 getOutput().add(middleLine);
@@ -109,15 +109,15 @@ public class BBANDS extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                input = settings.getInteger("input", input).intValue();
-                period = settings.getInteger("period", period).intValue();
-                maType = settings.getInteger("maType", maType).intValue();
-                upperDeviation = settings.getDouble("upperDeviation", upperDeviation).doubleValue();
-                lowerDeviation = settings.getDouble("lowerDeviation", lowerDeviation).doubleValue();
-                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
+                period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+                maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
+                upperDeviation = settings.getDouble("upperDeviation", upperDeviation).doubleValue(); //$NON-NLS-1$
+                lowerDeviation = settings.getDouble("lowerDeviation", lowerDeviation).doubleValue(); //$NON-NLS-1$
+                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag); //$NON-NLS-1$
             }
         };
 
@@ -140,16 +140,16 @@ public class BBANDS extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addBooleanSelector(content, "scaleFlag", "Use own scale", DEFAULT_SCALE_FLAG);
+                addColorSelector(content, "color", Messages.BBANDS_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.BBANDS_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addBooleanSelector(content, "scaleFlag", Messages.BBANDS_UseOwnScale, DEFAULT_SCALE_FLAG); //$NON-NLS-1$
 
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addInputSelector(content, "input", "Input", DEFAULT_INPUT, false);
-                addIntegerValueSelector(content, "period", "Period", 1, 9999, DEFAULT_PERIOD);
-                addMovingAverageSelector(content, "maType", "MA Type", DEFAULT_MA_TYPE);
-                addDoubleValueSelector(content, "upperDeviation", "Upper Band Deviation", 2, 0, 999999, DEFAULT_UPPER_DEVIATION);
-                addDoubleValueSelector(content, "lowerDeviation", "Lower Band Deviation", 2, 0, 999999, DEFAULT_LOWER_DEVIATION);
+                addLineTypeSelector(content, "lineType", Messages.BBANDS_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addInputSelector(content, "input", Messages.BBANDS_Input, DEFAULT_INPUT, false); //$NON-NLS-1$
+                addIntegerValueSelector(content, "period", Messages.BBANDS_Period, 1, 9999, DEFAULT_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "maType", Messages.BBANDS_MAType, DEFAULT_MA_TYPE); //$NON-NLS-1$
+                addDoubleValueSelector(content, "upperDeviation", Messages.BBANDS_UpperDeviation, 2, 0, 999999, DEFAULT_UPPER_DEVIATION); //$NON-NLS-1$
+                addDoubleValueSelector(content, "lowerDeviation", Messages.BBANDS_LowerDeviation, 2, 0, 999999, DEFAULT_LOWER_DEVIATION); //$NON-NLS-1$
             }
         };
 

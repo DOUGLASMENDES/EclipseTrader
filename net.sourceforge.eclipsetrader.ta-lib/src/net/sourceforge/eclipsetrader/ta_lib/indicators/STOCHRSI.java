@@ -33,14 +33,14 @@ import com.tictactec.ta.lib.MInteger;
 public class STOCHRSI extends Factory
 {
     private static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    private static final String DEFAULT_LABEL = "STOCHRSI";
+    private static final String DEFAULT_LABEL = Messages.STOCHRSI_DefaultLabel;
     private static final int DEFAULT_LINETYPE = PlotLine.LINE;
     private static final int DEFAULT_INPUT = BarData.CLOSE;
     private static final int DEFAULT_PERIOD = 3;
     private static final int DEFAULT_FAST_K_PERIOD = 5;
     private static final int DEFAULT_FAST_D_PERIOD = 3;
     private static final int DEFAULT_FAST_D_MA_TYPE = 0;
-    private static final String DEFAULT_D_LABEL = "%D";
+    private static final String DEFAULT_D_LABEL = Messages.STOCHRSI_DefaultLabelD;
     private static final int DEFAULT_D_LINETYPE = PlotLine.DOT;
     private static final RGB DEFAULT_D_COLOR = new RGB(0, 0, 192);
 
@@ -102,19 +102,19 @@ public class STOCHRSI extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
 
-                period = settings.getInteger("period", period).intValue();
-                fastKPeriod = settings.getInteger("fastKPeriod", fastKPeriod).intValue();
+                period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+                fastKPeriod = settings.getInteger("fastKPeriod", fastKPeriod).intValue(); //$NON-NLS-1$
 
-                dlabel = settings.getString("dlabel", dlabel);
-                dlineType = settings.getInteger("dlineType", dlineType).intValue();
-                dcolor = settings.getColor("dcolor", dcolor);
+                dlabel = settings.getString("dlabel", dlabel); //$NON-NLS-1$
+                dlineType = settings.getInteger("dlineType", dlineType).intValue(); //$NON-NLS-1$
+                dcolor = settings.getColor("dcolor", dcolor); //$NON-NLS-1$
 
-                fastDPeriod = settings.getInteger("fastDPeriod", fastDPeriod).intValue();
-                fastDMAType = settings.getInteger("fastDMAType", fastDMAType).intValue();
+                fastDPeriod = settings.getInteger("fastDPeriod", fastDPeriod).intValue(); //$NON-NLS-1$
+                fastDMAType = settings.getInteger("fastDMAType", fastDMAType).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -137,16 +137,16 @@ public class STOCHRSI extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "period", "Period", 1, 9999, DEFAULT_PERIOD);
-                addIntegerValueSelector(content, "fastKPeriod", "Fast %K Period", 1, 9999, DEFAULT_FAST_K_PERIOD);
-                addColorSelector(content, "dcolor", "%D Color", DEFAULT_D_COLOR);
-                addLabelField(content, "dlabel", "%D Label", DEFAULT_D_LABEL);
-                addLineTypeSelector(content, "dlineType", "%D Line Type", DEFAULT_D_LINETYPE);
-                addIntegerValueSelector(content, "fastDPeriod", "Fast %D Period", 1, 9999, DEFAULT_FAST_D_PERIOD);
-                addMovingAverageSelector(content, "fastDMAtype", "Fast %D MA Type", DEFAULT_FAST_D_MA_TYPE);
+                addColorSelector(content, "color", Messages.STOCHRSI_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.STOCHRSI_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.STOCHRSI_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "period", Messages.STOCHRSI_Period, 1, 9999, DEFAULT_PERIOD); //$NON-NLS-1$
+                addIntegerValueSelector(content, "fastKPeriod", Messages.STOCHRSI_FastKPeriod, 1, 9999, DEFAULT_FAST_K_PERIOD); //$NON-NLS-1$
+                addColorSelector(content, "dcolor", Messages.STOCHRSI_ColorD, DEFAULT_D_COLOR); //$NON-NLS-1$
+                addLabelField(content, "dlabel", Messages.STOCHRSI_LabelD, DEFAULT_D_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "dlineType", Messages.STOCHRSI_LineTypeD, DEFAULT_D_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "fastDPeriod", Messages.STOCHRSI_FastDPeriod, 1, 9999, DEFAULT_FAST_D_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "fastDMAtype", Messages.STOCHRSI_FastDMAType, DEFAULT_FAST_D_MA_TYPE); //$NON-NLS-1$
             }
         };
 

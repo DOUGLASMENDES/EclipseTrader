@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class OBV extends Factory
 {
-    public static final String DEFAULT_LABEL = "OBV";
+    public static final String DEFAULT_LABEL = Messages.OBV_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -85,10 +85,10 @@ public class OBV extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                input = settings.getInteger("input", input).intValue();
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -111,10 +111,10 @@ public class OBV extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addInputSelector(content, "input", "Input", DEFAULT_INPUT, false);
+                addColorSelector(content, "color", Messages.OBV_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.OBV_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.OBV_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addInputSelector(content, "input", Messages.OBV_Input, DEFAULT_INPUT, false); //$NON-NLS-1$
             }
         };
 

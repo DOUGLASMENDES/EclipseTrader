@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class ADOSC extends Factory
 {
-    public static final String DEFAULT_LABEL = "ADOSC";
+    public static final String DEFAULT_LABEL = Messages.ADOSC_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_FAST_PERIOD = 3;
@@ -86,11 +86,11 @@ public class ADOSC extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue();
-                slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue();
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue(); //$NON-NLS-1$
+                slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -113,11 +113,11 @@ public class ADOSC extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "fastPeriod", "Fast Period", 1, 9999, DEFAULT_FAST_PERIOD);
-                addIntegerValueSelector(content, "slowPeriod", "Slow Period", 1, 9999, DEFAULT_SLOW_PERIOD);
+                addColorSelector(content, "color", Messages.ADOSC_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.ADOSC_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.ADOSC_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "fastPeriod", Messages.ADOSC_FastPeriod, 1, 9999, DEFAULT_FAST_PERIOD); //$NON-NLS-1$
+                addIntegerValueSelector(content, "slowPeriod", Messages.ADOSC_SlowPeriod, 1, 9999, DEFAULT_SLOW_PERIOD); //$NON-NLS-1$
             }
         };
 

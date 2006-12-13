@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class LINEARREG extends Factory
 {
-    public static final String DEFAULT_LABEL = "LINEARREG";
+    public static final String DEFAULT_LABEL = Messages.LINEARREG_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -84,12 +84,12 @@ public class LINEARREG extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                input = settings.getInteger("input", input).intValue();
-                period = settings.getInteger("period", period).intValue();
-                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
+                period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag); //$NON-NLS-1$
             }
         };
 
@@ -112,13 +112,13 @@ public class LINEARREG extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addBooleanSelector(content, "scaleFlag", "Use own scale", DEFAULT_SCALE_FLAG);
+                addColorSelector(content, "color", Messages.LINEARREG_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.LINEARREG_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addBooleanSelector(content, "scaleFlag", Messages.LINEARREG_UseOwnScale, DEFAULT_SCALE_FLAG); //$NON-NLS-1$
 
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addInputSelector(content, "input", "Input", DEFAULT_INPUT, false);
-                addIntegerValueSelector(content, "period", "Period", 1, 9999, DEFAULT_PERIOD);
+                addLineTypeSelector(content, "lineType", Messages.LINEARREG_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addInputSelector(content, "input", Messages.LINEARREG_Input, DEFAULT_INPUT, false); //$NON-NLS-1$
+                addIntegerValueSelector(content, "period", Messages.LINEARREG_Period, 1, 9999, DEFAULT_PERIOD); //$NON-NLS-1$
             }
         };
 

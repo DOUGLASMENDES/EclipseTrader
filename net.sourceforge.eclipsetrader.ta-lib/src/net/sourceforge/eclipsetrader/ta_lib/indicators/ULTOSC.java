@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class ULTOSC extends Factory
 {
-    public static final String DEFAULT_LABEL = "ATR";
+    public static final String DEFAULT_LABEL = Messages.ULTOSC_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_SHORT_PERIOD = 7;
@@ -87,12 +87,12 @@ public class ULTOSC extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                shortPeriod = settings.getInteger("shortPeriod", shortPeriod).intValue();
-                mediumPeriod = settings.getInteger("mediumPeriod", mediumPeriod).intValue();
-                longPeriod = settings.getInteger("longPeriod", longPeriod).intValue();
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                shortPeriod = settings.getInteger("shortPeriod", shortPeriod).intValue(); //$NON-NLS-1$
+                mediumPeriod = settings.getInteger("mediumPeriod", mediumPeriod).intValue(); //$NON-NLS-1$
+                longPeriod = settings.getInteger("longPeriod", longPeriod).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -115,12 +115,12 @@ public class ULTOSC extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "shortPeriod", "Short Period", 1, 9999, DEFAULT_SHORT_PERIOD);
-                addIntegerValueSelector(content, "mediumPeriod", "Medium Period", 1, 9999, DEFAULT_MEDIUM_PERIOD);
-                addIntegerValueSelector(content, "longPeriod", "Long Period", 1, 9999, DEFAULT_LONG_PERIOD);
+                addColorSelector(content, "color", Messages.ULTOSC_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.ULTOSC_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.ULTOSC_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "shortPeriod", Messages.ULTOSC_ShortPeriod, 1, 9999, DEFAULT_SHORT_PERIOD); //$NON-NLS-1$
+                addIntegerValueSelector(content, "mediumPeriod", Messages.ULTOSC_MediumPeriod, 1, 9999, DEFAULT_MEDIUM_PERIOD); //$NON-NLS-1$
+                addIntegerValueSelector(content, "longPeriod", Messages.ULTOSC_LongPeriod, 1, 9999, DEFAULT_LONG_PERIOD); //$NON-NLS-1$
             }
         };
 

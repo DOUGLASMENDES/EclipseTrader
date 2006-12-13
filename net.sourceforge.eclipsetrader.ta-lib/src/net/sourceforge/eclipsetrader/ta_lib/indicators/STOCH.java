@@ -32,13 +32,13 @@ import com.tictactec.ta.lib.MInteger;
 
 public class STOCH extends Factory
 {
-    public static final String DEFAULT_LABEL = "STOCH";
+    public static final String DEFAULT_LABEL = Messages.STOCH_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_FAST_K_PERIOD = 5;
     public static final int DEFAULT_SLOW_K_PERIOD = 3;
     private static final int DEFAULT_SLOW_K_MA_TYPE = 0;
-    public static final String DEFAULT_D_LABEL = "%D";
+    public static final String DEFAULT_D_LABEL = Messages.STOCH_DefaultLabelD;
     public static final int DEFAULT_D_LINETYPE = PlotLine.DOT;
     public static final RGB DEFAULT_D_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_SLOW_D_PERIOD = 3;
@@ -105,20 +105,20 @@ public class STOCH extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
 
-                fastKPeriod = settings.getInteger("fastKPeriod", fastKPeriod).intValue();
-                slowKPeriod = settings.getInteger("slowKPeriod", slowKPeriod).intValue();
-                slowKMAType = settings.getInteger("slowKMAType", slowKMAType).intValue();
+                fastKPeriod = settings.getInteger("fastKPeriod", fastKPeriod).intValue(); //$NON-NLS-1$
+                slowKPeriod = settings.getInteger("slowKPeriod", slowKPeriod).intValue(); //$NON-NLS-1$
+                slowKMAType = settings.getInteger("slowKMAType", slowKMAType).intValue(); //$NON-NLS-1$
 
-                dlabel = settings.getString("dlabel", dlabel);
-                dlineType = settings.getInteger("dlineType", dlineType).intValue();
-                dcolor = settings.getColor("dcolor", dcolor);
+                dlabel = settings.getString("dlabel", dlabel); //$NON-NLS-1$
+                dlineType = settings.getInteger("dlineType", dlineType).intValue(); //$NON-NLS-1$
+                dcolor = settings.getColor("dcolor", dcolor); //$NON-NLS-1$
 
-                slowDPeriod = settings.getInteger("slowDPeriod", slowDPeriod).intValue();
-                slowDMAType = settings.getInteger("slowDMAType", slowDMAType).intValue();
+                slowDPeriod = settings.getInteger("slowDPeriod", slowDPeriod).intValue(); //$NON-NLS-1$
+                slowDMAType = settings.getInteger("slowDMAType", slowDMAType).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -141,17 +141,17 @@ public class STOCH extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "fastKPeriod", "Fast %K Period", 1, 9999, DEFAULT_FAST_K_PERIOD);
-                addIntegerValueSelector(content, "slowKPeriod", "Slow %K Period", 1, 9999, DEFAULT_SLOW_K_PERIOD);
-                addMovingAverageSelector(content, "slowKMAtype", "Slow %K MA Type", DEFAULT_SLOW_K_MA_TYPE);
-                addColorSelector(content, "dcolor", "%D Color", DEFAULT_D_COLOR);
-                addLabelField(content, "dlabel", "%D Label", DEFAULT_D_LABEL);
-                addLineTypeSelector(content, "dlineType", "%D Line Type", DEFAULT_D_LINETYPE);
-                addIntegerValueSelector(content, "slowDPeriod", "Slow %D Period", 1, 9999, DEFAULT_SLOW_D_PERIOD);
-                addMovingAverageSelector(content, "slowDMAtype", "Slow %D MA Type", DEFAULT_SLOW_K_MA_TYPE);
+                addColorSelector(content, "color", Messages.STOCH_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.STOCH_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.STOCH_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "fastKPeriod", Messages.STOCH_FastKPeriod, 1, 9999, DEFAULT_FAST_K_PERIOD); //$NON-NLS-1$
+                addIntegerValueSelector(content, "slowKPeriod", Messages.STOCH_SlowKPeriod, 1, 9999, DEFAULT_SLOW_K_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "slowKMAtype", Messages.STOCH_SlowKMAType, DEFAULT_SLOW_K_MA_TYPE); //$NON-NLS-1$
+                addColorSelector(content, "dcolor", Messages.STOCH_ColorD, DEFAULT_D_COLOR); //$NON-NLS-1$
+                addLabelField(content, "dlabel", Messages.STOCH_LabelD, DEFAULT_D_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "dlineType", Messages.STOCH_LineTypeD, DEFAULT_D_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "slowDPeriod", Messages.STOCH_SlowDPeriod, 1, 9999, DEFAULT_SLOW_D_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "slowDMAtype", Messages.STOCH_SlowDMAType, DEFAULT_SLOW_K_MA_TYPE); //$NON-NLS-1$
             }
         };
 

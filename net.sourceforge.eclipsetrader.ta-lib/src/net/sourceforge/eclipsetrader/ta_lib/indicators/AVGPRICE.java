@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class AVGPRICE extends Factory
 {
-    public static final String DEFAULT_LABEL = "AVGPRICE";
+    public static final String DEFAULT_LABEL = Messages.AVGPRICE_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     private static final boolean DEFAULT_SCALE_FLAG = false;
@@ -84,10 +84,10 @@ public class AVGPRICE extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                scaleFlag = settings.getBoolean("scaleFlag", scaleFlag); //$NON-NLS-1$
             }
         };
 
@@ -110,11 +110,11 @@ public class AVGPRICE extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addBooleanSelector(content, "scaleFlag", "Use own scale", DEFAULT_SCALE_FLAG);
+                addColorSelector(content, "color", Messages.AVGPRICE_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.AVGPRICE_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addBooleanSelector(content, "scaleFlag", Messages.AVGPRICE_UseOwnScale, DEFAULT_SCALE_FLAG); //$NON-NLS-1$
 
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
+                addLineTypeSelector(content, "lineType", Messages.AVGPRICE_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
             }
         };
 

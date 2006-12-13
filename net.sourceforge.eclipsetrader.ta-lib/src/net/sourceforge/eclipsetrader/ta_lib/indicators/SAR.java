@@ -32,7 +32,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class SAR extends Factory
 {
-    public static final String DEFAULT_LABEL = "SAR";
+    public static final String DEFAULT_LABEL = Messages.SAR_DefaultLabel;
     public static final int DEFAULT_LINETYPE = PlotLine.DOT;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final double DEFAULT_ACCELERATION = 0.02;
@@ -84,11 +84,11 @@ public class SAR extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                acceleration = settings.getDouble("acceleration", acceleration).doubleValue();
-                maximum = settings.getDouble("maximum", maximum).doubleValue();
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                acceleration = settings.getDouble("acceleration", acceleration).doubleValue(); //$NON-NLS-1$
+                maximum = settings.getDouble("maximum", maximum).doubleValue(); //$NON-NLS-1$
             }
         };
 
@@ -111,12 +111,12 @@ public class SAR extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
+                addColorSelector(content, "color", Messages.SAR_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.SAR_Label, DEFAULT_LABEL); //$NON-NLS-1$
 
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addDoubleValueSelector(content, "acceleration", "Acceleration", 4, 0.0001, 9.9999, DEFAULT_ACCELERATION);
-                addDoubleValueSelector(content, "maximum", "Maximum", 4, 0.0001, 9.9999, DEFAULT_MAXIMUM);
+                addLineTypeSelector(content, "lineType", Messages.SAR_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addDoubleValueSelector(content, "acceleration", Messages.SAR_Acceleration, 4, 0.0001, 9.9999, DEFAULT_ACCELERATION); //$NON-NLS-1$
+                addDoubleValueSelector(content, "maximum", Messages.SAR_Maximum, 4, 0.0001, 9.9999, DEFAULT_MAXIMUM); //$NON-NLS-1$
             }
         };
 

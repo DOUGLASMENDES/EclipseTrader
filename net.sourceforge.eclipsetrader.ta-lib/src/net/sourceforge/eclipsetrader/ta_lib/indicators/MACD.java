@@ -33,10 +33,10 @@ import com.tictactec.ta.lib.TA_MAType;
 
 public class MACD extends Factory
 {
-    private static final String DEFAULT_LABEL = "MACD";
+    private static final String DEFAULT_LABEL = Messages.MACD_DefaultLabel;
     private static final int DEFAULT_LINETYPE = PlotLine.LINE;
     private static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    private static final String DEFAULT_SIGNAL_LABEL = "SIG";
+    private static final String DEFAULT_SIGNAL_LABEL = Messages.MACD_DefaultLabelSIG;
     private static final int DEFAULT_SIGNAL_LINETYPE = PlotLine.DOT;
     private static final RGB DEFAULT_SIGNAL_COLOR = new RGB(0, 0, 192);
     private static final int DEFAULT_FAST_PERIOD = 12;
@@ -111,18 +111,18 @@ public class MACD extends Factory
 
             public void setParameters(Settings settings)
             {
-                label = settings.getString("label", label);
-                lineType = settings.getInteger("lineType", lineType).intValue();
-                color = settings.getColor("color", color);
-                fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue();
-                fastMaType = settings.getInteger("fastMaType", fastMaType).intValue();
-                slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue();
-                slowMaType = settings.getInteger("slowMaType", slowMaType).intValue();
-                signalLabel = settings.getString("signalLabel", signalLabel);
-                signalLineType = settings.getInteger("signalLineType", signalLineType).intValue();
-                signalColor = settings.getColor("signalColor", signalColor);
-                signalPeriod = settings.getInteger("signalPeriod", signalPeriod).intValue();
-                signalMaType = settings.getInteger("signalMaType", signalMaType).intValue();
+                label = settings.getString("label", label); //$NON-NLS-1$
+                lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+                color = settings.getColor("color", color); //$NON-NLS-1$
+                fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue(); //$NON-NLS-1$
+                fastMaType = settings.getInteger("fastMaType", fastMaType).intValue(); //$NON-NLS-1$
+                slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue(); //$NON-NLS-1$
+                slowMaType = settings.getInteger("slowMaType", slowMaType).intValue(); //$NON-NLS-1$
+                signalLabel = settings.getString("signalLabel", signalLabel); //$NON-NLS-1$
+                signalLineType = settings.getInteger("signalLineType", signalLineType).intValue(); //$NON-NLS-1$
+                signalColor = settings.getColor("signalColor", signalColor); //$NON-NLS-1$
+                signalPeriod = settings.getInteger("signalPeriod", signalPeriod).intValue(); //$NON-NLS-1$
+                signalMaType = settings.getInteger("signalMaType", signalMaType).intValue(); //$NON-NLS-1$
             }
         };
 
@@ -145,18 +145,18 @@ public class MACD extends Factory
                 content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
                 setControl(content);
 
-                addColorSelector(content, "color", "Color", DEFAULT_COLOR);
-                addLabelField(content, "label", "Label", DEFAULT_LABEL);
-                addLineTypeSelector(content, "lineType", "Line Type", DEFAULT_LINETYPE);
-                addIntegerValueSelector(content, "fastPeriod", "Fast Period", 1, 9999, DEFAULT_FAST_PERIOD);
-                addMovingAverageSelector(content, "fastMaType", "Fast MA Type", DEFAULT_FAST_MA_TYPE);
-                addIntegerValueSelector(content, "slowPeriod", "Slow Period", 1, 9999, DEFAULT_SLOW_PERIOD);
-                addMovingAverageSelector(content, "slowMaType", "Slow MA Type", DEFAULT_SLOW_MA_TYPE);
-                addColorSelector(content, "signalColor", "Signal Color", DEFAULT_SIGNAL_COLOR);
-                addLabelField(content, "signalLabel", "Signal Label", DEFAULT_SIGNAL_LABEL);
-                addLineTypeSelector(content, "signalLineType", "Signal Line Type", DEFAULT_SIGNAL_LINETYPE);
-                addIntegerValueSelector(content, "signalPeriod", "Signal Period", 1, 9999, DEFAULT_SIGNAL_PERIOD);
-                addMovingAverageSelector(content, "signalMaType", "Signal MA Type", DEFAULT_SIGNAL_MA_TYPE);
+                addColorSelector(content, "color", Messages.MACD_Color, DEFAULT_COLOR); //$NON-NLS-1$
+                addLabelField(content, "label", Messages.MACD_Label, DEFAULT_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "lineType", Messages.MACD_LineType, DEFAULT_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "fastPeriod", Messages.MACD_FastPeriod, 1, 9999, DEFAULT_FAST_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "fastMaType", Messages.MACD_FastMAType, DEFAULT_FAST_MA_TYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "slowPeriod", Messages.MACD_SlowPeriod, 1, 9999, DEFAULT_SLOW_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "slowMaType", Messages.MACD_SlowMAType, DEFAULT_SLOW_MA_TYPE); //$NON-NLS-1$
+                addColorSelector(content, "signalColor", Messages.MACD_SignalColor, DEFAULT_SIGNAL_COLOR); //$NON-NLS-1$
+                addLabelField(content, "signalLabel", Messages.MACD_SignalLabel, DEFAULT_SIGNAL_LABEL); //$NON-NLS-1$
+                addLineTypeSelector(content, "signalLineType", Messages.MACD_SignalLineType, DEFAULT_SIGNAL_LINETYPE); //$NON-NLS-1$
+                addIntegerValueSelector(content, "signalPeriod", Messages.MACD_SignalPeriod, 1, 9999, DEFAULT_SIGNAL_PERIOD); //$NON-NLS-1$
+                addMovingAverageSelector(content, "signalMaType", Messages.MACD_SignalMAType, DEFAULT_SIGNAL_MA_TYPE); //$NON-NLS-1$
             }
         };
 
