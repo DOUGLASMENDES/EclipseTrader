@@ -6,7 +6,7 @@
     <security code="AF.PA" wkn="AF.PA">AIR FRANCE - KLM</security>
     <security code="AI.PA" wkn="AI.PA">AIR LIQUIDE</security>
     <security code="ALC.PA" wkn="ALC.PA">ALCAN</security>
-    <security code="CGE.PA" wkn="CGE.PA">ALCATEL</security>
+    <security code="CGE.PA" wkn="CGE.PA">ALCATEL-LUCENT</security>
     <security code="ALL.PA" wkn="ALL.PA">ALLIANZ N</security>
     <security code="ALO.PA" wkn="ALO.PA">ALSTOM</security>
     <security code="ALD.PA" wkn="ALD.PA">ALTADIS</security>
@@ -48,6 +48,7 @@
     <security code="EAD.PA" wkn="EAD.PA">EUR AERO DEFENCE</security>
     <security code="RF.PA" wkn="RF.PA">EURAZEO</security>
     <security code="EDL.PA" wkn="EDL.PA">EURO DISNEY</security>
+    <security code="NXT.PA" wkn="NXT.PA">EURONEXT</security>
     <security code="TNU.PA" wkn="TNU.PA">EUROTUNNEL</security>
     <security code="EO.PA" wkn="EO.PA">FAURECIA</security>
     <security code="FFP.PA" wkn="FFP.PA">FFP</security>
@@ -81,12 +82,12 @@
     <security code="MMT.PA" wkn="MMT.PA">M6 METROPOLE TV</security>
     <security code="MRK.PA" wkn="MRK.PA">MERCK</security>
     <security code="ML.PA" wkn="ML.PA">MICHELIN</security>
-    <security code="KN.PA" wkn="KN.PA">NATEXIS BQ POP.</security>
+    <security code="KN.PA" wkn="KN.PA">NATIXIS</security>
     <security code="NEO.PA" wkn="NEO.PA">NEOPOST</security>
     <security code="NEX.PA" wkn="NEX.PA">NEXANS</security>
     <security code="NRG.PA" wkn="NRG.PA">NRJ GROUP </security>
     <security code="OCS.PA" wkn="OCS.PA">OBERTHUR CARD SYST.</security>
-    <security code="PAJ.PA" wkn="PAJ.PA">PAGESJAUNES</security>
+    <security code="PAJ.PA" wkn="PAJ.PA">PAGES JAUNES</security>
     <security code="ARR.PA" wkn="ARR.PA">PARIS RHIN RHONE B</security>
     <security code="PPS.PA" wkn="PPS.PA">PENAUILLE POLYSERV.</security>
     <security code="RI.PA" wkn="RI.PA">PERNOD RICARD</security>

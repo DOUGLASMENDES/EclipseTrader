@@ -84,7 +84,7 @@
 	</category>
 	<category name="Asia/Pacific">
     		<index code="^AORD">All Ordinaries</index>
-    		<index code="^SSEC">Shanghai Composite</index>
+    		<index code="000001.SS">Shanghai Composite</index>
     		<index code="^HSI">Hang Seng</index>
     		<index code="^BSESN">BSE 30</index>
     		<index code="^JKSE">Jakarta Composite</index>
