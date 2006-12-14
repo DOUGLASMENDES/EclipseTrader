@@ -80,20 +80,20 @@ public abstract class Level2
         List l = new ArrayList();
         Item item = new Item();
         
-        for (Iterator iter = list.iterator(); iter.hasNext(); )
+        Item[] items = (Item[])list.toArray(new Item[list.size()]);
+        for (int i = 0; i < items.length; i++)
         {
-            Item i = (Item)iter.next();
-            if (item.price != i.price)
+            if (item.price != items[i].price)
             {
                 if (item.quantity != 0)
                 {
                     l.add(item);
                     item = new Item();
                 }
-                item.price = i.price;
+                item.price = items[i].price;
             }
-            item.quantity += i.quantity;
-            item.number += i.number;
+            item.quantity += items[i].quantity;
+            item.number += items[i].number;
         }
 
         if (item.quantity != 0)
