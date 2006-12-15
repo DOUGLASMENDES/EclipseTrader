@@ -40,6 +40,8 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -53,8 +55,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -81,7 +81,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     static final int FILLED_QUANTITY = 10;
     static final int AVERAGE_PRICE = 11;
     static final int STATUS = 12;
-    TabFolder tabFolder;
+    CTabFolder tabFolder;
     OrdersTable all;
     OrdersTable pending;
     OrdersTable filled;
@@ -191,15 +191,15 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         
-        tabFolder = new TabFolder(content, SWT.BOTTOM);
+        tabFolder = new CTabFolder(content, SWT.BOTTOM);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
-        TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
+        CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("All");
         all = new OrdersTable(tabFolder, new ArrayList());
         tabItem.setControl(all.getControl());
 
-        tabItem = new TabItem(tabFolder, SWT.NONE);
+        tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Pending");
         OrderStatus[] pendingFilter = { 
                 OrderStatus.NEW, 
@@ -210,7 +210,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         pending = new OrdersTable(tabFolder, Arrays.asList(pendingFilter));
         tabItem.setControl(pending.getControl());
         
-        tabItem = new TabItem(tabFolder, SWT.NONE);
+        tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Filled");
         OrderStatus[] filledFilter = { 
                 OrderStatus.FILLED 
@@ -218,7 +218,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         filled = new OrdersTable(tabFolder, Arrays.asList(filledFilter));
         tabItem.setControl(filled.getControl());
         
-        tabItem = new TabItem(tabFolder, SWT.NONE);
+        tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Canceled");
         OrderStatus[] canceledFilter = { 
                 OrderStatus.CANCELED 
@@ -226,7 +226,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         canceled = new OrdersTable(tabFolder, Arrays.asList(canceledFilter));
         tabItem.setControl(canceled.getControl());
         
-        tabItem = new TabItem(tabFolder, SWT.NONE);
+        tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Rejected");
         OrderStatus[] rejectedFilter = { 
                 OrderStatus.REJECTED 
@@ -242,6 +242,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         });
 
         ignoreResize = false;
+        tabFolder.setSelection(0);
         TradingPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
     }
 
@@ -278,10 +279,10 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     {
         List orders = new ArrayList();
         
-        TabItem[] item = tabFolder.getSelection();
-        if (item.length != 0)
+        CTabItem item = tabFolder.getSelection();
+        if (item != null)
         {
-            Table table = (Table)item[0].getControl();
+            Table table = (Table)item.getControl();
             int[] selection = table.getSelectionIndices();
             OrdersTable ordersTable = (OrdersTable)table.getData();
             for (int i = 0; i < selection.length; i++)
