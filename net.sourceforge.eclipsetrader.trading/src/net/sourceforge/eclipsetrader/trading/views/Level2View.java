@@ -55,6 +55,7 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -215,6 +216,24 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
                 Security[] securities = (Security[]) event.data;
                 setSecurity(securities[0]);
             }
+        }
+    };
+    boolean tableUpdaterScheduled = false;
+    Runnable tableUpdater = new Runnable() {
+        public void run()
+        {
+            tableUpdaterScheduled = false;
+            if (!table.isDisposed())
+                updateTable();
+        }
+    };
+    boolean infoUpdaterScheduled = false;
+    Runnable infoUpdater = new Runnable() {
+        public void run()
+        {
+            infoUpdaterScheduled = false;
+            if (!info.isDisposed())
+                updateInfo();
         }
     };
 
@@ -387,16 +406,9 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
         table.addControlListener(new ControlAdapter() {
             public void controlResized(ControlEvent e)
             {
-                int width = ((Table)e.widget).getClientArea().width;
-                int c1 = (int) ((width / 2) * .18);
-                int c2 = (int) ((width / 2) * .45);
-                int c3 = (width / 2) - c1 - c2;
-                ((Table)e.widget).getColumn(1).setWidth(c1);
-                ((Table)e.widget).getColumn(2).setWidth(c2);
-                ((Table)e.widget).getColumn(3).setWidth(c3);
-                ((Table)e.widget).getColumn(4).setWidth(width - (c1 + c2) * 2 - c3);
-                ((Table)e.widget).getColumn(5).setWidth(c2);
-                ((Table)e.widget).getColumn(6).setWidth(c1);
+                table.setRedraw(false);
+                updateColumnWidth();
+                table.setRedraw(true);
             }
         });
         table.addFocusListener(new FocusAdapter() {
@@ -614,7 +626,6 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
         }
 
         int total = Math.max(bid.size(), ask.size());
-
         for (int index = 0; index < total; index++)
         {
             if (index < table.getItemCount())
@@ -707,23 +718,64 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
             }
         }
         
-        table.setItemCount(total);
+        while(table.getItemCount() > total)
+            table.getItem(total).dispose();
         
         if (security.getLevel2Bid() != null && security.getLevel2Ask() != null)
             trendbar.setData(security.getLevel2Bid(), security.getLevel2Ask());
 
+        updateColumnWidth();
+    }
+    
+    /**
+     * Adapt the columns width to the extents of the contained text.
+     */
+    void updateColumnWidth()
+    {
+        GC gc = new GC(table);
+        
+        // Get the maximum extent of the column headers
+        int c1 = Math.max(gc.textExtent(table.getColumn(1).getText()).x, gc.textExtent(table.getColumn(6).getText()).x);
+        int c2 = Math.max(gc.textExtent(table.getColumn(2).getText()).x, gc.textExtent(table.getColumn(5).getText()).x);
+        int c3 = Math.max(gc.textExtent(table.getColumn(3).getText()).x, gc.textExtent(table.getColumn(4).getText()).x);
+
+        // Get the maximum extent of all items
+        TableItem[] items = table.getItems();
+        for (int i = 0; i < items.length; i++)
+        {
+            c1 = Math.max(c1, Math.max(gc.textExtent(items[i].getText(1)).x, gc.textExtent(items[i].getText(6)).x));
+            c2 = Math.max(c2, Math.max(gc.textExtent(items[i].getText(2)).x, gc.textExtent(items[i].getText(5)).x));
+            c3 = Math.max(c3, Math.max(gc.textExtent(items[i].getText(3)).x, gc.textExtent(items[i].getText(4)).x));
+        }
+        
+        // Adds a border
+        c1 += 12;
+        c2 += 12;
+        c3 += 12;
+
+        gc.dispose();
+
+        // Calculates the ratio of columns 1 and 2 based on the total width
+        double columnsWidth = c1 + c2 + c3;
+        double r1 = c1 / columnsWidth;
+        double r2 = c2 / columnsWidth;
+
+        // Get the pixel width based on the table size and the columns ratio
         int width = table.getClientArea().width;
-        int c1 = (int) ((width / 2) * .18);
-        int c2 = (int) ((width / 2) * .45);
-        int c3 = (width / 2) - c1 - c2;
+        c1 = (int) ((width / 2) * r1);
+        c2 = (int) ((width / 2) * r2);
+        int c3a = (width / 2) - c1 - c2;
+        int c3b = width - (c1 + c2 + c3a + c2 + c1);
+
+        // Set the columns size only if necessary
         if (table.getColumn(1).getWidth() != c1)
             table.getColumn(1).setWidth(c1);
-        if (table.getColumn(1).getWidth() != c2)
+        if (table.getColumn(2).getWidth() != c2)
             table.getColumn(2).setWidth(c2);
-        if (table.getColumn(3).getWidth() != c3)
-            table.getColumn(3).setWidth(c3);
-        if (table.getColumn(4).getWidth() != ((c1 + c2) * 2 - c3))
-            table.getColumn(4).setWidth(width - (c1 + c2) * 2 - c3);
+        if (table.getColumn(3).getWidth() != c3a)
+            table.getColumn(3).setWidth(c3a);
+        if (table.getColumn(4).getWidth() != c3b)
+            table.getColumn(4).setWidth(c3b);
         if (table.getColumn(5).getWidth() != c2)
             table.getColumn(5).setWidth(c2);
         if (table.getColumn(6).getWidth() != c1)
@@ -759,23 +811,31 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
     {
         if (o == security.getLevel2Monitor())
         {
-            info.getDisplay().asyncExec(new Runnable() {
-                public void run()
-                {
-                    if (!info.isDisposed())
-                        updateTable();
-                }
-            });
+            if (!tableUpdaterScheduled)
+            {
+                table.getDisplay().asyncExec(new Runnable() {
+                    public void run()
+                    {
+                        if (!table.isDisposed())
+                            table.getDisplay().timerExec(200, tableUpdater);
+                    }
+                });
+                tableUpdaterScheduled = true;
+            }
         }
         else
         {
-            info.getDisplay().asyncExec(new Runnable() {
-                public void run()
-                {
-                    if (!info.isDisposed())
-                        updateInfo();
-                }
-            });
+            if (!infoUpdaterScheduled)
+            {
+                info.getDisplay().asyncExec(new Runnable() {
+                    public void run()
+                    {
+                        if (!info.isDisposed())
+                            info.getDisplay().timerExec(200, infoUpdater);
+                    }
+                });
+                infoUpdaterScheduled = true;
+            }
         }
     }
 
