@@ -435,7 +435,7 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
                     updateInfo();
                     updateTable();
 
-                    security.deleteObserver(Level2View.this);
+                    security.addObserver(Level2View.this);
                     security.getQuoteMonitor().addObserver(Level2View.this);
                     security.getLevel2Monitor().addObserver(Level2View.this);
                     Level2FeedMonitor.monitor(security);
@@ -827,13 +827,7 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
         {
             if (!infoUpdaterScheduled)
             {
-                info.getDisplay().asyncExec(new Runnable() {
-                    public void run()
-                    {
-                        if (!info.isDisposed())
-                            info.getDisplay().timerExec(200, infoUpdater);
-                    }
-                });
+                info.getDisplay().asyncExec(infoUpdater);
                 infoUpdaterScheduled = true;
             }
         }
