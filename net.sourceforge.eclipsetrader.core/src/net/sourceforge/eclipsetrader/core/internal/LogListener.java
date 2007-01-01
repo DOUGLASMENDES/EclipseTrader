@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,8 @@
 
 package net.sourceforge.eclipsetrader.core.internal;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 
@@ -23,20 +24,20 @@ public class LogListener implements ILogListener
      */
     public void logging(IStatus status, String plugin)
     {
-        Logger logger = Logger.getLogger(plugin); 
+        Log log = LogFactory.getLog(plugin); 
         switch(status.getSeverity())
         {
             case IStatus.INFO:
-                logger.info(status.getMessage(), status.getException());
+                log.info(status.getMessage(), status.getException());
                 break;
             case IStatus.WARNING:
-                logger.warn(status.getMessage(), status.getException());
+                log.warn(status.getMessage(), status.getException());
                 break;
             case IStatus.ERROR:
-                logger.error(status.getMessage(), status.getException());
+                log.error(status.getMessage(), status.getException());
                 break;
             default:
-                logger.debug(status.getMessage(), status.getException());
+                log.debug(status.getMessage(), status.getException());
                 break;
         }
     }

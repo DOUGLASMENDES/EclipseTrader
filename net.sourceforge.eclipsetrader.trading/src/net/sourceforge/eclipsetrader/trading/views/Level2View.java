@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,7 +31,7 @@ import net.sourceforge.eclipsetrader.trading.actions.TogglePriceGroupingAction;
 import net.sourceforge.eclipsetrader.trading.internal.CellTicker;
 import net.sourceforge.eclipsetrader.trading.internal.Trendbar;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -100,6 +100,7 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
     static boolean DEFAULT_GROUP_PRICES = false;
     static boolean DEFAULT_COLOR_LEVELS = true;
     static boolean DEFAULT_FOLLOW_SELECTION = false;
+    static int UPDATE_DELAY = 200;
     Security security;
     Composite info;
     Label time;
@@ -512,7 +513,7 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
         try {
             preferences.save();
         } catch(Exception e) {
-            Logger.getLogger(getClass()).warn(e);
+            LogFactory.getLog(getClass()).warn(e);
         }
 
         toggleLevelColorsAction.setChecked(colorLevels);
@@ -530,7 +531,7 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
         try {
             preferences.save();
         } catch(Exception e) {
-            Logger.getLogger(getClass()).warn(e);
+            LogFactory.getLog(getClass()).warn(e);
         }
     }
     
@@ -817,7 +818,7 @@ public class Level2View extends ViewPart implements Observer, ISelectionListener
                     public void run()
                     {
                         if (!table.isDisposed())
-                            table.getDisplay().timerExec(200, tableUpdater);
+                            table.getDisplay().timerExec(UPDATE_DELAY, tableUpdater);
                     }
                 });
                 tableUpdaterScheduled = true;

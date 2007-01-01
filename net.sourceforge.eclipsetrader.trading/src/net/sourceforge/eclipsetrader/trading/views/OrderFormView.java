@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,8 @@ import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -85,7 +86,7 @@ public class OrderFormView extends ViewPart
     private NumberFormat nf = NumberFormat.getInstance();
     SimpleDateFormat dateFormat = CorePlugin.getDateFormat();
     SimpleDateFormat dateParse = CorePlugin.getDateParse();
-    private Logger logger = Logger.getLogger(getClass());
+    private Log logger = LogFactory.getLog(getClass());
     DropTargetListener dropTargetListener = new DropTargetListener() {
         public void dragEnter(DropTargetEvent event)
         {
@@ -129,6 +130,7 @@ public class OrderFormView extends ViewPart
             {
                 Security[] securities = (Security[]) event.data;
                 setSecurity(securities[0]);
+                quantity.setFocus();
             }
         }
     };
@@ -286,7 +288,7 @@ public class OrderFormView extends ViewPart
         
         send = new Button(content, SWT.PUSH);
         send.setText("Send Order");
-        send.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+        send.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, 2, 1));
         send.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {

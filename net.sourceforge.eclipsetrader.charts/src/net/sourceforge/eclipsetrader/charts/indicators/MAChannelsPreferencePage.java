@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,8 @@ import java.text.ParseException;
 
 import net.sourceforge.eclipsetrader.charts.IndicatorPluginPreferencePage;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -35,7 +36,7 @@ public class MAChannelsPreferencePage extends IndicatorPluginPreferencePage
     private Text percentage;
     private Combo maType;
     private NumberFormat nf = NumberFormat.getInstance();
-    private Logger logger = Logger.getLogger(getClass());
+    private Log logger = LogFactory.getLog(getClass());
 
     public MAChannelsPreferencePage()
     {

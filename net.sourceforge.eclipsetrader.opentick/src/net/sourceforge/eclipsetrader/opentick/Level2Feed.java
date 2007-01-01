@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,11 +15,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
 import net.sourceforge.eclipsetrader.core.ILevel2Feed;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.opentick.internal.Client;
+
+import org.apache.commons.logging.LogFactory;
 
 public class Level2Feed implements ILevel2Feed
 {
@@ -44,7 +44,7 @@ public class Level2Feed implements ILevel2Feed
                 if (client != null && running)
                     client.requestBookStream(security);
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
         }
     }
@@ -62,7 +62,7 @@ public class Level2Feed implements ILevel2Feed
                 if (client != null && running)
                     client.cancelBookStream(security);
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
         }
     }
@@ -80,7 +80,7 @@ public class Level2Feed implements ILevel2Feed
                 for (Iterator iter = map.iterator(); iter.hasNext(); )
                     client.requestBookStream((Security)iter.next());
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
             
             running = true;
@@ -98,7 +98,7 @@ public class Level2Feed implements ILevel2Feed
                 for (Iterator iter = map.iterator(); iter.hasNext(); )
                     client.cancelBookStream((Security)iter.next());
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
             client.dispose();
             

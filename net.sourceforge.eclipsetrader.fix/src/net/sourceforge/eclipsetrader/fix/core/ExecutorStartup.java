@@ -15,7 +15,7 @@ import java.io.InputStream;
 
 import net.sourceforge.eclipsetrader.fix.FixPlugin;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IStartup;
 
@@ -34,7 +34,7 @@ public class ExecutorStartup implements IStartup
 {
     Acceptor acceptor;
     private static ExecutorStartup instance;
-    private Logger log = Logger.getLogger(getClass());
+    private Log log = org.apache.commons.logging.LogFactory.getLog(getClass());
 
     public ExecutorStartup()
     {

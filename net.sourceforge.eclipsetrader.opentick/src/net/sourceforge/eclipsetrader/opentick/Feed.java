@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +34,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 public class Feed implements IFeed
@@ -63,7 +63,7 @@ public class Feed implements IFeed
                     client.requestTickStream(security);
                 }
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
         }
     }
@@ -81,7 +81,7 @@ public class Feed implements IFeed
                 if (client != null && running)
                     client.cancelTickStream(security);
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
         }
     }
@@ -100,7 +100,7 @@ public class Feed implements IFeed
                 for (Iterator iter = map.iterator(); iter.hasNext(); )
                     client.requestTickStream((Security)iter.next());
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
             running = true;
         }
@@ -117,7 +117,7 @@ public class Feed implements IFeed
                 for (Iterator iter = map.iterator(); iter.hasNext(); )
                     client.cancelTickStream((Security)iter.next());
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                LogFactory.getLog(getClass()).error(e, e);
             }
             client.dispose();
             

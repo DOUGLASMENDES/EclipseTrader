@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,7 +36,8 @@ import net.sourceforge.eclipsetrader.core.db.ChartObject;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -224,7 +225,7 @@ public class ChartsPlugin extends AbstractUIPlugin
     
     public static Chart createDefaultChart()
     {
-        Logger logger = Logger.getLogger(ChartsPlugin.class);
+        Log logger = LogFactory.getLog(ChartsPlugin.class);
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
         Chart chart = new Chart();
 
@@ -353,7 +354,7 @@ public class ChartsPlugin extends AbstractUIPlugin
     
     public static void saveDefaultChart(Chart chart)
     {
-        Logger logger = Logger.getLogger(ChartsPlugin.class);
+        Log logger = LogFactory.getLog(ChartsPlugin.class);
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
 
         try {

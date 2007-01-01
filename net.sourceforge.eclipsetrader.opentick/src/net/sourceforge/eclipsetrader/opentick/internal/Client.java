@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,8 @@ import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 import net.sourceforge.eclipsetrader.opentick.OpenTickPlugin;
 import net.sourceforge.eclipsetrader.opentick.ui.dialogs.LoginDialog;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.opentick.OTBBO;
 import com.opentick.OTBookCancel;
@@ -59,32 +60,32 @@ public class Client
     Set pendingBookStreams = new HashSet();
     Map securityBook = new HashMap();
     Thread thread;
-    private Logger logger = Logger.getLogger(getClass());
+    private Log log = LogFactory.getLog(getClass());
     private OTClient client = new OTClient() {
 
         public void onEquityInit(OTEquityInit equity)
         {
-            logger.info(equity);
+            log.info(equity);
         }
 
         public void onError(OTError error)
         {
-            logger.info(error);
+            log.info(error);
         }
 
         public void onHistBBO(OTBBO bbo)
         {
-            logger.info(bbo);
+            log.info(bbo);
         }
 
         public void onHistMMQuote(OTMMQuote quote)
         {
-            logger.info(quote);
+            log.info(quote);
         }
 
         public void onHistOHLC(OTOHLC ohlc)
         {
-            logger.info(ohlc);
+            log.info(ohlc);
             Security security = (Security)tickStreams.get(String.valueOf(ohlc.getRequestID()));
             if (security != null)
             {
@@ -101,27 +102,27 @@ public class Client
 
         public void onHistQuote(OTQuote quote)
         {
-            logger.info(quote);
+            log.info(quote);
         }
 
         public void onHistTrade(OTTrade trade)
         {
-            logger.info(trade);
+            log.info(trade);
         }
 
         public void onListExchanges(List exchanges)
         {
-            logger.debug(exchanges);
+            log.debug(exchanges);
         }
 
         public void onListSymbols(List symbols)
         {
-            logger.debug(symbols);
+            log.debug(symbols);
         }
 
         public void onLogin()
         {
-            logger.info("Logged in to the server");
+            log.info("Logged in to the server");
 
             try {
                 for (Iterator iter = pendingTickStreams.iterator(); iter.hasNext(); )
@@ -132,18 +133,18 @@ public class Client
                     Client.this.requestBookStream((Security)iter.next());
                 pendingBookStreams.clear();
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                log.error(e, e);
             }
         }
 
         public void onMessage(OTMessage message)
         {
-            logger.info(message);
+            log.info(message);
         }
 
         public void onRealtimeBBO(OTBBO bbo)
         {
-            logger.info(bbo);
+            log.info(bbo);
 
             Security security = (Security)tickStreams.get(String.valueOf(bbo.getRequestID()));
             if (security != null)
@@ -166,7 +167,7 @@ public class Client
 
         public void onRealtimeBookCancel(OTBookCancel cancel)
         {
-            logger.debug(cancel);
+            log.debug(cancel);
             
             Book book = (Book)securityBook.get(String.valueOf(cancel.getRequestID()));
             if (book != null)
@@ -179,7 +180,7 @@ public class Client
 
         public void onRealtimeBookChange(OTBookChange change)
         {
-            logger.debug(change);
+            log.debug(change);
             
             Book book = (Book)securityBook.get(String.valueOf(change.getRequestID()));
             if (book != null)
@@ -192,7 +193,7 @@ public class Client
 
         public void onRealtimeBookDelete(OTBookDelete delete)
         {
-            logger.debug(delete);
+            log.debug(delete);
             
             Book book = (Book)securityBook.get(String.valueOf(delete.getRequestID()));
             if (book != null)
@@ -205,7 +206,7 @@ public class Client
 
         public void onRealtimeBookExecute(OTBookExecute execute)
         {
-            logger.debug(execute);
+            log.debug(execute);
             
             Book book = (Book)securityBook.get(String.valueOf(execute.getRequestID()));
             if (book != null)
@@ -218,7 +219,7 @@ public class Client
 
         public void onRealtimeBookOrder(OTBookOrder order)
         {
-            logger.debug(order);
+            log.debug(order);
             
             Book book = (Book)securityBook.get(String.valueOf(order.getRequestID()));
             if (book != null)
@@ -231,7 +232,7 @@ public class Client
 
         public void onRealtimeBookPurge(OTBookPurge purge)
         {
-            logger.debug(purge);
+            log.debug(purge);
             
             Book book = (Book)securityBook.get(String.valueOf(purge.getRequestID()));
             if (book != null)
@@ -244,7 +245,7 @@ public class Client
 
         public void onRealtimeBookReplace(OTBookReplace replace)
         {
-            logger.debug(replace);
+            log.debug(replace);
             
             Book book = (Book)securityBook.get(String.valueOf(replace.getRequestID()));
             if (book == null)
@@ -259,12 +260,12 @@ public class Client
 
         public void onRealtimeMMQuote(OTMMQuote quote)
         {
-            logger.info(quote);
+            log.info(quote);
         }
 
         public void onRealtimeQuote(OTQuote quote)
         {
-            logger.debug(quote);
+            log.debug(quote);
 
             Security security = (Security)tickStreams.get(String.valueOf(quote.getRequestID()));
             if (security != null)
@@ -281,7 +282,7 @@ public class Client
 
         public void onRealtimeTrade(OTTrade trade)
         {
-            logger.debug(trade);
+            log.debug(trade);
 
             Security security = (Security)tickStreams.get(String.valueOf(trade.getRequestID()));
             if (security != null)
@@ -305,17 +306,17 @@ public class Client
 
         public void onRestoreConnection()
         {
-            logger.info("Connection restored");
+            log.info("Connection restored");
         }
 
         public void onStatusChanged(int status)
         {
-            logger.info("Status " + (String)statusText.get(new Integer(status)));
+            log.info("Status " + (String)statusText.get(new Integer(status)));
         }
 
         public void onTodaysOHL(OTTodaysOHL todayOHL)
         {
-            logger.info(todayOHL);
+            log.info(todayOHL);
         }
     };
 
@@ -358,7 +359,7 @@ public class Client
                         Thread.yield();
                 }
             } catch(Exception e) {
-                Logger.getLogger(getClass()).error(e, e);
+                log.error(e, e);
             }
         }
     }
@@ -388,7 +389,7 @@ public class Client
                         String password = OpenTickPlugin.getDefault().getPreferenceStore().getString(OpenTickPlugin.PREFS_PASSWORD);
                         client.login(userName, password);
                     } catch(Exception e) {
-                        Logger.getLogger(getClass()).error(e, e);
+                        log.error(e, e);
                     }
                     thread = null;
                 }
@@ -413,7 +414,7 @@ public class Client
             int id = client.requestTickStream(new OTDataEntity(exchange, symbol), OTConstants.OT_TICK_TYPE_LEVEL1);
             tickStreams.put(String.valueOf(id), security);
 
-            logger.debug(String.valueOf(id) + " / Request tick stream " + symbol + "." + exchange);
+            log.debug(String.valueOf(id) + " / Request tick stream " + symbol + "." + exchange);
         }
     }
 
@@ -426,7 +427,7 @@ public class Client
             {
                 client.cancelTickStream(Integer.parseInt(id));
                 tickStreams.remove(id);
-                logger.debug(String.valueOf(id) + " / Request cancel tick stream");
+                log.debug(String.valueOf(id) + " / Request cancel tick stream");
                 break;
             }
         }
@@ -450,7 +451,7 @@ public class Client
             bookStreams.put(String.valueOf(id), security);
             securityBook.put(String.valueOf(id), new Book());
 
-            logger.debug(String.valueOf(id) + " / Request book stream " + symbol + "." + exchange);
+            log.debug(String.valueOf(id) + " / Request book stream " + symbol + "." + exchange);
         }
     }
 
@@ -464,7 +465,7 @@ public class Client
                 client.cancelBookStream(Integer.parseInt(id));
                 bookStreams.remove(id);
                 securityBook.remove(id);
-                logger.debug(String.valueOf(id) + " / Request cancel book stream");
+                log.debug(String.valueOf(id) + " / Request cancel book stream");
                 break;
             }
         }

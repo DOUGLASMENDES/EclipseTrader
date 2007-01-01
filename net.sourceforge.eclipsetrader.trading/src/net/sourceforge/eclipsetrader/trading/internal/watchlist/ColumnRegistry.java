@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import java.util.Map;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -91,7 +91,7 @@ public class ColumnRegistry
                 Object obj = element.createExecutableExtension("class");
                 return (ILabelProvider)obj;
             } catch(Exception e) {
-                Logger.getLogger(ColumnRegistry.class).error(e, e);
+                LogFactory.getLog(ColumnRegistry.class).error(e, e);
             }
         }
         

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,7 +78,8 @@ import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
 import net.sourceforge.eclipsetrader.core.ui.NullSelection;
 import net.sourceforge.eclipsetrader.core.ui.SecuritySelection;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -210,7 +211,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     Action deleteAction;
     PreferenceStore preferences;
     ITheme theme;
-    Logger logger = Logger.getLogger(getClass());
+    Log logger = LogFactory.getLog(getClass());
     IPropertyChangeListener themeChangeListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
         {
@@ -840,7 +841,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             if (preferences != null)
                 preferences.save();
         } catch(Exception e) {
-            Logger.getLogger(getClass()).warn(e);
+            LogFactory.getLog(getClass()).warn(e);
         }
         
         super.dispose();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,7 +35,8 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 public class Feed implements IFeed, Runnable
@@ -47,7 +48,7 @@ public class Feed implements IFeed, Runnable
     private SimpleDateFormat usDateParser = new SimpleDateFormat("MM/dd/yyyy");
     private SimpleDateFormat usTimeParser = new SimpleDateFormat("h:mma");
     private NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-    private Logger logger = Logger.getLogger(getClass());
+    private Log log = LogFactory.getLog(getClass());
 
     public Feed()
     {
@@ -62,6 +63,7 @@ public class Feed implements IFeed, Runnable
         if (symbol == null || symbol.length() == 0)
             symbol = security.getCode();
         map.put(security, symbol);
+        log.info("Subscribed to " + security.getCode() + " - " + security.getDescription());
     }
 
     /* (non-Javadoc)
@@ -70,6 +72,7 @@ public class Feed implements IFeed, Runnable
     public void unSubscribe(Security security)
     {
         map.remove(security);
+        log.info("Unsubscribed from " + security.getCode() + " - " + security.getDescription());
     }
 
     /* (non-Javadoc)
@@ -82,7 +85,10 @@ public class Feed implements IFeed, Runnable
             stopping = false;
             thread = new Thread(this);
             thread.start();
+            log.info("Thread started");
         }
+        else
+            log.warn("Thread already instantiated");
     }
 
     /* (non-Javadoc)
@@ -93,16 +99,17 @@ public class Feed implements IFeed, Runnable
         stopping = true;
         if (thread != null)
         {
-            try
-            {
+            try {
                 thread.join();
+                log.info("Thread stopped");
             }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
+            catch (InterruptedException e) {
+                log.error(e, e);
             }
             thread = null;
         }
+        else
+            log.warn("Thread not yet instantiated");
     }
 
     /* (non-Javadoc)
@@ -110,6 +117,7 @@ public class Feed implements IFeed, Runnable
      */
     public void snapshot()
     {
+        log.info("Snapshot update");
         update();
 
         boolean updateHistory = YahooPlugin.getDefault().getPreferenceStore().getBoolean(YahooPlugin.PREFS_UPDATE_HISTORY);
@@ -132,13 +140,11 @@ public class Feed implements IFeed, Runnable
                 nextRun = System.currentTimeMillis() + 10 * 1000;
             }
 
-            try
-            {
+            try {
                 Thread.sleep(1000);
             }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
+            catch (InterruptedException e) {
+                log.error(e, e);
                 break;
             }
         }
@@ -153,7 +159,7 @@ public class Feed implements IFeed, Runnable
         if (url.charAt(url.length() - 1) == '+')
             url.deleteCharAt(url.length() - 1);
         url.append("&format=sl1d1t1c1ohgvbap");
-        logger.debug(url.toString());
+        log.debug(url.toString());
 
         // Read the last prices
         String line = "";
@@ -205,7 +211,7 @@ public class Feed implements IFeed, Runnable
                 }
                 catch (Exception e)
                 {
-                    System.out.println(e.getMessage() + ": " + line);
+                    log.error(e.getMessage() + ": " + line);
                 }
                 // 1 = Last price or N/A
                 if (item[1].equalsIgnoreCase("N/A") == false)
@@ -248,7 +254,7 @@ public class Feed implements IFeed, Runnable
         }
         catch (Exception e)
         {
-            logger.error(e);
+            log.error(e);
         }
     }
 
@@ -317,7 +323,6 @@ public class Feed implements IFeed, Runnable
 
                 CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
                 CorePlugin.getRepository().save(security);
-
             }
         }
     }

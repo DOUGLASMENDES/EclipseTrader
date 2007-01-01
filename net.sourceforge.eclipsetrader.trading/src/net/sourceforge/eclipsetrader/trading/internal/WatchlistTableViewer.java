@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,7 @@ import net.sourceforge.eclipsetrader.trading.internal.watchlist.ColumnRegistry;
 import net.sourceforge.eclipsetrader.trading.views.WatchlistView;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistItemPropertiesDialog;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -455,7 +455,7 @@ public class WatchlistTableViewer extends AbstractLayout
             ILabelProvider provider = ColumnRegistry.createLabelProvider(column.getId());
             if (provider != null)
             {
-                Logger.getLogger(getClass()).info("Adding column [" + column.getId() + "]");
+                LogFactory.getLog(getClass()).debug("Adding column [" + column.getId() + "]");
                 name = ColumnRegistry.getName(column.getId());
                 style = ColumnRegistry.getOrientation(column.getId());
                 
@@ -466,7 +466,7 @@ public class WatchlistTableViewer extends AbstractLayout
                 }
             }
             else
-                Logger.getLogger(getClass()).warn("Missing column [" + column.getId() + "]");
+                LogFactory.getLog(getClass()).warn("Missing column [" + column.getId() + "]");
             
             if (index < table.getColumnCount())
             {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,7 +39,7 @@ import net.sourceforge.eclipsetrader.trading.internal.WatchlistBoxViewer;
 import net.sourceforge.eclipsetrader.trading.internal.WatchlistTableViewer;
 import net.sourceforge.eclipsetrader.trading.wizards.WatchlistSettingsDialog;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -274,7 +274,7 @@ public class WatchlistView extends ViewPart implements ICollectionObserver, Obse
         try {
             preferenceStore.save();
         } catch(Exception e) {
-            Logger.getLogger(getClass()).warn(e);
+            LogFactory.getLog(getClass()).warn(e);
         }
 
         super.dispose();

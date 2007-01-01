@@ -35,7 +35,8 @@ import net.sourceforge.eclipsetrader.core.db.OrderType;
 import net.sourceforge.eclipsetrader.core.db.OrderValidity;
 import net.sourceforge.eclipsetrader.core.db.Transaction;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
 
@@ -99,7 +100,7 @@ public class BanzaiTradingProvider implements Application, ITradingProvider, IEx
     static private TwoWayMap sideMap = new TwoWayMap();
     static private TwoWayMap typeMap = new TwoWayMap();
     static private TwoWayMap tifMap = new TwoWayMap();
-    private Logger log = Logger.getLogger(getClass());
+    private Log log = LogFactory.getLog(getClass());
 
     public BanzaiTradingProvider()
     {

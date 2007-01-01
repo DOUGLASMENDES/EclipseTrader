@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ import java.util.Locale;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -206,7 +206,7 @@ public class ExchangeRateDialog extends Dialog
                 ratio.setSelection((int)(1 * Math.pow(10, ratio.getDigits())));
         } catch(Exception e) {
             ratio.setSelection((int)(1 * Math.pow(10, ratio.getDigits())));
-            Logger.getLogger(getClass()).warn(e);
+            LogFactory.getLog(getClass()).warn(e);
         }
         if (getButton(IDialogConstants.OK_ID) != null)
             getButton(IDialogConstants.OK_ID).setEnabled(!from.getText().equals(to.getText()));
@@ -222,7 +222,7 @@ public class ExchangeRateDialog extends Dialog
             double r = (double)ratio.getSelection() / Math.pow(10, ratio.getDigits());
             CurrencyConverter.getInstance().setExchangeRatio(date, from.getText(), to.getText(), r);
         } catch(Exception e) {
-            Logger.getLogger(getClass()).warn(e);
+            LogFactory.getLog(getClass()).warn(e);
         }
         super.okPressed();
     }

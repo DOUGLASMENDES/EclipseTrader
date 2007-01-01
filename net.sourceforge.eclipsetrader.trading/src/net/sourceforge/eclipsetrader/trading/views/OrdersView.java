@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,8 @@ import net.sourceforge.eclipsetrader.core.ui.LabelProvidersRegistry;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.dialogs.OrdersViewColumnsDialog;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -95,7 +96,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     Action cancelRequest;
     Action editColumnsAction;
     LabelProvidersRegistry registry = new LabelProvidersRegistry(VIEW_ID);
-    private Logger logger = Logger.getLogger(getClass());
+    private Log logger = LogFactory.getLog(getClass());
     private ControlListener columnControlListener = new ControlAdapter() {
         public void controlResized(ControlEvent e)
         {
