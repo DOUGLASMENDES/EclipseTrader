@@ -75,6 +75,10 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String PREFS_UPDATE_HISTORY_LAST = "UPDATE_HISTORY_LAST"; //$NON-NLS-1$
     public static final String PREFS_UPDATE_NEWS = "UPDATE_NEWS"; //$NON-NLS-1$
     public static final String PREFS_UPDATE_CURRENCIES = "UPDATE_CURRENCIES"; //$NON-NLS-1$
+    public static final String PREFS_DELETE_CANCELED_ORDERS = "DELETE_CANCELED_ORDERS"; //$NON-NLS-1$
+    public static final String PREFS_DELETE_CANCELED_ORDERS_DAYS = "DELETE_CANCELED_ORDERS_DAYS"; //$NON-NLS-1$
+    public static final String PREFS_DELETE_FILLED_ORDERS = "DELETE_FILLED_ORDERS"; //$NON-NLS-1$
+    public static final String PREFS_DELETE_FILLED_ORDERS_DAYS = "DELETE_FILLED_ORDERS_DAYS"; //$NON-NLS-1$
     private static CorePlugin plugin;
     private static Repository repository;
     private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat(Messages.CorePlugin_DateTimeFormat);
@@ -141,6 +145,11 @@ public class CorePlugin extends AbstractUIPlugin
             preferenceStore.setDefault(PREFS_HISTORICAL_PRICE_RANGE, 5);
         if (preferenceStore.getDefaultInt(PREFS_NEWS_DATE_RANGE) == 0)
             preferenceStore.setDefault(PREFS_NEWS_DATE_RANGE, 3);
+
+        preferenceStore.setDefault(PREFS_DELETE_CANCELED_ORDERS, false);
+        preferenceStore.setDefault(PREFS_DELETE_CANCELED_ORDERS_DAYS, 2);
+        preferenceStore.setDefault(PREFS_DELETE_FILLED_ORDERS, false);
+        preferenceStore.setDefault(PREFS_DELETE_FILLED_ORDERS_DAYS, 5);
 
         preferenceStore.setValue(FEED_RUNNING, false);
         CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(feedPropertyListener);

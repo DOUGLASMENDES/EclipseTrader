@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,19 +52,13 @@ public class CellTicker
                 else
                     item.setBackground(index, bg);
                 if (bg != null)
-                {
-                    bg.dispose();
                     bg = null;
-                }
                 if (index == -1)
                     item.setForeground(fg);
                 else
                     item.setForeground(index, fg);
                 if (fg != null)
-                {
-                    fg.dispose();
                     fg = null;
-                }
             }
             started = 0;
         }
@@ -126,22 +120,14 @@ public class CellTicker
                 s.bg = tableItem.getBackground(index);
                 Color bg = tableItem.getBackground();
                 if (bg.equals(s.bg))
-                {
-                    s.bg.dispose();
                     s.bg = null;
-                }
-                bg.dispose();
             }
             if ((style & BACKGROUND) != 0)
             {
                 s.fg = tableItem.getForeground(index);
                 Color fg = tableItem.getForeground();
                 if (fg.equals(s.fg))
-                {
-                    s.fg.dispose();
                     s.fg = null;
-                }
-                fg.dispose();
             }
             if (background != null)
                 tableItem.setBackground(index, background);

@@ -27,15 +27,18 @@ import net.sourceforge.eclipsetrader.core.db.OrderStatus;
 import net.sourceforge.eclipsetrader.core.ui.LabelProvidersRegistry;
 import net.sourceforge.eclipsetrader.trading.TradingPlugin;
 import net.sourceforge.eclipsetrader.trading.dialogs.OrdersViewColumnsDialog;
+import net.sourceforge.eclipsetrader.trading.internal.OrdersCleanupJob;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -95,6 +98,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
     private boolean ignoreResize = true;
     Action cancelRequest;
     Action editColumnsAction;
+    Action deleteOrder;
     LabelProvidersRegistry registry = new LabelProvidersRegistry(VIEW_ID);
     private Log logger = LogFactory.getLog(getClass());
     private ControlListener columnControlListener = new ControlAdapter() {
@@ -156,6 +160,25 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         cancelRequest.setDisabledImageDescriptor(TradingPlugin.getImageDescriptor("icons/dlcl16/delete_edit.gif"));
         cancelRequest.setEnabled(false);
 
+        deleteOrder = new Action() {
+            public void run()
+            {
+                if (MessageDialog.openConfirm(getViewSite().getShell(), "Orders", "Do you really want to delete this order ?"))
+                {
+                    Order[] selection = getSelectedOrders();
+                    for (int i = 0; i < selection.length; i++)
+                    {
+                        if (!OrderStatus.CANCELED.equals(selection[i].getStatus()))
+                            selection[i].cancelRequest();
+                        CorePlugin.getRepository().delete(selection[i]);
+                    }
+                }
+            }
+        };
+        deleteOrder.setText("Delete");
+        deleteOrder.setToolTipText("Delete");
+        deleteOrder.setEnabled(false);
+
         editColumnsAction = new Action() {
             public void run()
             {
@@ -177,6 +200,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         toolBarManager.add(new Separator("end")); //$NON-NLS-1$
         
         menuManager.appendToGroup("top", editColumnsAction);
+        menuManager.appendToGroup("bottom", deleteOrder);
         toolBarManager.appendToGroup("end", cancelRequest);
         
         super.init(site);
@@ -245,6 +269,10 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
         ignoreResize = false;
         tabFolder.setSelection(0);
         TradingPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+        
+        Job job = new OrdersCleanupJob();
+        job.setUser(false);
+        job.schedule(100);
     }
 
     /* (non-Javadoc)
@@ -274,6 +302,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
                 cancelEnable = true;
         }
         cancelRequest.setEnabled(cancelEnable);
+        deleteOrder.setEnabled(selection.length != 0);
     }
     
     Order[] getSelectedOrders()
@@ -354,6 +383,7 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
                     menuManager.add(new Separator("top")); //$NON-NLS-1$
                     menuManager.add(cancelRequest);
                     menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+                    menuManager.add(deleteOrder);
                     menuManager.add(new Separator("bottom")); //$NON-NLS-1$
                 }
             });
@@ -361,11 +391,11 @@ public class OrdersView extends ViewPart implements IPropertyChangeListener
             getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
             list = new ArrayList();
-            for (Iterator iter = CorePlugin.getRepository().allOrders().iterator(); iter.hasNext(); )
+            Order[] orders = (Order[])CorePlugin.getRepository().allOrders().toArray(new Order[0]);
+            for (int i = 0; i < orders.length; i++)
             {
-                Order order = (Order)iter.next();
-                if (filter.size() == 0 || filter.contains(order.getStatus()))
-                    list.add(order);
+                if (filter.size() == 0 || filter.contains(orders[i].getStatus()))
+                    list.add(orders[i]);
             }
             Collections.sort(list, comparator);
 
