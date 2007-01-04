@@ -19,7 +19,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -27,6 +26,7 @@ import java.util.TimeZone;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IFeed;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.History;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 
@@ -288,7 +288,7 @@ public class Feed implements IFeed, Runnable
     protected void updateHistory(Security security, Quote quote)
     {
         // update only if quote's date is the last history date + 1, and the current time is later than the end time in security settings
-        List history = security.getHistory();
+        History history = security.getHistory();
         if (quote.getDate() != null && (!history.isEmpty()))
         {
             Calendar quoteCalendar = Calendar.getInstance();
@@ -311,7 +311,6 @@ public class Feed implements IFeed, Runnable
 
             if (quoteCalendar.getTime().after(lastBarDate.getTime()) && today.after(securityEndTime))
             {
-
                 Bar bar = new Bar();
                 bar.setDate(quoteCalendar.getTime());
                 bar.setOpen(security.getOpen().doubleValue());
@@ -320,9 +319,7 @@ public class Feed implements IFeed, Runnable
                 bar.setClose(quote.getLast());
                 bar.setVolume(quote.getVolume());
                 history.add(bar);
-
-                CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
-                CorePlugin.getRepository().save(security);
+                CorePlugin.getRepository().save(history);
             }
         }
     }

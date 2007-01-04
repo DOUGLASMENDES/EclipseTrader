@@ -72,6 +72,7 @@ import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
 import net.sourceforge.eclipsetrader.core.db.ChartObject;
 import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
+import net.sourceforge.eclipsetrader.core.db.History;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.visitors.ChartVisitorAdapter;
 import net.sourceforge.eclipsetrader.core.transfers.SecurityTransfer;
@@ -358,7 +359,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             });
         }
     };
-    List observedSecurities = new ArrayList();
+    List observedHistories = new ArrayList();
     Runnable updateViewRunnable = new Runnable() {
         public void run()
         {
@@ -665,12 +666,12 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 {
                     datePlot.setInterval(chart.getCompression());
                     if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
-                        datePlot.setBarData(new BarData(security.getIntradayHistory()).getCompressed(datePlot.getInterval()));
+                        datePlot.setBarData(new BarData(security.getIntradayHistory().getList()).getCompressed(datePlot.getInterval()));
                     else
                     {
                         int period = chart.getPeriod();
                         int size = security.getHistory().size();
-                        BarData barData = new BarData(showAdjustedValues ? security.getAdjustedHistory() : security.getHistory());
+                        BarData barData = new BarData(showAdjustedValues ? security.getAdjustedHistory().getList() : security.getHistory().getList());
                         
                         if (period != PERIOD_ALL && size != 0)
                         {
@@ -693,7 +694,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                                     end = chart.getEndDate(); 
                                     break;
                             }
-                            barData = new BarData(security.getHistory()).getPeriod(calendar.getTime(), end);
+                            barData = new BarData(security.getHistory().getList()).getPeriod(calendar.getTime(), end);
                         }
 
                         if (datePlot.getInterval() != BarData.INTERVAL_DAILY)
@@ -830,12 +831,12 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             chart.deleteObserver(chartUpdateObserver);
             chart.getRows().removeCollectionObserver(ChartView.this);
         }
-        for (Iterator iter = observedSecurities.iterator(); iter.hasNext(); )
+        for (Iterator iter = observedHistories.iterator(); iter.hasNext(); )
         {
-            Security security = (Security)iter.next();
+            History security = (History)iter.next();
             security.deleteObserver(chartUpdateObserver);
         }
-        observedSecurities.clear();
+        observedHistories.clear();
 
         try {
             if (preferences != null)
@@ -1090,18 +1091,28 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     
     protected void updateObservers()
     {
-        for (Iterator iter = observedSecurities.iterator(); iter.hasNext(); )
+        for (Iterator iter = observedHistories.iterator(); iter.hasNext(); )
         {
-            Security security = (Security)iter.next();
+            History security = (History)iter.next();
             security.deleteObserver(chartUpdateObserver);
         }
-        observedSecurities.clear();
+        observedHistories.clear();
         
         chart.accept(new ChartVisitorAdapter() {
             public void visit(Chart chart)
             {
-                chart.getSecurity().addObserver(chartUpdateObserver);
-                observedSecurities.add(chart.getSecurity());
+                if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
+                {
+                    History history = chart.getSecurity().getIntradayHistory();
+                    history.addObserver(chartUpdateObserver);
+                    observedHistories.add(history);
+                }
+                else
+                {
+                    History history = chart.getSecurity().getHistory();
+                    history.addObserver(chartUpdateObserver);
+                    observedHistories.add(history);
+                }
             }
 
             public void visit(ChartIndicator indicator)
@@ -1112,8 +1123,18 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     Security security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(securityId));
                     if (security != null)
                     {
-                        security.addObserver(chartUpdateObserver);
-                        observedSecurities.add(security);
+                        if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
+                        {
+                            History history = security.getIntradayHistory();
+                            history.addObserver(chartUpdateObserver);
+                            observedHistories.add(history);
+                        }
+                        else
+                        {
+                            History history = security.getHistory();
+                            history.addObserver(chartUpdateObserver);
+                            observedHistories.add(history);
+                        }
                     }
                 }
             }
@@ -1124,12 +1145,12 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     {
         datePlot.setInterval(chart.getCompression());
         if (datePlot.getInterval() < BarData.INTERVAL_DAILY)
-            datePlot.setBarData(new BarData(security.getIntradayHistory()).getCompressed(datePlot.getInterval()));
+            datePlot.setBarData(new BarData(security.getIntradayHistory().getList()).getCompressed(datePlot.getInterval()));
         else
         {
             int period = chart.getPeriod();
             int size = security.getHistory().size();
-            BarData barData = new BarData(showAdjustedValues ? security.getAdjustedHistory() : security.getHistory());
+            BarData barData = new BarData(showAdjustedValues ? security.getAdjustedHistory().getList() : security.getHistory().getList());
             
             if (period != PERIOD_ALL && size != 0)
             {
@@ -1152,7 +1173,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         end = chart.getEndDate(); 
                         break;
                 }
-                barData = new BarData(security.getHistory()).getPeriod(calendar.getTime(), end);
+                barData = new BarData(security.getHistory().getList()).getPeriod(calendar.getTime(), end);
             }
 
             if (datePlot.getInterval() != BarData.INTERVAL_DAILY)

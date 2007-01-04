@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,7 +80,7 @@ public abstract class PatternsSearchPage implements IPatternSearchPage
         {
             Security security = (Security) iter.next();
 
-            BarData barData = new BarData(security.getHistory(), begin, end);
+            BarData barData = new BarData(security.getHistory().getList(), begin, end);
             if (period != BarData.INTERVAL_DAILY)
                 barData = barData.getCompressed(period);
 

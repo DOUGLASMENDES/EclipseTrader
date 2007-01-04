@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -444,23 +444,5 @@ public class Repository
         
         if (obj instanceof TradingSystem)
             getTradingSystems().remove(obj);
-    }
-    
-    public List loadHistory(Integer id)
-    {
-        return new ArrayList();
-    }
-
-    public void saveHistory(Integer id, List list)
-    {
-    }
-
-    public List loadIntradayHistory(Integer id)
-    {
-        return new ArrayList();
-    }
-
-    public void saveIntradayHistory(Integer id, List list)
-    {
     }
 }

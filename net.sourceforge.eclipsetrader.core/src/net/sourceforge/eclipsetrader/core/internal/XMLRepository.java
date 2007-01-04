@@ -47,6 +47,8 @@ import net.sourceforge.eclipsetrader.core.db.ChartRow;
 import net.sourceforge.eclipsetrader.core.db.ChartTab;
 import net.sourceforge.eclipsetrader.core.db.Dividend;
 import net.sourceforge.eclipsetrader.core.db.Event;
+import net.sourceforge.eclipsetrader.core.db.History;
+import net.sourceforge.eclipsetrader.core.db.IntradayHistory;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Order;
 import net.sourceforge.eclipsetrader.core.db.OrderRoute;
@@ -97,6 +99,8 @@ public class XMLRepository extends Repository
     Integer eventNextId = new Integer(1);
     TradingSystemRepository tradingRepository;
     Integer orderNextId = new Integer(1);
+    Map historyMap = new HashMap();
+    Map intradayHistoryMap = new HashMap();
     private Log logger = LogFactory.getLog(getClass());
 
     public XMLRepository()
@@ -430,6 +434,8 @@ public class XMLRepository extends Repository
         eventNextId = new Integer(1);
         orderNextId = new Integer(1);
         tradingRepository.clear();
+        historyMap = new HashMap();
+        intradayHistoryMap = new HashMap();
 
         super.clear();
     }
@@ -443,6 +449,24 @@ public class XMLRepository extends Repository
         
         if (clazz.equals(Security.class))
             obj = (PersistentObject)securitiesMap.get(id);
+        else if (clazz.equals(IntradayHistory.class))
+        {
+            obj = (IntradayHistory)intradayHistoryMap.get(id);
+            if (obj == null)
+            {
+                obj = loadIntradayHistory(id);
+                intradayHistoryMap.put(id, obj);
+            }
+        }
+        else if (clazz.equals(History.class))
+        {
+            obj = (History)historyMap.get(id);
+            if (obj == null)
+            {
+                obj = loadHistory(id);
+                historyMap.put(id, obj);
+            }
+        }
         else if (clazz.equals(Chart.class))
             obj = (PersistentObject)chartsMap.get(id);
         else if (clazz.equals(Watchlist.class))
@@ -489,8 +513,7 @@ public class XMLRepository extends Repository
             }
             saveEvents();
         }
-        
-        if (obj instanceof Security)
+        else if (obj instanceof Security)
         {
             if (obj.getId() == null)
             {
@@ -500,8 +523,7 @@ public class XMLRepository extends Repository
             securitiesMap.put(obj.getId(), obj);
             saveSecurities();
         }
-        
-        if (obj instanceof SecurityGroup)
+        else if (obj instanceof SecurityGroup)
         {
             if (obj.getId() == null)
             {
@@ -510,8 +532,9 @@ public class XMLRepository extends Repository
             }
             saveSecurities();
         }
-        
-        if (obj instanceof Chart)
+        else if (obj instanceof History)
+            saveHistory((History)obj);
+        else if (obj instanceof Chart)
         {
             if (obj.getId() == null)
             {
@@ -521,8 +544,7 @@ public class XMLRepository extends Repository
             chartsMap.put(obj.getId(), obj);
             saveCharts();
         }
-        
-        if (obj instanceof Watchlist)
+        else if (obj instanceof Watchlist)
         {
             if (obj.getId() == null)
             {
@@ -532,8 +554,7 @@ public class XMLRepository extends Repository
             watchlistsMap.put(obj.getId(), obj);
             saveWatchlists();
         }
-        
-        if (obj instanceof Account)
+        else if (obj instanceof Account)
         {
             if (obj.getId() == null)
             {
@@ -542,8 +563,7 @@ public class XMLRepository extends Repository
             }
             accountMap.put(obj.getId(), obj);
         }
-        
-        if (obj instanceof AccountGroup)
+        else if (obj instanceof AccountGroup)
         {
             if (obj.getId() == null)
             {
@@ -552,20 +572,17 @@ public class XMLRepository extends Repository
             }
             accountGroupMap.put(obj.getId(), obj);
         }
-        
-        if (obj instanceof TradingSystem)
+        else if (obj instanceof TradingSystem)
         {
             tradingRepository.save((TradingSystem) obj);
             tradingRepository.saveTradingSystems();
         }
-        
-        if (obj instanceof TradingSystemGroup)
+        else if (obj instanceof TradingSystemGroup)
         {
             tradingRepository.save((TradingSystemGroup) obj);
             tradingRepository.saveTradingSystems();
         }
-        
-        if (obj instanceof Order)
+        else if (obj instanceof Order)
         {
             if (obj.getId() == null)
             {
@@ -591,6 +608,8 @@ public class XMLRepository extends Repository
         if (obj instanceof Security)
         {
             securitiesMap.remove(obj.getId());
+            historyMap.remove(obj.getId());
+            intradayHistoryMap.remove(obj.getId());
             File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
@@ -603,28 +622,44 @@ public class XMLRepository extends Repository
             saveSecurities();
             saveWatchlists();
         }
-        if (obj instanceof Watchlist)
+        else if (obj instanceof History)
+        {
+            if (obj instanceof IntradayHistory)
+            {
+                intradayHistoryMap.remove(obj.getId());
+                File file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+                if (file.exists())
+                    file.delete();
+            }
+            else
+            {
+                historyMap.remove(obj.getId());
+                File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+                if (file.exists())
+                    file.delete();
+            }
+        }
+        else if (obj instanceof Watchlist)
         {
             watchlistsMap.remove(obj.getId());
             saveWatchlists();
         }
-        if (obj instanceof Chart)
+        else if (obj instanceof Chart)
         {
             chartsMap.remove(obj.getId());
             saveCharts();
         }
-        if (obj instanceof Account)
+        else if (obj instanceof Account)
         {
             accountMap.remove(obj.getId());
             saveAccounts();
         }
-        if (obj instanceof AccountGroup)
+        else if (obj instanceof AccountGroup)
         {
             accountGroupMap.remove(obj.getId());
             saveAccounts();
         }
-
-        if (obj instanceof TradingSystem)
+        else if (obj instanceof TradingSystem)
         {
             TradingSystem system = (TradingSystem) obj;
             if (system.getGroup() != null)
@@ -633,7 +668,7 @@ public class XMLRepository extends Repository
             tradingRepository.tsMap.remove(obj.getId());
             tradingRepository.saveTradingSystems();
         }
-        if (obj instanceof TradingSystemGroup)
+        else if (obj instanceof TradingSystemGroup)
         {
             TradingSystemGroup group = (TradingSystemGroup) obj;
             if (group.getParent() != null)
@@ -658,9 +693,9 @@ public class XMLRepository extends Repository
         return new Integer(id.intValue() + 1);
     }
     
-    public List loadHistory(Integer id)
+    private History loadHistory(Integer id)
     {
-        List barData = new ArrayList();
+        History barData = new History(id);
         
         File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(id) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
         if (file.exists() == true)
@@ -670,18 +705,20 @@ public class XMLRepository extends Repository
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document document = builder.parse(file);
-                barData = decodeBarData(document.getFirstChild().getChildNodes());
+                barData.addAll(decodeBarData(document.getFirstChild().getChildNodes()));
             } catch (Exception e) {
                 logger.error(e.toString(), e);
             }
         }
         
+        barData.clearChanged();
+        
         return barData;
     }
     
-    public List loadIntradayHistory(Integer id)
+    public IntradayHistory loadIntradayHistory(Integer id)
     {
-        List barData = new ArrayList();
+        IntradayHistory barData = new IntradayHistory(id);
         
         File file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(id) + ".xml");
         if (file.exists() == true)
@@ -691,11 +728,13 @@ public class XMLRepository extends Repository
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document document = builder.parse(file);
-                barData = decodeBarData(document.getFirstChild().getChildNodes());
+                barData.addAll(decodeBarData(document.getFirstChild().getChildNodes()));
             } catch (Exception e) {
                 logger.error(e.toString(), e);
             }
         }
+        
+        barData.clearChanged();
         
         return barData;
     }
@@ -747,31 +786,19 @@ public class XMLRepository extends Repository
         return barData;
     }
     
-    public void saveHistory(Integer id, List list)
+    private void saveHistory(History list)
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.getDOMImplementation().createDocument(null, "history", null);
 
             Element root = document.getDocumentElement();
-            encodeBarData(list, root, document);
+            encodeBarData(list.getList(), root, document);
 
-            saveDocument(document, "history", String.valueOf(id) + ".xml");
-        } catch (Exception e) {
-            logger.error(e.toString(), e);
-        }
-    }
-    
-    public void saveIntradayHistory(Integer id, List list)
-    {
-        try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, "history", null);
-
-            Element root = document.getDocumentElement();
-            encodeBarData(list, root, document);
-
-            saveDocument(document, "intraday", String.valueOf(id) + ".xml");
+            if (list instanceof IntradayHistory)
+                saveDocument(document, "intraday", String.valueOf(list.getId()) + ".xml");
+            else
+                saveDocument(document, "history", String.valueOf(list.getId()) + ".xml");
         } catch (Exception e) {
             logger.error(e.toString(), e);
         }

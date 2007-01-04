@@ -12,12 +12,12 @@
 package net.sourceforge.eclipsetrader.charts.dialogs;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import net.sourceforge.eclipsetrader.charts.internal.Messages;
 import net.sourceforge.eclipsetrader.charts.views.ChartView;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Chart;
+import net.sourceforge.eclipsetrader.core.db.History;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -136,7 +136,7 @@ public class GeneralPage extends PreferencePage
         label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, true, 2, 1));
         
-        List history = chart.getSecurity().getHistory();
+        History history = chart.getSecurity().getHistory();
         
         label = new Label(content, SWT.NONE);
         label.setText(Messages.GeneralPage_FirstDate);
@@ -206,10 +206,10 @@ public class GeneralPage extends PreferencePage
                     break;
                 case 4:
                 {
-                    List history = chart.getSecurity().getHistory();
+                    History history = chart.getSecurity().getHistory();
                     chart.setPeriod(ChartView.PERIOD_CUSTOM);
-                    chart.setBeginDate(((Bar)history.get(begin.getSelectionIndex())).getDate());
-                    chart.setEndDate(((Bar)history.get(end.getSelectionIndex())).getDate());
+                    chart.setBeginDate(history.get(begin.getSelectionIndex()).getDate());
+                    chart.setEndDate(history.get(end.getSelectionIndex()).getDate());
                     break;
                 }
             }

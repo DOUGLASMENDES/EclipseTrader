@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,14 +16,13 @@ import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.History;
 import net.sourceforge.eclipsetrader.core.db.Security;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -53,7 +52,7 @@ public class HistoryFeed implements IHistoryFeed
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
 
-        List history = security.getHistory();
+        History history = security.getHistory();
         if (history.size() == 0)
         {
             from.add(Calendar.YEAR, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE));
@@ -135,18 +134,6 @@ public class HistoryFeed implements IHistoryFeed
                 }
                 in.close();
 
-                java.util.Collections.sort(history, new Comparator() {
-                    public int compare(Object o1, Object o2)
-                    {
-                        Bar d1 = (Bar) o1;
-                        Bar d2 = (Bar) o2;
-                        if (d1.getDate().after(d2.getDate()) == true)
-                            return 1;
-                        else if (d1.getDate().before(d2.getDate()) == true)
-                            return -1;
-                        return 0;
-                    }
-                });
             } catch (Exception e) {
                 e.printStackTrace();
                 break;
@@ -167,7 +154,7 @@ public class HistoryFeed implements IHistoryFeed
             }
         } while (to.before(today));
         
-        CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
-        CorePlugin.getRepository().save(security);
+        history.sort();
+        CorePlugin.getRepository().save(history);
     }
 }

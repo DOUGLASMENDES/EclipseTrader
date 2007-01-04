@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,8 +16,6 @@ import java.util.Currency;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sourceforge.eclipsetrader.core.ICollectionObserver;
-import net.sourceforge.eclipsetrader.core.ObservableList;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
@@ -43,8 +41,6 @@ public class Security extends PersistentObject
     FeedSource level2Feed;
     FeedSource historyFeed;
     TradeSource tradeSource;
-    ObservableList history;
-    ObservableList intradayHistory;
     Quote quote;
     Level2Bid level2Bid;
     Level2Ask level2Ask;
@@ -182,29 +178,14 @@ public class Security extends PersistentObject
         this.tradeSource = tradeSource;
     }
 
-    public List getHistory()
+    public History getHistory()
     {
-        if (history == null)
-        {
-            history = new ObservableList(getRepository().loadHistory(getId()));
-            history.addCollectionObserver(new ICollectionObserver() {
-                public void itemAdded(Object o)
-                {
-                    setChanged();
-                }
-
-                public void itemRemoved(Object o)
-                {
-                    setChanged();
-                }
-            });
-        }
-        return history;
+        return (History)getRepository().load(History.class, getId());
     }
     
-    public List getAdjustedHistory()
+    public History getAdjustedHistory()
     {
-        List list = new ArrayList();
+        History list = new History();
 
         for (Iterator iter = getHistory().iterator(); iter.hasNext(); )
         {
@@ -232,27 +213,14 @@ public class Security extends PersistentObject
             list.add(bar);
         }
         
+        list.clearChanged();
+        
         return list;
     }
 
-    public List getIntradayHistory()
+    public IntradayHistory getIntradayHistory()
     {
-        if (intradayHistory == null)
-        {
-            intradayHistory = new ObservableList(getRepository().loadIntradayHistory(getId()));
-            intradayHistory.addCollectionObserver(new ICollectionObserver() {
-                public void itemAdded(Object o)
-                {
-                    setChanged();
-                }
-
-                public void itemRemoved(Object o)
-                {
-                    setChanged();
-                }
-            });
-        }
-        return intradayHistory;
+        return (IntradayHistory)getRepository().load(IntradayHistory.class, getId());
     }
 
     public Quote getQuote()

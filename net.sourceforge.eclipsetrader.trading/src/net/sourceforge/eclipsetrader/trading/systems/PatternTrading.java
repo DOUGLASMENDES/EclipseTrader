@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,7 @@ public class PatternTrading extends TradingSystemPlugin
     public static final int MONTHLY = 2;
     private String patternId;
     private int period = BarData.INTERVAL_WEEKLY;
-    private int bars = 0;
+//    private int bars = 0;
 
     public PatternTrading()
     {
@@ -38,7 +38,7 @@ public class PatternTrading extends TradingSystemPlugin
     {
         setSignal(TradingSystem.SIGNAL_NONE);
 
-        BarData barData = new BarData(getSecurity().getHistory());
+        BarData barData = new BarData(getSecurity().getHistory().getList());
         if (period != BarData.INTERVAL_DAILY)
             barData = barData.getCompressed(period);
 
@@ -77,7 +77,7 @@ public class PatternTrading extends TradingSystemPlugin
                     break;
             }
         }
-        if (parameters.get("bars") != null)
-            bars = Integer.parseInt((String)parameters.get("bars"));
+//        if (parameters.get("bars") != null)
+//            bars = Integer.parseInt((String)parameters.get("bars"));
     }
 }

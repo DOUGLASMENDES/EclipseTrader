@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,166 +12,129 @@
 package net.sourceforge.eclipsetrader.core.db;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  */
-public class History extends Observable
+public class History extends PersistentObject
 {
-    static Map map = new HashMap();
-    static Map adjustedMap = new HashMap();
-    Security security;
-    History unadjustedHistory;
-    BarData barData = new BarData();
-    int instanceCount = 0;
-    Observer historyObserver = new Observer() {
-        public void update(Observable o, Object arg)
-        {
-            buildAdjustedBarData();
-            setChanged();
-            notifyObservers();
-        }
-    };
+    List list = new ArrayList();
     
-    public static History getInstance(Security security, boolean adjusted)
+    public History()
     {
-        History instance = null;
         
-        if (adjusted)
-        {
-            instance = (History)adjustedMap.get(security);
-            if (instance == null)
-            {
-                instance = new History(security, adjusted);
-                adjustedMap.put(security, instance);
-            }
-        }
-        else
-        {
-            instance = (History)map.get(security);
-            if (instance == null)
-            {
-                instance = new History(security, adjusted);
-                map.put(security, instance);
-            }
-        }
-        
-        instance.instanceCount++;
-        
-        return instance;
     }
     
-    History(Security security, boolean adjusted)
+    public History(Integer id)
     {
-        if (security.getRepository() != null)
-        {
-            if (adjusted)
-            {
-                unadjustedHistory = History.getInstance(security, false);
-                buildAdjustedBarData();
-                unadjustedHistory.addObserver(historyObserver);
-            }
-            else
-                barData = new BarData(security.getRepository().loadHistory(security.getId()));
-        }
-
-        this.security = security;
+        super(id);
     }
     
-    public void dispose()
+    public boolean add(Bar obj)
     {
-        if (instanceCount > 0)
-        {
-            instanceCount--;
-            if (instanceCount == 0)
-            {
-                if (unadjustedHistory != null)
-                {
-                    unadjustedHistory.deleteObserver(historyObserver);
-                    unadjustedHistory.dispose();
-                    unadjustedHistory = null;
-                    adjustedMap.remove(security);
-                }
-                else
-                    map.remove(security);
-            }
-        }
-        if (instanceCount <= 0)
-            deleteObservers();
-    }
-    
-    void buildAdjustedBarData()
-    {
-        List list = new ArrayList();
-        for (Iterator iter = unadjustedHistory.iterator(); iter.hasNext(); )
-        {
-            Bar bar = new Bar((Bar)iter.next());
-            double factor = 1.0;
-            for (Iterator iter2 = security.getSplits().iterator(); iter2.hasNext(); )
-            {
-                Split split = (Split)iter2.next();
-                if (bar.getDate().before(split.getDate()))
-                    factor *= (double)split.getToQuantity() / (double)split.getFromQuantity();
-            }
-            double dividends = 0.0;
-            for (Iterator iter2 = security.getDividends().iterator(); iter2.hasNext(); )
-            {
-                Dividend dividend = (Dividend)iter2.next();
-                if (bar.getDate().before(dividend.getDate()))
-                    dividends += dividend.getValue();
-            }
-
-            bar.setOpen((bar.getOpen() * factor) - dividends);
-            bar.setHigh((bar.getHigh() * factor) - dividends);
-            bar.setLow((bar.getLow() * factor) - dividends);
-            bar.setClose((bar.getClose() * factor) - dividends);
-            bar.setVolume((long)(bar.getVolume() / factor));
-            list.add(bar);
-        }
-        
-        barData = new BarData(list);
-    }
-    
-    public BarData getBarData()
-    {
-        return barData;
-    }
-    
-    public void clear()
-    {
-        barData.clear();
-        setChanged();
-    }
-    
-    public void save()
-    {
-        security.getRepository().saveHistory(security.getId(), barData.getBars());
-        notifyObservers();
-    }
-    
-    public boolean append(Bar obj)
-    {
-        boolean result = barData.append(obj);
+        boolean result = list.add(obj);
         if (result)
             setChanged();
+        return result;
+    }
+    
+    public void addAll(Collection collection)
+    {
+        for (Iterator iter = collection.iterator(); iter.hasNext(); )
+        {
+            Object obj = iter.next();
+            if (obj instanceof Bar)
+            {
+                if (list.add(obj))
+                    setChanged();
+            }
+        }
+    }
+
+    public Bar remove(int index)
+    {
+        Bar result = (Bar)list.remove(index);
+        setChanged();
         return result;
     }
 
     public boolean remove(Bar obj)
     {
-        boolean result = barData.remove(obj);
+        boolean result = list.remove(obj);
         if (result)
             setChanged();
         return result;
     }
     
+    public void clear()
+    {
+        list.clear();
+        setChanged();
+    }
+    
+    public int size()
+    {
+        return list.size();
+    }
+    
+    public Bar get(int index)
+    {
+        return (Bar)list.get(index);
+    }
+    
+    public Bar get(Date date)
+    {
+        int index = Collections.binarySearch(list, date, new Comparator() {
+            public int compare(Object o1, Object o2)
+            {
+                Date d1 = (o1 instanceof Bar) ? ((Bar)o1).getDate() : (Date)o1;
+                Date d2 = (o2 instanceof Bar) ? ((Bar)o2).getDate() : (Date)o2;
+                if (d1.after(d2) == true)
+                    return 1;
+                else if (d1.before(d2) == true)
+                    return -1;
+                return 0;
+            }
+        });
+        Bar bar = (index >= 0 && index < list.size()) ? (Bar)list.get(index) : null;
+        if (bar != null && !bar.getDate().equals(date))
+            bar = null;
+        return bar;
+    }
+    
     public Iterator iterator()
     {
-        return barData.iterator();
+        return new ArrayList(list).iterator();
+    }
+    
+    public boolean isEmpty()
+    {
+        return list.isEmpty();
+    }
+    
+    public List getList()
+    {
+        return Collections.unmodifiableList(list);
+    }
+    
+    public void sort()
+    {
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2)
+            {
+                Bar d1 = (Bar) o1;
+                Bar d2 = (Bar) o2;
+                if (d1.getDate().after(d2.getDate()) == true)
+                    return 1;
+                else if (d1.getDate().before(d2.getDate()) == true)
+                    return -1;
+                return 0;
+            }
+        });
     }
 }

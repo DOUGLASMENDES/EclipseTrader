@@ -132,7 +132,7 @@ public class ChartSettingsDialog extends PreferenceDialog
         {
             chart.getSecurity().getHistory().clear();
             chart.setChanged();
-            CorePlugin.getRepository().saveHistory(chart.getSecurity().getId(), chart.getSecurity().getHistory());
+            CorePlugin.getRepository().save(chart.getSecurity().getHistory());
         }
         
         if (generalPage.getSaveAsDefault())

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,15 +14,13 @@ package net.sourceforge.eclipsetrader.borsaitalia;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.History;
 import net.sourceforge.eclipsetrader.core.db.Security;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -41,23 +39,12 @@ public class HistoryFeed implements IHistoryFeed
     {
     }
     
-    private Bar getBar(List list, Date date)
-    {
-        Bar[] elementData = (Bar[])list.toArray(new Bar[0]);
-        for (int i = 0; i < elementData.length; i++)
-        {
-            if (elementData[i].getDate().equals(date))
-                return elementData[i];
-        }
-        return null;
-    }
-
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsetrader.core.IHistoryFeed#updateHistory(net.sourceforge.eclipsetrader.core.db.Security, int)
      */
     public void updateHistory(Security security, int interval)
     {
-        List history = new ArrayList();
+        History history = null;
         Calendar from = Calendar.getInstance();
         from.set(Calendar.MILLISECOND, 0);
 
@@ -122,7 +109,7 @@ public class HistoryFeed implements IHistoryFeed
                 String[] item = inputLine.split("\\|");
 
                 Date date = df.parse(item[0]);
-                Bar bar = getBar(history, date);
+                Bar bar = history.get(date);
                 if (bar == null)
                 {
                     bar = new Bar();
@@ -138,26 +125,11 @@ public class HistoryFeed implements IHistoryFeed
 
             in.close();
 
-            java.util.Collections.sort(history, new Comparator() {
-                public int compare(Object o1, Object o2)
-                {
-                    Bar d1 = (Bar) o1;
-                    Bar d2 = (Bar) o2;
-                    if (d1.getDate().after(d2.getDate()) == true)
-                        return 1;
-                    else if (d1.getDate().before(d2.getDate()) == true)
-                        return -1;
-                    return 0;
-                }
-            });
         } catch (Exception e) {
             CorePlugin.logException(e);
         }
         
-        if (interval < IHistoryFeed.INTERVAL_DAILY)
-            CorePlugin.getRepository().saveIntradayHistory(security.getId(), security.getIntradayHistory());
-        else
-            CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
-        CorePlugin.getRepository().save(security);
+        history.sort();
+        CorePlugin.getRepository().save(history);
     }
 }

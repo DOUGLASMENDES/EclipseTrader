@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
+import net.sourceforge.eclipsetrader.core.db.History;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
@@ -199,16 +200,18 @@ public class SecurityPropertiesDialog extends PreferenceDialog
                 
                 if (clearHistory.getSelection())
                 {
-                    security.getHistory().clear();
+                    History history = security.getHistory();
+                    history.clear();
                     security.setChanged();
-                    CorePlugin.getRepository().saveHistory(security.getId(), security.getHistory());
+                    CorePlugin.getRepository().save(history);
                 }
 
                 if (clearIntraday.getSelection())
                 {
-                    security.getIntradayHistory().clear();
+                    History history = security.getIntradayHistory();
+                    history.clear();
                     security.setChanged();
-                    CorePlugin.getRepository().saveIntradayHistory(security.getId(), security.getIntradayHistory());
+                    CorePlugin.getRepository().save(history);
                 }
             }
             return super.performOk();

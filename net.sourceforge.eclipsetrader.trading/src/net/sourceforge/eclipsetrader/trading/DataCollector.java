@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,6 @@ package net.sourceforge.eclipsetrader.trading;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -22,22 +21,27 @@ import java.util.Observer;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Bar;
+import net.sourceforge.eclipsetrader.core.db.IntradayHistory;
 import net.sourceforge.eclipsetrader.core.db.Security;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DataCollector implements Observer, ICollectionObserver
 {
     private int minutes = 1;
     private Map map = new HashMap();
     private Calendar barTime = Calendar.getInstance();
+    private Log log = LogFactory.getLog(getClass());
     
     private class MapData
     {
         Bar bar;
-        List history;
+        IntradayHistory history;
         long volume;
         Calendar nextBarTime;
 
-        MapData(List data)
+        MapData(IntradayHistory data)
         {
             this.history = data;
             nextBarTime = Calendar.getInstance();
@@ -70,6 +74,7 @@ public class DataCollector implements Observer, ICollectionObserver
             return;
         
         barTime.setTime(security.getQuote().getDate());
+        barTime.set(Calendar.SECOND, 0);
         barTime.set(Calendar.MILLISECOND, 0);
 
         int quoteTime = barTime.get(Calendar.HOUR_OF_DAY) * 60 + barTime.get(Calendar.MINUTE);
@@ -98,8 +103,8 @@ public class DataCollector implements Observer, ICollectionObserver
                         data.history.remove(0);
                 }
                 
-                CorePlugin.getRepository().saveIntradayHistory(security.getId(), security.getIntradayHistory());
-                security.notifyObservers();
+                log.debug("Notifying intraday data updated for " + security.getCode() + " - " + security.getDescription());
+                CorePlugin.getRepository().save(data.history);
                 data.bar = null;
             }
         }
@@ -138,6 +143,7 @@ public class DataCollector implements Observer, ICollectionObserver
             {
                 map.put(security, new MapData(security.getIntradayHistory()));
                 security.getQuoteMonitor().addObserver(this);
+                log.info("Added " + security.getDescription());
             }
         }
     }
@@ -150,8 +156,12 @@ public class DataCollector implements Observer, ICollectionObserver
         if (o instanceof Security)
         {
             Security security = (Security)o;
-            map.remove(security);
-            security.getQuoteMonitor().deleteObserver(this);
+            if (map.get(security) != null)
+            {
+                map.remove(security);
+                security.getQuoteMonitor().deleteObserver(this);
+                log.info("Removed " + security.getDescription());
+            }
         }
     }
 }

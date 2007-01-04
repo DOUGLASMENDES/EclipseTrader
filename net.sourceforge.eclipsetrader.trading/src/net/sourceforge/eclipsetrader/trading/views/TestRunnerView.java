@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,13 +13,13 @@ package net.sourceforge.eclipsetrader.trading.views;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.DefaultAccount;
+import net.sourceforge.eclipsetrader.core.db.History;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.Transaction;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
@@ -185,8 +185,8 @@ public class TestRunnerView extends ViewPart
     {
         private Account account;
         private Security security;
-        private java.util.List original = new ArrayList();
-        private java.util.List history = new ArrayList();
+        private History original = new History();
+        private History history = new History();
         private TradingSystemPlugin plugin;
         private int signals = 0;
         private int successCount = 0;
@@ -212,11 +212,14 @@ public class TestRunnerView extends ViewPart
                     last = i;
             }
             if (first != -1 && last != -1)
-                original = new ArrayList(original.subList(first, last));
+            {
+                original = new History();
+                original.addAll(original.getList().subList(first, last));
+            }
 
             // Create a fake subclass of the security item that returns our history data
             security = new Security(system.getSecurity().getId()) {
-                public java.util.List getHistory()
+                public History getHistory()
                 {
                     return history;
                 }
@@ -319,7 +322,8 @@ public class TestRunnerView extends ViewPart
                     }
                 });
                 
-                history = new ArrayList(original.subList(0, i));
+                history = new History();
+                history.addAll(original.getList().subList(0, i));
                 plugin.run();
                 
                 if (plugin.getSignal() != TradingSystem.SIGNAL_NONE)
