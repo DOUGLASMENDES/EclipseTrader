@@ -26,7 +26,7 @@ public class BarData
     public static final int LOW = 2;
     public static final int CLOSE = 3;
     public static final int VOLUME = 4;
-    public static final int INTERVAL_MINUTE1 = 0;
+    public static final int INTERVAL_MINUTE1 = 1;
     public static final int INTERVAL_MINUTE2 = 2;
     public static final int INTERVAL_MINUTE5 = 3;
     public static final int INTERVAL_MINUTE10 = 4;
