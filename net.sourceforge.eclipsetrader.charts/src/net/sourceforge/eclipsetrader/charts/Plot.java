@@ -348,9 +348,9 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
     {
         int index = (x - getIndicatorPlot().getPlotLocation().x - indicatorPlot.getMarginWidth()) / indicatorPlot.getGridWidth();
         if (index >= 0 && index < datePlot.getBarData().size())
-            dateSummary.setData(datePlot.getBarData().getDate(index));
+            dateSummary.setData(datePlot.getBarData().getDate(index), datePlot.getInterval() < BarData.INTERVAL_DAILY);
         else
-            dateSummary.setData(null);
+            dateSummary.setData(null, datePlot.getInterval() < BarData.INTERVAL_DAILY);
 
         List list = indicatorPlot.getIndicators();
         for (int i = 0; i < list.size(); i++)
@@ -394,9 +394,9 @@ public class Plot extends Composite implements MouseListener, MouseMoveListener
     {
         int index = datePlot.getBarData().size() - 1;
         if (index >= 0)
-            dateSummary.setData(datePlot.getBarData().getDate(index));
+            dateSummary.setData(datePlot.getBarData().getDate(index), datePlot.getInterval() < BarData.INTERVAL_DAILY);
         else
-            dateSummary.setData(null);
+            dateSummary.setData(null, datePlot.getInterval() < BarData.INTERVAL_DAILY);
 
         List list = indicatorPlot.getIndicators();
         for (int i = 0; i < list.size(); i++)

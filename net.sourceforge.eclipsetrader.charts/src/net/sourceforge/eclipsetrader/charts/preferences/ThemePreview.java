@@ -288,7 +288,7 @@ public class ThemePreview implements IThemePreview
         indicator.add(ma);
         indicatorPlot.addIndicator(indicator);
         
-        dateSummary.setData(Calendar.getInstance().getTime());
+        dateSummary.setData(Calendar.getInstance().getTime(), true);
         
         theme = currentTheme;
         theme.addPropertyChangeListener(themeChangeListener);

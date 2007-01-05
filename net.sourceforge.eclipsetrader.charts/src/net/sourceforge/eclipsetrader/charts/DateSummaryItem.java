@@ -24,6 +24,7 @@ public class DateSummaryItem extends SummaryItem
 {
     private Label date;
     private SimpleDateFormat df = CorePlugin.getDateFormat();
+    private SimpleDateFormat tf = CorePlugin.getTimeFormat();
 
     public DateSummaryItem(Summary parent, int style)
     {
@@ -52,12 +53,18 @@ public class DateSummaryItem extends SummaryItem
         super.dispose();
     }
 
-    public void setData(Date value)
+    public void setData(Date value, boolean viewTime)
     {
+        String text = "--/--/----"; //$NON-NLS-1$
+        if (viewTime)
+            text += " --:--"; //$NON-NLS-1$
         if (value != null)
-            date.setText(df.format(value));
-        else
-            date.setText("--/--/----"); //$NON-NLS-1$
+        {
+            text = df.format(value);
+            if (viewTime)
+                text += " " + tf.format(value).substring(0, 6); //$NON-NLS-1$
+        }
+        date.setText(text);
     }
 
     /* (non-Javadoc)
