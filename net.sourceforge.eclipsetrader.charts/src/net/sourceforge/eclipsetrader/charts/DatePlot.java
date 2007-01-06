@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,11 +14,11 @@ package net.sourceforge.eclipsetrader.charts;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.BarData;
@@ -43,9 +43,7 @@ public class DatePlot extends Composite
     private Color hilight = new Color(null, 255, 0, 0);
     private int scaleWidth = 75;
     private int interval = BarData.INTERVAL_DAILY;
-//    private Map map = new HashMap();
     private List dateList = new ArrayList();
-    private Map map = new HashMap();
     private BarData barData;
     private Label label;
     private Color labelColor = new Color(null, 255, 255, 0);
@@ -54,6 +52,18 @@ public class DatePlot extends Composite
     private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); //$NON-NLS-1$
     private SimpleDateFormat tf = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
     private int extendPeriod = 0;
+    private Comparator dateSearchComparator = new Comparator() {
+        public int compare(Object o1, Object o2)
+        {
+            Date d1 = (o1 instanceof TickItem) ? ((TickItem)o1).date : (Date)o1;
+            Date d2 = (o2 instanceof TickItem) ? ((TickItem)o2).date : (Date)o2;
+            if (d1.after(d2) == true)
+                return 1;
+            else if (d1.before(d2) == true)
+                return -1;
+            return 0;
+        }
+    };
     
     private class TickItem
     {
@@ -218,19 +228,10 @@ public class DatePlot extends Composite
         if (date == null)
             return -1;
         
-        Integer value = (Integer)map.get(date);
-        if (value != null)
-            return value.intValue();
+        int index = Collections.binarySearch(dateList, date, dateSearchComparator);
+        if (index >= 0 && index < dateList.size())
+            return indicatorPlot.getMarginWidth() + indicatorPlot.getGridWidth() / 2 + index * indicatorPlot.getGridWidth();
 
-        int index = 0;
-        for(Iterator iter = dateList.iterator(); iter.hasNext(); )
-        {
-            TickItem item = (TickItem)iter.next();
-            if (item.date.compareTo(date) >= 0)
-                return indicatorPlot.getMarginWidth() + indicatorPlot.getGridWidth() / 2 + index * indicatorPlot.getGridWidth();
-            index++;
-        }
-        
         return -1;
     }
 
@@ -263,7 +264,6 @@ public class DatePlot extends Composite
         this.barData = barData;
 
         dateList.clear();
-        map.clear();
 
         switch (interval)
         {
@@ -329,7 +329,6 @@ public class DatePlot extends Composite
             }
 
             dateList.add(item);
-            map.put(item.date, new Integer(x));
 
             x += indicatorPlot.getGridWidth();
         }
@@ -368,7 +367,6 @@ public class DatePlot extends Composite
                     }
                     
                     dateList.add(item);
-                    map.put(item.date, new Integer(x));
                     
                     x += indicatorPlot.getGridWidth();
                 }
@@ -419,7 +417,6 @@ public class DatePlot extends Composite
             }
 
             dateList.add(item);
-            map.put(item.date, new Integer(x));
 
             x += indicatorPlot.getGridWidth();
         }
@@ -462,7 +459,6 @@ public class DatePlot extends Composite
                 }
                 
                 dateList.add(item);
-                map.put(item.date, new Integer(x));
                 
                 x += indicatorPlot.getGridWidth();
 
@@ -508,7 +504,6 @@ public class DatePlot extends Composite
             }
 
             dateList.add(item);
-            map.put(item.date, new Integer(x));
 
             x += indicatorPlot.getGridWidth();
         }
@@ -548,7 +543,6 @@ public class DatePlot extends Composite
                 }
                 
                 dateList.add(item);
-                map.put(item.date, new Integer(x));
                 
                 x += indicatorPlot.getGridWidth();
 
@@ -626,7 +620,6 @@ public class DatePlot extends Composite
             }
 
             dateList.add(item);
-            map.put(item.date, new Integer(x));
 
             x += indicatorPlot.getGridWidth();
         }
@@ -704,7 +697,6 @@ public class DatePlot extends Composite
                 }
 
                 dateList.add(item);
-                map.put(item.date, new Integer(x));
 
                 x += indicatorPlot.getGridWidth();
             }
