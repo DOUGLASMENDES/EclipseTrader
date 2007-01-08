@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: QuickFIX/J
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.fix;singleton:=true
-Bundle-Version: 1.0.4.M20061204-0938
+Bundle-Version: 1.0.5.M20070108-1033
 Bundle-Activator: net.sourceforge.eclipsetrader.fix.FixPlugin
 Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ClassPath: plugin.jar,
  lib/quickfixj.jar,
  lib/backport-util-concurrent-2.1.jar,
- lib/mina-core-0.9.3.jar,
+ lib/mina-core-1.0.0.jar,
  lib/slf4j-log4j12.jar
 Export-Package: net.sourceforge.eclipsetrader.fix,
  net.sourceforge.eclipsetrader.fix.core,
