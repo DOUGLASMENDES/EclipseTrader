@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.apache.log4j"
+      label="%featureName"
+      version="1.2.14.v200701080905"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <url>
+      <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+      <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+   </url>
+
+   <plugin
+         id="org.apache.log4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>
