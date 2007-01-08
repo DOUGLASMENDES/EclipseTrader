@@ -46,19 +46,19 @@
             <separator name="group1"/>
          </menu>
          <action
-               class="net.sourceforge.eclipsetrader.internal.InstallWizardAction"
-               disabledIcon="icons/dlcl16/usearch_obj.gif"
-               icon="icons/elcl16/usearch_obj.gif"
-               id="org.eclipse.update.ui.newUpdates"
-               label="%action.label.newUpates"
-               menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
-               style="push"/>
-         <action
                class="net.sourceforge.eclipsetrader.internal.ConfigurationManagerAction"
                disabledIcon="icons/dlcl16/configs.gif"
                icon="icons/elcl16/configs.gif"
                id="org.eclipse.update.ui.configManager"
                label="%action.label.configManager"
+               menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
+               style="push"/>
+         <action
+               class="net.sourceforge.eclipsetrader.internal.InstallWizardAction"
+               disabledIcon="icons/dlcl16/usearch_obj.gif"
+               icon="icons/elcl16/usearch_obj.gif"
+               id="org.eclipse.update.ui.newUpdates"
+               label="%action.label.newUpates"
                menubarPath="help/org.eclipse.update.ui.updateMenu/group0"
                style="push"/>
       </actionSet>

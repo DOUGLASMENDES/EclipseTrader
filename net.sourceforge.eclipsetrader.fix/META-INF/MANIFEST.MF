@@ -8,8 +8,9 @@ Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader.core
-Bundle-ClassPath: .,
+ net.sourceforge.eclipsetrader.core,
+ org.apache.commons
+Bundle-ClassPath: plugin.jar,
  lib/quickfixj.jar,
  lib/backport-util-concurrent-2.1.jar,
  lib/mina-core-0.9.3.jar,
@@ -19,6 +20,10 @@ Export-Package: net.sourceforge.eclipsetrader.fix,
  net.sourceforge.eclipsetrader.fix.ui.preferences,
  quickfix,
  quickfix.codegen,
+ quickfix.examples.banzai,
+ quickfix.examples.banzai.ui,
+ quickfix.examples.executor,
+ quickfix.examples.ordermatch,
  quickfix.field,
  quickfix.field.converter,
  quickfix.fix40,

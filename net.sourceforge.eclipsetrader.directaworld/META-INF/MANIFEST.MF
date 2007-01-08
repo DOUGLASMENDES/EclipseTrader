@@ -8,5 +8,6 @@ Bundle-Vendor: EclipseTrader.Plugins
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader.core
+ net.sourceforge.eclipsetrader.core,
+ org.apache.commons
 Eclipse-LazyStart: true

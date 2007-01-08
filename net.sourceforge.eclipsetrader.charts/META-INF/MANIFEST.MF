@@ -8,7 +8,8 @@ Bundle-Vendor: EclipseTrader
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader.core
+ net.sourceforge.eclipsetrader.core,
+ org.apache.commons
 Export-Package: net.sourceforge.eclipsetrader.charts,
  net.sourceforge.eclipsetrader.charts.actions,
  net.sourceforge.eclipsetrader.charts.dialogs,

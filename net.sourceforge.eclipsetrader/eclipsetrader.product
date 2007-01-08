@@ -29,7 +29,9 @@
 
    <features>
       <feature id="net.sourceforge.eclipsetrader" version="0.0.0"/>
-      <feature id="org.eclipse.rcp" version="3.2.1.r321_v20060801-2ekW2BxmcpPUOoq"/>
+      <feature id="org.apache.commons" version="0.0.0"/>
+      <feature id="org.apache.log4j" version="0.0.0"/>
+      <feature id="org.eclipse.rcp" version="0.0.0"/>
    </features>
 
 </product>

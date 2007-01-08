@@ -8,9 +8,10 @@ Bundle-Vendor: EclipseTrader
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- net.sourceforge.eclipsetrader.core
+ net.sourceforge.eclipsetrader.core,
+ org.apache.commons
 Eclipse-LazyStart: true
-Bundle-ClassPath: .,
+Bundle-ClassPath: plugin.jar,
  lib/OTFeed.jar
 Export-Package: com.opentick,
  net.sourceforge.eclipsetrader.opentick,

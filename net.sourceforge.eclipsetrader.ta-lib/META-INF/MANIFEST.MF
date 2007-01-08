@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-LazyStart: true
 Bundle-Vendor: Sourceforge.net
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Bundle-ClassPath: .,
+Bundle-ClassPath: plugin.jar,
  lib/ta-lib.jar
 Export-Package: com.tictactec.ta.lib,
  net.sourceforge.eclipsetrader.ta_lib,

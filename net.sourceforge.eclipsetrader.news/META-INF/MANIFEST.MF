@@ -9,7 +9,7 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.sourceforge.eclipsetrader.core
-Bundle-ClassPath: .,
+Bundle-ClassPath: plugin.jar,
  lib/jdom.jar,
  lib/rome-0.8.jar,
  lib/rome-fetcher-0.7.jar

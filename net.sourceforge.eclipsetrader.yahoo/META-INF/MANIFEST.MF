@@ -9,8 +9,12 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.sourceforge.eclipsetrader.core,
- net.sourceforge.eclipsetrader.news;resolution:=optional
-Export-Package: net.sourceforge.eclipsetrader.yahoo
-Bundle-ClassPath: .,
+ net.sourceforge.eclipsetrader.news;resolution:=optional,
+ org.apache.commons
+Export-Package: net.sourceforge.eclipsetrader.yahoo,
+ net.sourceforge.eclipsetrader.yahoo.actions,
+ net.sourceforge.eclipsetrader.yahoo.preferences,
+ net.sourceforge.eclipsetrader.yahoo.wizards
+Bundle-ClassPath: plugin.jar,
  lib/htmlparser.jar
 Eclipse-LazyStart: true
