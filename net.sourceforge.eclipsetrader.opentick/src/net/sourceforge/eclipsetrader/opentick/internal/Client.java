@@ -172,7 +172,7 @@ public class Client
             Book book = (Book)securityBook.get(String.valueOf(cancel.getRequestID()));
             if (book != null)
             {
-                book.remove(cancel.getReference(), cancel.getSize());
+                book.remove(cancel.getOrderRef(), cancel.getSize());
                 Security security = (Security)bookStreams.get(String.valueOf(cancel.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
@@ -185,7 +185,7 @@ public class Client
             Book book = (Book)securityBook.get(String.valueOf(change.getRequestID()));
             if (book != null)
             {
-                book.remove(change.getReference(), change.getSize());
+                book.remove(change.getOrderRef(), change.getSize());
                 Security security = (Security)bookStreams.get(String.valueOf(change.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
@@ -198,7 +198,7 @@ public class Client
             Book book = (Book)securityBook.get(String.valueOf(delete.getRequestID()));
             if (book != null)
             {
-                book.delete(delete.getReference(), delete.getSide(), delete.getDeleteType());
+                book.delete(delete.getOrderRef(), delete.getSide(), delete.getDeleteType());
                 Security security = (Security)bookStreams.get(String.valueOf(delete.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
@@ -211,7 +211,7 @@ public class Client
             Book book = (Book)securityBook.get(String.valueOf(execute.getRequestID()));
             if (book != null)
             {
-                book.remove(execute.getReference(), execute.getSize());
+                book.remove(execute.getOrderRef(), execute.getSize());
                 Security security = (Security)bookStreams.get(String.valueOf(execute.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
@@ -224,7 +224,7 @@ public class Client
             Book book = (Book)securityBook.get(String.valueOf(order.getRequestID()));
             if (book != null)
             {
-                book.add(order.getTimestamp(), order.getReference(), order.getPrice(), order.getSize(), order.getSide());
+                book.add(order.getTimestamp(), order.getOrderRef(), order.getPrice(), order.getSize(), order.getSide());
                 Security security = (Security)bookStreams.get(String.valueOf(order.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
@@ -253,7 +253,7 @@ public class Client
                 book = new Book();
                 securityBook.put(String.valueOf(replace.getRequestID()), book);
             }
-            book.replace(replace.getTimestamp(), replace.getReference(), replace.getPrice(), replace.getSize(), replace.getSide());
+            book.replace(replace.getTimestamp(), replace.getOrderRef(), replace.getPrice(), replace.getSize(), replace.getSide());
             Security security = (Security)bookStreams.get(String.valueOf(replace.getRequestID()));
             security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
         }
