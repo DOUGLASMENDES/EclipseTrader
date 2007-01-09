@@ -127,6 +127,7 @@ public class ChartsPrefereces extends PreferencePage implements IWorkbenchPrefer
         tree.setHeaderVisible(false);
         tree.setLinesVisible(false);
         tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData)tree.getLayoutData()).heightHint = 200;
         tree.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
