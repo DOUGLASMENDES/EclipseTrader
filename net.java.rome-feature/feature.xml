@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.java.rome"
+      label="%featureName"
+      version="0.9.0.v200701091200"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="LICENSE">
+      %license
+   </license>
+
+   <includes
+         id="org.jdom"
+         version="0.0.0"/>
+
+   <requires>
+      <import feature="org.apache.commons" version="1.0.0" match="compatible"/>
+   </requires>
+
+   <plugin
+         id="net.java.rome"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="net.java.rome.fetcher"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>
