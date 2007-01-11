@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Document Object Model Plug-in
+Bundle-SymbolicName: org.jdom
+Bundle-Version: 1.0.0.v200701091200
+Bundle-Vendor: Sourceforge.net
+Bundle-Localization: plugin
+Export-Package: org.jdom,
+ org.jdom.adapters,
+ org.jdom.filter,
+ org.jdom.input,
+ org.jdom.output,
+ org.jdom.transform,
+ org.jdom.xpath
+Bundle-ClassPath: jdom.jar
+Eclipse-LazyStart: true
