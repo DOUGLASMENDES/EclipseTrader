@@ -28,10 +28,12 @@
    </plugins>
 
    <features>
+      <feature id="net.java.rome" version="0.0.0"/>
       <feature id="net.sourceforge.eclipsetrader" version="0.0.0"/>
       <feature id="org.apache.commons" version="0.0.0"/>
       <feature id="org.apache.log4j" version="0.0.0"/>
       <feature id="org.eclipse.rcp" version="0.0.0"/>
+      <feature id="org.jdom" version="0.0.0"/>
    </features>
 
 </product>

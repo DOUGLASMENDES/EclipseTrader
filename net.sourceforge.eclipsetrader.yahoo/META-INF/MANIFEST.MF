@@ -10,7 +10,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.sourceforge.eclipsetrader.core,
  net.sourceforge.eclipsetrader.news;resolution:=optional,
- org.apache.commons
+ org.apache.commons,
+ net.java.rome,
+ net.java.rome.fetcher
 Export-Package: net.sourceforge.eclipsetrader.yahoo,
  net.sourceforge.eclipsetrader.yahoo.actions,
  net.sourceforge.eclipsetrader.yahoo.preferences,

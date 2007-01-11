@@ -21,13 +21,14 @@
 
    <url>
       <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
-      <discover label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+      <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
 
    <requires>
       <import feature="org.eclipse.rcp" version="3.2.0" match="compatible"/>
       <import feature="org.apache.commons" version="1.0.0" match="compatible"/>
       <import feature="org.apache.log4j" version="1.2.0" match="compatible"/>
+      <import feature="net.java.rome" version="0.9.0" match="compatible"/>
    </requires>
 
    <plugin
@@ -62,7 +63,8 @@
          id="net.sourceforge.eclipsetrader.news"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="net.sourceforge.eclipsetrader.help"
