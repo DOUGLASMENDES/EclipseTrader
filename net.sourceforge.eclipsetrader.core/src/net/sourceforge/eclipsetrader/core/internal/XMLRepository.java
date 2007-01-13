@@ -71,6 +71,7 @@ import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystem;
 import net.sourceforge.eclipsetrader.core.db.trading.TradingSystemGroup;
 
+import org.apache.commons.collections.map.ReferenceIdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.Platform;
@@ -99,8 +100,8 @@ public class XMLRepository extends Repository
     Integer eventNextId = new Integer(1);
     TradingSystemRepository tradingRepository;
     Integer orderNextId = new Integer(1);
-    Map historyMap = new HashMap();
-    Map intradayHistoryMap = new HashMap();
+    ReferenceIdentityMap historyMap = new ReferenceIdentityMap();
+    ReferenceIdentityMap intradayHistoryMap = new ReferenceIdentityMap();
     private Log logger = LogFactory.getLog(getClass());
 
     public XMLRepository()
@@ -434,8 +435,8 @@ public class XMLRepository extends Repository
         eventNextId = new Integer(1);
         orderNextId = new Integer(1);
         tradingRepository.clear();
-        historyMap = new HashMap();
-        intradayHistoryMap = new HashMap();
+        historyMap = new ReferenceIdentityMap();
+        intradayHistoryMap = new ReferenceIdentityMap();
 
         super.clear();
     }
