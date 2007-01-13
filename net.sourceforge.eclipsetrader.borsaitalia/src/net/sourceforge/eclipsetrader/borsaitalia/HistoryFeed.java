@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
@@ -28,12 +27,15 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 public class HistoryFeed implements IHistoryFeed
 {
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.borsaitalia";
     private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+    private Log log = LogFactory.getLog(getClass());
 
     public HistoryFeed()
     {
@@ -54,6 +56,7 @@ public class HistoryFeed implements IHistoryFeed
             from.set(Calendar.HOUR_OF_DAY, 0);
             from.set(Calendar.MINUTE, 0);
             from.set(Calendar.SECOND, 0);
+            log.info("Updating intraday data for " + security.getCode() + " - " + security.getDescription());
         }
         else
         {
@@ -62,10 +65,11 @@ public class HistoryFeed implements IHistoryFeed
                 from.add(Calendar.YEAR, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE));
             else
             {
-                Bar cd = (Bar)history.get(history.size() - 1);
+                Bar cd = history.getLast();
                 from.setTime(cd.getDate());
                 from.add(Calendar.DATE, 1);
             }
+            log.info("Updating historical data for " + security.getCode() + " - " + security.getDescription());
         }
 
         String symbol = null;
@@ -83,6 +87,7 @@ public class HistoryFeed implements IHistoryFeed
                 url.append("&period=1DAY");
                 url.append("&From=" + df.format(from.getTime()));
             }
+            log.debug(url);
 
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
@@ -101,26 +106,31 @@ public class HistoryFeed implements IHistoryFeed
             
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
 
+            // The first line is the header, ignoring
             String inputLine = in.readLine();
+            log.trace(inputLine);
+
             while ((inputLine = in.readLine()) != null)
             {
+                log.trace(inputLine);
                 if (inputLine.startsWith("@") == true || inputLine.length() == 0)
                     continue;
                 String[] item = inputLine.split("\\|");
 
-                Date date = df.parse(item[0]);
-                Bar bar = history.get(date);
-                if (bar == null)
-                {
-                    bar = new Bar();
-                    history.add(bar);
-                }
-                bar.setDate(date);
+                Bar bar = new Bar();
+                bar.setDate(df.parse(item[0]));
                 bar.setOpen(Double.parseDouble(item[1]));
                 bar.setHigh(Double.parseDouble(item[2]));
                 bar.setLow(Double.parseDouble(item[3]));
                 bar.setClose(Double.parseDouble(item[4]));
                 bar.setVolume((long)Double.parseDouble(item[5]));
+
+                // Remove the old bar, if exists
+                int index = history.indexOf(bar.getDate());
+                if (index != -1)
+                    history.remove(index);
+                
+                history.add(bar);
             }
 
             in.close();
@@ -129,7 +139,6 @@ public class HistoryFeed implements IHistoryFeed
             CorePlugin.logException(e);
         }
         
-        history.sort();
         CorePlugin.getRepository().save(history);
     }
 }
