@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -130,9 +130,10 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
         format.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         format.add(Messages.LoggerPreferencesPage_Default);
         
-        Group group = new Group(content, SWT.NONE);
+        Group group = new Group(content, SWT.V_SCROLL);
         group.setText(Messages.LoggerPreferencesPage_Levels);
-        group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        ((GridData)group.getLayoutData()).heightHint = 200;
         gridLayout = new GridLayout();
         gridLayout.numColumns = 2;
         gridLayout.verticalSpacing = 3;
@@ -240,7 +241,7 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
 
         if (value != null)
         {
-            for (int i = 1; i < level.getItemCount(); i++)
+            for (int i = 0; i < level.getItemCount(); i++)
             {
                 if (value.indexOf((String)level.getData(String.valueOf(i))) != -1)
                     level.select(i);
