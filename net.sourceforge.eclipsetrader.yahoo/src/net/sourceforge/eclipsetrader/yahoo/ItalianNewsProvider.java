@@ -22,6 +22,8 @@ import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -39,7 +41,48 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 {
     private Thread thread;
     private boolean stopping = false;
-    private String url[] = { "http://it.biz.yahoo.com/finance_top_business.html", "http://it.biz.yahoo.com/attualita/mib30/index.html", "http://it.biz.yahoo.com/attualita/nasdaq.html", "http://it.biz.yahoo.com/francoforte.html", "http://it.biz.yahoo.com/londra.html", "http://it.biz.yahoo.com/parigi.html", "http://it.biz.yahoo.com/attualita/giappone.html", "http://it.biz.yahoo.com/attualita/avviso.html", "http://it.biz.yahoo.com/attualita/occhio.html", "http://it.biz.yahoo.com/attualita/companyres.html", "http://it.biz.yahoo.com/researchalerts.html", "http://it.biz.yahoo.com/attualita/giornali.html", "http://it.biz.yahoo.com/listasettori.html", "http://it.biz.yahoo.com/attualita/comunicati.html", };
+    private String url[] = {
+            "http://it.biz.yahoo.com/aspettandodow/index.html",
+            "http://it.biz.yahoo.com/attualita/index.html",
+            "http://it.biz.yahoo.com/attualita/after.html",
+            "http://it.biz.yahoo.com/attualita/agenda.html",
+            "http://it.biz.yahoo.com/attualita/asia.html",
+            "http://it.biz.yahoo.com/attualita/aumenticap.html",
+            "http://it.biz.yahoo.com/attualita/avviso.html", 
+            "http://it.biz.yahoo.com/attualita/cda.html",
+            "http://it.biz.yahoo.com/attualita/companyres.html", 
+            "http://it.biz.yahoo.com/attualita/comunicati.html",
+            "http://it.biz.yahoo.com/attualita/coveredwarrants.html",
+            "http://it.biz.yahoo.com/attualita/dollaro/index.html",
+            "http://it.biz.yahoo.com/attualita/fib30.html",
+            "http://it.biz.yahoo.com/attualita/gann/index.html",
+            "http://it.biz.yahoo.com/attualita/giappone.html", 
+            "http://it.biz.yahoo.com/attualita/giornali.html", 
+            "http://it.biz.yahoo.com/attualita/ipo.html",
+            "http://it.biz.yahoo.com/attualita/mib30/index.html",
+            "http://it.biz.yahoo.com/attualita/milano_chiusure.html",
+            "http://it.biz.yahoo.com/attualita/nasdaq.html", 
+            "http://it.biz.yahoo.com/attualita/obbligazioni.html",
+            "http://it.biz.yahoo.com/attualita/occhio.html", 
+            "http://it.biz.yahoo.com/attualita/ratings.html",
+            "http://it.biz.yahoo.com/attualita/seul.html",
+            "http://it.biz.yahoo.com/attualita/singapore.html",
+            "http://it.biz.yahoo.com/attualita/taiwan.html",
+            "http://it.biz.yahoo.com/attualita/yen.html",
+            "http://it.biz.yahoo.com/etf/index.html",
+            "http://it.biz.yahoo.com/finance_top_business.html", 
+            "http://it.biz.yahoo.com/francoforte.html", 
+            "http://it.biz.yahoo.com/funds/news_old.html",
+            "http://it.biz.yahoo.com/londra.html", 
+            "http://it.biz.yahoo.com/mercatochiuso/index.html",
+            "http://it.biz.yahoo.com/newsfinanzaworld.html",
+            "http://it.biz.yahoo.com/newslet/free/index.html",
+            "http://it.biz.yahoo.com/parigi.html", 
+            "http://it.biz.yahoo.com/researchalerts.html", 
+            "http://it.biz.yahoo.com/techstar/index.html",
+            "http://it.biz.yahoo.com/trader/index.html",
+    };
+    private Log log = LogFactory.getLog(getClass());
 
     public ItalianNewsProvider()
     {
@@ -66,12 +109,9 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
         stopping = true;
         if (thread != null)
         {
-            try
-            {
+            try {
                 thread.join();
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             thread = null;
@@ -109,12 +149,9 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
                 nextRun = System.currentTimeMillis() + interval * 60 * 1000;
             }
 
-            try
-            {
+            try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
             }
@@ -147,68 +184,68 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
     private void parseNewsPage(String url)
     {
-        try
-        {
+        int dtCount = 0;
+        int liCount = 0;
+        
+        try {
+            log.info(url);
             Parser parser = new Parser(url);
+
             NodeList list = parser.extractAllNodesThatMatch(new OrFilter(new TagNameFilter("dt"), new TagNameFilter("li")));
             for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes();)
             {
                 Node root = iter.nextNode();
-                if (root instanceof TagNode)
+                list = root.getChildren();
+
+                if (((TagNode) root).getTagName().equalsIgnoreCase("dt") && list.size() == 12)
                 {
-                    if (((TagNode) root).getTagName().equalsIgnoreCase("dt"))
-                    {
-                        NodeList childs = root.getChildren();
-                        NewsItem news = new NewsItem();
+                    LinkTag link = (LinkTag)list.elementAt(3);
 
-                        Node node = childs.elementAt(3);
-                        news.setTitle(node.getFirstChild().getText().trim());
-                        news.setUrl(((LinkTag) node).getLink());
+                    NewsItem news = new NewsItem();
+                    news.setTitle(decode(link.getLinkText().trim()));
+                    news.setUrl(decode(link.getLink()));
 
-                        node = childs.elementAt(9);
-                        String source = node.getText();
-                        source = source.replaceAll("[\r\n]", " ");
-                        source = source.replaceAll("[()]", "");
-                        source = source.replaceAll("[ ]{2,}", " ").trim();
-                        news.setSource(source);
+                    String source = list.elementAt(9).getText();
+                    source = source.replaceAll("[\r\n]", " ");
+                    source = source.replaceAll("[()]", "");
+                    source = source.replaceAll("[ ]{2,}", " ").trim();
+                    news.setSource(source);
 
-                        childs = root.getNextSibling().getNextSibling().getNextSibling().getChildren();
+                    news.setDate(parseDateString(root.getNextSibling().getNextSibling().getNextSibling().getChildren().elementAt(1).getText()));
 
-                        node = childs.elementAt(1);
-                        news.setDate(parseDateString(node.getText()));
+                    log.debug(news.getTitle() + " (" + news.getSource() + ")");
+                    CorePlugin.getRepository().save(news);
+                    dtCount++;
+                }
+                else if (((TagNode) root).getTagName().equalsIgnoreCase("li") && list.size() == 14)
+                {
+                    LinkTag link = (LinkTag)list.elementAt(1);
 
-                        CorePlugin.getRepository().save(news);
-                    }
-                    if (((TagNode) root).getTagName().equalsIgnoreCase("li"))
-                    {
-                        NodeList childs = root.getChildren();
+                    NewsItem news = new NewsItem();
+                    news.setTitle(decode(link.getLinkText().trim()));
+                    news.setUrl(decode(link.getLink()));
 
-                        Node node = childs.elementAt(1);
-                        if (node.getFirstChild() != null)
-                        {
-                            NewsItem news = new NewsItem();
-                            news.setTitle(node.getFirstChild().getText().trim());
-                            news.setUrl(((LinkTag) node).getLink());
+                    String source = list.elementAt(6).getText();
+                    source = source.replaceAll("[\r\n]", " ");
+                    source = source.replaceAll("[()]", "");
+                    source = source.replaceAll("[ ]{2,}", " ").trim();
+                    news.setSource(source);
 
-                            node = childs.elementAt(6);
-                            String source = node.getText();
-                            source = source.replaceAll("[\r\n]", " ");
-                            source = source.replaceAll("[()]", "");
-                            source = source.replaceAll("[ ]{2,}", " ").trim();
-                            news.setSource(source);
+                    news.setDate(parseDateString(list.elementAt(10).getText()));
 
-                            node = childs.elementAt(10);
-                            news.setDate(parseDateString(node.getText()));
-
-                            CorePlugin.getRepository().save(news);
-                        }
-                    }
+                    log.debug(news.getTitle() + " (" + news.getSource() + ")");
+                    CorePlugin.getRepository().save(news);
+                    liCount++;
                 }
             }
+            
+            if (dtCount == 0 && liCount == 0)
+                log.warn("No news found on that page (" + url + ")");
+            else if (dtCount == 0 || liCount == 0)
+                log.warn("Page not completely parsed (" + url + ")");
         }
-        catch (Exception e)
-        {
-            CorePlugin.logException(e);
+        catch (Exception e) {
+            log.error(e, e);
         }
     }
 
@@ -260,4 +297,48 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
         return 0;
     }
+    
+    private String decode(String s)
+    {
+        if (s.indexOf("&#") == -1)
+            return s;
+        
+        int numChars = s.length();
+        int i = 0;
+        StringBuffer sb = new StringBuffer();
+        byte[] bytes = s.getBytes();
+        
+        while(i < numChars)
+        {
+            char c = s.charAt(i++);
+            if (c == '&' && i < numChars)
+            {
+                c = s.charAt(i++);
+                if (c == '#')
+                {
+                    int data = 0;
+                    if (i < numChars)
+                        data = (data * 10) + (bytes[i++] - '0');
+                    if (i < numChars)
+                        data = (data * 10) + (bytes[i++] - '0');
+                    try {
+                        sb.append(new String(new byte[] { (byte)data }));
+                    } catch(Exception e) {
+                        log.error(e, e);
+                    }
+                    i++;
+                }
+                else
+                {
+                    sb.append('&');
+                    sb.append(c);
+                }
+            }
+            else
+                sb.append(c);
+        }
+        
+        return sb.toString();
+    }
+    
 }
