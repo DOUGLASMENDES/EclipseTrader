@@ -162,7 +162,7 @@ public class Repository
             for (Iterator iter = allNews().iterator(); iter.hasNext(); )
             {
                 NewsItem news = (NewsItem)iter.next();
-                if (news.getSecurity() != null && news.getSecurity().equals(security))
+                if (news.isSecurity(security))
                     list.add(news);
             }
             newsMap.put(security, list);
@@ -285,13 +285,32 @@ public class Repository
             if (news.getDate().before(limit.getTime()))
                 return;
             
-            if (!allNews().contains(news))
-                allNews().add(news);
-            if (news.getSecurity() != null)
+            int index = allNews().indexOf(news);
+            if (index == -1)
             {
-                ObservableList list = (ObservableList) newsMap.get(news.getSecurity());
-                if (list != null && !list.contains(news))
-                    list.add(news);
+                allNews().add(news);
+
+                Object[] o = news.getSecurities().toArray();
+                for (int i = 0; i < o.length; i++)
+                {
+                    List list = (List) newsMap.get(o[i]);
+                    if (list != null && !list.contains(news))
+                        list.add(news);
+                }
+            }
+            else
+            {
+                NewsItem existing = (NewsItem)allNews().get(index);
+                existing.addSecurities(news.getSecurities());
+                existing.notifyObservers();
+
+                Object[] o = existing.getSecurities().toArray();
+                for (int i = 0; i < o.length; i++)
+                {
+                    List list = (List) newsMap.get(o[i]);
+                    if (list != null && !list.contains(existing))
+                        list.add(existing);
+                }
             }
         }
 
@@ -399,10 +418,12 @@ public class Repository
         {
             NewsItem news = (NewsItem) obj;
             allNews().remove(news);
-            if (news.getSecurity() != null)
+
+            Object[] o = news.getSecurities().toArray();
+            for (int i = 0; i < o.length; i++)
             {
-                ObservableList list = (ObservableList) newsMap.get(news.getSecurity());
-                if (list != null)
+                ObservableList list = (ObservableList) newsMap.get(o[i]);
+                if (list != null && !list.contains(news))
                     list.remove(news);
             }
         }

@@ -1997,7 +1997,8 @@ public class XMLRepository extends Repository
         if (((Node)node).getAttributes().getNamedItem("security") != null)
         {
             Security security = getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue());
-            news.setSecurity(security);
+            if (security != null)
+                news.addSecurity(security);
         }
         if (((Node)node).getAttributes().getNamedItem("readed") != null)
             news.setReaded(new Boolean(((Node)node).getAttributes().getNamedItem("readed").getNodeValue()).booleanValue());
@@ -2023,6 +2024,12 @@ public class XMLRepository extends Repository
                     news.setSource(value.getNodeValue());
                 else if (nodeName.equals("url")) //$NON-NLS-1$
                     news.setUrl(value.getNodeValue());
+                else if (nodeName.equals("security")) //$NON-NLS-1$
+                {
+                    Security security = getSecurity(value.getNodeValue());
+                    if (security != null)
+                        news.addSecurity(security);
+                }
             }
         }
         
@@ -2045,8 +2052,6 @@ public class XMLRepository extends Repository
                 NewsItem news = (NewsItem)iter.next(); 
 
                 Element element = document.createElement("news");
-                if (news.getSecurity() != null)
-                    element.setAttribute("security", String.valueOf(news.getSecurity().getId()));
                 element.setAttribute("readed", String.valueOf(news.isReaded()));
                 root.appendChild(element);
 
@@ -2062,6 +2067,14 @@ public class XMLRepository extends Repository
                 node = document.createElement("url");
                 node.appendChild(document.createTextNode(news.getUrl()));
                 element.appendChild(node);
+                
+                Object[] o = news.getSecurities().toArray();
+                for (int i = 0; i < o.length; i++)
+                {
+                    node = document.createElement("security");
+                    node.appendChild(document.createTextNode(String.valueOf(((Security)o[i]).getId())));
+                    element.appendChild(node);
+                }
             }
             
             saveDocument(document, "", "news.xml");

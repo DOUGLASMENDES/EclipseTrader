@@ -27,6 +27,8 @@ import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -51,6 +53,7 @@ public class NewsProvider implements Runnable, INewsProvider
     private boolean stopping = false;
     private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
     private FeedFetcher fetcher = new HttpURLFeedFetcher(feedInfoCache);
+    private Log log = LogFactory.getLog(getClass());
 
     public NewsProvider()
     {
@@ -80,7 +83,7 @@ public class NewsProvider implements Runnable, INewsProvider
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
             }
             thread = null;
         }
@@ -102,7 +105,7 @@ public class NewsProvider implements Runnable, INewsProvider
         try {
             update(new URL("http://finance.yahoo.com/rss/headline?s=" + security.getCode().toLowerCase()), security);
         } catch(Exception e) {
-            CorePlugin.logException(e);
+            log.error(e);
         }
     }
 
@@ -125,7 +128,7 @@ public class NewsProvider implements Runnable, INewsProvider
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
                 break;
             }
         }
@@ -173,8 +176,8 @@ public class NewsProvider implements Runnable, INewsProvider
                             }
                         }
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (Exception e) {
+                    log.error(e, e);
                 }
                 
                 List securities = CorePlugin.getRepository().allSecurities();
@@ -185,10 +188,11 @@ public class NewsProvider implements Runnable, INewsProvider
                     Security security = (Security) iter.next();
                     try {
                         String url = "http://finance.yahoo.com/rss/headline?s=" + security.getCode().toLowerCase(); //$NON-NLS-1$
+                        log.debug(url);
                         monitor.subTask(url);
                         update(new URL(url), security);
                     } catch(Exception e) {
-                        CorePlugin.logException(e);
+                        log.error(e, e);
                     }
                     monitor.worked(1);
                 }
@@ -197,9 +201,10 @@ public class NewsProvider implements Runnable, INewsProvider
                     String url = (String) iter.next();
                     try {
                         monitor.subTask(url);
+                        log.debug(url);
                         update(new URL(url));
                     } catch(Exception e) {
-                        CorePlugin.logException(e);
+                        log.error(e, e);
                     }
                     monitor.worked(1);
                 }
@@ -254,11 +259,11 @@ public class NewsProvider implements Runnable, INewsProvider
                 news.setTitle(title);
                 news.setUrl(entry.getLink());
                 if (security != null)
-                    news.setSecurity(security);
+                    news.addSecurity(security);
                 CorePlugin.getRepository().save(news);
             }
         } catch(Exception e) {
-            CorePlugin.logException(e);
+            log.error(e, e);
         }
     }
 }

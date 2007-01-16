@@ -260,7 +260,7 @@ public class FrenchNewsProvider implements Runnable, INewsProvider
                 news.setTitle(title);
                 news.setUrl(entry.getLink());
                 if (security != null)
-                    news.setSecurity(security);
+                    news.addSecurity(security);
 //				System.out.println("** News found:");
 //				System.out.println(news.getTitle());
 //				System.out.println(news.getSource());

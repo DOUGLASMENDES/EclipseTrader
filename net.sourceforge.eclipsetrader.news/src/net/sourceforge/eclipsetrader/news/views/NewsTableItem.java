@@ -17,6 +17,7 @@ import java.util.Observer;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.NewsItem;
+import net.sourceforge.eclipsetrader.core.db.Security;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -106,9 +107,26 @@ public class NewsTableItem extends TableItem implements DisposeListener, Observe
     public void update()
     {
         setText(0, dateTimeFormat.format(newsItem.getDate()));
-        setText(1, newsItem.getTitle());
-        if (newsItem.getSecurity() != null)
-            setText(2, newsItem.getSecurity().getDescription());
+
+        String title = newsItem.getTitle();
+        title = title.replaceAll("&agrave;", "à");
+        title = title.replaceAll("&egrave;", "è");
+        title = title.replaceAll("&eacute;", "é");
+        title = title.replaceAll("&igrave;", "ì");
+        title = title.replaceAll("&ograve;", "ò");
+        title = title.replaceAll("&pgrave;", "ù");
+        setText(1, title);
+        
+        String text = "";
+        Object[] o = newsItem.getSecurities().toArray();
+        for (int i = 0; i < o.length; i++)
+        {
+            if (!text.equals(""))
+                text += ", ";
+            text += ((Security)o[i]).getDescription();
+        }
+        setText(2, text);
+
         setText(3, newsItem.getSource());
 
         if (newsItem.isReaded())
@@ -122,6 +140,12 @@ public class NewsTableItem extends TableItem implements DisposeListener, Observe
             setBackground(theme.getColorRegistry().get(NewsView.NEW_ITEM_BACKGROUND));
             setForeground(theme.getColorRegistry().get(NewsView.NEW_ITEM_FOREGROUND));
             setFont(theme.getFontRegistry().get(NewsView.NEW_ITEM_FONT));
+        }
+        else
+        {
+            setBackground(null);
+            setForeground(null);
+            setFont(null);
         }
     }
 

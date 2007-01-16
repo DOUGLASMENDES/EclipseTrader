@@ -11,8 +11,11 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class NewsItem extends PersistentObject
 {
@@ -20,7 +23,7 @@ public class NewsItem extends PersistentObject
     private String title = "";
     private String source = "";
     private String url = "";
-    private Security security;
+    private List securities = new ArrayList();
     private boolean recent = false;
     private boolean readed = false;
 
@@ -57,16 +60,49 @@ public class NewsItem extends PersistentObject
         this.title = title;
     }
 
-    public Security getSecurity()
+    public List getSecurities()
     {
-        return security;
+        return Collections.unmodifiableList(securities);
+    }
+    
+    public void setSecurities(List securities)
+    {
+        this.securities = securities;
+        setChanged();
     }
 
-    public void setSecurity(Security security)
+    public void addSecurity(Security security)
     {
-        if ((this.security == null && security != null) || (this.security != null && !this.security.equals(security)))
-            setChanged();
-        this.security = security;
+        if (security != null)
+        {
+            if (!securities.contains(security))
+            {
+                securities.add(security);
+                setChanged();
+            }
+        }
+    }
+
+    public void addSecurities(List list)
+    {
+        Object[] o = list.toArray();
+        for (int i = 0; i < o.length; i++)
+        {
+            if (o[i] instanceof Security)
+            {
+                Security security = (Security)o[i];
+                if (!securities.contains(security))
+                {
+                    securities.add(security);
+                    setChanged();
+                }
+            }
+        }
+    }
+    
+    public boolean isSecurity(Security security)
+    {
+        return securities.contains(security);
     }
 
     public String getSource()
