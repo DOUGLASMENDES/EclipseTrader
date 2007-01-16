@@ -80,6 +80,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  */
@@ -102,18 +105,36 @@ public class XMLRepository extends Repository
     Integer orderNextId = new Integer(1);
     ReferenceIdentityMap historyMap = new ReferenceIdentityMap();
     ReferenceIdentityMap intradayHistoryMap = new ReferenceIdentityMap();
-    private Log logger = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(getClass());
+    private ErrorHandler errorHandler = new ErrorHandler() {
+
+        public void error(SAXParseException exception) throws SAXException
+        {
+            log.error(exception, exception);
+        }
+
+        public void fatalError(SAXParseException exception) throws SAXException
+        {
+            log.fatal(exception, exception);
+        }
+
+        public void warning(SAXParseException exception) throws SAXException
+        {
+            log.warn(exception, exception);
+        }
+    };
 
     public XMLRepository()
     {
         File file = new File(Platform.getLocation().toFile(), "securities.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            logger.info("Loading securities");
+            log.info("Loading securities");
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
 
                 Node firstNode = document.getFirstChild();
@@ -141,18 +162,19 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
 
         file = new File(Platform.getLocation().toFile(), "watchlists.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            logger.info("Loading watchlists");
+            log.info("Loading watchlists");
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
 
                 Node firstNode = document.getFirstChild();
@@ -172,18 +194,19 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
 
         file = new File(Platform.getLocation().toFile(), "charts.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            logger.info("Loading charts");
+            log.info("Loading charts");
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
 
                 Node firstNode = document.getFirstChild();
@@ -206,7 +229,7 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
 
@@ -236,11 +259,12 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "news.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            logger.info("Loading news");
+            log.info("Loading news");
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
                 
                 Calendar limit = Calendar.getInstance();
@@ -264,18 +288,19 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
 
         file = new File(Platform.getLocation().toFile(), "accounts.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            logger.info("Loading accounts");
+            log.info("Loading accounts");
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
 
                 Node firstNode = document.getFirstChild();
@@ -299,18 +324,19 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
 
         file = new File(Platform.getLocation().toFile(), "events.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            logger.info("Loading events");
+            log.info("Loading events");
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
                 
                 Node firstNode = document.getFirstChild();
@@ -328,18 +354,19 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
 
         file = new File(Platform.getLocation().toFile(), "orders.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            logger.info("Loading orders");
+            log.info("Loading orders");
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
                 
                 Node firstNode = document.getFirstChild();
@@ -358,7 +385,7 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
         
@@ -705,10 +732,11 @@ public class XMLRepository extends Repository
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
                 barData.addAll(decodeBarData(document.getFirstChild().getChildNodes()));
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
         
@@ -728,10 +756,11 @@ public class XMLRepository extends Repository
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
                 barData.addAll(decodeBarData(document.getFirstChild().getChildNodes()));
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
         
@@ -775,7 +804,7 @@ public class XMLRepository extends Repository
                             try {
                                 bar.setDate(dateTimeFormat.parse(value.getNodeValue()));
                             } catch (Exception e) {
-                                logger.warn(e.toString());
+                                log.warn(e.toString());
                             }
                         }
                     }
@@ -791,6 +820,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "history", null);
 
             Element root = document.getDocumentElement();
@@ -801,7 +831,7 @@ public class XMLRepository extends Repository
             else
                 saveDocument(document, "history", String.valueOf(list.getId()) + ".xml");
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
     
@@ -842,6 +872,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
@@ -856,7 +887,7 @@ public class XMLRepository extends Repository
             saveDocument(document, "", "charts.xml");
 
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
     
@@ -976,6 +1007,7 @@ public class XMLRepository extends Repository
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setErrorHandler(errorHandler);
                 Document document = builder.parse(file);
 
                 NodeList firstNode = document.getFirstChild().getChildNodes();
@@ -998,7 +1030,7 @@ public class XMLRepository extends Repository
                             try {
                                 chart.setBeginDate(dateTimeFormat.parse(valueNode.getNodeValue()));
                             } catch (Exception e) {
-                                logger.warn(e.toString());
+                                log.warn(e.toString());
                             }
                         }
                         else if (nodeName.equalsIgnoreCase("end") == true)
@@ -1006,7 +1038,7 @@ public class XMLRepository extends Repository
                             try {
                                 chart.setEndDate(dateTimeFormat.parse(valueNode.getNodeValue()));
                             } catch (Exception e) {
-                                logger.warn(e.toString());
+                                log.warn(e.toString());
                             }
                         }
                     }
@@ -1087,7 +1119,7 @@ public class XMLRepository extends Repository
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.toString(), e);
+                log.error(e.toString(), e);
             }
         }
         
@@ -1117,7 +1149,7 @@ public class XMLRepository extends Repository
                 {
                     chart.setSecurity((Security)load(Security.class, new Integer(Integer.parseInt(valueNode.getNodeValue()))));
                     if (chart.getSecurity() == null)
-                        logger.warn("Cannot load security (id=" + valueNode.getNodeValue() + ")");
+                        log.warn("Cannot load security (id=" + valueNode.getNodeValue() + ")");
                 }
                 else if (nodeName.equalsIgnoreCase("title") == true)
                     chart.setTitle(valueNode.getNodeValue());
@@ -1132,7 +1164,7 @@ public class XMLRepository extends Repository
                     try {
                         chart.setBeginDate(dateTimeFormat.parse(valueNode.getNodeValue()));
                     } catch (Exception e) {
-                        logger.warn(e.toString());
+                        log.warn(e.toString());
                     }
                 }
                 else if (nodeName.equalsIgnoreCase("end") == true)
@@ -1140,7 +1172,7 @@ public class XMLRepository extends Repository
                     try {
                         chart.setEndDate(dateTimeFormat.parse(valueNode.getNodeValue()));
                     } catch (Exception e) {
-                        logger.warn(e.toString());
+                        log.warn(e.toString());
                     }
                 }
             }
@@ -1399,7 +1431,7 @@ public class XMLRepository extends Repository
                             try {
                                 quote.setDate(dateTimeFormat.parse(value.getNodeValue()));
                             } catch (Exception e) {
-                                logger.warn(e.toString());
+                                log.warn(e.toString());
                             }
                         }
                         else if (nodeName.equalsIgnoreCase("last")) //$NON-NLS-1$
@@ -1449,7 +1481,7 @@ public class XMLRepository extends Repository
                     split.setToQuantity(Integer.parseInt(attributes.getNamedItem("toQuantity").getNodeValue()));
                     security.getSplits().add(split);
                 } catch (Exception e) {
-                    logger.error(e.toString());
+                    log.error(e.toString());
                 }
             }
             else if (nodeName.equalsIgnoreCase("dividend")) //$NON-NLS-1$
@@ -1461,7 +1493,7 @@ public class XMLRepository extends Repository
                     dividend.setValue(new Double(Double.parseDouble(attributes.getNamedItem("value").getNodeValue())).doubleValue());
                     security.getDividends().add(dividend);
                 } catch (Exception e) {
-                    logger.error(e.toString());
+                    log.error(e.toString());
                 }
             }
         }
@@ -1689,6 +1721,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
@@ -1712,7 +1745,7 @@ public class XMLRepository extends Repository
             saveDocument(document, "", "securities.xml");
 
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
     
@@ -1775,7 +1808,7 @@ public class XMLRepository extends Repository
                         Security security = (Security)load(Security.class, new Integer(id));
                         if (security == null)
                         {
-                            logger.warn("Cannot load security (id=" + id + ")");
+                            log.warn("Cannot load security (id=" + id + ")");
                             continue;
                         }
                         
@@ -1806,7 +1839,7 @@ public class XMLRepository extends Repository
                                     try {
                                         alert.setLastSeen(dateTimeFormat.parse(item.getAttributes().getNamedItem("lastSeen").getNodeValue()));
                                     } catch(Exception e) {
-                                        logger.warn(e.toString());
+                                        log.warn(e.toString());
                                     }
                                 }
                                 if (item.getAttributes().getNamedItem("popup") != null)
@@ -1850,6 +1883,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
@@ -1952,7 +1986,7 @@ public class XMLRepository extends Repository
             saveDocument(document, "", "watchlists.xml");
 
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
 
@@ -1980,7 +2014,7 @@ public class XMLRepository extends Repository
                     try {
                         news.setDate(dateTimeFormat.parse(value.getNodeValue()));
                     } catch (Exception e) {
-                        logger.warn(e.toString());
+                        log.warn(e.toString());
                     }
                 }
                 else if (nodeName.equals("description")) //$NON-NLS-1$
@@ -2001,6 +2035,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
@@ -2032,7 +2067,7 @@ public class XMLRepository extends Repository
             saveDocument(document, "", "news.xml");
 
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
 
@@ -2099,7 +2134,7 @@ public class XMLRepository extends Repository
                             try {
                                 transaction.setDate(dateTimeFormat.parse(value.getNodeValue()));
                             } catch(Exception e) {
-                                logger.error(e.toString(), e);
+                                log.error(e.toString(), e);
                                 break;
                             }
                         }
@@ -2107,7 +2142,7 @@ public class XMLRepository extends Repository
                         {
                             transaction.setSecurity((Security)load(Security.class, new Integer(Integer.parseInt(value.getNodeValue()))));
                             if (transaction.getSecurity() == null)
-                                logger.warn("Cannot load security (id=" + value.getNodeValue() + ")");
+                                log.warn("Cannot load security (id=" + value.getNodeValue() + ")");
                         }
                         else if (nodeName.equals("price")) //$NON-NLS-1$
                             transaction.setPrice(Double.parseDouble(value.getNodeValue()));
@@ -2276,6 +2311,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
@@ -2301,7 +2337,7 @@ public class XMLRepository extends Repository
             saveDocument(document, "", "accounts.xml");
 
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
 
@@ -2327,7 +2363,7 @@ public class XMLRepository extends Repository
                     try {
                         event.setDate(dateTimeFormat.parse(value.getNodeValue()));
                     } catch (Exception e) {
-                        logger.warn(e.toString());
+                        log.warn(e.toString());
                     }
                 }
                 else if (nodeName.equals("message")) //$NON-NLS-1$
@@ -2348,12 +2384,12 @@ public class XMLRepository extends Repository
 
         order.setSecurity(getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue()));
         if (order.getSecurity() == null)
-            logger.warn("Cannot load security (id=" + ((Node)node).getAttributes().getNamedItem("security").getNodeValue() + ")");
+            log.warn("Cannot load security (id=" + ((Node)node).getAttributes().getNamedItem("security").getNodeValue() + ")");
         
         String pluginId = ((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue();
         order.setProvider(CorePlugin.createTradeSourcePlugin(pluginId));
         if (order.getProvider() == null)
-            logger.warn("Cannot load trade source '" + pluginId + "' for order (id=" + String.valueOf(order.getId()) + ")");
+            log.warn("Cannot load trade source '" + pluginId + "' for order (id=" + String.valueOf(order.getId()) + ")");
         order.setPluginId(pluginId);
 
         for (int i = 0; i < node.getLength(); i++)
@@ -2368,7 +2404,7 @@ public class XMLRepository extends Repository
                     try {
                         order.setDate(dateTimeFormat.parse(value.getNodeValue()));
                     } catch (Exception e) {
-                        logger.warn(e.toString());
+                        log.warn(e.toString());
                     }
                 }
                 else if (nodeName.equals("exchange")) //$NON-NLS-1$
@@ -2397,7 +2433,7 @@ public class XMLRepository extends Repository
                 {
                     order.setAccount((Account)this.accountMap.get(new Integer(value.getNodeValue())));
                     if (order.getAccount() != null)
-                        logger.warn("Cannot load account (id=" + value.getNodeValue() + ")");
+                        log.warn("Cannot load account (id=" + value.getNodeValue() + ")");
                 }
             }
             if (nodeName.equalsIgnoreCase("param") == true)
@@ -2416,6 +2452,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
@@ -2494,7 +2531,7 @@ public class XMLRepository extends Repository
             saveDocument(document, "", "orders.xml");
 
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
     
@@ -2502,6 +2539,7 @@ public class XMLRepository extends Repository
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setErrorHandler(errorHandler);
             Document document = builder.getDOMImplementation().createDocument(null, "data", null);
 
             Element root = document.getDocumentElement();
@@ -2529,7 +2567,7 @@ public class XMLRepository extends Repository
             saveDocument(document, "", "events.xml");
 
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
 
@@ -2557,7 +2595,7 @@ public class XMLRepository extends Repository
             out.flush();
             out.close();
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            log.error(e.toString(), e);
         }
     }
 }
