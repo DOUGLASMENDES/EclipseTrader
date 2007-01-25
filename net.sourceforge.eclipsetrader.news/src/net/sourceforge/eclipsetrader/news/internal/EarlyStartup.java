@@ -34,11 +34,11 @@ public class EarlyStartup implements IStartup
     {
         if (CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_NEWS))
         {
-            Job job = new Job("Update chart data") {
+            Job job = new Job("News update") {
                 protected IStatus run(IProgressMonitor monitor)
                 {
                     monitor.beginTask("Updating news", 1);
-                    NewsPlugin.startFeedSnapshot();
+                    NewsPlugin.getDefault().startFeedSnapshot();
                     monitor.worked(1);
                     monitor.done();
                     return Status.OK_STATUS;

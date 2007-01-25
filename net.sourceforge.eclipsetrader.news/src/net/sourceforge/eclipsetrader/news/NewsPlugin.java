@@ -141,12 +141,13 @@ public class NewsPlugin extends AbstractUIPlugin
             }
         }
         
-        getPreferenceStore().setValue(NewsPlugin.FEED_RUNNING, true);
+        store.setValue(NewsPlugin.FEED_RUNNING, true);
     }
     
-    public static void startFeedSnapshot()
+    public void startFeedSnapshot()
     {
-        IPreferenceStore store = NewsPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore store = getPreferenceStore();
+        store.setValue(NewsPlugin.FEED_RUNNING, true);
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry.getExtensionPoint(NewsPlugin.PROVIDER_EXTENSION_POINT);
@@ -168,7 +169,7 @@ public class NewsPlugin extends AbstractUIPlugin
             }
         }
         
-        NewsPlugin.getDefault().getPreferenceStore().setValue(NewsPlugin.FEED_RUNNING, true);
+        store.setValue(NewsPlugin.FEED_RUNNING, false);
     }
     
     public void startFeedSnapshot(Security security)
@@ -195,7 +196,7 @@ public class NewsPlugin extends AbstractUIPlugin
             }
         }
         
-        getPreferenceStore().setValue(NewsPlugin.FEED_RUNNING, true);
+        store.setValue(NewsPlugin.FEED_RUNNING, true);
     }
     
     public void stopFeed()
