@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,6 +53,7 @@ public class NewsProvider implements Runnable, INewsProvider
     private boolean stopping = false;
     private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
     private FeedFetcher fetcher = new HttpURLFeedFetcher(feedInfoCache);
+    static private List oldItems = new ArrayList();
     private Log log = LogFactory.getLog(getClass());
 
     public NewsProvider()
@@ -138,6 +139,14 @@ public class NewsProvider implements Runnable, INewsProvider
 
     private void update()
     {
+        Object[] o = oldItems.toArray();
+        for (int i = 0; i < o.length; i++)
+        {
+            ((NewsItem)o[i]).setRecent(false);
+            CorePlugin.getRepository().save((NewsItem)o[i]);
+        }
+        oldItems.clear();
+        
         Job job = new Job("Yahoo! News") {
             protected IStatus run(IProgressMonitor monitor)
             {
@@ -182,13 +191,13 @@ public class NewsProvider implements Runnable, INewsProvider
                 
                 List securities = CorePlugin.getRepository().allSecurities();
                 monitor.beginTask("Fetching Yahoo! News", securities.size() + urls.size());
+                log.info("Start fetching Yahoo! News");
 
                 for (Iterator iter = securities.iterator(); iter.hasNext(); )
                 {
                     Security security = (Security) iter.next();
                     try {
                         String url = "http://finance.yahoo.com/rss/headline?s=" + security.getCode().toLowerCase(); //$NON-NLS-1$
-                        log.debug(url);
                         monitor.subTask(url);
                         update(new URL(url), security);
                     } catch(Exception e) {
@@ -201,7 +210,6 @@ public class NewsProvider implements Runnable, INewsProvider
                     String url = (String) iter.next();
                     try {
                         monitor.subTask(url);
-                        log.debug(url);
                         update(new URL(url));
                     } catch(Exception e) {
                         log.error(e, e);
@@ -224,7 +232,11 @@ public class NewsProvider implements Runnable, INewsProvider
 
     private void update(URL feedUrl, Security security)
     {
+        Calendar limit = Calendar.getInstance();
+        limit.add(Calendar.DATE, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
+        
         boolean subscribersOnly = YahooPlugin.getDefault().getPreferenceStore().getBoolean(YahooPlugin.PREFS_SHOW_SUBSCRIBERS_ONLY);
+        log.debug(feedUrl);
         
         try {
             SyndFeed feed = fetcher.retrieveFeed(feedUrl);
@@ -236,16 +248,8 @@ public class NewsProvider implements Runnable, INewsProvider
                     continue;
                 
                 NewsItem news = new NewsItem();
-                Date entryDate = entry.getPublishedDate();
-                if (entry.getUpdatedDate() != null)
-                    entryDate = entry.getUpdatedDate();
-                if (entryDate != null)
-                {
-                    Calendar date = Calendar.getInstance();
-                    date.setTime(entryDate);
-                    date.set(Calendar.SECOND, 0);
-                    news.setDate(date.getTime());
-                }
+                news.setRecent(true);
+
                 String title = entry.getTitle();
                 if (title.endsWith(")"))
                 {
@@ -257,13 +261,50 @@ public class NewsProvider implements Runnable, INewsProvider
                     }
                 }
                 news.setTitle(title);
+                
                 news.setUrl(entry.getLink());
+                
+                Date entryDate = entry.getPublishedDate();
+                if (entry.getUpdatedDate() != null)
+                    entryDate = entry.getUpdatedDate();
+                if (entryDate != null)
+                {
+                    Calendar date = Calendar.getInstance();
+                    date.setTime(entryDate);
+                    date.set(Calendar.SECOND, 0);
+                    date.set(Calendar.MILLISECOND, 0);
+                    news.setDate(date.getTime());
+                }
+
                 if (security != null)
                     news.addSecurity(security);
-                CorePlugin.getRepository().save(news);
+                
+                if (!news.getDate().before(limit.getTime()) && !isDuplicated(news))
+                {
+                    log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                    CorePlugin.getRepository().save(news);
+                    oldItems.add(news);
+                }
             }
         } catch(Exception e) {
             log.error(e, e);
         }
+    }
+    
+    boolean isDuplicated(NewsItem news)
+    {
+        NewsItem[] items = (NewsItem[])CorePlugin.getRepository().allNews().toArray(new NewsItem[0]);
+        
+        for (int i = 0; i < items.length; i++)
+        {
+            if (news.getTitle().equals(items[i].getTitle()) && news.getUrl().equals(items[i].getUrl()))
+            {
+                items[i].addSecurities(news.getSecurities());
+                CorePlugin.getRepository().save(items[i]);
+                return true;
+            }
+        }
+
+        return false;
     }
 }
