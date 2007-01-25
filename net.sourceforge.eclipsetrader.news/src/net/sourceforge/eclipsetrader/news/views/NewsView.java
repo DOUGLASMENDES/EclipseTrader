@@ -242,7 +242,6 @@ public class NewsView extends ViewPart implements ICollectionObserver
             public void run()
             {
                 NewsItem news = (NewsItem) o;
-                news.setRecent(true);
                 TableItem tableItem = null;
 
                 TableItem[] items = table.getItems();
