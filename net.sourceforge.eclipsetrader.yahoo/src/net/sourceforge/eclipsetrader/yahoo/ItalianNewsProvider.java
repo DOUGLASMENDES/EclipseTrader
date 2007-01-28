@@ -11,10 +11,17 @@
 
 package net.sourceforge.eclipsetrader.yahoo;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.INewsProvider;
@@ -24,10 +31,13 @@ import net.sourceforge.eclipsetrader.news.NewsPlugin;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.OrFilter;
@@ -36,52 +46,22 @@ import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
+import org.w3c.dom.Document;
+
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.fetcher.FeedFetcher;
+import com.sun.syndication.fetcher.impl.FeedFetcherCache;
+import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
+import com.sun.syndication.fetcher.impl.HttpURLFeedFetcher;
 
 public class ItalianNewsProvider implements Runnable, INewsProvider
 {
     private Thread thread;
     private boolean stopping = false;
-    private String url[] = {
-            "http://it.biz.yahoo.com/aspettandodow/index.html",
-            "http://it.biz.yahoo.com/attualita/index.html",
-            "http://it.biz.yahoo.com/attualita/after.html",
-            "http://it.biz.yahoo.com/attualita/agenda.html",
-            "http://it.biz.yahoo.com/attualita/asia.html",
-            "http://it.biz.yahoo.com/attualita/aumenticap.html",
-            "http://it.biz.yahoo.com/attualita/avviso.html", 
-            "http://it.biz.yahoo.com/attualita/cda.html",
-            "http://it.biz.yahoo.com/attualita/companyres.html", 
-            "http://it.biz.yahoo.com/attualita/comunicati.html",
-            "http://it.biz.yahoo.com/attualita/coveredwarrants.html",
-            "http://it.biz.yahoo.com/attualita/dollaro/index.html",
-            "http://it.biz.yahoo.com/attualita/fib30.html",
-            "http://it.biz.yahoo.com/attualita/gann/index.html",
-            "http://it.biz.yahoo.com/attualita/giappone.html", 
-            "http://it.biz.yahoo.com/attualita/giornali.html", 
-            "http://it.biz.yahoo.com/attualita/ipo.html",
-            "http://it.biz.yahoo.com/attualita/mib30/index.html",
-            "http://it.biz.yahoo.com/attualita/milano_chiusure.html",
-            "http://it.biz.yahoo.com/attualita/nasdaq.html", 
-            "http://it.biz.yahoo.com/attualita/obbligazioni.html",
-            "http://it.biz.yahoo.com/attualita/occhio.html", 
-            "http://it.biz.yahoo.com/attualita/ratings.html",
-            "http://it.biz.yahoo.com/attualita/seul.html",
-            "http://it.biz.yahoo.com/attualita/singapore.html",
-            "http://it.biz.yahoo.com/attualita/taiwan.html",
-            "http://it.biz.yahoo.com/attualita/yen.html",
-            "http://it.biz.yahoo.com/etf/index.html",
-            "http://it.biz.yahoo.com/finance_top_business.html", 
-            "http://it.biz.yahoo.com/francoforte.html", 
-            "http://it.biz.yahoo.com/funds/news_old.html",
-            "http://it.biz.yahoo.com/londra.html", 
-            "http://it.biz.yahoo.com/mercatochiuso/index.html",
-            "http://it.biz.yahoo.com/newsfinanzaworld.html",
-            "http://it.biz.yahoo.com/newslet/free/index.html",
-            "http://it.biz.yahoo.com/parigi.html", 
-            "http://it.biz.yahoo.com/researchalerts.html", 
-            "http://it.biz.yahoo.com/techstar/index.html",
-            "http://it.biz.yahoo.com/trader/index.html",
-    };
+    static private List oldItems = new ArrayList();
+    private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
+    private FeedFetcher fetcher = new HttpURLFeedFetcher(feedInfoCache);
     private Log log = LogFactory.getLog(getClass());
 
     public ItalianNewsProvider()
@@ -112,7 +92,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
             }
             thread = null;
         }
@@ -131,6 +111,11 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
      */
     public void snapshot(Security security)
     {
+        try {
+            update(new URL("http://it.finance.yahoo.com/rss/headline?s=" + security.getCode().toUpperCase()), security);
+        } catch(Exception e) {
+            CorePlugin.logException(e);
+        }
     }
 
     /* (non-Javadoc)
@@ -152,7 +137,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
                 break;
             }
         }
@@ -162,15 +147,78 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
     private void update()
     {
-        Job job = new Job("Yahoo! News") {
+        Object[] o = oldItems.toArray();
+        for (int i = 0; i < o.length; i++)
+        {
+            ((NewsItem)o[i]).setRecent(false);
+            CorePlugin.getRepository().save((NewsItem)o[i]);
+        }
+        oldItems.clear();
+        
+        Job job = new Job("Yahoo! News (Italy)") {
             protected IStatus run(IProgressMonitor monitor)
             {
-                monitor.beginTask("Fetching Yahoo! News (Italy)", url.length);
+                IPreferenceStore store = YahooPlugin.getDefault().getPreferenceStore();
 
-                for (int i = 0; i < url.length; i++)
+                List urls = new ArrayList();
+                try
                 {
-                    monitor.subTask(url[i]);
-                    parseNewsPage(url[i]);
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("categories.it.xml"), false)); //$NON-NLS-1$
+
+                    org.w3c.dom.NodeList childNodes = document.getFirstChild().getChildNodes();
+                    for (int i = 0; i < childNodes.getLength(); i++)
+                    {
+                        org.w3c.dom.Node node = childNodes.item(i);
+                        String nodeName = node.getNodeName();
+                        if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
+                        {
+                            String id = ((org.w3c.dom.Node)node).getAttributes().getNamedItem("id").getNodeValue(); //$NON-NLS-1$
+                         
+                            org.w3c.dom.NodeList list = node.getChildNodes();
+                            for (int x = 0; x < list.getLength(); x++)
+                            {
+                                org.w3c.dom.Node item = list.item(x);
+                                nodeName = item.getNodeName();
+                                org.w3c.dom.Node value = item.getFirstChild();
+                                if (value != null)
+                                {
+                                    if (nodeName.equalsIgnoreCase("url")) //$NON-NLS-1$
+                                    {
+                                        if (store.getBoolean(id))
+                                            urls.add(value.getNodeValue());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
+
+                List securities = CorePlugin.getRepository().allSecurities();
+                monitor.beginTask("Fetching Yahoo! News (Italy)", urls.size() + securities.size());
+                log.info("Start fetching Yahoo! News (Italy)");
+
+                for (Iterator iter = securities.iterator(); iter.hasNext(); )
+                {
+                    Security security = (Security) iter.next();
+                    try {
+                        String url = "http://it.finance.yahoo.com/rss/headline?s=" + security.getCode().toUpperCase(); //$NON-NLS-1$
+                        monitor.subTask(url);
+                        update(new URL(url), security);
+                        monitor.worked(1);
+                    } catch(Exception e) {
+                        log.error(e, e);
+                    }
+                }
+
+                for (Iterator iter = urls.iterator(); iter.hasNext(); )
+                {
+                    String url = (String) iter.next();
+                    monitor.subTask(url);
+                    parseNewsPage(url);
                     monitor.worked(1);
                 }
 
@@ -184,11 +232,14 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
     private void parseNewsPage(String url)
     {
+        Calendar limit = Calendar.getInstance();
+        limit.add(Calendar.DATE, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
+
         int dtCount = 0;
         int liCount = 0;
         
         try {
-            log.info(url);
+            log.debug(url);
             Parser parser = new Parser(url);
 
             NodeList list = parser.extractAllNodesThatMatch(new OrFilter(new TagNameFilter("dt"), new TagNameFilter("li")));
@@ -202,8 +253,9 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
                     LinkTag link = (LinkTag)list.elementAt(3);
 
                     NewsItem news = new NewsItem();
+                    news.setRecent(true);
                     news.setTitle(decode(link.getLinkText().trim()));
-                    news.setUrl(decode(link.getLink()));
+                    news.setUrl(link.getLink());
 
                     String source = list.elementAt(9).getText();
                     source = source.replaceAll("[\r\n]", " ");
@@ -213,8 +265,12 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
                     news.setDate(parseDateString(root.getNextSibling().getNextSibling().getNextSibling().getChildren().elementAt(1).getText()));
 
-                    log.debug(news.getTitle() + " (" + news.getSource() + ")");
-                    CorePlugin.getRepository().save(news);
+                    if (!news.getDate().before(limit.getTime()))
+                    {
+                        log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                        CorePlugin.getRepository().save(news);
+                        oldItems.add(news);
+                    }
                     dtCount++;
                 }
                 else if (((TagNode) root).getTagName().equalsIgnoreCase("li") && list.size() == 14)
@@ -222,8 +278,9 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
                     LinkTag link = (LinkTag)list.elementAt(1);
 
                     NewsItem news = new NewsItem();
+                    news.setRecent(true);
                     news.setTitle(decode(link.getLinkText().trim()));
-                    news.setUrl(decode(link.getLink()));
+                    news.setUrl(link.getLink());
 
                     String source = list.elementAt(6).getText();
                     source = source.replaceAll("[\r\n]", " ");
@@ -233,8 +290,12 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
                     news.setDate(parseDateString(list.elementAt(10).getText()));
 
-                    log.debug(news.getTitle() + " (" + news.getSource() + ")");
-                    CorePlugin.getRepository().save(news);
+                    if (!news.getDate().before(limit.getTime()))
+                    {
+                        log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                        CorePlugin.getRepository().save(news);
+                        oldItems.add(news);
+                    }
                     liCount++;
                 }
             }
@@ -246,6 +307,67 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
         }
         catch (Exception e) {
             log.error(e, e);
+        }
+    }
+
+    private void update(URL feedUrl, Security security)
+    {
+        Calendar limit = Calendar.getInstance();
+        limit.add(Calendar.DATE, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
+
+        boolean subscribersOnly = YahooPlugin.getDefault().getPreferenceStore().getBoolean(YahooPlugin.PREFS_SHOW_SUBSCRIBERS_ONLY);
+        log.debug(feedUrl);
+        
+        try {
+            SyndFeed feed = fetcher.retrieveFeed(feedUrl);
+            for (Iterator iter = feed.getEntries().iterator(); iter.hasNext(); )
+            {
+                SyndEntry entry = (SyndEntry) iter.next();
+                
+                if (!subscribersOnly && entry.getTitle().indexOf("[$$]") != -1)
+                    continue;
+                
+                NewsItem news = new NewsItem();
+                news.setRecent(true);
+
+                String title = entry.getTitle();
+                if (title.endsWith(")"))
+                {
+                    int s = title.lastIndexOf('(');
+                    if (s != -1)
+                    {
+                        news.setSource(title.substring(s + 1, title.length() - 1));
+                        title = title.substring(0, s - 1).trim();
+                    }
+                }
+                news.setTitle(decode(title));
+
+                news.setUrl(entry.getLink());
+
+                Date entryDate = entry.getPublishedDate();
+                if (entry.getUpdatedDate() != null)
+                    entryDate = entry.getUpdatedDate();
+                if (entryDate != null)
+                {
+                    Calendar date = Calendar.getInstance();
+                    date.setTime(entryDate);
+                    date.set(Calendar.SECOND, 0);
+                    date.set(Calendar.MILLISECOND, 0);
+                    news.setDate(date.getTime());
+                }
+                
+                if (security != null)
+                    news.addSecurity(security);
+
+                if (!news.getDate().before(limit.getTime()) && !isDuplicated(news))
+                {
+                    log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                    CorePlugin.getRepository().save(news);
+                    oldItems.add(news);
+                }
+            }
+        } catch(Exception e) {
+            CorePlugin.logException(e);
         }
     }
 
@@ -303,42 +425,78 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
         if (s.indexOf("&#") == -1)
             return s;
         
-        int numChars = s.length();
         int i = 0;
         StringBuffer sb = new StringBuffer();
-        byte[] bytes = s.getBytes();
+        byte[] bytes = new byte[0];
+        try {
+            bytes = s.getBytes();
+        } catch(Exception e) {
+            log.error(e, e);
+            bytes = s.getBytes();
+        }
         
-        while(i < numChars)
+        while(i < bytes.length)
         {
-            char c = s.charAt(i++);
-            if (c == '&' && i < numChars)
+            byte c = bytes[i++];
+            if (c == '&' && i < bytes.length)
             {
-                c = s.charAt(i++);
+                c = bytes[i++];
                 if (c == '#')
                 {
                     int data = 0;
-                    if (i < numChars)
-                        data = (data * 10) + (bytes[i++] - '0');
-                    if (i < numChars)
-                        data = (data * 10) + (bytes[i++] - '0');
-                    try {
-                        sb.append(new String(new byte[] { (byte)data }));
-                    } catch(Exception e) {
-                        log.error(e, e);
+                    while(i < bytes.length)
+                    {
+                        c = bytes[i++];
+                        if (c < '0' || c > '9')
+                            break;
+                        data = (data * 10) + (c - '0');
                     }
-                    i++;
+                    if (data >= ' ')
+                    {
+                        try {
+                            sb.append(new String(new byte[] { (byte)data }));
+                        } catch(Exception e) {
+                            log.error(e, e);
+                        }
+                    }
                 }
                 else
                 {
-                    sb.append('&');
-                    sb.append(c);
+                    try {
+                        sb.append('&');
+                        sb.append(new String(new byte[] { c }));
+                    } catch(Exception e) {
+                        log.error(e, e);
+                    }
                 }
             }
-            else
-                sb.append(c);
+            else if (c >= ' ')
+            {
+                try {
+                    sb.append(new String(new byte[] { c }));
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
+            }
         }
         
         return sb.toString();
     }
     
+    boolean isDuplicated(NewsItem news)
+    {
+        NewsItem[] items = (NewsItem[])CorePlugin.getRepository().allNews().toArray(new NewsItem[0]);
+        
+        for (int i = 0; i < items.length; i++)
+        {
+            if (news.getTitle().equals(items[i].getTitle()) && news.getUrl().equals(items[i].getUrl()))
+            {
+                items[i].addSecurities(news.getSecurities());
+                CorePlugin.getRepository().save(items[i]);
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

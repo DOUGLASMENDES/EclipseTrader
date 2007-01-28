@@ -54,6 +54,11 @@
             class="net.sourceforge.eclipsetrader.yahoo.preferences.FrenchNewsPreferencesPage"
             id="net.sourceforge.eclipsetrader.yahoo.news.france"
             name="Yahoo! France"/>
+      <page
+            category="net.sourceforge.eclipsetrader.news"
+            class="net.sourceforge.eclipsetrader.yahoo.preferences.ItalianNewsPreferencesPage"
+            id="net.sourceforge.eclipsetrader.yahoo.news.italy"
+            name="Yahoo! Italia"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.core.feeds">

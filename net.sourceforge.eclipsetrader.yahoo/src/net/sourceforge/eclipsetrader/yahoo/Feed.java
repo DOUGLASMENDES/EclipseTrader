@@ -100,7 +100,7 @@ public class Feed implements IFeed, Runnable
         if (thread != null)
         {
             try {
-                thread.join();
+                thread.join(30 * 1000);
                 log.info("Thread stopped");
             }
             catch (InterruptedException e) {
@@ -142,10 +142,8 @@ public class Feed implements IFeed, Runnable
 
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException e) {
-                log.error(e, e);
-                break;
+            } catch (InterruptedException e) {
+                // Ignore exception, not important at this time
             }
         }
     }
