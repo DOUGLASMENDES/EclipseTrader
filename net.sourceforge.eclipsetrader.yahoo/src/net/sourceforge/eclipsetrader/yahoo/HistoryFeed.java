@@ -16,7 +16,6 @@ import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
@@ -36,10 +35,10 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 public class HistoryFeed implements IHistoryFeed
 {
-    protected SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
-    protected NumberFormat nf = NumberFormat.getInstance(Locale.US);
-    protected NumberFormat pf = NumberFormat.getInstance(Locale.US);
-    String months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yy", Locale.US);
+    SimpleDateFormat dfAlt = new SimpleDateFormat("yy-MM-dd");
+    NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    NumberFormat pf = NumberFormat.getInstance(Locale.US);
     private Log log = LogFactory.getLog(getClass());
 
     public HistoryFeed()
@@ -76,8 +75,7 @@ public class HistoryFeed implements IHistoryFeed
                     to.setTime(from.getTime());
                     to.add(Calendar.DATE, 200);
                 }
-
-                StringBuffer url = new StringBuffer("http://table.finance.yahoo.com/table.csv" + "?s=");
+                StringBuffer url = new StringBuffer("http://ichart.finance.yahoo.com/table.csv" + "?s=");
                 String symbol = null;
                 if (security.getHistoryFeed() != null)
                     symbol = security.getHistoryFeed().getSymbol();
@@ -86,7 +84,7 @@ public class HistoryFeed implements IHistoryFeed
                 url.append(symbol);
                 url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR));
                 url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR));
-                url.append("&g=d&q=q&y=0&z=&x=.csv");
+                url.append("&g=d&ignore=.csv");
                 log.debug(url);
 
                 try {
@@ -119,22 +117,17 @@ public class HistoryFeed implements IHistoryFeed
                         String[] item = inputLine.split(",");
                         if (item.length < 6)
                             continue;
-                        String[] dateItem = item[0].split("-");
-                        if (dateItem.length != 3)
-                            continue;
 
-                        int yr = Integer.parseInt(dateItem[2]);
-                        if (yr < 30)
-                            yr += 2000;
-                        else
-                            yr += 1900;
-                        int mm = 0;
-                        for (mm = 0; mm < months.length; mm++)
-                        {
-                            if (dateItem[1].equalsIgnoreCase(months[mm]) == true)
-                                break;
+                        Calendar day = Calendar.getInstance();
+                        try {
+                            day.setTime(df.parse(item[0]));
+                        } catch(Exception e) {
+                            try {
+                                day.setTime(dfAlt.parse(item[0]));
+                            } catch(Exception e1) {
+                                log.error(e1, e1);
+                            }
                         }
-                        Calendar day = new GregorianCalendar(yr, mm, Integer.parseInt(dateItem[0]));
                         day.set(Calendar.HOUR, 0);
                         day.set(Calendar.MINUTE, 0);
                         day.set(Calendar.SECOND, 0);
