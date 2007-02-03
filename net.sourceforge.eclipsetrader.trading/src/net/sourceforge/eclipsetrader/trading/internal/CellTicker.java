@@ -27,10 +27,10 @@ public class CellTicker
     private int style;
     private int interval = 5;
     private Color foreground;
-    private Color background = new Color(null, 255, 224, 0);
-    private Color incrementForeground = new Color(null, 0, 224, 0);
+    private Color background;
+    private Color incrementForeground;
     private Color incrementBackground;
-    private Color decrementForeground = new Color(null, 224, 0, 0);
+    private Color decrementForeground;
     private Color decrementBackground;
     private TableItem tableItem;
     private Status rowStatus;
@@ -76,10 +76,6 @@ public class CellTicker
     
     public void dispose()
     {
-        if (foreground != null)
-            foreground.dispose();
-        if (background != null)
-            background.dispose();
     }
 
     public void tick(int index)
@@ -115,24 +111,24 @@ public class CellTicker
         {
             s.item = tableItem;
             s.index = index;
-            if ((style & FOREGROUND) != 0)
+            if ((style & BACKGROUND) != 0)
             {
                 s.bg = tableItem.getBackground(index);
                 Color bg = tableItem.getBackground();
                 if (bg.equals(s.bg))
                     s.bg = null;
+                if (background != null)
+                    tableItem.setBackground(index, background);
             }
-            if ((style & BACKGROUND) != 0)
+            if ((style & FOREGROUND) != 0)
             {
                 s.fg = tableItem.getForeground(index);
                 Color fg = tableItem.getForeground();
                 if (fg.equals(s.fg))
                     s.fg = null;
+                if (foreground != null)
+                    tableItem.setForeground(index, foreground);
             }
-            if (background != null)
-                tableItem.setBackground(index, background);
-            if (foreground != null)
-                tableItem.setForeground(index, foreground);
             s.started = System.currentTimeMillis();
             tableItem.getDisplay().timerExec(interval * 1000, s);
         }
@@ -154,14 +150,18 @@ public class CellTicker
             for (int i = 0; i < stats.length; i++)
                 stats[i].run();
             
-            if ((style & FOREGROUND) != 0)
-                rowStatus.bg = tableItem.getBackground();
             if ((style & BACKGROUND) != 0)
+            {
+                rowStatus.bg = tableItem.getBackground();
+                if (background != null)
+                    tableItem.setBackground(background);
+            }
+            if ((style & FOREGROUND) != 0)
+            {
                 rowStatus.fg = tableItem.getForeground();
-            if (background != null)
-                tableItem.setBackground(background);
-            if (foreground != null)
-                tableItem.setForeground(foreground);
+                if (foreground != null)
+                    tableItem.setForeground(foreground);
+            }
             rowStatus.started = System.currentTimeMillis();
             tableItem.getDisplay().timerExec(interval * 1000, rowStatus);
         }
@@ -174,9 +174,7 @@ public class CellTicker
 
     public void setBackground(Color background)
     {
-        if (this.background != null)
-            this.background.dispose();
-        this.background = new Color(tableItem.getDisplay(), background.getRGB());
+        this.background = background;
     }
 
     public Color getForeground()
@@ -186,9 +184,7 @@ public class CellTicker
 
     public void setForeground(Color foreground)
     {
-        if (this.foreground != null)
-            this.foreground.dispose();
-        this.foreground = new Color(tableItem.getDisplay(), foreground.getRGB());
+        this.foreground = foreground;
     }
 
     public Color getDecrementBackground()
