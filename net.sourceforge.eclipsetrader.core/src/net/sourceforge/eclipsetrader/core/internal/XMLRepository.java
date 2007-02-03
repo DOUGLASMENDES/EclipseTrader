@@ -2593,7 +2593,7 @@ public class XMLRepository extends Repository
             } catch(Exception e) {}
             Transformer transformer = factory.newTransformer();
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
             DOMSource source = new DOMSource(document);
