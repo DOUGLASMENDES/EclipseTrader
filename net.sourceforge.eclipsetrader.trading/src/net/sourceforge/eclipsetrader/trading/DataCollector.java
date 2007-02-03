@@ -23,6 +23,7 @@ import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.IntradayHistory;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,23 +31,10 @@ import org.apache.commons.logging.LogFactory;
 public class DataCollector implements Observer, ICollectionObserver
 {
     private int minutes = 1;
+    private int changes = 15;
     private Map map = new HashMap();
     private Calendar barTime = Calendar.getInstance();
     private Log log = LogFactory.getLog(getClass());
-    
-    private class MapData
-    {
-        Bar bar;
-        IntradayHistory history;
-        long volume;
-        Calendar nextBarTime;
-
-        MapData(IntradayHistory data)
-        {
-            this.history = data;
-            nextBarTime = Calendar.getInstance();
-        }
-    }
 
     public DataCollector()
     {
@@ -70,10 +58,12 @@ public class DataCollector implements Observer, ICollectionObserver
     public void update(Observable o, Object arg)
     {
         Security security = (Security) arg;
-        if (!security.isEnableDataCollector() || security.getQuote().getDate() == null)
+        Quote quote = security.getQuote();
+
+        if (!security.isEnableDataCollector() || quote == null || quote.getDate() == null)
             return;
         
-        barTime.setTime(security.getQuote().getDate());
+        barTime.setTime(quote.getDate());
         barTime.set(Calendar.SECOND, 0);
         barTime.set(Calendar.MILLISECOND, 0);
 
@@ -103,32 +93,44 @@ public class DataCollector implements Observer, ICollectionObserver
                         data.history.remove(0);
                 }
                 
-                log.debug("Notifying intraday data updated for " + security.getCode() + " - " + security.getDescription());
-                CorePlugin.getRepository().save(data.history);
+                try {
+                    log.trace("Notifying intraday data updated for " + security.getCode() + " - " + security.getDescription());
+                    data.history.notifyObservers();
+                    data.changes++;
+                    if (data.changes >= changes)
+                    {
+                        CorePlugin.getRepository().save(data.history);
+                        data.changes = 0;
+                    }
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
                 data.bar = null;
             }
         }
-        
-        if (data.bar == null)
+        else if (data.bar == null)
         {
             data.bar = new Bar();
-            data.bar.setOpen(security.getQuote().getLast());
-            data.bar.setHigh(security.getQuote().getLast());
-            data.bar.setLow(security.getQuote().getLast());
-            data.bar.setClose(security.getQuote().getLast());
-            data.volume = security.getQuote().getVolume();
+            data.bar.setOpen(quote.getLast());
+            data.bar.setHigh(quote.getLast());
+            data.bar.setLow(quote.getLast());
+            data.bar.setClose(quote.getLast());
+            data.volume = quote.getVolume();
             barTime.add(Calendar.MINUTE, - (barTime.get(Calendar.MINUTE) % minutes));
             data.bar.setDate(barTime.getTime());
             data.nextBarTime.setTime(data.bar.getDate());
             data.nextBarTime.add(Calendar.MINUTE, minutes);
         }
 
-        if (security.getQuote().getLast() > data.bar.getHigh())
-            data.bar.setHigh(security.getQuote().getLast());
-        if (security.getQuote().getLast() < data.bar.getLow())
-            data.bar.setLow(security.getQuote().getLast());
-        data.bar.setClose(security.getQuote().getLast());
-        data.bar.setVolume(security.getQuote().getVolume() - data.volume);
+        if (data.bar != null)
+        {
+            if (quote.getLast() > data.bar.getHigh())
+                data.bar.setHigh(quote.getLast());
+            if (quote.getLast() < data.bar.getLow())
+                data.bar.setLow(quote.getLast());
+            data.bar.setClose(quote.getLast());
+            data.bar.setVolume(quote.getVolume() - data.volume);
+        }
     }
 
     /* (non-Javadoc)
@@ -156,12 +158,34 @@ public class DataCollector implements Observer, ICollectionObserver
         if (o instanceof Security)
         {
             Security security = (Security)o;
-            if (map.get(security) != null)
+            MapData data = (MapData)map.get(security);
+            if (data != null)
             {
-                map.remove(security);
                 security.getQuoteMonitor().deleteObserver(this);
+                map.remove(security);
+
+                if (data.history.size() != 0)
+                    CorePlugin.getRepository().save(data.history);
+                
                 log.info("Removed " + security.getDescription());
             }
+        }
+    }
+    
+    private class MapData
+    {
+        Bar bar;
+        IntradayHistory history;
+        long volume;
+        Calendar nextBarTime;
+        int changes;
+
+        MapData(IntradayHistory data)
+        {
+            this.history = data;
+            nextBarTime = Calendar.getInstance();
+            nextBarTime.set(Calendar.SECOND, 0);
+            nextBarTime.set(Calendar.MILLISECOND, 0);
         }
     }
 }
