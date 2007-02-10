@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,6 +45,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.opentick.OTExchange;
+
 /**
  */
 public class SecurityPage extends WizardPage
@@ -53,10 +55,6 @@ public class SecurityPage extends WizardPage
     Table table;
     Text search;
     NodeList childNodes;
-    String[][] list = {
-            { "Nasdaq NMS", "Q" },
-            { "New York Stock Exchange", "N" },
-    };
     
     Runnable runnable = new Runnable() {
         public void run()
@@ -163,11 +161,6 @@ public class SecurityPage extends WizardPage
         label.setText("Exchange");
         exchange = new Combo(group, SWT.READ_ONLY);
         exchange.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        for (int i = 0; i < list.length; i++)
-        {
-            exchange.add(list[i][0]);
-            exchange.setData(list[i][0], list[i][1]);
-        }
         exchange.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -205,6 +198,44 @@ public class SecurityPage extends WizardPage
                 search.getDisplay().timerExec(500, searchJob);
             }
         });
+
+        List exchanges = new ArrayList();
+        exchanges.add(new OTExchange(-1, "A", "American Stock Exchange", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "AO", "American Stock Exchange (options)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "B", "Boston Stock Exchange", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "BO", "Boston Options Exchange", "", true, ""));
+        exchanges.add(new OTExchange(-1, "BT", "Chicago Board of Trade", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "CO", "Chicago Board Options Exchange", "", true, ""));
+        exchanges.add(new OTExchange(-1, "EC", "Chicago Board of Trade (E-Mini)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "MT", "Chicago Mercantile Exchange", "", true, ""));
+        exchanges.add(new OTExchange(-1, "EM", "Chicago Mercantile Exchange (E-Mini)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "HT", "Chicago Mercantile Exchange (GLOBEX)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "M", "Chicago (Midwest) Stock Exchange", "", true, ""));
+        exchanges.add(new OTExchange(-1, "C", "Cincinatti Stock Exchange", "", true, ""));
+        exchanges.add(new OTExchange(-1, "DT", "Dow Jones", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "IO", "International Securities Exchange (options)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "MX", "Montreal Exchange", "", true, ""));
+        exchanges.add(new OTExchange(-1, "D", "Nasdaq ADF", "", true, ""));
+        exchanges.add(new OTExchange(-1, "U", "Nasdaq Bulletin Board", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "V", "Nasdaq Bulletin Board (pink)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "T", "Nasdaq Listed Stocks", "", true, ""));
+        exchanges.add(new OTExchange(-1, "Q", "Nasdaq NMS", "", true, ""));
+        exchanges.add(new OTExchange(-1, "S", "Nasdaq Small Cap", "", true, ""));
+        exchanges.add(new OTExchange(-1, "N", "New York Stock Exchange", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "NO", "New York Stock Exchange (options)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "P", "Pacific Stock Exchange", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "PO", "Pacific Stock Exchange (options)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "X", "Philadelphia Stock Exchange", "", true, ""));
+//        exchanges.add(new OTExchange(-1, "XO", "Philadelphia Stock Exchange (options)", "", true, ""));
+        exchanges.add(new OTExchange(-1, "TO", "Toronto Stock Exchange", "", true, ""));
+        exchanges.add(new OTExchange(-1, "VN", "Toronto Stock Exchange (Venture)", "", true, ""));
+        
+        OTExchange[] list = (OTExchange[])exchanges.toArray(new OTExchange[exchanges.size()]);
+        for (int i = 0; i < list.length; i++)
+        {
+            exchange.add(list[i].getTitle());
+            exchange.setData(list[i].getTitle(), list[i].getCode());
+        }
     }
     
     public List getSelectedSecurities()

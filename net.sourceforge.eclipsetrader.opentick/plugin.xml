@@ -31,22 +31,127 @@
             name="OpenTick">
          <quote class="net.sourceforge.eclipsetrader.opentick.Feed">
             <exchange
+                  id="A"
+                  name="American Stock Exchange"/>
+            <exchange
+                  id="AO"
+                  name="American Stock Exchange (options)"/>
+            <exchange
+                  id="B"
+                  name="Boston Stock Exchange"/>
+            <exchange
+                  id="BO"
+                  name="Boston Options Exchange"/>
+            <exchange
+                  id="BT"
+                  name="Chicago Board of Trade"/>
+            <exchange
+                  id="CO"
+                  name="Chicago Board Options Exchange"/>
+            <exchange
+                  id="EC"
+                  name="Chicago Board of Trade (E-Mini)"/>
+            <exchange
+                  id="MT"
+                  name="Chicago Mercantile Exchange"/>
+            <exchange
+                  id="EM"
+                  name="Chicago Mercantile Exchange (E-Mini)"/>
+            <exchange
+                  id="HT"
+                  name="Chicago Mercantile Exchange (GLOBEX)"/>
+            <exchange
+                  id="M"
+                  name="Chicago (Midwest) Stock Exchange"/>
+            <exchange
+                  id="C"
+                  name="Cincinatti Stock Exchange"/>
+            <exchange
+                  id="DT"
+                  name="Dow Jones"/>
+            <exchange
+                  id="IO"
+                  name="International Securities Exchange (options)"/>
+            <exchange
+                  id="MX"
+                  name="Montreal Exchange"/>
+            <exchange
+                  id="D"
+                  name="Nasdaq ADF"/>
+            <exchange
+                  id="U"
+                  name="Nasdaq Bulletin Board"/>
+            <exchange
+                  id="V"
+                  name="Nasdaq Bulletin Board (pink)"/>
+            <exchange
+                  id="T"
+                  name="Nasdaq Listed Stocks"/>
+            <exchange
                   id="Q"
                   name="Nasdaq NMS"/>
             <exchange
+                  id="S"
+                  name="Nasdaq Small Cap"/>
+            <exchange
                   id="N"
                   name="New York Stock Exchange"/>
+            <exchange
+                  id="NO"
+                  name="New York Stock Exchange (options)"/>
+            <exchange
+                  id="P"
+                  name="Pacific Stock Exchange"/>
+            <exchange
+                  id="PO"
+                  name="Pacific Stock Exchange (options)"/>
+            <exchange
+                  id="X"
+                  name="Philadelphia Stock Exchange"/>
+            <exchange
+                  id="XO"
+                  name="Philadelphia Stock Exchange (options)"/>
+            <exchange
+                  id="TO"
+                  name="Toronto Stock Exchange"/>
+            <exchange
+                  id="VN"
+                  name="Toronto Stock Exchange (Venture)"/>
          </quote>
          <level2 class="net.sourceforge.eclipsetrader.opentick.Level2Feed">
             <exchange
                   id="ar"
                   name="ARCA"/>
             <exchange
+                  id="at"
+                  name="Attain"/>
+            <exchange
+                  id="no"
+                  name="Attain (book 2)"/>
+            <exchange
+                  id="br"
+                  name="BRUT"/>
+            <exchange
                   id="bt"
                   name="Bloomberg"/>
             <exchange
+                  id="cm"
+                  name="CME"/>
+            <exchange
+                  id="em"
+                  name="CME E-Mini"/>
+            <exchange
+                  id="ct"
+                  name="CBOT"/>
+            <exchange
+                  id="ec"
+                  name="CBOT E-Mini"/>
+            <exchange
                   id="is"
                   name="Island"/>
+            <exchange
+                  id="mx"
+                  name="Montreal Options"/>
          </level2>
       </feed>
    </extension>
