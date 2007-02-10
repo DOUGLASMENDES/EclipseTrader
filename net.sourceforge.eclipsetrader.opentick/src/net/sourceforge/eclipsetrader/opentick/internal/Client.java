@@ -63,61 +63,91 @@ public class Client
     private Log log = LogFactory.getLog(getClass());
     private OTClient client = new OTClient() {
 
-        public void onEquityInit(OTEquityInit equity)
+        public void onEquityInit(OTEquityInit msg)
         {
-            log.info(equity);
-        }
+            log.trace(msg);
 
-        public void onError(OTError error)
-        {
-            log.info(error);
-        }
-
-        public void onHistBBO(OTBBO bbo)
-        {
-            log.info(bbo);
-        }
-
-        public void onHistMMQuote(OTMMQuote quote)
-        {
-            log.info(quote);
-        }
-
-        public void onHistOHLC(OTOHLC ohlc)
-        {
-            log.info(ohlc);
-            Security security = (Security)tickStreams.get(String.valueOf(ohlc.getRequestID()));
+            Security security = (Security)tickStreams.get(String.valueOf(msg.getRequestId()));
             if (security != null)
             {
-                Bar bar = new Bar();
-                bar.setDate(new Date(ohlc.getTimestamp() * 1000));
-                bar.setOpen(ohlc.getOpenPrice());
-                bar.setHigh(ohlc.getHighPrice());
-                bar.setLow(ohlc.getLowPrice());
-                bar.setClose(ohlc.getClosePrice());
-                bar.setVolume(ohlc.getVolume());
-                security.getHistory().add(bar);
+                if (msg.getPrevClosePrice() != 0)
+                    security.setClose(new Double(msg.getPrevClosePrice()));
+            }
+            else
+                log.warn("Unknown security for request id " + msg.getRequestId());
+            tickStreams.remove(String.valueOf(msg.getRequestId()));
+        }
+
+        public void onError(OTError msg)
+        {
+            Security security = (Security)tickStreams.get(String.valueOf(msg.getRequestId()));
+            if (security != null)
+            {
+                log.error(msg.getRequestId() + " / " + msg.getDescription() + " (ticks) - " + security);
+                tickStreams.remove(String.valueOf(msg.getRequestId()));
+            }
+            else
+            {
+                security = (Security)bookStreams.get(String.valueOf(msg.getRequestId()));
+                if (security != null)
+                {
+                    log.error(msg.getRequestId() + " / " + msg.getDescription() + " (book) - " + security);
+                    bookStreams.remove(String.valueOf(msg.getRequestId()));
+                    securityBook.remove(String.valueOf(msg.getRequestId()));
+                }
+                else
+                    log.error(String.valueOf(msg.getRequestId()) + " / " + msg.getDescription());
             }
         }
 
-        public void onHistQuote(OTQuote quote)
+        public void onHistBBO(OTBBO msg)
         {
-            log.info(quote);
+            log.trace(msg);
         }
 
-        public void onHistTrade(OTTrade trade)
+        public void onHistMMQuote(OTMMQuote msg)
         {
-            log.info(trade);
+            log.trace(msg);
         }
 
-        public void onListExchanges(List exchanges)
+        public void onHistOHLC(OTOHLC msg)
         {
-            log.debug(exchanges);
+            log.trace(msg);
+
+            Security security = (Security)tickStreams.get(String.valueOf(msg.getRequestID()));
+            if (security != null)
+            {
+                Bar bar = new Bar();
+                bar.setDate(new Date(msg.getTimestamp() * 1000));
+                bar.setOpen(msg.getOpenPrice());
+                bar.setHigh(msg.getHighPrice());
+                bar.setLow(msg.getLowPrice());
+                bar.setClose(msg.getClosePrice());
+                bar.setVolume(msg.getVolume());
+                security.getHistory().add(bar);
+            }
+            else
+                log.warn("Unknown security for request id " + msg.getRequestID());
         }
 
-        public void onListSymbols(List symbols)
+        public void onHistQuote(OTQuote msg)
         {
-            log.debug(symbols);
+            log.trace(msg);
+        }
+
+        public void onHistTrade(OTTrade msg)
+        {
+            log.trace(msg);
+        }
+
+        public void onListExchanges(List list)
+        {
+            log.trace(list);
+        }
+
+        public void onListSymbols(List list)
+        {
+            log.trace(list);
         }
 
         public void onLogin()
@@ -137,186 +167,243 @@ public class Client
             }
         }
 
-        public void onMessage(OTMessage message)
+        public void onMessage(OTMessage msg)
         {
-            log.info(message);
+            log.info(msg);
         }
 
-        public void onRealtimeBBO(OTBBO bbo)
+        public void onRealtimeBBO(OTBBO msg)
         {
-            log.info(bbo);
+            log.trace(msg);
 
-            Security security = (Security)tickStreams.get(String.valueOf(bbo.getRequestID()));
+            Security security = (Security)tickStreams.get(String.valueOf(msg.getRequestID()));
             if (security != null)
             {
                 Quote quote = new Quote(security.getQuote());
-                quote.setDate(new Date(bbo.getTimestamp() * 1000L));
-                if (bbo.getSide() == 'B')
+                quote.setDate(new Date(msg.getTimestamp() * 1000L));
+                if (msg.getSide() == 'B')
                 {
-                    quote.setBid(bbo.getPrice());
-                    quote.setBidSize(bbo.getSize());
+                    quote.setBid(msg.getPrice());
+                    quote.setBidSize(msg.getSize());
                 }
-                else if (bbo.getSide() == 'A' || bbo.getSide() == 'S')
+                else if (msg.getSide() == 'A' || msg.getSide() == 'S')
                 {
-                    quote.setAsk(bbo.getPrice());
-                    quote.setAskSize(bbo.getSize());
+                    quote.setAsk(msg.getPrice());
+                    quote.setAskSize(msg.getSize());
                 }
                 security.setQuote(quote);
             }
+            else
+                log.warn("Unknown security for request id " + msg.getRequestID());
         }
 
-        public void onRealtimeBookCancel(OTBookCancel cancel)
+        public void onRealtimeBookCancel(OTBookCancel msg)
         {
-            log.debug(cancel);
+            log.trace(msg);
             
-            Book book = (Book)securityBook.get(String.valueOf(cancel.getRequestID()));
+            Book book = (Book)securityBook.get(String.valueOf(msg.getRequestID()));
             if (book != null)
             {
-                book.remove(cancel.getOrderRef(), cancel.getSize());
-                Security security = (Security)bookStreams.get(String.valueOf(cancel.getRequestID()));
+                book.remove(msg.getOrderRef(), msg.getSize());
+                Security security = (Security)bookStreams.get(String.valueOf(msg.getRequestID()));
+                security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+            }
+            else
+                log.warn("Unknown security for request id " + msg.getRequestID());
+        }
+
+        public void onRealtimeBookChange(OTBookChange msg)
+        {
+            log.trace(msg);
+            
+            Book book = (Book)securityBook.get(String.valueOf(msg.getRequestID()));
+            if (book != null)
+            {
+                book.remove(msg.getOrderRef(), msg.getSize());
+                Security security = (Security)bookStreams.get(String.valueOf(msg.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
         }
 
-        public void onRealtimeBookChange(OTBookChange change)
+        public void onRealtimeBookDelete(OTBookDelete msg)
         {
-            log.debug(change);
+            log.trace(msg);
             
-            Book book = (Book)securityBook.get(String.valueOf(change.getRequestID()));
+            Book book = (Book)securityBook.get(String.valueOf(msg.getRequestID()));
             if (book != null)
             {
-                book.remove(change.getOrderRef(), change.getSize());
-                Security security = (Security)bookStreams.get(String.valueOf(change.getRequestID()));
+                book.delete(msg.getOrderRef(), msg.getSide(), msg.getDeleteType());
+                Security security = (Security)bookStreams.get(String.valueOf(msg.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
         }
 
-        public void onRealtimeBookDelete(OTBookDelete delete)
+        public void onRealtimeBookExecute(OTBookExecute msg)
         {
-            log.debug(delete);
+            log.trace(msg);
             
-            Book book = (Book)securityBook.get(String.valueOf(delete.getRequestID()));
+            Book book = (Book)securityBook.get(String.valueOf(msg.getRequestID()));
             if (book != null)
             {
-                book.delete(delete.getOrderRef(), delete.getSide(), delete.getDeleteType());
-                Security security = (Security)bookStreams.get(String.valueOf(delete.getRequestID()));
+                book.remove(msg.getOrderRef(), msg.getSize());
+                Security security = (Security)bookStreams.get(String.valueOf(msg.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
         }
 
-        public void onRealtimeBookExecute(OTBookExecute execute)
+        public void onRealtimeBookOrder(OTBookOrder msg)
         {
-            log.debug(execute);
+            log.trace(msg);
             
-            Book book = (Book)securityBook.get(String.valueOf(execute.getRequestID()));
+            Book book = (Book)securityBook.get(String.valueOf(msg.getRequestID()));
             if (book != null)
             {
-                book.remove(execute.getOrderRef(), execute.getSize());
-                Security security = (Security)bookStreams.get(String.valueOf(execute.getRequestID()));
+                book.add(msg.getTimestamp(), msg.getOrderRef(), msg.getPrice(), msg.getSize(), msg.getSide());
+                Security security = (Security)bookStreams.get(String.valueOf(msg.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
         }
 
-        public void onRealtimeBookOrder(OTBookOrder order)
+        public void onRealtimeBookPurge(OTBookPurge msg)
         {
-            log.debug(order);
+            log.trace(msg);
             
-            Book book = (Book)securityBook.get(String.valueOf(order.getRequestID()));
-            if (book != null)
-            {
-                book.add(order.getTimestamp(), order.getOrderRef(), order.getPrice(), order.getSize(), order.getSide());
-                Security security = (Security)bookStreams.get(String.valueOf(order.getRequestID()));
-                security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
-            }
-        }
-
-        public void onRealtimeBookPurge(OTBookPurge purge)
-        {
-            log.debug(purge);
-            
-            Book book = (Book)securityBook.get(String.valueOf(purge.getRequestID()));
+            Book book = (Book)securityBook.get(String.valueOf(msg.getRequestID()));
             if (book != null)
             {
                 book.clear();
-                Security security = (Security)bookStreams.get(String.valueOf(purge.getRequestID()));
+                Security security = (Security)bookStreams.get(String.valueOf(msg.getRequestID()));
                 security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
             }
         }
 
-        public void onRealtimeBookReplace(OTBookReplace replace)
+        public void onRealtimeBookReplace(OTBookReplace msg)
         {
-            log.debug(replace);
+            log.trace(msg);
             
-            Book book = (Book)securityBook.get(String.valueOf(replace.getRequestID()));
+            Book book = (Book)securityBook.get(String.valueOf(msg.getRequestID()));
             if (book == null)
             {
                 book = new Book();
-                securityBook.put(String.valueOf(replace.getRequestID()), book);
+                securityBook.put(String.valueOf(msg.getRequestID()), book);
             }
-            book.replace(replace.getTimestamp(), replace.getOrderRef(), replace.getPrice(), replace.getSize(), replace.getSide());
-            Security security = (Security)bookStreams.get(String.valueOf(replace.getRequestID()));
+            book.replace(msg.getTimestamp(), msg.getOrderRef(), msg.getPrice(), msg.getSize(), msg.getSide());
+            Security security = (Security)bookStreams.get(String.valueOf(msg.getRequestID()));
             security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
         }
 
-        public void onRealtimeMMQuote(OTMMQuote quote)
+        public void onRealtimeMMQuote(OTMMQuote msg)
         {
-            log.info(quote);
+            log.trace(msg);
         }
 
-        public void onRealtimeQuote(OTQuote quote)
+        public void onRealtimeQuote(OTQuote msg)
         {
-            log.debug(quote);
+            log.trace(msg);
 
-            Security security = (Security)tickStreams.get(String.valueOf(quote.getRequestID()));
+            Security security = (Security)tickStreams.get(String.valueOf(msg.getRequestID()));
             if (security != null)
             {
                 Quote values = new Quote(security.getQuote());
-                values.setDate(new Date(quote.getTimestamp() * 1000L));
-                values.setBid(quote.getBidPrice());
-                values.setBidSize(quote.getBidSize());
-                values.setAsk(quote.getAskPrice());
-                values.setAskSize(quote.getAskSize());
+                values.setDate(new Date(msg.getTimestamp() * 1000L));
+                values.setBid(msg.getBidPrice());
+                values.setBidSize(msg.getBidSize());
+                values.setAsk(msg.getAskPrice());
+                values.setAskSize(msg.getAskSize());
                 security.setQuote(values);
+            }
+            else
+            {
+                log.warn("Unknown security for request id " + msg.getRequestID());
+                try {
+                    cancelTickStream(msg.getRequestID());
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
             }
         }
 
-        public void onRealtimeTrade(OTTrade trade)
+        public void onRealtimeTrade(OTTrade msg)
         {
-            log.debug(trade);
+            log.trace(msg);
 
-            Security security = (Security)tickStreams.get(String.valueOf(trade.getRequestID()));
+            Security security = (Security)tickStreams.get(String.valueOf(msg.getRequestID()));
             if (security != null)
             {
                 Quote quote = new Quote(security.getQuote());
-                quote.setDate(new Date(trade.getTimestamp() * 1000L));
-                quote.setLast(trade.getPrice());
-                quote.setVolume(trade.getVolume());
+                quote.setDate(new Date(msg.getTimestamp() * 1000L));
+                quote.setLast(msg.getPrice());
+                quote.setVolume(msg.getVolume());
                 security.setQuote(quote);
                 
-                if (trade.isOpen())
-                    security.setOpen(new Double(trade.getPrice()));
-                if (trade.isHigh())
-                    security.setHigh(new Double(trade.getPrice()));
-                if (trade.isLow())
-                    security.setLow(new Double(trade.getPrice()));
-                if (trade.isClose())
-                    security.setClose(new Double(trade.getPrice()));
+                if (msg.isOpen())
+                    security.setOpen(new Double(msg.getPrice()));
+                if (msg.isHigh())
+                    security.setHigh(new Double(msg.getPrice()));
+                if (msg.isLow())
+                    security.setLow(new Double(msg.getPrice()));
+                if (msg.isClose())
+                    security.setClose(new Double(msg.getPrice()));
             }
+            else
+            {
+                log.warn("Unknown security for request id " + msg.getRequestID());
+                try {
+                    cancelTickStream(msg.getRequestID());
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
+            }
+        }
+
+        public void onTodaysOHL(OTTodaysOHL msg)
+        {
+            log.trace(msg);
+
+            Security security = (Security)tickStreams.get(String.valueOf(msg.getRequestID()));
+            if (security != null)
+            {
+                if (msg.getOpenPrice() != 0)
+                    security.setOpen(new Double(msg.getOpenPrice()));
+                if (msg.getHighPrice() != 0)
+                    security.setHigh(new Double(msg.getHighPrice()));
+                if (msg.getLowPrice() != 0)
+                    security.setLow(new Double(msg.getLowPrice()));
+            }
+            else
+                log.warn("Unknown security for request id " + msg.getRequestID());
+            
+            tickStreams.remove(String.valueOf(msg.getRequestID()));
         }
 
         public void onRestoreConnection()
         {
             log.info("Connection restored");
+            
+            Object[] s = tickStreams.values().toArray();
+            tickStreams.clear();
+
+            try {
+                for (int i = 0; i < s.length; i++)
+                    Client.this.requestTickStream((Security)s[i]);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+            
+            s = bookStreams.values().toArray();
+            bookStreams.clear();
+
+            try {
+                for (int i = 0; i < s.length; i++)
+                    Client.this.requestBookStream((Security)s[i]);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
         }
 
         public void onStatusChanged(int status)
         {
             log.info("Status " + (String)statusText.get(new Integer(status)));
-        }
-
-        public void onTodaysOHL(OTTodaysOHL todayOHL)
-        {
-            log.info(todayOHL);
         }
     };
 
@@ -355,8 +442,16 @@ public class Client
                 if (client.isLoggedIn())
                 {
                     client.logout();
-                    while(client.getStatus() != OTConstants.OT_STATUS_INACTIVE)
-                        Thread.yield();
+                    
+                    long timeout = System.currentTimeMillis() + 10 * 1000;
+                    while(client.getStatus() != OTConstants.OT_STATUS_INACTIVE && System.currentTimeMillis() < timeout)
+                    {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            // Ignore exception, not important at this time
+                        }
+                    }
                 }
             } catch(Exception e) {
                 log.error(e, e);
@@ -410,25 +505,31 @@ public class Client
             String exchange = security.getQuoteFeed().getExchange();
             if (exchange == null || exchange.length() == 0)
                 exchange = "Q";
-            
-            int id = client.requestTickStream(new OTDataEntity(exchange, symbol), OTConstants.OT_TICK_TYPE_LEVEL1);
-            tickStreams.put(String.valueOf(id), security);
 
-            log.debug(String.valueOf(id) + " / Request tick stream " + symbol + "." + exchange);
+            int id = client.requestEquityInit(new OTDataEntity(exchange, symbol));
+            tickStreams.put(String.valueOf(id), security);
+            log.debug(String.valueOf(id) + " / Request Equity Init " + security);
+
+            id = client.requestTodaysOHL(new OTDataEntity(exchange, symbol));
+            tickStreams.put(String.valueOf(id), security);
+            log.debug(String.valueOf(id) + " / Request Today's OHL " + security);
+            
+            id = client.requestTickStream(new OTDataEntity(exchange, symbol), OTConstants.OT_TICK_TYPE_LEVEL1);
+            tickStreams.put(String.valueOf(id), security);
+            log.debug(String.valueOf(id) + " / Request Tick stream " + security);
         }
     }
 
     public void cancelTickStream(Security security) throws OTException
     {
-        for (Iterator iter = tickStreams.keySet().iterator(); iter.hasNext(); )
+        String[] keys = (String[])tickStreams.keySet().toArray(new String[0]);
+        for (int i = 0; i < keys.length; i++)
         {
-            String id = (String)iter.next();
-            if (security.equals(tickStreams.get(id)))
+            if (security.equals(tickStreams.get(keys[i])))
             {
-                client.cancelTickStream(Integer.parseInt(id));
-                tickStreams.remove(id);
-                log.debug(String.valueOf(id) + " / Request cancel tick stream");
-                break;
+                client.cancelTickStream(Integer.parseInt(keys[i]));
+                tickStreams.remove(keys[i]);
+                log.debug(String.valueOf(keys[i]) + " / Request cancel Tick stream " + security);
             }
         }
         pendingTickStreams.remove(security);
@@ -451,7 +552,7 @@ public class Client
             bookStreams.put(String.valueOf(id), security);
             securityBook.put(String.valueOf(id), new Book());
 
-            log.debug(String.valueOf(id) + " / Request book stream " + symbol + "." + exchange);
+            log.debug(String.valueOf(id) + " / Request Book stream " + security);
         }
     }
 
@@ -465,7 +566,7 @@ public class Client
                 client.cancelBookStream(Integer.parseInt(id));
                 bookStreams.remove(id);
                 securityBook.remove(id);
-                log.debug(String.valueOf(id) + " / Request cancel book stream");
+                log.debug(String.valueOf(id) + " / Request cancel Book stream " + security);
                 break;
             }
         }
