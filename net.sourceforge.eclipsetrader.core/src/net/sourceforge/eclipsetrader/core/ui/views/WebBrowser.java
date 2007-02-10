@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,8 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -82,13 +84,30 @@ public class WebBrowser extends ViewPart
         browser.addLocationListener(new LocationListener() {
             public void changed(LocationEvent event)
             {
+                String[] items = combo.getItems();
+                for (int i = 0; i < items.length; i++)
+                {
+                    if (items[i].equals(event.location))
+                        return;
+                }
+                combo.add(event.location, 0);
                 combo.setText(event.location);
             }
 
             public void changing(LocationEvent event)
             {
+                combo.setText(event.location);
             }
         });
+        browser.addTitleListener(new TitleListener() 
+        {
+            public void changed(TitleEvent event) 
+            {
+                setPartName(event.title);
+            }
+        });
+        
+        setTitleToolTip(getPartName());
     }
 
     private ToolBar createToolbar(Composite parent) 
@@ -151,16 +170,14 @@ public class WebBrowser extends ViewPart
     private ToolBar createLocationBar(Composite parent) 
     {
         combo = new Combo(parent, SWT.DROP_DOWN);
+        combo.setVisibleItemCount(20);
         combo.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent we)
             {
-                try
-                {
+                try {
                     if (combo.getSelectionIndex() != -1)
                         setUrl(combo.getItem(combo.getSelectionIndex()));
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     // ignore
                 }
             }
