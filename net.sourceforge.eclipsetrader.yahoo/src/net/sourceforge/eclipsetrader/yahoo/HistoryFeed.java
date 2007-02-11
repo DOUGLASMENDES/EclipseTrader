@@ -52,123 +52,103 @@ public class HistoryFeed implements IHistoryFeed
     {
         if (interval == IHistoryFeed.INTERVAL_DAILY)
         {
-            Calendar today = Calendar.getInstance();
             Calendar from = Calendar.getInstance();
             Calendar to = Calendar.getInstance();
 
             History history = security.getHistory();
             if (history.size() == 0)
-            {
                 from.add(Calendar.YEAR, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE));
-                to.setTime(from.getTime());
-                to.add(Calendar.DATE, 200);
-            }
-
-            log.info("Updating historical data for " + security.getCode() + " - " + security.getDescription());
-
-            do {
+            else
+            {
                 Bar cd = history.getLast();
                 if (cd != null)
                 {
                     from.setTime(cd.getDate());
                     from.add(Calendar.DATE, 1);
-                    to.setTime(from.getTime());
-                    to.add(Calendar.DATE, 200);
                 }
-                StringBuffer url = new StringBuffer("http://ichart.finance.yahoo.com/table.csv" + "?s=");
-                String symbol = null;
-                if (security.getHistoryFeed() != null)
-                    symbol = security.getHistoryFeed().getSymbol();
-                if (symbol == null || symbol.length() == 0)
-                    symbol = security.getCode();
-                url.append(symbol);
-                url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR));
-                url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR));
-                url.append("&g=d&ignore=.csv");
-                log.debug(url);
+            }
 
-                try {
-                    HttpClient client = new HttpClient();
-                    client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-                    
-                    IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
-                    if (store.getBoolean(CorePlugin.PREFS_ENABLE_HTTP_PROXY))
-                    {
-                        client.getHostConfiguration().setProxy(store.getString(CorePlugin.PREFS_PROXY_HOST_ADDRESS), store.getInt(CorePlugin.PREFS_PROXY_PORT_ADDRESS));
-                        if (store.getBoolean(CorePlugin.PREFS_ENABLE_PROXY_AUTHENTICATION))
-                            client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(store.getString(CorePlugin.PREFS_PROXY_USER), store.getString(CorePlugin.PREFS_PROXY_PASSWORD)));
-                    }
+            log.info("Updating historical data for " + security.getCode() + " - " + security.getDescription());
 
-                    HttpMethod method = new GetMethod(url.toString());
-                    method.setFollowRedirects(true);
-                    client.executeMethod(method);
-                    
-                    BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+            StringBuffer url = new StringBuffer("http://ichart.finance.yahoo.com/table.csv" + "?s=");
+            String symbol = null;
+            if (security.getHistoryFeed() != null)
+                symbol = security.getHistoryFeed().getSymbol();
+            if (symbol == null || symbol.length() == 0)
+                symbol = security.getCode();
+            url.append(symbol);
+            url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR));
+            url.append("&g=d");
+            url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR));
+            url.append("&ignore=.csv");
+            log.debug(url);
 
-                    // The first line is the header, ignoring
-                    String inputLine = in.readLine();
-                    log.trace(inputLine);
-                    
-                    while ((inputLine = in.readLine()) != null)
-                    {
-                        log.trace(inputLine);
-                        if (inputLine.startsWith("<"))
-                            continue;
-                        String[] item = inputLine.split(",");
-                        if (item.length < 6)
-                            continue;
-
-                        Calendar day = Calendar.getInstance();
-                        try {
-                            day.setTime(df.parse(item[0]));
-                        } catch(Exception e) {
-                            try {
-                                day.setTime(dfAlt.parse(item[0]));
-                            } catch(Exception e1) {
-                                log.error(e1, e1);
-                            }
-                        }
-                        day.set(Calendar.HOUR, 0);
-                        day.set(Calendar.MINUTE, 0);
-                        day.set(Calendar.SECOND, 0);
-                        day.set(Calendar.MILLISECOND, 0);
-                        
-                        Bar bar = new Bar();
-                        bar.setDate(day.getTime());
-                        bar.setOpen(Double.parseDouble(item[1].replace(',', '.')));
-                        bar.setHigh(Double.parseDouble(item[2].replace(',', '.')));
-                        bar.setLow(Double.parseDouble(item[3].replace(',', '.')));
-                        bar.setClose(Double.parseDouble(item[4].replace(',', '.')));
-                        bar.setVolume(Long.parseLong(item[5]));
-
-                        // Remove the old bar, if exists
-                        int index = history.indexOf(bar.getDate());
-                        if (index != -1)
-                            history.remove(index);
-                        
-                        history.add(bar);
-                    }
-                    in.close();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    break;
-                }
-
-                if (history.size() == 0)
+            try {
+                HttpClient client = new HttpClient();
+                client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+                
+                IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+                if (store.getBoolean(CorePlugin.PREFS_ENABLE_HTTP_PROXY))
                 {
-                    from.add(Calendar.DATE, 200);
-                    to.setTime(from.getTime());
-                    to.add(Calendar.DATE, 200);
-                    if (to.after(today) == true)
-                    {
-                        to.setTime(today.getTime());
-                        to.add(Calendar.DATE, -1);
-                    }
-                    if (from.after(to) == true)
-                        break;
+                    client.getHostConfiguration().setProxy(store.getString(CorePlugin.PREFS_PROXY_HOST_ADDRESS), store.getInt(CorePlugin.PREFS_PROXY_PORT_ADDRESS));
+                    if (store.getBoolean(CorePlugin.PREFS_ENABLE_PROXY_AUTHENTICATION))
+                        client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(store.getString(CorePlugin.PREFS_PROXY_USER), store.getString(CorePlugin.PREFS_PROXY_PASSWORD)));
                 }
-            } while (to.before(today));
+
+                HttpMethod method = new GetMethod(url.toString());
+                method.setFollowRedirects(true);
+                client.executeMethod(method);
+                
+                BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+
+                // The first line is the header, ignoring
+                String inputLine = in.readLine();
+                log.trace(inputLine);
+                
+                while ((inputLine = in.readLine()) != null)
+                {
+                    log.trace(inputLine);
+                    if (inputLine.startsWith("<"))
+                        continue;
+                    String[] item = inputLine.split(",");
+                    if (item.length < 6)
+                        continue;
+
+                    Calendar day = Calendar.getInstance();
+                    try {
+                        day.setTime(df.parse(item[0]));
+                    } catch(Exception e) {
+                        try {
+                            day.setTime(dfAlt.parse(item[0]));
+                        } catch(Exception e1) {
+                            log.error(e1, e1);
+                        }
+                    }
+                    day.set(Calendar.HOUR, 0);
+                    day.set(Calendar.MINUTE, 0);
+                    day.set(Calendar.SECOND, 0);
+                    day.set(Calendar.MILLISECOND, 0);
+                    
+                    Bar bar = new Bar();
+                    bar.setDate(day.getTime());
+                    bar.setOpen(Double.parseDouble(item[1].replace(',', '.')));
+                    bar.setHigh(Double.parseDouble(item[2].replace(',', '.')));
+                    bar.setLow(Double.parseDouble(item[3].replace(',', '.')));
+                    bar.setClose(Double.parseDouble(item[4].replace(',', '.')));
+                    bar.setVolume(Long.parseLong(item[5]));
+
+                    // Remove the old bar, if exists
+                    int index = history.indexOf(bar.getDate());
+                    if (index != -1)
+                        history.remove(index);
+                    
+                    history.add(bar);
+                }
+                in.close();
+
+            } catch (Exception e) {
+                log.error(e, e);
+            }
             
             CorePlugin.getRepository().save(history);
         }
