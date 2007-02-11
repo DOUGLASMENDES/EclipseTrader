@@ -494,4 +494,12 @@ public class Security extends PersistentObject
     {
         this.comment = comment;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return getCode() + " - " + getDescription();
+    }
 }

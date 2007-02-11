@@ -11,8 +11,11 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
-
 /**
+ * Intraday historical data.
+ * 
+ * @author Marco Maccaferri
+ * @since 1.0
  */
 public class IntradayHistory extends History
 {
