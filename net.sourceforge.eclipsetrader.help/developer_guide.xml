@@ -22,8 +22,8 @@
             <topic label="net.sourceforge.eclipsetrader.core.news" href="reference/extension-points/net_sourceforge_eclipsetrader_core_news.html"/>
             <topic label="net.sourceforge.eclipsetrader.core.patterns" href="reference/extension-points/net_sourceforge_eclipsetrader_core_patterns.html"/>
             <topic label="net.sourceforge.eclipsetrader.core.tradingProviders" href="reference/extension-points/net_sourceforge_eclipsetrader_core_tradingProviders.html"/>
+            <topic label="net.sourceforge.eclipsetrader.core.viewLabelProviders" href="reference/extension-points/net_sourceforge_eclipsetrader_core_viewLabelProviders.html"/>
             <topic label="net.sourceforge.eclipsetrader.trading.alerts" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_alerts.html"/>
-            <topic label="net.sourceforge.eclipsetrader.trading.ordersViewColumns" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_ordersViewColumns.html"/>
             <topic label="net.sourceforge.eclipsetrader.trading.systems" href="reference/extension-points/net_sourceforge_eclipsetrader_trading_systems.html"/>
         </topic>
     </topic>
