@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+    <security code="EPI/CL" currency="USD">Consolidated Edison Company of New York, Inc.</security>
+    <security code="IGC/U" currency="USD">India Globalization Cap</security>
+    <security code="$ADVT" currency="USD">NASDAQ Listed Advance</security>
+    <security code="$ADDIFFT" currency="USD">NASDAQ Listed Advance Decline Difference</security>
+    <security code="$DECT" currency="USD">NASDAQ Listed Decline</security>
+    <security code="$DVOT" currency="USD">NASDAQ Listed Down Volume / 1000</security>
+    <security code="$ISST" currency="USD">NASDAQ Listed Issues Traded</security>
+    <security code="$TICT" currency="USD">NASDAQ Listed Tick</security>
+    <security code="$TRIT" currency="USD">NASDAQ Listed Trin</security>
+    <security code="$UNCT" currency="USD">NASDAQ Listed Unchanged</security>
+    <security code="$UVOT" currency="USD">NASDAQ Listed Up Volume / 1000</security>
+    <security code="$VOLT" currency="USD">NASDAQ Listed Volume / 1000</security>
+</data>

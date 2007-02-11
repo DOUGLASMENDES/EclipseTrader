@@ -1,0 +1,777 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+    <security code="$CALVIN" currency="USD">Calvert Social Responsibilty Index</security>
+    <security code="$IDDOW" currency="USD">DJ Indonesia Stock Index</security>
+    <security code="$JPDOW" currency="USD">DJ Japan Stock Index</security>
+    <security code="$SGDOW" currency="USD">DJ Singapore Stock Index</security>
+    <security code="$AIFVV5" currency="USD">DJAIGCI Fair Value October 05</security>
+    <security code="$UTILA" currency="USD">DOW JONES ACTUAL 15 UTILITIES</security>
+    <security code="$TRANA" currency="USD">DOW JONES ACTUAL 20 TRANSPORTS</security>
+    <security code="$INDUA" currency="USD">DOW JONES ACTUAL 30 INDUSTRIALS</security>
+    <security code="$DJMSID" currency="USD">Dow Jones  Diversified Industrials MicroSector Index</security>
+    <security code="$DJMSEU" currency="USD">Dow Jones  Electricity MicroSector Index</security>
+    <security code="$DJMSDF" currency="USD">Dow Jones  General Financial MicroSector Index</security>
+    <security code="$DJMSRT" currency="USD">Dow Jones  General Retailers MicroSector Index</security>
+    <security code="$DJMSPM" currency="USD">Dow Jones  Gold Mining MicroSector Index</security>
+    <security code="$DJMSOL" currency="USD">Dow Jones  Integrated Oil &amp; Gas MicroSector Index</security>
+    <security code="$DJMSAE" currency="USD">Dow Jones Aerospace &amp; Defense MicroSector Index</security>
+    <security code="$A1BSC" currency="USD">Dow Jones Americas Basic Materials Index</security>
+    <security code="$A1NCY" currency="USD">Dow Jones Americas Consumer Goods Index</security>
+    <security code="$A1CYC" currency="USD">Dow Jones Americas Consumer Services Index</security>
+    <security code="$A1FIN" currency="USD">Dow Jones Americas Financials Index</security>
+    <security code="$A1HCR" currency="USD">Dow Jones Americas Health Care Index</security>
+    <security code="$A1DOW" currency="USD">Dow Jones Americas Index</security>
+    <security code="$A1IDU" currency="USD">Dow Jones Americas Industrials Index</security>
+    <security code="$A1ENE" currency="USD">Dow Jones Americas Oil &amp; Gas Index</security>
+    <security code="$A1TEC" currency="USD">Dow Jones Americas Technology Index</security>
+    <security code="$A1TLS" currency="USD">Dow Jones Americas Telecommunications Index</security>
+    <security code="$A1UTI" currency="USD">Dow Jones Americas Utilities Index</security>
+    <security code="$DJASD" currency="USD">Dow Jones Asia Select Dividend 30 Index</security>
+    <security code="$DJASDT" currency="USD">Dow Jones Asia Select Dividend 30 Total Return Index</security>
+    <security code="$P2BSC" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Basic Materials Index</security>
+    <security code="$P2NCY" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Consumer Goods Index</security>
+    <security code="$P2CYC" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Consumer Services Index</security>
+    <security code="$P2FIN" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Financials Index</security>
+    <security code="$P2HCR" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Health Care Index</security>
+    <security code="$P2DOW" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Index</security>
+    <security code="$P2IDU" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Industrials Index</security>
+    <security code="$P2ENE" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Oil &amp; Gas Index</security>
+    <security code="$P2TEC" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Technology Index</security>
+    <security code="$P2TLS" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Telecommunications Index</security>
+    <security code="$P2UTI" currency="USD">Dow Jones Asia/Pacific - Ex. Japan Utilities Index</security>
+    <security code="$P3DOW" currency="USD">Dow Jones Asia/Pacific - South Asia Index</security>
+    <security code="$P1ATO" currency="USD">Dow Jones Asia/Pacific Automobiles &amp; Parts Index</security>
+    <security code="$P1BNK" currency="USD">Dow Jones Asia/Pacific Banks Index</security>
+    <security code="$P1BSC" currency="USD">Dow Jones Asia/Pacific Basic Materials Index</security>
+    <security code="$P1BAS" currency="USD">Dow Jones Asia/Pacific Basic Resources Index</security>
+    <security code="$P1CHM" currency="USD">Dow Jones Asia/Pacific Chemicals Index</security>
+    <security code="$P1CNS" currency="USD">Dow Jones Asia/Pacific Construction &amp; Materials Index</security>
+    <security code="$P1NCY" currency="USD">Dow Jones Asia/Pacific Consumer Goods Index</security>
+    <security code="$P1CYC" currency="USD">Dow Jones Asia/Pacific Consumer Services Index</security>
+    <security code="$P1FVS" currency="USD">Dow Jones Asia/Pacific Financial Services Index</security>
+    <security code="$P1FIN" currency="USD">Dow Jones Asia/Pacific Financials Index</security>
+    <security code="$P1FOB" currency="USD">Dow Jones Asia/Pacific Food &amp; Beverage Index</security>
+    <security code="$P1HCR" currency="USD">Dow Jones Asia/Pacific Health Care Index</security>
+    <security code="$P1DOW" currency="USD">Dow Jones Asia/Pacific Index</security>
+    <security code="$P1IGS" currency="USD">Dow Jones Asia/Pacific Industrial Goods &amp; Services Index</security>
+    <security code="$P1IDU" currency="USD">Dow Jones Asia/Pacific Industrials Index</security>
+    <security code="$P1INS" currency="USD">Dow Jones Asia/Pacific Insurance Index</security>
+    <security code="$P1LRG" currency="USD">Dow Jones Asia/Pacific Large-Cap Index</security>
+    <security code="$P1MDI" currency="USD">Dow Jones Asia/Pacific Media Index</security>
+    <security code="$P1MID" currency="USD">Dow Jones Asia/Pacific Mid-Cap Index</security>
+    <security code="$P1ENE" currency="USD">Dow Jones Asia/Pacific Oil &amp; Gas Index</security>
+    <security code="$P1NCG" currency="USD">Dow Jones Asia/Pacific Personal &amp; Household Goods Index</security>
+    <security code="$P1RTS" currency="USD">Dow Jones Asia/Pacific Retail Index</security>
+    <security code="$DJAPSD" currency="USD">Dow Jones Asia/Pacific Select Dividend 30 Index</security>
+    <security code="$DJAPSDE" currency="USD">Dow Jones Asia/Pacific Select Dividend 30 Index</security>
+    <security code="$DJAPSDET" currency="USD">Dow Jones Asia/Pacific Select Dividend 30 Total Return Index</security>
+    <security code="$DJAPSDT" currency="USD">Dow Jones Asia/Pacific Select Dividend 30 Total Return Index</security>
+    <security code="$P1SML" currency="USD">Dow Jones Asia/Pacific Small-Cap Index</security>
+    <security code="$P1TEC" currency="USD">Dow Jones Asia/Pacific Technology Index</security>
+    <security code="$P1TLS" currency="USD">Dow Jones Asia/Pacific Telecommunications Index</security>
+    <security code="$P1CGS" currency="USD">Dow Jones Asia/Pacific Travel &amp; Leisure Index</security>
+    <security code="$P1UTI" currency="USD">Dow Jones Asia/Pacific Utilities Index</security>
+    <security code="$DJAT" currency="USD">Dow Jones Asian Titans 50 Index (U.S. $)</security>
+    <security code="$DJAU" currency="USD">Dow Jones Australia Index</security>
+    <security code="$AUDOWD" currency="USD">Dow Jones Australia Index (U.S.$)</security>
+    <security code="$DJAULPT" currency="USD">Dow Jones Australia LPT Index</security>
+    <security code="$DJAUL" currency="USD">Dow Jones Australia Large-Cap Index</security>
+    <security code="$DJAUM" currency="USD">Dow Jones Australia Mid-Cap Index</security>
+    <security code="$DJAUSD" currency="USD">Dow Jones Australia Select Dividend 30 Index</security>
+    <security code="$DJAUSDT" currency="USD">Dow Jones Australia Select Dividend 30 Total Return Index</security>
+    <security code="$DJAUS" currency="USD">Dow Jones Australia Small-Cap Index</security>
+    <security code="$XLAUS" currency="USD">Dow Jones Australia Titans 30 Index</security>
+    <security code="$ATDOW" currency="USD">Dow Jones Austria Index</security>
+    <security code="$ATDOWD" currency="USD">Dow Jones Austria Index (U.S.$)</security>
+    <security code="$DJTATO" currency="USD">Dow Jones Automobiles &amp; Parts Titans 30 Index</security>
+    <security code="$DJTATOE" currency="USD">Dow Jones Automobiles &amp; Parts Titans 30 Index (Euros)</security>
+    <security code="$B50BRE" currency="USD">Dow Jones BRIC 50 Brazil Subindex (EUR)</security>
+    <security code="$B50BRD" currency="USD">Dow Jones BRIC 50 Brazil Subindex (USD)</security>
+    <security code="$B50CNE" currency="USD">Dow Jones BRIC 50 China Subindex (EUR)</security>
+    <security code="$B50CND" currency="USD">Dow Jones BRIC 50 China Subindex (USD)</security>
+    <security code="$BRIC50E" currency="USD">Dow Jones BRIC 50 Index</security>
+    <security code="$BRIC50D" currency="USD">Dow Jones BRIC 50 Index</security>
+    <security code="$B50INE" currency="USD">Dow Jones BRIC 50 India Subindex (EUR)</security>
+    <security code="$B50IND" currency="USD">Dow Jones BRIC 50 India Subindex (USD)</security>
+    <security code="$B50RUE" currency="USD">Dow Jones BRIC 50 Russia Subindex (EUR)</security>
+    <security code="$B50RUD" currency="USD">Dow Jones BRIC 50 Russia Subindex (USD)</security>
+    <security code="$BRIC50T" currency="USD">Dow Jones BRIC 50 Total Return Index</security>
+    <security code="$BRIC50R" currency="USD">Dow Jones BRIC 50 Total Return Index</security>
+    <security code="$DJBH" currency="USD">Dow Jones Bahrain Index</security>
+    <security code="$DJBHD" currency="USD">Dow Jones Bahrain Index (USD)</security>
+    <security code="$DJMSBK" currency="USD">Dow Jones Banks MicroSector Index</security>
+    <security code="$DJTBAK" currency="USD">Dow Jones Banks Titans 30 Index</security>
+    <security code="$DJTBAKE" currency="USD">Dow Jones Banks Titans 30 Index (Euros)</security>
+    <security code="$DJTBAS" currency="USD">Dow Jones Basic Resources Titans 30 Index</security>
+    <security code="$DJTBASE" currency="USD">Dow Jones Basic Resources Titans 30 Index (Euros)</security>
+    <security code="$BEDOW" currency="USD">Dow Jones Belgium Index</security>
+    <security code="$BEDOWD" currency="USD">Dow Jones Belgium Index (U.S.$)</security>
+    <security code="$DJMSBT" currency="USD">Dow Jones Biotechnology MicroSector Index</security>
+    <security code="$BRDOW" currency="USD">Dow Jones Brazil Index</security>
+    <security code="$BRDOWD" currency="USD">Dow Jones Brazil Index (U.S.$)</security>
+    <security code="$BR20" currency="USD">Dow Jones Brazil Titans 20 ADR Index</security>
+    <security code="$DJEG20" currency="USD">Dow Jones CASE Egypt Titans 20 Index</security>
+    <security code="$DJEG20E" currency="USD">Dow Jones CASE Egypt Titans 20 Index</security>
+    <security code="$DJEG20D" currency="USD">Dow Jones CASE Egypt Titans 20 Index</security>
+    <security code="$DJEG20ET" currency="USD">Dow Jones CASE Egypt Titans 20 Total Return Index</security>
+    <security code="$DJEG20DT" currency="USD">Dow Jones CASE Egypt Titans 20 Total Return Index</security>
+    <security code="$DJEG20T" currency="USD">Dow Jones CASE Egypt Titans 20 Total Return Index</security>
+    <security code="$DJCBN600" currency="USD">Dow Jones CBN China 600 Index</security>
+    <security code="$DJCBNAUP" currency="USD">Dow Jones CBN China Automobiles &amp; Parts Blue-Chip Index</security>
+    <security code="$DJCBNBSC" currency="USD">Dow Jones CBN China Basic Resources Blue-Chip Index</security>
+    <security code="$DJCBNCHM" currency="USD">Dow Jones CBN China Chemicals Index</security>
+    <security code="$DJCBNCNS" currency="USD">Dow Jones CBN China Construction &amp; Materials Blue-Chip Index</security>
+    <security code="$DJCBNFIN" currency="USD">Dow Jones CBN China Financial Services Blue-Chip Index</security>
+    <security code="$DJCBNFOB" currency="USD">Dow Jones CBN China Food &amp; Beverage Blue-Chip Index</security>
+    <security code="$DJCBNHCR" currency="USD">Dow Jones CBN China Health Care Blue-Chip Index</security>
+    <security code="$DJCBNIGS" currency="USD">Dow Jones CBN China Industrial Goods &amp; Services Blue-Chip Index</security>
+    <security code="$DJCBNOGS" currency="USD">Dow Jones CBN China Oil &amp; Gas Blue-Chip Index</security>
+    <security code="$DJCBNPHG" currency="USD">Dow Jones CBN China Personal &amp; Household Goods Blue-Chip Index</security>
+    <security code="$DJCBNRTL" currency="USD">Dow Jones CBN China Retail Blue-Chip Index</security>
+    <security code="$DJCBNTEC" currency="USD">Dow Jones CBN China Technology Blue-Chip Index</security>
+    <security code="$DJCBNTVL" currency="USD">Dow Jones CBN China Travel &amp; Leisure Blue-Chip Index</security>
+    <security code="$DJCBNUTI" currency="USD">Dow Jones CBN China Utilities Blue-Chip Index</security>
+    <security code="$DJCBTI" currency="USD">Dow Jones CBOT Treasury Index</security>
+    <security code="$DJCDXXO" currency="USD">Dow Jones CDX North America Crossover Index</security>
+    <security code="$CADOW" currency="USD">Dow Jones Canada Index</security>
+    <security code="$CADOWD" currency="USD">Dow Jones Canada Index (U.S.$)</security>
+    <security code="$DJCASD" currency="USD">Dow Jones Canada Select Dividend Index</security>
+    <security code="$DJCASDT" currency="USD">Dow Jones Canada Select Dividend Total Return Index</security>
+    <security code="$DJCASG" currency="USD">Dow Jones Canada Select Growth Index</security>
+    <security code="$DJCASGT" currency="USD">Dow Jones Canada Select Growth Total Return Index</security>
+    <security code="$DJCASV" currency="USD">Dow Jones Canada Select Value Index</security>
+    <security code="$DJCASVT" currency="USD">Dow Jones Canada Select Value Total Return Index</security>
+    <security code="$DJCNGT" currency="USD">Dow Jones Canada TopCap Growth Index (Canadian Dollars)</security>
+    <security code="$DJCNVT" currency="USD">Dow Jones Canada TopCap Value Index (Canadian Dollars)</security>
+    <security code="$XLCAN" currency="USD">Dow Jones Canadian Titans 40 Index</security>
+    <security code="$DJTCHE" currency="USD">Dow Jones Chemicals Titans 30 Index</security>
+    <security code="$DJTCHEE" currency="USD">Dow Jones Chemicals Titans 30 Index (Euros)</security>
+    <security code="$CLDOW" currency="USD">Dow Jones Chile Index</security>
+    <security code="$CLDOWD" currency="USD">Dow Jones Chile Index (U.S.$)</security>
+    <security code="$DJCHN88" currency="USD">Dow Jones China 88 Index</security>
+    <security code="$DJCHINA" currency="USD">Dow Jones China Broad Market Index</security>
+    <security code="$DJCHOS50" currency="USD">Dow Jones China Offshore 50 Index</security>
+    <security code="$RCI" currency="USD">Dow Jones Composite All REIT Index</security>
+    <security code="$RCIT" currency="USD">Dow Jones Composite All REIT Total Return Index</security>
+    <security code="$DJC" currency="USD">Dow Jones Composite Average</security>
+    <security code="$DJCTR" currency="USD">Dow Jones Composite Average Total Return</security>
+    <security code="$DJTSEC" currency="USD">Dow Jones Composite Titans 30 Index</security>
+    <security code="$DJTSECE" currency="USD">Dow Jones Composite Titans 30 Index (Euros)</security>
+    <security code="$DJTCNS" currency="USD">Dow Jones Construction &amp; Materials Titans 30 Index</security>
+    <security code="$DJTCNSE" currency="USD">Dow Jones Construction &amp; Materials Titans 30 Index (Euros)</security>
+    <security code="$DJCBP" currency="USD">Dow Jones Coporate Bond Index</security>
+    <security code="$DJCBT" currency="USD">Dow Jones Corporate Bond Total Return Index</security>
+    <security code="$DJARB50" currency="USD">Dow Jones DIFC Arabia Titans 50 Index (U.S. $)</security>
+    <security code="$DKDOW" currency="USD">Dow Jones Denmark Index</security>
+    <security code="$DKDOWD" currency="USD">Dow Jones Denmark Index (U.S.$)</security>
+    <security code="$DJEPCSD" currency="USD">Dow Jones EPAC Select Dividend Index</security>
+    <security code="$DJEPCSDT" currency="USD">Dow Jones EPAC Select Dividend Total Return Index</security>
+    <security code="$SD3E" currency="USD">Dow Jones EURO STOXX Select Dividend 30 Index (EUR)</security>
+    <security code="$SD3K" currency="USD">Dow Jones EURO STOXX Select Dividend 30 Index (USD)</security>
+    <security code="$DJEE" currency="USD">Dow Jones Eastern Europe Index</security>
+    <security code="$REI" currency="USD">Dow Jones Equity All REIT Index</security>
+    <security code="$REIT" currency="USD">Dow Jones Equity All REIT Total Return Index</security>
+    <security code="$DJEURO5" currency="USD">Dow Jones Euro Currency 5 Index</security>
+    <security code="$DJEURO" currency="USD">Dow Jones Euro Currency Index</security>
+    <security code="$E2BSC" currency="USD">Dow Jones Europe - Ex. U.K. Basic Materials Index</security>
+    <security code="$E2NCY" currency="USD">Dow Jones Europe - Ex. U.K. Consumer Goods Index</security>
+    <security code="$E2CYC" currency="USD">Dow Jones Europe - Ex. U.K. Consumer Services Index</security>
+    <security code="$E2FIN" currency="USD">Dow Jones Europe - Ex. U.K. Financials Index</security>
+    <security code="$E2HCR" currency="USD">Dow Jones Europe - Ex. U.K. Health Care Index</security>
+    <security code="$E2DOW" currency="USD">Dow Jones Europe - Ex. U.K. Index</security>
+    <security code="$E2IDU" currency="USD">Dow Jones Europe - Ex. U.K. Industrials Index</security>
+    <security code="$E2ENE" currency="USD">Dow Jones Europe - Ex. U.K. Oil &amp; Gas Index</security>
+    <security code="$E2TEC" currency="USD">Dow Jones Europe - Ex. U.K. Technology Index</security>
+    <security code="$E2TLS" currency="USD">Dow Jones Europe - Ex. U.K. Telecommunications Index</security>
+    <security code="$E2UTI" currency="USD">Dow Jones Europe - Ex. U.K. Utilities Index</security>
+    <security code="$E3DOW" currency="USD">Dow Jones Europe - Nordic Index</security>
+    <security code="$E1BSC" currency="USD">Dow Jones Europe Basic Materials Index</security>
+    <security code="$E1NCY" currency="USD">Dow Jones Europe Consumer Goods Index</security>
+    <security code="$E1CYC" currency="USD">Dow Jones Europe Consumer Services Index</security>
+    <security code="$E1FIN" currency="USD">Dow Jones Europe Financials Index</security>
+    <security code="$E1HCR" currency="USD">Dow Jones Europe Health Care Index</security>
+    <security code="$E1DOW" currency="USD">Dow Jones Europe Index</security>
+    <security code="$E1IDU" currency="USD">Dow Jones Europe Industrials Index</security>
+    <security code="$E1ENE" currency="USD">Dow Jones Europe Oil &amp; Gas Index</security>
+    <security code="$E1TEC" currency="USD">Dow Jones Europe Technology Index</security>
+    <security code="$E1TLS" currency="USD">Dow Jones Europe Telecommunications Index</security>
+    <security code="$E1UTI" currency="USD">Dow Jones Europe Utilities Index</security>
+    <security code="$DJTFVS" currency="USD">Dow Jones Financial Services Titans 30 Index</security>
+    <security code="$DJTFVSE" currency="USD">Dow Jones Financial Services Titans 30 Index (Euros)</security>
+    <security code="$FIDOW" currency="USD">Dow Jones Finland Index</security>
+    <security code="$FIDOWD" currency="USD">Dow Jones Finland Index (U.S.$)</security>
+    <security code="$DJTFOB" currency="USD">Dow Jones Food &amp; Beverage Titans 30 Index</security>
+    <security code="$DJTFOBE" currency="USD">Dow Jones Food &amp; Beverage Titans 30 Index (Euros)</security>
+    <security code="$DJFRG" currency="USD">Dow Jones France Growth Index (Euros)</security>
+    <security code="$FRDOW" currency="USD">Dow Jones France Index</security>
+    <security code="$FRDOWD" currency="USD">Dow Jones France Index (U.S.$)</security>
+    <security code="$DJFRSD" currency="USD">Dow Jones France Select Dividend 20 Index</security>
+    <security code="$DJFRSDT" currency="USD">Dow Jones France Select Dividend 20 Total Return Index</security>
+    <security code="$FR30" currency="USD">Dow Jones France Titans 30 Index (Euros)</security>
+    <security code="$FR30D" currency="USD">Dow Jones France Titans 30 Index (U.S. $)</security>
+    <security code="$DJFRV" currency="USD">Dow Jones France Value Index (Euros)</security>
+    <security code="$DJDEG" currency="USD">Dow Jones Germany Growth Index (Euros)</security>
+    <security code="$DEDOW" currency="USD">Dow Jones Germany Index</security>
+    <security code="$DEDOWD" currency="USD">Dow Jones Germany Index (U.S.$)</security>
+    <security code="$DJDESD" currency="USD">Dow Jones Germany Select Dividend 20 Index</security>
+    <security code="$DJDESDT" currency="USD">Dow Jones Germany Select Dividend 20 Total Return Index</security>
+    <security code="$DE30" currency="USD">Dow Jones Germany Titans 30 Index (Euros)</security>
+    <security code="$DE30D" currency="USD">Dow Jones Germany Titans 30 Index (U.S. $)</security>
+    <security code="$DJDEV" currency="USD">Dow Jones Germany Value Index (Euros)</security>
+    <security code="$DJGEX" currency="USD">Dow Jones Global Exchanges Index</security>
+    <security code="$DJGTE" currency="USD">Dow Jones Global Titans 50 Index - World Close (Euros)</security>
+    <security code="$DJGT" currency="USD">Dow Jones Global Titans Index</security>
+    <security code="$GRDOW" currency="USD">Dow Jones Greece Index</security>
+    <security code="$GRDOWD" currency="USD">Dow Jones Greece Index (U.S.$)</security>
+    <security code="$DJTHCA" currency="USD">Dow Jones Health Care Titans 30 Index</security>
+    <security code="$DJTHCAE" currency="USD">Dow Jones Health Care Titans 30 Index (Euros)</security>
+    <security code="$HKDOW" currency="USD">Dow Jones Hong Kong Index</security>
+    <security code="$HKDOWD" currency="USD">Dow Jones Hong Kong Index (U.S.$)</security>
+    <security code="$XLHK" currency="USD">Dow Jones Hong Kong Titans 30 Index</security>
+    <security code="$IDDOWD" currency="USD">Dow Jones Indonesia Index (U.S.$)</security>
+    <security code="$DJI" currency="USD">Dow Jones Industrial Average</security>
+    <security code="$INDU" currency="USD">Dow Jones Industrial Average</security>
+    <security code="$DJTIGS" currency="USD">Dow Jones Industrial Goods and Services Titans 30 Index</security>
+    <security code="$DJTIGSE" currency="USD">Dow Jones Industrial Goods and Services Titans 30 Index (Euros)</security>
+    <security code="$DJTINN" currency="USD">Dow Jones Insurance Titans 30 Index</security>
+    <security code="$DJTINNE" currency="USD">Dow Jones Insurance Titans 30 Index (Euros)</security>
+    <security code="$DJECOM" currency="USD">Dow Jones Internet Commerce Index</security>
+    <security code="$DJINET" currency="USD">Dow Jones Internet Composite Index</security>
+    <security code="$DJINETT" currency="USD">Dow Jones Internet Composite Total Return Index</security>
+    <security code="$DJISVC" currency="USD">Dow Jones Internet Services Index</security>
+    <security code="$DJMSSB" currency="USD">Dow Jones Investment Services MicroSector Index</security>
+    <security code="$IEDOW" currency="USD">Dow Jones Ireland Index</security>
+    <security code="$IEDOWD" currency="USD">Dow Jones Ireland Index (U.S.$)</security>
+    <security code="$DJIAP" currency="USD">Dow Jones Islamic Market Asia/Pacific Index</security>
+    <security code="$DJIAPL" currency="USD">Dow Jones Islamic Market Asia/Pacific Large-Cap Index</security>
+    <security code="$DJIAPM" currency="USD">Dow Jones Islamic Market Asia/Pacific Mid-Cap Index</security>
+    <security code="$DJIAPS" currency="USD">Dow Jones Islamic Market Asia/Pacific Small-Cap Index</security>
+    <security code="$DJAP25" currency="USD">Dow Jones Islamic Market Asia/Pacific Titans 25 Index</security>
+    <security code="$DJAP25T" currency="USD">Dow Jones Islamic Market Asia/Pacific Titans 25 Total Return Index</security>
+    <security code="$DJIP2" currency="USD">Dow Jones Islamic Market Asia/Pacific ex-Japan Index</security>
+    <security code="$DJIP2T" currency="USD">Dow Jones Islamic Market Asia/Pacific ex-Japan Total Return Index</security>
+    <security code="$DJIBRIC" currency="USD">Dow Jones Islamic Market BRIC Equal Weighted Index</security>
+    <security code="$DJIBSC" currency="USD">Dow Jones Islamic Market Basic Materials Index</security>
+    <security code="$DJICA" currency="USD">Dow Jones Islamic Market Canada Index</security>
+    <security code="$DJINCY" currency="USD">Dow Jones Islamic Market Consumer Goods Index</security>
+    <security code="$DJICYC" currency="USD">Dow Jones Islamic Market Consumer Services Index</security>
+    <security code="$DJIEZ" currency="USD">Dow Jones Islamic Market Euro Index</security>
+    <security code="$DJIEZL" currency="USD">Dow Jones Islamic Market Euro Large-Cap Index</security>
+    <security code="$DJIEZM" currency="USD">Dow Jones Islamic Market Euro Mid-Cap Index</security>
+    <security code="$DJIEZS" currency="USD">Dow Jones Islamic Market Euro Small-Cap Index</security>
+    <security code="$DJIEU" currency="USD">Dow Jones Islamic Market Europe Index</security>
+    <security code="$DJIEUL" currency="USD">Dow Jones Islamic Market Europe Large-Cap Index</security>
+    <security code="$DJIEUM" currency="USD">Dow Jones Islamic Market Europe Mid-Cap Index</security>
+    <security code="$DJIEUS" currency="USD">Dow Jones Islamic Market Europe Small-Cap Index</security>
+    <security code="$DJEU25" currency="USD">Dow Jones Islamic Market Europe Titans 25 Index</security>
+    <security code="$DJEU25T" currency="USD">Dow Jones Islamic Market Europe Titans 25 Total Return Index</security>
+    <security code="$DJIFIN" currency="USD">Dow Jones Islamic Market Financials Index</security>
+    <security code="$DJIHCR" currency="USD">Dow Jones Islamic Market Health Care Index</security>
+    <security code="$DJIIDU" currency="USD">Dow Jones Islamic Market Industrials Index</security>
+    <security code="$DJIJP" currency="USD">Dow Jones Islamic Market Japan Index</security>
+    <security code="$DJIMKW" currency="USD">Dow Jones Islamic Market Kuwait Index</security>
+    <security code="$DJIMKWT" currency="USD">Dow Jones Islamic Market Kuwait Total Return Index</security>
+    <security code="$DJIENE" currency="USD">Dow Jones Islamic Market Oil &amp; Gas Index</security>
+    <security code="$DJITEC" currency="USD">Dow Jones Islamic Market Technology Index</security>
+    <security code="$DJITLS" currency="USD">Dow Jones Islamic Market Telecommunications Index</security>
+    <security code="$IMXL" currency="USD">Dow Jones Islamic Market Titans 100 Index</security>
+    <security code="$IMXLT" currency="USD">Dow Jones Islamic Market Titans 100 Total Return Index</security>
+    <security code="$DJIMTR" currency="USD">Dow Jones Islamic Market Turkey Index</security>
+    <security code="$DJIMTRT" currency="USD">Dow Jones Islamic Market Turkey Total Return Index</security>
+    <security code="$DJIUK" currency="USD">Dow Jones Islamic Market U.K. Index</security>
+    <security code="$IMUS" currency="USD">Dow Jones Islamic Market U.S. Index</security>
+    <security code="$IMUSL" currency="USD">Dow Jones Islamic Market U.S. Large-Cap Index</security>
+    <security code="$IMUSM" currency="USD">Dow Jones Islamic Market U.S. Mid-Cap Index</security>
+    <security code="$IMUSS" currency="USD">Dow Jones Islamic Market U.S. Small-Cap Index</security>
+    <security code="$DJUS50" currency="USD">Dow Jones Islamic Market U.S. Titans 50 Index</security>
+    <security code="$DJUS50T" currency="USD">Dow Jones Islamic Market U.S. Titans 50 Total Return Index</security>
+    <security code="$IMUST" currency="USD">Dow Jones Islamic Market U.S. Total Return Index</security>
+    <security code="$DJIUTI" currency="USD">Dow Jones Islamic Market Utilities Index</security>
+    <security code="$DJIXUST" currency="USD">Dow Jones Islamic Market World - Ex. U.S. Total Return Index</security>
+    <security code="$DJIDEVXT" currency="USD">Dow Jones Islamic Market World Developed - Ex. U.S. Total Return Index</security>
+    <security code="$DJIDEVT" currency="USD">Dow Jones Islamic Market World Developed Total Return Index</security>
+    <security code="$DJIEMG" currency="USD">Dow Jones Islamic Market World Emerging Markets Index</security>
+    <security code="$DJIEMGT" currency="USD">Dow Jones Islamic Market World Emerging Markets Total Return Index</security>
+    <security code="$DJIM" currency="USD">Dow Jones Islamic Market World Index</security>
+    <security code="$DJILRG" currency="USD">Dow Jones Islamic Market World Large-Cap Index</security>
+    <security code="$DJIMID" currency="USD">Dow Jones Islamic Market World Mid-Cap Index</security>
+    <security code="$DJISML" currency="USD">Dow Jones Islamic Market World Small-Cap Index</security>
+    <security code="$DJIMT" currency="USD">Dow Jones Islamic Market World Total Return Index</security>
+    <security code="$DJIMSI" currency="USD">Dow Jones Islamic Sustainability Index</security>
+    <security code="$DJITG" currency="USD">Dow Jones Italy Growth Index (Euros)</security>
+    <security code="$ITDOW" currency="USD">Dow Jones Italy Index</security>
+    <security code="$ITDOWD" currency="USD">Dow Jones Italy Index (U.S.$)</security>
+    <security code="$DJITSD" currency="USD">Dow Jones Italy Select Dividend 20 Index</security>
+    <security code="$DJITSDT" currency="USD">Dow Jones Italy Select Dividend 20 Total Return Index</security>
+    <security code="$IT30" currency="USD">Dow Jones Italy Titans 30 Index (Euros)</security>
+    <security code="$IT30D" currency="USD">Dow Jones Italy Titans 30 Index (U.S. $)</security>
+    <security code="$DJITV" currency="USD">Dow Jones Italy Value Index (Euros)</security>
+    <security code="$JPDOWD" currency="USD">Dow Jones Japan Index (U.S.$)</security>
+    <security code="$DJJPSD" currency="USD">Dow Jones Japan Select Dividend 30 Index</security>
+    <security code="$DJJPSDT" currency="USD">Dow Jones Japan Select Dividend 30 Total Return Index</security>
+    <security code="$XLJPN" currency="USD">Dow Jones Japan Titans 100 Index</security>
+    <security code="$DJKW50" currency="USD">Dow Jones Kuwait Titans 50 Index</security>
+    <security code="$DJKW50T" currency="USD">Dow Jones Kuwait Titans 50 Total Return Index</security>
+    <security code="$A4DOW" currency="USD">Dow Jones Latin America - Ex. Mexico Index</security>
+    <security code="$A3DOW" currency="USD">Dow Jones Latin America Index</security>
+    <security code="$MYDOW" currency="USD">Dow Jones Malaysia Index</security>
+    <security code="$MYDOWD" currency="USD">Dow Jones Malaysia Index (U.S.$)</security>
+    <security code="$DJTMDI" currency="USD">Dow Jones Media Titans 30 Index</security>
+    <security code="$DJTMDIE" currency="USD">Dow Jones Media Titans 30 Index (Euros)</security>
+    <security code="$MXDOW" currency="USD">Dow Jones Mexico Index</security>
+    <security code="$MXDOWD" currency="USD">Dow Jones Mexico Index (U.S.$)</security>
+    <security code="$DJNLG" currency="USD">Dow Jones Netherlands Growth Index (Euros)</security>
+    <security code="$NLDOW" currency="USD">Dow Jones Netherlands Index</security>
+    <security code="$NLDOWD" currency="USD">Dow Jones Netherlands Index (U.S.$)</security>
+    <security code="$DJNLSD" currency="USD">Dow Jones Netherlands Select Dividend 15 Index</security>
+    <security code="$DJNLSDT" currency="USD">Dow Jones Netherlands Select Dividend 15 Total Return Index</security>
+    <security code="$NL30" currency="USD">Dow Jones Netherlands Titans 30 Index (Euros)</security>
+    <security code="$NL30D" currency="USD">Dow Jones Netherlands Titans 30 Index (U.S. $)</security>
+    <security code="$DJNLV" currency="USD">Dow Jones Netherlands Value Index (Euros)</security>
+    <security code="$NZDOW" currency="USD">Dow Jones New Zealand Index</security>
+    <security code="$NZDOWD" currency="USD">Dow Jones New Zealand Index (U.S.$)</security>
+    <security code="$NODOW" currency="USD">Dow Jones Norway Index</security>
+    <security code="$NODOWD" currency="USD">Dow Jones Norway Index (U.S.$)</security>
+    <security code="$DJTENG" currency="USD">Dow Jones Oil &amp; Gas Titans 30 Index</security>
+    <security code="$DJTENGE" currency="USD">Dow Jones Oil &amp; Gas Titans 30 Index (Euros)</security>
+    <security code="$DJTNCG" currency="USD">Dow Jones Personal &amp; Household Goods Titans 30 Index</security>
+    <security code="$DJTNCGE" currency="USD">Dow Jones Personal &amp; Household Goods Titans 30 Index (Euros)</security>
+    <security code="$DJMSPR" currency="USD">Dow Jones Pharmaceuticals MicroSector Index</security>
+    <security code="$PHDOW" currency="USD">Dow Jones Philippines Index</security>
+    <security code="$PHDOWD" currency="USD">Dow Jones Philippines Index (U.S.$)</security>
+    <security code="$PTDOW" currency="USD">Dow Jones Portugal Index</security>
+    <security code="$PTDOWD" currency="USD">Dow Jones Portugal Index (U.S.$)</security>
+    <security code="$DJGSP" currency="USD">Dow Jones Precious Metals Index</security>
+    <security code="$DJGSPT" currency="USD">Dow Jones Precious Metals Total Return Index</security>
+    <security code="$DJTRET" currency="USD">Dow Jones Retail Titans 30 Index</security>
+    <security code="$DJTRETE" currency="USD">Dow Jones Retail Titans 30 Index (Euros)</security>
+    <security code="$RU10" currency="USD">Dow Jones RusIndex Titans 10</security>
+    <security code="$RU10D" currency="USD">Dow Jones RusIndex Titans 10 (U.S.$)</security>
+    <security code="$DJA1" currency="USD">Dow Jones STOXX Americas 600 Index</security>
+    <security code="$DJP2" currency="USD">Dow Jones STOXX Asia/Pacific 600 Ex. Japan Index</security>
+    <security code="$DJP1" currency="USD">Dow Jones STOXX Asia/Pacific 600 Index</security>
+    <security code="$DJW1" currency="USD">Dow Jones STOXX Global 1800 Index</security>
+    <security code="$SD3P" currency="USD">Dow Jones STOXX Select Dividend 30 Index (EUR)</security>
+    <security code="$SD3L" currency="USD">Dow Jones STOXX Select Dividend 30 Index (USD)</security>
+    <security code="$DJCHSD" currency="USD">Dow Jones SWX Select Dividend 20 Index</security>
+    <security code="$DJCHSDT" currency="USD">Dow Jones SWX Select Dividend 20 Total Return Index</security>
+    <security code="$DJDVY" currency="USD">Dow Jones Select Dividend Total Return Index</security>
+    <security code="$DJSM" currency="USD">Dow Jones Select Micro-Cap Index</security>
+    <security code="$DJSMT" currency="USD">Dow Jones Select Micro-Cap Total Return Index</security>
+    <security code="$DJMSSC" currency="USD">Dow Jones Semiconductors MicroSector Index</security>
+    <security code="$DJSH" currency="USD">Dow Jones Shanghai Index</security>
+    <security code="$DJSZ" currency="USD">Dow Jones Shenzhen Index</security>
+    <security code="$SGDOWD" currency="USD">Dow Jones Singapore Index (U.S.$)</security>
+    <security code="$DJMSSW" currency="USD">Dow Jones Software MicroSector Index</security>
+    <security code="$ZADOW" currency="USD">Dow Jones South Africa Index</security>
+    <security code="$ZADOWD" currency="USD">Dow Jones South Africa Index (U.S.$)</security>
+    <security code="$ZA30" currency="USD">Dow Jones South Africa Titans 30 Index</security>
+    <security code="$ZA30D" currency="USD">Dow Jones South Africa Titans 30 Index (U.S. $)</security>
+    <security code="$KRDOW" currency="USD">Dow Jones South Korea Index</security>
+    <security code="$KRDOWD" currency="USD">Dow Jones South Korea Index (U.S.$)</security>
+    <security code="$ESDOW" currency="USD">Dow Jones Spain Index</security>
+    <security code="$ESDOWD" currency="USD">Dow Jones Spain Index (U.S.$)</security>
+    <security code="$DJESSD" currency="USD">Dow Jones Spain Select Dividend 20 Index</security>
+    <security code="$DJESSDT" currency="USD">Dow Jones Spain Select Dividend 20 Total Return Index</security>
+    <security code="$ES30" currency="USD">Dow Jones Spain Titans 30 Index (Euros)</security>
+    <security code="$ES30D" currency="USD">Dow Jones Spain Titans 30 Index (U.S. $)</security>
+    <security code="$E1SGI" currency="USD">Dow Jones Sustainability Europe Index Composite</security>
+    <security code="$W1SGI" currency="USD">Dow Jones Sustainability World Index Composite</security>
+    <security code="$DJSEG" currency="USD">Dow Jones Sweden Growth Index (Swedish Kronas)</security>
+    <security code="$SEDOW" currency="USD">Dow Jones Sweden Index</security>
+    <security code="$SEDOWD" currency="USD">Dow Jones Sweden Index (U.S.$)</security>
+    <security code="$DJSESD" currency="USD">Dow Jones Sweden Select Dividend 15 Index</security>
+    <security code="$DJSESDT" currency="USD">Dow Jones Sweden Select Dividend 15 Total Return Index</security>
+    <security code="$SE30" currency="USD">Dow Jones Sweden Titans 30 Index</security>
+    <security code="$SE30D" currency="USD">Dow Jones Sweden Titans 30 Index (U.S. $)</security>
+    <security code="$DJSEV" currency="USD">Dow Jones Sweden Value Index (Swedish Kronas)</security>
+    <security code="$CHDOW" currency="USD">Dow Jones Switzerland Index</security>
+    <security code="$CHDOWD" currency="USD">Dow Jones Switzerland Index (U.S.$)</security>
+    <security code="$CH30" currency="USD">Dow Jones Switzerland Titans 30 Index</security>
+    <security code="$CH30D" currency="USD">Dow Jones Switzerland Titans 30 Index (U.S. $)</security>
+    <security code="$TWDOW" currency="USD">Dow Jones Taiwan Index</security>
+    <security code="$TWDOWD" currency="USD">Dow Jones Taiwan Index (U.S.$)</security>
+    <security code="$DJMSHQ" currency="USD">Dow Jones Technology Hardware &amp; Equipment MicroSector Index</security>
+    <security code="$DJTTHE" currency="USD">Dow Jones Technology Titans 30 Index</security>
+    <security code="$DJTTHEE" currency="USD">Dow Jones Technology Titans 30 Index (Euros)</security>
+    <security code="$DJMSCT" currency="USD">Dow Jones Telecommunications Equipment MicroSector Index</security>
+    <security code="$DJTTEL" currency="USD">Dow Jones Telecommunications Titans 30 Index</security>
+    <security code="$DJTTELE" currency="USD">Dow Jones Telecommunications Titans 30 Index (Euros)</security>
+    <security code="$DJTGR" currency="USD">Dow Jones Tiger Titans 50 Index</security>
+    <security code="$DJTTR" currency="USD">Dow Jones Transportation Average Total Return</security>
+    <security code="$DJTCGS" currency="USD">Dow Jones Travel &amp; Leisure Titans 30 Index</security>
+    <security code="$DJTCGSE" currency="USD">Dow Jones Travel &amp; Leisure Titans 30 Index (Euros)</security>
+    <security code="$TR15" currency="USD">Dow Jones Turkey Equal Weighted 15 Index</security>
+    <security code="$TR15E" currency="USD">Dow Jones Turkey Equal Weighted 15 Index</security>
+    <security code="$TR15D" currency="USD">Dow Jones Turkey Equal Weighted 15 Index</security>
+    <security code="$TR15ET" currency="USD">Dow Jones Turkey Equal Weighted 15 Total Return Index</security>
+    <security code="$TR15DT" currency="USD">Dow Jones Turkey Equal Weighted 15 Total Return Index</security>
+    <security code="$TR15T" currency="USD">Dow Jones Turkey Equal Weighted 15 Total Return Index</security>
+    <security code="$TR20" currency="USD">Dow Jones Turkey Titans 20 Index</security>
+    <security code="$TR20E" currency="USD">Dow Jones Turkey Titans 20 Index (Euros)</security>
+    <security code="$TR20D" currency="USD">Dow Jones Turkey Titans 20 Index (U.S. $)</security>
+    <security code="$DJUKG" currency="USD">Dow Jones U.K. Growth Index (British Pounds)</security>
+    <security code="$GBDOW" currency="USD">Dow Jones U.K. Index</security>
+    <security code="$GBDOWD" currency="USD">Dow Jones U.K. Index (U.S.$)</security>
+    <security code="$DJUKSD" currency="USD">Dow Jones U.K. Select Dividend 20 Index</security>
+    <security code="$DJUKSDT" currency="USD">Dow Jones U.K. Select Dividend 20 Total Return Index</security>
+    <security code="$UK50" currency="USD">Dow Jones U.K. Titans 50 Index</security>
+    <security code="$UK50E" currency="USD">Dow Jones U.K. Titans 50 Index (Euros)</security>
+    <security code="$UK50D" currency="USD">Dow Jones U.K. Titans 50 Index (U.S. $)</security>
+    <security code="$DJUKV" currency="USD">Dow Jones U.K. Value Index (British Pounds)</security>
+    <security code="$DJUSAE" currency="USD">Dow Jones U.S. Aerospace &amp; Defense Index</security>
+    <security code="$DJUSAS" currency="USD">Dow Jones U.S. Aerospace Index</security>
+    <security code="$DJUSAR" currency="USD">Dow Jones U.S. Airlines Index</security>
+    <security code="$DJUSAL" currency="USD">Dow Jones U.S. Aluminum Index</security>
+    <security code="$DJUSRA" currency="USD">Dow Jones U.S. Apparel Retailers Index</security>
+    <security code="$DJUSAG" currency="USD">Dow Jones U.S. Asset Managers Index</security>
+    <security code="$DJUSAT" currency="USD">Dow Jones U.S. Auto Parts Index</security>
+    <security code="$DJUSAP" currency="USD">Dow Jones U.S. Automobiles &amp; Parts Index</security>
+    <security code="$DJUSAU" currency="USD">Dow Jones U.S. Automobiles Index</security>
+    <security code="$DJUSBK" currency="USD">Dow Jones U.S. Banks Index</security>
+    <security code="$DJUSBKT" currency="USD">Dow Jones U.S. Banks Total Return Index</security>
+    <security code="$DJUSBMT" currency="USD">Dow Jones U.S. Basic Materials Total Return Index</security>
+    <security code="$DJUSBS" currency="USD">Dow Jones U.S. Basic Resources Index</security>
+    <security code="$DJUSBV" currency="USD">Dow Jones U.S. Beverages Index</security>
+    <security code="$DJUSBT" currency="USD">Dow Jones U.S. Biotechnology Index</security>
+    <security code="$DJUSBTT" currency="USD">Dow Jones U.S. Biotechnology Total Return Index</security>
+    <security code="$DJUSDB" currency="USD">Dow Jones U.S. Brewers Index</security>
+    <security code="$DJUSBC" currency="USD">Dow Jones U.S. Broadcasting &amp; Entertainment Index</security>
+    <security code="$DJUSRB" currency="USD">Dow Jones U.S. Broadline Retailers Index</security>
+    <security code="$DJUSBD" currency="USD">Dow Jones U.S. Building Materials &amp; Fixtures Index</security>
+    <security code="$DJUSIV" currency="USD">Dow Jones U.S. Business Support Services Index</security>
+    <security code="$DJUSBE" currency="USD">Dow Jones U.S. Business Training &amp; Employment Agencies Index</security>
+    <security code="$DJUSCH" currency="USD">Dow Jones U.S. Chemicals Index</security>
+    <security code="$DJUSCF" currency="USD">Dow Jones U.S. Clothing &amp; Accessories Index</security>
+    <security code="$DJUSCL" currency="USD">Dow Jones U.S. Coal Index</security>
+    <security code="$DJUSHR" currency="USD">Dow Jones U.S. Commercial Vehicles &amp; Trucks Index</security>
+    <security code="$DJUSCC" currency="USD">Dow Jones U.S. Commodity Chemicals Index</security>
+    <security code="$DJUSCR" currency="USD">Dow Jones U.S. Computer Hardware Index</security>
+    <security code="$DJUSDV" currency="USD">Dow Jones U.S. Computer Services Index</security>
+    <security code="$DJUSCN" currency="USD">Dow Jones U.S. Construction &amp; Materials Index</security>
+    <security code="$DJUSCE" currency="USD">Dow Jones U.S. Consumer Electronics Index</security>
+    <security code="$DJUSSF" currency="USD">Dow Jones U.S. Consumer Finance Index</security>
+    <security code="$DJUSNCT" currency="USD">Dow Jones U.S. Consumer Goods Total Return Index</security>
+    <security code="$DJUSCYT" currency="USD">Dow Jones U.S. Consumer Services Total Return Index</security>
+    <security code="$DJUSCP" currency="USD">Dow Jones U.S. Containers &amp; Packaging Index</security>
+    <security code="$DJUSDN" currency="USD">Dow Jones U.S. Defense Index</security>
+    <security code="$DJUSAF" currency="USD">Dow Jones U.S. Delivery Services Index</security>
+    <security code="$DJUSVN" currency="USD">Dow Jones U.S. Distillers &amp; Vintners Index</security>
+    <security code="$DJUSID" currency="USD">Dow Jones U.S. Diversified Industrials Index</security>
+    <security code="$DJUSRD" currency="USD">Dow Jones U.S. Drug Retailers Index</security>
+    <security code="$DJUSHD" currency="USD">Dow Jones U.S. Durable Household Products Index</security>
+    <security code="$DJUSEC" currency="USD">Dow Jones U.S. Electrical Components &amp; Equipment Index</security>
+    <security code="$DJUSEU" currency="USD">Dow Jones U.S. Electricity Index</security>
+    <security code="$DJUSEE" currency="USD">Dow Jones U.S. Electronic &amp; Electrical Equipment Index</security>
+    <security code="$DJUSAI" currency="USD">Dow Jones U.S. Electronic Equipment Index</security>
+    <security code="$DJUSOE" currency="USD">Dow Jones U.S. Electronic Office Equipment Index</security>
+    <security code="$DJUSOS" currency="USD">Dow Jones U.S. Exploration &amp; Production Index</security>
+    <security code="$DJUSFA" currency="USD">Dow Jones U.S. Financial Administration Index</security>
+    <security code="$DJUSFI" currency="USD">Dow Jones U.S. Financial Services Index</security>
+    <security code="$DJUSFNT" currency="USD">Dow Jones U.S. Financials Total Return Index</security>
+    <security code="$DJUSFC" currency="USD">Dow Jones U.S. Fixed Line Telecommunications Index</security>
+    <security code="$DJUSFB" currency="USD">Dow Jones U.S. Food &amp; Beverage Index</security>
+    <security code="$DJUSDR" currency="USD">Dow Jones U.S. Food &amp; Drug Retailers Index</security>
+    <security code="$DJUSFO" currency="USD">Dow Jones U.S. Food Producers Index</security>
+    <security code="$DJUSFP" currency="USD">Dow Jones U.S. Food Products Index</security>
+    <security code="$DJUSFD" currency="USD">Dow Jones U.S. Food Retailers &amp; Wholesalers Index</security>
+    <security code="$DJUSFT" currency="USD">Dow Jones U.S. Footwear Index</security>
+    <security code="$DJUSFR" currency="USD">Dow Jones U.S. Forestry &amp; Paper Index</security>
+    <security code="$DJUSFS" currency="USD">Dow Jones U.S. Forestry Index</security>
+    <security code="$DJUSIF" currency="USD">Dow Jones U.S. Full Line Insurance Index</security>
+    <security code="$DJUSFH" currency="USD">Dow Jones U.S. Furnishings Index</security>
+    <security code="$DJUSCA" currency="USD">Dow Jones U.S. Gambling Index</security>
+    <security code="$DJUSGU" currency="USD">Dow Jones U.S. Gas Distribution Index</security>
+    <security code="$DJUSUO" currency="USD">Dow Jones U.S. Gas/ Water &amp; Multiutilities Index</security>
+    <security code="$DJUSGF" currency="USD">Dow Jones U.S. General Financial Index</security>
+    <security code="$DJUSGI" currency="USD">Dow Jones U.S. General Industrials Index</security>
+    <security code="$DJUSMD" currency="USD">Dow Jones U.S. General Mining Index</security>
+    <security code="$DJUSGT" currency="USD">Dow Jones U.S. General Retailers Index</security>
+    <security code="$DJUSPM" currency="USD">Dow Jones U.S. Gold Mining Index</security>
+    <security code="$DJUSGR" currency="USD">Dow Jones U.S. Growth Index</security>
+    <security code="$DJUSMC" currency="USD">Dow Jones U.S. Health Care Equipment &amp; Services Index</security>
+    <security code="$DJUSHP" currency="USD">Dow Jones U.S. Health Care Providers Index</security>
+    <security code="$DJUSHCT" currency="USD">Dow Jones U.S. Health Care Total Return Index</security>
+    <security code="$DJUSHV" currency="USD">Dow Jones U.S. Heavy Construction Index</security>
+    <security code="$DJUSHB" currency="USD">Dow Jones U.S. Home Construction Index</security>
+    <security code="$DJUSHI" currency="USD">Dow Jones U.S. Home Improvement Retailers Index</security>
+    <security code="$DJUSLG" currency="USD">Dow Jones U.S. Hotels Index</security>
+    <security code="$DJUSHG" currency="USD">Dow Jones U.S. Household Goods Index</security>
+    <security code="$DJUSIQ" currency="USD">Dow Jones U.S. Industrial Engineering Index</security>
+    <security code="$DJUSIG" currency="USD">Dow Jones U.S. Industrial Goods &amp; Services Index</security>
+    <security code="$DJUSFE" currency="USD">Dow Jones U.S. Industrial Machinery Index</security>
+    <security code="$DJUSIM" currency="USD">Dow Jones U.S. Industrial Metals Index</security>
+    <security code="$DJUSDS" currency="USD">Dow Jones U.S. Industrial Suppliers Index</security>
+    <security code="$DJUSIT" currency="USD">Dow Jones U.S. Industrial Transportation Index</security>
+    <security code="$DJUSINT" currency="USD">Dow Jones U.S. Industrials Total Return Index</security>
+    <security code="$DJUSIB" currency="USD">Dow Jones U.S. Insurance Brokers Index</security>
+    <security code="$DJUSIR" currency="USD">Dow Jones U.S. Insurance Index</security>
+    <security code="$DJUSOL" currency="USD">Dow Jones U.S. Integrated Oil &amp; Gas Index</security>
+    <security code="$DJUSNS" currency="USD">Dow Jones U.S. Internet Index</security>
+    <security code="$DJUSSB" currency="USD">Dow Jones U.S. Investment Services Index</security>
+    <security code="$DJUSL" currency="USD">Dow Jones U.S. Large-Cap Index</security>
+    <security code="$DJULTC" currency="USD">Dow Jones U.S. Large-Cap Technology Index</security>
+    <security code="$DJUSLE" currency="USD">Dow Jones U.S. Leisure Goods Index</security>
+    <security code="$DJUSIL" currency="USD">Dow Jones U.S. Life Insurance Index</security>
+    <security code="$DJUSLW" currency="USD">Dow Jones U.S. LowCap Index</security>
+    <security code="$DJUSMT" currency="USD">Dow Jones U.S. Marine Transportation Index</security>
+    <security code="$DJUSAV" currency="USD">Dow Jones U.S. Media Agencies Index</security>
+    <security code="$DJUSME" currency="USD">Dow Jones U.S. Media Index</security>
+    <security code="$DJUSAM" currency="USD">Dow Jones U.S. Medical Equipment Index</security>
+    <security code="$DJUSMS" currency="USD">Dow Jones U.S. Medical Supplies Index</security>
+    <security code="$DJUSGM" currency="USD">Dow Jones U.S. Mid-Cap Growth Index</security>
+    <security code="$DJUSM" currency="USD">Dow Jones U.S. Mid-Cap Index</security>
+    <security code="$DJUSVM" currency="USD">Dow Jones U.S. Mid-Cap Value Index</security>
+    <security code="$DJUSMG" currency="USD">Dow Jones U.S. Mining Index</security>
+    <security code="$DJUSWC" currency="USD">Dow Jones U.S. Mobile Telecommunications Index</security>
+    <security code="$DJUSWCT" currency="USD">Dow Jones U.S. Mobile Telecommunications Total Return Index</security>
+    <security code="$DJUSMF" currency="USD">Dow Jones U.S. Mortgage Finance Index</security>
+    <security code="$DJUSMU" currency="USD">Dow Jones U.S. Multiutilities Index</security>
+    <security code="$DJUSHN" currency="USD">Dow Jones U.S. Nondurable Household Products Index</security>
+    <security code="$DJUSNF" currency="USD">Dow Jones U.S. Nonferrous Metals Index</security>
+    <security code="$DJUSIX" currency="USD">Dow Jones U.S. Nonlife Insurance Index</security>
+    <security code="$DJUSOG" currency="USD">Dow Jones U.S. Oil &amp; Gas Producers Index</security>
+    <security code="$DJUSENT" currency="USD">Dow Jones U.S. Oil &amp; Gas Total Return Index</security>
+    <security code="$DJUSOI" currency="USD">Dow Jones U.S. Oil Equipment &amp; Services Index</security>
+    <security code="$DJUSOQ" currency="USD">Dow Jones U.S. Oil Equipment/ Services &amp; Distribution Index</security>
+    <security code="$DJUSPP" currency="USD">Dow Jones U.S. Paper Index</security>
+    <security code="$DJUSNG" currency="USD">Dow Jones U.S. Personal &amp; Household Goods Index</security>
+    <security code="$DJUSPG" currency="USD">Dow Jones U.S. Personal Goods Index</security>
+    <security code="$DJUSCM" currency="USD">Dow Jones U.S. Personal Products Index</security>
+    <security code="$DJUSPN" currency="USD">Dow Jones U.S. Pharmaceuticals &amp; Biotechnology Index</security>
+    <security code="$DJUSPR" currency="USD">Dow Jones U.S. Pharmaceuticals Index</security>
+    <security code="$DJUSPRT" currency="USD">Dow Jones U.S. Pharmaceuticals Total Return Index</security>
+    <security code="$DJUSPL" currency="USD">Dow Jones U.S. Pipelines Index</security>
+    <security code="$DJUSPT" currency="USD">Dow Jones U.S. Platinum &amp; Precious Metals Index</security>
+    <security code="$DJUSIP" currency="USD">Dow Jones U.S. Property &amp; Casualty Insurance Index</security>
+    <security code="$DJUSPB" currency="USD">Dow Jones U.S. Publishing Index</security>
+    <security code="$DJUSRR" currency="USD">Dow Jones U.S. Railroads Index</security>
+    <security code="$DJUSRH" currency="USD">Dow Jones U.S. Real Estate Holding &amp; Development Index</security>
+    <security code="$DJUSRI" currency="USD">Dow Jones U.S. Real Estate Investment Trusts Index</security>
+    <security code="$DJUSRET" currency="USD">Dow Jones U.S. Real Estate Total Return Index</security>
+    <security code="$DJUSRP" currency="USD">Dow Jones U.S. Recreational Products Index</security>
+    <security code="$DJUSRQ" currency="USD">Dow Jones U.S. Recreational Services Index</security>
+    <security code="$DJUSIU" currency="USD">Dow Jones U.S. Reinsurance Index</security>
+    <security code="$DJUSRU" currency="USD">Dow Jones U.S. Restaurants &amp; Bars Index</security>
+    <security code="$DJUSRT" currency="USD">Dow Jones U.S. Retail Index</security>
+    <security code="$DJSASD" currency="USD">Dow Jones U.S. Select Aerospace &amp; Defense Index</security>
+    <security code="$DJSASDT" currency="USD">Dow Jones U.S. Select Aerospace &amp; Defense Total Return Index</security>
+    <security code="$DJDVP" currency="USD">Dow Jones U.S. Select Dividend Index</security>
+    <security code="$DJSHCP" currency="USD">Dow Jones U.S. Select Health Care Providers Index</security>
+    <security code="$DJSHCPT" currency="USD">Dow Jones U.S. Select Health Care Providers Total Return Index</security>
+    <security code="$DJSHMB" currency="USD">Dow Jones U.S. Select Home Construction  Index</security>
+    <security code="$DJSHMBT" currency="USD">Dow Jones U.S. Select Home Construction Total Return Index</security>
+    <security code="$DJSINS" currency="USD">Dow Jones U.S. Select Insurance  Index</security>
+    <security code="$DJSINST" currency="USD">Dow Jones U.S. Select Insurance Total Return Index</security>
+    <security code="$DJSINV" currency="USD">Dow Jones U.S. Select Investment Services Index</security>
+    <security code="$DJSINVT" currency="USD">Dow Jones U.S. Select Investment Services Total Return Index</security>
+    <security code="$DJSMDQ" currency="USD">Dow Jones U.S. Select Medical Equipment  Index</security>
+    <security code="$DJSMDQT" currency="USD">Dow Jones U.S. Select Medical Equipment Total Return Index</security>
+    <security code="$DJSOES" currency="USD">Dow Jones U.S. Select Oil Equipment &amp; Services Index</security>
+    <security code="$DJSOEST" currency="USD">Dow Jones U.S. Select Oil Equipment &amp; Services Total Return Index</security>
+    <security code="$DJSOEP" currency="USD">Dow Jones U.S. Select Oil Exploration &amp; Production  Index</security>
+    <security code="$DJSOEPT" currency="USD">Dow Jones U.S. Select Oil Exploration &amp; Production Total Return Index</security>
+    <security code="$DJSPHM" currency="USD">Dow Jones U.S. Select Pharmaceuticals Index</security>
+    <security code="$DJSPHMT" currency="USD">Dow Jones U.S. Select Pharmaceuticals Total Return Index</security>
+    <security code="$DJSRBK" currency="USD">Dow Jones U.S. Select Regional Banks Index</security>
+    <security code="$DJSRBKT" currency="USD">Dow Jones U.S. Select Regional Banks Total Return Index</security>
+    <security code="$DJUSSC" currency="USD">Dow Jones U.S. Semiconductors Index</security>
+    <security code="$DJUSSCT" currency="USD">Dow Jones U.S. Semiconductors Total Return Index</security>
+    <security code="$DJUSS" currency="USD">Dow Jones U.S. Small-Cap Index</security>
+    <security code="$DJUSSD" currency="USD">Dow Jones U.S. Soft Drinks Index</security>
+    <security code="$DJUSSV" currency="USD">Dow Jones U.S. Software &amp; Computer Services Index</security>
+    <security code="$DJUSSW" currency="USD">Dow Jones U.S. Software Index</security>
+    <security code="$DJUSCS" currency="USD">Dow Jones U.S. Specialized Consumer Services Index</security>
+    <security code="$DJUSCX" currency="USD">Dow Jones U.S. Specialty Chemicals Index</security>
+    <security code="$DJUSSP" currency="USD">Dow Jones U.S. Specialty Finance Index</security>
+    <security code="$DJUSRS" currency="USD">Dow Jones U.S. Specialty Retailers Index</security>
+    <security code="$DJUSST" currency="USD">Dow Jones U.S. Steel Index</security>
+    <security code="$DJUSIS" currency="USD">Dow Jones U.S. Support Services Index</security>
+    <security code="$DJUSTQ" currency="USD">Dow Jones U.S. Technology Hardware &amp; Equipment Index</security>
+    <security code="$DJUSTCT" currency="USD">Dow Jones U.S. Technology Total Return Index</security>
+    <security code="$DJUSCT" currency="USD">Dow Jones U.S. Telecommunications Equipment Index</security>
+    <security code="$DJUSTLT" currency="USD">Dow Jones U.S. Telecommunications Total Return Index</security>
+    <security code="$DJUSTR" currency="USD">Dow Jones U.S. Tires Index</security>
+    <security code="$DJUSTB" currency="USD">Dow Jones U.S. Tobacco Index</security>
+    <security code="$DJUSTP" currency="USD">Dow Jones U.S. TopCap Index</security>
+    <security code="$DJUSTY" currency="USD">Dow Jones U.S. Toys Index</security>
+    <security code="$DJUSTS" currency="USD">Dow Jones U.S. Transportation Services Index</security>
+    <security code="$DJUSCG" currency="USD">Dow Jones U.S. Travel &amp; Leisure Index</security>
+    <security code="$DJUSTT" currency="USD">Dow Jones U.S. Travel &amp; Tourism Index</security>
+    <security code="$DJUSTK" currency="USD">Dow Jones U.S. Trucking Index</security>
+    <security code="$DJUSUTT" currency="USD">Dow Jones U.S. Utilities Total Return Index</security>
+    <security code="$DJUSVA" currency="USD">Dow Jones U.S. Value Index</security>
+    <security code="$DJUSPC" currency="USD">Dow Jones U.S. Waste &amp; Disposal Services Index</security>
+    <security code="$DJUSWU" currency="USD">Dow Jones U.S. Water Index</security>
+    <security code="$DJUSHC" currency="USD">Dow Jones US  Healthcare Index</security>
+    <security code="$DJUSIN" currency="USD">Dow Jones US  Industrial Index</security>
+    <security code="$DJUSBM" currency="USD">Dow Jones US Basic Materials Index</security>
+    <security code="$DJUS" currency="USD">Dow Jones US Broad Market Index</security>
+    <security code="$DJUSCY" currency="USD">Dow Jones US Consumer Cyclical Inde</security>
+    <security code="$DJUSNC" currency="USD">Dow Jones US Consumer Non-Cyclical</security>
+    <security code="$DJUSEN" currency="USD">Dow Jones US Energy Index</security>
+    <security code="$DJUSFN" currency="USD">Dow Jones US Financial Index</security>
+    <security code="$DJUSFV" currency="USD">Dow Jones US Financial Services Idx</security>
+    <security code="$DJUSGL" currency="USD">Dow Jones US Large Cap Growth Index</security>
+    <security code="$DJUSVL" currency="USD">Dow Jones US Large Cap Value Index</security>
+    <security code="$DJUSRE" currency="USD">Dow Jones US Real Estate Index</security>
+    <security code="$DJUSGS" currency="USD">Dow Jones US Small Cap Growth Index</security>
+    <security code="$DJUSVS" currency="USD">Dow Jones US Small Cap Value Index</security>
+    <security code="$DJUSTL" currency="USD">Dow Jones US Telecommunications Idx</security>
+    <security code="$DJT" currency="USD">Dow Jones US Transportation Index</security>
+    <security code="$DJUSUT" currency="USD">Dow Jones US Utilities Index</security>
+    <security code="$DJTUTS" currency="USD">Dow Jones Utilities Titans 30 Index</security>
+    <security code="$DJTUTSE" currency="USD">Dow Jones Utilities Titans 30 Index (Euros)</security>
+    <security code="$DJU" currency="USD">Dow Jones Utility Average</security>
+    <security code="$DJUTR" currency="USD">Dow Jones Utility Average Total Return</security>
+    <security code="$VEDOW" currency="USD">Dow Jones Venezuela Index</security>
+    <security code="$VEDOWD" currency="USD">Dow Jones Venezuela Index (U.S.$)</security>
+    <security code="$DW25" currency="USD">Dow Jones Wilshire 2500 Index</security>
+    <security code="$DWCPF" currency="USD">Dow Jones Wilshire 4500 Completion Index</security>
+    <security code="$DWCP" currency="USD">Dow Jones Wilshire 4500 Completion Index (full-cap)</security>
+    <security code="$DWCF" currency="USD">Dow Jones Wilshire 5000 Composite Index</security>
+    <security code="$DWRTF" currency="USD">Dow Jones Wilshire REIT Index</security>
+    <security code="$DWRT" currency="USD">Dow Jones Wilshire REIT Index (full-cap)</security>
+    <security code="$DWRTT" currency="USD">Dow Jones Wilshire REIT Total Return Index (full-cap)</security>
+    <security code="$DWRSF" currency="USD">Dow Jones Wilshire Real Estate Securities Index</security>
+    <security code="$DWRS" currency="USD">Dow Jones Wilshire Real Estate Securities Index (full-cap)</security>
+    <security code="$DWLG" currency="USD">Dow Jones Wilshire U.S. Large-Cap Growth Index</security>
+    <security code="$DWL" currency="USD">Dow Jones Wilshire U.S. Large-Cap Index</security>
+    <security code="$DWLV" currency="USD">Dow Jones Wilshire U.S. Large-Cap Value Index</security>
+    <security code="$DWMI" currency="USD">Dow Jones Wilshire U.S. Micro-Cap Index</security>
+    <security code="$DWMG" currency="USD">Dow Jones Wilshire U.S. Mid-Cap Growth Index</security>
+    <security code="$DWM" currency="USD">Dow Jones Wilshire U.S. Mid-Cap Index</security>
+    <security code="$DWMV" currency="USD">Dow Jones Wilshire U.S. Mid-Cap Value Index</security>
+    <security code="$DWSG" currency="USD">Dow Jones Wilshire U.S. Small-Cap Growth Index</security>
+    <security code="$DWS" currency="USD">Dow Jones Wilshire U.S. Small-Cap Index</security>
+    <security code="$DWSV" currency="USD">Dow Jones Wilshire U.S. Small-Cap Value Index</security>
+    <security code="$W2BSC" currency="USD">Dow Jones World - Ex. U.S. Basic Materials Index</security>
+    <security code="$W2NCY" currency="USD">Dow Jones World - Ex. U.S. Consumer Goods Index</security>
+    <security code="$W2CYC" currency="USD">Dow Jones World - Ex. U.S. Consumer Services Index</security>
+    <security code="$W2FIN" currency="USD">Dow Jones World - Ex. U.S. Financials Index</security>
+    <security code="$W2HCR" currency="USD">Dow Jones World - Ex. U.S. Health Care Index</security>
+    <security code="$W2DOW" currency="USD">Dow Jones World - Ex. U.S. Index</security>
+    <security code="$W2IDU" currency="USD">Dow Jones World - Ex. U.S. Industrials Index</security>
+    <security code="$W2ENE" currency="USD">Dow Jones World - Ex. U.S. Oil &amp; Gas Index</security>
+    <security code="$W2TEC" currency="USD">Dow Jones World - Ex. U.S. Technology Index</security>
+    <security code="$W2TLS" currency="USD">Dow Jones World - Ex. U.S. Telecommunications Index</security>
+    <security code="$W2UTI" currency="USD">Dow Jones World - Ex. U.S. Utilities Index</security>
+    <security code="$W1BSC" currency="USD">Dow Jones World Basic Materials Index</security>
+    <security code="$W1NCY" currency="USD">Dow Jones World Consumer Goods Index</security>
+    <security code="$W1CYC" currency="USD">Dow Jones World Consumer Services Index</security>
+    <security code="$W1FIN" currency="USD">Dow Jones World Financials Index</security>
+    <security code="$W1HCR" currency="USD">Dow Jones World Health Care Index</security>
+    <security code="$W1DOW" currency="USD">Dow Jones World Index</security>
+    <security code="$W1IDU" currency="USD">Dow Jones World Industrials Index</security>
+    <security code="$W1ENE" currency="USD">Dow Jones World Oil &amp; Gas Index</security>
+    <security code="$W1TEC" currency="USD">Dow Jones World Technology Index</security>
+    <security code="$W1TLS" currency="USD">Dow Jones World Telecommunications Index</security>
+    <security code="$W1UTI" currency="USD">Dow Jones World Utilities Index</security>
+    <security code="$DJAIG" currency="USD">Dow Jones-AIG Commodity Index</security>
+    <security code="$DJAIGTR" currency="USD">Dow Jones-AIG Commodity Total Return Index</security>
+    <security code="$DJAIGEN" currency="USD">Dow Jones-AIG Energy Index</security>
+    <security code="$DJAIGENTR" currency="USD">Dow Jones-AIG Energy Total Return Index</security>
+    <security code="$DJAIGGR" currency="USD">Dow Jones-AIG Grains Index</security>
+    <security code="$DJAIGGRTR" currency="USD">Dow Jones-AIG Grains Total Return Index</security>
+    <security code="$DJAIGIN" currency="USD">Dow Jones-AIG Industrial Metals Index</security>
+    <security code="$DJAIGINTR" currency="USD">Dow Jones-AIG Industrial Metals Total Return Index</security>
+    <security code="$DJAIGLI" currency="USD">Dow Jones-AIG Livestock Index</security>
+    <security code="$DJAIGLITR" currency="USD">Dow Jones-AIG Livestock Total Return Index</security>
+    <security code="$DJAIGPE" currency="USD">Dow Jones-AIG Petroleum Index</security>
+    <security code="$DJAIGPETR" currency="USD">Dow Jones-AIG Petroleum Total Return Index</security>
+    <security code="$DJAIGPR" currency="USD">Dow Jones-AIG Precious Metals Index</security>
+    <security code="$DJAIGPRTR" currency="USD">Dow Jones-AIG Precious Metals Total Return Index</security>
+    <security code="$DJAIGSO" currency="USD">Dow Jones-AIG Softs Index</security>
+    <security code="$DJAIGSOTR" currency="USD">Dow Jones-AIG Softs Total Return Index</security>
+    <security code="$DJIMPK" currency="USD">Dow Jones-JS Pakistan Islamic Index</security>
+    <security code="$DJIMPKT" currency="USD">Dow Jones-JS Pakistan Islamic Total Return Index</security>
+    <security code="$DJRHBMY" currency="USD">Dow Jones-RHB Islamic Malaysia Index</security>
+    <security code="$ETX" currency="USD">Euro Currency TRAKRS Index</security>
+    <security code="$GLX" currency="USD">Gold TRAKRS Index</security>
+    <security code="$DJIE" currency="USD">Indicative Dow Jones Industrial Average (Euros)</security>
+    <security code="$DJII" currency="USD">Indicative Dow Jones Industrial Average (US$)</security>
+    <security code="$JSI" currency="USD">Jantzi Social Index</security>
+    <security code="$KLDSSI" currency="USD">KLD Select Social Index</security>
+    <security code="$OOC" currency="USD">LMC TRAKRS Index</security>
+    <security code="$LSH" currency="USD">Long-Short Technology TRAKRS II Index</security>
+    <security code="$MLH" currency="USD">Long-Short Technology TRAKRS Index</security>
+    <security code="$CYX" currency="USD">Long-Short Technology TRAKRS Index (Cash Component)</security>
+    <security code="$LCX" currency="USD">Long-Short Technology TRAKRS Index (Long Component)</security>
+    <security code="$XSX" currency="USD">Long-Short Technology TRAKRS Index (Short Component)</security>
+    <security code="$MLCP" currency="USD">Morningstar Large CapSM Index</security>
+    <security code="$MLCR" currency="USD">Morningstar Large CoreSM Index</security>
+    <security code="$MLGR" currency="USD">Morningstar Large GrowthSM Index</security>
+    <security code="$MLVL" currency="USD">Morningstar Large ValueSM Index</security>
+    <security code="$MMCP" currency="USD">Morningstar Mid CapSM Index</security>
+    <security code="$MMCR" currency="USD">Morningstar Mid CoreSM  Index</security>
+    <security code="$MMGR" currency="USD">Morningstar Mid GrowthSM Index</security>
+    <security code="$MMVL" currency="USD">Morningstar Mid ValueSM Index</security>
+    <security code="$MSCP" currency="USD">Morningstar Small CapSM Index</security>
+    <security code="$MSCR" currency="USD">Morningstar Small CoreSM Index</security>
+    <security code="$MSGR" currency="USD">Morningstar Small GrowthSM Index</security>
+    <security code="$MSVL" currency="USD">Morningstar Small ValueSM Index</security>
+    <security code="$MCOR" currency="USD">Morningstar U.S. CoreSM Index</security>
+    <security code="$MGRO" currency="USD">Morningstar U.S. GrowthSM Index</security>
+    <security code="$MSTAR" currency="USD">Morningstar U.S. MarketSM Index</security>
+    <security code="$MVAL" currency="USD">Morningstar U.S. ValueSM Index</security>
+    <security code="$PSE" currency="USD">Pacific Stock Exchange Technology 100 Index</security>
+    <security code="$FLD" currency="USD">Select 50 TRAKRS Index</security>
+    <security code="$DJUSTC" currency="USD">Technology Index</security>
+    <security code="$BKADR" currency="USD">The Bank of New York ADR Index</security>
+    <security code="$BKAR" currency="USD">The Bank of New York Argentina ADR Index</security>
+    <security code="$BKTAS" currency="USD">The Bank of New York Asia 50 ADR Index</security>
+    <security code="$BKAS" currency="USD">The Bank of New York Asia ADR Index</security>
+    <security code="$BKAU" currency="USD">The Bank of New York Australia ADR Index</security>
+    <security code="$BKAT" currency="USD">The Bank of New York Austria ADR Index</security>
+    <security code="$BKBE" currency="USD">The Bank of New York Belgium ADR Index</security>
+    <security code="$BKBR" currency="USD">The Bank of New York Brazil ADR Index</security>
+    <security code="$BKCL" currency="USD">The Bank of New York Chile ADR Index</security>
+    <security code="$BKCN" currency="USD">The Bank of New York China ADR Index</security>
+    <security code="$BKCO" currency="USD">The Bank of New York Colombia ADR Index</security>
+    <security code="$BKDK" currency="USD">The Bank of New York Denmark ADR Index</security>
+    <security code="$BKTDM" currency="USD">The Bank of New York Developed Markets 100 ADR Index</security>
+    <security code="$BKDM" currency="USD">The Bank of New York Developed Markets ADR Index</security>
+    <security code="$BKTEM" currency="USD">The Bank of New York Emerging Markets 50 ADR Index</security>
+    <security code="$BKEM" currency="USD">The Bank of New York Emerging Markets ADR Index</security>
+    <security code="$BKEUL" currency="USD">The Bank of New York Euroland ADR Index</security>
+    <security code="$BKTEUR" currency="USD">The Bank of New York Europe 100 ADR Index</security>
+    <security code="$BKEUR" currency="USD">The Bank of New York Europe ADR Index</security>
+    <security code="$BKEOG" currency="USD">The Bank of New York European Oil &amp; Gas ADR Index</security>
+    <security code="$BKETL" currency="USD">The Bank of New York European Telecom ADR Index</security>
+    <security code="$BKFI" currency="USD">The Bank of New York Finland ADR Index</security>
+    <security code="$BKFR" currency="USD">The Bank of New York France ADR Index</security>
+    <security code="$BKDE" currency="USD">The Bank of New York Germany ADR Index</security>
+    <security code="$BKGR" currency="USD">The Bank of New York Greece ADR Index</security>
+    <security code="$BKHU" currency="USD">The Bank of New York Hungary ADR Index</security>
+    <security code="$BKIN" currency="USD">The Bank of New York India ADR Index</security>
+    <security code="$BKID" currency="USD">The Bank of New York Indonesia ADR Index</security>
+    <security code="$BKTADR" currency="USD">The Bank of New York International 100 ADR Index</security>
+    <security code="$BKTTL" currency="USD">The Bank of New York International Telecom 35 ADR Index</security>
+    <security code="$BKIE" currency="USD">The Bank of New York Ireland ADR Index</security>
+    <security code="$BKIL" currency="USD">The Bank of New York Israel ADR Index</security>
+    <security code="$BKIY" currency="USD">The Bank of New York Italy ADR Index</security>
+    <security code="$BKJP" currency="USD">The Bank of New York Japan ADR Index</security>
+    <security code="$BKKR" currency="USD">The Bank of New York Korea ADR Index</security>
+    <security code="$BKTLA" currency="USD">The Bank of New York Latin America 35 ADR Index</security>
+    <security code="$BKLA" currency="USD">The Bank of New York Latin America ADR Index</security>
+    <security code="$BKLTL" currency="USD">The Bank of New York Latin Telecom ADR Index</security>
+    <security code="$BKLU" currency="USD">The Bank of New York Luxembourg ADR Index</security>
+    <security code="$BKMX" currency="USD">The Bank of New York Mexico ADR Index</security>
+    <security code="$BKNL" currency="USD">The Bank of New York Netherlands ADR Index</security>
+    <security code="$BKNZ" currency="USD">The Bank of New York New Zealand ADR Index</security>
+    <security code="$BKNO" currency="USD">The Bank of New York Norway ADR Index</security>
+    <security code="$BKPE" currency="USD">The Bank of New York Peru ADR Index</security>
+    <security code="$BKPH" currency="USD">The Bank of New York Philippines ADR Index</security>
+    <security code="$BKPT" currency="USD">The Bank of New York Portugal ADR Index</security>
+    <security code="$BKRU" currency="USD">The Bank of New York Russia ADR Index</security>
+    <security code="$BKSG" currency="USD">The Bank of New York Singapore ADR Index</security>
+    <security code="$BKZA" currency="USD">The Bank of New York South Africa ADR Index</security>
+    <security code="$BKES" currency="USD">The Bank of New York Spain ADR Index</security>
+    <security code="$BKSN" currency="USD">The Bank of New York Sweden ADR Index</security>
+    <security code="$BKCH" currency="USD">The Bank of New York Switzerland ADR Index</security>
+    <security code="$BKTW" currency="USD">The Bank of New York Taiwan ADR Index</security>
+    <security code="$BKTB" currency="USD">The Bank of New York Telebras ADR Index</security>
+    <security code="$BKTR" currency="USD">The Bank of New York Turkey ADR Index</security>
+    <security code="$BKGB" currency="USD">The Bank of New York United Kingdom ADR Index</security>
+    <security code="$BKVE" currency="USD">The Bank of New York Venezuela ADR Index</security>
+</data>

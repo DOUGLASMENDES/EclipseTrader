@@ -1,1185 +1,1439 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <data>
-    <security code="FLWS" currency="USD">1-800-Flowers.com Inc.</security>
-    <security code="SRCE" currency="USD">1st Source Corp.</security>
+    <security code="SFLY" currency="USD">$DFI (European Exercise) Jan 2007 1130.00 call</security>
+    <security code="QMARW" currency="USD">$DXL (European Exercise) Jun 2007 1170.00 put</security>
+    <security code="HALL" currency="USD">$DXL (European Exercise) Sep 2007 1360.00 put</security>
+    <security code="FLWS" currency="USD">1-800 FLOWERS.COM, Inc.</security>
+    <security code="SRCE" currency="USD">1st Source Corporation</security>
+    <security code="SRCEO" currency="USD">1st Source Corporation - 1st Source Capital Trust II - Floating Rate Cumulative</security>
+    <security code="FSBC" currency="USD">1st State Bancorp, Inc.</security>
     <security code="COMS" currency="USD">3Com Corporation</security>
-    <security code="JOBS" currency="USD">51job Inc.</security>
+    <security code="JOBS" currency="USD">51job, Inc. - American Depositary Shares</security>
+    <security code="AMAX" currency="USD">A-Max Technology Limited - American Depositary Shares representing 25 ordinary s</security>
     <security code="SHLM" currency="USD">A. Schulman, Inc.</security>
-    <security code="ASVI" currency="USD">A.S.V. Inc.</security>
-    <security code="TRMD" currency="USD">A/S STEAMSHIP COMPANY TORM</security>
-    <security code="AAON" currency="USD">AAON Inc.</security>
-    <security code="ACMR" currency="USD">AC Moore Arts &amp; Crafts Inc.</security>
-    <security code="ADCT" currency="USD">ADC Telecommunications Inc.</security>
-    <security code="ADTN" currency="USD">ADTRAN Inc.</security>
-    <security code="AMFI" currency="USD">AMCORE Financial Inc.</security>
-    <security code="UHAL" currency="USD">AMERCO</security>
-    <security code="AMIS" currency="USD">AMIS Holdings Inc.</security>
-    <security code="ARMHY" currency="USD">ARM Holdings plc</security>
-    <security code="ASTSF" currency="USD">ASE Test Ltd.</security>
-    <security code="ASMI" currency="USD">ASM International NV</security>
-    <security code="ASML" currency="USD">ASML Holding NV</security>
+    <security code="ACMR" currency="USD">A.C. Moore Arts &amp; Crafts, Inc.</security>
+    <security code="ASVI" currency="USD">A.S.V., Inc.</security>
+    <security code="AAON" currency="USD">AAON, Inc.</security>
+    <security code="VOLV" currency="USD">AB Volvo - Class B American Depositary Shares</security>
+    <security code="ABAX" currency="USD">ABAXIS, Inc.</security>
+    <security code="ULTR" currency="USD">ACF  Dec 2006 40.00 put</security>
+    <security code="ADCT" currency="USD">ADC Telecommunications, Inc.</security>
+    <security code="ADTN" currency="USD">ADTRAN, Inc.</security>
+    <security code="ADVNA" currency="USD">ADVANTA Corp. - Class A Common Stock</security>
+    <security code="ADVNB" currency="USD">ADVANTA Corp. - Class B Common Non Voting</security>
+    <security code="CVLT" currency="USD">AGU  Dec 2006 25.00 call</security>
+    <security code="AMSF" currency="USD">AMERISAFE, Inc.</security>
+    <security code="AMIS" currency="USD">AMIS Holdings, Inc. - common stock</security>
+    <security code="ANSS" currency="USD">ANSYS, Inc.</security>
+    <security code="STST" currency="USD">ARGON ST, Inc. - common stock</security>
+    <security code="ARMHY" currency="USD">ARM Holdings, plc - American Depositary Shares</security>
+    <security code="ASTSF" currency="USD">ASE Test, Limited - Ordinary Shares</security>
+    <security code="ASMI" currency="USD">ASM International N.V. - New York Registry Shares</security>
+    <security code="ASML" currency="USD">ASML Holding N.V. - New York Registry Shares</security>
     <security code="ATMI" currency="USD">ATMI Inc.</security>
-    <security code="ATPG" currency="USD">ATP Oil &amp; Gas Corp.</security>
-    <security code="ABAX" currency="USD">Abaxis Inc.</security>
-    <security code="ABBI" currency="USD">Abraxis Bioscience, Inc.</security>
-    <security code="LEND" currency="USD">Accredited Home Lenders Holdin</security>
-    <security code="ACGY" currency="USD">Acergy SA</security>
-    <security code="ACET" currency="USD">Aceto Corp.</security>
-    <security code="ATVI" currency="USD">Activision Inc.</security>
-    <security code="ACXM" currency="USD">Acxiom Corp.</security>
-    <security code="ARXT" currency="USD">Adams Respiratory Therapeutics</security>
-    <security code="ADZA" currency="USD">Adeza Biomedical Corp.</security>
-    <security code="ADBE" currency="USD">Adobe Systems Inc.</security>
-    <security code="AATI" currency="USD">Advanced Analogic Technologies</security>
-    <security code="ADVNB" currency="USD">Advanta Corp.</security>
-    <security code="ADVS" currency="USD">Advent Software Inc.</security>
-    <security code="ABCO" currency="USD">Advisory Board Co.</security>
-    <security code="ARXX" currency="USD">Aeroflex Inc.</security>
-    <security code="AFFM" currency="USD">Affirmative Insurance Holdings</security>
-    <security code="AFFX" currency="USD">Affymetrix Inc.</security>
+    <security code="ATPG" currency="USD">ATP Oil &amp; Gas Corporation</security>
+    <security code="ABBI" currency="USD">Abraxis BioScience, Inc. - Common stock</security>
+    <security code="LEND" currency="USD">Accredited Home Lenders Holding Co.</security>
+    <security code="ARAY" currency="USD">Accuray Incorporated Common Stock</security>
+    <security code="ACGY" currency="USD">Acergy S.A. - American Depositary Shares</security>
+    <security code="ACET" currency="USD">Aceto Corporation</security>
+    <security code="ATVI" currency="USD">Activision, Inc.</security>
+    <security code="ACXM" currency="USD">Acxiom Corporation</security>
+    <security code="ARXT" currency="USD">Adams Respiratory Therapeutics, Inc. - commom stock</security>
+    <security code="ADZA" currency="USD">Adeza Biomedical Corporation</security>
+    <security code="ADBE" currency="USD">Adobe Systems Incorporated</security>
+    <security code="AATI" currency="USD">Advanced Analogic Technologies, Inc.</security>
+    <security code="ADVS" currency="USD">Advent Software, Inc.</security>
+    <security code="ABCO" currency="USD">Advisory Board Company (The)</security>
+    <security code="ARXX" currency="USD">Aeroflex Incorporated</security>
+    <security code="AFFM" currency="USD">Affirmative Insurance Holdings, Inc.</security>
+    <security code="AFFX" currency="USD">Affymetrix, Inc.</security>
     <security code="ATAC" currency="USD">Aftermarket Technology Corp.</security>
-    <security code="AGYS" currency="USD">Agilysys Inc.</security>
-    <security code="AIRM" currency="USD">Air Methods Corp.</security>
-    <security code="AKAM" currency="USD">Akamai Technologies Inc.</security>
-    <security code="AKZOY" currency="USD">Akzo Nobel NV</security>
-    <security code="ALAB" currency="USD">Alabama National Bancorp.</security>
-    <security code="ALEX" currency="USD">Alexander &amp; Baldwin Inc.</security>
-    <security code="ALFA" currency="USD">Alfa Corp.</security>
-    <security code="ALCO" currency="USD">Alico Inc.</security>
-    <security code="ALKS" currency="USD">Alkermes Inc.</security>
-    <security code="AHGP" currency="USD">Alliance Holdings Gp, L.P.</security>
-    <security code="ARLP" currency="USD">Alliance Resource Partners LP</security>
-    <security code="AHCI" currency="USD">Allied Healthcare Internationa</security>
-    <security code="MDRX" currency="USD">Allscripts Healthcare Solution</security>
-    <security code="ATRS" currency="USD">Altiris Inc.</security>
-    <security code="AMSG" currency="USD">AmSurg Corp.</security>
-    <security code="AMZN" currency="USD">Amazon.com Inc.</security>
-    <security code="EPAX" currency="USD">Ambassadors Group Inc.</security>
-    <security code="AMCR" currency="USD">Amcor Ltd.</security>
-    <security code="AMED" currency="USD">Amedisys Inc.</security>
+    <security code="AGYS" currency="USD">Agilysys, Inc.</security>
+    <security code="AIRM" currency="USD">Air Methods Corporation</security>
+    <security code="AKAM" currency="USD">Akamai Technologies, Inc.</security>
+    <security code="TRMD" currency="USD">Aktieselskabet Dampskibsselskabet Torm - American Depositary Shares</security>
+    <security code="AKZOY" currency="USD">Akzo Nobel N.V. - American Depositary Shares</security>
+    <security code="ALAB" currency="USD">Alabama National BanCorporation</security>
+    <security code="ALEX" currency="USD">Alexander &amp; Baldwin, Inc.</security>
+    <security code="ALFA" currency="USD">Alfa Corporation</security>
+    <security code="ALCO" currency="USD">Alico, Inc.</security>
+    <security code="ALKS" currency="USD">Alkermes, Inc.</security>
+    <security code="AHGP" currency="USD">Alliance Holdings GP, L.P. - Common Units Representing Limited Partner Interests</security>
+    <security code="ARLP" currency="USD">Alliance Resource Partners, L.P. - Common Units Representing Limited Partnership</security>
+    <security code="AHCI" currency="USD">Allied HealthCare International Inc.</security>
+    <security code="MDRX" currency="USD">Allscripts Healthcare Solutions Inc</security>
+    <security code="AOD" currency="USD">Alpine Total Dynamics</security>
+    <security code="ATRS" currency="USD">Altiris, Inc.</security>
+    <security code="AMNT" currency="USD">AmNet Mortgage, Inc</security>
+    <security code="AMZN" currency="USD">Amazon.com, Inc.</security>
+    <security code="EPAX" currency="USD">Ambassadors Group, Inc.</security>
+    <security code="AMCR" currency="USD">Amcor Limited - American Depositary Shares</security>
+    <security code="AMFI" currency="USD">Amcore Financial, Inc.</security>
+    <security code="AMED" currency="USD">Amedisys Inc</security>
+    <security code="ABNK" currency="USD">Amegy Bancorporation, Inc.</security>
+    <security code="UHAL" currency="USD">Amerco</security>
+    <security code="AMOV" currency="USD">America Movil, S.A.B. de C.V. - Class A American Depositary Shares</security>
     <security code="ASGR" currency="USD">America Service Group Inc.</security>
-    <security code="ACAS" currency="USD">American Capital Strategies, L</security>
-    <security code="ACLI" currency="USD">American Commercial Lines Inc.</security>
-    <security code="ADPI" currency="USD">American Dental Partners Inc.</security>
-    <security code="AEOS" currency="USD">American Eagle Outfitters Inc.</security>
-    <security code="AMMD" currency="USD">American Medical Systems Holdi</security>
-    <security code="AMNB" currency="USD">American National Bankshares I</security>
-    <security code="ANAT" currency="USD">American National Insurance Co</security>
-    <security code="APCC" currency="USD">American Power Conversion Corp</security>
-    <security code="ARII" currency="USD">American Railcar Industries</security>
+    <security code="ACAS" currency="USD">American Capital Strategies, Ltd.</security>
+    <security code="ACLI" currency="USD">American Commercial Lines Inc</security>
+    <security code="ADPI" currency="USD">American Dental Partners, Inc.</security>
+    <security code="AEOS" currency="USD">American Eagle Outfitters, Inc.</security>
+    <security code="AMMD" currency="USD">American Medical Systems Holdings, Inc.</security>
+    <security code="AMNB" currency="USD">American National Bankshares, Inc.</security>
+    <security code="ANAT" currency="USD">American National Insurance Company</security>
+    <security code="APCC" currency="USD">American Power Conversion Corporation</security>
+    <security code="ARII" currency="USD">American Railcar Industries, Inc. - Common stock</security>
     <security code="AMRB" currency="USD">American River Bankshares</security>
-    <security code="AMSWA" currency="USD">American Software Inc.</security>
-    <security code="AMWD" currency="USD">American Woodmark Corp.</security>
-    <security code="AWBC" currency="USD">Americanwest Bancorp.</security>
+    <security code="AMSWA" currency="USD">American Software, Inc. - Class A Common Stock</security>
+    <security code="AMSAE" currency="USD">American Software, Inc. - Class A Common Stock</security>
+    <security code="AMWD" currency="USD">American Woodmark Corporation</security>
+    <security code="AWBC" currency="USD">AmericanWest Bancorporation</security>
     <security code="ABCB" currency="USD">Ameris Bancorp</security>
-    <security code="AMSF" currency="USD">Amerisafe, Inc.</security>
-    <security code="ASCA" currency="USD">Ameristar Casinos Inc.</security>
+    <security code="ASCA" currency="USD">Ameristar Casinos, Inc.</security>
     <security code="AMGN" currency="USD">Amgen Inc.</security>
-    <security code="AMKR" currency="USD">Amkor Technology Inc.</security>
-    <security code="AMLN" currency="USD">Amylin Pharmaceuticals Inc.</security>
-    <security code="ALOG" currency="USD">Analogic Corp.</security>
-    <security code="ABCW" currency="USD">Anchor Bancorp Wisconsin Inc.</security>
-    <security code="ANDE" currency="USD">Andersons Inc.</security>
-    <security code="ANDW" currency="USD">Andrew Corp.</security>
-    <security code="ANGO" currency="USD">AngioDynamics Inc.</security>
-    <security code="ANPI" currency="USD">Angiotech Pharmaceuticals Inc.</security>
+    <security code="AMKR" currency="USD">Amkor Technology, Inc.</security>
+    <security code="AMSG" currency="USD">Amsurg Corp.</security>
+    <security code="AMLN" currency="USD">Amylin Pharmaceuticals, Inc.</security>
+    <security code="ALOG" currency="USD">Analogic Corporation</security>
+    <security code="ABCW" currency="USD">Anchor BanCorp Wisconsin Inc.</security>
+    <security code="ANDE" currency="USD">Andersons, Inc. (The)</security>
+    <security code="ANDW" currency="USD">Andrew Corporation</security>
+    <security code="ANGO" currency="USD">AngioDynamics, Inc.</security>
+    <security code="ANPI" currency="USD">Angiotech Pharmaceuticals, Inc. - Common Shares</security>
     <security code="ANIK" currency="USD">Anika Therapeutics Inc.</security>
-    <security code="ANST" currency="USD">Ansoft Corp.</security>
-    <security code="ANSS" currency="USD">Ansys, Inc.</security>
-    <security code="APOG" currency="USD">Apogee Enterprises Inc.</security>
-    <security code="APOL" currency="USD">Apollo Group Inc.</security>
-    <security code="AINV" currency="USD">Apollo Investment Corp.</security>
-    <security code="AAPL" currency="USD">Apple Computer Inc.</security>
-    <security code="AMAT" currency="USD">Applied Materials Inc.</security>
-    <security code="AMCC" currency="USD">Applied Micro Circuits Corp.</security>
-    <security code="APSG" currency="USD">Applied Signal Technology Inc.</security>
-    <security code="ARCAF" currency="USD">Arcadis NV</security>
+    <security code="AHII" currency="USD">Animal Health International, Inc.</security>
+    <security code="ANST" currency="USD">Ansoft Corporation</security>
+    <security code="APOG" currency="USD">Apogee Enterprises, Inc.</security>
+    <security code="APOL" currency="USD">Apollo Group, Inc. - Class A Common Stock</security>
+    <security code="AINV" currency="USD">Apollo Investment Corporation - Closed End Fund</security>
+    <security code="AAPL" currency="USD">Apple Inc.</security>
+    <security code="AMAT" currency="USD">Applied Materials, Inc.</security>
+    <security code="AMCC" currency="USD">Applied Micro Circuits Corporation</security>
+    <security code="APSG" currency="USD">Applied Signal Technology, Inc.</security>
+    <security code="APLX" currency="USD">Applix, Inc.</security>
+    <security code="ARCAF" currency="USD">Arcadis NV - New York Registry Shares</security>
     <security code="ACGL" currency="USD">Arch Capital Group Ltd.</security>
     <security code="ACAT" currency="USD">Arctic Cat Inc.</security>
-    <security code="ARCC" currency="USD">Ares Capital Corp.</security>
-    <security code="STST" currency="USD">Argon ST, Inc.</security>
-    <security code="AGII" currency="USD">Argonaut Group Inc.</security>
-    <security code="ABFS" currency="USD">Arkansas Best Corp.</security>
-    <security code="ARRS" currency="USD">Arris Group Inc.</security>
-    <security code="AROW" currency="USD">Arrow Financial Corp.</security>
-    <security code="ARRO" currency="USD">Arrow International Inc.</security>
-    <security code="ARTC" currency="USD">Arthrocare Corp.</security>
-    <security code="ASPV" currency="USD">Aspreva Pharmaceuticals Corpor</security>
-    <security code="AACC" currency="USD">Asset Acceptance Capital Corp.</security>
+    <security code="ARCC" currency="USD">Ares Capital Corporation - Closed End Fund</security>
+    <security code="AGII" currency="USD">Argonaut Group, Inc.</security>
+    <security code="RAMS" currency="USD">Aries Maritime Transport Limited - Common shares</security>
+    <security code="ABFS" currency="USD">Arkansas Best Corporation</security>
+    <security code="HOSTE" currency="USD">Arlington Hospitality, Inc</security>
+    <security code="ARRS" currency="USD">Arris Group Inc</security>
+    <security code="AROW" currency="USD">Arrow Financial Corporation</security>
+    <security code="ARRO" currency="USD">Arrow International, Inc.</security>
+    <security code="ARTC" currency="USD">ArthroCare Corporation</security>
+    <security code="ASPV" currency="USD">Aspreva Pharmaceuticals Corporation</security>
+    <security code="AACC" currency="USD">Asset Acceptance Capital Corp. - COMMON STOCK</security>
     <security code="ASBC" currency="USD">Associated Banc-Corp</security>
-    <security code="ASFI" currency="USD">Asta Funding Inc.</security>
-    <security code="ASTE" currency="USD">Astec Industries Inc.</security>
-    <security code="ATHR" currency="USD">Atheros Communications Inc.</security>
-    <security code="AAWW" currency="USD">Atlas Air Worldwide Holdings I</security>
-    <security code="ATLS" currency="USD">Atlas America Inc.</security>
-    <security code="ATML" currency="USD">Atmel Corp.</security>
-    <security code="ADSK" currency="USD">Autodesk Inc.</security>
+    <security code="ASFI" currency="USD">Asta Funding, Inc.</security>
+    <security code="ASTE" currency="USD">Astec Industries, Inc.</security>
+    <security code="ATHR" currency="USD">Atheros Communications, Inc.</security>
+    <security code="AAWW" currency="USD">Atlas Air Worldwide Holdings</security>
+    <security code="ATLS" currency="USD">Atlas America, Inc.</security>
+    <security code="ATML" currency="USD">Atmel Corporation</security>
+    <security code="ADSK" currency="USD">Autodesk, Inc.</security>
     <security code="AVTR" currency="USD">Avatar Holdings Inc.</security>
-    <security code="AVID" currency="USD">Avid Technology Inc.</security>
-    <security code="AVCT" currency="USD">Avocent Corp.</security>
-    <security code="AXCA" currency="USD">Axcan Pharma Inc.</security>
-    <security code="AXYS" currency="USD">Axsys Technologies Inc.</security>
-    <security code="BEAV" currency="USD">BE Aerospace Inc.</security>
-    <security code="BEAS" currency="USD">BEA Systems Inc.</security>
-    <security code="BOKF" currency="USD">BOK Financial Corp.</security>
-    <security code="BANF" currency="USD">BancFirst Corp.</security>
-    <security code="BTFG" currency="USD">BancTrust Financial Group Inc.</security>
-    <security code="BARI" currency="USD">Bancorp Rhode Island Inc.</security>
-    <security code="BKMU" currency="USD">Bank Mutual Corp.</security>
-    <security code="GRAN" currency="USD">Bank of Granite Corp.</security>
-    <security code="OZRK" currency="USD">Bank of the Ozarks Inc.</security>
-    <security code="BKUNA" currency="USD">BankUnited Financial Corp.</security>
-    <security code="RATE" currency="USD">Bankrate Inc.</security>
-    <security code="BANR" currency="USD">Banner Corp.</security>
+    <security code="AVID" currency="USD">Avid Technology, Inc.</security>
+    <security code="AVCT" currency="USD">Avocent Corporation</security>
+    <security code="AXCA" currency="USD">Axcan Pharma Inc. - Common Shares</security>
+    <security code="AXYS" currency="USD">Axsys Technologies, Inc.</security>
+    <security code="BEAV" currency="USD">BE Aerospace, Inc.</security>
+    <security code="BEAS" currency="USD">BEA Systems, Inc.</security>
+    <security code="BFEN" currency="USD">BF Enterprises, Inc.</security>
+    <security code="BOKF" currency="USD">BOK Financial Corporation</security>
+    <security code="BSQRD" currency="USD">BSQUARE Corporation</security>
+    <security code="BCPC" currency="USD">Balchem Corporation</security>
+    <security code="BANF" currency="USD">BancFirst Corporation</security>
+    <security code="BANFP" currency="USD">BancFirst Corporation - 7.2% Cumulative Trust Preferred Securities</security>
+    <security code="BTFG" currency="USD">BancTrust Financial Group, Inc.</security>
+    <security code="BARI" currency="USD">Bancorp Rhode Island, Inc.</security>
+    <security code="BKMU" currency="USD">Bank Mutual Corporation</security>
+    <security code="GRAN" currency="USD">Bank of Granite Corporation</security>
+    <security code="OZRK" currency="USD">Bank of the Ozarks</security>
+    <security code="BKUNA" currency="USD">BankUnited Financial Corporation - Class A Common Stock</security>
+    <security code="RATE" currency="USD">Bankrate Inc</security>
+    <security code="BANR" currency="USD">Banner Corporation</security>
     <security code="BARE" currency="USD">Bare Escentuals, Inc.</security>
-    <security code="BBSI" currency="USD">Barrett Business Services Inc.</security>
-    <security code="BSET" currency="USD">Bassett Furniture Industries I</security>
-    <security code="BECN" currency="USD">Beacon Roofing Supply Inc.</security>
-    <security code="BEBE" currency="USD">Bebe Stores, Inc.</security>
+    <security code="BBSI" currency="USD">Barrett Business Services, Inc.</security>
+    <security code="BSET" currency="USD">Bassett Furniture Industries, Incorporated</security>
+    <security code="BECN" currency="USD">Beacon Roofing Supply, Inc.</security>
     <security code="BBBY" currency="USD">Bed Bath &amp; Beyond Inc.</security>
-    <security code="BELFB" currency="USD">Bel Fuse Inc.</security>
-    <security code="BHLB" currency="USD">Berkshire Hills Bancorp Inc.</security>
+    <security code="BELFA" currency="USD">Bel Fuse Inc. - Class A Common Stock</security>
+    <security code="BELFB" currency="USD">Bel Fuse Inc. - Class B Common Stock</security>
+    <security code="BHLB" currency="USD">Berkshire Hills Bancorp, Inc.</security>
     <security code="BHBC" currency="USD">Beverly Hills Bancorp Inc.</security>
-    <security code="BGFV" currency="USD">Big 5 Sporting Goods Corp.</security>
-    <security code="BRLI" currency="USD">Bio-Reference Laboratories Inc</security>
-    <security code="BIIB" currency="USD">Biogen Idec Inc.</security>
-    <security code="BMET" currency="USD">Biomet Inc.</security>
-    <security code="BSTE" currency="USD">Biosite Incorporated</security>
-    <security code="BBOX" currency="USD">Black Box Corp.</security>
-    <security code="PEFX" currency="USD">BlackRock S&amp;amp;P 500 Protected Eq</security>
-    <security code="BLKB" currency="USD">Blackbaud Inc.</security>
+    <security code="BGFVE" currency="USD">Big 5 Sporting Goods Corporation - common stock</security>
+    <security code="BGFV" currency="USD">Big 5 Sporting Goods Corporation - common stock</security>
+    <security code="BRLI" currency="USD">Bio-Reference Laboratories, Inc.</security>
+    <security code="BLTIE" currency="USD">BioLase Technology, Inc.</security>
+    <security code="BIIB" currency="USD">Biogen Idec Inc</security>
+    <security code="BMET" currency="USD">Biomet, Inc.</security>
+    <security code="BSTE" currency="USD">Biosite, Inc.</security>
+    <security code="BBOX" currency="USD">Black Box Corporation</security>
+    <security code="PEFX" currency="USD">BlackRock S&amp;P 500 Protected Equity Fund, Inc. (The) - Closed End Fund</security>
+    <security code="BLKB" currency="USD">Blackbaud, Inc.</security>
     <security code="BBBB" currency="USD">Blackboard Inc.</security>
-    <security code="NILE" currency="USD">Blue Nile Inc.</security>
-    <security code="BOBE" currency="USD">Bob Evans Farms Inc.</security>
-    <security code="BONT" currency="USD">Bon-Ton Stores Inc.</security>
-    <security code="BAMM" currency="USD">Books-A-Million Inc.</security>
-    <security code="BPFH" currency="USD">Boston Private Financial Holdi</security>
-    <security code="BBEP" currency="USD">Breitburn Energy Partners LP</security>
-    <security code="BEXP" currency="USD">Brigham Exploration Co.</security>
-    <security code="BFAM" currency="USD">Bright Horizons Family Solutio</security>
-    <security code="CELL" currency="USD">Brightpoint Inc.</security>
-    <security code="BRCM" currency="USD">Broadcom Corp.</security>
-    <security code="BWNG" currency="USD">Broadwing Corporation</security>
-    <security code="BRCD" currency="USD">Brocade Communications Systems</security>
-    <security code="BRKL" currency="USD">Brookline Bancorp Inc.</security>
-    <security code="BUCY" currency="USD">Bucyrus International Inc.</security>
-    <security code="BWLD" currency="USD">Buffalo Wild Wings Inc.</security>
+    <security code="NILE" currency="USD">Blue Nile, Inc.</security>
+    <security code="BOBE" currency="USD">Bob Evans Farms, Inc.</security>
+    <security code="BONT" currency="USD">Bon-Ton Stores, Inc. (The)</security>
+    <security code="BAMM" currency="USD">Books-A-Million, Inc.</security>
+    <security code="BAMME" currency="USD">Books-A-Million, Inc.</security>
+    <security code="BPFH" currency="USD">Boston Private Financial Holdings, Inc.</security>
+    <security code="BBEP" currency="USD">BreitBurn Energy Partners, L.P. - Common Units Representing Limited Partnership</security>
+    <security code="BEXP" currency="USD">Brigham Exploration Company</security>
+    <security code="BFAM" currency="USD">Bright Horizons Family Solutions Inc.</security>
+    <security code="CELL" currency="USD">Brightpoint, Inc.</security>
+    <security code="BRCM" currency="USD">Broadcom Corporation - Class A Common Stock</security>
+    <security code="BRCD" currency="USD">Brocade Communications Systems, Inc.</security>
+    <security code="BRKL" currency="USD">Brookline Bancorp, Inc.</security>
+    <security code="BRKT" currency="USD">Brooktrout, Inc.</security>
+    <security code="BUCY" currency="USD">Bucyrus International, Inc. - Class A Common Stock</security>
+    <security code="BWLD" currency="USD">Buffalo Wild Wings, Inc.</security>
     <security code="BLDR" currency="USD">Builders FirstSource, Inc.</security>
-    <security code="BOBJ" currency="USD">Business Objects SA</security>
-    <security code="CFFI" currency="USD">C&amp;F Financial Corp.</security>
+    <security code="BOBJ" currency="USD">Business Objects S.A. - American Depositary Shares</security>
+    <security code="CFFI" currency="USD">C&amp;F Financial Corporation</security>
+    <security code="CHRW" currency="USD">C.H. Robinson Worldwide, Inc.</security>
     <security code="CBRL" currency="USD">CBRL Group Inc.</security>
-    <security code="CDWC" currency="USD">CDW Corp.</security>
-    <security code="CHRW" currency="USD">CH Robinson Worldwide Inc.</security>
-    <security code="CIEN" currency="USD">CIENA Corp.</security>
-    <security code="CKXE" currency="USD">CKX Inc.</security>
-    <security code="CCNE" currency="USD">CNB Financial Corp.</security>
-    <security code="CNET" currency="USD">CNET Networks Inc.</security>
-    <security code="CNXS" currency="USD">CNS Inc.</security>
-    <security code="CNMD" currency="USD">CONMED Corp.</security>
-    <security code="CRAI" currency="USD">CRA International Inc.</security>
-    <security code="CRMH" currency="USD">CRM Holdings Ltd.</security>
-    <security code="CROX" currency="USD">CROCS Inc.</security>
-    <security code="CSGS" currency="USD">CSG Systems International Inc.</security>
-    <security code="CTCI" currency="USD">CT Communications Inc.</security>
-    <security code="CVBF" currency="USD">CVB Financial Corp.</security>
-    <security code="CYTC" currency="USD">CYTYC Corp.</security>
-    <security code="CCMP" currency="USD">Cabot Microelectronics Corp.</security>
-    <security code="CACH" currency="USD">Cache Inc.</security>
-    <security code="CDNS" currency="USD">Cadence Design Systems Inc.</security>
+    <security code="CDWC" currency="USD">CDW Corporation</security>
+    <security code="CHSCP" currency="USD">CHS Inc - 8%  Cumulative Redeemable Preferred Stock</security>
+    <security code="CKXE" currency="USD">CKX, Inc.</security>
+    <security code="CCNE" currency="USD">CNB Financial Corporation</security>
+    <security code="CNET" currency="USD">CNET Networks, Inc.</security>
+    <security code="CNMD" currency="USD">CONMED Corporation</security>
+    <security code="CORS" currency="USD">CORUS Bankshares, Inc.</security>
+    <security code="CRAI" currency="USD">CRA International,Inc.</security>
+    <security code="CRMH" currency="USD">CRM Holdings, Ltd. - Common Shares</security>
+    <security code="CSGS" currency="USD">CSG Systems International, Inc.</security>
+    <security code="CTCI" currency="USD">CT Communications, Inc.</security>
+    <security code="CVBF" currency="USD">CVB Financial Corporation</security>
+    <security code="CCMP" currency="USD">Cabot Microelectronics Corporation</security>
+    <security code="CACH" currency="USD">Cache, Inc.</security>
+    <security code="CDNS" currency="USD">Cadence Design Systems, Inc.</security>
+    <security code="CADE" currency="USD">Cadence Financial Corporation</security>
     <security code="CAMP" currency="USD">CalAmp Corp.</security>
-    <security code="CLMS" currency="USD">Calamos Asset Management Inc.</security>
-    <security code="CPKI" currency="USD">California Pizza Kitchen Inc.</security>
-    <security code="CLZR" currency="USD">Candela Corp.</security>
-    <security code="CBKN" currency="USD">Capital Bank Corp.</security>
-    <security code="CCBG" currency="USD">Capital City Bank Group Inc.</security>
-    <security code="CCOW" currency="USD">Capital Corp. of the West</security>
+    <security code="CLMS" currency="USD">Calamos Asset Management, Inc. - Class A Common Stock, par value $0.01 per share</security>
+    <security code="CPKI" currency="USD">California Pizza Kitchen, Inc.</security>
+    <security code="CLZR" currency="USD">Candela Corporation</security>
+    <security code="CBKN" currency="USD">Capital Bank Corporation</security>
+    <security code="CCBG" currency="USD">Capital City Bank Group</security>
+    <security code="CCOW" currency="USD">Capital Corp of the West</security>
     <security code="CFFN" currency="USD">Capitol Federal Financial</security>
-    <security code="CFNL" currency="USD">Cardinal Financial Corp.</security>
-    <security code="CECO" currency="USD">Career Education Corp.</security>
-    <security code="CRZO" currency="USD">Carrizo Oil &amp; Gas Inc.</security>
-    <security code="CWST" currency="USD">Casella Waste Systems Inc.</security>
-    <security code="CATT" currency="USD">Catapult Communications Corp.</security>
+    <security code="CFNL" currency="USD">Cardinal Financial Corporation</security>
+    <security code="CECO" currency="USD">Career Education Corporation</security>
+    <security code="CRZO" currency="USD">Carrizo Oil &amp; Gas, Inc.</security>
+    <security code="CWST" currency="USD">Casella Waste Systems, Inc. - Class A Common Stock</security>
+    <security code="CATT" currency="USD">Catapult Communicatons Corporation</security>
     <security code="CATY" currency="USD">Cathay General Bancorp</security>
-    <security code="CVCO" currency="USD">Cavco Industries Inc.</security>
-    <security code="CLDN" currency="USD">Celadon Group Inc.</security>
+    <security code="CVCO" currency="USD">Cavco Industries, Inc.</security>
+    <security code="CLDN" currency="USD">Celadon Group, Inc.</security>
     <security code="CELG" currency="USD">Celgene Corporation</security>
     <security code="CBHI" currency="USD">Centennial Bank Holdings, Inc.</security>
-    <security code="CYCL" currency="USD">Centennial Communications Corp</security>
-    <security code="CNBC" currency="USD">Center Bancorp Inc.</security>
-    <security code="CLFC" currency="USD">Center Financial Corp.</security>
-    <security code="CSFL" currency="USD">Centerstate Banks of Florida I</security>
-    <security code="CEDC" currency="USD">Central European Distribution</security>
-    <security code="CETV" currency="USD">Central European Media Enterpr</security>
-    <security code="CENT" currency="USD">Central Garden &amp; Pet Co.</security>
-    <security code="CENX" currency="USD">Century Aluminum Co.</security>
-    <security code="CEPH" currency="USD">Cephalon Inc.</security>
-    <security code="CRDN" currency="USD">Ceradyne Inc.</security>
-    <security code="CERN" currency="USD">Cerner Corp.</security>
+    <security code="CYCL" currency="USD">Centennial Communications Corporation - Class A Common Stock</security>
+    <security code="CNBC" currency="USD">Center Bancorp, Inc.</security>
+    <security code="CLFC" currency="USD">Center Financial Corporation</security>
+    <security code="CLFCE" currency="USD">Center Financial Corporation</security>
+    <security code="CSFL" currency="USD">Centerstate Banks of Florida, Inc.</security>
+    <security code="CEDC" currency="USD">Central European Distribution Corporation</security>
+    <security code="CETV" currency="USD">Central European Media Enterprises Ltd. - Class A Common Stock</security>
+    <security code="CENT" currency="USD">Central Garden &amp; Pet Company</security>
+    <security code="CENTA" currency="USD">Central Garden &amp; Pet Company - Class A Common Stock Nonvoting</security>
+    <security code="CENX" currency="USD">Century Aluminum Company</security>
+    <security code="CEPH" currency="USD">Cephalon, Inc.</security>
+    <security code="CRDN" currency="USD">Ceradyne, Inc.</security>
+    <security code="CERN" currency="USD">Cerner Corporation</security>
     <security code="CHAP" currency="USD">Chaparral Steel Company</security>
-    <security code="CTHR" currency="USD">Charles &amp; Colvard Ltd.</security>
-    <security code="SCHW" currency="USD">Charles Schwab Corp.</security>
-    <security code="CHIC" currency="USD">Charlotte Russe Holding Inc.</security>
-    <security code="CHRS" currency="USD">Charming Shoppes Inc.</security>
-    <security code="CHRT" currency="USD">Chartered Semiconductor Manufa</security>
-    <security code="CHTT" currency="USD">Chattem Inc.</security>
-    <security code="CHKP" currency="USD">Check Point Software Technolog</security>
-    <security code="CKFR" currency="USD">Checkfree Corp.</security>
-    <security code="CAKE" currency="USD">Cheesecake Factory Inc.</security>
-    <security code="CHFC" currency="USD">Chemical Financial Corp.</security>
+    <security code="CTHR" currency="USD">Charles &amp; Colvard Ltd</security>
+    <security code="SCHW" currency="USD">Charles Schwab Corporation (The)</security>
+    <security code="CHIC" currency="USD">Charlotte Russe Holding, Inc.</security>
+    <security code="CHRS" currency="USD">Charming Shoppes, Inc.</security>
+    <security code="CHRT" currency="USD">Chartered Semiconductor Manufacturing Ltd. - American Depositary Shares</security>
+    <security code="CHTT" currency="USD">Chattem, Inc.</security>
+    <security code="CHKP" currency="USD">Check Point Software Technologies Ltd. - Ordinary Shares</security>
+    <security code="CKFR" currency="USD">CheckFree Corporation</security>
+    <security code="CAKE" currency="USD">Cheesecake Factory Incorporated (The)</security>
+    <security code="CHFC" currency="USD">Chemical Financial Corporation</security>
     <security code="CHKE" currency="USD">Cherokee Inc.</security>
-    <security code="CMED" currency="USD">China Medical Technologies Inc</security>
-    <security code="IMOS" currency="USD">ChipMOS TECHNOLOGIES (Bermuda)</security>
-    <security code="CHDN" currency="USD">Churchill Downs Inc.</security>
-    <security code="CINF" currency="USD">Cincinnati Financial Corp.</security>
-    <security code="CTAS" currency="USD">Cintas Corp.</security>
-    <security code="CRUS" currency="USD">Cirrus Logic Inc.</security>
+    <security code="CMED" currency="USD">China Medical Technologies, Inc. - ADS</security>
+    <security code="IMOS" currency="USD">ChipMOS TECHNOLOGIES (Bermuda) LTD. - Common Shares</security>
+    <security code="CHDN" currency="USD">Churchill Downs, Incorporated</security>
+    <security code="CIEN" currency="USD">Ciena Corporation</security>
+    <security code="CINF" currency="USD">Cincinnati Financial Corporation</security>
+    <security code="CTAS" currency="USD">Cintas Corporation</security>
+    <security code="CRUS" currency="USD">Cirrus Logic, Inc.</security>
     <security code="CSCO" currency="USD">Cisco Systems, Inc.</security>
-    <security code="CTRN" currency="USD">Citi Trends</security>
-    <security code="CBCF" currency="USD">Citizens Banking Corp.</security>
-    <security code="CTZN" currency="USD">Citizens First Bancorp Inc.</security>
+    <security code="CTRN" currency="USD">Citi Trends, Inc.</security>
+    <security code="CRBC" currency="USD">Citizens Banking Corporation</security>
+    <security code="RBNCP" currency="USD">Citizens Banking Corporation - Capital Trust I - 8.60% Cumulative Trust Preferre</security>
+    <security code="CTZN" currency="USD">Citizens First Bancorp, Inc.</security>
     <security code="CTXS" currency="USD">Citrix Systems, Inc.</security>
-    <security code="CHCO" currency="USD">City Holding Co.</security>
-    <security code="CLHB" currency="USD">Clean Harbors Inc.</security>
-    <security code="CSBK" currency="USD">Clifton Savings Bancorp Inc.</security>
-    <security code="COBZ" currency="USD">CoBiz Inc.</security>
-    <security code="CSGP" currency="USD">CoStar Group Inc.</security>
-    <security code="COGT" currency="USD">Cogent Inc.</security>
-    <security code="CGNX" currency="USD">Cognex Corp.</security>
-    <security code="CTSH" currency="USD">Cognizant Technology Solutions</security>
-    <security code="COGN" currency="USD">Cognos Inc.</security>
-    <security code="COHR" currency="USD">Coherent Inc.</security>
-    <security code="COHU" currency="USD">Cohu Inc.</security>
-    <security code="CSTR" currency="USD">Coinstar Inc.</security>
-    <security code="CWTR" currency="USD">Coldwater Creek Inc.</security>
-    <security code="CBBO" currency="USD">Columbia Bancorp.</security>
-    <security code="COLB" currency="USD">Columbia Banking System Inc.</security>
+    <security code="CHCO" currency="USD">City Holding Company</security>
+    <security code="CLHB" currency="USD">Clean Harbors, Inc.</security>
+    <security code="CSBK" currency="USD">Clifton Savings Bancorp, Inc.</security>
+    <security code="COBZ" currency="USD">CoBiz, Inc.</security>
+    <security code="CSGP" currency="USD">CoStar Group, Inc.</security>
+    <security code="COGT" currency="USD">Cogent, Inc.</security>
+    <security code="CGNX" currency="USD">Cognex Corporation</security>
+    <security code="CTSH" currency="USD">Cognizant Technology Solutions Corporation - Class A Common Stock</security>
+    <security code="COGN" currency="USD">Cognos Incorporated - Common Shares</security>
+    <security code="COHR" currency="USD">Coherent, Inc.</security>
+    <security code="COHU" currency="USD">Cohu, Inc.</security>
+    <security code="CSTR" currency="USD">Coinstar, Inc.</security>
+    <security code="CWTR" currency="USD">Coldwater Creek, Inc.</security>
+    <security code="CBBO" currency="USD">Columbia  Bancorp</security>
+    <security code="COLB" currency="USD">Columbia Banking System, Inc.</security>
     <security code="COLM" currency="USD">Columbia Sportswear Company</security>
-    <security code="CMCSA" currency="USD">Comcast Corp.</security>
-    <security code="CVLT" currency="USD">CommVault Systems, Inc.</security>
-    <security code="CBSH" currency="USD">Commerce Bancshares Inc.</security>
-    <security code="CVGI" currency="USD">Commercial Vehicle Group Inc.</security>
-    <security code="CTCO" currency="USD">Commonwealth Telephone Enterpr</security>
-    <security code="CMTY" currency="USD">Community Banks Inc.</security>
-    <security code="CTBI" currency="USD">Community Trust Bancorp Inc.</security>
-    <security code="CBSS" currency="USD">Compass Bancshares Inc.</security>
-    <security code="CODI" currency="USD">Compass Diversified Trust</security>
-    <security code="CCRT" currency="USD">CompuCredit Corp.</security>
-    <security code="CPSI" currency="USD">Computer Programs &amp; Systems In</security>
-    <security code="CPWR" currency="USD">Compuware Corp.</security>
-    <security code="COGO" currency="USD">Comtech Group Inc.</security>
-    <security code="CMTL" currency="USD">Comtech Telecommunications Cor</security>
-    <security code="CNXT" currency="USD">Conexant Systems Inc.</security>
-    <security code="CTWS" currency="USD">Connecticut Water Service Inc.</security>
-    <security code="CWCO" currency="USD">Consolidated Water Co. Ltd.</security>
-    <security code="CPNO" currency="USD">Copano Energy LLC</security>
-    <security code="CPRT" currency="USD">Copart Inc.</security>
+    <security code="CMCSA" currency="USD">Comcast Corporation - Class A Common Stock</security>
+    <security code="CMCSK" currency="USD">Comcast Corporation - Class A Special Common Stock</security>
+    <security code="CBSH" currency="USD">Commerce Bancshares, Inc.</security>
+    <security code="CVGI" currency="USD">Commercial Vehicle Group, Inc.</security>
+    <security code="CTCO" currency="USD">Commonwealth Telephone Enterprises, Inc.</security>
+    <security code="CMTY" currency="USD">Community Banks, Inc.</security>
+    <security code="CTBI" currency="USD">Community Trust Bancorp, Inc.</security>
+    <security code="CTBIP" currency="USD">Community Trust Bancorp, Inc. - CTBI Preferred Capital Trust - 9.0% Cumulative T</security>
+    <security code="CBSS" currency="USD">Compass Bancshares, Inc.</security>
+    <security code="CODI" currency="USD">Compass Diversified Trust - Shares of Beneficial Interest</security>
+    <security code="CCRT" currency="USD">CompuCredit Corporation</security>
+    <security code="CPSI" currency="USD">Computer Programs and Systems, Inc.</security>
+    <security code="CPWR" currency="USD">Compuware Corporation</security>
+    <security code="COGO" currency="USD">Comtech Group, Inc.</security>
+    <security code="CMTL" currency="USD">Comtech Telecommunications Corp.</security>
+    <security code="CNXT" currency="USD">Conexant Systems, Inc.</security>
+    <security code="CTWS" currency="USD">Connecticut Water Service, Inc.</security>
+    <security code="CWCO" currency="USD">Consolidated Water Co. Ltd. - Ordinary Shares</security>
+    <security code="CPNO" currency="USD">Copano Energy, L.L.C. - Common Units representing limited liability company inte</security>
+    <security code="CPRT" currency="USD">Copart, Inc.</security>
     <security code="CRVL" currency="USD">CorVel Corp.</security>
-    <security code="CORE" currency="USD">Core-Mark Holding Company, Inc</security>
-    <security code="CORI" currency="USD">Corillian Corp.</security>
-    <security code="COCO" currency="USD">Corinthian Colleges Inc.</security>
-    <security code="EXBD" currency="USD">Corporate Executive Board Co.</security>
-    <security code="CORS" currency="USD">Corus Bankshares Inc.</security>
-    <security code="CPWM" currency="USD">Cost Plus Inc.</security>
-    <security code="COST" currency="USD">Costco Wholesale Corp.</security>
-    <security code="CRRC" currency="USD">Courier Corp.</security>
-    <security code="CVNS" currency="USD">Covansys Corp.</security>
-    <security code="CVTI" currency="USD">Covenant Transport Inc.</security>
-    <security code="CREAF" currency="USD">Creative Technology Ltd.</security>
-    <security code="CMOS" currency="USD">Credence Systems Corp.</security>
-    <security code="CREE" currency="USD">Cree Inc.</security>
-    <security code="CRESY" currency="USD">Cresud Inc.</security>
-    <security code="CCRN" currency="USD">Cross Country Healthcare Inc.</security>
-    <security code="XTXI" currency="USD">Crosstex Energy Inc.</security>
-    <security code="XTEX" currency="USD">Crosstex Energy LP</security>
-    <security code="CRYP" currency="USD">Cryptologic Inc.</security>
-    <security code="CTRP" currency="USD">Ctrip.com International Ltd.</security>
-    <security code="CBST" currency="USD">Cubist Pharmaceuticals Inc.</security>
+    <security code="CORE" currency="USD">Core-Mark Holding Company, Inc.</security>
+    <security code="CORI" currency="USD">Corillian Corporation</security>
+    <security code="COCO" currency="USD">Corinthian Colleges, Inc.</security>
+    <security code="EXBD" currency="USD">Corporate Executive Board Company (The)</security>
+    <security code="CPWM" currency="USD">Cost Plus, Inc.</security>
+    <security code="COST" currency="USD">Costco Wholesale Corporation</security>
+    <security code="CRRC" currency="USD">Courier Corporation</security>
+    <security code="CVNS" currency="USD">Covansys Corporation</security>
+    <security code="CVTI" currency="USD">Covenant Transport, Inc. - Class A Common Stock</security>
+    <security code="CREAF" currency="USD">Creative Technology Ltd. - Ordinary Shares</security>
+    <security code="CMOS" currency="USD">Credence Systems Corporation</security>
+    <security code="CREE" currency="USD">Cree, Inc.</security>
+    <security code="CRESY" currency="USD">Cresud S.A.C.I.F. y A. - American Depositary Shares</security>
+    <security code="CROX" currency="USD">Crocs, Inc.</security>
+    <security code="CCRN" currency="USD">Cross Country Healthcare, Inc.</security>
+    <security code="XTXI" currency="USD">Crosstex Energy, Inc. - Common stock</security>
+    <security code="XTEX" currency="USD">Crosstex Energy, L.P. - Common Units Representing Limited Partner Interests</security>
+    <security code="CRYP" currency="USD">Cryptologic, Inc.</security>
+    <security code="CTRP" currency="USD">Ctrip.com International, Ltd. - American Depositary Shares</security>
+    <security code="CBST" currency="USD">Cubist Pharmaceuticals, Inc.</security>
     <security code="CMLS" currency="USD">Cumulus Media Inc.</security>
-    <security code="CUTR" currency="USD">Cutera Inc.</security>
-    <security code="CYMI" currency="USD">Cymer Inc.</security>
-    <security code="DSPG" currency="USD">DSP Group Inc.</security>
-    <security code="DTSI" currency="USD">DTS Inc.</security>
-    <security code="DADE" currency="USD">Dade Behring Holdings Inc.</security>
-    <security code="DAKT" currency="USD">Daktronics Inc.</security>
-    <security code="DASTY" currency="USD">Dassault Systemes SA</security>
+    <security code="CUTR" currency="USD">Cutera, Inc.</security>
+    <security code="CYMI" currency="USD">Cymer, Inc.</security>
+    <security code="CYTC" currency="USD">Cytyc Corporation</security>
+    <security code="XRAY" currency="USD">DENTSPLY International Inc.</security>
+    <security code="LMAT" currency="USD">DIA  Jan 2007 111.00 put</security>
+    <security code="DSPG" currency="USD">DSP Group, Inc.</security>
+    <security code="DTSI" currency="USD">DTS, Inc. - COMMON STOCK</security>
+    <security code="DADE" currency="USD">Dade Behring Holdings, Inc</security>
+    <security code="DAKT" currency="USD">Daktronics, Inc.</security>
+    <security code="DASTY" currency="USD">Dassault Systemes, S.A. - American Depositary Shares</security>
     <security code="DSCP" currency="USD">Datascope Corp.</security>
-    <security code="DEBS" currency="USD">Deb Shops Inc.</security>
-    <security code="DECK" currency="USD">Deckers Outdoor Corp.</security>
+    <security code="DEBS" currency="USD">Deb Shops, Inc.</security>
+    <security code="DECK" currency="USD">Deckers Outdoor Corporation</security>
+    <security code="DCTHZ" currency="USD">Delcath Systems, Inc. - Delcath Systems, Inc. 2005 Redeemable Common Stock Purch</security>
     <security code="DELL" currency="USD">Dell Inc.</security>
-    <security code="DRTE" currency="USD">Dendrite International Inc.</security>
-    <security code="XRAY" currency="USD">Dentsply International, Inc.</security>
+    <security code="DRTE" currency="USD">Dendrite International, Inc.</security>
     <security code="DMND" currency="USD">Diamond Foods, Inc.</security>
-    <security code="DIGE" currency="USD">Digene Corp.</security>
+    <security code="DIGE" currency="USD">Digene Corporation</security>
     <security code="DGII" currency="USD">Digi International Inc.</security>
-    <security code="DGIN" currency="USD">Digital Insight Corp.</security>
-    <security code="DRIV" currency="USD">Digital River Inc.</security>
-    <security code="DTAS" currency="USD">Digitas Inc.</security>
-    <security code="DCOM" currency="USD">Dime Community Bancshares Inc.</security>
-    <security code="DIOD" currency="USD">Diodes Inc.</security>
-    <security code="DNEX" currency="USD">Dionex Corp.</security>
-    <security code="DRCT" currency="USD">Direct General Corp.</security>
-    <security code="DISCA" currency="USD">Discovery Holding Co.</security>
-    <security code="DCEL" currency="USD">Dobson Communications Corp.</security>
-    <security code="DLLR" currency="USD">Dollar Financial Corp.</security>
-    <security code="DLTR" currency="USD">Dollar Tree Stores Inc.</security>
-    <security code="DGICB" currency="USD">Donegal Group Inc.</security>
-    <security code="DIIB" currency="USD">Dorel Industries Inc.</security>
-    <security code="DRAX" currency="USD">Draxis Health Inc.</security>
-    <security code="DBRN" currency="USD">Dress Barn Inc.</security>
-    <security code="DRYS" currency="USD">DryShips, Inc.</security>
-    <security code="DDMX" currency="USD">Dynamex Inc.</security>
-    <security code="BOOM" currency="USD">Dynamic Materials Corp.</security>
-    <security code="EZEM" currency="USD">E-Z-EM Inc.</security>
-    <security code="ECIL" currency="USD">ECI Telecom Ltd.</security>
-    <security code="EAGL" currency="USD">EGL Inc.</security>
-    <security code="EMCI" currency="USD">EMC Insurance Group Inc.</security>
-    <security code="ELMG" currency="USD">EMS Technologies Inc.</security>
-    <security code="EPIQ" currency="USD">EPIQ Systems Inc.</security>
-    <security code="ESBF" currency="USD">ESB Financial Corp.</security>
-    <security code="EVEP" currency="USD">EV Energy Partners LP</security>
-    <security code="EZPW" currency="USD">EZCORP Inc.</security>
-    <security code="EGLE" currency="USD">Eagle Bulk Shipping Inc.</security>
-    <security code="ELNK" currency="USD">EarthLink Inc.</security>
-    <security code="EWBC" currency="USD">East West Bancorp Inc.</security>
-    <security code="DISH" currency="USD">EchoStar Communications Corp.</security>
-    <security code="ECLP" currency="USD">Eclipsys Corp.</security>
-    <security code="EPEX" currency="USD">Edge Petroleum Corp.</security>
-    <security code="EEEE" currency="USD">Educate Inc.</security>
-    <security code="ESLT" currency="USD">Elbit Systems Ltd.</security>
+    <security code="DGIN" currency="USD">Digital Insight Corporation</security>
+    <security code="DRIV" currency="USD">Digital River, Inc.</security>
+    <security code="DTAS" currency="USD">Digitas, Inc.</security>
+    <security code="DCOM" currency="USD">Dime Community Bancshares, Inc.</security>
+    <security code="DIOD" currency="USD">Diodes Incorporated</security>
+    <security code="DNEX" currency="USD">Dionex Corporation</security>
+    <security code="DRCT" currency="USD">Direct General Corporation - Common stock</security>
+    <security code="DISCA" currency="USD">Discovery Holding Co - Class A Common Stock</security>
+    <security code="DISCB" currency="USD">Discovery Holding Co - Series B common stock</security>
+    <security code="DCEL" currency="USD">Dobson Communications Corporation - Class A Common Stock</security>
+    <security code="DLLR" currency="USD">Dollar Financial Corp. - Common stock</security>
+    <security code="DLTR" currency="USD">Dollar Tree Stores, Inc.</security>
+    <security code="DGICA" currency="USD">Donegal Group, Inc. - Class A Common Stock</security>
+    <security code="DGICB" currency="USD">Donegal Group, Inc. - Class B Common Stock</security>
+    <security code="DRLPE" currency="USD">Doral Financial Corporation - 7% Series A Non-cumulative Monthly Income Preferre</security>
+    <security code="DRLNE" currency="USD">Doral Financial Corporation - 7.25% Noncumulative Monthly Inc Preferred Ser C</security>
+    <security code="DRLOE" currency="USD">Doral Financial Corporation - Class B Preferred Stock</security>
+    <security code="DIIB" currency="USD">Dorel Industries, Inc. - Class B Subordinate Voting Shares</security>
+    <security code="DBLE" currency="USD">Double Eagle Petroleum Company</security>
+    <security code="DRAX" currency="USD">Draxis Health Inc. - Common Shares</security>
+    <security code="DBRN" currency="USD">Dress Barn, Inc. (The)</security>
+    <security code="DRYS" currency="USD">DryShips Inc.</security>
+    <security code="DDMX" currency="USD">Dynamex, Inc.</security>
+    <security code="BOOM" currency="USD">Dynamic Materials Corporation</security>
+    <security code="ETFC" currency="USD">E*TRADE Financial Corporation</security>
+    <security code="EZEM" currency="USD">E-Z-EM, Inc.</security>
+    <security code="ECIL" currency="USD">ECI Telecom Ltd. - Ordinary Shares</security>
+    <security code="EAGL" currency="USD">EGL, Inc.</security>
+    <security code="TRBN" currency="USD">EGLE  Mar 2007 20.00 put</security>
+    <security code="EMCI" currency="USD">EMC Insurance Group, Inc.</security>
+    <security code="NEWT" currency="USD">EME  Dec 2006 65.00 put</security>
+    <security code="ELMG" currency="USD">EMS Technologies, Inc.</security>
+    <security code="EPIQ" currency="USD">EPIQ Systems, Inc.</security>
+    <security code="ESBF" currency="USD">ESB Financial Corporation</security>
+    <security code="EVEP" currency="USD">EV Energy Partners, L.P. - common units representing limited partnership interes</security>
+    <security code="EZPW" currency="USD">EZCORP, Inc. - Class A Non-Voting Common Stock</security>
+    <security code="EGLE" currency="USD">Eagle Bulk Shipping Inc. - common stock</security>
+    <security code="ELNK" currency="USD">EarthLink, Inc.</security>
+    <security code="EWBC" currency="USD">East West Bancorp, Inc.</security>
+    <security code="DISH" currency="USD">EchoStar Communications Corporation - Class A Common Stock</security>
+    <security code="ECLP" currency="USD">Eclipsys Corporation</security>
+    <security code="EPEX" currency="USD">Edge Petroleum Corporation</security>
+    <security code="EPEXP" currency="USD">Edge Petroleum Corporation - Ser. A Cumulative Convertible Perpetual Preferred S</security>
+    <security code="EEEE" currency="USD">Educate, Inc.</security>
+    <security code="ESLT" currency="USD">Elbit Systems Ltd. - Ordinary Shares</security>
     <security code="ERTS" currency="USD">Electronic Arts Inc.</security>
     <security code="EFII" currency="USD">Electronics for Imaging, Inc.</security>
-    <security code="RDEN" currency="USD">Elizabeth Arden Inc.</security>
-    <security code="EMBT" currency="USD">Embarcadero Technologies Inc.</security>
-    <security code="HLTH" currency="USD">Emdeon Corp.</security>
-    <security code="EMMS" currency="USD">Emmis Communications Corp.</security>
-    <security code="ECPG" currency="USD">Encore Capital Group Inc.</security>
-    <security code="WIRE" currency="USD">Encore Wire Corp.</security>
-    <security code="ENDP" currency="USD">Endo Pharmaceuticals Holdings</security>
-    <security code="ENER" currency="USD">Energy Conversion Devices, Inc</security>
-    <security code="ENSI" currency="USD">Energysouth Inc.</security>
-    <security code="ESGR" currency="USD">Enstar Group Inc.</security>
-    <security code="ENTG" currency="USD">Entegris Inc.</security>
-    <security code="EPIC" currency="USD">Epicor Software Corp.</security>
-    <security code="EQIX" currency="USD">Equinix Inc.</security>
-    <security code="ERIE" currency="USD">Erie Indemnity Co.</security>
-    <security code="ESCL" currency="USD">Escala Group Inc.</security>
-    <security code="KEYW" currency="USD">Essex Corp.</security>
-    <security code="EUBK" currency="USD">EuroBancshares Inc.</security>
-    <security code="EEFT" currency="USD">Euronet Worldwide Inc.</security>
-    <security code="XLTC" currency="USD">Excel Technology Inc.</security>
-    <security code="EXEL" currency="USD">Exelixis Inc.</security>
-    <security code="EXLS" currency="USD">Exlservice Holdings, Inc.</security>
-    <security code="EXPE" currency="USD">Expedia Inc.</security>
-    <security code="EXPD" currency="USD">Expeditors International of Wa</security>
-    <security code="TXCO" currency="USD">Exploration Co. of Delaware In</security>
-    <security code="EXPO" currency="USD">Exponent Inc.</security>
-    <security code="ESRX" currency="USD">Express Scripts Inc.</security>
-    <security code="FFIV" currency="USD">F5 Networks Inc.</security>
-    <security code="FLIR" currency="USD">FLIR Systems Inc.</security>
-    <security code="FNBP" currency="USD">FNB Corp.</security>
+    <security code="RDEN" currency="USD">Elizabeth Arden, Inc.</security>
+    <security code="ELRN" currency="USD">Elron Electronic Industries Ltd. - Ordinary Shares</security>
+    <security code="EMBT" currency="USD">Embarcadero Technologies, Inc.</security>
+    <security code="HLTH" currency="USD">Emdeon Corporation</security>
+    <security code="EMMSP" currency="USD">Emmis Communications Corporation - 6.25% Series A Cumulative Convertible Preferr</security>
+    <security code="EMMS" currency="USD">Emmis Communications Corporation - Class A Common Stock</security>
+    <security code="ECPG" currency="USD">Encore Capital Group Inc</security>
+    <security code="WIRE" currency="USD">Encore Wire Corporation</security>
+    <security code="ENDP" currency="USD">Endo Pharmaceuticals Holdings Inc.</security>
+    <security code="ENER" currency="USD">Energy Conversion Devices, Inc.</security>
+    <security code="ENSI" currency="USD">EnergySouth, Inc.</security>
+    <security code="ESGR" currency="USD">Enstar Group Inc</security>
+    <security code="ESGRD" currency="USD">Enstar Group Limited - Ordinary Shares</security>
+    <security code="ENTG" currency="USD">Entegris, Inc.</security>
+    <security code="EPIC" currency="USD">Epicor Software Corporation</security>
+    <security code="EQIX" currency="USD">Equinix, Inc.</security>
+    <security code="ERIE" currency="USD">Erie Indemnity Company - Class A Common Stock</security>
+    <security code="ESCL" currency="USD">Escala Group, Inc.</security>
+    <security code="EUBK" currency="USD">EuroBancshares, Inc.</security>
+    <security code="EEFT" currency="USD">Euronet Worldwide, Inc.</security>
+    <security code="XLTC" currency="USD">Excel Technology, Inc.</security>
+    <security code="EXEL" currency="USD">Exelixis, Inc.</security>
+    <security code="EXLS" currency="USD">ExlService Holdings, Inc.</security>
+    <security code="EXPE" currency="USD">Expedia, Inc. - Common stock</security>
+    <security code="EXPEZ" currency="USD">Expedia, Inc. - Warrant to purchase .969375 shares of Common Stock</security>
+    <security code="EXPEW" currency="USD">Expedia, Inc. - warrant to purchase one half of one share of Expedia common stoc</security>
+    <security code="EXPD" currency="USD">Expeditors International of Washington, Inc.</security>
+    <security code="EXPO" currency="USD">Exponent, Inc.</security>
+    <security code="ESRX" currency="USD">Express Scripts, Inc. - Class A Common Stock</security>
+    <security code="FFIV" currency="USD">F5 Networks, Inc.</security>
+    <security code="FLIR" currency="USD">FLIR Systems, Inc.</security>
+    <security code="FNBP" currency="USD">FNB Corporation</security>
     <security code="FNBN" currency="USD">FNB United Corp.</security>
-    <security code="FPIC" currency="USD">FPIC Insurance Group Inc.</security>
-    <security code="FAST" currency="USD">Fastenal Co.</security>
+    <security code="FPIC" currency="USD">FPIC Insurance Group, Inc.</security>
+    <security code="FFKT" currency="USD">Farmers Capital Bank Corporation</security>
+    <security code="FSTC" currency="USD">Fastclick, Inc.</security>
+    <security code="FAST" currency="USD">Fastenal Company</security>
     <security code="FTWR" currency="USD">FiberTower Corporation</security>
-    <security code="FFFL" currency="USD">Fidelity Bankshares Inc.</security>
-    <security code="LION" currency="USD">Fidelity Southern Corp.</security>
-    <security code="FICC" currency="USD">Fieldstone Investment Corp.</security>
+    <security code="LION" currency="USD">Fidelity Southern Corporation</security>
+    <security code="FICC" currency="USD">Fieldstone Investment Corporation - Common stock</security>
     <security code="FITB" currency="USD">Fifth Third Bancorp</security>
-    <security code="FISI" currency="USD">Financial Institutions Inc.</security>
-    <security code="FNSR" currency="USD">Finisar Corp.</security>
-    <security code="FINL" currency="USD">Finish Line Inc.</security>
-    <security code="FADV" currency="USD">First Advantage Corp.</security>
+    <security code="FISI" currency="USD">Financial Institutions, Inc.</security>
+    <security code="FNSR" currency="USD">Finisar Corporation</security>
+    <security code="FINL" currency="USD">Finish Line, Inc. (The) - Class A Common Stock</security>
+    <security code="FADV" currency="USD">First Advantage Corporation - Class A Common Stock</security>
     <security code="FBNC" currency="USD">First Bancorp</security>
+    <security code="FBNKN" currency="USD">First Banks, Inc. - First Preferred Capital Trust II - 10.24% Trust Preferred Se</security>
     <security code="BUSE" currency="USD">First Busey Corporation</security>
-    <security code="FCFS" currency="USD">First Cash Financial Services</security>
-    <security code="FCTR" currency="USD">First Charter Corp.</security>
-    <security code="FCNCA" currency="USD">First Citizens Bancshares Inc.</security>
+    <security code="FCFS" currency="USD">First Cash Financial Services, Inc.</security>
+    <security code="FCTR" currency="USD">First Charter Corporation</security>
+    <security code="FCNCA" currency="USD">First Citizens BancShares, Inc. - Class A Common Stock</security>
     <security code="FCBP" currency="USD">First Community Bancorp</security>
-    <security code="FCBC" currency="USD">First Community Bancshares, In</security>
+    <security code="FCBC" currency="USD">First Community Bancshares, Inc.</security>
     <security code="FDEF" currency="USD">First Defiance Financial Corp.</security>
     <security code="FFBC" currency="USD">First Financial Bancorp.</security>
-    <security code="FFIN" currency="USD">First Financial Bankshares Inc</security>
-    <security code="THFF" currency="USD">First Financial Corp.</security>
-    <security code="FFCH" currency="USD">First Financial Holdings Inc.</security>
-    <security code="FINB" currency="USD">First Indiana Corp.</security>
-    <security code="FMFC" currency="USD">First M&amp;F Corp.</security>
-    <security code="FRME" currency="USD">First Merchants Corp.</security>
-    <security code="FMBI" currency="USD">First Midwest Bancorp Inc.</security>
-    <security code="FNLC" currency="USD">First National Lincoln Corp.</security>
-    <security code="FNFG" currency="USD">First Niagara Financial Group</security>
+    <security code="FFIN" currency="USD">First Financial Bankshares, Inc.</security>
+    <security code="THFF" currency="USD">First Financial Corporation Indiana</security>
+    <security code="FFCH" currency="USD">First Financial Holdings, Inc.</security>
+    <security code="FINB" currency="USD">First Indiana Corporation</security>
+    <security code="FMFC" currency="USD">First M &amp; F Corporation</security>
+    <security code="FRME" currency="USD">First Merchants Corporation</security>
+    <security code="FRMEP" currency="USD">First Merchants Corporation - First Merchants Capital Trust I - 8.75% Cumulative</security>
+    <security code="FMBI" currency="USD">First Midwest Bancorp, Inc.</security>
+    <security code="FNLC" currency="USD">First National Lincoln Corporation</security>
+    <security code="FNFG" currency="USD">First Niagara Financial Group Inc.</security>
     <security code="FPFC" currency="USD">First Place Financial Corp.</security>
     <security code="FSGI" currency="USD">First Security Group, Inc.</security>
-    <security code="FSBK" currency="USD">First South Bancorp Inc.</security>
-    <security code="FSNM" currency="USD">First State Bancorp.</security>
-    <security code="FCFC" currency="USD">FirstCity Financial Corp.</security>
-    <security code="FMER" currency="USD">FirstMerit Corp.</security>
-    <security code="FSRV" currency="USD">FirstService Corp.</security>
-    <security code="FBMI" currency="USD">Firstbank Corp.</security>
-    <security code="FISV" currency="USD">Fiserv Inc.</security>
-    <security code="FLAG" currency="USD">Flag Financial Corp.</security>
-    <security code="FLDR" currency="USD">Flanders Corp.</security>
-    <security code="FLEX" currency="USD">Flextronics International Ltd.</security>
-    <security code="FFIC" currency="USD">Flushing Financial Corp.</security>
-    <security code="FORM" currency="USD">FormFactor Inc.</security>
-    <security code="FORR" currency="USD">Forrester Research Inc.</security>
-    <security code="FWRD" currency="USD">Forward Air Corp.</security>
-    <security code="FOSL" currency="USD">Fossil Inc.</security>
-    <security code="FWLT" currency="USD">Foster Wheeler, Ltd.</security>
+    <security code="FSBK" currency="USD">First South Bancorp Inc</security>
+    <security code="FSNM" currency="USD">First State Bancorporation</security>
+    <security code="FCFC" currency="USD">FirstCity Financial Corporation</security>
+    <security code="FFDB" currency="USD">FirstFed Bancorp, Inc.</security>
+    <security code="FMER" currency="USD">FirstMerit Corporation</security>
+    <security code="FSRV" currency="USD">FirstService Corporation - Subordinate Voting Shares</security>
+    <security code="FBMI" currency="USD">Firstbank Corporation</security>
+    <security code="FISV" currency="USD">Fiserv, Inc.</security>
+    <security code="FLDR" currency="USD">Flanders Corporation</security>
+    <security code="FLEX" currency="USD">Flextronics International Ltd. - Ordinary Shares</security>
+    <security code="FFIC" currency="USD">Flushing Financial Corporation</security>
+    <security code="FMXIE" currency="USD">Foamex International, Inc.</security>
+    <security code="FORM" currency="USD">FormFactor, Inc.</security>
+    <security code="FORR" currency="USD">Forrester Research, Inc.</security>
+    <security code="FWRD" currency="USD">Forward Air Corporation</security>
+    <security code="FOSL" currency="USD">Fossil, Inc.</security>
+    <security code="FWLT" currency="USD">Foster Wheeler Ltd.</security>
+    <security code="FWLTW" currency="USD">Foster Wheeler Ltd. - Class A Warrants Exp. 9/24/2009 (Bermuda)</security>
+    <security code="FWLTZ" currency="USD">Foster Wheeler Ltd. - Warrants B 9/24/2007</security>
     <security code="FDRY" currency="USD">Foundry Networks, Inc.</security>
-    <security code="FXCB" currency="USD">Fox Chase Bancorp Inc</security>
-    <security code="FOXH" currency="USD">Foxhollow Technologies Inc.</security>
+    <security code="FXCB" currency="USD">Fox Chase Bancorp, Inc.</security>
+    <security code="FOXH" currency="USD">FoxHollow Technologies, Inc.</security>
     <security code="FBTX" currency="USD">Franklin Bank Corp.</security>
-    <security code="FELE" currency="USD">Franklin Electric Co. Inc.</security>
-    <security code="RAIL" currency="USD">FreightCar America Inc.</security>
-    <security code="FTBK" currency="USD">Frontier Financial Corp.</security>
-    <security code="FULT" currency="USD">Fulton Financial Corp.</security>
-    <security code="GKSR" currency="USD">G&amp;K Services Inc.</security>
-    <security code="GBTB" currency="USD">GB&amp;T Bancshares Inc.</security>
+    <security code="FELE" currency="USD">Franklin Electric Co., Inc.</security>
+    <security code="RAIL" currency="USD">FreightCar America, Inc.</security>
+    <security code="FTBK" currency="USD">Frontier Financial Corporation</security>
+    <security code="FULT" currency="USD">Fulton Financial Corporation</security>
+    <security code="HUGH" currency="USD">Future April 7</security>
+    <security code="UNCL" currency="USD">Future February 7</security>
+    <security code="GKSR" currency="USD">G&amp;K Services, Inc. - Class A Common Stock</security>
+    <security code="GBTB" currency="USD">GB&amp;T Bancshares</security>
     <security code="GFIG" currency="USD">GFI Group Inc.</security>
-    <security code="GSIC" currency="USD">GSI Commerce Inc.</security>
+    <security code="GSIC" currency="USD">GSI Commerce, Inc.</security>
+    <security code="ALAND" currency="USD">GWW  Dec 2006 65.00 call</security>
     <security code="GRMN" currency="USD">Garmin Ltd.</security>
-    <security code="GEHL" currency="USD">Gehl Co.</security>
-    <security code="GEMP" currency="USD">Gemplus International SA</security>
-    <security code="GMST" currency="USD">Gemstar-TV Guide International</security>
-    <security code="GPRO" currency="USD">Gen-Probe Inc.</security>
-    <security code="GETI" currency="USD">GenTek Inc.</security>
-    <security code="GSTL" currency="USD">Genco Shipping &amp; Trading Ltd.</security>
-    <security code="GNCMA" currency="USD">General Communication Inc.</security>
-    <security code="GHCI" currency="USD">Genesis Healthcare Corp.</security>
-    <security code="GLYT" currency="USD">Genlyte Group Inc.</security>
-    <security code="GNTX" currency="USD">Gentex Corp.</security>
-    <security code="GTIV" currency="USD">Gentiva Health Services Inc.</security>
-    <security code="GENZ" currency="USD">Genzyme Corp.</security>
-    <security code="GABC" currency="USD">German American Bancorp Inc.</security>
-    <security code="GVHR" currency="USD">Gevity HR Inc.</security>
-    <security code="ROCK" currency="USD">Gibraltar Industries Inc.</security>
-    <security code="GILD" currency="USD">Gilead Sciences Inc.</security>
-    <security code="GBCI" currency="USD">Glacier Bancorp Inc.</security>
-    <security code="GLAD" currency="USD">Gladstone Capital Corp.</security>
-    <security code="GAIN" currency="USD">Gladstone Investment Corporati</security>
-    <security code="GISX" currency="USD">Global Imaging Systems Inc.</security>
-    <security code="GLBL" currency="USD">Global Industries Ltd.</security>
+    <security code="GEHL" currency="USD">Gehl Company</security>
+    <security code="GMST" currency="USD">Gemstar-TV Guide International Inc.</security>
+    <security code="GPRO" currency="USD">Gen-Probe Incorporated</security>
+    <security code="GETI" currency="USD">GenTek, Inc.</security>
+    <security code="GNSC" currency="USD">Genaissance Pharmaceuticals, Inc.</security>
+    <security code="GSTL" currency="USD">Genco Shipping &amp; Trading Limited - common stock</security>
+    <security code="GNLBD" currency="USD">Genelabs Technologies, Inc.</security>
+    <security code="GNCMA" currency="USD">General Communication, Inc. - Class A Common Stock</security>
+    <security code="GHCI" currency="USD">Genesis HealthCare Corporation - Common stock</security>
+    <security code="GLYT" currency="USD">Genlyte Group Incorporated (The)</security>
+    <security code="GNTX" currency="USD">Gentex Corporation</security>
+    <security code="GTIV" currency="USD">Gentiva Health Services, Inc.</security>
+    <security code="GENZ" currency="USD">Genzyme Corporation - Genzyme Corporation Common Stock</security>
+    <security code="GABC" currency="USD">German American Bancorp, Inc.</security>
+    <security code="GVHR" currency="USD">Gevity HR, Inc.</security>
+    <security code="ROCK" currency="USD">Gibraltar Industries, Inc.</security>
+    <security code="GILD" currency="USD">Gilead Sciences, Inc.</security>
+    <security code="GBCI" currency="USD">Glacier Bancorp, Inc.</security>
+    <security code="GLAD" currency="USD">Gladstone Capital Corporation - Closed End Fund</security>
+    <security code="GAIN" currency="USD">Gladstone Investment Corporation - Closed End Fund</security>
+    <security code="GISX" currency="USD">Global Imaging Systems, Inc.</security>
+    <security code="GLBL" currency="USD">Global Industries, Ltd.</security>
+    <security code="GSEC" currency="USD">Global Secure Corp.</security>
     <security code="GSOL" currency="USD">Global Sources Ltd.</security>
-    <security code="GSAT" currency="USD">Globalstar Inc.</security>
-    <security code="GLNG" currency="USD">Golar LNG Ltd.</security>
-    <security code="GKIS" currency="USD">Gold Kist Inc.</security>
-    <security code="GLDN" currency="USD">Golden Telecom Inc.</security>
-    <security code="GGXY" currency="USD">Golf Galaxy, Inc.</security>
-    <security code="GOOG" currency="USD">Google Inc.</security>
-    <security code="GSBC" currency="USD">Great Southern Bancorp Inc.</security>
+    <security code="GSAT" currency="USD">Globalstar, Inc.</security>
+    <security code="GLOWE" currency="USD">Glowpoint, Inc.</security>
+    <security code="GLNG" currency="USD">Golar LNG Limited - common shares</security>
+    <security code="SHIP" currency="USD">Golden Energy Marine Corp. - common stock</security>
+    <security code="GLDN" currency="USD">Golden Telecom, Inc.</security>
+    <security code="GGXY" currency="USD">Golf Galaxy, Inc. - common stock</security>
+    <security code="GOOG" currency="USD">Google Inc. - Class A Common Stock</security>
+    <security code="GCFBW" currency="USD">Granite City Food &amp; Brewery Ltd. - Class A Warrants (Expire 06/06/2005)</security>
+    <security code="GCFBU" currency="USD">Granite City Food &amp; Brewery Ltd. - Units</security>
+    <security code="GSBC" currency="USD">Great Southern Bancorp, Inc.</security>
     <security code="GBBK" currency="USD">Greater Bay Bancorp</security>
-    <security code="GMCR" currency="USD">Green Mountain Coffee Roasters</security>
-    <security code="GPRE" currency="USD">Green Plains Renewable Energy</security>
-    <security code="GCBS" currency="USD">Greene County Bancshares Inc.</security>
-    <security code="OMAB" currency="USD">Grupo Aeroportuario Centro Nor</security>
-    <security code="GTRC" currency="USD">Guitar Center Inc.</security>
-    <security code="GIFI" currency="USD">Gulf Island Fabrication Inc.</security>
-    <security code="GMRK" currency="USD">Gulfmark Offshore Inc.</security>
-    <security code="GPOR" currency="USD">Gulfport Energy Corp.</security>
-    <security code="GYMB" currency="USD">Gymboree Corp.</security>
-    <security code="HEES" currency="USD">H&amp;E Equipment Services Inc.</security>
-    <security code="HMSY" currency="USD">HMS Holdings Corp.</security>
-    <security code="HAIN" currency="USD">Hain Celestial Group Inc.</security>
-    <security code="HALL" currency="USD">Hallmark Financial Services In</security>
-    <security code="HANA" currency="USD">Hanaro Telecom, Inc.</security>
-    <security code="HBHC" currency="USD">Hancock Holding Co.</security>
-    <security code="HAFC" currency="USD">Hanmi Financial Corp.</security>
-    <security code="HDNG" currency="USD">Hardinge Inc.</security>
+    <security code="GMCR" currency="USD">Green Mountain Coffee Roasters, Inc.</security>
+    <security code="GPRE" currency="USD">Green Plains Renewable Energy, Inc.</security>
+    <security code="GCBS" currency="USD">Greene County Bancshares, Inc.</security>
+    <security code="OMAB" currency="USD">Grupo Aeroportuario del Centro Norte S.A.B. de C.V. - ADS</security>
+    <security code="GLFD" currency="USD">Guilford Pharmaceuticals Inc.</security>
+    <security code="GTRC" currency="USD">Guitar Center, Inc.</security>
+    <security code="GIFI" currency="USD">Gulf Island Fabrication, Inc.</security>
+    <security code="GMRK" currency="USD">GulfMark Offshore, Inc.</security>
+    <security code="GPOR" currency="USD">Gulfport Energy Corporation</security>
+    <security code="GYMB" currency="USD">Gymboree Corporation (The)</security>
+    <security code="HEES" currency="USD">H&amp;E Equipment Services, Inc.</security>
+    <security code="HMSY" currency="USD">HMS Holdings Corp</security>
+    <security code="HGGR" currency="USD">Haggar Corp.</security>
+    <security code="HAIN" currency="USD">Hain Celestial Group, Inc. (The)</security>
+    <security code="HBHC" currency="USD">Hancock Holding Company</security>
+    <security code="HAFC" currency="USD">Hanmi Financial Corporation</security>
+    <security code="HDNG" currency="USD">Hardinge, Inc.</security>
     <security code="HGIC" currency="USD">Harleysville Group Inc.</security>
-    <security code="HNBC" currency="USD">Harleysville National Corp.</security>
-    <security code="HPOL" currency="USD">Harris Interactive Inc.</security>
-    <security code="HTRN" currency="USD">HealthTronics Inc.</security>
-    <security code="HCSG" currency="USD">Healthcare Services Group Inc.</security>
-    <security code="HLEX" currency="USD">Healthextras Inc.</security>
-    <security code="HWAY" currency="USD">Healthways Inc.</security>
-    <security code="HTLD" currency="USD">Heartland Express Inc.</security>
-    <security code="HTLF" currency="USD">Heartland Financial USA Inc.</security>
-    <security code="HSII" currency="USD">Heidrick &amp; Struggles Internati</security>
-    <security code="HELE" currency="USD">Helen of Troy Ltd.</security>
-    <security code="HSIC" currency="USD">Henry Schein Inc.</security>
+    <security code="HNBC" currency="USD">Harleysville National Corporation</security>
+    <security code="HPOL" currency="USD">Harris Interactive, Inc.</security>
+    <security code="HLEX" currency="USD">HealthExtras, Inc.</security>
+    <security code="HTRN" currency="USD">HealthTronics, Inc.</security>
+    <security code="HCSG" currency="USD">Healthcare Services Group, Inc.</security>
+    <security code="HWAY" currency="USD">Healthways, Inc.</security>
+    <security code="HTLD" currency="USD">Heartland Express, Inc.</security>
+    <security code="HTLF" currency="USD">Heartland Financial USA, Inc.</security>
+    <security code="HSII" currency="USD">Heidrick &amp; Struggles International, Inc.</security>
+    <security code="HELE" currency="USD">Helen of Troy Limited</security>
+    <security code="HMSL" currency="USD">Hemosol Corp.</security>
+    <security code="HSIC" currency="USD">Henry Schein, Inc.</security>
     <security code="HERO" currency="USD">Hercules Offshore, Inc.</security>
-    <security code="HTBK" currency="USD">Heritage Commerce Corp.</security>
-    <security code="HFWA" currency="USD">Heritage Financial Corp.</security>
-    <security code="MLHR" currency="USD">Herman Miller Inc.</security>
-    <security code="HITK" currency="USD">Hi Tech Pharmacal Co. Inc.</security>
-    <security code="HIBB" currency="USD">Hibbett Sporting Goods Inc.</security>
-    <security code="HLND" currency="USD">Hiland Partners, LP</security>
-    <security code="HIMX" currency="USD">Himax Technologies, Inc.</security>
-    <security code="HITT" currency="USD">Hittite Microwave Corporation</security>
-    <security code="HOLX" currency="USD">Hologic Inc.</security>
-    <security code="HMIN" currency="USD">Home Inns &amp; Hotels Management</security>
+    <security code="HTBK" currency="USD">Heritage Commerce Corp</security>
+    <security code="HFWA" currency="USD">Heritage Financial Corporation</security>
+    <security code="MLHR" currency="USD">Herman Miller, Inc.</security>
+    <security code="HITK" currency="USD">Hi-Tech Pharmacal Co., Inc.</security>
+    <security code="HIBB" currency="USD">Hibbett Sporting Goods, Inc.</security>
+    <security code="HLND" currency="USD">Hiland Partners, LP - Common units represent limited partnership interests</security>
+    <security code="HIMX" currency="USD">Himax Technologies, Inc. - american depositary shares</security>
+    <security code="HITT" currency="USD">Hittite Microwave Corporation - common stock</security>
+    <security code="HOLX" currency="USD">Hologic, Inc.</security>
+    <security code="HMIN" currency="USD">Home Inns &amp; Hotels Management Inc. American Depository Shares</security>
     <security code="HRZB" currency="USD">Horizon Financial Corp.</security>
-    <security code="HORC" currency="USD">Horizon Health Corp.</security>
-    <security code="HOTT" currency="USD">Hot Topic Inc.</security>
-    <security code="SOLD" currency="USD">Housevalues Inc.</security>
-    <security code="HUBG" currency="USD">Hub Group Inc.</security>
-    <security code="HCBK" currency="USD">Hudson City Bancorp Inc.</security>
-    <security code="HUGH" currency="USD">Hughes Communications, Inc.</security>
-    <security code="HBAN" currency="USD">Huntington Bancshares Inc.</security>
-    <security code="HURC" currency="USD">Hurco Companies Inc.</security>
-    <security code="HURN" currency="USD">Huron Consulting Group Inc.</security>
-    <security code="HTCH" currency="USD">Hutchinson Technology Inc.</security>
-    <security code="HYDL" currency="USD">Hydril Co.</security>
-    <security code="HYSL" currency="USD">Hyperion Solutions Corp.</security>
+    <security code="HORC" currency="USD">Horizon Health Corporation</security>
+    <security code="HOTT" currency="USD">Hot Topic, Inc.</security>
+    <security code="SOLD" currency="USD">HouseValues, Inc.</security>
+    <security code="HUBG" currency="USD">Hub Group, Inc. - Class A Common Stock</security>
+    <security code="HCBK" currency="USD">Hudson City Bancorp, Inc.</security>
+    <security code="HBAN" currency="USD">Huntington Bancshares Incorporated</security>
+    <security code="HURC" currency="USD">Hurco Companies, Inc.</security>
+    <security code="HURN" currency="USD">Huron Consulting Group Inc. - Common stock</security>
+    <security code="HTCH" currency="USD">Hutchinson Technology Incorporated</security>
+    <security code="HYDL" currency="USD">Hydril</security>
+    <security code="HYSL" currency="USD">Hyperion Solutions Corporation</security>
     <security code="IACI" currency="USD">IAC/InterActiveCorp</security>
-    <security code="ICFI" currency="USD">ICF International Inc.</security>
-    <security code="ICLR" currency="USD">ICON plc</security>
-    <security code="ICOS" currency="USD">ICOS Corp.</security>
-    <security code="ICUI" currency="USD">ICU Medical Inc.</security>
-    <security code="IDXX" currency="USD">IDEXX Laboratories Inc.</security>
-    <security code="IIVI" currency="USD">II-VI Inc.</security>
-    <security code="ILOG" currency="USD">ILOG SA</security>
-    <security code="IPCR" currency="USD">IPC Holdings Ltd.</security>
-    <security code="ITLA" currency="USD">ITLA Capital Corp.</security>
-    <security code="IBKC" currency="USD">IberiaBank Corp.</security>
-    <security code="IMCL" currency="USD">Imclone Systems Inc.</security>
-    <security code="BLUD" currency="USD">Immucor Inc.</security>
-    <security code="IBCP" currency="USD">Independent Bank Corp.</security>
+    <security code="IACIW" currency="USD">IAC/InterActiveCorp - Warrants 2/4/2009</security>
+    <security code="IACIZ" currency="USD">IAC/InterActiveCorp - warrant to purchase 1.93875 common shares</security>
+    <security code="IBKC" currency="USD">IBERIABANK Corporation</security>
+    <security code="ICFI" currency="USD">ICF International, Inc.</security>
+    <security code="ICLR" currency="USD">ICON plc - American Depositary Shares</security>
+    <security code="ICOS" currency="USD">ICOS Corporation</security>
+    <security code="ICUI" currency="USD">ICU Medical, Inc.</security>
+    <security code="IDBE" currency="USD">ID Biomedical Corporation - Common Shares</security>
+    <security code="IDXX" currency="USD">IDEXX Laboratories, Inc.</security>
+    <security code="GIGZ" currency="USD">IDT Spectrum, Inc. - Class B Common Stock</security>
+    <security code="IDXC" currency="USD">IDX Systems Corporation</security>
+    <security code="IIVI" currency="USD">II-VI Incorporated</security>
+    <security code="ZIOP" currency="USD">ILE  Jun 2007 2.50 put</security>
+    <security code="ILOG" currency="USD">ILOG S.A. - American Depositary Shares</security>
+    <security code="IMCOE" currency="USD">IMPCO Technologies, Inc</security>
+    <security code="IPCR" currency="USD">IPC Holdings, Limited - Common Shares</security>
+    <security code="SBBX" currency="USD">IWD  Dec 2006 91.00 put</security>
+    <security code="IMCL" currency="USD">ImClone Systems Incorporated</security>
+    <security code="BLUD" currency="USD">Immucor, Inc.</security>
     <security code="INDB" currency="USD">Independent Bank Corp.</security>
-    <security code="NRGP" currency="USD">Inergy Holdings, L.P.</security>
-    <security code="NRGY" currency="USD">Inergy LP</security>
-    <security code="IPCC" currency="USD">Infinity Property and Casualty</security>
-    <security code="INSP" currency="USD">InfoSpace Inc.</security>
-    <security code="IFOX" currency="USD">Infocrossing Inc.</security>
-    <security code="INFA" currency="USD">Informatica Corp.</security>
-    <security code="INFY" currency="USD">Infosys Technologies Ltd.</security>
-    <security code="ISSC" currency="USD">Innovative Solutions &amp; Support</security>
-    <security code="NSIT" currency="USD">Insight Enterprises Inc.</security>
-    <security code="INSU" currency="USD">Insituform Technologies Inc.</security>
-    <security code="IART" currency="USD">Integra Lifesciences Holdings</security>
-    <security code="ISYS" currency="USD">Integral Systems Inc.</security>
-    <security code="IDTI" currency="USD">Integrated Device Technology I</security>
-    <security code="INTC" currency="USD">Intel Corp.</security>
-    <security code="IPAR" currency="USD">Inter Parfums Inc.</security>
-    <security code="INTL" currency="USD">Inter-Tel Inc.</security>
-    <security code="IDCC" currency="USD">InterDigital Communications Co</security>
-    <security code="IFCJ" currency="USD">Interchange Financial Services</security>
-    <security code="INAP" currency="USD">Internap Network Services Corp</security>
-    <security code="IBOC" currency="USD">International Bancshares Corp.</security>
-    <security code="ISCA" currency="USD">International Speedway Corp.</security>
-    <security code="ISIL" currency="USD">Intersil Corp.</security>
-    <security code="IBCA" currency="USD">Intervest Bancshares Corp.</security>
-    <security code="INTV" currency="USD">Intervoice Inc.</security>
+    <security code="INDBM" currency="USD">Independent Bank Corp. - Independent Capital Trust IV - 8.375% Cumulative Trust</security>
+    <security code="IBCP" currency="USD">Independent Bank Corporation</security>
+    <security code="IBCPO" currency="USD">Independent Bank Corporation - IBC Capital Finance II - % Cumulative Trust Prefe</security>
+    <security code="NRGP" currency="USD">Inergy Holdings, L.P. - Common Units representing limited partnership interests</security>
+    <security code="NRGY" currency="USD">Inergy, L.P. - Common Units Representing Limited Partnership Interests</security>
+    <security code="IPCC" currency="USD">Infinity Property and Casualty Corporation</security>
+    <security code="INSP" currency="USD">InfoSpace, Inc.</security>
+    <security code="IFOX" currency="USD">Infocrossing, Inc.</security>
+    <security code="INFA" currency="USD">Informatica Corporation</security>
+    <security code="INFY" currency="USD">Infosys Technologies Limited - American Depositary Shares</security>
+    <security code="INKP" currency="USD">Inkine Pharmaceutical Company Inc.</security>
+    <security code="ISSC" currency="USD">Innovative Solutions and Support, Inc.</security>
+    <security code="ICCI" currency="USD">Insight Communications Company, Inc.</security>
+    <security code="NSIT" currency="USD">Insight Enterprises, Inc.</security>
+    <security code="INSU" currency="USD">Insituform Technologies, Inc. - Class A Common Stock</security>
+    <security code="INGP" currency="USD">Instinet Group Incorporated</security>
+    <security code="IART" currency="USD">Integra LifeSciences Holdings Corporation</security>
+    <security code="ISYS" currency="USD">Integral Systems, Inc.</security>
+    <security code="ICST" currency="USD">Integrated Circuit Systems, Inc.</security>
+    <security code="IDTI" currency="USD">Integrated Device Technology, Inc.</security>
+    <security code="INTC" currency="USD">Intel Corporation</security>
+    <security code="IPAR" currency="USD">Inter Parfums, Inc.</security>
+    <security code="INTL" currency="USD">Inter-Tel, Incorporated - Series A Common Stock</security>
+    <security code="IDCC" currency="USD">InterDigital Communications Corp.</security>
+    <security code="INTV" currency="USD">InterVoice Inc.</security>
+    <security code="INAP" currency="USD">Internap Network Services Corporation</security>
+    <security code="IBOC" currency="USD">International Bancshares Corporation</security>
+    <security code="ISCA" currency="USD">International Speedway Corporation - Class A Common Stock</security>
+    <security code="ISIL" currency="USD">Intersil Corporation - Class A Common Stock</security>
+    <security code="IBCA" currency="USD">Intervest Bancshares Corp. - Class A Common Stock</security>
+    <security code="ILNX" currency="USD">IntraLinks, Inc. - common stock</security>
+    <security code="ITRAD" currency="USD">Intraware, Inc.</security>
     <security code="INTU" currency="USD">Intuit Inc.</security>
-    <security code="ISRG" currency="USD">Intuitive Surgical Inc.</security>
-    <security code="ISBC" currency="USD">Investors Bancorp Inc.</security>
-    <security code="IFIN" currency="USD">Investors Financial Services C</security>
-    <security code="IRETS" currency="USD">Investors Real Estate Trust</security>
-    <security code="IVGN" currency="USD">Invitrogen Corp.</security>
-    <security code="ISLE" currency="USD">Isle of Capri Casinos Inc.</security>
-    <security code="ITRI" currency="USD">Itron Inc.</security>
-    <security code="ITRN" currency="USD">Ituran Location &amp; Control Ltd.</security>
+    <security code="ISRG" currency="USD">Intuitive Surgical, Inc.</security>
+    <security code="ISBC" currency="USD">Investors Bancorp, Inc.</security>
+    <security code="IFIN" currency="USD">Investors Financial Services Corp.</security>
+    <security code="IRETP" currency="USD">Investors Real Estate Trust - Series A Cumulative Redeemable Preferred Shares of</security>
+    <security code="IRETS" currency="USD">Investors Real Estate Trust - Shares of Beneficial Interest</security>
+    <security code="IVGN" currency="USD">Invitrogen Corporation</security>
+    <security code="ISLE" currency="USD">Isle of Capri Casinos, Inc.</security>
+    <security code="ITRI" currency="USD">Itron, Inc.</security>
+    <security code="ITRN" currency="USD">Ituran Location and Control Ltd. - Ordinary Shares</security>
     <security code="XXIA" currency="USD">Ixia</security>
-    <security code="JJSF" currency="USD">J&amp;J Snack Foods Corp.</security>
-    <security code="JCOM" currency="USD">J2 Global Communications, Inc.</security>
-    <security code="JAKK" currency="USD">JAKKS Pacific Inc.</security>
-    <security code="JBHT" currency="USD">JB Hunt Transport Services Inc</security>
-    <security code="JDSU" currency="USD">JDS Uniphase Corp.</security>
-    <security code="JKHY" currency="USD">Jack Henry &amp; Associates Inc.</security>
-    <security code="JMBA" currency="USD">Jamba, Inc.</security>
-    <security code="JBLU" currency="USD">JetBlue Airways Corp.</security>
-    <security code="JHFT" currency="USD">John Hancock Financial Trends</security>
-    <security code="JOSB" currency="USD">Jos. A Bank Clothiers Inc.</security>
-    <security code="JOYG" currency="USD">Joy Global, Inc.</security>
-    <security code="JNPR" currency="USD">Juniper Networks, Inc</security>
-    <security code="JUPM" currency="USD">Jupitermedia Corp.</security>
-    <security code="KSWS" currency="USD">K-Swiss Inc.</security>
-    <security code="KHDH" currency="USD">KHD Humboldt Wedag Internation</security>
-    <security code="KLAC" currency="USD">KLA-Tencor Corp.</security>
-    <security code="KOSP" currency="USD">KOS Pharmaceuticals Inc.</security>
-    <security code="KBAY" currency="USD">Kanbay International Inc.</security>
-    <security code="KRNY" currency="USD">Kearny Financial Corp.</security>
-    <security code="KELYA" currency="USD">Kelly Services Inc.</security>
+    <security code="JJSF" currency="USD">J &amp; J Snack Foods Corp.</security>
+    <security code="JBHT" currency="USD">J.B. Hunt Transport Services, Inc.</security>
+    <security code="JAKK" currency="USD">JAKKS Pacific, Inc.</security>
+    <security code="JDSU" currency="USD">JDS Uniphase Corporation</security>
+    <security code="JKHY" currency="USD">Jack Henry &amp; Associates, Inc.</security>
+    <security code="JMBA" currency="USD">Jamba, Inc. Common Stock</security>
+    <security code="JMBAU" currency="USD">Jamba, Inc. Units</security>
+    <security code="JBLU" currency="USD">JetBlue Airways Corporation</security>
+    <security code="JHFT" currency="USD">John Hancock Financial Trends Fund, Inc. - Closed End Fund</security>
+    <security code="JOSB" currency="USD">Jos. A. Bank Clothiers, Inc.</security>
+    <security code="JOYG" currency="USD">Joy Global Inc.</security>
+    <security code="JNPR" currency="USD">Juniper Networks, Inc.</security>
+    <security code="JUPM" currency="USD">Jupitermedia Corporation</security>
+    <security code="KSWS" currency="USD">K-Swiss Inc. - Class A Common Stock</security>
+    <security code="KHDH" currency="USD">KHD Humboldt Wedag International Ltd.</security>
+    <security code="KLAC" currency="USD">KLA-Tencor Corporation</security>
+    <security code="KAMNA" currency="USD">Kaman Corporation - Class A Common Stock</security>
+    <security code="KANAE" currency="USD">Kana Software, Inc.</security>
+    <security code="KBAY" currency="USD">Kanbay International, Inc.</security>
+    <security code="KRNY" currency="USD">Kearny Financial</security>
+    <security code="KELYA" currency="USD">Kelly Services, Inc. - Class A Common Stock</security>
+    <security code="KELYB" currency="USD">Kelly Services, Inc. - Class B Common Stock</security>
     <security code="KNDL" currency="USD">Kendle International Inc.</security>
-    <security code="KNSY" currency="USD">Kensey Nash Corp.</security>
-    <security code="KEYS" currency="USD">Keystone Automotive Industries</security>
-    <security code="KFRC" currency="USD">Kforce Inc.</security>
-    <security code="KBALB" currency="USD">Kimball International Inc.</security>
-    <security code="NITE" currency="USD">Knight Capital Group Inc.</security>
-    <security code="VLCCF" currency="USD">Knightsbridge Tankers Ltd.</security>
-    <security code="KOMG" currency="USD">Komag Inc.</security>
-    <security code="KRON" currency="USD">Kronos, Inc.</security>
+    <security code="KNSY" currency="USD">Kensey Nash Corporation</security>
+    <security code="KEYS" currency="USD">Keystone Automotive Industries, Inc.</security>
+    <security code="KFRC" currency="USD">Kforce, Inc.</security>
+    <security code="KBALB" currency="USD">Kimball International, Inc. - Class B Common Stock</security>
+    <security code="NITE" currency="USD">Knight Capital Group, Inc. - Class A Common Stock</security>
+    <security code="VLCCF" currency="USD">Knightsbridge Tankers, Limited</security>
+    <security code="KCAP" currency="USD">Kohlberg Capital Corporation - common stock</security>
+    <security code="KOMG" currency="USD">Komag, Inc.</security>
+    <security code="KRON" currency="USD">Kronos Incorporated</security>
     <security code="KYPH" currency="USD">Kyphon Inc.</security>
-    <security code="LRCX" currency="USD">LAM Research Corp.</security>
-    <security code="FSTR" currency="USD">LB Foster Co.</security>
+    <security code="FSTR" currency="USD">L.B. Foster Company</security>
     <security code="LCAV" currency="USD">LCA-Vision Inc.</security>
-    <security code="XPRT" currency="USD">LECG Corp.</security>
-    <security code="LKQX" currency="USD">LKQ Corp.</security>
-    <security code="ERIC" currency="USD">LM Ericsson Telephone Co.</security>
-    <security code="LXBK" currency="USD">LSB Bancshares Inc.</security>
+    <security code="XPRT" currency="USD">LECG Corporation</security>
+    <security code="PBIB" currency="USD">LEH  Dec 2006 100.00 call</security>
+    <security code="LKQX" currency="USD">LKQ Corporation - LKQ Corporation Common Stock</security>
+    <security code="ERIC" currency="USD">LM Ericsson Telephone Company - American Depositary Shares</security>
+    <security code="LXBK" currency="USD">LSB Bancshares, Inc.</security>
     <security code="LYTS" currency="USD">LSI Industries Inc.</security>
-    <security code="LBAI" currency="USD">Lakeland Bancorp Inc.</security>
-    <security code="LKFN" currency="USD">Lakeland Financial Corp.</security>
-    <security code="LAMR" currency="USD">Lamar Advertising Co.</security>
-    <security code="LANC" currency="USD">Lancaster Colony Corp.</security>
-    <security code="LNCE" currency="USD">Lance Inc.</security>
-    <security code="LNDC" currency="USD">Landec Corp.</security>
-    <security code="LSTR" currency="USD">Landstar System Inc.</security>
-    <security code="LAUR" currency="USD">Laureate Education Inc.</security>
-    <security code="LAWS" currency="USD">Lawson Products Inc.</security>
-    <security code="LWSN" currency="USD">Lawson Software Inc.</security>
-    <security code="LAYN" currency="USD">Layne Christensen Co.</security>
-    <security code="LMAT" currency="USD">LeMaitre Vascular, Inc.</security>
-    <security code="LEAP" currency="USD">Leap Wireless International In</security>
-    <security code="FLPB" currency="USD">Leesport Financial Corp.</security>
-    <security code="LVLT" currency="USD">Level 3 Communications Inc.</security>
-    <security code="LBTYA" currency="USD">Liberty Global Inc.</security>
-    <security code="LCAPA" currency="USD">Liberty Media Capital</security>
-    <security code="LINTA" currency="USD">Liberty Media Interactive</security>
-    <security code="LIFC" currency="USD">LifeCell Corp.</security>
-    <security code="LPNT" currency="USD">Lifepoint Hospitals Inc.</security>
+    <security code="LJPCD" currency="USD">La Jolla Pharmaceutical Company</security>
+    <security code="LABS" currency="USD">LabOne, Inc.</security>
+    <security code="LBAI" currency="USD">Lakeland Bancorp, Inc.</security>
+    <security code="LKFN" currency="USD">Lakeland Financial Corporation</security>
+    <security code="LRCX" currency="USD">Lam Research Corporation</security>
+    <security code="LAMR" currency="USD">Lamar Advertising Company - Class A Common Stock</security>
+    <security code="LANC" currency="USD">Lancaster Colony Corporation</security>
+    <security code="LNCE" currency="USD">Lance, Inc.</security>
+    <security code="LNDC" currency="USD">Landec Corporation</security>
+    <security code="LSTR" currency="USD">Landstar System, Inc.</security>
+    <security code="LAUR" currency="USD">Laureate Education, Inc.</security>
+    <security code="LAWS" currency="USD">Lawson Products, Inc.</security>
+    <security code="LWSN" currency="USD">Lawson Software, Inc.</security>
+    <security code="LAYN" currency="USD">Layne Christensen Company</security>
+    <security code="LEAP" currency="USD">Leap Wireless International, Inc.</security>
+    <security code="LCGI" currency="USD">Learning Care Group, Inc.</security>
+    <security code="FLPB" currency="USD">Leesport Financial Corporation</security>
+    <security code="LVLT" currency="USD">Level 3 Communications, Inc.</security>
+    <security code="LBTYA" currency="USD">Liberty Global, Inc. - Class A Common Stock</security>
+    <security code="LBTYB" currency="USD">Liberty Global, Inc. - Class B Common Stock</security>
+    <security code="LBTYK" currency="USD">Liberty Global, Inc. - Series C Common Stock</security>
+    <security code="LCAPA" currency="USD">Liberty Media Corporation - Capital Common Series A</security>
+    <security code="LCAPB" currency="USD">Liberty Media Corporation - Capital Common Series B</security>
+    <security code="LINTA" currency="USD">Liberty Media Corporation - Interactive Common Series A</security>
+    <security code="LINTB" currency="USD">Liberty Media Corporation - Interactive Common Series B</security>
+    <security code="LIFC" currency="USD">LifeCell Corporation</security>
+    <security code="LPNT" currency="USD">LifePoint Hospitals, Inc.</security>
+    <security code="LCBM" currency="USD">Lifecore Biomedical, Inc.</security>
     <security code="LCUT" currency="USD">Lifetime Brands, Inc.</security>
-    <security code="LIHR" currency="USD">Lihir Gold Ltd.</security>
+    <security code="LGNDE" currency="USD">Ligand Pharmaceuticals Incorporated</security>
+    <security code="LIHR" currency="USD">Lihir Gold, Limited - American Depositary Shares</security>
     <security code="LNCR" currency="USD">Lincare Holdings Inc.</security>
-    <security code="LECO" currency="USD">Lincoln Electric Holdings Inc.</security>
-    <security code="LLTC" currency="USD">Linear Technology Corp.</security>
-    <security code="LFUS" currency="USD">Littelfuse Inc.</security>
-    <security code="LOJN" currency="USD">LoJack Corp.</security>
-    <security code="LOGI" currency="USD">Logitech International SA</security>
-    <security code="STAR" currency="USD">Lone Star Steakhouse &amp; Saloon</security>
-    <security code="LUFK" currency="USD">Lufkin Industries Inc.</security>
-    <security code="MAFB" currency="USD">MAF Bancorp Inc.</security>
+    <security code="LECO" currency="USD">Lincoln Electric Holdings, Inc. - Common Shares</security>
+    <security code="LLTC" currency="USD">Linear Technology Corporation</security>
+    <security code="LPMA" currency="USD">Lipman Electronic Engineering Ltd. Ordinary Shares</security>
+    <security code="LFUS" currency="USD">Littelfuse, Inc.</security>
+    <security code="LOJN" currency="USD">LoJack Corporation</security>
+    <security code="LOGI" currency="USD">Logitech International S.A. - Registered Shares</security>
+    <security code="LICB" currency="USD">Long Island Financial Corp.</security>
+    <security code="LOOKD" currency="USD">LookSmart, Ltd.</security>
+    <security code="LUFK" currency="USD">Lufkin Industries, Inc.</security>
+    <security code="MBTF" currency="USD">M B T Financial Corp</security>
+    <security code="MAFB" currency="USD">MAF Bancorp, Inc.</security>
     <security code="MASB" currency="USD">MASSBANK Corp.</security>
     <security code="MBFI" currency="USD">MB Financial Inc.</security>
-    <security code="MBTF" currency="USD">MBT Financial Corp.</security>
-    <security code="MCGC" currency="USD">MCG Capital Corporation</security>
-    <security code="MDCA" currency="USD">MDC Partners Inc.</security>
+    <security code="MBFIP" currency="USD">MB Financial Inc. - MB Financial Capital Trust I -8.60% Cumulative Trust Preferr</security>
+    <security code="MCGC" currency="USD">MCG Capital Corporation - Closed End Fund</security>
+    <security code="MCIP" currency="USD">MCI, Inc.</security>
+    <security code="MDCA" currency="USD">MDC Partners Inc. - Class A Subordinate Voting Shares</security>
+    <security code="MDSI" currency="USD">MDSI Mobile Data Solutions, Inc.</security>
+    <security code="OCNW" currency="USD">MDT  Dec 2006 57.50 put</security>
+    <security code="MXBIF" currency="USD">MFC Bancorp Ltd.</security>
     <security code="MGEE" currency="USD">MGE Energy Inc.</security>
-    <security code="MOGN" currency="USD">MGI Pharma Inc.</security>
-    <security code="MGPI" currency="USD">MGP Ingredients Inc.</security>
-    <security code="MKSI" currency="USD">MKS Instruments Inc.</security>
-    <security code="UNCL" currency="USD">MRU Holdings Inc.</security>
-    <security code="MSCS" currency="USD">MSC Software Corp.</security>
-    <security code="MTCT" currency="USD">MTC Technologies Inc.</security>
-    <security code="MNTG" currency="USD">MTR Gaming Group Inc.</security>
-    <security code="MTSC" currency="USD">MTS Systems Corp.</security>
-    <security code="MWIV" currency="USD">MWI Veterinary Supply, Inc.</security>
-    <security code="MCBC" currency="USD">Macatawa Bank Corp.</security>
-    <security code="MXIC" currency="USD">Macronix International Co. Ltd</security>
-    <security code="MVSN" currency="USD">Macrovision Corp.</security>
-    <security code="MGLN" currency="USD">Magellan Health Services Inc.</security>
-    <security code="MSFG" currency="USD">Mainsource Financial Group</security>
-    <security code="MKTAY" currency="USD">Makita Corp.</security>
-    <security code="MANT" currency="USD">ManTech International Corp.</security>
-    <security code="MANH" currency="USD">Manhattan Associates Inc.</security>
-    <security code="MTEX" currency="USD">Mannatech Inc.</security>
-    <security code="MKTX" currency="USD">MarketAxess Holdings Inc.</security>
-    <security code="MATK" currency="USD">Martek Biosciences Corp.</security>
-    <security code="MRTN" currency="USD">Marten Transport Ltd.</security>
-    <security code="MMLP" currency="USD">Martin Midstream Partners LP</security>
-    <security code="MRVL" currency="USD">Marvell Technology Group Ltd.</security>
-    <security code="MATR" currency="USD">Matria Healthcare Inc.</security>
+    <security code="MOGN" currency="USD">MGI PHARMA, Inc.</security>
+    <security code="MGPI" currency="USD">MGP Ingredients, Inc.</security>
+    <security code="MCRS" currency="USD">MICROS Systems, Inc.</security>
+    <security code="MKSI" currency="USD">MKS Instruments, Inc.</security>
+    <security code="MSBF" currency="USD">MSB Financial Corp.</security>
+    <security code="MSCS" currency="USD">MSC.Software Corporation</security>
+    <security code="MTCT" currency="USD">MTC Technologies, Inc. - COMMON STOCK</security>
+    <security code="MNTG" currency="USD">MTR Gaming Group, Inc.</security>
+    <security code="MTSC" currency="USD">MTS Systems Corporation</security>
+    <security code="MWIV" currency="USD">MWI Veterinary Supply, Inc. - common stock</security>
+    <security code="MCBC" currency="USD">Macatawa Bank Corporation</security>
+    <security code="MACR" currency="USD">Macromedia, Inc.</security>
+    <security code="MXIC" currency="USD">Macronix International Co. Ltd - American Depositary Shares</security>
+    <security code="MVSN" currency="USD">Macrovision Corporation</security>
+    <security code="MGLN" currency="USD">Magellan Health Services, Inc.</security>
+    <security code="MSFG" currency="USD">MainSource Financial Group, Inc.</security>
+    <security code="MKTAY" currency="USD">Makita Corp. - American Depositary Shares</security>
+    <security code="MANT" currency="USD">ManTech International Corporation</security>
+    <security code="MANH" currency="USD">Manhattan Associates, Inc.</security>
+    <security code="MTEX" currency="USD">Mannatech, Incorporated</security>
+    <security code="MRCIY" currency="USD">Marconi Corporation - American Depositary Shares</security>
+    <security code="MKTX" currency="USD">MarketAxess Holdings, Inc. - common stock</security>
+    <security code="MATK" currency="USD">Martek Biosciences Corporation</security>
+    <security code="MRTN" currency="USD">Marten Transport, Ltd.</security>
+    <security code="MMLP" currency="USD">Martin Midstream Partners L.P. - Common Units Representing Limited Partnership I</security>
+    <security code="MRVL" currency="USD">Marvell Technology Group, Ltd.</security>
+    <security code="MATR" currency="USD">Matria Healthcare, Inc.</security>
+    <security code="MONEE" currency="USD">MatrixOne, Inc.</security>
     <security code="MTXX" currency="USD">Matrixx Initiatives Inc.</security>
-    <security code="MATW" currency="USD">Matthews International Corp.</security>
+    <security code="MATW" currency="USD">Matthews International Corporation - Class A Common Stock</security>
     <security code="MXRE" currency="USD">Max Re Capital Ltd.</security>
-    <security code="MXIM" currency="USD">Maxim Integrated Products Inc.</security>
-    <security code="MCDTA" currency="USD">McDATA Corp.</security>
-    <security code="MGRC" currency="USD">McGrath Rentcorp</security>
-    <security code="MEDI" currency="USD">MedImmune Inc.</security>
+    <security code="MXIM" currency="USD">Maxim Integrated Products, Inc.</security>
+    <security code="MAXM" currency="USD">Maxim Pharmaceuticals, Inc.</security>
+    <security code="MCDTA" currency="USD">McDATA Corporation - Class A Common Stock</security>
+    <security code="MCDT" currency="USD">McDATA Corporation - Class B Common Stock</security>
+    <security code="MGRC" currency="USD">McGrath RentCorp</security>
+    <security code="MEDI" currency="USD">MedImmune, Inc.</security>
     <security code="TAXI" currency="USD">Medallion Financial Corp.</security>
-    <security code="MCCC" currency="USD">Mediacom Communications Corp.</security>
+    <security code="MCCC" currency="USD">Mediacom Communications Corporation - Class A Common Stock</security>
     <security code="MDCI" currency="USD">Medical Action Industries Inc.</security>
-    <security code="MDCO" currency="USD">Medicines Co.</security>
-    <security code="MENT" currency="USD">Mentor Graphics Corp.</security>
-    <security code="MBWM" currency="USD">Mercantile Bank Corp.</security>
-    <security code="MRBK" currency="USD">Mercantile Bankshares Corp.</security>
-    <security code="MRCY" currency="USD">Mercury Computer Systems Inc.</security>
+    <security code="MDCO" currency="USD">Medicines Company (The)</security>
+    <security code="MDKI" currency="USD">Medicore, Inc.</security>
+    <security code="MLNX" currency="USD">Mellanox Technologies, Ltd. Ordinary Shares</security>
+    <security code="MENT" currency="USD">Mentor Graphics Corporation</security>
+    <security code="MBWM" currency="USD">Mercantile Bank Corporation</security>
+    <security code="MRBK" currency="USD">Mercantile Bankshares Corporation</security>
+    <security code="MRCY" currency="USD">Mercury Computer Systems</security>
+    <security code="MERQE" currency="USD">Mercury Interactive Corporation</security>
     <security code="VIVO" currency="USD">Meridian Bioscience Inc.</security>
-    <security code="MMSI" currency="USD">Merit Medical Systems Inc.</security>
-    <security code="MESA" currency="USD">Mesa Air Group Inc.</security>
-    <security code="MEOH" currency="USD">Methanex Corp.</security>
-    <security code="METH" currency="USD">Methode Electronics Inc.</security>
-    <security code="MTLG" currency="USD">Metrologic Instruments Inc.</security>
-    <security code="MCRL" currency="USD">Micrel Inc.</security>
-    <security code="MSTR" currency="USD">MicroStrategy Inc.</security>
-    <security code="MCHP" currency="USD">Microchip Technology Inc.</security>
-    <security code="MCRS" currency="USD">Micros Systems Inc.</security>
-    <security code="MSCC" currency="USD">Microsemi Corp.</security>
-    <security code="MSFT" currency="USD">Microsoft Corp.</security>
-    <security code="MTMD" currency="USD">Microtek Medical Holdings Inc.</security>
+    <security code="MMSI" currency="USD">Merit Medical Systems, Inc.</security>
+    <security code="ARRU" currency="USD">Merrill Lynch &amp; Co., Inc. - ARN Linked to the Russell 2000 Index</security>
+    <security code="MRSS" currency="USD">Merrill Lynch &amp; Co., Inc. - ARNs linked to S&amp;P 500 due January 2006</security>
+    <security code="MESA" currency="USD">Mesa Air Group, Inc.</security>
+    <security code="MUSA" currency="USD">Metals USA, Inc. New</security>
+    <security code="MUSAW" currency="USD">Metals USA, Inc. New - Warrants, Expiring 10/31/2007</security>
+    <security code="MEOH" currency="USD">Methanex Corporation</security>
+    <security code="METH" currency="USD">Methode Electronics, Inc.</security>
+    <security code="MCRL" currency="USD">Micrel, Incorporated</security>
+    <security code="MTIX" currency="USD">Micro Therapeutics, Inc.</security>
+    <security code="MSTR" currency="USD">MicroStrategy Incorporated</security>
+    <security code="MSTRW" currency="USD">MicroStrategy Incorporated - Warrants to Purchase Class A Common Stock</security>
+    <security code="MCHP" currency="USD">Microchip Technology Incorporated</security>
+    <security code="MSCC" currency="USD">Microsemi Corporation</security>
+    <security code="MSFT" currency="USD">Microsoft Corporation</security>
+    <security code="MTMD" currency="USD">Microtek Medical Holdings Inc</security>
     <security code="MDST" currency="USD">Mid-State Bancshares</security>
-    <security code="MIDD" currency="USD">Middleby Corp.</security>
-    <security code="MSEX" currency="USD">Middlesex Water Co.</security>
-    <security code="MLAN" currency="USD">Midland Co.</security>
-    <security code="MLEA" currency="USD">Millea Holdings Inc.</security>
-    <security code="MLNM" currency="USD">Millennium Pharmaceuticals Inc</security>
-    <security code="MICC" currency="USD">Millicom International Cellula</security>
+    <security code="MIDD" currency="USD">Middleby Corporation (The)</security>
+    <security code="MSEX" currency="USD">Middlesex Water Company</security>
+    <security code="MLAN" currency="USD">Midland Company (The)</security>
+    <security code="MLEA" currency="USD">Millea Holdings Inc. ADR - American Depositary Shares</security>
+    <security code="MLNM" currency="USD">Millennium Pharmaceuticals, Inc.</security>
+    <security code="MICC" currency="USD">Millicom International Cellular S.A.</security>
+    <security code="MITSY" currency="USD">Mitsui &amp; Company, Ltd. - American Depositary Shares</security>
     <security code="MINI" currency="USD">Mobile Mini, Inc.</security>
     <security code="MFLO" currency="USD">Moldflow Corporation</security>
-    <security code="MDCC" currency="USD">Molecular Devices Corp.</security>
-    <security code="MOLX" currency="USD">Molex Inc.</security>
-    <security code="MCRI" currency="USD">Monarch Casino &amp; Resort Inc.</security>
-    <security code="MNRTA" currency="USD">Monmouth Real Estate Investmen</security>
-    <security code="MNRO" currency="USD">Monro Muffler Brake Inc.</security>
-    <security code="MNST" currency="USD">Monster Worldwide Inc.</security>
-    <security code="MORN" currency="USD">Morningstar Inc.</security>
+    <security code="MDCC" currency="USD">Molecular Devices Corporation</security>
+    <security code="MIPI" currency="USD">Molecular Insight</security>
+    <security code="MOLX" currency="USD">Molex Incorporated</security>
+    <security code="MOLXA" currency="USD">Molex Incorporated - Class A Common Stock</security>
+    <security code="MCRI" currency="USD">Monarch Casino &amp; Resort, Inc.</security>
+    <security code="MNRTP" currency="USD">Monmouth Real Estate Investment Corporation - 7.625% Series A Cumulative Redeema</security>
+    <security code="MNRTA" currency="USD">Monmouth Real Estate Investment Corporation - Class A Common Stock</security>
+    <security code="MNRO" currency="USD">Monro Muffler Brake, Inc.</security>
+    <security code="MNST" currency="USD">Monster Worldwide, Inc.</security>
+    <security code="NBXZ" currency="USD">Morgan Stanley - Morgan Stanley Strategic Total Return Securites</security>
+    <security code="MORN" currency="USD">Morningstar, Inc.</security>
     <security code="MOVE" currency="USD">Move, Inc.</security>
-    <security code="MFLX" currency="USD">Multi-Fineline Electronix Inc.</security>
-    <security code="MGAM" currency="USD">Multimedia Games Inc.</security>
-    <security code="MYGN" currency="USD">Myriad Genetics Inc.</security>
-    <security code="NDAQ" currency="USD">NASDAQ Stock Market, Inc.</security>
+    <security code="MFLX" currency="USD">Multi-Fineline Electronix, Inc.</security>
+    <security code="MGAM" currency="USD">Multimedia Games, Inc.</security>
+    <security code="MYGN" currency="USD">Myriad Genetics, Inc.</security>
+    <security code="$IXTC" currency="USD">NASDAQ                       TELECOMM INDEX</security>
+    <security code="$CND" currency="USD">NASDAQ CANADA INDEX INDEX</security>
+    <security code="$CLEN" currency="USD">NASDAQ Clean Edge US Index</security>
+    <security code="$CLNX" currency="USD">NASDAQ Clean Edge US Total Return Index</security>
+    <security code="$COMPX" currency="USD">NASDAQ Composite Index</security>
+    <security code="$ADVQE" currency="USD">NASDAQ NMS Advance</security>
+    <security code="$ADDIFFQE" currency="USD">NASDAQ NMS Advance Decline Difference</security>
+    <security code="$DECQE" currency="USD">NASDAQ NMS Decline</security>
+    <security code="$DVOQE" currency="USD">NASDAQ NMS Down Volume / 1000</security>
+    <security code="$ISSQE" currency="USD">NASDAQ NMS Issues Traded</security>
+    <security code="$TICQE" currency="USD">NASDAQ NMS Tick</security>
+    <security code="$TRIQE" currency="USD">NASDAQ NMS Trin</security>
+    <security code="$UNCQE" currency="USD">NASDAQ NMS Unchanged</security>
+    <security code="$UVOQE" currency="USD">NASDAQ NMS Up Volume / 1000</security>
+    <security code="$VOLQE" currency="USD">NASDAQ NMS Volume / 1000</security>
+    <security code="QQQX" currency="USD">NASDAQ Premium Income and Growth Fund Inc.</security>
+    <security code="$QIV" currency="USD">NASDAQ100AFTER HRS INDICATOR INDEX</security>
+    <security code="$QMI" currency="USD">NASDAQ100PREMARKET INDICATOR INDEX</security>
     <security code="NBTB" currency="USD">NBT Bancorp Inc.</security>
-    <security code="NNDS" currency="USD">NDS Group plc</security>
-    <security code="NIPNY" currency="USD">NEC Corp.</security>
-    <security code="NGAS" currency="USD">NGAS Resources Inc.</security>
-    <security code="NGPC" currency="USD">NGP Capital Resources Company</security>
+    <security code="NNDS" currency="USD">NDS Group plc. - American Depositary Shares</security>
+    <security code="NIPNY" currency="USD">NEC Corporation - American Depositary Shares</security>
+    <security code="NTGR" currency="USD">NETGEAR, Inc. - Netgear, Inc. Common Stock</security>
+    <security code="NGAS" currency="USD">NGAS Resources, Inc.</security>
+    <security code="NGPC" currency="USD">NGP Capital Resources Company - Closed End Fund</security>
     <security code="EGOV" currency="USD">NIC Inc.</security>
-    <security code="NICE" currency="USD">NICE Systems Ltd.</security>
-    <security code="NIHD" currency="USD">NII Holdings Inc.</security>
-    <security code="NNBR" currency="USD">NN Inc.</security>
+    <security code="NICE" currency="USD">NICE-Systems Limited - American Depositary Shares</security>
+    <security code="NIHD" currency="USD">NII Holdings, Inc.</security>
+    <security code="NNBR" currency="USD">NN, Inc.</security>
     <security code="NTLI" currency="USD">NTL Incorporated</security>
-    <security code="NVDA" currency="USD">NVIDIA Corp.</security>
-    <security code="NSSC" currency="USD">Napco Security Systems Inc.</security>
-    <security code="NARA" currency="USD">Nara Bancorp Inc.</security>
-    <security code="NAFC" currency="USD">Nash Finch Co.</security>
-    <security code="NATI" currency="USD">National Instruments Corp.</security>
-    <security code="NPBC" currency="USD">National Penn Bancshares Inc.</security>
-    <security code="NWLIA" currency="USD">National Western Life Insuranc</security>
-    <security code="NAVG" currency="USD">Navigators Group Inc.</security>
+    <security code="NTLIW" currency="USD">NTL Incorporated - Series A Warrants</security>
+    <security code="NVDA" currency="USD">NVIDIA Corporation</security>
+    <security code="NYFXE" currency="USD">NYFIX, Inc.</security>
+    <security code="NSSC" currency="USD">Napco Security Systems, Inc.</security>
+    <security code="NARA" currency="USD">Nara Bancorp, Inc.</security>
+    <security code="$NDX" currency="USD">Nasdaq 100 Index</security>
+    <security code="$NBI" currency="USD">Nasdaq Biotechnology Index</security>
+    <security code="$IXCO" currency="USD">Nasdaq Computer Index</security>
+    <security code="NDAQ" currency="USD">Nasdaq Stock Market, Inc. (The)</security>
+    <security code="$NETR" currency="USD">Nasdaq-100 Equal Weighted Total Return Index</security>
+    <security code="$NXTR" currency="USD">Nasdaq-100 Ex-Tech Sector Total Return Index</security>
+    <security code="$NTTR" currency="USD">Nasdaq-100 Technology Sector Total Return Index</security>
+    <security code="NAFC" currency="USD">Nash-Finch Company</security>
+    <security code="NCMI" currency="USD">National CineMedia, Inc. Common Stock</security>
+    <security code="NATI" currency="USD">National Instruments Corporation</security>
+    <security code="NPBC" currency="USD">National Penn Bancshares, Inc.</security>
+    <security code="NPBCO" currency="USD">National Penn Bancshares, Inc. - NPB Capital Trust II - 7.85% Cumulative Trust P</security>
+    <security code="NWLIA" currency="USD">National Western Life Insurance Company - Class A Common Stock</security>
+    <security code="NAVRE" currency="USD">Navarre Corporation</security>
+    <security code="NAVG" currency="USD">Navigators Group, Inc. (The)</security>
     <security code="NKTR" currency="USD">Nektar Therapeutics</security>
-    <security code="NEOG" currency="USD">Neogen Corp.</security>
+    <security code="NMGCD" currency="USD">NeoMagic Corporation</security>
+    <security code="NEOG" currency="USD">Neogen Corporation</security>
     <security code="NWRE" currency="USD">Neoware, Inc.</security>
-    <security code="NSTC" currency="USD">Ness Technologies Inc.</security>
-    <security code="UEPS" currency="USD">Net 1 Ueps Technologies Inc.</security>
-    <security code="NTES" currency="USD">Netease.com Inc.</security>
+    <security code="NSTC" currency="USD">Ness Technologies, Inc.</security>
+    <security code="UEPS" currency="USD">Net 1 UEPS Technologies, Inc.</security>
+    <security code="NTES" currency="USD">Netease.com, Inc. - American Depositary Shares</security>
     <security code="NFLX" currency="USD">Netflix, Inc.</security>
-    <security code="NTGR" currency="USD">Netgear Inc.</security>
-    <security code="NTAP" currency="USD">Network Appliance Inc.</security>
-    <security code="NBIX" currency="USD">Neurocrine Biosciences Inc.</security>
-    <security code="NOOF" currency="USD">New Frontier Media Inc.</security>
-    <security code="NEWT" currency="USD">Newtek Business Services Inc.</security>
-    <security code="NICK" currency="USD">Nicholas Financial Inc.</security>
-    <security code="NOBL" currency="USD">Noble International Ltd.</security>
-    <security code="NDSN" currency="USD">Nordson Corp.</security>
-    <security code="NPSI" currency="USD">North Pittsburgh Systems Inc.</security>
+    <security code="NTAP" currency="USD">Network Appliance, Inc.</security>
+    <security code="NBIX" currency="USD">Neurocrine Biosciences, Inc.</security>
+    <security code="NOOF" currency="USD">New Frontier Media, Inc.</security>
+    <security code="NVAL" currency="USD">New Valley Corporation</security>
+    <security code="WAVEV" currency="USD">Nextwave Wireless Inc Common Stock When Issued</security>
+    <security code="NICK" currency="USD">Nicholas Financial, Inc.</security>
+    <security code="NOBL" currency="USD">Noble International, Ltd.</security>
+    <security code="NDSN" currency="USD">Nordson Corporation</security>
+    <security code="NPSI" currency="USD">North Pittsburgh Systems, Inc.</security>
     <security code="NOVB" currency="USD">North Valley Bancorp</security>
-    <security code="NTRS" currency="USD">Northern Trust Corp.</security>
-    <security code="NRIM" currency="USD">Northrim Bancorp Inc.</security>
-    <security code="NWSB" currency="USD">Northwest Bancorp Inc.</security>
-    <security code="NWPX" currency="USD">Northwest Pipe Co.</security>
-    <security code="NWEC" currency="USD">Northwestern Corp.</security>
-    <security code="NGPS" currency="USD">NovAtel Inc.</security>
-    <security code="NOVA" currency="USD">NovaMed Inc.</security>
-    <security code="NOVL" currency="USD">Novell Inc.</security>
-    <security code="NVLS" currency="USD">Novellus Systems Inc.</security>
-    <security code="NOVN" currency="USD">Noven Pharmaceuticals Inc.</security>
+    <security code="NWEC" currency="USD">NorthWestern Corporation - Common stock</security>
+    <security code="NWECW" currency="USD">NorthWestern Corporation - Warrant for 1 common stock at an exer. price of $28.4</security>
+    <security code="NTRS" currency="USD">Northern Trust Corporation</security>
+    <security code="NRIM" currency="USD">Northrim BanCorp Inc</security>
+    <security code="NWSB" currency="USD">Northwest Bancorp, Inc.</security>
+    <security code="NWPX" currency="USD">Northwest Pipe Company</security>
+    <security code="NGPS" currency="USD">NovAtel Inc. - Common Shares</security>
+    <security code="NOVA" currency="USD">NovaMed, Inc.</security>
+    <security code="NOVL" currency="USD">Novell, Inc.</security>
+    <security code="NVLS" currency="USD">Novellus Systems, Inc.</security>
+    <security code="NOVN" currency="USD">Noven Pharmaceuticals, Inc.</security>
     <security code="NUCO" currency="USD">NuCo2 Inc.</security>
     <security code="NUAN" currency="USD">Nuance Communications, Inc.</security>
-    <security code="NUTR" currency="USD">Nutraceutical International Co</security>
-    <security code="NTRI" currency="USD">NutriSystem Inc.</security>
-    <security code="OIIM" currency="USD">O2Micro International Ltd.</security>
-    <security code="ONNN" currency="USD">ON Semiconductor Corp.</security>
+    <security code="NUTR" currency="USD">Nutraceutical International Corporation</security>
+    <security code="NTRI" currency="USD">NutriSystem Inc</security>
+    <security code="OIIM" currency="USD">O2Micro International Limited - American Depositary Shares</security>
+    <security code="ONNN" currency="USD">ON Semiconductor Corporation</security>
     <security code="OPNT" currency="USD">OPNET Technologies Inc.</security>
+    <security code="OPTN" currency="USD">OPTION CARE, Inc.</security>
     <security code="OSIP" currency="USD">OSI Pharmaceuticals Inc.</security>
-    <security code="OAKF" currency="USD">Oak Hill Financial Inc.</security>
-    <security code="OCNW" currency="USD">Occam Networks Inc.</security>
+    <security code="OAKF" currency="USD">Oak Hill Financial, Inc.</security>
     <security code="OCFC" currency="USD">OceanFirst Financial Corp.</security>
-    <security code="ODSY" currency="USD">Odyssey Healthcare Inc.</security>
-    <security code="OCAS" currency="USD">Ohio Casualty Corp.</security>
-    <security code="ODFL" currency="USD">Old Dominion Freight Line Inc.</security>
-    <security code="OSBC" currency="USD">Old Second Bancorp Inc.</security>
-    <security code="OMEF" currency="USD">Omega Financial Corp. (PA)</security>
-    <security code="OVTI" currency="USD">OmniVision Technologies Inc.</security>
-    <security code="ORCC" currency="USD">Online Resources Corp.</security>
-    <security code="OPEN" currency="USD">Open Solutions Inc.</security>
-    <security code="OTEX" currency="USD">Open Text Corp.</security>
-    <security code="OPWV" currency="USD">Openwave Systems Inc.</security>
-    <security code="OPTN" currency="USD">Option Care Inc.</security>
+    <security code="ODSY" currency="USD">Odyssey Healthcare, Inc.</security>
+    <security code="OCAS" currency="USD">Ohio Casualty Corporation</security>
+    <security code="ODFL" currency="USD">Old Dominion Freight Line, Inc.</security>
+    <security code="OSBC" currency="USD">Old Second Bancorp, Inc.</security>
+    <security code="OSBCP" currency="USD">Old Second Bancorp, Inc. - 7.80% Cumulative Trust Preferred Securities</security>
+    <security code="OMEF" currency="USD">Omega Financial Corporation</security>
+    <security code="OVTI" currency="USD">OmniVision Technologies, Inc.</security>
+    <security code="ORCC" currency="USD">Online Resources Corporation</security>
+    <security code="OTEX" currency="USD">Open Text Corporation - Common Shares</security>
+    <security code="OPWV" currency="USD">Openwave Systems Inc</security>
+    <security code="OPLKD" currency="USD">Oplink Communications, Inc.</security>
+    <security code="OPTR" currency="USD">Optimer Pharmaceuticals, Inc. Common Stock</security>
     <security code="OPTM" currency="USD">Optium Corporation</security>
-    <security code="ORCL" currency="USD">Oracle Corp.</security>
-    <security code="ORBK" currency="USD">Orbotech Ltd.</security>
-    <security code="OFIX" currency="USD">Orthofix International NV</security>
-    <security code="OTTR" currency="USD">Otter Tail Corp.</security>
-    <security code="OVRL" currency="USD">Overland Storage Inc.</security>
-    <security code="PABK" currency="USD">PAB Bankshares Inc.</security>
-    <security code="PDLI" currency="USD">PDL BioPharma Inc.</security>
-    <security code="PMCS" currency="USD">PMC-Sierra Inc.</security>
+    <security code="ORCL" currency="USD">Oracle Corporation</security>
+    <security code="ORBK" currency="USD">Orbotech Ltd. - Ordinary Shares</security>
+    <security code="SEEDW" currency="USD">Origin Agritech Limited - Warrant</security>
+    <security code="SEEDU" currency="USD">Origin Agritech Limited - unit</security>
+    <security code="OFIX" currency="USD">Orthofix International N.V.</security>
+    <security code="OTTR" currency="USD">Otter Tail Corporation</security>
+    <security code="OVRL" currency="USD">Overland Storage, Inc.</security>
+    <security code="PABK" currency="USD">PAB Bankshares, Inc.</security>
+    <security code="PCAR" currency="USD">PACCAR Inc.</security>
+    <security code="PRXL" currency="USD">PAREXEL International Corporation</security>
+    <security code="PDLI" currency="USD">PDL BioPharma, Inc.</security>
+    <security code="PETM" currency="USD">PETsMART, Inc.</security>
+    <security code="PMCS" currency="USD">PMC - Sierra, Inc.</security>
     <security code="PRAI" currency="USD">PRA International</security>
+    <security code="PRCSD" currency="USD">PRAECIS PHARMACEUTICALS INCORPORATED</security>
     <security code="PSSI" currency="USD">PSS World Medical Inc.</security>
-    <security code="PCAR" currency="USD">Paccar Inc.</security>
-    <security code="PACR" currency="USD">Pacer International Inc.</security>
+    <security code="PACR" currency="USD">Pacer International, Inc. - Common stock</security>
     <security code="PCBC" currency="USD">Pacific Capital Bancorp</security>
     <security code="PMBC" currency="USD">Pacific Mercantile Bancorp</security>
-    <security code="PSUN" currency="USD">Pacific Sunwear of California</security>
-    <security code="PKTR" currency="USD">Packeteer Inc.</security>
+    <security code="PSUN" currency="USD">Pacific Sunwear of California, Inc.</security>
+    <security code="PKTR" currency="USD">Packeteer, Inc.</security>
     <security code="PALM" currency="USD">Palm, Inc.</security>
-    <security code="PMTI" currency="USD">Palomar Medical Technologies I</security>
+    <security code="PMTI" currency="USD">Palomar Medical Technologies, Inc.</security>
     <security code="PAAS" currency="USD">Pan American Silver Corp.</security>
-    <security code="PNRA" currency="USD">Panera Bread Co.</security>
-    <security code="PTRY" currency="USD">Pantry Inc.</security>
-    <security code="PMTC" currency="USD">Parametric Technology Corp.</security>
-    <security code="PRXL" currency="USD">Parexel International Corp.</security>
-    <security code="PVSA" currency="USD">Parkvale Financial Corp.</security>
-    <security code="PARL" currency="USD">Parlux Fragrances Inc.</security>
-    <security code="PTNR" currency="USD">Partner Communications Co. Ltd</security>
-    <security code="PRTR" currency="USD">Partners Trust Financial Group</security>
+    <security code="PNRA" currency="USD">Panera Bread Company - Class A Common Stock</security>
+    <security code="PTRY" currency="USD">Pantry, Inc. (The)</security>
+    <security code="PMTC" currency="USD">Parametric Technology Corporation</security>
+    <security code="PVSA" currency="USD">Parkvale Financial Corporation</security>
+    <security code="PARL" currency="USD">Parlux Fragrances, Inc.</security>
+    <security code="PTNR" currency="USD">Partner Communications Company Ltd. - American Depositary Shares</security>
+    <security code="PRTR" currency="USD">Partners Trust Financial Group, Inc.</security>
     <security code="PCAP" currency="USD">Patriot Capital Funding, Inc.</security>
     <security code="PDCO" currency="USD">Patterson Companies Inc.</security>
-    <security code="PTEN" currency="USD">Patterson-UTI Energy Inc.</security>
-    <security code="PAYX" currency="USD">Paychex Inc.</security>
+    <security code="PTEN" currency="USD">Patterson-UTI Energy, Inc.</security>
+    <security code="PAYX" currency="USD">Paychex, Inc.</security>
     <security code="PEGA" currency="USD">Pegasystems Inc.</security>
-    <security code="PENN" currency="USD">Penn National Gaming Inc.</security>
-    <security code="COBH" currency="USD">Pennsylvania Commerce Bancorp</security>
+    <security code="PENN" currency="USD">Penn National Gaming, Inc.</security>
+    <security code="COBH" currency="USD">Pennsylvania Commerce Bancorp, Inc.</security>
     <security code="PEBO" currency="USD">Peoples Bancorp Inc.</security>
-    <security code="PSTI" currency="USD">Per-Se Technologies Inc.</security>
-    <security code="PRFT" currency="USD">Perficient Inc.</security>
-    <security code="PFGC" currency="USD">Performance Food Group Co.</security>
-    <security code="PRGO" currency="USD">Perrigo Co.</security>
+    <security code="PRFT" currency="USD">Perficient, Inc.</security>
+    <security code="PFGC" currency="USD">Performance Food Group Company</security>
+    <security code="PRGO" currency="USD">Perrigo Company</security>
     <security code="PERY" currency="USD">Perry Ellis International Inc.</security>
-    <security code="PETS" currency="USD">PetMed Express Inc.</security>
-    <security code="HAWK" currency="USD">Petrohawk Energy Corp.</security>
-    <security code="PETD" currency="USD">Petroleum Development Corp.</security>
-    <security code="PETM" currency="USD">Petsmart Inc.</security>
-    <security code="PDGI" currency="USD">PharmaNet Development Group, I</security>
-    <security code="PPDI" currency="USD">Pharmaceutical Product Develop</security>
-    <security code="PHLY" currency="USD">Philadelphia Consolidated Hold</security>
-    <security code="PLAB" currency="USD">Photronics Inc.</security>
-    <security code="FACE" currency="USD">Physicians Formula Holdings In</security>
-    <security code="PNFP" currency="USD">Pinnacle Financial Partners In</security>
+    <security code="PETS" currency="USD">PetMed Express, Inc.</security>
+    <security code="HAWK" currency="USD">Petrohawk Energy Corporation</security>
+    <security code="PETD" currency="USD">Petroleum Development Corporation</security>
+    <security code="PDGI" currency="USD">PharmaNet Development Group, Inc.</security>
+    <security code="PPDI" currency="USD">Pharmaceutical Product Development, Inc.</security>
+    <security code="PHLY" currency="USD">Philadelphia Consolidated Holding Corp.</security>
+    <security code="PLAB" currency="USD">Photronics, Inc.</security>
+    <security code="FACE" currency="USD">Physicians Formula Holdings, Inc.</security>
+    <security code="PNFP" currency="USD">Pinnacle Financial Partners, Inc.</security>
     <security code="PLSB" currency="USD">Placer Sierra Bancshares</security>
     <security code="PLXS" currency="USD">Plexus Corp.</security>
-    <security code="PLMD" currency="USD">PolyMedica Corp.</security>
+    <security code="PLUM" currency="USD">Plumtree Software, Inc.</security>
+    <security code="PLMD" currency="USD">PolyMedica Corporation</security>
     <security code="PLCM" currency="USD">Polycom, Inc.</security>
-    <security code="POOL" currency="USD">Pool Corp</security>
-    <security code="BPOP" currency="USD">Popular Inc.</security>
-    <security code="PLAY" currency="USD">PortalPlayer Inc.</security>
-    <security code="PBIB" currency="USD">Porter Bancorp Inc.</security>
-    <security code="PRAA" currency="USD">Portfolio Recovery Associates</security>
-    <security code="POSS" currency="USD">Possis Medical Inc.</security>
-    <security code="PWAV" currency="USD">Powerwave Technologies Inc.</security>
-    <security code="PORK" currency="USD">Premium Standard Farms Inc.</security>
-    <security code="PLFE" currency="USD">Presidential Life Corp.</security>
-    <security code="PRST" currency="USD">Presstek Inc.</security>
-    <security code="PCLN" currency="USD">Priceline.com Inc.</security>
-    <security code="PVTB" currency="USD">Privatebancorp Inc.</security>
-    <security code="PGLA" currency="USD">Progen Industries Ltd.</security>
-    <security code="PRGS" currency="USD">Progress Software Corp.</security>
-    <security code="PRSP" currency="USD">Prosperity Bancshares Inc.</security>
-    <security code="PRSC" currency="USD">Providence Service Corp.</security>
-    <security code="PBKS" currency="USD">Provident Bankshares Corp.</security>
-    <security code="PROV" currency="USD">Provident Financial Holdings I</security>
+    <security code="POOL" currency="USD">Pool Corporation</security>
+    <security code="BPOP" currency="USD">Popular, Inc.</security>
+    <security code="BPOPO" currency="USD">Popular, Inc. - Noncumulative Monthly Income Preferred Stock 2003 Series A</security>
+    <security code="BPOPN" currency="USD">Popular, Inc. - Popular Capital Trust I -6.70% Cumulative Monthly Income Trust P</security>
+    <security code="BPOPM" currency="USD">Popular, Inc. - Popular Capital Trust II - 6.125% Cumulative Monthly Income Trus</security>
+    <security code="PRAA" currency="USD">Portfolio Recovery Associates, Inc.</security>
+    <security code="POSS" currency="USD">Possis Medical, Inc.</security>
+    <security code="PWAV" currency="USD">Powerwave Technologies, Inc.</security>
+    <security code="PRDX" currency="USD">Predix Pharmaceuticals Holdings, Inc.</security>
+    <security code="PORK" currency="USD">Premium Standard Farms, Inc. - common stock</security>
+    <security code="PLFE" currency="USD">Presidential Life Corporation</security>
+    <security code="PRST" currency="USD">Presstek, Inc.</security>
+    <security code="PVTB" currency="USD">PrivateBancorp, Inc.</security>
+    <security code="PRGS" currency="USD">Progress Software Corporation</security>
+    <security code="PRSP" currency="USD">Prosperity Bancshares, Inc.</security>
+    <security code="PBKS" currency="USD">Provident Bankshares Corporation</security>
+    <security code="PROV" currency="USD">Provident Financial Holdings, Inc.</security>
     <security code="PBNY" currency="USD">Provident New York Bancorp</security>
-    <security code="PSYS" currency="USD">Psychiatric Solutions Inc.</security>
-    <security code="PULB" currency="USD">Pulaski Financial Corp.</security>
+    <security code="PSYS" currency="USD">Psychiatric Solutions, Inc. - common stock</security>
+    <security code="PULB" currency="USD">Pulaski Financial Corporation</security>
     <security code="QADI" currency="USD">QAD Inc.</security>
-    <security code="QLTI" currency="USD">QLT Inc.</security>
-    <security code="QLGC" currency="USD">QLogic Corp.</security>
-    <security code="QCOM" currency="USD">QUALCOMM Inc.</security>
-    <security code="QGEN" currency="USD">Qiagen NV</security>
-    <security code="QSII" currency="USD">Quality Systems Inc.</security>
-    <security code="QSFT" currency="USD">Quest Software Inc.</security>
-    <security code="RARE" currency="USD">RARE Hospitality International</security>
-    <security code="ROLL" currency="USD">RBC Bearings Inc.</security>
-    <security code="RCRC" currency="USD">RC2 Corp.</security>
+    <security code="QLTI" currency="USD">QLT Inc. - Common Shares</security>
+    <security code="QLGC" currency="USD">QLogic Corporation</security>
+    <security code="QCOM" currency="USD">QUALCOMM Incorporated</security>
+    <security code="QGEN" currency="USD">Qiagen N.V. - Common Shares</security>
+    <security code="QSII" currency="USD">Quality Systems, Inc.</security>
+    <security code="QSFT" currency="USD">Quest Software, Inc.</security>
+    <security code="RGFPE" currency="USD">R&amp;G Financial Corporation - 7.40% Noncumulative Monthly Income Series A Preferre</security>
+    <security code="RGFME" currency="USD">R&amp;G Financial Corporation - Preferred Stock</security>
+    <security code="RGFOE" currency="USD">R&amp;G Financial Corporation - Series B 7.75% Noncumulative Monthly Income Preferre</security>
+    <security code="RGFLE" currency="USD">R&amp;G Financial Corporation - Series C 7.60% Noncumulative Monthly Income Preferre</security>
+    <security code="RVSN" currency="USD">RADVision Ltd. - Ordinary Shares</security>
+    <security code="RARE" currency="USD">RARE Hospitality International  Inc.</security>
+    <security code="ROLL" currency="USD">RBC Bearings Incorporated</security>
+    <security code="RCRC" currency="USD">RC2 Corporation</security>
     <security code="RCNI" currency="USD">RCN Corp.</security>
-    <security code="RFMD" currency="USD">RF Micro Devices Inc.</security>
-    <security code="RACK" currency="USD">Rackable Systems Inc.</security>
-    <security code="RSYS" currency="USD">RadiSys Corp.</security>
-    <security code="RTSX" currency="USD">Radiation Therapy Services Inc</security>
-    <security code="RVSN" currency="USD">Radvision Ltd.</security>
-    <security code="RDWR" currency="USD">Radware Ltd.</security>
-    <security code="RADN" currency="USD">Radyne Corp.</security>
-    <security code="RMBS" currency="USD">Rambus Inc.</security>
-    <security code="GOLD" currency="USD">Randgold Resources Ltd.</security>
-    <security code="RAVN" currency="USD">Raven Industries Inc.</security>
-    <security code="RNWK" currency="USD">RealNetworks Inc.</security>
-    <security code="RHAT" currency="USD">Red Hat Inc.</security>
-    <security code="RRGB" currency="USD">Red Robin Gourmet Burgers Inc.</security>
-    <security code="RBAK" currency="USD">Redback Networks Inc.</security>
-    <security code="RLRN" currency="USD">Renaissance Learning Inc.</security>
-    <security code="RNST" currency="USD">Renasant Corp.</security>
+    <security code="RFMD" currency="USD">RF Micro Devices, Inc.</security>
+    <security code="RACK" currency="USD">Rackable Systems, Inc.</security>
+    <security code="RSYS" currency="USD">RadiSys Corporation</security>
+    <security code="RTSX" currency="USD">Radiation Therapy Services, Inc.</security>
+    <security code="RDWR" currency="USD">Radware Ltd. - Ordinary Shares</security>
+    <security code="RADN" currency="USD">Radyne Corporation</security>
+    <security code="RMBS" currency="USD">Rambus, Inc.</security>
+    <security code="RANGE" currency="USD">Randgold &amp; Exploration Company, Limited - American Depositary Shares</security>
+    <security code="GOLD" currency="USD">Randgold Resources Limited - American Depositary Shares</security>
+    <security code="RAVN" currency="USD">Raven Industries, Inc.</security>
+    <security code="RNWK" currency="USD">RealNetworks, Inc.</security>
+    <security code="RRGB" currency="USD">Red Robin Gourmet Burgers, Inc.</security>
+    <security code="RLRN" currency="USD">Renaissance Learning, Inc.</security>
+    <security code="RNST" currency="USD">Renasant Corporation</security>
     <security code="RCII" currency="USD">Rent-A-Center Inc.</security>
-    <security code="RJET" currency="USD">Republic Airways Holdings Inc.</security>
-    <security code="RBCAA" currency="USD">Republic Bancorp Inc.</security>
-    <security code="RBNC" currency="USD">Republic Bancorp Inc.</security>
-    <security code="FRBK" currency="USD">Republic First Bancorp Inc.</security>
-    <security code="RSCR" currency="USD">Res-Care Inc.</security>
-    <security code="RIMM" currency="USD">Research In Motion Ltd.</security>
-    <security code="REXI" currency="USD">Resource America Inc.</security>
-    <security code="RECN" currency="USD">Resources Connection Inc.</security>
-    <security code="RESP" currency="USD">Respironics Inc.</security>
-    <security code="RTLX" currency="USD">Retalix Ltd.</security>
-    <security code="RTRSY" currency="USD">Reuters Group plc</security>
-    <security code="RIMG" currency="USD">Rimage Corp.</security>
-    <security code="RVSB" currency="USD">Riverview Bancorp Inc.</security>
-    <security code="RCKB" currency="USD">Rockville Financial Inc.</security>
+    <security code="RJET" currency="USD">Republic Airways Holdings, Inc. - Common stock</security>
+    <security code="RBCAA" currency="USD">Republic Bancorp, Inc. - Class A Common Stock</security>
+    <security code="FRBK" currency="USD">Republic First Bancorp, Inc.</security>
+    <security code="RSCR" currency="USD">Res-Care, Inc.</security>
+    <security code="RIMM" currency="USD">Research in Motion Limited</security>
+    <security code="REXI" currency="USD">Resource America, Inc. - Class A Common Stock</security>
+    <security code="RECN" currency="USD">Resources Connection, Inc.</security>
+    <security code="RESP" currency="USD">Respironics, Inc.</security>
+    <security code="RTLX" currency="USD">Retalix Ltd. - Ordinary Shares</security>
+    <security code="RTRSY" currency="USD">Reuters Group PLC - American Depositary Shares</security>
+    <security code="RIMG" currency="USD">Rimage Corporation</security>
+    <security code="RVSB" currency="USD">Riverview Bancorp Inc</security>
+    <security code="RCKB" currency="USD">Rockville Financial, Inc.</security>
+    <security code="RMTIZ" currency="USD">Rockwell Medical Technologies, Inc. - Warrants</security>
     <security code="RCKY" currency="USD">Rocky Brands, Inc.</security>
-    <security code="RSTI" currency="USD">Rofin-Sinar Technologies Inc.</security>
-    <security code="ROMA" currency="USD">Roma Financial Corp.</security>
-    <security code="ROSE" currency="USD">Rosetta Resources, Inc.</security>
-    <security code="ROST" currency="USD">Ross Stores Inc.</security>
-    <security code="RGLD" currency="USD">Royal Gold Inc.</security>
-    <security code="FUND" currency="USD">Royce Focus Trust, Inc.</security>
-    <security code="RTEC" currency="USD">Rudolph Technologies Inc.</security>
-    <security code="RUSHB" currency="USD">Rush Enterprises Inc.</security>
-    <security code="RYAAY" currency="USD">Ryanair Holdings plc</security>
-    <security code="STBA" currency="USD">S&amp;T Bancorp Inc.</security>
-    <security code="SBAC" currency="USD">SBA Communications Corp.</security>
-    <security code="SCBT" currency="USD">SCBT Financial Corp.</security>
-    <security code="SEIC" currency="USD">SEI Investments Co.</security>
-    <security code="SINT" currency="USD">SI International Inc.</security>
-    <security code="SMOD" currency="USD">SMART Modular Technologies (WW</security>
+    <security code="RSTI" currency="USD">Rofin-Sinar Technologies, Inc.</security>
+    <security code="ROMA" currency="USD">Roma Financial Corporation</security>
+    <security code="ROSE" currency="USD">Rosetta Resources Inc.</security>
+    <security code="ROST" currency="USD">Ross Stores, Inc.</security>
+    <security code="RGLD" currency="USD">Royal Gold, Inc.</security>
+    <security code="FUND" currency="USD">Royce Focus Trust, Inc. - Closed End Fund</security>
+    <security code="RTEC" currency="USD">Rudolph Technologies, Inc.</security>
+    <security code="RUSHA" currency="USD">Rush Enterprises, Inc. - COMMON STOCK CL A</security>
+    <security code="RUSHB" currency="USD">Rush Enterprises, Inc. - Class B Common Stock</security>
+    <security code="RYAAY" currency="USD">Ryanair Holdings plc - American Depositary Shares</security>
+    <security code="STBA" currency="USD">S&amp;T Bancorp, Inc.</security>
+    <security code="SYBT" currency="USD">S.Y. Bancorp, Inc.</security>
+    <security code="SBAC" currency="USD">SBA Communications Corporation</security>
+    <security code="SCBT" currency="USD">SCBT Financial Corporation</security>
+    <security code="SEIC" currency="USD">SEI Investments Company</security>
+    <security code="PGLA" currency="USD">SFG  Dec 2006 50.00 put</security>
+    <security code="SINT" currency="USD">SI International, Inc. - common stock</security>
+    <security code="ZJZZT" currency="USD">SINGLEBOOK SIP TEST</security>
+    <security code="SMOD" currency="USD">SMART Modular Technologies (WWH), Inc. - Ordinary shares, $0.00016667 par value.</security>
     <security code="SPSS" currency="USD">SPSS Inc.</security>
-    <security code="STTS" currency="USD">STATS ChipPAC Ltd.</security>
+    <security code="STTS" currency="USD">STATS ChipPAC Ltd. - American Depositary Shares</security>
+    <security code="CWZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="MMZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="KTZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="TJZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="AMZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="WJZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="GJZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="XJZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="IJZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="BKZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="FZZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="KJZST" currency="USD">SUPERMONTAGE TEST</security>
+    <security code="MQZST" currency="USD">SUPERMONTAGE TEST</security>
     <security code="SIVB" currency="USD">SVB Financial Group</security>
-    <security code="SYBT" currency="USD">SY Bancorp Inc.</security>
-    <security code="SFNT" currency="USD">SafeNet Inc.</security>
-    <security code="SAFT" currency="USD">Safety Insurance Group Inc.</security>
+    <security code="SIVBO" currency="USD">SVB Financial Group - 7% Cumulative Trust Preferred Securities - SVB Capital II</security>
+    <security code="Z" currency="USD">SYMBOLOGY TEST 1</security>
+    <security code="SFNT" currency="USD">SafeNet Inc</security>
+    <security code="SAFT" currency="USD">Safety Insurance Group, Inc.</security>
     <security code="SAIA" currency="USD">Saia, Inc.</security>
-    <security code="SFUN" currency="USD">Saifun Semiconductors Ltd.</security>
-    <security code="SNDK" currency="USD">SanDisk Corp.</security>
-    <security code="SAFM" currency="USD">Sanderson Farms Inc.</security>
-    <security code="SASR" currency="USD">Sandy Spring Bancorp Inc.</security>
-    <security code="SANM" currency="USD">Sanmina-SCI Corp.</security>
-    <security code="SAPE" currency="USD">Sapient Corp.</security>
-    <security code="SCSC" currency="USD">ScanSource Inc.</security>
-    <security code="SCHN" currency="USD">Schnitzer Steel Industries Inc</security>
-    <security code="SCHL" currency="USD">Scholastic Corp.</security>
-    <security code="SCHS" currency="USD">School Specialty Inc.</security>
-    <security code="SCRX" currency="USD">Sciele Pharma Inc.</security>
-    <security code="SGMS" currency="USD">Scientific Games Corp.</security>
-    <security code="SEAB" currency="USD">SeaBright Insurance Holdings I</security>
-    <security code="SBCF" currency="USD">Seacoast Banking Corp. of Flor</security>
+    <security code="SFUN" currency="USD">Saifun Semiconductors Ltd. - Ordinary Shares</security>
+    <security code="SNDK" currency="USD">SanDisk Corporation</security>
+    <security code="SAFM" currency="USD">Sanderson Farms, Inc.</security>
+    <security code="SASR" currency="USD">Sandy Spring Bancorp, Inc.</security>
+    <security code="SANM" currency="USD">Sanmina-SCI Corporation</security>
+    <security code="SAPE" currency="USD">Sapient Corporation</security>
+    <security code="SCSC" currency="USD">ScanSource, Inc.</security>
+    <security code="SCHN" currency="USD">Schnitzer Steel Industries, Inc. - Class A Common Stock</security>
+    <security code="SCHL" currency="USD">Scholastic Corporation</security>
+    <security code="SCHS" currency="USD">School Specialty, Inc.</security>
+    <security code="SCRX" currency="USD">Sciele Pharma, Inc.</security>
+    <security code="SGMS" currency="USD">Scientific Games Corp - Class A Common Stock</security>
+    <security code="SEAB" currency="USD">SeaBright Insurance Holdings, Inc.</security>
+    <security code="SBCF" currency="USD">Seacoast Banking Corporation of Florida</security>
     <security code="SHLD" currency="USD">Sears Holdings Corporation</security>
-    <security code="SCUR" currency="USD">Secure Computing Corp.</security>
-    <security code="SBKC" currency="USD">Security Bank Corp.</security>
+    <security code="SCUR" currency="USD">Secure Computing Corporation</security>
+    <security code="SBKC" currency="USD">Security Bank Corporation</security>
     <security code="SCSS" currency="USD">Select Comfort Corporation</security>
-    <security code="SIGI" currency="USD">Selective Insurance Group Inc.</security>
-    <security code="SEPR" currency="USD">Sepracor, Inc.</security>
-    <security code="SNDA" currency="USD">Shanda Interactive Entertainme</security>
-    <security code="SHEN" currency="USD">Shenandoah Telecommunications</security>
-    <security code="SCVL" currency="USD">Shoe Carnival Inc.</security>
-    <security code="SHFL" currency="USD">Shuffle Master Inc.</security>
-    <security code="SFLY" currency="USD">Shutterfly, Inc.</security>
-    <security code="SIRF" currency="USD">SiRF Technology Holdings Inc.</security>
+    <security code="SIGI" currency="USD">Selective Insurance Group, Inc.</security>
+    <security code="SEPR" currency="USD">Sepracor Inc.</security>
+    <security code="SNDA" currency="USD">Shanda Interactive Entertainment Limited - American Depositary Shares</security>
+    <security code="SHEN" currency="USD">Shenandoah Telecommunications Co</security>
+    <security code="SHPGY" currency="USD">Shire plc - American Depositary Shares</security>
+    <security code="SCVL" currency="USD">Shoe Carnival, Inc.</security>
+    <security code="SHOP" currency="USD">Shopping.com Ltd. - Ordinary Shares</security>
+    <security code="SHFL" currency="USD">Shuffle Master, Inc.</security>
+    <security code="SIRF" currency="USD">SiRF Technology Holdings, Inc.</security>
     <security code="BSRR" currency="USD">Sierra Bancorp</security>
-    <security code="SIAL" currency="USD">Sigma-Aldrich Corp.</security>
-    <security code="SGTL" currency="USD">Sigmatel Inc.</security>
+    <security code="SIAL" currency="USD">Sigma-Aldrich Corporation</security>
+    <security code="SGTL" currency="USD">Sigmatel, Inc. - COMMON STOCK</security>
     <security code="SBNY" currency="USD">Signature Bank</security>
-    <security code="SLGN" currency="USD">Silgan Holdings Inc.</security>
-    <security code="SIMG" currency="USD">Silicon Image Inc.</security>
+    <security code="SLGN" currency="USD">Silgan Holdings, Inc.</security>
+    <security code="SIMG" currency="USD">Silicon Image, Inc.</security>
     <security code="SLAB" currency="USD">Silicon Laboratories, Inc.</security>
-    <security code="SPIL" currency="USD">Siliconware Precision Industri</security>
-    <security code="SFNC" currency="USD">Simmons First National Corp.</security>
-    <security code="SINA" currency="USD">Sina Corp.</security>
-    <security code="SBGI" currency="USD">Sinclair Broadcast Group Inc.</security>
+    <security code="SPIL" currency="USD">Siliconware Precision Industries Company, Ltd. - American Depositary Shares</security>
+    <security code="SFNC" currency="USD">Simmons First National Corporation</security>
+    <security code="SINA" currency="USD">Sina Corporation - Ordinary Shares</security>
+    <security code="SBGI" currency="USD">Sinclair Broadcast Group, Inc. - Class A Common Stock</security>
     <security code="SIRI" currency="USD">Sirius Satellite Radio Inc.</security>
-    <security code="SIRO" currency="USD">Sirona Dental Systems Inc.</security>
-    <security code="SKYF" currency="USD">Sky Financial Group Inc.</security>
-    <security code="SKYW" currency="USD">SkyWest Inc.</security>
-    <security code="SWKS" currency="USD">Skyworks Solutions Inc.</security>
-    <security code="SWHC" currency="USD">Smith &amp; Wesson Holding Corp.</security>
-    <security code="SSCC" currency="USD">Smurfit-Stone Container Corp.</security>
+    <security code="SIRO" currency="USD">Sirona Dental Systems, Inc.</security>
+    <security code="SKMD" currency="USD">SkinMedica, Inc.</security>
+    <security code="SKYF" currency="USD">Sky Financial Group, Inc.</security>
+    <security code="SKYW" currency="USD">SkyWest, Inc.</security>
+    <security code="SWKS" currency="USD">Skyworks Solutions, Inc.</security>
+    <security code="SWHC" currency="USD">Smith &amp; Wesson Holding Corporation</security>
+    <security code="SSCC" currency="USD">Smurfit-Stone Container Corporation</security>
+    <security code="SSCCP" currency="USD">Smurfit-Stone Container Corporation - 7% Series A Cumulative Exchangeable Redeem</security>
     <security code="SOHU" currency="USD">Sohu.com Inc.</security>
     <security code="SONC" currency="USD">Sonic Corp.</security>
     <security code="SNIC" currency="USD">Sonic Solutions</security>
     <security code="SONS" currency="USD">Sonus Networks, Inc.</security>
-    <security code="SORC" currency="USD">Source Interlink Companies Inc</security>
-    <security code="TSFG" currency="USD">South Financial Group Inc.</security>
-    <security code="SCMF" currency="USD">Southern Community Financial C</security>
-    <security code="SBSI" currency="USD">Southside Bancshares Inc.</security>
-    <security code="OKSB" currency="USD">Southwest Bancorp Inc.</security>
-    <security code="SWWC" currency="USD">Southwest Water Co.</security>
-    <security code="SPSN" currency="USD">Spansion Inc.</security>
-    <security code="SPAR" currency="USD">Spartan Motors Inc.</security>
-    <security code="SLNK" currency="USD">Spectralink Corp.</security>
-    <security code="SMSC" currency="USD">Standard Microsystems Corp.</security>
-    <security code="STLY" currency="USD">Stanley Furniture Co. Inc.</security>
-    <security code="SPLS" currency="USD">Staples Inc.</security>
-    <security code="SBUX" currency="USD">Starbucks Corp.</security>
-    <security code="STFC" currency="USD">State Auto Financial Corp.</security>
-    <security code="STLD" currency="USD">Steel Dynamics Inc.</security>
+    <security code="SORC" currency="USD">Source Interlink Companies, Inc.</security>
+    <security code="TSFG" currency="USD">South Financial Group Inc. (The)</security>
+    <security code="SCMF" currency="USD">Southern Community Financial Corporation</security>
+    <security code="SCMFO" currency="USD">Southern Community Financial Corporation - Southern Community Capital Trust II -</security>
+    <security code="SBSI" currency="USD">Southside Bancshares, Inc.</security>
+    <security code="OKSB" currency="USD">Southwest Bancorp, Inc.</security>
+    <security code="SWWC" currency="USD">Southwest Water Company</security>
+    <security code="SPSN" currency="USD">Spansion Inc. - Class A Common Stock</security>
+    <security code="SPAR" currency="USD">Spartan Motors, Inc.</security>
+    <security code="SLNK" currency="USD">SpectraLink Corporation</security>
+    <security code="SMSC" currency="USD">Standard Microsystems Corporation</security>
+    <security code="STLY" currency="USD">Stanley Furniture Company, Inc.</security>
+    <security code="SPLS" currency="USD">Staples, Inc.</security>
+    <security code="SBUX" currency="USD">Starbucks Corporation</security>
+    <security code="STFC" currency="USD">State Auto Financial Corporation</security>
+    <security code="STLD" currency="USD">Steel Dynamics, Inc.</security>
     <security code="STTX" currency="USD">Steel Technologies Inc.</security>
-    <security code="SMRT" currency="USD">Stein Mart Inc.</security>
-    <security code="STNR" currency="USD">Steiner Leisure Ltd.</security>
-    <security code="SRCL" currency="USD">Stericycle Inc.</security>
-    <security code="SBIB" currency="USD">Sterling Bancshares Inc.</security>
-    <security code="STRL" currency="USD">Sterling Construction Co. Inc.</security>
-    <security code="SLFI" currency="USD">Sterling Financial Corp.</security>
-    <security code="STSA" currency="USD">Sterling Financial Corp.</security>
+    <security code="SMRT" currency="USD">Stein Mart, Inc.</security>
+    <security code="STNR" currency="USD">Steiner Leisure Limited - Common Shares</security>
+    <security code="SRCL" currency="USD">Stericycle, Inc.</security>
+    <security code="SBIB" currency="USD">Sterling Bancshares, Inc.</security>
+    <security code="SBIBN" currency="USD">Sterling Bancshares, Inc. - Sterling Bancshares Capital Trust III - 8.30% Cummul</security>
+    <security code="STRL" currency="USD">Sterling Construction Company Inc</security>
+    <security code="SLFI" currency="USD">Sterling Financial Corporation</security>
+    <security code="STSA" currency="USD">Sterling Financial Corporation</security>
     <security code="SHOO" currency="USD">Steven Madden, Ltd.</security>
-    <security code="STEI" currency="USD">Stewart Enterprises Inc.</security>
-    <security code="SNSA" currency="USD">Stolt-Nielsen SA</security>
-    <security code="SSYS" currency="USD">Stratasys Inc.</security>
-    <security code="STRA" currency="USD">Strayer Education Inc.</security>
+    <security code="STEI" currency="USD">Stewart Enterprises, Inc. - Class A Common Stock</security>
+    <security code="SNSA" currency="USD">Stolt-Nielsen S.A. - American Depositary Shares</security>
+    <security code="SSYS" currency="USD">Stratasys, Inc.</security>
+    <security code="STRA" currency="USD">Strayer Education, Inc.</security>
+    <security code="FUELW" currency="USD">Streicher Mobile Fueling, Inc. - Warrants</security>
     <security code="SUBK" currency="USD">Suffolk Bancorp</security>
-    <security code="SNBC" currency="USD">Sun Bancorp Inc.</security>
-    <security code="SNHY" currency="USD">Sun Hydraulics Corp.</security>
-    <security code="SUNW" currency="USD">Sun Microsystems Inc.</security>
-    <security code="STKL" currency="USD">SunOpta Inc.</security>
-    <security code="SPSX" currency="USD">Superior Essex Inc.</security>
-    <security code="SWSI" currency="USD">Superior Well Services Inc.</security>
-    <security code="SUPX" currency="USD">Supertex Inc.</security>
-    <security code="SPRT" currency="USD">Supportsoft Inc.</security>
-    <security code="SRDX" currency="USD">SurModics Inc.</security>
-    <security code="SUSQ" currency="USD">Susquehanna Bancshares Inc.</security>
-    <security code="SBBX" currency="USD">Sussex Bancorp</security>
-    <security code="SWFT" currency="USD">Swift Transportation Co. Inc.</security>
-    <security code="SYKE" currency="USD">Sykes Enterprises Inc.</security>
-    <security code="SYMC" currency="USD">Symantec Corp.</security>
-    <security code="SMBI" currency="USD">Symbion Inc.</security>
-    <security code="SMMX" currency="USD">Symyx Technologies Inc.</security>
-    <security code="SYNA" currency="USD">Synaptics Inc.</security>
-    <security code="ELOS" currency="USD">Syneron Medical Ltd.</security>
-    <security code="SNPS" currency="USD">Synopsys Inc.</security>
-    <security code="SYNT" currency="USD">Syntel Inc.</security>
+    <security code="SNBC" currency="USD">Sun Bancorp, Inc.</security>
+    <security code="SNHY" currency="USD">Sun Hydraulics Corporation</security>
+    <security code="SUNW" currency="USD">Sun Microsystems, Inc.</security>
+    <security code="STKL" currency="USD">SunOpta, Inc.</security>
+    <security code="SRTIE" currency="USD">Sunrise Telecom Incorporated</security>
+    <security code="SPSX" currency="USD">Superior Essex Inc</security>
+    <security code="SWSI" currency="USD">Superior Well Services, Inc.</security>
+    <security code="SUPX" currency="USD">Supertex, Inc.</security>
+    <security code="SPRT" currency="USD">SupportSoft Inc.</security>
+    <security code="SRDX" currency="USD">SurModics, Inc.</security>
+    <security code="SUSQ" currency="USD">Susquehanna Bancshares, Inc.</security>
+    <security code="SWFT" currency="USD">Swift Transportation Co., Inc.</security>
+    <security code="SDXC" currency="USD">Switch &amp; Data Facilities Company, Inc. Common Stock</security>
+    <security code="SYKE" currency="USD">Sykes Enterprises, Incorporated</security>
+    <security code="SYMC" currency="USD">Symantec Corporation</security>
+    <security code="SMBI" currency="USD">Symbion, Inc.</security>
+    <security code="ALSCE" currency="USD">Symbol changed to  ALSC</security>
+    <security code="AULTE" currency="USD">Symbol changed to  AULT</security>
+    <security code="BLUDE" currency="USD">Symbol changed to  BLUD</security>
+    <security code="BRCDE" currency="USD">Symbol changed to  BRCD</security>
+    <security code="BRLCD" currency="USD">Symbol changed to  BRLC</security>
+    <security code="CACSE" currency="USD">Symbol changed to  CACS</security>
+    <security code="GCFC" currency="USD">Symbol changed to  CFBK</security>
+    <security code="CGTKD" currency="USD">Symbol changed to  CGTK</security>
+    <security code="CHRWD" currency="USD">Symbol changed to  CHRW</security>
+    <security code="CIPHE" currency="USD">Symbol changed to  CIPH</security>
+    <security code="CTTYC" currency="USD">Symbol changed to  CTTY</security>
+    <security code="DLIAV" currency="USD">Symbol changed to  DLIA</security>
+    <security code="DNEXE" currency="USD">Symbol changed to  DNEX</security>
+    <security code="EASYE" currency="USD">Symbol changed to  EASY</security>
+    <security code="GMAI" currency="USD">Symbol changed to  ESCL</security>
+    <security code="FLOWE" currency="USD">Symbol changed to  FLOW</security>
+    <security code="FLYI" currency="USD">Symbol changed to  FLYIQ</security>
+    <security code="FMXI" currency="USD">Symbol changed to  FMXIQ</security>
+    <security code="GKSRA" currency="USD">Symbol changed to  GKSR</security>
+    <security code="GRIFE" currency="USD">Symbol changed to  GRIF</security>
+    <security code="IACID" currency="USD">Symbol changed to  IACI</security>
+    <security code="ICDG" currency="USD">Symbol changed to  ICOP</security>
+    <security code="ICDGW" currency="USD">Symbol changed to  ICOPW</security>
+    <security code="INSGE" currency="USD">Symbol changed to  INSG</security>
+    <security code="ITCDD" currency="USD">Symbol changed to  ITCD</security>
+    <security code="LTYKV" currency="USD">Symbol changed to  LBTYK</security>
+    <security code="LCCIE" currency="USD">Symbol changed to  LCCI</security>
+    <security code="LTREE" currency="USD">Symbol changed to  LTRE</security>
+    <security code="MBAYD" currency="USD">Symbol changed to  MBAY</security>
+    <security code="VLGC" currency="USD">Symbol changed to  MGRM</security>
+    <security code="NCEME" currency="USD">Symbol changed to  NCEM</security>
+    <security code="NCSTV" currency="USD">Symbol changed to  NCST</security>
+    <security code="NEBSD" currency="USD">Symbol changed to  NEBS</security>
+    <security code="NOVTD" currency="USD">Symbol changed to  NOVT</security>
+    <security code="SSFT" currency="USD">Symbol changed to  NUAN</security>
+    <security code="NWAC" currency="USD">Symbol changed to  NWACQ</security>
+    <security code="OIIMD" currency="USD">Symbol changed to  OIIM</security>
+    <security code="OLGRE" currency="USD">Symbol changed to  OLGR</security>
+    <security code="PETDE" currency="USD">Symbol changed to  PETD</security>
+    <security code="PROSE" currency="USD">Symbol changed to  PROS</security>
+    <security code="RMKRD" currency="USD">Symbol changed to  RMKR</security>
+    <security code="SCMRE" currency="USD">Symbol changed to  SCMR</security>
+    <security code="SIVBE" currency="USD">Symbol changed to  SIVB</security>
+    <security code="SIVOE" currency="USD">Symbol changed to  SIVBO</security>
+    <security code="SNAKE" currency="USD">Symbol changed to  SNAK</security>
+    <security code="SYKEE" currency="USD">Symbol changed to  SYKE</security>
+    <security code="TASRE" currency="USD">Symbol changed to  TASR</security>
+    <security code="YDIW" currency="USD">Symbol changed to  TRBM</security>
+    <security code="TRNCD" currency="USD">Symbol changed to  TRINC</security>
+    <security code="TSCCD" currency="USD">Symbol changed to  TSCC</security>
+    <security code="UHCPC" currency="USD">Symbol changed to  UHCDC</security>
+    <security code="UHCDC" currency="USD">Symbol changed to  UHCP</security>
+    <security code="USEYE" currency="USD">Symbol changed to  USEY</security>
+    <security code="VSNTD" currency="USD">Symbol changed to  VSNT</security>
+    <security code="WOLVE" currency="USD">Symbol changed to  WOLV</security>
+    <security code="SMMX" currency="USD">Symyx Technologies, Inc.</security>
+    <security code="SYNA" currency="USD">Synaptics Incorporated</security>
+    <security code="ELOS" currency="USD">Syneron Medical Ltd. - Ordinary Shares</security>
+    <security code="SNPS" currency="USD">Synopsys, Inc.</security>
+    <security code="SYNT" currency="USD">Syntel, Inc.</security>
     <security code="TROW" currency="USD">T. Rowe Price Group, Inc.</security>
-    <security code="TALX" currency="USD">TALX Corp.</security>
-    <security code="TASR" currency="USD">TASER International Inc.</security>
-    <security code="TCLP" currency="USD">TC Pipelines LP</security>
-    <security code="AMTD" currency="USD">TD AMERITRADE Holding Corporat</security>
+    <security code="TALX" currency="USD">TALX Corporation</security>
+    <security code="TASR" currency="USD">TASER International, Inc.</security>
+    <security code="TCLP" currency="USD">TC PipeLines, LP - Common Units Representing Limited Partnership Interests</security>
+    <security code="AMTD" currency="USD">TD Ameritrade Holding Corporation</security>
     <security code="THQI" currency="USD">THQ Inc.</security>
-    <security code="TIBB" currency="USD">TIB Financial Corp.</security>
-    <security code="TOMO" currency="USD">TOM Online Inc.</security>
-    <security code="TTMI" currency="USD">TTM Technologies Inc.</security>
-    <security code="TTWO" currency="USD">Take-Two Interactive Software</security>
-    <security code="TALK" currency="USD">Talk America Holdings Inc.</security>
-    <security code="TARO" currency="USD">Taro Pharmaceutical Industries</security>
-    <security code="TARR" currency="USD">Tarragon Corp.</security>
-    <security code="TAYC" currency="USD">Taylor Capital Group Inc.</security>
-    <security code="TECD" currency="USD">Tech Data Corp.</security>
-    <security code="TECH" currency="USD">Techne Corp.</security>
-    <security code="TICC" currency="USD">Technology Investment Capital</security>
-    <security code="TTEC" currency="USD">TeleTech Holdings Inc.</security>
-    <security code="TELN" currency="USD">Telenor ASA</security>
-    <security code="TLAB" currency="USD">Tellabs Inc.</security>
-    <security code="TMCV" currency="USD">Temecula Valley Bancorp Inc.</security>
-    <security code="TSRA" currency="USD">Tessera Technologies Inc.</security>
-    <security code="TTEK" currency="USD">Tetra Tech Inc.</security>
-    <security code="TEVA" currency="USD">Teva Pharmaceutical Industries</security>
-    <security code="TCBI" currency="USD">Texas Capital BancShares Inc.</security>
-    <security code="TXRH" currency="USD">Texas Roadhouse Inc.</security>
-    <security code="THOR" currency="USD">Thoratec Corp.</security>
-    <security code="TIBX" currency="USD">Tibco Software Inc.</security>
-    <security code="TONE" currency="USD">TierOne Corp.</security>
-    <security code="TWTC" currency="USD">Time Warner Telecom Inc.</security>
-    <security code="TLGD" currency="USD">Tollgrade Communications Inc.</security>
-    <security code="TOPT" currency="USD">Top Tankers Inc.</security>
-    <security code="TOPP" currency="USD">Topps Co. Inc.</security>
-    <security code="TWGP" currency="USD">Tower Group Inc.</security>
-    <security code="TSCO" currency="USD">Tractor Supply Co.</security>
-    <security code="TRAD" currency="USD">TradeStation Group Inc.</security>
-    <security code="TSAI" currency="USD">Transaction Systems Architects</security>
-    <security code="TZOO" currency="USD">Travelzoo Inc.</security>
+    <security code="TIBB" currency="USD">TIB Financial Corporation</security>
+    <security code="TIBX" currency="USD">TIBCO Software, Inc.</security>
+    <security code="TIMHY" currency="USD">TIM Hellas Telecommunications S.A. - American Depositary Shares</security>
+    <security code="TOPT" currency="USD">TOP Tankers Inc.</security>
+    <security code="TTMI" currency="USD">TTM Technologies, Inc.</security>
+    <security code="TTWO" currency="USD">Take-Two Interactive Software, Inc.</security>
+    <security code="TARR" currency="USD">Tarragon Corporation</security>
+    <security code="TAYC" currency="USD">Taylor Capital Group, Inc. - COMMON STOCK</security>
+    <security code="TAYCP" currency="USD">Taylor Capital Group, Inc. - TAYC Capital Trust I - 9.75% Preferred Securities</security>
+    <security code="TISI" currency="USD">Team, Inc.</security>
+    <security code="TECD" currency="USD">Tech Data Corporation</security>
+    <security code="TECH" currency="USD">Techne Corporation</security>
+    <security code="TICC" currency="USD">Technology Investment Capital Corp. - Closed End Fund</security>
+    <security code="TEKCC" currency="USD">Teknowledge Corporation</security>
+    <security code="TTEC" currency="USD">TeleTech Holdings, Inc.</security>
+    <security code="TELN" currency="USD">Telenor ASA - American Depositary Shares</security>
+    <security code="TLAB" currency="USD">Tellabs, Inc.</security>
+    <security code="TMCV" currency="USD">Temecula Valley Bancorp Inc. (CA)</security>
+    <security code="TMMPA" currency="USD">Temporary Security Issuer</security>
+    <security code="TMMPB" currency="USD">Temporary Security Issuer - Common</security>
+    <security code="TSRA" currency="USD">Tessera Technologies, Inc.</security>
+    <security code="TTEK" currency="USD">Tetra Tech, Inc.</security>
+    <security code="TEVA" currency="USD">Teva Pharmaceutical Industries Limited - American Depositary Shares</security>
+    <security code="TCBI" currency="USD">Texas Capital Bancshares, Inc.</security>
+    <security code="TXRH" currency="USD">Texas Roadhouse, Inc. - Class A Common Stock, par value $0.001 per share</security>
+    <security code="TXCO" currency="USD">The Exploration Company</security>
+    <security code="PRSC" currency="USD">The Providence Service Corporation</security>
+    <security code="THOR" currency="USD">Thoratec Corporation</security>
+    <security code="TONE" currency="USD">TierOne Corporation</security>
+    <security code="TWTC" currency="USD">Time Warner Telecom Inc. - Class A Common Stock</security>
+    <security code="TLGD" currency="USD">Tollgrade Communications, Inc.</security>
+    <security code="TOMO" currency="USD">Tom Online Inc. - ADS</security>
+    <security code="TOPP" currency="USD">Topps Company, Inc. (The)</security>
+    <security code="TWGP" currency="USD">Tower Group, Inc.</security>
+    <security code="TSEMR" currency="USD">Tower Semiconductor Ltd. - Transferable Rights to Purchase Convertible Debenture</security>
+    <security code="TSCO" currency="USD">Tractor Supply Company</security>
+    <security code="TRAD" currency="USD">TradeStation Group Inc</security>
+    <security code="TSAI" currency="USD">Transaction Systems Architects , Inc.</security>
+    <security code="TZOO" currency="USD">Travelzoo Inc</security>
+    <security code="TMIC" currency="USD">Trend Micro Incorporated - American Depositary Shares</security>
     <security code="TCBK" currency="USD">TriCo Bancshares</security>
-    <security code="TQNT" currency="USD">TriQuint Semiconductor Inc.</security>
-    <security code="TZIX" currency="USD">TriZetto Group Inc.</security>
+    <security code="TQNT" currency="USD">TriQuint Semiconductor, Inc.</security>
+    <security code="TZIX" currency="USD">TriZetto Group, Inc. (The)</security>
     <security code="TGIC" currency="USD">Triad Guaranty Inc.</security>
-    <security code="TRMB" currency="USD">Trimble Navigation Ltd.</security>
-    <security code="TRIB" currency="USD">Trinity Biotech plc</security>
-    <security code="TRBN" currency="USD">Trubion Pharmaceuticals Inc.</security>
-    <security code="TRST" currency="USD">TrustCo Bank Corp. NY</security>
-    <security code="TRMK" currency="USD">Trustmark Corp.</security>
+    <security code="TRMB" currency="USD">Trimble Navigation Limited</security>
+    <security code="TRIB" currency="USD">Trinity Biotech plc - American Depositary Shares</security>
+    <security code="TRINC" currency="USD">Trinsic, Inc.</security>
+    <security code="TCMIV" currency="USD">Triple Crown Media, Inc. - Triple Crown Media, Inc. Common Stock When Issued</security>
+    <security code="TRST" currency="USD">TrustCo Bank Corp NY</security>
+    <security code="TRMK" currency="USD">Trustmark Corporation</security>
     <security code="TUES" currency="USD">Tuesday Morning Corp.</security>
-    <security code="UAUA" currency="USD">UAL Corp.</security>
+    <security code="USPH" currency="USD">U.S. Physical Therapy, Inc.</security>
+    <security code="XPRSA" currency="USD">U.S. Xpress Enterprises, Inc. - Class A Common Stock</security>
+    <security code="UAUA" currency="USD">UAL Corporation</security>
     <security code="UAPH" currency="USD">UAP Holding Corp.</security>
-    <security code="UCBH" currency="USD">UCBH Holdings Inc.</security>
-    <security code="UMBF" currency="USD">UMB Financial Corp.</security>
-    <security code="USPH" currency="USD">US Physical Therapy Inc.</security>
-    <security code="XPRSA" currency="USD">US Xpress Enterprises Inc.</security>
-    <security code="USMO" currency="USD">USA Mobility Inc.</security>
-    <security code="USAK" currency="USD">USA Truck Inc.</security>
+    <security code="UCBH" currency="USD">UCBH Holdings, Inc.</security>
+    <security code="UMBF" currency="USD">UMB Financial Corporation</security>
+    <security code="PRTS" currency="USD">US Auto Parts Network Inc</security>
+    <security code="USMO" currency="USD">USA Mobility, Inc.</security>
+    <security code="USAK" currency="USD">USA Truck, Inc.</security>
     <security code="USNA" currency="USD">USANA Health Sciences Inc.</security>
-    <security code="USIH" currency="USD">USI Holdings Corp.</security>
-    <security code="UTIW" currency="USD">UTI Worldwide, Inc.</security>
-    <security code="UTSI" currency="USD">UTStarcom Inc.</security>
-    <security code="UCTT" currency="USD">Ultra Clean Holdings Inc.</security>
-    <security code="ULTR" currency="USD">Ultrapetrol (Bahamas) Ltd.</security>
-    <security code="UMPQ" currency="USD">Umpqua Holdings Corp.</security>
-    <security code="UARM" currency="USD">Under Armour, Inc.</security>
-    <security code="UBSH" currency="USD">Union Bankshares Corp.</security>
-    <security code="UBSI" currency="USD">United Bankshares Inc.</security>
-    <security code="UCBI" currency="USD">United Community Banks Inc.</security>
-    <security code="UCFC" currency="USD">United Community Financial Cor</security>
-    <security code="UBNK" currency="USD">United Financial Bancorp</security>
-    <security code="UFCS" currency="USD">United Fire &amp; Casualty Co.</security>
-    <security code="UNFI" currency="USD">United Natural Foods Inc.</security>
-    <security code="UNTD" currency="USD">United Online Inc.</security>
-    <security code="UPFC" currency="USD">United Panam Financial Corp.</security>
+    <security code="USIH" currency="USD">USI Holdings Corporation</security>
+    <security code="UTSI" currency="USD">UTStarcom, Inc.</security>
+    <security code="UTIW" currency="USD">UTi Worldwide Inc. - Ordinary Shares</security>
+    <security code="UCTT" currency="USD">Ultra Clean Holdings, Inc.</security>
+    <security code="UMPQ" currency="USD">Umpqua Holdings Corporation</security>
+    <security code="UBSH" currency="USD">Union Bankshares Corporation</security>
+    <security code="UBSI" currency="USD">United Bankshares, Inc.</security>
+    <security code="UCBI" currency="USD">United Community Banks, Inc.</security>
+    <security code="UCFC" currency="USD">United Community Financial Corp.</security>
+    <security code="UBNK" currency="USD">United Financial Bancorp, Inc.</security>
+    <security code="UFMC" currency="USD">United Financial Mortgage Corporation</security>
+    <security code="UFCS" currency="USD">United Fire &amp; Casualty Company</security>
+    <security code="UNFI" currency="USD">United Natural Foods, Inc.</security>
+    <security code="UNTD" currency="USD">United Online, Inc.</security>
+    <security code="UPFC" currency="USD">United PanAm Financial Corporation</security>
     <security code="UBFO" currency="USD">United Security Bancshares</security>
     <security code="USTR" currency="USD">United Stationers Inc.</security>
-    <security code="USPI" currency="USD">United Surgical Partners Inter</security>
-    <security code="UTHR" currency="USD">United Therapeutics Corp.</security>
-    <security code="UHCO" currency="USD">Universal American Financial C</security>
+    <security code="USPI" currency="USD">United Surgical Partners International, Inc.</security>
+    <security code="UTHR" currency="USD">United Therapeutics Corporation</security>
+    <security code="UHCO" currency="USD">Universal American Financial Corp.</security>
     <security code="UEIC" currency="USD">Universal Electronics Inc.</security>
-    <security code="UFPI" currency="USD">Universal Forest Products Inc.</security>
-    <security code="UVSP" currency="USD">Univest Corp. of Pennsylvania</security>
-    <security code="URBN" currency="USD">Urban Outfitters Inc.</security>
-    <security code="WOOF" currency="USD">VCA Antech Inc.</security>
-    <security code="VCLK" currency="USD">ValueClick Inc.</security>
-    <security code="VARI" currency="USD">Varian Inc.</security>
-    <security code="VSEA" currency="USD">Varian Semiconductor Equipment</security>
+    <security code="UFPI" currency="USD">Universal Forest Products, Inc.</security>
+    <security code="UVSP" currency="USD">Univest Corporation of Pennsylvania</security>
+    <security code="URBN" currency="USD">Urban Outfitters, Inc.</security>
+    <security code="WOOF" currency="USD">VCA Antech, Inc.</security>
+    <security code="VCLK" currency="USD">ValueClick, Inc.</security>
+    <security code="VSEA" currency="USD">Varian Semiconductor Equipment Associates, Inc.</security>
+    <security code="VARI" currency="USD">Varian, Inc.</security>
     <security code="VECO" currency="USD">Veeco Instruments Inc.</security>
-    <security code="VMSI" currency="USD">Ventana Medical Systems Inc.</security>
-    <security code="VRSN" currency="USD">VeriSign Inc.</security>
-    <security code="VRGY" currency="USD">Verigy, Ltd.</security>
-    <security code="VRTX" currency="USD">Vertex Pharmaceuticals Inc.</security>
-    <security code="VTRU" currency="USD">Vertrue Inc.</security>
-    <security code="VRTB" currency="USD">Vestin Realty Mortgage II, Inc</security>
-    <security code="VSAT" currency="USD">ViaSat Inc.</security>
-    <security code="VICR" currency="USD">Vicor Corp.</security>
-    <security code="VPFG" currency="USD">Viewpoint Financial Group</security>
+    <security code="VMSI" currency="USD">Ventana Medical Systems, Inc.</security>
+    <security code="VRSN" currency="USD">VeriSign, Inc.</security>
+    <security code="VRGY" currency="USD">Verigy Ltd. - Ordinary Shares</security>
+    <security code="VRSOD" currency="USD">Verso Technologies, Inc.</security>
+    <security code="VRTX" currency="USD">Vertex Pharmaceuticals Incorporated</security>
+    <security code="VTRU" currency="USD">Vertrue Incorporated</security>
+    <security code="VRTB" currency="USD">Vestin Realty Mortgage II, Inc.</security>
+    <security code="VSAT" currency="USD">ViaSat, Inc.</security>
+    <security code="VICR" currency="USD">Vicor Corporation</security>
+    <security code="MICU" currency="USD">Vicuron Pharmaceuticals, Inc.</security>
+    <security code="VPFG" currency="USD">ViewPoint Financial Group</security>
+    <security code="VISGD" currency="USD">Viisage Technology, Inc.</security>
     <security code="VNBC" currency="USD">Vineyard National Bancorp</security>
-    <security code="VCBI" currency="USD">Virginia Commerce Bancorp Inc.</security>
-    <security code="VFGI" currency="USD">Virginia Financial Group Inc.</security>
-    <security code="VPHM" currency="USD">ViroPharma Inc.</security>
-    <security code="VPRT" currency="USD">VistaPrint Ltd.</security>
-    <security code="VITL" currency="USD">Vital Signs Inc.</security>
-    <security code="VLCM" currency="USD">Volcom Inc</security>
-    <security code="WDFC" currency="USD">WD-40 Co.</security>
-    <security code="WPPGY" currency="USD">WPP Group plc</security>
-    <security code="WSFS" currency="USD">WSFS Financial Corp.</security>
-    <security code="WRNC" currency="USD">Warnaco Group Inc.</security>
-    <security code="WCRX" currency="USD">Warner Chilcott Limited</security>
-    <security code="WBCO" currency="USD">Washington Banking Co.</security>
-    <security code="WFSL" currency="USD">Washington Federal Inc.</security>
-    <security code="WGII" currency="USD">Washington Group International</security>
-    <security code="WASH" currency="USD">Washington Trust Bancorp Inc.</security>
+    <security code="VMED" currency="USD">Virgin Media Inc. Common Stock</security>
+    <security code="VMEDW" currency="USD">Virgin Media Inc. Series A Warrants</security>
+    <security code="VCBI" currency="USD">Virginia Commerce Bancorp</security>
+    <security code="VFGI" currency="USD">Virginia Financial Group Inc</security>
+    <security code="VPHM" currency="USD">ViroPharma Incorporated</security>
+    <security code="VPRT" currency="USD">VistaPrint Limited - common stock</security>
+    <security code="VITL" currency="USD">Vital Signs, Inc.</security>
+    <security code="VOCLD" currency="USD">VocalTec Communications Ltd. - Ordinary shares</security>
+    <security code="VLCM" currency="USD">Volcom, Inc.</security>
+    <security code="VYGR" currency="USD">Voyager Pharmaceutical Corporation</security>
+    <security code="WDFC" currency="USD">WD-40 Company</security>
+    <security code="WPPGY" currency="USD">WPP Group plc - American Depositary Shares</security>
+    <security code="WSFS" currency="USD">WSFS Financial Corporation</security>
+    <security code="WRNC" currency="USD">Warnaco Group Inc (The)</security>
+    <security code="WCRX" currency="USD">Warner Chilcott Limited - Class A Common Stock</security>
+    <security code="WWVYE" currency="USD">Warwick Valley Telephone Company</security>
+    <security code="WBCO" currency="USD">Washington Banking Company</security>
+    <security code="WFSL" currency="USD">Washington Federal, Inc.</security>
+    <security code="WGII" currency="USD">Washington Group International, Inc.</security>
+    <security code="WASH" currency="USD">Washington Trust Bancorp, Inc.</security>
     <security code="WAUW" currency="USD">Wauwatosa Holdings, Inc.</security>
-    <security code="WEBX" currency="USD">WebEx Communications Inc.</security>
-    <security code="WBMD" currency="USD">WebMD Health Corp.</security>
-    <security code="WBSN" currency="USD">Websense Inc.</security>
-    <security code="WERN" currency="USD">Werner Enterprises Inc.</security>
-    <security code="WSBC" currency="USD">WesBanco Inc.</security>
+    <security code="WEBX" currency="USD">WebEx Communications, Inc.</security>
+    <security code="WBMD" currency="USD">WebMD Health Corp - Class A Common Stock</security>
+    <security code="WBSN" currency="USD">Websense, Inc.</security>
+    <security code="WERN" currency="USD">Werner Enterprises, Inc.</security>
+    <security code="WSBC" currency="USD">WesBanco, Inc.</security>
     <security code="WCBO" currency="USD">West Coast Bancorp</security>
-    <security code="WABC" currency="USD">Westamerica Bancorp.</security>
-    <security code="WSTL" currency="USD">Westell Technologies Inc.</security>
-    <security code="WTNY" currency="USD">Whitney Holding Corp.</security>
-    <security code="WFMI" currency="USD">Whole Foods Market Inc.</security>
-    <security code="WLSC" currency="USD">Williams Scotsman Internationa</security>
+    <security code="WABC" currency="USD">Westamerica Bancorporation</security>
+    <security code="WSTL" currency="USD">Westell Technologies, Inc. - Class A Common Stock</security>
+    <security code="WTNY" currency="USD">Whitney Holding Corporation</security>
+    <security code="WFMI" currency="USD">Whole Foods Market, Inc.</security>
+    <security code="WLSC" currency="USD">Williams Scotsman International, Inc.</security>
+    <security code="WLFCE" currency="USD">Willis Lease Finance Corporation</security>
     <security code="WFBC" currency="USD">Willow Financial Bancorp, Inc.</security>
-    <security code="WIBC" currency="USD">Wilshire Bancorp Inc.</security>
-    <security code="WIND" currency="USD">Wind River Systems Inc.</security>
-    <security code="WTFC" currency="USD">Wintrust Financial Corp.</security>
-    <security code="WFII" currency="USD">Wireless Facilities Inc.</security>
-    <security code="WITS" currency="USD">Witness Systems Inc.</security>
-    <security code="WGOV" currency="USD">Woodward Governor Co.</security>
-    <security code="WRLD" currency="USD">World Acceptance Corp.</security>
-    <security code="WMGI" currency="USD">Wright Medical Group Inc.</security>
-    <security code="WYNN" currency="USD">Wynn Resorts Ltd.</security>
-    <security code="XRIT" currency="USD">X-Rite Inc.</security>
-    <security code="XMSR" currency="USD">XM Satellite Radio Holdings In</security>
-    <security code="XLNX" currency="USD">Xilinx Inc.</security>
-    <security code="XRTX" currency="USD">Xyratex Ltd.</security>
-    <security code="YRCW" currency="USD">YRC Worldwide Inc.</security>
-    <security code="YAVY" currency="USD">Yadkin Valley Financial Corp.</security>
+    <security code="WIBC" currency="USD">Wilshire Bancorp, Inc.</security>
+    <security code="WIND" currency="USD">Wind River Systems, Inc.</security>
+    <security code="WTFC" currency="USD">Wintrust Financial Corporation</security>
+    <security code="WFII" currency="USD">Wireless Facilities, Inc.</security>
+    <security code="WITS" currency="USD">Witness Systems, Inc.</security>
+    <security code="WGOV" currency="USD">Woodward Governor Company</security>
+    <security code="WRLD" currency="USD">World Acceptance Corporation</security>
+    <security code="WGATE" currency="USD">Worldgate Communications, Inc.</security>
+    <security code="WMGI" currency="USD">Wright Medical Group, Inc.</security>
+    <security code="WYNN" currency="USD">Wynn Resorts, Limited - Common stock</security>
+    <security code="XRIT" currency="USD">X-Rite, Incorporated</security>
+    <security code="XMSR" currency="USD">XM Satellite Radio Holdings Inc. - Class A Common Stock</security>
+    <security code="XLNX" currency="USD">Xilinx, Inc.</security>
+    <security code="XRTX" currency="USD">Xyratex Ltd. - Common Shares</security>
+    <security code="YRCW" currency="USD">YRC Worldwide, Inc.</security>
+    <security code="YAVY" currency="USD">Yadkin Valley Financial Corporation</security>
     <security code="YHOO" currency="USD">Yahoo! Inc.</security>
     <security code="YANB" currency="USD">Yardville National Bancorp</security>
-    <security code="YORW" currency="USD">York Water Co.</security>
-    <security code="YDNT" currency="USD">Young Innovations Inc.</security>
-    <security code="ZIOP" currency="USD">ZIOPHARM Oncology, Inc.</security>
-    <security code="ZOLL" currency="USD">ZOLL Medical Corp.</security>
-    <security code="ZBRA" currency="USD">Zebra Technologies Corp.</security>
-    <security code="ZION" currency="USD">Zions Bancorp.</security>
-    <security code="ZRAN" currency="USD">Zoran Corp.</security>
-    <security code="ZUMZ" currency="USD">Zumiez, Inc.</security>
-    <security code="ZIGO" currency="USD">Zygo Corp.</security>
-    <security code="AQNT" currency="USD">aQuantive Inc.</security>
+    <security code="YORW" currency="USD">York Water Company (The)</security>
+    <security code="YDNT" currency="USD">Young Innovations, Inc.</security>
+    <security code="ZBRA" currency="USD">Zebra Technologies Corporation - Class A Common Stock</security>
+    <security code="ZION" currency="USD">Zions Bancorporation</security>
+    <security code="ZOLL" currency="USD">Zoll Medical Corporation</security>
+    <security code="ZRAN" currency="USD">Zoran Corporation</security>
+    <security code="ZUMZ" currency="USD">Zumiez Inc.</security>
+    <security code="ZIGO" currency="USD">Zygo Corporation</security>
+    <security code="AQNT" currency="USD">aQuantive, Inc.</security>
+    <security code="BEBE" currency="USD">bebe stores, inc.</security>
     <security code="EBAY" currency="USD">eBay Inc.</security>
-    <security code="ERES" currency="USD">eResearchTechnology Inc.</security>
-    <security code="EVVV" currency="USD">ev3, Inc.</security>
+    <security code="ERES" currency="USD">eResearch Technology Inc.</security>
+    <security code="EVVV" currency="USD">ev3 Inc. - common stock</security>
+    <security code="HANA" currency="USD">hanarotelecom incorporated - American Depositary Shares</security>
     <security code="IPAS" currency="USD">iPass Inc.</security>
+    <security code="IVOWD" currency="USD">iVOW, Inc.</security>
     <security code="VTIV" currency="USD">inVentiv Health, Inc.</security>
-    <security code="IUSA" currency="USD">infoUSA Inc.</security>
-    <security code="OXPS" currency="USD">optionsXpress Holdings Inc.</security>
+    <security code="IUSA" currency="USD">infoUSA, Inc.</security>
+    <security code="JCOM" currency="USD">j2 Global Communications Inc</security>
+    <security code="OXPS" currency="USD">optionsXpress Holdings, Inc.</security>
+    <security code="PCLN" currency="USD">priceline.com Incorporated</security>
 </data>

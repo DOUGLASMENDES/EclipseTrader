@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+    <security code="$ADVM" currency="USD">Chicago Advance</security>
+    <security code="$ADDIFFM" currency="USD">Chicago Advance Decline Difference</security>
+    <security code="$DECM" currency="USD">Chicago Decline</security>
+    <security code="$DVOM" currency="USD">Chicago Down Volume / 1000</security>
+    <security code="$ISSM" currency="USD">Chicago Issues Traded</security>
+    <security code="$TICM" currency="USD">Chicago Tick</security>
+    <security code="$TRIM" currency="USD">Chicago Trin</security>
+    <security code="$UNCM" currency="USD">Chicago Unchanged</security>
+    <security code="$UVOM" currency="USD">Chicago Up Volume / 1000</security>
+    <security code="$VOLM" currency="USD">Chicago Volume / 1000</security>
+    <security code="OCw" currency="USD">HW  Dec 2006 17.50 call</security>
+</data>

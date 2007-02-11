@@ -1,0 +1,1881 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+    <security code="SND" currency="USD">10% SPARQS Mandatorily Exchangeable for common stock of NVIDIA Corporation</security>
+    <security code="CGS" currency="USD">7% Intel Corporation SEQUINS due May 27, 2005</security>
+    <security code="TTE" currency="USD">8% TARGETS W/TIME WA</security>
+    <security code="TTA" currency="USD">8% TARGETS with respect to the common stock of Alcoa, Inc.</security>
+    <security code="BHCp" currency="USD">ABC BANCORP CAP TR I</security>
+    <security code="BRR" currency="USD">ACR Group Inc</security>
+    <security code="AEY" currency="USD">ADDvantage Technologies Group, Inc</security>
+    <security code="ANX" currency="USD">ADVENTRX Pharmaceuticals Inc</security>
+    <security code="RIF" currency="USD">AEW Real Estate Income Fund</security>
+    <security code="AAp" currency="USD">ALCOA INC PF 3.75</security>
+    <security code="DIT" currency="USD">AMCON Distributing Company</security>
+    <security code="ADL" currency="USD">AMDL, Inc</security>
+    <security code="ADY" currency="USD">AMERICAN DAIRY INC</security>
+    <security code="JNP" currency="USD">AMERICUS TRUST FOR J&amp;J SHARES</security>
+    <security code="$ADVA" currency="USD">AMEX Advance</security>
+    <security code="$ADDIFFA" currency="USD">AMEX Advance Decline Difference</security>
+    <security code="$MLXAL" currency="USD">AMEX Airline Total Return Index</security>
+    <security code="$DXV" currency="USD">AMEX DIAMONDS INDEX TRADING VALUE</security>
+    <security code="$DECA" currency="USD">AMEX Decline</security>
+    <security code="$DVOA" currency="USD">AMEX Down Volume / 1000</security>
+    <security code="$ISSA" currency="USD">AMEX Issues Traded</security>
+    <security code="$BXAIN" currency="USD">AMEX Reference Index for Strategic</security>
+    <security code="$TICA" currency="USD">AMEX Tick</security>
+    <security code="$TRIA" currency="USD">AMEX Trin</security>
+    <security code="$UNCA" currency="USD">AMEX Unchanged</security>
+    <security code="$UVOA" currency="USD">AMEX Up Volume / 1000</security>
+    <security code="$VOLA" currency="USD">AMEX Volume / 1000</security>
+    <security code="$WBJ" currency="USD">AMEX WEBS AUSTRALIA IOPV     VALUE INDEX</security>
+    <security code="$INY" currency="USD">AMEX WEBS AUSTRIA IOPV       VALUE INDEX</security>
+    <security code="$INK" currency="USD">AMEX WEBS BELGIUM IOPV       VALUE INDEX</security>
+    <security code="$WPB" currency="USD">AMEX WEBS CANADA IOPV        VALUE INDEX</security>
+    <security code="$WBF" currency="USD">AMEX WEBS FRANCE IOPV        VALUE INDEX</security>
+    <security code="$WDG" currency="USD">AMEX WEBS GERMANY SHARES     OUTSTNDG INDEX</security>
+    <security code="$INH" currency="USD">AMEX WEBS HONG KONG IOPV     VALUE INDEX</security>
+    <security code="$INE" currency="USD">AMEX WEBS ITALY IOPV         VALUE UNDEX</security>
+    <security code="$INJ" currency="USD">AMEX WEBS JAPAN IOPV         VALUE INDEX</security>
+    <security code="$INM" currency="USD">AMEX WEBS MALAYSIA IOPV      VALUE INDEX</security>
+    <security code="$INW" currency="USD">AMEX WEBS MEXICO IOPV        VALUE INDEX</security>
+    <security code="$INN" currency="USD">AMEX WEBS NETHERLANDS IOPV   VALUE INDEX</security>
+    <security code="$INR" currency="USD">AMEX WEBS SINGAPORE IOPV     VALUE INDEX</security>
+    <security code="$INP" currency="USD">AMEX WEBS SPAIN IOPV         VALUE INDEX</security>
+    <security code="$WBQ" currency="USD">AMEX WEBS SWEDEN IOPV        VALUE INDEX</security>
+    <security code="$INL" currency="USD">AMEX WEBS SWITZERLAND IOPV   VALUE INDEX</security>
+    <security code="$INU" currency="USD">AMEX WEBS UK IOPV            VALUE INDEX</security>
+    <security code="AMM" currency="USD">AMS Health Sciences, Inc</security>
+    <security code="AX" currency="USD">ARCHIPELAGO HLDGS</security>
+    <security code="ARD/WS" currency="USD">ARENA RESOURCES WTS</security>
+    <security code="AHN" currency="USD">ATC Healthcare, Inc</security>
+    <security code="AVN/R" currency="USD">AVANIR PHARMACEUTICALS CL A</security>
+    <security code="AVN" currency="USD">AVANIR Pharmaceuticals</security>
+    <security code="AXJ" currency="USD">AXM Pharma, Inc</security>
+    <security code="AXO" currency="USD">AXS-One Inc</security>
+    <security code="FAX" currency="USD">Aberdeen Asia-Pacific Income Fund Inc</security>
+    <security code="IAF" currency="USD">Aberdeen Australia Equity Fund, Inc</security>
+    <security code="FCO" currency="USD">Aberdeen Global Income Fund, Inc</security>
+    <security code="AAC" currency="USD">Ableauctions.com, Inc</security>
+    <security code="AIH" currency="USD">Ablest Inc</security>
+    <security code="ABP" currency="USD">Abraxas Petroleum Corp</security>
+    <security code="AXK" currency="USD">Accelr8 Technology Corp</security>
+    <security code="AIX" currency="USD">Access Integrated Technologies, Inc</security>
+    <security code="AKC" currency="USD">Access Pharmaceuticals, Inc</security>
+    <security code="ACU" currency="USD">Acme United Corp</security>
+    <security code="AQR" currency="USD">Acquicor Technology, Inc</security>
+    <security code="AE" currency="USD">Adams Resources &amp; Energy, Inc</security>
+    <security code="ADK" currency="USD">Adcare Health Systems Inc</security>
+    <security code="ADH" currency="USD">Adherex Technologies Inc</security>
+    <security code="AVM" currency="USD">Advanced Magnetics Inc</security>
+    <security code="API" currency="USD">Advanced Photonix, Inc</security>
+    <security code="ACY" currency="USD">AeroCentury Corp</security>
+    <security code="AIM" currency="USD">Aerosonic Corp</security>
+    <security code="$DFW" currency="USD">Aerospace and Defense BRIDGES</security>
+    <security code="ANS" currency="USD">AirNet Systems, Inc</security>
+    <security code="AKN" currency="USD">Akorn, Inc</security>
+    <security code="ALU" currency="USD">Alcatel-Lucent American Depositary Shares</security>
+    <security code="AB" currency="USD">AllianceBernstein Holding L.P. Units</security>
+    <security code="ADG" currency="USD">Allied Defense Group (The), Inc</security>
+    <security code="ALY" currency="USD">Allis-Chalmers Energy Inc</security>
+    <security code="AAU" currency="USD">Almaden Minerals Ltd</security>
+    <security code="APT" currency="USD">Alpha Pro Tech, Ltd</security>
+    <security code="AGD" currency="USD">Alpine Global Dynamic Dividend Fund Common Shares of Beneficial Interest</security>
+    <security code="ALT" currency="USD">Alteon , Inc</security>
+    <security code="AMY" currency="USD">AmReit, Inc</security>
+    <security code="AMV" currency="USD">AmeriVest Properties, Inc</security>
+    <security code="ABL" currency="USD">American Biltrite Inc</security>
+    <security code="XSI" currency="USD">American CareSource Holdings Inc</security>
+    <security code="APO" currency="USD">American Community Properties Trust</security>
+    <security code="AIP" currency="USD">American Israeli Paper Mills Ltd</security>
+    <security code="AMC" currency="USD">American Mortgage Acceptance</security>
+    <security code="AEZ" currency="USD">American Oil &amp; Gas Inc</security>
+    <security code="AOB" currency="USD">American Oriental Bioengineering, Inc. Common Stock</security>
+    <security code="ASE" currency="USD">American Science and Engineering, Inc</security>
+    <security code="AMS" currency="USD">American Shared Hospital Services</security>
+    <security code="AQQ" currency="USD">American Spectrum Realty, Inc</security>
+    <security code="AMK" currency="USD">American Technical Ceramics Corp</security>
+    <security code="TES" currency="USD">American Telecom Services, Inc</security>
+    <security code="AVD" currency="USD">American Vanguard Corporation Common Stock, $.10 par value</security>
+    <security code="AMW" currency="USD">American Water Star, Inc</security>
+    <security code="$DDX" currency="USD">Amex  Disk Drive Index</security>
+    <security code="$XAL" currency="USD">Amex Airline Index</security>
+    <security code="$BTK" currency="USD">Amex Biotechnology Index</security>
+    <security code="$CZH" currency="USD">Amex China Index</security>
+    <security code="$MBO" currency="USD">Amex Chinese Mps Basket Value Index</security>
+    <security code="$XAX" currency="USD">Amex Composite</security>
+    <security code="$HWI" currency="USD">Amex Computer Hardware Index</security>
+    <security code="$XCI" currency="USD">Amex Computer Technology Index</security>
+    <security code="$DFI" currency="USD">Amex Defense Index</security>
+    <security code="$RPE" currency="USD">Amex Electric &amp; Gas Infrastructure</security>
+    <security code="$MEB" currency="USD">Amex Energy Industry Cpn</security>
+    <security code="$AXENV" currency="USD">Amex Environmental Services Index</security>
+    <security code="$DGE" currency="USD">Amex Equal Weighted Pharmaceutical</security>
+    <security code="$HUI" currency="USD">Amex Gold BUGS Index</security>
+    <security code="$GDM" currency="USD">Amex Gold Miners</security>
+    <security code="$HKX" currency="USD">Amex Hong Kong 30 Index</security>
+    <security code="$HKO" currency="USD">Amex Hong Kong Option Index</security>
+    <security code="$XII" currency="USD">Amex Institutional Index</security>
+    <security code="$ADR" currency="USD">Amex International Market Index</security>
+    <security code="$JPN" currency="USD">Amex Japan Index</security>
+    <security code="$XMI" currency="USD">Amex Major Market Index</security>
+    <security code="$MXY" currency="USD">Amex Mexico Index</security>
+    <security code="$GBS" currency="USD">Amex Morgan Stanley Global Basket</security>
+    <security code="$XTC" currency="USD">Amex N American Telecommunications</security>
+    <security code="$XNG" currency="USD">Amex Natural Gas Index</security>
+    <security code="$NWX" currency="USD">Amex Networking Index</security>
+    <security code="$XOI" currency="USD">Amex Oil Index</security>
+    <security code="$DRG" currency="USD">Amex Pharmaceutical Index</security>
+    <security code="$QQV" currency="USD">Amex QQQ Volatility Index</security>
+    <security code="$XBD" currency="USD">Amex Securities Broker/Dealer Index</security>
+    <security code="$UUO" currency="USD">Amex Select Utility Index</security>
+    <security code="$SIS" currency="USD">Amex Semiconductor Index</security>
+    <security code="$STEEL" currency="USD">Amex Steel Index</security>
+    <security code="$PHN" currency="USD">Amex Telecomunications  Index</security>
+    <security code="$TOB" currency="USD">Amex Tobacco Index</security>
+    <security code="NLX" currency="USD">Analex Corp</security>
+    <security code="AND" currency="USD">Andrea Electronics Corp</security>
+    <security code="ANO" currency="USD">Anooraq Resources Corporation</security>
+    <security code="AOM" currency="USD">AnorMed Inc</security>
+    <security code="AIS" currency="USD">Antares Pharma Inc</security>
+    <security code="SIL" currency="USD">Apex Silver Mines Ltd</security>
+    <security code="ATA" currency="USD">Apogee Technology, Inc</security>
+    <security code="AGT" currency="USD">Apollo Gold Corp</security>
+    <security code="AQA" currency="USD">AquaCell Technologies, Inc</security>
+    <security code="KAD" currency="USD">Arcadia Resources, Inc</security>
+    <security code="ARD" currency="USD">Arena Resources, Inc. Common Stock</security>
+    <security code="AZL" currency="USD">Arizona Land Income Corp</security>
+    <security code="AZS" currency="USD">Arizona Star Resource Corp</security>
+    <security code="ARY" currency="USD">Arley Holdings Plc</security>
+    <security code="HRT" currency="USD">Arrhythmia Research Technology, Inc</security>
+    <security code="ASB" currency="USD">Ascendia Brands, Inc</security>
+    <security code="ACD" currency="USD">Asconi Corporation</security>
+    <security code="APY" currency="USD">Aspyra, Inc</security>
+    <security code="ANK" currency="USD">Atlantic Tele-Network, Inc</security>
+    <security code="AZC" currency="USD">Augusta Resource Corporation</security>
+    <security code="AZK" currency="USD">Aurizon Mines Ltd</security>
+    <security code="AOG" currency="USD">Aurora Oil &amp; Gas Corporation</security>
+    <security code="AEN" currency="USD">Austral Pacific Energy Ltd</security>
+    <security code="AWX" currency="USD">Avalon Holdings Corp</security>
+    <security code="AFT" currency="USD">Axesstel, Inc</security>
+    <security code="BGF" currency="USD">B&amp;G Foods, Inc</security>
+    <security code="BHO" currency="USD">B+H Ocean Carriers Ltd</security>
+    <security code="$BUX" currency="USD">B2B Internet HOLDRS Index</security>
+    <security code="BHH" currency="USD">B2B Internet HOLDRs Trust B2B Internet HOLDRs Trust</security>
+    <security code="BMP" currency="USD">BALLARD MED PRODS</security>
+    <security code="BYLp" currency="USD">BAYLAKE CAPITAL TR I</security>
+    <security code="BIRpA" currency="USD">BERKSHIRE RLTY 9.00A</security>
+    <security code="BFF" currency="USD">BFC Financial Corporation</security>
+    <security code="BIO/B" currency="USD">BIO RAD LABS CL B</security>
+    <security code="BIW" currency="USD">BIW Limited</security>
+    <security code="KAZ" currency="USD">BMB Munai, Inc</security>
+    <security code="BNP" currency="USD">BNP Residential Properties, Inc</security>
+    <security code="BWL/A" currency="USD">BOWL AMER INC CL A</security>
+    <security code="BPG" currency="USD">BPI Energy Holdings, Inc</security>
+    <security code="BZP" currency="USD">BPZ Energy, Inc</security>
+    <security code="BFIp" currency="USD">BREMER CAP TR I</security>
+    <security code="TPA" currency="USD">BRIDGES ON TEN COMP</security>
+    <security code="BSM" currency="USD">BSD Medical Corporation</security>
+    <security code="BLVp" currency="USD">BVBC CAP TRU</security>
+    <security code="$MLFOY" currency="USD">Baby Boomer Consumption Index</security>
+    <security code="BUN" currency="USD">BabyUniverse, Inc</security>
+    <security code="BMI" currency="USD">Badger Meter, Inc</security>
+    <security code="BKR" currency="USD">Baker (Michael) Corp</security>
+    <security code="BLD" currency="USD">Baldwin Technology Company, Inc</security>
+    <security code="BTN" currency="USD">Ballantyne of Omaha, Inc</security>
+    <security code="BMA" currency="USD">Banco Macro S.A. American Depositary Shares</security>
+    <security code="BCV" currency="USD">Bancroft Fund Ltd</security>
+    <security code="BAA" currency="USD">Banro Corporation</security>
+    <security code="BHB" currency="USD">Bar Harbor Bankshares, Inc</security>
+    <security code="DJP" currency="USD">Barclays Bank PLC iPath Exchanged Traded Notes due June 12, 2036 Linked to Dow J</security>
+    <security code="BRN" currency="USD">Barnwell Industries, Inc</security>
+    <security code="MWH" currency="USD">Baycorp Holdings, Ltd</security>
+    <security code="BI" currency="USD">Bell Industries, Inc</security>
+    <security code="BEL" currency="USD">Bennett Environmental, Inc</security>
+    <security code="BHL" currency="USD">Berkshire Hills Bancorp, Inc</security>
+    <security code="BNV" currency="USD">Beverly National Corporation</security>
+    <security code="BXL" currency="USD">Bexil Corp</security>
+    <security code="BIO" currency="USD">Bio-Rad Laboratories, Inc (Class A)</security>
+    <security code="BPA" currency="USD">BioSante Pharmaceuticals, Inc</security>
+    <security code="$BTD" currency="USD">Biotech BOXES Indicative Value Inde</security>
+    <security code="$IBH" currency="USD">Biotech HOLDRS Index</security>
+    <security code="BBH" currency="USD">Biotech HOLDRs Trust Biotech HOLDRs Trust</security>
+    <security code="$BPI" currency="USD">Biotech-Pharmaceutical Index</security>
+    <security code="BMD" currency="USD">Birch Mountain Resources Ltd</security>
+    <security code="BMJ" currency="USD">Birks &amp; Mayors Inc</security>
+    <security code="BCT" currency="USD">BlackRock Broad Investment Grade 2009 Term Trust</security>
+    <security code="RAA" currency="USD">BlackRock California Investment Quality Municipal Trust</security>
+    <security code="BCL" currency="USD">BlackRock California Municipal Income Trust II</security>
+    <security code="RFA" currency="USD">BlackRock Florida Investment Quality Municipal Trust</security>
+    <security code="BZM" currency="USD">BlackRock Maryland Municipal Bond Trust</security>
+    <security code="MVF" currency="USD">BlackRock MuniVest Fund, Inc</security>
+    <security code="MZA" currency="USD">BlackRock MuniYield Arizona Fund, Inc</security>
+    <security code="BLE" currency="USD">BlackRock Municipal Income Trust II</security>
+    <security code="RNJ" currency="USD">BlackRock New Jersey Investment Quality Municipal Trust Inc</security>
+    <security code="BLJ" currency="USD">BlackRock New Jersey Municipal Bond Trust</security>
+    <security code="RNY" currency="USD">BlackRock New York Investment Quality Municipal Trust</security>
+    <security code="BFY" currency="USD">BlackRock New York Municipal Income Trust II</security>
+    <security code="BPS" currency="USD">BlackRock Pennsylvania Strategic Municipal Trust</security>
+    <security code="BQY" currency="USD">BlackRock S&amp;P Quality Rankings Global Equity Managed Trust</security>
+    <security code="BHV" currency="USD">BlackRock Virginia Municipal  Bond Trust</security>
+    <security code="BL" currency="USD">Blair Corp</security>
+    <security code="BDR" currency="USD">Blonder Tongue Laboratories, Inc</security>
+    <security code="BBC" currency="USD">Bodisen Biotech Inc</security>
+    <security code="BTJ" currency="USD">Bolt Technology Corp</security>
+    <security code="WEL" currency="USD">Boots and Coots International Well Control, Inc</security>
+    <security code="BVX" currency="USD">Bovie Medical Corporation</security>
+    <security code="BZC" currency="USD">Breeze-Eastern Corporation</security>
+    <security code="BTI" currency="USD">British American Tobacco PLC</security>
+    <security code="$XDH" currency="USD">Broadband HOLDRS Index</security>
+    <security code="BDH" currency="USD">Broadband HOLDRs Trust Broadband HOLDRs Trust</security>
+    <security code="BRB" currency="USD">Brunswick Bancorp</security>
+    <security code="BAQ/U" currency="USD">Builder Acquisition-UNIT</security>
+    <security code="BKC" currency="USD">Burger King Holdings, Inc. Common Stock</security>
+    <security code="CGL/A" currency="USD">CAGLES CL A</security>
+    <security code="CAW" currency="USD">CCA Industries Inc</security>
+    <security code="CDV" currency="USD">CD&amp;L, Inc</security>
+    <security code="CFK" currency="USD">CE Franklin Ltd</security>
+    <security code="CVM" currency="USD">CEL-SCI-Sci Corp</security>
+    <security code="ENV" currency="USD">CET Services, Inc</security>
+    <security code="CXZ" currency="USD">CF TEXAS INST SEQUIN</security>
+    <security code="CGY" currency="USD">CG ALTRIA GP SEQUINS</security>
+    <security code="SMU" currency="USD">CG DJIA UPTURN NTS</security>
+    <security code="EHD" currency="USD">CGF *% HM DEPOT ELKS</security>
+    <security code="PTS" currency="USD">CGF S&amp;P500 INX PPN</security>
+    <security code="EKF" currency="USD">CGM ELKS FM COP&amp;GOLD</security>
+    <security code="CAQ" currency="USD">CGM PPN ASIAN CURR</security>
+    <security code="PNJ" currency="USD">CGM PPN DJ GL TITAN</security>
+    <security code="CIM" currency="USD">CIM High Yield Securities</security>
+    <security code="PDD" currency="USD">CITI GM *% PPN</security>
+    <security code="EBY" currency="USD">CITIGROUP 5 STK ELKS</security>
+    <security code="EBC" currency="USD">CITIGROUP ELKS 5 COM</security>
+    <security code="EKG" currency="USD">CITIGROUP ELKS GENET</security>
+    <security code="PDW" currency="USD">CITIGROUP GBL 1.5 DJ</security>
+    <security code="PDY" currency="USD">CITIGROUP GBL PP NTS</security>
+    <security code="PSC" currency="USD">CITIGROUP GBL S&amp;P500</security>
+    <security code="PQU" currency="USD">CITIGROUP GLB NASDAQ</security>
+    <security code="CZP" currency="USD">CITIGROUP GLB PACERS</security>
+    <security code="QIA" currency="USD">CITIGROUP GLOBAL MAR</security>
+    <security code="SPU" currency="USD">CITIGROUP INC</security>
+    <security code="SSB" currency="USD">CITIGROUP INT IDX</security>
+    <security code="IDJ" currency="USD">CITIGROUP LASERS EUR</security>
+    <security code="CLQ" currency="USD">CITIGROUP SEQUIN CCZ</security>
+    <security code="SPO" currency="USD">CITIGROUP TIERS S&amp;P</security>
+    <security code="SYP" currency="USD">CITIGROUP TIERS S&amp;P5</security>
+    <security code="CDM" currency="USD">CITIGRP 7% SEQUINS</security>
+    <security code="ETI" currency="USD">CITIGRP ELKS TXS INS</security>
+    <security code="PPN" currency="USD">CITIGRP GBL DJ IND</security>
+    <security code="CKX" currency="USD">CKX Lands, Inc</security>
+    <security code="CFS" currency="USD">COMFORCE Corp</security>
+    <security code="CRB/U" currency="USD">COURTSIDE ACQ CORP</security>
+    <security code="CRB/WS" currency="USD">COURTSIDE ACQ WTS</security>
+    <security code="CVU" currency="USD">CPI Aerostructures, Inc</security>
+    <security code="XMM" currency="USD">CROSS MEDIA MKTG NEW</security>
+    <security code="$CTN" currency="USD">CSFB Technology Index</security>
+    <security code="BPFp" currency="USD">CTBI PFD CAP TR II</security>
+    <security code="CVV" currency="USD">CVD Equipment Corp</security>
+    <security code="GBR" currency="USD">CabelTel International Corporation</security>
+    <security code="NBY" currency="USD">Cadence Financial Corporation</security>
+    <security code="KAL" currency="USD">Callisto Pharmaceuticals, Inc</security>
+    <security code="HIV" currency="USD">Calypte Biomedical Corporation</security>
+    <security code="CBJ" currency="USD">Cambior Inc</security>
+    <security code="CAC" currency="USD">Camden National Corp</security>
+    <security code="CNR" currency="USD">CanArgo Energy Corporation</security>
+    <security code="SNG" currency="USD">Canadian Superior Energy, Inc</security>
+    <security code="CNE" currency="USD">Canetic Resources Trust Trust Units</security>
+    <security code="CFW" currency="USD">Cano Petroleum, Inc</security>
+    <security code="ECP" currency="USD">Canterbury Park Holding Corp</security>
+    <security code="CAU" currency="USD">Canyon Resources Corp</security>
+    <security code="RKE" currency="USD">Cap Rock Energy Corp</security>
+    <security code="CAA" currency="USD">Capital Alliance Income Trust Ltd</security>
+    <security code="CJM" currency="USD">Capital Automotive REIT</security>
+    <security code="$CPMKTL" currency="USD">Capital Markets Liquidity Index</security>
+    <security code="CPI" currency="USD">Capital Properties, Inc</security>
+    <security code="CPD" currency="USD">Caraco Pharmaceutical Labortories, Ltd</security>
+    <security code="CDY" currency="USD">Cardero Resource Corp</security>
+    <security code="CTE" currency="USD">CardioTech International, Inc</security>
+    <security code="CNY" currency="USD">Carver Bancorp, Inc</security>
+    <security code="CKN" currency="USD">Cash Systems, Inc</security>
+    <security code="TQ" currency="USD">Cash Technologies, Inc</security>
+    <security code="CAS" currency="USD">Castle (A.M.) &amp; Co</security>
+    <security code="ROX" currency="USD">Castle Brands Inc</security>
+    <security code="CVF" currency="USD">Castle Convertible Fund, Inc</security>
+    <security code="CMQ" currency="USD">Cathay Merchant Group, Inc</security>
+    <security code="CAV" currency="USD">Cavalier Homes, Inc</security>
+    <security code="CLN" currency="USD">Celsion Corp</security>
+    <security code="CVP" currency="USD">Centerplate, Inc</security>
+    <security code="CEF" currency="USD">Central Fund of Canada Limited</security>
+    <security code="GTU" currency="USD">Central Gold-Trust</security>
+    <security code="CET" currency="USD">Central Securities Corp</security>
+    <security code="ICU" currency="USD">Cenuco, Inc</security>
+    <security code="CTU" currency="USD">Chad Therapeutics, Inc</security>
+    <security code="CHQ" currency="USD">Challenger Energy Corp</security>
+    <security code="CHC" currency="USD">CharterMAC Common Shares of Beneficial Interest, no par value</security>
+    <security code="CCF" currency="USD">Chase Corp</security>
+    <security code="LNG" currency="USD">Cheniere Energy, Inc</security>
+    <security code="CVR" currency="USD">Chicago Rivet &amp; Machine Co</security>
+    <security code="CH" currency="USD">Chile Fund, Inc (The)</security>
+    <security code="$WSWDBM" currency="USD">China Metals Basket Index</security>
+    <security code="CRC" currency="USD">Chromcraft Revington, Inc</security>
+    <security code="CXN" currency="USD">Circle Group Holdings, Inc</security>
+    <security code="CIZ" currency="USD">Citizens Holding Company</security>
+    <security code="CSN" currency="USD">City Network, Inc</security>
+    <security code="CGR" currency="USD">Claude Resources, Inc</security>
+    <security code="DCR" currency="USD">Claymore MACROshares Oil Down Tradeable Shares</security>
+    <security code="UCR" currency="USD">Claymore MACROshares Oil Up Tradeable Shares</security>
+    <security code="EEB" currency="USD">Claymore/BNY BRIC ETF</security>
+    <security code="CSD" currency="USD">Claymore/Clear Spin-Off ETF</security>
+    <security code="GRN" currency="USD">Claymore/LGA Green ETF</security>
+    <security code="OTP" currency="USD">Claymore/Ocean Tomo Patent ETF</security>
+    <security code="DEF" currency="USD">Claymore/Sabrient Defender ETF</security>
+    <security code="NFO" currency="USD">Claymore/Sabrient Insider ETF</security>
+    <security code="STH" currency="USD">Claymore/Sabrient Stealth ETF</security>
+    <security code="XRO" currency="USD">Claymore/Zacks Sector Rotation ETF</security>
+    <security code="CVY" currency="USD">Claymore/Zacks Yield Hog ETF</security>
+    <security code="$CTIUS" currency="USD">Cleantech Index</security>
+    <security code="$CLRSO" currency="USD">Clear Spinoff Index</security>
+    <security code="GLV" currency="USD">Clough Global Allocation Fund</security>
+    <security code="GLQ" currency="USD">Clough Global Equity Fund</security>
+    <security code="GLO" currency="USD">Clough Global Opportunities Fund</security>
+    <security code="CRV" currency="USD">Coast Distribution System, Inc (The)</security>
+    <security code="JVA" currency="USD">Coffee Holding Co., Inc</security>
+    <security code="COI" currency="USD">Cogent Communications Group, Inc</security>
+    <security code="CGN" currency="USD">Cognitronics Corp</security>
+    <security code="$RMP" currency="USD">Cohen &amp; Steers REIT Index</security>
+    <security code="DRY" currency="USD">Coinmach Service Corp</security>
+    <security code="DRA" currency="USD">Coinmach Service Corp</security>
+    <security code="CDS" currency="USD">Cold Spring Capital Inc</security>
+    <security code="BOO" currency="USD">Collegiate Pacific Inc</security>
+    <security code="CCA" currency="USD">Colonial California Insured Municipal Fund</security>
+    <security code="CFX" currency="USD">Colonial Insured Municipal Fund</security>
+    <security code="EGR" currency="USD">Commerce Energy Group, Inc</security>
+    <security code="JCS" currency="USD">Communications Systems Inc</security>
+    <security code="BTC/U" currency="USD">Community Bankers ACQU-UNITS</security>
+    <security code="BTC" currency="USD">Community Bankers Acquistion Corporation</security>
+    <security code="SCB" currency="USD">Community Bankshares, Inc</security>
+    <security code="CYL" currency="USD">Community Capital Corp</security>
+    <security code="CTT" currency="USD">Competitive Technologies, Inc</security>
+    <security code="CGM" currency="USD">Congoleum Corp</security>
+    <security code="CTO" currency="USD">Consolidated-Tomoka Land Co</security>
+    <security code="$IXY" currency="USD">Consumer Discretionary Select Sct I</security>
+    <security code="$IXR" currency="USD">Consumer Staples Select Sector Indx</security>
+    <security code="MCF" currency="USD">Contango Oil and Gas Co</security>
+    <security code="CUO" currency="USD">Continental Materials Corp</security>
+    <security code="CNU" currency="USD">Continucare Corporation</security>
+    <security code="CVN" currency="USD">Conversion Services International, Inc</security>
+    <security code="CMT" currency="USD">Core Molding Technologies, Inc.</security>
+    <security code="CBN" currency="USD">Cornerstone Bancorp, Inc</security>
+    <security code="CLM" currency="USD">Cornerstone Strategic Value Fund</security>
+    <security code="CRF" currency="USD">Cornerstone Total Return Fund</security>
+    <security code="ETQ" currency="USD">Corriente Resources Inc</security>
+    <security code="COR" currency="USD">Cortex Pharmaceuticals, Inc</security>
+    <security code="CRB" currency="USD">Courtside Acquisition Corp</security>
+    <security code="DVW" currency="USD">Covad Communications Group, Inc</security>
+    <security code="DHC" currency="USD">Covanta Holding Corporation</security>
+    <security code="CAP" currency="USD">Creative Computer Applications, Inc</security>
+    <security code="CIK" currency="USD">Credit Suisse Asset Management Income Fund, Inc</security>
+    <security code="DHY" currency="USD">Credit Suisse High Yield Bond Fund</security>
+    <security code="CMD" currency="USD">Criticare Systems, Inc</security>
+    <security code="ATX" currency="USD">Cross (A.T.) Co</security>
+    <security code="RUM" currency="USD">Cruzan International, Inc</security>
+    <security code="CRYp" currency="USD">CryoLife, Inc. 6% Convertible Preferred Stock</security>
+    <security code="KRY" currency="USD">Crystallex International Corp</security>
+    <security code="CUB" currency="USD">Cubic Corp</security>
+    <security code="FZN" currency="USD">Cuisine Solutions, Inc</security>
+    <security code="CLG" currency="USD">Cumberland Resources Ltd</security>
+    <security code="CYB" currency="USD">Cybex International</security>
+    <security code="ATC" currency="USD">Cycle Country Accessories Corporation</security>
+    <security code="GTF" currency="USD">Cytomedix, Inc</security>
+    <security code="$DBCIIV" currency="USD">DB Commodity Indx Tracking Fund IIV</security>
+    <security code="$DBCNAV" currency="USD">DB Commodity Indx Tracking Fund NAV</security>
+    <security code="DHB" currency="USD">DHB Industries, Inc</security>
+    <security code="DIA" currency="USD">DIAMONDS</security>
+    <security code="DBX" currency="USD">DJ EURO STOXX 50 IDX</security>
+    <security code="RWR" currency="USD">DJ Wilshire REIT ETF</security>
+    <security code="EII/WS" currency="USD">DK  Dec 2006 15.00 call</security>
+    <security code="DOR" currency="USD">DOR BioPharma, Inc</security>
+    <security code="$NIJ" currency="USD">DOW JONES ISHARES INDUST SECTOR</security>
+    <security code="BIZ" currency="USD">DSL.net, Inc</security>
+    <security code="SRO" currency="USD">DWS RREEF Real Estate Fund II, Inc</security>
+    <security code="SRQ" currency="USD">DWS RREEF Real Estate Fund, Inc</security>
+    <security code="DAR" currency="USD">Darling International Inc</security>
+    <security code="DXR" currency="USD">Daxor Corp</security>
+    <security code="DRV" currency="USD">Debt Resolve Inc</security>
+    <security code="DII" currency="USD">Decorator Industries, Inc</security>
+    <security code="DCZ" currency="USD">Decorize, Inc</security>
+    <security code="VAZ" currency="USD">Delaware Investments Arizona Municipal Income Fund, Inc</security>
+    <security code="VCF" currency="USD">Delaware Investments Colorado Insured Municipal Income Fund, Inc</security>
+    <security code="VFL" currency="USD">Delaware Investments Florida Insured Municipal Income Fund, Inc</security>
+    <security code="VMM" currency="USD">Delaware Investments Minnesota Municipal Income Fund II, Inc</security>
+    <security code="VMN" currency="USD">Delaware Investments Minnesota Municipal Income Fund, Inc</security>
+    <security code="DLA" currency="USD">Delta Apparel, Inc</security>
+    <security code="DFC" currency="USD">Delta Financial Corp</security>
+    <security code="DEZ" currency="USD">Desert Sun Mining Corp</security>
+    <security code="$CROCI" currency="USD">Deutsche Bank CROCI  US+ Index</security>
+    <security code="$CRCEU" currency="USD">Deutsche Bank CROCI Europe+ Index</security>
+    <security code="$CRCJP" currency="USD">Deutsche Bank CROCI Japan+ Index</security>
+    <security code="$DXE" currency="USD">Deutsche Bank Energy Index</security>
+    <security code="DYX" currency="USD">DiaSys Corp</security>
+    <security code="DOC" currency="USD">Digital Angel Corp</security>
+    <security code="DPW" currency="USD">Digital Power Corp</security>
+    <security code="DIO" currency="USD">Diomed Holdings, Inc</security>
+    <security code="DMC" currency="USD">Document Security Systems, Inc</security>
+    <security code="DMF" currency="USD">Dreyfus Municipal Income, Inc</security>
+    <security code="DCU" currency="USD">Dryclean USA, Inc</security>
+    <security code="DNE" currency="USD">Dune Energy, Inc</security>
+    <security code="DIL" currency="USD">Dyadic International, Inc</security>
+    <security code="$ILR" currency="USD">Dynamic Aggr. Growth Intellidex</security>
+    <security code="$DHD" currency="USD">Dynamic Banking Intellidex</security>
+    <security code="$EZB" currency="USD">Dynamic Basic Mat Sector Intellidex</security>
+    <security code="$DZO" currency="USD">Dynamic Biotech &amp; Genome Intellidex</security>
+    <security code="$DWC" currency="USD">Dynamic Bld &amp; Const. Intellidex</security>
+    <security code="$EZZ" currency="USD">Dynamic Cons Dscr Sector Intellidex</security>
+    <security code="$EZS" currency="USD">Dynamic Cons Stpl Sector Intellidex</security>
+    <security code="$ILU" currency="USD">Dynamic Deep Value Intellidex Index</security>
+    <security code="$DWE" currency="USD">Dynamic Ener Expl &amp; Prod Intellidex</security>
+    <security code="$EZK" currency="USD">Dynamic Energy Sector Intellidex</security>
+    <security code="$EZF" currency="USD">Dynamic Financial Sector Intellidex</security>
+    <security code="$DZF" currency="USD">Dynamic Food &amp; Beverage Intellidex</security>
+    <security code="$DZH" currency="USD">Dynamic Hardware &amp; Consumer EI</security>
+    <security code="$DHC" currency="USD">Dynamic Healthcare Svcs Intellidex</security>
+    <security code="$EZX" currency="USD">Dynamic Hlthcare Sector Intellidex</security>
+    <security code="$EZL" currency="USD">Dynamic Industr. Sector Intellidex</security>
+    <security code="$DWJ" currency="USD">Dynamic Insurance Intellidex</security>
+    <security code="$ILH" currency="USD">Dynamic Large Cap Growth Intellidex</security>
+    <security code="$IEB" currency="USD">Dynamic Large Cap Intellidex</security>
+    <security code="$ILW" currency="USD">Dynamic Large Cap Value Intellidex</security>
+    <security code="$DZL" currency="USD">Dynamic Leisure &amp; Entertainment Int</security>
+    <security code="$DYI" currency="USD">Dynamic Market Intellidex Index</security>
+    <security code="$DZM" currency="USD">Dynamic Media Intellidex</security>
+    <security code="$ILJ" currency="USD">Dynamic Mid Cap Growth Intellidex</security>
+    <security code="$IEK" currency="USD">Dynamic Mid Cap Intellidex</security>
+    <security code="$ILP" currency="USD">Dynamic Mid Cap Value Intellidex</security>
+    <security code="$DZN" currency="USD">Dynamic Networking Intellidex</security>
+    <security code="$DYO" currency="USD">Dynamic OTC Intellidex Index</security>
+    <security code="$DWO" currency="USD">Dynamic Oil Services Intellidex</security>
+    <security code="$DZR" currency="USD">Dynamic Pharmaceutical Intellidex</security>
+    <security code="$DWR" currency="USD">Dynamic Retail Intellidex</security>
+    <security code="$DZE" currency="USD">Dynamic Semiconductor Intellidex</security>
+    <security code="$ILK" currency="USD">Dynamic Small Cap Growth Intellidex</security>
+    <security code="$IEY" currency="USD">Dynamic Small Cap Intellidex</security>
+    <security code="$ILZ" currency="USD">Dynamic Small Cap Value Intellidex</security>
+    <security code="$DZC" currency="USD">Dynamic Software Intellidex</security>
+    <security code="$DWY" currency="USD">Dynamic T &amp; W Intellidex</security>
+    <security code="$EZV" currency="USD">Dynamic Tech Sector Intellidex</security>
+    <security code="$DYH" currency="USD">Dynamic Top 200 Intellidex</security>
+    <security code="$DWU" currency="USD">Dynamic Utilities Intellidex</security>
+    <security code="EXX/A" currency="USD">E X X INC CL A</security>
+    <security code="EXX/B" currency="USD">E X X INC CL B</security>
+    <security code="EZYpA" currency="USD">EASY GARDENER TR I</security>
+    <security code="EFC" currency="USD">EFC Bancorp, Inc</security>
+    <security code="ENG" currency="USD">ENGlobal Corp</security>
+    <security code="ERH/WD" currency="USD">EVGN UT HI INC FD WD</security>
+    <security code="EAG" currency="USD">Eagle Broadband, Inc</security>
+    <security code="EML" currency="USD">Eastern Company (The)</security>
+    <security code="CEV" currency="USD">Eaton Vance California Municipal Income Trust</security>
+    <security code="FEV" currency="USD">Eaton Vance Florida Municipal Income Trust</security>
+    <security code="EVM" currency="USD">Eaton Vance Insured California Bond Fund</security>
+    <security code="EIA" currency="USD">Eaton Vance Insured California Municipal Bond Fund II</security>
+    <security code="EIF" currency="USD">Eaton Vance Insured Florida Municipal Bond Fund</security>
+    <security code="MAB" currency="USD">Eaton Vance Insured Massachusetts Municipal Bond Fund</security>
+    <security code="MIW" currency="USD">Eaton Vance Insured Michigan Municipal Bond Fund</security>
+    <security code="EIM" currency="USD">Eaton Vance Insured Municipal Bond Fund</security>
+    <security code="EIV" currency="USD">Eaton Vance Insured Municipal Bond Fund II</security>
+    <security code="EMJ" currency="USD">Eaton Vance Insured New Jersey Municipal Bond Fund</security>
+    <security code="ENX" currency="USD">Eaton Vance Insured New York Bond Fund</security>
+    <security code="NYH" currency="USD">Eaton Vance Insured New York Municipal Bond Fund II</security>
+    <security code="EIO" currency="USD">Eaton Vance Insured Ohio Municipal Bond Fund</security>
+    <security code="EIP" currency="USD">Eaton Vance Insured Pennsylvania Municipal Bond Fund</security>
+    <security code="EVV" currency="USD">Eaton Vance Limited Duration Income Fund</security>
+    <security code="MMV" currency="USD">Eaton Vance Massachusetts Municipal Income Trust</security>
+    <security code="EMI" currency="USD">Eaton Vance Michigan Municipal Income Trust</security>
+    <security code="EVJ" currency="USD">Eaton Vance New Jersey Municipal Income Trust</security>
+    <security code="EVY" currency="USD">Eaton Vance New York Municipal Income Trust</security>
+    <security code="EVO" currency="USD">Eaton Vance Ohio Municipal Income Trust</security>
+    <security code="EVP" currency="USD">Eaton Vance Pennsylvania Municipal Income Trust</security>
+    <security code="$ECONDX" currency="USD">Eco*Index Index</security>
+    <security code="EEI" currency="USD">Ecology and Environment, Inc</security>
+    <security code="EGO" currency="USD">Eldorado Gold Corp</security>
+    <security code="ASY" currency="USD">Elecsys Corp</security>
+    <security code="ELC" currency="USD">Electric City Corp</security>
+    <security code="ELI" currency="USD">Elite Pharmaceuticals, Inc</security>
+    <security code="ECF" currency="USD">Ellsworth Fund Ltd</security>
+    <security code="ETF" currency="USD">Emerging Markets Telecommunications Fund, Inc (The)</security>
+    <security code="ESC" currency="USD">Emeritus Corp</security>
+    <security code="MSN" currency="USD">Emerson Radio Corp</security>
+    <security code="EFH" currency="USD">Empire Financial Holding Co</security>
+    <security code="ERS" currency="USD">Empire Resources, Inc</security>
+    <security code="ECI" currency="USD">Encision, Inc</security>
+    <security code="EDA" currency="USD">Endeavor Acquisition Corp</security>
+    <security code="END" currency="USD">Endeavour International Corporation</security>
+    <security code="EXK" currency="USD">Endeavour Silver Corp</security>
+    <security code="ENY" currency="USD">EnerNorth Industries Inc</security>
+    <security code="FEN" currency="USD">Energy Income and Growth Fund</security>
+    <security code="EII" currency="USD">Energy Infrastructure Acquisition Corporation</security>
+    <security code="$IXE" currency="USD">Energy Select Sector Index</security>
+    <security code="EGX" currency="USD">Engex, Inc</security>
+    <security code="ENA" currency="USD">Enova Systems, Inc</security>
+    <security code="EGI" currency="USD">Entree Gold Inc</security>
+    <security code="EPG" currency="USD">Environmental Power Corporation</security>
+    <security code="ETC" currency="USD">Environmental Tectonics Corp</security>
+    <security code="ATF" currency="USD">Equity Income Fund, First Exchange Series</security>
+    <security code="ESP" currency="USD">Espey Mfg. &amp; Electronics Corp</security>
+    <security code="EZM" currency="USD">EuroZinc Mining Corporation</security>
+    <security code="$EKI" currency="USD">Europe 2001 HOLDRS Index</security>
+    <security code="EKH" currency="USD">Europe 2001 HOLDRs Trust Europe 2001 HOLDRs Trust</security>
+    <security code="EAD" currency="USD">Evergreen Income Advantage Fund</security>
+    <security code="ERC" currency="USD">Evergreen Managed Income Fund</security>
+    <security code="ERH" currency="USD">Evergreen Utilities and High Income Fund</security>
+    <security code="EPM" currency="USD">Evolution Petroleum Corporation</security>
+    <security code="EXM" currency="USD">Excel Maritime Carriers Ltd. Class A Common shares, par value $0.01</security>
+    <security code="XRA" currency="USD">Exeter Resource Corporation</security>
+    <security code="XPO" currency="USD">Express-1 Expedited Solutions, Inc</security>
+    <security code="FZBp" currency="USD">FCB/NC CAPITAL TR II</security>
+    <security code="FLT/WS" currency="USD">FLIGHT SAFETY WARNTS</security>
+    <security code="FNX" currency="USD">FNX Mining Company, Inc</security>
+    <security code="$FFY.NV" currency="USD">FORTUNE 500 INDEX FUND INDEX</security>
+    <security code="FNGp" currency="USD">FRONT RANGE CAP TR I</security>
+    <security code="$EUR" currency="USD">FTSE Eurotop 100 Index</security>
+    <security code="FSN/WS" currency="USD">FUSION TELECOM WTS</security>
+    <security code="FTG" currency="USD">Farmstead Telephone Group, Inc</security>
+    <security code="$FGL" currency="USD">Fastest Growing LargeCap 50 Index</security>
+    <security code="$FGM" currency="USD">Fastest Growing MidCap 300 Index</security>
+    <security code="$FGT" currency="USD">Fastest Growing Total Market Index</security>
+    <security code="FDT" currency="USD">Federal Trust Corp</security>
+    <security code="FNT" currency="USD">Fidelity National Title Group, Inc.</security>
+    <security code="FPP" currency="USD">FieldPoint Petroleum Corporation</security>
+    <security code="$IXM" currency="USD">Financial Select Sector Index</security>
+    <security code="$MBM" currency="USD">Fincl Srvcs BRIDGES Basket Val Idx</security>
+    <security code="MXN" currency="USD">First American Minnesota Municipal Income Fund II</security>
+    <security code="ISL" currency="USD">First Israel Fund, Inc (The)</security>
+    <security code="FBT" currency="USD">First Trust Amex Biotechnology Index Fund</security>
+    <security code="FDV" currency="USD">First Trust DB Strategic Value Index Fund</security>
+    <security code="FDN" currency="USD">First Trust Dow Jones Internet Index Fund</security>
+    <security code="FDM" currency="USD">First Trust Dow Jones Select MicroCap Index Fund</security>
+    <security code="FPX" currency="USD">First Trust IPOX-100 Index Fund</security>
+    <security code="FDL" currency="USD">First Trust Morningstar Dividend Leaders Index Fund</security>
+    <security code="FPI" currency="USD">First Trust Tax Advantage Preferred Income Fund</security>
+    <security code="FVL" currency="USD">First Trust Value Line 100 Fund</security>
+    <security code="FVD" currency="USD">First Trust Value Line Dividend Index Fund</security>
+    <security code="FVI" currency="USD">First Trust Value Line Equity Allocation Index Fund</security>
+    <security code="FCM" currency="USD">First Trust/Four Corners Senior Floating Rate Income Fund</security>
+    <security code="FWV" currency="USD">First West Virginia Bancorp, Inc</security>
+    <security code="FVE" currency="USD">Five Star Quality Care, Inc</security>
+    <security code="FSI" currency="USD">Flexible Solutions International, Inc</security>
+    <security code="FLT" currency="USD">Flight Safety Technologies, Inc</security>
+    <security code="FPU" currency="USD">Florida Public Utilities Co</security>
+    <security code="FTK" currency="USD">Flotek Industries Inc</security>
+    <security code="FSM" currency="USD">Foodarama Supermarkets, Inc</security>
+    <security code="$FFX" currency="USD">Fortune 500</security>
+    <security code="FFI" currency="USD">Fortune Industries, Inc</security>
+    <security code="FPB" currency="USD">Fountain Powerboat Industries Inc</security>
+    <security code="FXX" currency="USD">Foxby Corp</security>
+    <security code="FEP" currency="USD">Franklin Electronic Publishing, Inc</security>
+    <security code="FSP" currency="USD">Franklin Street Properties Corp</security>
+    <security code="FTF" currency="USD">Franklin Templeton Limited Duration Income Trust</security>
+    <security code="FRH" currency="USD">Freedom Acquisition Holdings, Inc</security>
+    <security code="FRH/U" currency="USD">Freedom Acquisitions</security>
+    <security code="FEI" currency="USD">Frequency Electronics, Inc</security>
+    <security code="FRD" currency="USD">Friedman Industries, Inc</security>
+    <security code="FRN" currency="USD">Friendly Ice Cream Corp</security>
+    <security code="FRG" currency="USD">Fronteer Development Group Inc</security>
+    <security code="FLL" currency="USD">Full House Resorts, Inc</security>
+    <security code="FSN" currency="USD">Fusion Telecommunications International, Inc</security>
+    <security code="GAN" currency="USD">GAINSCO, INC</security>
+    <security code="HOOpA" currency="USD">GLACIER WTR TR9.0625</security>
+    <security code="GCGC" currency="USD">GOLDEN CYCLE GOLD CO</security>
+    <security code="GVP" currency="USD">GSE Systems, Inc</security>
+    <security code="$GSR" currency="USD">GSSI Natural Resources Index</security>
+    <security code="GWBpB" currency="USD">GWB CAP TR II</security>
+    <security code="GGN" currency="USD">Gabelli Global Gold, Natural Resources &amp; Income Trust (The)</security>
+    <security code="GLU" currency="USD">Gabelli Global Utility &amp; Income Trust (The)</security>
+    <security code="GAX" currency="USD">Galaxy Energy Corporation</security>
+    <security code="GXY" currency="USD">Galaxy Nutritional Foods, Inc</security>
+    <security code="GRS" currency="USD">Gammon Lake Resources, Inc</security>
+    <security code="GSX" currency="USD">Gasco Energy, Inc</security>
+    <security code="GST" currency="USD">Gastar Exploration Ltd</security>
+    <security code="JOB" currency="USD">General Employment Enterprises, Inc</security>
+    <security code="GFN" currency="USD">General Finance Corporation</security>
+    <security code="GBI" currency="USD">Genesis Bioventures, Inc</security>
+    <security code="GEL" currency="USD">Genesis Energy, L.P.</security>
+    <security code="GLS" currency="USD">Genesis Lease Ltd</security>
+    <security code="GNT" currency="USD">Gentium SpA</security>
+    <security code="GGR" currency="USD">GeoGlobal Resources Inc</security>
+    <security code="HOO" currency="USD">Glacier Water Services, Inc</security>
+    <security code="GLE" currency="USD">Glencairn Gold Corporation</security>
+    <security code="GEE" currency="USD">Global Entertainment Corporation</security>
+    <security code="GIF" currency="USD">Global Income Fund, Inc</security>
+    <security code="GLA" currency="USD">Global Logistics Acquisition Corporation</security>
+    <security code="GTE" currency="USD">GlobeTel Communications Corp</security>
+    <security code="GEX" currency="USD">Globix Corporation</security>
+    <security code="$DJG" currency="USD">Gold Mining Cmps PLUS Bskt Val Indx</security>
+    <security code="GRZ" currency="USD">Gold Reserve Inc</security>
+    <security code="GSS" currency="USD">Golden Star Resources Ltd</security>
+    <security code="GV" currency="USD">Goldfield Corp (The)</security>
+    <security code="GTA" currency="USD">Golf Trust of America, Inc</security>
+    <security code="GRC" currency="USD">Gorman-Rupp Company (The)</security>
+    <security code="GOV" currency="USD">Gouverneur Bancorp, Inc</security>
+    <security code="GHM" currency="USD">Graham Corp</security>
+    <security code="GHN" currency="USD">Granahan McCourt Acquisition Corporation</security>
+    <security code="GBN" currency="USD">Great Basin Gold Ltd</security>
+    <security code="GPRE" currency="USD">Green Plains Renewable Energy, Inc.</security>
+    <security code="GW" currency="USD">Grey Wolf, Inc</security>
+    <security code="GAV" currency="USD">Grubb &amp; Ellis Realty Advisors, Inc</security>
+    <security code="SIM" currency="USD">Grupo Simec S.A.B. de C.V.</security>
+    <security code="HDP" currency="USD">HD Partners Acquisition Corporation</security>
+    <security code="HAQ/U" currency="USD">HEALTHCARE ACQ CORP</security>
+    <security code="HLMp" currency="USD">HILLMAN GR CAP 11.6</security>
+    <security code="HMG" currency="USD">HMG/Courtland Properties, Inc</security>
+    <security code="HCO/WS" currency="USD">HYPERSPACE COMM WRTS</security>
+    <security code="HX" currency="USD">Halifax Corp</security>
+    <security code="HAF" currency="USD">Hallmark Financial Services, Inc</security>
+    <security code="HWG" currency="USD">Hallwood Group Incorporated (The)</security>
+    <security code="HTI" currency="USD">Halozyme Therapeutics, Inc</security>
+    <security code="$HXC" currency="USD">Halter USX China Index</security>
+    <security code="$HXI" currency="USD">Halter USX India Index</security>
+    <security code="HBX" currency="USD">Hana Biosciences, Inc</security>
+    <security code="HCM" currency="USD">Hanover Capital Mortgage Holdings, Inc</security>
+    <security code="HAC" currency="USD">Harbor Acquisition Corporation</security>
+    <security code="HEC" currency="USD">Harken Energy Corp</security>
+    <security code="HA" currency="USD">Hawaiian Holdings, Inc</security>
+    <security code="HWK" currency="USD">Hawk Corporation</security>
+    <security code="$IXV" currency="USD">Health Care Select Sector Index</security>
+    <security code="HAQ" currency="USD">Healthcare Acquisition Corp</security>
+    <security code="$PHP" currency="USD">Healthcare PRUDENTS Underlying Bskt</security>
+    <security code="EAR" currency="USD">HearUSA, Inc</security>
+    <security code="HTL" currency="USD">Heartland Partners, LP</security>
+    <security code="HCT" currency="USD">Hector Communications Corp</security>
+    <security code="HEB" currency="USD">Hemispherx Biopharma, Inc</security>
+    <security code="HEM" currency="USD">HemoSense Inc</security>
+    <security code="HBE" currency="USD">Henry Bros. Electronics, Inc</security>
+    <security code="HT" currency="USD">Hersha Hospitality Trust</security>
+    <security code="HSR" currency="USD">Hi-Shear Technology Corp</security>
+    <security code="HOM" currency="USD">Home Solutions of America, Inc</security>
+    <security code="HH" currency="USD">Hooper Holmes, Inc</security>
+    <security code="HGO" currency="USD">Houston American Energy Corp</security>
+    <security code="HTC" currency="USD">Hungarian Telephone and Cable Corp</security>
+    <security code="HBY" currency="USD">Hybridon, Inc</security>
+    <security code="HCO" currency="USD">HyperSpace Communications, Inc</security>
+    <security code="HDY" currency="USD">Hyperdynamics Corporation</security>
+    <security code="ITL" currency="USD">I</security>
+    <security code="$NJJ.NV" currency="USD">I SHARES S&amp;P MDCP 400/BARRA INDEX</security>
+    <security code="ISR/WS" currency="USD">I-SECTOR WARRANTS</security>
+    <security code="DMX" currency="USD">I-Trax, Inc</security>
+    <security code="IAO" currency="USD">IA Global, Inc</security>
+    <security code="IAG" currency="USD">IAMGOLD Corporation Common Shares</security>
+    <security code="IRW" currency="USD">IBT Bancorp, Inc</security>
+    <security code="IFT" currency="USD">IFT Corporation</security>
+    <security code="IG" currency="USD">IGI, Inc</security>
+    <security code="ILX" currency="USD">ILX Resorts Inc</security>
+    <security code="IMR" currency="USD">IMA Exploration, Inc</security>
+    <security code="IME" currency="USD">IMI International Medical Innovations, Inc</security>
+    <security code="IMX/WS" currency="USD">IMPLANT SCIENCES WS</security>
+    <security code="ILY" currency="USD">INDEX LASERS NIK 225</security>
+    <security code="$NIZ" currency="USD">INDEX RUSSELL NDCP INDEX INDEX</security>
+    <security code="$ETZ" currency="USD">INEV for 8% T. I. STRS due 3/30/10</security>
+    <security code="$DIB" currency="USD">INEV for 8% T.I. STRS</security>
+    <security code="$DEY" currency="USD">INEV for STRS due 07/30/2011</security>
+    <security code="$ETT" currency="USD">INEV for STRS due 12/17/09</security>
+    <security code="IGR" currency="USD">ING Clarion Global Real Estate Income Fund</security>
+    <security code="IIA" currency="USD">ING Clarion Real Estate Income Fund</security>
+    <security code="IFK" currency="USD">INTL FIN S&amp;P MITTS</security>
+    <security code="IED" currency="USD">INVESTools, Inc.</security>
+    <security code="ISR" currency="USD">INX Inc.</security>
+    <security code="ION" currency="USD">ION Media Networks, Inc</security>
+    <security code="ISO" currency="USD">ISCO International, Inc</security>
+    <security code="$ICG.NV" currency="USD">ISHARES COHEN &amp; STEERS RLTY INDEX</security>
+    <security code="$ICG" currency="USD">ISHARES COHEN&amp;STEERS RLTY INDEX</security>
+    <security code="$NLB.NV" currency="USD">ISHARES DJ US BASIC MATL SEC INDEX</security>
+    <security code="$NLL.NV" currency="USD">ISHARES DJ US CNSMR CYCL SEC INDEX</security>
+    <security code="$NMJ.NV" currency="USD">ISHARES DJ US CONSMR NO CYCL INDEX</security>
+    <security code="$NLE.NV" currency="USD">ISHARES DJ US ENERGY SECTOR INDEX</security>
+    <security code="$NLF.NV" currency="USD">ISHARES DJ US FINCL SECT INDEX</security>
+    <security code="$NAG.NV" currency="USD">ISHARES DJ US FINL SVCS INDEX</security>
+    <security code="$NHG.NV" currency="USD">ISHARES DJ US HLTHCARE SELT INDEX</security>
+    <security code="$NLR.NV" currency="USD">ISHARES DJ US REAL EST SECT INDEX</security>
+    <security code="$NJW.NV" currency="USD">ISHARES DJ US TECH SELECT INDEX</security>
+    <security code="$NLU.NV" currency="USD">ISHARES DJ US UTIL SECT INDEX</security>
+    <security code="$NLL" currency="USD">ISHARES DOW JONES US CONS CYCL</security>
+    <security code="$NMJ" currency="USD">ISHARES DOW JONES US CONS NONCYCL</security>
+    <security code="$NJZ.NV" currency="USD">ISHARES FD US TEL SECT INDEX</security>
+    <security code="$IPM.NV" currency="USD">ISHARES GOLDMAN SACH TEC IDX INDEX</security>
+    <security code="$NGJ.NV" currency="USD">ISHARES GS NATL RESRCES IDX NET ASSET VALUE</security>
+    <security code="$NJH.NV" currency="USD">ISHARES MDCAP 400 FD INDEX</security>
+    <security code="$WWC" currency="USD">ISHARES MSCI BRAZIL INDEX</security>
+    <security code="$EFV.NV" currency="USD">ISHARES MSCI EAFE INDEX FUND NET ASSET VALUE</security>
+    <security code="$WEM" currency="USD">ISHARES MSCI EMU IOPV</security>
+    <security code="$EPK" currency="USD">ISHARES MSCI PACIFIC EXC JPN INDEX</security>
+    <security code="$EPK.NV" currency="USD">ISHARES MSCI PACIFIC EXC JPN NET ASSET VALUE</security>
+    <security code="$IBF" currency="USD">ISHARES NASDAQ BIOTECHNOLOGY INDEX</security>
+    <security code="$NJB.NV" currency="USD">ISHARES RUSSELL 1000 FD INDEX</security>
+    <security code="$NJU.NV" currency="USD">ISHARES RUSSELL 1000 VAL FD INDEX</security>
+    <security code="$NJM.NV" currency="USD">ISHARES RUSSELL 2000 FD INDEX</security>
+    <security code="$NLO.NV" currency="USD">ISHARES RUSSELL 2000 GR INDX INDEX</security>
+    <security code="$NAJ.NV" currency="USD">ISHARES RUSSELL 2000 VL INDX INDEX</security>
+    <security code="$NMV.NV" currency="USD">ISHARES RUSSELL 3000 FD INDEX</security>
+    <security code="$NBE" currency="USD">ISHARES RUSSELL 3000 GRWTH INDX</security>
+    <security code="$NNW.NV" currency="USD">ISHARES RUSSELL 3000 VAL INDEX</security>
+    <security code="$NIW" currency="USD">ISHARES RUSSELL INDEX GROWTH INDEX</security>
+    <security code="$NIV" currency="USD">ISHARES RUSSELL INDEX VALUE INDEX</security>
+    <security code="$NIZ.NV" currency="USD">ISHARES RUSSELL MDCP INDX FD INDEX</security>
+    <security code="$NIW.NV" currency="USD">ISHARES RUSSELL MDCP INDX GR INDEX</security>
+    <security code="$NIV.NV" currency="USD">ISHARES RUSSELL MDCP VAL FD INDEX</security>
+    <security code="$NBE.NV" currency="USD">ISHARES RUSSELL3000 GRWTH INDEX</security>
+    <security code="$NLG" currency="USD">ISHARES S&amp;P EUROPE 350 INDX</security>
+    <security code="$XGC" currency="USD">ISHARES S&amp;P GLB ENERGY SECTR INDEX</security>
+    <security code="$XGC.NV" currency="USD">ISHARES S&amp;P GLB ENERGY SECTR NET ASSET VALUE</security>
+    <security code="$XGJ" currency="USD">ISHARES S&amp;P GLB HLTHCARE STR INDEX</security>
+    <security code="$XGJ.NV" currency="USD">ISHARES S&amp;P GLB HLTHCARE STR NET ASSET VALUE</security>
+    <security code="$XGN" currency="USD">ISHARES S&amp;P GLB INF TECHNLGY INDEX</security>
+    <security code="$XGN.NV" currency="USD">ISHARES S&amp;P GLB INF TECHNLGY NET ASSET VALUE</security>
+    <security code="$XHP.NV" currency="USD">ISHARES S&amp;P GLB TELECOMMNS NET ASSET VALUE</security>
+    <security code="$XGG" currency="USD">ISHARES S&amp;P GLBL FINLS SECTR INDEX</security>
+    <security code="$XGG.NV" currency="USD">ISHARES S&amp;P GLBL FINLS SECTR NET ASSET VALUE</security>
+    <security code="$NNK.NV" currency="USD">ISHARES S&amp;P MCP400/BARRA GTH INDEX</security>
+    <security code="$NNK" currency="USD">ISHARES S&amp;P MIDCAP 400 BAR GROWTH</security>
+    <security code="$NJJ" currency="USD">ISHARES S&amp;P MIDCAP 400 BAR VAR</security>
+    <security code="$NJS.NV" currency="USD">ISHARES S&amp;P SMC600/BARRA VAL INDEX</security>
+    <security code="$NLT" currency="USD">ISHARES S&amp;P SMCAP 600 BAR GRWTH</security>
+    <security code="$NJS" currency="USD">ISHARES S&amp;P SMCAP 600 BAR VALUE</security>
+    <security code="$NIR.NV" currency="USD">ISHARES S&amp;P SMCP 600 FD INDEX</security>
+    <security code="$NLT.NV" currency="USD">ISHARES S&amp;P SMCP600 BARRA GR INDEX</security>
+    <security code="$NME.NV" currency="USD">ISHARES S&amp;P500 BARRA VAL INDEX</security>
+    <security code="$NJZ" currency="USD">ISHARES TELCO SEC INDEX</security>
+    <security code="$EFV" currency="USD">ISHARS MSCI EAFE IDX FD IOPV INDEX</security>
+    <security code="$NVK" currency="USD">ISHS GLDMAN NETWORK UNDRLYNG INDEX</security>
+    <security code="$NVV" currency="USD">ISHS GLDMAN SOFTWR UNDRLYNG INDEX</security>
+    <security code="$NVV.NV" currency="USD">ISHS GOLDMAN SACHS SOFTWARE INDEX</security>
+    <security code="$NVK.NV" currency="USD">ISHS GOLDMN SACHS NETWORKING INDEX</security>
+    <security code="$NVW.NV" currency="USD">ISHS GOLDMN SACHS SEMICNDCTR INDEX</security>
+    <security code="$NVW" currency="USD">ISHS GOLDMN SEMI UNDERLYING INDEX</security>
+    <security code="IVX" currency="USD">IVAX Corp</security>
+    <security code="IVD" currency="USD">IVAX Diagnostics,  Inc</security>
+    <security code="SBA" currency="USD">IYY  Jun 2007 62.00 put</security>
+    <security code="GMO" currency="USD">Idaho General Mines, Inc</security>
+    <security code="IDP" currency="USD">Idera Pharmaceuticals, Inc</security>
+    <security code="IW" currency="USD">Imageware Systems, Inc</security>
+    <security code="IMM" currency="USD">Immtech Pharmaceuticals, Inc</security>
+    <security code="IMO" currency="USD">Imperial Oil Ltd</security>
+    <security code="IMX" currency="USD">Implant Sciences Corp</security>
+    <security code="IOT" currency="USD">Income Opportunity Realty Investors, Inc</security>
+    <security code="ILB" currency="USD">Index LASERS based upon the Dow Jones Industrial Average</security>
+    <security code="IGC" currency="USD">India Globalization Capital, Inc</security>
+    <security code="IGC/WS" currency="USD">India Globalization Capital, Inc Warrants</security>
+    <security code="IF" currency="USD">Indonesia Fund (The)</security>
+    <security code="$IXD" currency="USD">Industrial 15 Index</security>
+    <security code="$IXI" currency="USD">Industrial Select Sector Index</security>
+    <security code="IFO" currency="USD">InfoSonics Corporation</security>
+    <security code="IHT" currency="USD">InnSuites Hospitality Trust</security>
+    <security code="INO" currency="USD">Inovio Biomedical Corporation</security>
+    <security code="ISV" currency="USD">Insite Vision, Inc</security>
+    <security code="$IXH" currency="USD">Institutional Holdings Index</security>
+    <security code="INB" currency="USD">Integrated BioPharma, Inc</security>
+    <security code="IDN" currency="USD">Intelli-Check, Inc</security>
+    <security code="INS" currency="USD">Intelligent Systems Corp</security>
+    <security code="$IIX" currency="USD">Inter@ctive Week Internet Index</security>
+    <security code="IOC" currency="USD">InterOil Corporation</security>
+    <security code="IGO" currency="USD">InterSearch Group Inc</security>
+    <security code="ILI" currency="USD">Interleukin Genetics, Inc</security>
+    <security code="MIX" currency="USD">Intermix Media, Inc</security>
+    <security code="IIP" currency="USD">Internap Network Services Corporation</security>
+    <security code="IAX" currency="USD">International Absorbents</security>
+    <security code="ROY" currency="USD">International Royalty Corporation</security>
+    <security code="$XAH" currency="USD">Internet Architecture HOLDRS Index</security>
+    <security code="IAH" currency="USD">Internet Architecture HOLDRs Trust Internet Architecture HOLDRs Trust</security>
+    <security code="$HHI" currency="USD">Internet HOLDRS Index</security>
+    <security code="HHH" currency="USD">Internet HOLDRs Trust Internet HOLDRs Trust</security>
+    <security code="$YIH" currency="USD">Internet Infrastructure HOLDRS Indx</security>
+    <security code="IIH" currency="USD">Internet Infrastructure HOLDRs Trust Internet Infrastructure HOLDRs Trust</security>
+    <security code="IPA" currency="USD">Interpharm Holdings, Inc.</security>
+    <security code="IHR" currency="USD">Interstate Hotels &amp; Resorts, Inc. Common Stock</security>
+    <security code="$EFK" currency="USD">Intl Indices Propels Bkt Val Index</security>
+    <security code="IIN" currency="USD">IntriCon Corporation</security>
+    <security code="IMA" currency="USD">Inverness Medical Innovations, Inc</security>
+    <security code="ICH" currency="USD">Investors Capital Holdings, Ltd</security>
+    <security code="IOX" currency="USD">Iomed, Inc</security>
+    <security code="IPI" currency="USD">Island Pacific, Inc</security>
+    <security code="ILE" currency="USD">Isolagen, Inc</security>
+    <security code="ITI" currency="USD">Iteris, Inc</security>
+    <security code="II" currency="USD">Ivivi Technologies, Inc.</security>
+    <security code="JDO" currency="USD">JED Oil Inc</security>
+    <security code="JKA" currency="USD">JK Acquisition Corp</security>
+    <security code="JMG" currency="USD">JMG EXPLORATION</security>
+    <security code="JMG/WS" currency="USD">JMG EXPLORATION WTS</security>
+    <security code="JLN" currency="USD">Jaclyn, Inc</security>
+    <security code="JAV" currency="USD">Javelin Pharmaceuticals, Inc</security>
+    <security code="JEN" currency="USD">Jennifer Convertibles, Inc</security>
+    <security code="JST" currency="USD">Jinpan International Ltd</security>
+    <security code="JQH" currency="USD">John Q. Hammons Hotels, Inc</security>
+    <security code="KBE" currency="USD">KBW Bank ETF</security>
+    <security code="KCE" currency="USD">KBW Capital Markets ETF</security>
+    <security code="KIE" currency="USD">KBW Insurance ETF</security>
+    <security code="KRE" currency="USD">KBW Regional Banking ETF</security>
+    <security code="KFX" currency="USD">KFX Inc</security>
+    <security code="$WWK" currency="USD">KOREA WEBS INDEX</security>
+    <security code="KSW" currency="USD">KSW Inc</security>
+    <security code="KBX" currency="USD">Kimber Resources Inc</security>
+    <security code="KHK" currency="USD">Kitty Hawk, Inc</security>
+    <security code="KOG" currency="USD">Kodiak Oil &amp; Gas Corp</security>
+    <security code="KUL" currency="USD">Kuhlman Company, Inc</security>
+    <security code="BYW/WS" currency="USD">LEHMAN BROS HLDGS INC</security>
+    <security code="SPJ" currency="USD">LEHMAN BROS SUNS1/07</security>
+    <security code="LGL" currency="USD">LGL Group, Inc (The)</security>
+    <security code="EJS" currency="USD">LI  Dec 2006 30.00 call</security>
+    <security code="LSR" currency="USD">LIFE SCIENCES RESEARCH INC</security>
+    <security code="LMZ" currency="USD">LMS Medical Systems Inc</security>
+    <security code="MAQ/WS" currency="USD">LOGI  Dec 2006 30.00 call</security>
+    <security code="LXU" currency="USD">LSB Industries, Inc</security>
+    <security code="LB" currency="USD">LaBarge, Inc</security>
+    <security code="LPA" currency="USD">LaPolla Industries, Inc</security>
+    <security code="LTS" currency="USD">Ladenburg Thalmann Financial Services Inc</security>
+    <security code="LAN" currency="USD">Lancer Corp</security>
+    <security code="LCI" currency="USD">Lannett Company, Inc</security>
+    <security code="LAQ" currency="USD">Latin America Equity Fund, Inc (The)</security>
+    <security code="AID" currency="USD">Law Enforcement Associates Corp</security>
+    <security code="LKI" currency="USD">Lazare Kaplan International Inc</security>
+    <security code="$UVO" currency="USD">Lehman Bros 10 Uncmmn Val Idx 2003</security>
+    <security code="$UVC" currency="USD">Lehman Brothers 10 Uncommon</security>
+    <security code="$UVL" currency="USD">Lehman Brothers 10 Uncommon (1999)</security>
+    <security code="$UVI" currency="USD">Lehman Brothers 10 Uncommon (2000)</security>
+    <security code="$UVT" currency="USD">Lehman Brothers 10 Uncommon (2001)</security>
+    <security code="$UFX" currency="USD">Lehman Brothers Financial Index</security>
+    <security code="LEHpN" currency="USD">Lehman Brothers Holdings Capital Trust VI 6.24% Preferred Securities, Series N</security>
+    <security code="AAB/WS" currency="USD">Lehman Brothers Warrants Feb 13 2008</security>
+    <security code="LGN" currency="USD">Lodgian, Inc</security>
+    <security code="LRP" currency="USD">Lorus Therapeutics, Inc</security>
+    <security code="LMC" currency="USD">Lundin Mining Corporation</security>
+    <security code="$LUXNI" currency="USD">Lux Nanotech Index</security>
+    <security code="LIC" currency="USD">Lynch Interactive Corp</security>
+    <security code="NOW" currency="USD">MAI SYSTEM CP</security>
+    <security code="MXM" currency="USD">MAXXAM Inc</security>
+    <security code="MCX" currency="USD">MC Shipping Inc</security>
+    <security code="MEM" currency="USD">MCF Corp</security>
+    <security code="MRI/A" currency="USD">MCRAE INDS CL A</security>
+    <security code="MRI/B" currency="USD">MCRAE INDS CL B</security>
+    <security code="DSE" currency="USD">MERRILL LY STR IXD</security>
+    <security code="MGT" currency="USD">MGT Capital Investments Inc</security>
+    <security code="MDH" currency="USD">MHI Hospitality Corporation</security>
+    <security code="MLD" currency="USD">MIDLAND RESOURCE</security>
+    <security code="MS/WS" currency="USD">MILESTONE SC WARRANT</security>
+    <security code="IEL" currency="USD">ML 7% STRIDES INTEL</security>
+    <security code="SSM" currency="USD">ML 8% STRDS ADR SONY</security>
+    <security code="GSY" currency="USD">ML 8% STRIDES GPS</security>
+    <security code="SNQ" currency="USD">ML 9% STRIDES 11/03</security>
+    <security code="APP" currency="USD">ML ACCL NTS  PFIZER</security>
+    <security code="BHM" currency="USD">ML BIOTECH MITTS8/O7</security>
+    <security code="BDM" currency="USD">ML BRDBAND MITTS9/07</security>
+    <security code="CSM" currency="USD">ML CONSTAPL SPDRMT06</security>
+    <security code="IPB" currency="USD">ML DEP 6.0518% IDX P</security>
+    <security code="ANJ" currency="USD">ML DJ INDSRL AVG</security>
+    <security code="MDJ" currency="USD">ML DJIA MITT6/06</security>
+    <security code="MKO" currency="USD">ML DJIA MITTS 7/09</security>
+    <security code="ESM" currency="USD">ML ENERGY SPDRMT2/06</security>
+    <security code="ESY" currency="USD">ML ENERGY SPDRMT9/06</security>
+    <security code="EFM" currency="USD">ML EUROFND MITTS2/06</security>
+    <security code="GWM" currency="USD">ML FDGRTH SPDRMT506</security>
+    <security code="IHM" currency="USD">ML INTERNET MITT3/07</security>
+    <security code="DFM" currency="USD">ML MITTS AMEX DEF ID</security>
+    <security code="EUF" currency="USD">ML MITTS USD/EUR8/05</security>
+    <security code="EUM" currency="USD">ML MJR11 MITTS5/06</security>
+    <security code="MNM" currency="USD">ML NASDAQ100 MITT807</security>
+    <security code="NML" currency="USD">ML NIKKEI 225 MITTS</security>
+    <security code="NKS" currency="USD">ML NIKKEI 225 MITTS</security>
+    <security code="MLJ" currency="USD">ML NIKKEI MITTS3/07</security>
+    <security code="NKM" currency="USD">ML NIKKEI MITTS8/06</security>
+    <security code="MLN" currency="USD">ML NIKKEI MITTS9/05</security>
+    <security code="MNK" currency="USD">ML NIKKEI225 MITTS09</security>
+    <security code="RSM" currency="USD">ML RUSS2000 MITT7/06</security>
+    <security code="RRM" currency="USD">ML RUSSELL2000 MITTS</security>
+    <security code="MLW" currency="USD">ML S&amp;P 500 MITTS</security>
+    <security code="MKP" currency="USD">ML S&amp;P 500 MITTS</security>
+    <security code="MCP" currency="USD">ML S&amp;P 500 MITTS</security>
+    <security code="FML" currency="USD">ML S&amp;P500 MITTS3/06</security>
+    <security code="MPF" currency="USD">ML S&amp;P500 MITTS8/06</security>
+    <security code="SME" currency="USD">ML SEMICND MITT10/07</security>
+    <security code="LDB" currency="USD">ML STG RTN NT I15 IX</security>
+    <security code="DSJ" currency="USD">ML STR NT SELECT TEN</security>
+    <security code="DMP" currency="USD">ML STR RET BIOTECH</security>
+    <security code="BPN" currency="USD">ML STR RET BIOTECH</security>
+    <security code="DSP" currency="USD">ML STR RET INDL 15</security>
+    <security code="DCV" currency="USD">ML STR RET INDL 15</security>
+    <security code="DSN" currency="USD">ML STR RET NTS 2006</security>
+    <security code="DTY" currency="USD">ML STR RET NTS 2007</security>
+    <security code="OGN" currency="USD">ML STR RET NTS ONGI</security>
+    <security code="DSZ" currency="USD">ML STR RET SEL 10</security>
+    <security code="DSO" currency="USD">ML STR RET SELECT 10</security>
+    <security code="DMD" currency="USD">ML STR RET SELECT 10</security>
+    <security code="NSD" currency="USD">ML STR RTN DUE 11/04</security>
+    <security code="DSA" currency="USD">ML STR RTN DUE 5/06</security>
+    <security code="DSK" currency="USD">ML STR RTN SELECT 10</security>
+    <security code="BXA" currency="USD">ML STRAT RTN NTS S&amp;P</security>
+    <security code="SRK" currency="USD">ML STRATEGIC IND 15</security>
+    <security code="MTT" currency="USD">ML TOPTEN MITTS8/06</security>
+    <security code="MPNpA" currency="USD">MONONGAHELA PWR A 10</security>
+    <security code="MPNpC" currency="USD">MONONGAHELA PWR C 10</security>
+    <security code="MMX/WS" currency="USD">MONTANA MILLS BR WTS</security>
+    <security code="DFB" currency="USD">MORGAN STAN BRIDGES</security>
+    <security code="ALR" currency="USD">MORGAN STANLEY</security>
+    <security code="ERV" currency="USD">MORGAN STANLEY</security>
+    <security code="GIT" currency="USD">MORGAN STANLEY NOTES</security>
+    <security code="NES" currency="USD">MORGAN STANLEY PR NT</security>
+    <security code="QSQ" currency="USD">MORGAN STANLEY SPARQ</security>
+    <security code="MIS" currency="USD">MORGAN STANLEY SPARQ</security>
+    <security code="LSM" currency="USD">MORGAN STANLEY SPRQS</security>
+    <security code="MBS" currency="USD">MORGAN STANLEY STRS</security>
+    <security code="MOR" currency="USD">MORGAN STN CAP PR NT</security>
+    <security code="MPZ" currency="USD">MPC Corporation</security>
+    <security code="MHT" currency="USD">MPS - MS TECH INDEX</security>
+    <security code="DMJ" currency="USD">MPS LINK TO DJIA</security>
+    <security code="MRP" currency="USD">MPS LINK TO S&amp;P500</security>
+    <security code="MSU" currency="USD">MPS RUSSELL 2000 IDX</security>
+    <security code="GLL" currency="USD">MRGN STNLY GLBL IBC</security>
+    <security code="DRP" currency="USD">MRGN STNLY PLS BASED</security>
+    <security code="MBJ" currency="USD">MRGN STNLY STAR CBOE</security>
+    <security code="GNS" currency="USD">MS *% GENENTECH SPRQ</security>
+    <security code="CEQ" currency="USD">MS *%CEC SPARQS</security>
+    <security code="ECC" currency="USD">MS 6% SPARQS EMC COR</security>
+    <security code="NEH" currency="USD">MS 6.25% SPARQS</security>
+    <security code="GFE" currency="USD">MS 7% GSF CORP SPARQ</security>
+    <security code="ECN" currency="USD">MS 8% CE SPARQS</security>
+    <security code="XLS" currency="USD">MS 8% XILINX SPARQS</security>
+    <security code="DRU" currency="USD">MS AMEX PHARMA IDX</security>
+    <security code="MBK" currency="USD">MS BRIDGES 15 FINL</security>
+    <security code="BGD" currency="USD">MS BRIDGES DJIA</security>
+    <security code="BOI" currency="USD">MS BRIDGES OIL IND</security>
+    <security code="EFP" currency="USD">MS CAP NTS MSCI EAFE</security>
+    <security code="MST" currency="USD">MS CAP PROT S&amp;P M400</security>
+    <security code="DPP" currency="USD">MS CAP PRT DJ IN ADV</security>
+    <security code="EEC" currency="USD">MS CPN MS EAFE IDX</security>
+    <security code="SDM" currency="USD">MS CPTL S&amp;P 500</security>
+    <security code="BXB" currency="USD">MS DW BIOTECH BOXES</security>
+    <security code="EST" currency="USD">MS DW BRIDGES R2000</security>
+    <security code="RBG" currency="USD">MS DW BRIDGES R2000</security>
+    <security code="MCB" currency="USD">MS DW BRIDGES S&amp;P400</security>
+    <security code="TPS" currency="USD">MS DW BRIDGES TEN</security>
+    <security code="RXB" currency="USD">MS DW PHARMA BOXES</security>
+    <security code="BRD" currency="USD">MS DW S&amp;P500 BRIDGES</security>
+    <security code="FOL" currency="USD">MS FOREST LAB SPARQS</security>
+    <security code="NVE" currency="USD">MS NVIDIA CP SPARQS</security>
+    <security code="NKI" currency="USD">MS PERF LV UP SEC NI</security>
+    <security code="SBM" currency="USD">MS PERF. LVGN UPSD</security>
+    <security code="JPK" currency="USD">MS PLUS NIKKEI 225</security>
+    <security code="DJL" currency="USD">MS PRF LV SEC DJIA</security>
+    <security code="PEL" currency="USD">MS PROPELS S&amp;P 500</security>
+    <security code="EBK" currency="USD">MS PROPELS VALUE</security>
+    <security code="PDJ" currency="USD">MS PROT PERF DOW JNS</security>
+    <security code="RPN" currency="USD">MS RUSSELL 2000 PLUS</security>
+    <security code="NPS" currency="USD">MS S&amp;P 500 IDX CPN</security>
+    <security code="DBZ" currency="USD">MS STRAT TTL RTN SEC</security>
+    <security code="DBY" currency="USD">MS TI STRAT TTL RTN</security>
+    <security code="WCS" currency="USD">MS WLMS CO SPARQS</security>
+    <security code="$MSCIEN" currency="USD">MSCI US Investable Market Energy</security>
+    <security code="$MSCIIN" currency="USD">MSCI US Investable Market Industri</security>
+    <security code="$MSCITC" currency="USD">MSCI US Investable Market Telecomm</security>
+    <security code="$MSCIIT" currency="USD">MSCI US Investable Mkt Info Tech Ix</security>
+    <security code="$MSCIMT" currency="USD">MSCI US Investable Mkt Mtrls Index</security>
+    <security code="$MSCICD" currency="USD">MSCI US Investable Mrkt Cnsmr  Disc</security>
+    <security code="$MSCICS" currency="USD">MSCI US Investable Mrkt Cnsmr Stpl</security>
+    <security code="$MSCIFN" currency="USD">MSCI US Investable Mrkt Fincl Indx</security>
+    <security code="$MSCIHC" currency="USD">MSCI US Investable Mrkt Hlth Care I</security>
+    <security code="$MSCIUT" currency="USD">MSCI US Investable Mrkt Utlts Index</security>
+    <security code="$MSCIMC" currency="USD">MSCI US Mid Cap 450 Index</security>
+    <security code="$MSCIPM" currency="USD">MSCI US Prime Market 750 Index</security>
+    <security code="$MSCIPG" currency="USD">MSCI US Prime Market Growth Index</security>
+    <security code="$MSCIPV" currency="USD">MSCI US Prime Market Value Index</security>
+    <security code="$RMZ" currency="USD">MSCI US REIT Index</security>
+    <security code="$MSCISC" currency="USD">MSCI US Small Cap 1750 Index</security>
+    <security code="$MSCISG" currency="USD">MSCI US Small Cap Growth Index</security>
+    <security code="$MSCISV" currency="USD">MSCI US Small Cap Value Index</security>
+    <security code="MJP" currency="USD">MSDW 2%MPS NIKKEI225</security>
+    <security code="MPL" currency="USD">MSDW PLUS S&amp;P 500</security>
+    <security code="TGM" currency="USD">MSDW TRIGGERS</security>
+    <security code="MPP" currency="USD">MTS Medication Technologies, Inc</security>
+    <security code="MIF" currency="USD">MUNI INSURED FUND</security>
+    <security code="MCZ" currency="USD">Mad Catz Interactive, Inc</security>
+    <security code="MAM" currency="USD">Maine &amp; Maritimes Corp</security>
+    <security code="MHJ" currency="USD">Man Sang Holdings, Inc</security>
+    <security code="MHA" currency="USD">Manhattan Pharmaceuticals Inc</security>
+    <security code="MAQ" currency="USD">Marathon Acquisition Corp</security>
+    <security code="MWE" currency="USD">MarkWest Energy Partners, LP</security>
+    <security code="MWP" currency="USD">MarkWest Hydrocarbon, Inc</security>
+    <security code="$XKH" currency="USD">Market 2000+ HOLDRS Index</security>
+    <security code="MKH" currency="USD">Market 2000+ HOLDRs Trust Market 2000+ HOLDRs Trust</security>
+    <security code="EVX" currency="USD">Market Vectors Environmental Services Index Fund</security>
+    <security code="GDX" currency="USD">Market Vectors Gold Miners ETF</security>
+    <security code="SLX" currency="USD">Market Vectors Steel Index Fund</security>
+    <security code="$MGFTY" currency="USD">MarketGrader 40 Index</security>
+    <security code="MTY" currency="USD">Marlton Technologies, Inc</security>
+    <security code="MHE" currency="USD">Massachusetts Health and Education Tax-Exempt Trust</security>
+    <security code="$IXB" currency="USD">Materials Select Sector Index</security>
+    <security code="MZT" currency="USD">Matritech, Inc</security>
+    <security code="MLP" currency="USD">Maui Land and Pineapple Company, Inc</security>
+    <security code="GFX" currency="USD">Media Sciences International, Inc</security>
+    <security code="MCU" currency="USD">Medicure, Inc</security>
+    <security code="MED" currency="USD">Medifast, Inc. Common Stock</security>
+    <security code="MDV" currency="USD">Medivation, Inc</security>
+    <security code="TOX" currency="USD">Medtox Scientific, Inc</security>
+    <security code="MRY" currency="USD">Memry Corp</security>
+    <security code="MBR" currency="USD">Mercantile Bancorp Inc</security>
+    <security code="MGP" currency="USD">Merchants Group, Inc</security>
+    <security code="MAX" currency="USD">Mercury Air Group, Inc</security>
+    <security code="MPQ" currency="USD">Meredith Enterprises Inc</security>
+    <security code="$ACD" currency="USD">Mergent Canadian Dividend &amp; Income</security>
+    <security code="$DAY" currency="USD">Mergent Dividend Achiever 50 Index</security>
+    <security code="$DAA" currency="USD">Mergent Dividend Achievers Index</security>
+    <security code="$DVG" currency="USD">Mergent Dividend Achievers Select</security>
+    <security code="$DAH" currency="USD">Mergent High Gr Rt Div Achieve Indx</security>
+    <security code="MHG" currency="USD">Meritage Hospitality Group Inc</security>
+    <security code="MERpH" currency="USD">Merrill Lynch &amp; Co., Inc. Depositary Shares</security>
+    <security code="$XE" currency="USD">Merrill Lynch Early Cyclical Index</security>
+    <security code="$GLI" currency="USD">Merrill Lynch Global Market Index</security>
+    <security code="$XI" currency="USD">Merrill Lynch Intrst Rate Sensitive</security>
+    <security code="$XT" currency="USD">Merrill Lynch Late Cyclical Index</security>
+    <security code="$JKC" currency="USD">Merrill Lynch Long Short Index-III</security>
+    <security code="$EUX" currency="USD">Merrill Lynch Major 11 Intl</security>
+    <security code="$EMX" currency="USD">Merrill Lynch Major 8 European</security>
+    <security code="$NNZ" currency="USD">Merrill Lynch Nanotech Index</security>
+    <security code="$GWI" currency="USD">Merrill Lynch Slct Sctr SPDR Grwth</security>
+    <security code="$XS" currency="USD">Merrill Lynch Stable Growth Index</security>
+    <security code="$MLO" currency="USD">Merrill Lynch Technology 100 Index</security>
+    <security code="$XMT" currency="USD">Merrill Lynch Top Ten Yield Index</security>
+    <security code="MRM" currency="USD">Merrimac Industries, Inc</security>
+    <security code="MEA" currency="USD">Metalico, Inc</security>
+    <security code="MRB" currency="USD">Metallica Resources, Inc</security>
+    <security code="MMG" currency="USD">Metalline Mining Company</security>
+    <security code="MEK" currency="USD">Metretek Technology, Inc</security>
+    <security code="MDF" currency="USD">Metropolitan Health Networks, Inc</security>
+    <security code="MXC" currency="USD">Mexco Energy Corp</security>
+    <security code="MFI" currency="USD">MicroFinancial, Inc</security>
+    <security code="MII" currency="USD">MicroIslet, Inc</security>
+    <security code="MBP" currency="USD">Mid Penn Bancorp, Inc</security>
+    <security code="MDY" currency="USD">MidCap SPDRs</security>
+    <security code="$MXV" currency="USD">MidCap SPDRs IIV</security>
+    <security code="MSL" currency="USD">MidSouth Bancorp</security>
+    <security code="MEH" currency="USD">Midwest Air Group, Inc</security>
+    <security code="MSS" currency="USD">Milestone Scientific Inc</security>
+    <security code="MQC" currency="USD">Millennium India Acquisition Company Inc</security>
+    <security code="MGH" currency="USD">Minco Gold Corporation</security>
+    <security code="MMK" currency="USD">Minco Mining and Metals Corporation</security>
+    <security code="MR" currency="USD">Mindray Medical</security>
+    <security code="MFN" currency="USD">Minefinders Corp Ltd</security>
+    <security code="MGN" currency="USD">Mines Management, Inc</security>
+    <security code="MXA" currency="USD">Minnesota Municipal Income Portfolio</security>
+    <security code="BUF" currency="USD">Minrad International Inc</security>
+    <security code="MNG" currency="USD">Miramar Mining Corp</security>
+    <security code="MSW" currency="USD">Mission West Properties</security>
+    <security code="$HBS" currency="USD">Morgan Stanley Basket of Homebuild</security>
+    <security code="$CRX" currency="USD">Morgan Stanley Commodity Related</security>
+    <security code="MS" currency="USD">Morgan Stanley Common Stock</security>
+    <security code="$CMR" currency="USD">Morgan Stanley Consumer Index</security>
+    <security code="$CYC" currency="USD">Morgan Stanley Cyclical Index</security>
+    <security code="$GBK" currency="USD">Morgan Stanley Global Basket CPN</security>
+    <security code="$HMO" currency="USD">Morgan Stanley Health Care Payors</security>
+    <security code="$RXP" currency="USD">Morgan Stanley Health Care Products</security>
+    <security code="$RXH" currency="USD">Morgan Stanley Health Care Provider</security>
+    <security code="$MOX" currency="USD">Morgan Stanley Internet Index</security>
+    <security code="$RMS" currency="USD">Morgan Stanley REIT Index</security>
+    <security code="MTK" currency="USD">Morgan Stanley Technology ETF</security>
+    <security code="$MSH" currency="USD">Morgan Stanley Technology Index</security>
+    <security code="$MDLTR" currency="USD">Morningstar Div Ldrs Total Ret Indx</security>
+    <security code="$MDL" currency="USD">Morningstar Dividend Leaders Index</security>
+    <security code="MDM" currency="USD">Mountain Province Diamonds, Inc</security>
+    <security code="MSI" currency="USD">Movie Star, Inc</security>
+    <security code="MPE" currency="USD">Mpower Holding Corporation</security>
+    <security code="NGS/WS" currency="USD">NATURAL GAS SVCS WTS</security>
+    <security code="NIp" currency="USD">NORTHERN IN PUB 4.25</security>
+    <security code="NTN" currency="USD">NTN Buzztime, Inc</security>
+    <security code="NLP" currency="USD">NTS Realty Holdings Limited Partnership</security>
+    <security code="NVR" currency="USD">NVR, Inc</security>
+    <security code="NBR" currency="USD">Nabors Industries Ltd. Common Shares</security>
+    <security code="$QXV" currency="USD">Nasdaq 100 Index</security>
+    <security code="FIZ" currency="USD">National Beverage Corp</security>
+    <security code="NHR" currency="USD">National Health Realty, Inc</security>
+    <security code="NHC" currency="USD">National Healthcare Corp</security>
+    <security code="NLN" currency="USD">National Lampoon, Inc</security>
+    <security code="NVI" currency="USD">National Vision, Inc</security>
+    <security code="NGS" currency="USD">Natural Gas Services Group, Inc</security>
+    <security code="NEP" currency="USD">Nephros, Inc</security>
+    <security code="NBW" currency="USD">Neuberger Berman California Intermediate Municipal Fund Inc</security>
+    <security code="NDD" currency="USD">Neuberger Berman Dividend Advantage Fund, Inc</security>
+    <security code="NOX" currency="USD">Neuberger Berman Income Opportunity Fund Inc</security>
+    <security code="NBH" currency="USD">Neuberger Berman Intermediate Municipal Fund Inc</security>
+    <security code="NBO" currency="USD">Neuberger Berman New York Intermediate Municipal Fund Inc</security>
+    <security code="NRO" currency="USD">Neuberger Berman Real Estate Securities Income Fund Inc</security>
+    <security code="UWN" currency="USD">Nevada Gold &amp; Casinos, Inc</security>
+    <security code="NSU" currency="USD">Nevsun Resources Ltd</security>
+    <security code="NWD" currency="USD">New Dragon Asia Corp</security>
+    <security code="NEN" currency="USD">New England Realty Associates LP</security>
+    <security code="NGD" currency="USD">New Gold Inc</security>
+    <security code="NGA" currency="USD">North American Galvanizing &amp; Coatings, Inc</security>
+    <security code="NAO" currency="USD">North American Insurance Leaders, Inc</security>
+    <security code="PAL" currency="USD">North American Palladium, Ltd</security>
+    <security code="NBN" currency="USD">Northeast Bancorp</security>
+    <security code="NAK" currency="USD">Northern Dynasty Minerals Ltd</security>
+    <security code="NTO" currency="USD">Northern Orion Resources Inc</security>
+    <security code="NTI" currency="USD">Northern Technologies International</security>
+    <security code="NXG" currency="USD">Northgate Minerals Corporation</security>
+    <security code="NVD" currency="USD">NovaDel Pharma, Inc</security>
+    <security code="NG" currency="USD">NovaGold Resources, Inc</security>
+    <security code="NFZ" currency="USD">Nuveen Arizona Dividend Advantage Municipal Fund</security>
+    <security code="NKR" currency="USD">Nuveen Arizona Dividend Advantage Municipal Fund 2</security>
+    <security code="NXE" currency="USD">Nuveen Arizona Dividend Advantage Municipal Fund 3</security>
+    <security code="$NMUNP" currency="USD">Nuveen CE ETF Index-Price Return</security>
+    <security code="NVX" currency="USD">Nuveen California Dividend Advantage Municipal Fund 2</security>
+    <security code="NZH" currency="USD">Nuveen California Dividend Advantage Municipal Fund 3</security>
+    <security code="NCU" currency="USD">Nuveen California Premium Income Municipal Fund</security>
+    <security code="NFC" currency="USD">Nuveen Connecticut Dividend Advantage Municipal Fund</security>
+    <security code="NGK" currency="USD">Nuveen Connecticut Dividend Advantage Municipal Fund 2</security>
+    <security code="NGO" currency="USD">Nuveen Connecticut Dividend Advantage Municipal Fund 3</security>
+    <security code="NXZ" currency="USD">Nuveen Dividend Advantage Municipal Fund 2</security>
+    <security code="NZF" currency="USD">Nuveen Dividend Advantage Municipal Fund 3</security>
+    <security code="NZX" currency="USD">Nuveen Georgia Dividend Advantage Municipal Fund</security>
+    <security code="NKG" currency="USD">Nuveen Georgia Dividend Advantage Municipal Fund 2</security>
+    <security code="NPG" currency="USD">Nuveen Georgia Premium Income Municipal Fund</security>
+    <security code="NKL" currency="USD">Nuveen Insured California Dividend Advantage Municipal Fund</security>
+    <security code="NKX" currency="USD">Nuveen Insured California Tax-Free Advantage Municipal Fund</security>
+    <security code="NVG" currency="USD">Nuveen Insured Dividend Advantage Municipal Fund</security>
+    <security code="NWF" currency="USD">Nuveen Insured Florida Tax-Free Advantage Municipal Fund</security>
+    <security code="NGX" currency="USD">Nuveen Insured Massachusetts Tax-Free Advantage Municipal Fu</security>
+    <security code="NKO" currency="USD">Nuveen Insured New York Dividend Advantage Municipal Fund</security>
+    <security code="NRK" currency="USD">Nuveen Insured New York Tax-Free Advantage Municipal Fund</security>
+    <security code="NEA" currency="USD">Nuveen Insured Tax-Free Advantage Municipal Fund</security>
+    <security code="NFM" currency="USD">Nuveen Maryland Dividend Advantage Municipal Fund</security>
+    <security code="NZR" currency="USD">Nuveen Maryland Dividend Advantage Municipal Fund 2</security>
+    <security code="NWI" currency="USD">Nuveen Maryland Dividend Advantage Municipal Fund 3</security>
+    <security code="NMB" currency="USD">Nuveen Massachusetts Dividend Advantage Municipal Fund</security>
+    <security code="NZW" currency="USD">Nuveen Michigan Dividend Advantage Municipal Fund</security>
+    <security code="NOM" currency="USD">Nuveen Missouri Premium Income Municipal</security>
+    <security code="$NMUNI" currency="USD">Nuveen Municipal Closed-End ETF Ind</security>
+    <security code="NMZ" currency="USD">Nuveen Municipal High Income Opportunity Fund</security>
+    <security code="NXJ" currency="USD">Nuveen New Jersey Dividend Advantage Municipal Fund</security>
+    <security code="NUJ" currency="USD">Nuveen New Jersey Dividend Advantage Municipal Fund 2</security>
+    <security code="NXK" currency="USD">Nuveen New York Dividend Advantage Municipal Fund 2</security>
+    <security code="NRB" currency="USD">Nuveen North Carolina Dividend Advantage Municipal Fund</security>
+    <security code="NNO" currency="USD">Nuveen North Carolina Dividend Advantage Municipal Fund 2</security>
+    <security code="NII" currency="USD">Nuveen North Carolina Dividend Advantage Municipal Fund 3</security>
+    <security code="NXI" currency="USD">Nuveen Ohio Dividend Advantage Municipal Fund</security>
+    <security code="NBJ" currency="USD">Nuveen Ohio Dividend Advantage Municipal Fund 2</security>
+    <security code="NVJ" currency="USD">Nuveen Ohio Dividend Advantage Municipal Fund 3</security>
+    <security code="NXM" currency="USD">Nuveen Pennsylvania Dividend Advantage Municipal Fund</security>
+    <security code="NVY" currency="USD">Nuveen Pennsylvania Dividend Advantage Municipal Fund 2</security>
+    <security code="JRS" currency="USD">Nuveen Real Estate Income Fund</security>
+    <security code="NGB" currency="USD">Nuveen Virginia Dividend Advantage Municipal Fund</security>
+    <security code="NNB" currency="USD">Nuveen Virginia Dividend Advantage Municipal Fund 2</security>
+    <security code="OTD" currency="USD">O2Diesel Corporation</security>
+    <security code="$OTPAT" currency="USD">Ocean Tomo 300 Patent Index</security>
+    <security code="OMR" currency="USD">Odyssey Marine Exploration Inc</security>
+    <security code="$BOJ" currency="USD">Oil Industry BRIDGES Basket Value</security>
+    <security code="$OXH" currency="USD">Oil Service HOLDRS Index</security>
+    <security code="OIH" currency="USD">Oil Service HOLDRs Trust Oil Service HOLDRs Trust</security>
+    <security code="$OGX" currency="USD">Oil and Natural Gas Index</security>
+    <security code="BQI" currency="USD">Oilsands Quest Inc</security>
+    <security code="ONT" currency="USD">On2 Technologies, Inc</security>
+    <security code="OTV" currency="USD">OneTravel Holdings, Inc</security>
+    <security code="OPT" currency="USD">OptiCare Health Systems Inc</security>
+    <security code="ONI" currency="USD">Oragenics, Inc</security>
+    <security code="TIS" currency="USD">Orchids Paper Products Company</security>
+    <security code="OZN" currency="USD">Orezone Resources, Inc</security>
+    <security code="ONH" currency="USD">Orion HealthCorp, Inc.</security>
+    <security code="OHB" currency="USD">Orleans Homebuilders, Inc</security>
+    <security code="OTT" currency="USD">Otelco Inc</security>
+    <security code="OFI" currency="USD">Overhill Farms Inc</security>
+    <security code="PAB" currency="USD">PAB Bankshares, Inc</security>
+    <security code="PETpA" currency="USD">PACIFIC ENTRPR 4.36</security>
+    <security code="PETpB" currency="USD">PACIFIC ENTRPR 4.40</security>
+    <security code="PETpC" currency="USD">PACIFIC ENTRPR 4.50</security>
+    <security code="PETpD" currency="USD">PACIFIC ENTRPR 4.75</security>
+    <security code="PCGpI" currency="USD">PACIFIC GAS EL 4.36</security>
+    <security code="PCGpH" currency="USD">PACIFIC GAS EL 4.50</security>
+    <security code="PCGpG" currency="USD">PACIFIC GAS EL 4.80</security>
+    <security code="PCGpE" currency="USD">PACIFIC GAS EL 5.00</security>
+    <security code="PCGpD" currency="USD">PACIFIC GAS EL 5.00</security>
+    <security code="PCGpC" currency="USD">PACIFIC GAS EL 5.00</security>
+    <security code="PCGpB" currency="USD">PACIFIC GAS EL 5.50</security>
+    <security code="PCGpA" currency="USD">PACIFIC GAS EL 6.00</security>
+    <security code="PCGpU" currency="USD">PACIFIC GAS EL 7.04</security>
+    <security code="PPWp" currency="USD">PACIFICORP 5 PR</security>
+    <security code="PNO/WS" currency="USD">PATH 1 NETWORK WTS</security>
+    <security code="PCRp" currency="USD">PERINI CP PFD</security>
+    <security code="CUP/WS" currency="USD">PERU COPPER WTS 2006</security>
+    <security code="$DYL.DV" currency="USD">PHARMACTCL BOXES INDICATIVE ESTD ACCR DIV</security>
+    <security code="PLC" currency="USD">PLC Systems, Inc</security>
+    <security code="PMK" currency="USD">PMA CAP 8.5 SR NTS</security>
+    <security code="PCC" currency="USD">PMC Commercial Trust</security>
+    <security code="PRB" currency="USD">PRB Energy, Inc</security>
+    <security code="PDL/A" currency="USD">PRES RLTY CP CL A</security>
+    <security code="PDL/B" currency="USD">PRES RLTY CP CL B</security>
+    <security code="$PXS" currency="USD">PRUDENTS Underlying Basket Index</security>
+    <security code="PSBpK" currency="USD">PS BUS PARK K</security>
+    <security code="PSBpF" currency="USD">PS BUS PKS DEP 8.75%</security>
+    <security code="PSBpH" currency="USD">PS BUS PKS DEP PFD H</security>
+    <security code="PSBpI" currency="USD">PS BUS PKS DEP SHS</security>
+    <security code="PSBpM" currency="USD">PS BUSINESS PFD M</security>
+    <security code="PSBpL" currency="USD">PS BUSINESS PKS 7.60</security>
+    <security code="PSBpD" currency="USD">PS BUSINESS PKS DEP</security>
+    <security code="PSB" currency="USD">PS Business Parks, Inc</security>
+    <security code="MNL" currency="USD">PWC  Jun 2007 51.00 call</security>
+    <security code="PYR" currency="USD">PYR Energy Corp</security>
+    <security code="PHF" currency="USD">Pacholder High Yield Fund, Inc</security>
+    <security code="PAM" currency="USD">Pacific CMA, Inc</security>
+    <security code="PMU" currency="USD">Pacific Rim Mining Corp</security>
+    <security code="PRZ" currency="USD">PainCare  Holdings, Inc</security>
+    <security code="PTN" currency="USD">Palatin Technologies, Inc</security>
+    <security code="$PIIWI" currency="USD">Palisades Global Water Index</security>
+    <security code="$ZWI" currency="USD">Palisades Water Index</security>
+    <security code="$ZHI" currency="USD">Palomar Healthcare Technology Index</security>
+    <security code="PNB" currency="USD">PanAmerican Bancorp</security>
+    <security code="PHX" currency="USD">Panhandle Royalty Company</security>
+    <security code="PRG" currency="USD">Paragon Real Estate Equity and Investment Trust</security>
+    <security code="PTG" currency="USD">Paragon Technologies, Inc</security>
+    <security code="PRK" currency="USD">Park National Corp</security>
+    <security code="PNO" currency="USD">Path 1 Network Technologies, Inc</security>
+    <security code="PST" currency="USD">Patient Safety Technologies, Inc</security>
+    <security code="PAX" currency="USD">Paxson Communications Corp</security>
+    <security code="PAE" currency="USD">Peace Arch Entertainment Group Inc</security>
+    <security code="PGC" currency="USD">Peapack-Gladstone Financial Corp</security>
+    <security code="PCR" currency="USD">Perini Corporation Common Stock</security>
+    <security code="CUP" currency="USD">Peru Copper Inc</security>
+    <security code="PRC" currency="USD">Petro Resources Corporation</security>
+    <security code="$DYL" currency="USD">Pharmaceutical BOXES Indicative Val</security>
+    <security code="$IPH" currency="USD">Pharmaceutical HOLDRS Index</security>
+    <security code="PPH" currency="USD">Pharmaceutical HOLDRs Trust Pharmaceutical HOLDRs Trust</security>
+    <security code="PXG" currency="USD">Phoenix Footwear Group, Inc</security>
+    <security code="PLE" currency="USD">Pinnacle Bancshares, Inc</security>
+    <security code="PNS" currency="USD">Pinnacle Data Systems, Inc</security>
+    <security code="PDC" currency="USD">Pioneer Drilling Company</security>
+    <security code="PW" currency="USD">Pittsburgh &amp; West Virginia Railroad</security>
+    <security code="PLM" currency="USD">PolyMet Mining Corp</security>
+    <security code="PPK" currency="USD">Polyair Inter Pack Inc</security>
+    <security code="PPA" currency="USD">PowerShares Aerospace &amp; Defense Portfolio</security>
+    <security code="PKW" currency="USD">PowerShares Buyback Achievers</security>
+    <security code="PZD" currency="USD">PowerShares Cleantech Portfolio</security>
+    <security code="DBB" currency="USD">PowerShares DB Base Metals Fund</security>
+    <security code="DBC" currency="USD">PowerShares DB Commodity Index Tracking Fund</security>
+    <security code="DBE" currency="USD">PowerShares DB Energy Fund</security>
+    <security code="DBV" currency="USD">PowerShares DB G10 Currency Harvest Fund</security>
+    <security code="DGL" currency="USD">PowerShares DB Gold Fund</security>
+    <security code="DBS" currency="USD">PowerShares DB Silver Fund</security>
+    <security code="PFM" currency="USD">PowerShares Dividend Achievers Portfolio</security>
+    <security code="PGZ" currency="USD">PowerShares Dynamic Aggressive Growth Portfolio</security>
+    <security code="PJB" currency="USD">PowerShares Dynamic Banking Sector Portfolio</security>
+    <security code="PYZ" currency="USD">PowerShares Dynamic Basic Materials Sector Portfolio</security>
+    <security code="PBE" currency="USD">PowerShares Dynamic Biotechnology &amp; Genome Portfolio</security>
+    <security code="PKB" currency="USD">PowerShares Dynamic Building &amp; Construction Portfolio</security>
+    <security code="PEZ" currency="USD">PowerShares Dynamic Consumer Discretionary Sector Portfolio</security>
+    <security code="PSL" currency="USD">PowerShares Dynamic Consumer Staples Sector Portfolio</security>
+    <security code="PVM" currency="USD">PowerShares Dynamic Deep Value Portfolio</security>
+    <security code="PXE" currency="USD">PowerShares Dynamic Energy Exploration &amp; Production Portfolio</security>
+    <security code="PXI" currency="USD">PowerShares Dynamic Energy Sector Portfolio</security>
+    <security code="PFI" currency="USD">PowerShares Dynamic Financial Sector Portfolio</security>
+    <security code="PBJ" currency="USD">PowerShares Dynamic Food &amp; Beverage Portfolio</security>
+    <security code="PHW" currency="USD">PowerShares Dynamic Hardware &amp; Consumer Electronics Portfolio</security>
+    <security code="PTJ" currency="USD">PowerShares Dynamic Healthcare Services Portfolio</security>
+    <security code="PTH" currency="USD">PowerShares Dynamic Heathcare Sector Portfolio</security>
+    <security code="PRN" currency="USD">PowerShares Dynamic Industrials Sector Portfolio</security>
+    <security code="PIC" currency="USD">PowerShares Dynamic Insurance Portfolio</security>
+    <security code="PWB" currency="USD">PowerShares Dynamic Large Cap Growth Portfolio</security>
+    <security code="PJF" currency="USD">PowerShares Dynamic Large Cap Portfolio</security>
+    <security code="PWV" currency="USD">PowerShares Dynamic Large Cap Value Portfolio</security>
+    <security code="PEJ" currency="USD">PowerShares Dynamic Leisure &amp; Entertainment Portfolio</security>
+    <security code="PIQ" currency="USD">PowerShares Dynamic MagniQuant Portfolio</security>
+    <security code="PWC" currency="USD">PowerShares Dynamic Market Portfolio</security>
+    <security code="PBS" currency="USD">PowerShares Dynamic Media Portfolio</security>
+    <security code="PWJ" currency="USD">PowerShares Dynamic Mid Cap Growth Portfolio</security>
+    <security code="PJG" currency="USD">PowerShares Dynamic Mid Cap Portfolio</security>
+    <security code="PWP" currency="USD">PowerShares Dynamic Mid Cap Value Portfolio</security>
+    <security code="PXQ" currency="USD">PowerShares Dynamic Networking Portfolio</security>
+    <security code="PWO" currency="USD">PowerShares Dynamic OTC Portfolio</security>
+    <security code="PXJ" currency="USD">PowerShares Dynamic Oil Services Portfolio</security>
+    <security code="PJP" currency="USD">PowerShares Dynamic Pharmaceuticals Portfolio</security>
+    <security code="PMR" currency="USD">PowerShares Dynamic Retail Portfolio</security>
+    <security code="PSI" currency="USD">PowerShares Dynamic Semiconductors Portfolio</security>
+    <security code="PWT" currency="USD">PowerShares Dynamic Small Cap Growth Portfolio</security>
+    <security code="PJM" currency="USD">PowerShares Dynamic Small Cap Portfolio</security>
+    <security code="PWY" currency="USD">PowerShares Dynamic Small Cap Value Portfolio</security>
+    <security code="PSJ" currency="USD">PowerShares Dynamic Software Portfolio</security>
+    <security code="PTF" currency="USD">PowerShares Dynamic Technology Sector Portfolio</security>
+    <security code="PTE" currency="USD">PowerShares Dynamic Telecom &amp; Wireless Portfolio</security>
+    <security code="PUI" currency="USD">PowerShares Dynamic Utilities Portfolio</security>
+    <security code="PGF" currency="USD">PowerShares Financial Preferred Portfolio</security>
+    <security code="PGJ" currency="USD">PowerShares Golden Dragon Halter USX China Portfolio</security>
+    <security code="PHJ" currency="USD">PowerShares High Growth Rate Dividend Achievers Portfolio</security>
+    <security code="PEY" currency="USD">PowerShares High Yield Equity Dividend Achievers Portfolio</security>
+    <security code="PID" currency="USD">PowerShares International Dividend Achievers Portfolio</security>
+    <security code="PSP" currency="USD">PowerShares Listed Private Equity Portfolio</security>
+    <security code="PXN" currency="USD">PowerShares Lux Nanotech Portfolio</security>
+    <security code="PYH" currency="USD">PowerShares Value Line Industry Rotation Portfolio</security>
+    <security code="PIV" currency="USD">PowerShares Value Line Timeliness Select Portfolio</security>
+    <security code="PHO" currency="USD">PowerShares Water Resource Portfolio</security>
+    <security code="PBW" currency="USD">PowerShares WilderHill Clean Energy Portfolio</security>
+    <security code="PUW" currency="USD">PowerShares WilderHill Progressive Energy Portfolio</security>
+    <security code="PZI" currency="USD">PowerShares Zacks Micro Cap Portfolio</security>
+    <security code="PZJ" currency="USD">PowerShares Zacks Small Cap Portfolio</security>
+    <security code="PME" currency="USD">PreMD Inc</security>
+    <security code="PRW" currency="USD">Pro-Pharmaceuticals, Inc</security>
+    <security code="PLI" currency="USD">Proliance International, Inc</security>
+    <security code="PRL" currency="USD">Prolong International Corp</security>
+    <security code="PZZ" currency="USD">Prospect Medical Holdings, Inc</security>
+    <security code="PZA" currency="USD">Provena Foods Inc</security>
+    <security code="PWX" currency="USD">Providence and Worcester Railroad Co</security>
+    <security code="PVX" currency="USD">Provident Energy Trust Trust Units</security>
+    <security code="PMD" currency="USD">Psychemedics Corp</security>
+    <security code="PFT" currency="USD">Puradyn Filter Technologies Inc</security>
+    <security code="PCA" currency="USD">Putnam California Investment Grade Municipal Trust</security>
+    <security code="PMN" currency="USD">Putnam New York Investment Grade Municipal Trust</security>
+    <security code="PDO" currency="USD">Pyramid Oil Company</security>
+    <security code="QMM/WS" currency="USD">Q COMM WARRANT</security>
+    <security code="QMM" currency="USD">Q Comm International, Inc</security>
+    <security code="QD" currency="USD">QuadraMed Corporation</security>
+    <security code="QEE" currency="USD">Queenstake Resources Ltd</security>
+    <security code="QCC" currency="USD">Quest Capital Corporation</security>
+    <security code="QSC" currency="USD">Questcor Pharmaceuticals, Inc</security>
+    <security code="DFZ" currency="USD">R.G. Barry Corporation</security>
+    <security code="RDI/B" currency="USD">READING INTL CL B</security>
+    <security code="RWC" currency="USD">RELM Wireless Corporation</security>
+    <security code="RAP" currency="USD">RMR Asia Pacific Real Estate Fund</security>
+    <security code="RFR" currency="USD">RMR F.I.R.E. Fund</security>
+    <security code="RHR" currency="USD">RMR Hospitality and Real Estate Fund</security>
+    <security code="RDR" currency="USD">RMR Preferred Dividend Fund</security>
+    <security code="RMR" currency="USD">RMR Real Estate Fund</security>
+    <security code="$RAV" currency="USD">RUSSELL 3000 VALUE INDEX</security>
+    <security code="RGX" currency="USD">Radiologix, Inc</security>
+    <security code="RAE" currency="USD">Rae Systems, Inc</security>
+    <security code="RDI" currency="USD">Reading International, Inc.</security>
+    <security code="RMX" currency="USD">Ready Mix Inc</security>
+    <security code="UTG" currency="USD">Reaves Utility Income Fund</security>
+    <security code="RSY" currency="USD">Recom Managed Systems, Inc</security>
+    <security code="$LSTPE" currency="USD">Red Rocks Listed Private Eq Indx</security>
+    <security code="$MIBII" currency="USD">Ref Index for MIB due 04/20/10</security>
+    <security code="REF" currency="USD">Refac Optical Group</security>
+    <security code="RLO" currency="USD">Regalito Copper Corp</security>
+    <security code="RGN" currency="USD">RegeneRX Biopharmaceuticals Inc</security>
+    <security code="RKH" currency="USD">Regional Bank HOLDRs Trust Regional Bank HOLDRs Trust</security>
+    <security code="$XRH" currency="USD">Regional Banks HOLDRS Index</security>
+    <security code="RAK/U" currency="USD">Renaissance Acquisition-Units</security>
+    <security code="RTK" currency="USD">Rentech, Inc</security>
+    <security code="$IRH" currency="USD">Retail HOLDRS Index</security>
+    <security code="RTH" currency="USD">Retail HOLDRs Trust Retail HOLDRs Trust</security>
+    <security code="RVP" currency="USD">Retractable Technologies, Inc</security>
+    <security code="RUN" currency="USD">Reunion Industries, Inc</security>
+    <security code="IRN" currency="USD">Rewards Network Inc</security>
+    <security code="RCF" currency="USD">Rica Foods, Inc</security>
+    <security code="RIC" currency="USD">Richmont Mines, Inc</security>
+    <security code="RNO" currency="USD">Rio Narcea Gold Mines, Ltd</security>
+    <security code="RTC" currency="USD">Riveria Tool Co</security>
+    <security code="RIV" currency="USD">Riviera Holdings Corp</security>
+    <security code="RPI" currency="USD">Roberts Realty Investors, Inc</security>
+    <security code="RMI" currency="USD">Rotonics Manufacturing, Inc</security>
+    <security code="ROW" currency="USD">Rowe Companies (The)</security>
+    <security code="RBY" currency="USD">Rubicon Minerals Corporation</security>
+    <security code="$RLG" currency="USD">Russell 1000 Growth Index</security>
+    <security code="$RUO" currency="USD">Russell 2000 Growth Index</security>
+    <security code="$RUJ" currency="USD">Russell 2000 Value Index</security>
+    <security code="$RAG" currency="USD">Russell 3000 Growth Index</security>
+    <security code="$RDG" currency="USD">Russell Midcap Growth Index</security>
+    <security code="$RMC" currency="USD">Russell Midcap Index</security>
+    <security code="$RMV" currency="USD">Russell Midcap Value Index</security>
+    <security code="XLG" currency="USD">Rydex Russell Top 50 ETF</security>
+    <security code="RFV" currency="USD">Rydex S&amp;P  Midcap 400 Pure Value ETF</security>
+    <security code="RPG" currency="USD">Rydex S&amp;P 500 Pure Growth ETF</security>
+    <security code="RPV" currency="USD">Rydex S&amp;P 500 Pure Value ETF</security>
+    <security code="RCD" currency="USD">Rydex S&amp;P Equal Weight Consumer Discretionary ETF</security>
+    <security code="RHS" currency="USD">Rydex S&amp;P Equal Weight Consumer Staples ETF</security>
+    <security code="RSP" currency="USD">Rydex S&amp;P Equal Weight ETF</security>
+    <security code="RYE" currency="USD">Rydex S&amp;P Equal Weight Energy ETF</security>
+    <security code="RYF" currency="USD">Rydex S&amp;P Equal Weight Financial ETF</security>
+    <security code="RYH" currency="USD">Rydex S&amp;P Equal Weight Health Care ETF</security>
+    <security code="RGI" currency="USD">Rydex S&amp;P Equal Weight Industrials ETF</security>
+    <security code="RTM" currency="USD">Rydex S&amp;P Equal Weight Materials ETF</security>
+    <security code="RYT" currency="USD">Rydex S&amp;P Equal Weight Technology ETF</security>
+    <security code="RYU" currency="USD">Rydex S&amp;P Equal Weight Utilities ETF</security>
+    <security code="RFG" currency="USD">Rydex S&amp;P Midcap 400 Pure Growth ETF</security>
+    <security code="RZG" currency="USD">Rydex S&amp;P Smallcap 600 Pure Growth ETF</security>
+    <security code="RZV" currency="USD">Rydex S&amp;P Smallcap 600 Pure Value ETF</security>
+    <security code="$NNV.NV" currency="USD">S&amp;P 500 FD INDEX</security>
+    <security code="$SPXOS" currency="USD">S&amp;P 500 O-STRIP INDEX</security>
+    <security code="$SPCMI" currency="USD">S&amp;P Completion Index</security>
+    <security code="$SPSUPX" currency="USD">S&amp;P Composite 1500 Index</security>
+    <security code="$SXV" currency="USD">S&amp;P DEP RCP UNDERLYING TRDNG INDEX</security>
+    <security code="$SXV.NV" currency="USD">S&amp;P DEPOSITARY RECEIPTS INDEX</security>
+    <security code="$SPXEW" currency="USD">S&amp;P Equal Weight Index</security>
+    <security code="$NIH" currency="USD">S&amp;P LATIN AMERICA 40 FUND INDEX</security>
+    <security code="$MXV.NV" currency="USD">S&amp;P MIDCAP 400 DEP RCPT INDEX</security>
+    <security code="$MID" currency="USD">S&amp;P Midcap 400</security>
+    <security code="$MGD" currency="USD">S&amp;P Midcap 400 BARRA Growth Index</security>
+    <security code="$MUV" currency="USD">S&amp;P Midcap 400 BARRA Value Index</security>
+    <security code="$CKG" currency="USD">S&amp;P Smallcap 600 BARRA Growth Index</security>
+    <security code="$CVK" currency="USD">S&amp;P Smallcap 600 BARRA Value Index</security>
+    <security code="$NIT" currency="USD">S&amp;P TOPIX 150 INDEX</security>
+    <security code="TSX" currency="USD">S&amp;P500 IDX TARGET</security>
+    <security code="SYIp" currency="USD">S.Y. BANCORP TRUST I</security>
+    <security code="SAI" currency="USD">SAIC, Inc. Common Stock</security>
+    <security code="TGD" currency="USD">SALOMON SB 10% TRGTS</security>
+    <security code="SDOpC" currency="USD">SAN DIEGO 6 E 440 PF</security>
+    <security code="SDOpB" currency="USD">SAN DIEGO 6 E 450 PE</security>
+    <security code="SDOpA" currency="USD">SAN DIEGO 6 E 5 PFD</security>
+    <security code="SDOpH" currency="USD">SANDIEGO G &amp; E PRF</security>
+    <security code="DDD" currency="USD">SCOLR Pharma, Inc</security>
+    <security code="UUY" currency="USD">SELECT UTILITY INDEX</security>
+    <security code="SHM" currency="USD">SHEFFIELD PHARM INC</security>
+    <security code="SIF" currency="USD">SIFCO Industries, Inc</security>
+    <security code="SJW" currency="USD">SJW Corp. Common Stock, par value $0.521</security>
+    <security code="SLI" currency="USD">SL Industries Inc</security>
+    <security code="SLMpB" currency="USD">SLM Corporation Floating-Rate Non-Cumulative Preferred Stock, Series B, $0.20 pa</security>
+    <security code="SLS" currency="USD">SLS International Inc</security>
+    <security code="PED/WS" currency="USD">SMARTPROS LTD WTS</security>
+    <security code="SCEpB" currency="USD">SOUTH CA EDIS 408 PF</security>
+    <security code="SCEpC" currency="USD">SOUTH CA EDIS 424 PF</security>
+    <security code="SCEpD" currency="USD">SOUTH CA EDIS 431 PF</security>
+    <security code="SCEpE" currency="USD">SOUTH CA EDIS 478 PF</security>
+    <security code="GII" currency="USD">SPDR  FTSE/Macquarie Global Infrastructure 100 ETF</security>
+    <security code="DGT" currency="USD">SPDR DJ Global Titans ETF</security>
+    <security code="RWX" currency="USD">SPDR DJ Wilshire International Real Estate ETF</security>
+    <security code="ELR" currency="USD">SPDR DJ Wilshire Large Cap ETF</security>
+    <security code="ELG" currency="USD">SPDR DJ Wilshire Large Cap Growth ETF</security>
+    <security code="ELV" currency="USD">SPDR DJ Wilshire Large Cap Value ETF</security>
+    <security code="EMM" currency="USD">SPDR DJ Wilshire Mid Cap ETF</security>
+    <security code="EMG" currency="USD">SPDR DJ Wilshire Mid Cap Growth ETF</security>
+    <security code="EMV" currency="USD">SPDR DJ Wilshire Mid Cap Value ETF</security>
+    <security code="DSC" currency="USD">SPDR DJ Wilshire Small Cap ETF</security>
+    <security code="DSG" currency="USD">SPDR DJ Wilshire Small Cap Growth ETF</security>
+    <security code="DSV" currency="USD">SPDR DJ Wilshire Small Cap Value ETF</security>
+    <security code="TMW" currency="USD">SPDR DJ Wilshire Total Market ETF</security>
+    <security code="$BXV.NV" currency="USD">SPDR FD BASIC INDUSTRIES INDEX</security>
+    <security code="$PXV.NV" currency="USD">SPDR FD CONS STAPLES INDEX</security>
+    <security code="$NXV.NV" currency="USD">SPDR FD CONSUMER SERVICES INDEX</security>
+    <security code="$YXV.NV" currency="USD">SPDR FD CYCLICALS/TRANSPORT INDEX</security>
+    <security code="$EXV.NV" currency="USD">SPDR FD ENERGY INDEX</security>
+    <security code="$FXV.NV" currency="USD">SPDR FD FINANCIAL INDEX</security>
+    <security code="$KXV.NV" currency="USD">SPDR FD TECHNOLOGY INDEX</security>
+    <security code="$UXV.NV" currency="USD">SPDR FD UTILITIES INDEX</security>
+    <security code="$NXV" currency="USD">SPDR FUND CONSUMER SERVICES INDEX</security>
+    <security code="$YXV" currency="USD">SPDR FUND CYCLICALS/TRANSPRT INDEX</security>
+    <security code="$EXV" currency="USD">SPDR FUND ENERGY INDEX</security>
+    <security code="$FXV" currency="USD">SPDR FUND FINANCIAL INDEX</security>
+    <security code="$TXV" currency="USD">SPDR FUND INDUSTRIAL INDEX</security>
+    <security code="$KXV" currency="USD">SPDR FUND TECHNOLOGY INDEX</security>
+    <security code="$UXV" currency="USD">SPDR FUND UTILITIES INDEX</security>
+    <security code="XHB" currency="USD">SPDR Homebuilders ETF</security>
+    <security code="CWI" currency="USD">SPDR MSCI ACWI ex-US ETF</security>
+    <security code="OOO" currency="USD">SPDR O-Strip ETF</security>
+    <security code="JPP" currency="USD">SPDR Russell/Nomura PRIME Japan ETF</security>
+    <security code="JSC" currency="USD">SPDR Russell/Nomura Small Cap Japan ETF</security>
+    <security code="XBI" currency="USD">SPDR S&amp;P Biotech ETF</security>
+    <security code="SDY" currency="USD">SPDR S&amp;P Dividend ETF</security>
+    <security code="XME" currency="USD">SPDR S&amp;P Metals &amp; Mining ETF</security>
+    <security code="XES" currency="USD">SPDR S&amp;P Oil &amp; Gas Equipment &amp; Services ETF</security>
+    <security code="XOP" currency="USD">SPDR S&amp;P Oil &amp; Gas Exploration &amp; Production ETF</security>
+    <security code="XPH" currency="USD">SPDR S&amp;P Pharmaceuticals ETF</security>
+    <security code="XRT" currency="USD">SPDR S&amp;P Retail ETF</security>
+    <security code="XSD" currency="USD">SPDR S&amp;P Semiconductor ETF</security>
+    <security code="SPY" currency="USD">SPDRs</security>
+    <security code="$BXUIN" currency="USD">SRN Ref. Ind. linked to CBOE SPX Bu</security>
+    <security code="$BWRIN" currency="USD">SRN Ref. Ind. to CBOE DJIA BuyWrite</security>
+    <security code="XSB" currency="USD">SSB HLDGS DJIA2002-5</security>
+    <security code="XOS" currency="USD">STR PD AMX SEMI 11/5</security>
+    <security code="ISB" currency="USD">STR PD DJIA 2001-26</security>
+    <security code="NQL" currency="USD">STR PD NASDAQ 2002-6</security>
+    <security code="NQH" currency="USD">STR PD NDQ TIER 4/06</security>
+    <security code="RUD" currency="USD">STR PD RUSS2000 TIER</security>
+    <security code="RSB" currency="USD">STR PD S&amp;P 1999-2</security>
+    <security code="HSB" currency="USD">STR PD S&amp;P 2001-11</security>
+    <security code="SRB" currency="USD">STR PD S&amp;P 2001-19</security>
+    <security code="SFM" currency="USD">STR PD S&amp;P 2003-10</security>
+    <security code="SMC" currency="USD">STR PD S&amp;P MIDCAP</security>
+    <security code="JSB" currency="USD">STR PD SER S&amp;P2002-1</security>
+    <security code="LSB" currency="USD">STR PD TIER 01-13</security>
+    <security code="SNB" currency="USD">STR PD TIERS 2002-9</security>
+    <security code="DJQ" currency="USD">STR PD TIERS DOW</security>
+    <security code="SFH" currency="USD">STR PDS NAS 2003-12</security>
+    <security code="SMX" currency="USD">STR PDS TIERS 2003-7</security>
+    <security code="NAS" currency="USD">STR PRD NASDAQ100</security>
+    <security code="$UGT" currency="USD">STREET TRACKS DJ GLBL TITANS INDEX</security>
+    <security code="$FLG" currency="USD">STREET TRACKS DJ LG CP GRWTH INDEX</security>
+    <security code="$PSV" currency="USD">STREET TRACKS DJ US SM CP VL INDEX</security>
+    <security code="$PSG" currency="USD">STREET TRACKS US SM CAP GRTH INDEX</security>
+    <security code="$EWR.NV" currency="USD">STREET TRCK WILSHRE REIT NAV INDEX</security>
+    <security code="BIS" currency="USD">STRUCTURED PRODUCT</security>
+    <security code="BEM" currency="USD">STRUCTURED PRODUCT</security>
+    <security code="SVI/U" currency="USD">SVCS ACQ CORP INTL</security>
+    <security code="SVI/WS" currency="USD">SVICE ACQUI CORP WAR</security>
+    <security code="SYS" currency="USD">SYS Technologies, Inc.</security>
+    <security code="$SBRDE" currency="USD">Sabrient Defensive Equity Index</security>
+    <security code="$SBRIN" currency="USD">Sabrient Insider Sentiment Index</security>
+    <security code="$SBRST" currency="USD">Sabrient Stealth Index</security>
+    <security code="SAL" currency="USD">Salisbury Bancorp, Inc</security>
+    <security code="$NIX" currency="USD">Salomon Smith Barney</security>
+    <security code="LIV" currency="USD">Samaritan Pharmaceuticals, Inc</security>
+    <security code="SEB" currency="USD">Seaboard Corp</security>
+    <security code="SA" currency="USD">Seabridge Gold Inc</security>
+    <security code="SZI" currency="USD">Segmentz, Inc</security>
+    <security code="$ESX" currency="USD">Select European 50</security>
+    <security code="XLY" currency="USD">Select Sector SPDR-Consumer Discretionary</security>
+    <security code="XLP" currency="USD">Select Sector SPDR-Consumer Staples</security>
+    <security code="XLE" currency="USD">Select Sector SPDR-Energy</security>
+    <security code="XLF" currency="USD">Select Sector SPDR-Financial</security>
+    <security code="XLV" currency="USD">Select Sector SPDR-Health Care</security>
+    <security code="XLI" currency="USD">Select Sector SPDR-Industrial</security>
+    <security code="XLB" currency="USD">Select Sector SPDR-Materials</security>
+    <security code="XLK" currency="USD">Select Sector SPDR-Technology</security>
+    <security code="XLU" currency="USD">Select Sector SPDR-Utilities</security>
+    <security code="$XST" currency="USD">Select Ten Index</security>
+    <security code="$XSH" currency="USD">Semiconductor HOLDRS Index</security>
+    <security code="SMH" currency="USD">Semiconductor HOLDRs Trust Semiconductor HOLDRs Trust</security>
+    <security code="$IIB" currency="USD">Semiconductor Industry PLUS</security>
+    <security code="DLK" currency="USD">Semotus Solutions, Inc</security>
+    <security code="SNT" currency="USD">Senesco Technologies, Inc</security>
+    <security code="SVI" currency="USD">Services Acquisition Corp International</security>
+    <security code="SVT" currency="USD">Servotronics, Inc</security>
+    <security code="SHA" currency="USD">Shanghai Century Acquisition Corporation</security>
+    <security code="DOG" currency="USD">Short Dow30 ProShares</security>
+    <security code="MYY" currency="USD">Short MidCap400 ProShares</security>
+    <security code="PSQ" currency="USD">Short QQQ ProShares</security>
+    <security code="RWM" currency="USD">Short Russell2000 ProShares</security>
+    <security code="SH" currency="USD">Short S&amp;P500 ProShares</security>
+    <security code="SBB" currency="USD">Short SmallCap600 ProShares</security>
+    <security code="SGN" currency="USD">Signalife, Inc</security>
+    <security code="SLW" currency="USD">Silver Wheaton Corp. Common Stock, no par value.</security>
+    <security code="SVL" currency="USD">Silverleaf Resorts, Inc</security>
+    <security code="SLP" currency="USD">Simulations Plus, Inc</security>
+    <security code="SMD" currency="USD">Singing Machine Company, Inc (The)</security>
+    <security code="SVA" currency="USD">Sinovac Biotech Ltd</security>
+    <security code="MVE" currency="USD">Smart Move, Inc</security>
+    <security code="PED" currency="USD">SmartPros Ltd</security>
+    <security code="$SDD" currency="USD">Smcndctr Indtry PLUS Bskt Val Idx</security>
+    <security code="SWB" currency="USD">Smith &amp; Wesson Holding Corp</security>
+    <security code="SBN" currency="USD">SoftBrands, Inc</security>
+    <security code="$XWH" currency="USD">Software HOLDRS Index</security>
+    <security code="SWH" currency="USD">Software HOLDRs Trust Software HOLDRs Trust</security>
+    <security code="XPL" currency="USD">Solitario Resources Corporation</security>
+    <security code="SZB" currency="USD">SouthFirst Bancshares, Inc</security>
+    <security code="SSE" currency="USD">Southern Connecticut Bancorp, Inc</security>
+    <security code="SGB" currency="USD">Southwest Georgia Financial Corp</security>
+    <security code="LOV" currency="USD">Spark Networks plc</security>
+    <security code="SCY" currency="USD">Sports Club Company, Inc (The)</security>
+    <security code="SEA" currency="USD">Star Maritime Acquisition Corp</security>
+    <security code="STB" currency="USD">State Bancorp, Inc</security>
+    <security code="TSC" currency="USD">Stephan Company (The)</security>
+    <security code="SPR" currency="USD">Sterling Capital Corp</security>
+    <security code="STV" currency="USD">Sterling Construction Company, Inc</security>
+    <security code="$RCE" currency="USD">StockCar Stocks Index</security>
+    <security code="STG" currency="USD">Stonepath Group, Inc</security>
+    <security code="SCU" currency="USD">Storm Cat Energy Corporation</security>
+    <security code="RTS" currency="USD">Strategic Return Notes Linked to Select 10 Index</security>
+    <security code="UUD" currency="USD">Strategic Return Notes linked to the Select Utility Index</security>
+    <security code="SUF" currency="USD">SulphCo, Inc</security>
+    <security code="SBK" currency="USD">Sun American Bancorp</security>
+    <security code="SSY" currency="USD">SunLink Health Systems, Inc</security>
+    <security code="SNR" currency="USD">Sunair Services Corporation</security>
+    <security code="SGC" currency="USD">Superior Uniform Group, Inc</security>
+    <security code="STS" currency="USD">Supreme Industries, Inc</security>
+    <security code="BCP" currency="USD">Symbol changed to  BCPC</security>
+    <security code="TAM" currency="USD">TAM S.A. American Depositary Shares (Each representing one preferred share)</security>
+    <security code="TJA" currency="USD">TARGETS TO AMGEN INC</security>
+    <security code="TGZ" currency="USD">TARGETS TR ADR NOK</security>
+    <security code="TOI" currency="USD">TARGETS TR XXIV</security>
+    <security code="TCY" currency="USD">TARGETS TRUST XX</security>
+    <security code="TZN" currency="USD">TARGETS TRUST XXIII</security>
+    <security code="TSI" currency="USD">TCW Strategic Income Fund, Inc. Common Stock</security>
+    <security code="TDS/S" currency="USD">TEL AND DATA SYS</security>
+    <security code="TGE" currency="USD">TGC Industries, Inc</security>
+    <security code="DJE" currency="USD">TIERS DJIA 2003-1</security>
+    <security code="SNJ" currency="USD">TIERS S&amp;P 2002-19</security>
+    <security code="TEDpB" currency="USD">TOLEDO ED 4.25    25</security>
+    <security code="TAG" currency="USD">Tag-it Pacific, Inc</security>
+    <security code="TLF" currency="USD">Tandy Leather Factory, Inc</security>
+    <security code="TRE" currency="USD">Tanzanian Royalty Exploration Corporation</security>
+    <security code="TLG" currency="USD">Target Logistics, Inc</security>
+    <security code="TPO" currency="USD">Tarpon Industries Inc</security>
+    <security code="TGB" currency="USD">Taseko Mines Limited</security>
+    <security code="TMI" currency="USD">Team, Inc</security>
+    <security code="TO" currency="USD">Tech/Ops Sevcon, Inc</security>
+    <security code="TSH" currency="USD">Teche Holding Co</security>
+    <security code="$IXT" currency="USD">Technology Select Sector Index</security>
+    <security code="TIK" currency="USD">Tel Instrument Electronics Corp</security>
+    <security code="$PTB" currency="USD">Telebras ProGroS Index</security>
+    <security code="$ITH" currency="USD">Telecom HOLDRS Index</security>
+    <security code="TTH" currency="USD">Telecom HOLDRs Trust Telecom HOLDRs Trust</security>
+    <security code="TDS" currency="USD">Telephone And Data Systems, Inc</security>
+    <security code="TST" currency="USD">Telestone Technologies Corporation</security>
+    <security code="TLL" currency="USD">Teletouch Communications, Inc</security>
+    <security code="TKO" currency="USD">Telkonet, Inc</security>
+    <security code="$TPN" currency="USD">Ten Companies BRIDGES</security>
+    <security code="$TAY" currency="USD">Ten Companies BRIDGES for TPA</security>
+    <security code="TGC" currency="USD">Tengasco, Inc</security>
+    <security code="TWW" currency="USD">Terremark Worldwide, Inc</security>
+    <security code="TEC" currency="USD">Teton Energy Corporation</security>
+    <security code="TF" currency="USD">Thai Capital Fund, Inc (The)</security>
+    <security code="$CPMKTB" currency="USD">The Capital Markets Bond Index</security>
+    <security code="$CPMKTE" currency="USD">The Capital Markets Equities Index</security>
+    <security code="$CPMKTS" currency="USD">The Capital Markets Index</security>
+    <security code="$DRB" currency="USD">The Share BuyBack Achievers Index</security>
+    <security code="$DXS" currency="USD">The Spade Defense Index</security>
+    <security code="$ECO" currency="USD">The WilderHill Clean Energy Index</security>
+    <security code="THV" currency="USD">Thermoview Industries, Inc</security>
+    <security code="THK" currency="USD">Think Partnership Inc</security>
+    <security code="THN" currency="USD">ThinkEngine Networks, Inc</security>
+    <security code="THM" currency="USD">Thomas Equipment, Inc</security>
+    <security code="TBV" currency="USD">Tiens Biotech Group (USA), Inc</security>
+    <security code="TPY" currency="USD">Tipperary Corp</security>
+    <security code="TTP" currency="USD">Titan Pharmaceuticals, Inc</security>
+    <security code="TOF" currency="USD">Tofutti Brands Inc</security>
+    <security code="TMP" currency="USD">Tompkins Trustco, Inc</security>
+    <security code="TLX" currency="USD">Trans-Lux Corp</security>
+    <security code="TGA" currency="USD">TransGlobe Energy Corporation</security>
+    <security code="TAQ" currency="USD">Transforma Acquisition Group Inc</security>
+    <security code="TMY" currency="USD">Transmeridian Exploration, Inc</security>
+    <security code="TFN" currency="USD">Transnational Financial Network, Inc</security>
+    <security code="TA" currency="USD">TravelCenters of America LLC</security>
+    <security code="TIV" currency="USD">Tri-Valley Corp</security>
+    <security code="TRT" currency="USD">Trio-Tech International</security>
+    <security code="TCX" currency="USD">Tucows Inc</security>
+    <security code="TTG" currency="USD">Tutogen Medical, Inc</security>
+    <security code="TUX" currency="USD">Tuxis Corp</security>
+    <security code="UMH" currency="USD">UMH Properties, Inc</security>
+    <security code="UTL" currency="USD">UNITIL Corp</security>
+    <security code="UQM" currency="USD">UQM Technologies, Inc</security>
+    <security code="LCC" currency="USD">US Airways Group, Inc. Common stock, par value $0.01</security>
+    <security code="UDW" currency="USD">US Dataworks, Inc</security>
+    <security code="UXG" currency="USD">US Gold Corporation</security>
+    <security code="UTK" currency="USD">UTEK Corporation</security>
+    <security code="UYM" currency="USD">Ultra Basic Materials ProShares</security>
+    <security code="UGE" currency="USD">Ultra Consumer Goods ProShares</security>
+    <security code="UCC" currency="USD">Ultra Consumer Services ProShares</security>
+    <security code="DDM" currency="USD">Ultra Dow30 ProShares</security>
+    <security code="UYG" currency="USD">Ultra Financials ProShares</security>
+    <security code="RXL" currency="USD">Ultra Health Care ProShares</security>
+    <security code="UXI" currency="USD">Ultra Industrials ProShares</security>
+    <security code="MVV" currency="USD">Ultra MidCap400 ProShares</security>
+    <security code="DIG" currency="USD">Ultra Oil &amp; Gas ProShares</security>
+    <security code="UPL" currency="USD">Ultra Petroleum Corp</security>
+    <security code="QLD" currency="USD">Ultra QQQ  ProShares</security>
+    <security code="URE" currency="USD">Ultra Real Estate ProShares</security>
+    <security code="UWM" currency="USD">Ultra Russell2000 ProShares</security>
+    <security code="SSO" currency="USD">Ultra S&amp;P500 ProShares</security>
+    <security code="USD" currency="USD">Ultra Semiconductors ProShares</security>
+    <security code="SAA" currency="USD">Ultra SmallCap600 ProShares</security>
+    <security code="ROM" currency="USD">Ultra Technology ProShares</security>
+    <security code="UPW" currency="USD">Ultra Utilities ProShares</security>
+    <security code="SMN" currency="USD">UltraShort Basic Materials ProShares</security>
+    <security code="SZK" currency="USD">UltraShort Consumer Goods ProShares</security>
+    <security code="SCC" currency="USD">UltraShort Consumer Services ProShares</security>
+    <security code="DXD" currency="USD">UltraShort Dow30 ProShares</security>
+    <security code="SKF" currency="USD">UltraShort Financials ProShares</security>
+    <security code="RXD" currency="USD">UltraShort Health Care ProShares</security>
+    <security code="SIJ" currency="USD">UltraShort Industrials ProShares</security>
+    <security code="MZZ" currency="USD">UltraShort MidCap400 ProShares</security>
+    <security code="DUG" currency="USD">UltraShort Oil &amp; Gas ProShares</security>
+    <security code="QID" currency="USD">UltraShort QQQ ProShares</security>
+    <security code="SRS" currency="USD">UltraShort Real Estate ProShares</security>
+    <security code="TWM" currency="USD">UltraShort Russell2000 ProShares</security>
+    <security code="SSG" currency="USD">UltraShort Semiconductors ProShares</security>
+    <security code="SDD" currency="USD">UltraShort SmallCap600 ProShares</security>
+    <security code="REW" currency="USD">UltraShort Technology ProShares</security>
+    <security code="SDP" currency="USD">UltraShort Utilities ProShares</security>
+    <security code="UNB" currency="USD">Union Bankshares, Inc</security>
+    <security code="AFP" currency="USD">United Capital Corp</security>
+    <security code="USM" currency="USD">United States Cellular Corp</security>
+    <security code="USO" currency="USD">United States Oil Fund, LP</security>
+    <security code="UG" currency="USD">United-Guardian, Inc</security>
+    <security code="UPG" currency="USD">Universal Power Group, Inc</security>
+    <security code="UUU" currency="USD">Universal Security Instruments, Inc</security>
+    <security code="URZ" currency="USD">Uranerz Energy Corporation</security>
+    <security code="UPI" currency="USD">Uroplasty, Inc</security>
+    <security code="$XUH" currency="USD">Utilities HOLDRS Index</security>
+    <security code="UTH" currency="USD">Utilities HOLDRs Trust Utilities HOLDRs Trust</security>
+    <security code="$IXU" currency="USD">Utilities Select Sector Index</security>
+    <security code="EGY" currency="USD">VAALCO Energy, Inc. Common Stock</security>
+    <security code="$EAH" currency="USD">VANGUARD EXTENDED MKT VIPERS INDEX</security>
+    <security code="$EAH.NV" currency="USD">VANGUARD EXTENDED MKT VIPERS NET ASSET VALUE</security>
+    <security code="$TSJ.NV" currency="USD">VANGUART PTL STKMKT VIPERS NET AST VAL IDX</security>
+    <security code="PTT" currency="USD">VCG Holding Corp</security>
+    <security code="PRH/WS/B" currency="USD">VITACUBE HLDG B WTS</security>
+    <security code="PRH/WS/A" currency="USD">VITACUBE HLDS A WTS</security>
+    <security code="VLG" currency="USD">Valley National Gases, Inc</security>
+    <security code="VPF" currency="USD">Valpey Fisher Corp</security>
+    <security code="$MVW" currency="USD">Value 30 Index</security>
+    <security code="$VLFVD" currency="USD">Value Line Dividend Index</security>
+    <security code="$VLFVI" currency="USD">Value Line Equity Allocation Index</security>
+    <security code="$VLINR" currency="USD">Value Line Industry Rotation Index</security>
+    <security code="$VLTSI" currency="USD">Value Line Timeliness Select Index</security>
+    <security code="VKI" currency="USD">Van Kampen Advantage Municipal Income Trust II</security>
+    <security code="VKC" currency="USD">Van Kampen American Capital California Municipal Trust</security>
+    <security code="VMV" currency="USD">Van Kampen Massachusetts Value Municipal Income Trust</security>
+    <security code="VOV" currency="USD">Van Kampen Ohio Value Municipal Income Trust</security>
+    <security code="VKL" currency="USD">Van Kampen Select Sector Municipal Trust</security>
+    <security code="VCR" currency="USD">Vanguard Consumer Discretionary ETF</security>
+    <security code="VDC" currency="USD">Vanguard Consumer Staples ETF</security>
+    <security code="VWO" currency="USD">Vanguard Emerging Markets ETF</security>
+    <security code="VDE" currency="USD">Vanguard Energy ETF</security>
+    <security code="VGK" currency="USD">Vanguard European ETF</security>
+    <security code="VXF" currency="USD">Vanguard Extended Market ETF</security>
+    <security code="VFH" currency="USD">Vanguard Financials ETF</security>
+    <security code="VUG" currency="USD">Vanguard Growth ETF</security>
+    <security code="VHT" currency="USD">Vanguard Health Care ETF</security>
+    <security code="VYM" currency="USD">Vanguard High Dividend Yield ETF</security>
+    <security code="VIS" currency="USD">Vanguard Industrials ETF</security>
+    <security code="VGT" currency="USD">Vanguard Information Technology ETF</security>
+    <security code="VV" currency="USD">Vanguard Large-Cap ETF</security>
+    <security code="VAW" currency="USD">Vanguard Materials ETF</security>
+    <security code="VO" currency="USD">Vanguard Mid-Cap ETF</security>
+    <security code="VOE" currency="USD">Vanguard Mid-Cap Value ETF</security>
+    <security code="VPL" currency="USD">Vanguard Pacific ETF</security>
+    <security code="VNQ" currency="USD">Vanguard REIT ETF</security>
+    <security code="VB" currency="USD">Vanguard Small-Cap ETF</security>
+    <security code="VBK" currency="USD">Vanguard Small-Cap Growth ETF</security>
+    <security code="VBR" currency="USD">Vanguard Small-Cap Value ETF</security>
+    <security code="VOX" currency="USD">Vanguard Telecommunication Services ETF</security>
+    <security code="VTI" currency="USD">Vanguard Total Stock Market ETF</security>
+    <security code="VPU" currency="USD">Vanguard Utilities ETF</security>
+    <security code="VTV" currency="USD">Vanguard Value ETF</security>
+    <security code="VNX" currency="USD">VendingData Corporation</security>
+    <security code="VCC" currency="USD">Veri-Tek International, Corp</security>
+    <security code="VPS" currency="USD">Vermont Pure Holdings, Ltd</security>
+    <security code="VSR" currency="USD">Versar, Inc</security>
+    <security code="XVE" currency="USD">Viceroy Exploration Ltd</security>
+    <security code="VII" currency="USD">Vicon Industries, Inc</security>
+    <security code="VRA" currency="USD">Viragen, Inc</security>
+    <security code="VIR" currency="USD">Virco Manufacturing Corp</security>
+    <security code="REX" currency="USD">Virexx Medical Corp</security>
+    <security code="VGZ" currency="USD">Vista Gold Corp</security>
+    <security code="VSF" currency="USD">Vita Food Products, Inc</security>
+    <security code="PRH" currency="USD">VitaCube Systems Holdings, Inc</security>
+    <security code="VUL" currency="USD">Vulcan International Corp</security>
+    <security code="TSV" currency="USD">WACHOVIA PINS S&amp;P500</security>
+    <security code="WSO/B" currency="USD">WATSCO INC CL B</security>
+    <security code="WLBp" currency="USD">WESTMORELAND PFD</security>
+    <security code="$WHPSF" currency="USD">WHPS Financial Index</security>
+    <security code="WISp" currency="USD">WISCONSIN P L 450 10</security>
+    <security code="$EBL" currency="USD">Wachovia Equity Asset Cl Basket Ind</security>
+    <security code="$MPCDX" currency="USD">Wachovia MARKETPOWER CDs Ref Index</security>
+    <security code="$WSBXM" currency="USD">Wachovia NEV SAS BXM</security>
+    <security code="WSB" currency="USD">Washington Savings Bank (The)</security>
+    <security code="TWH" currency="USD">Washtenaw Group, Inc (The)</security>
+    <security code="WLC" currency="USD">Wellco Enterprises, Inc</security>
+    <security code="WGA" currency="USD">Wells-Gardner Electronics Corp</security>
+    <security code="WRP" currency="USD">Wellsford Real Properties, Inc</security>
+    <security code="WSC" currency="USD">Wesco Financial Corp</security>
+    <security code="SBI" currency="USD">Western Asset Intermediate Muni Fund Inc</security>
+    <security code="WTZ" currency="USD">Western Silver Corporation</security>
+    <security code="WFD" currency="USD">Westfield Financial, Inc</security>
+    <security code="WLB" currency="USD">Westmoreland Coal Co</security>
+    <security code="WHT" currency="USD">Westside Energy Corporation</security>
+    <security code="RVR" currency="USD">White River Capital, Inc</security>
+    <security code="WYY" currency="USD">WidePoint Corporation</security>
+    <security code="GIW" currency="USD">Wilber Corporation (The)</security>
+    <security code="$NEX" currency="USD">WilderHill New Energy GI Index</security>
+    <security code="$WHPRO" currency="USD">WilderHill Progressive Energy Index</security>
+    <security code="$EMW" currency="USD">Wilshire 4500 Completion Index</security>
+    <security code="WOC" currency="USD">Wilshire Enterprises, Inc</security>
+    <security code="$EWR" currency="USD">Wilshire REIT Index</security>
+    <security code="$REW" currency="USD">Wilshire REIT Index</security>
+    <security code="WEX" currency="USD">Winland Electronics, Inc</security>
+    <security code="$IWH" currency="USD">Wireless HOLDRS Index</security>
+    <security code="WMH" currency="USD">Wireless HOLDRs Trust Wireless HOLDRs Trust</security>
+    <security code="WTT" currency="USD">Wireless Telecom Group, Inc</security>
+    <security code="XWG" currency="USD">Wireless Xcessories Group Inc</security>
+    <security code="XNN" currency="USD">Xenonics Holdings, Inc</security>
+    <security code="XNL" currency="USD">Xethanol Corporation</security>
+    <security code="XFN" currency="USD">Xfone, Inc</security>
+    <security code="AUY/WS" currency="USD">YAMANA GOLD INC WTS</security>
+    <security code="YMI" currency="USD">YM BioSciences, Inc</security>
+    <security code="AUY" currency="USD">Yamana Gold Inc. Common Shares</security>
+    <security code="ZTM" currency="USD">Z-Trim Holdings, Inc</security>
+    <security code="ZP" currency="USD">ZAP</security>
+    <security code="$ZAX" currency="USD">Zacks Micro Cap Index</security>
+    <security code="$ZAXSR" currency="USD">Zacks Sector Rotation Index</security>
+    <security code="$ZRS" currency="USD">Zacks Small Cap Index</security>
+    <security code="$ZAXYH" currency="USD">Zacks Yield Hog Index</security>
+    <security code="ZN" currency="USD">Zion Oil &amp; Gas, Inc</security>
+    <security code="ELU" currency="USD">eLinear, Inc</security>
+    <security code="EMA" currency="USD">eMagin Corp</security>
+    <security code="ILC" currency="USD">iLinc Communications, Inc</security>
+    <security code="IIG" currency="USD">iMergent, Inc</security>
+    <security code="IPT" currency="USD">iParty Corp</security>
+    <security code="IAU" currency="USD">iShares COMEX Gold Trust</security>
+    <security code="$IAV" currency="USD">iShares COMEX Gold Trust IIV</security>
+    <security code="ICF" currency="USD">iShares Cohen &amp; Steers Realty Major</security>
+    <security code="IYT" currency="USD">iShares Dow Jones Transportation Average Index Fund</security>
+    <security code="IYM" currency="USD">iShares Dow Jones U.S. Basic Materials Sector Index Fund</security>
+    <security code="IYK" currency="USD">iShares Dow Jones U.S. Consumer Goods Sector Index Fund</security>
+    <security code="IYC" currency="USD">iShares Dow Jones U.S. Consumer Services Sector Index Fund</security>
+    <security code="IYE" currency="USD">iShares Dow Jones U.S. Energy Sector Index Fund</security>
+    <security code="IYF" currency="USD">iShares Dow Jones U.S. Financial Sector Index Fund</security>
+    <security code="IYG" currency="USD">iShares Dow Jones U.S. Financial Services Index Fund</security>
+    <security code="IYH" currency="USD">iShares Dow Jones U.S. Healthcare Sector Index Fund</security>
+    <security code="IYJ" currency="USD">iShares Dow Jones U.S. Industrial Sector Index Fund</security>
+    <security code="IYR" currency="USD">iShares Dow Jones U.S. Real Estate Index Fund</security>
+    <security code="IYW" currency="USD">iShares Dow Jones U.S. Technology Sector Index Fund</security>
+    <security code="IYZ" currency="USD">iShares Dow Jones U.S. Telecommunications Sector Index Fund</security>
+    <security code="IYY" currency="USD">iShares Dow Jones U.S. Total Market Index</security>
+    <security code="IDU" currency="USD">iShares Dow Jones U.S. Utilities Sector Index Fund</security>
+    <security code="IGE" currency="USD">iShares Goldman Sachs Natural Resources</security>
+    <security code="IGN" currency="USD">iShares Goldman Sachs Networking</security>
+    <security code="IGW" currency="USD">iShares Goldman Sachs Semiconductor</security>
+    <security code="IGV" currency="USD">iShares Goldman Sachs Software</security>
+    <security code="IGM" currency="USD">iShares Goldman Sachs Technology</security>
+    <security code="DSI" currency="USD">iShares KLD 400 Social Index Fund</security>
+    <security code="SHY" currency="USD">iShares Lehman 1-3 Year Treasury Bond Fund</security>
+    <security code="TLT" currency="USD">iShares Lehman 20+ Year Treasury Bond Fund</security>
+    <security code="IEF" currency="USD">iShares Lehman 7-10 Year Treasury Bond Fund</security>
+    <security code="AGG" currency="USD">iShares Lehman Aggregate Bond Fund</security>
+    <security code="EWA" currency="USD">iShares MSCI Australia Index Fund</security>
+    <security code="EWO" currency="USD">iShares MSCI Austria Index Fund</security>
+    <security code="EWK" currency="USD">iShares MSCI Belgium Index Fund</security>
+    <security code="EWC" currency="USD">iShares MSCI Canada Index Fund</security>
+    <security code="EZU" currency="USD">iShares MSCI EMU Index Fund</security>
+    <security code="EEM" currency="USD">iShares MSCI Emerging Markets</security>
+    <security code="EWQ" currency="USD">iShares MSCI France Index Fund</security>
+    <security code="EWG" currency="USD">iShares MSCI Germany Index Fund</security>
+    <security code="EWH" currency="USD">iShares MSCI Hong Kong Index Fund</security>
+    <security code="EWI" currency="USD">iShares MSCI Italy Index Fund</security>
+    <security code="EWJ" currency="USD">iShares MSCI Japan Index Fund</security>
+    <security code="EWM" currency="USD">iShares MSCI Malaysia Index Fund</security>
+    <security code="EWW" currency="USD">iShares MSCI Mexico Index Fund</security>
+    <security code="EWN" currency="USD">iShares MSCI Netherlands Index Fund</security>
+    <security code="EWS" currency="USD">iShares MSCI Singapore (Free) Index Fund</security>
+    <security code="EWP" currency="USD">iShares MSCI Spain Index Fund</security>
+    <security code="EWD" currency="USD">iShares MSCI Sweden Index Fund</security>
+    <security code="EWL" currency="USD">iShares MSCI Switzerland Index Fund</security>
+    <security code="EWT" currency="USD">iShares MSCI Taiwan Index Fund</security>
+    <security code="EWU" currency="USD">iShares MSCI United Kingdom Index Fund</security>
+    <security code="EWZ" currency="USD">iShares MSCI-Brazil Index Fund</security>
+    <security code="EFA" currency="USD">iShares MSCI-EAFE</security>
+    <security code="EPP" currency="USD">iShares MSCI-Pacific Ex-Japan</security>
+    <security code="EZA" currency="USD">iShares MSCI-South Africa</security>
+    <security code="EWY" currency="USD">iShares MSCI-South Korea Index Fund</security>
+    <security code="IBB" currency="USD">iShares Nasdaq Biotechnology</security>
+    <security code="IWF" currency="USD">iShares Russell 1000 Growth Index Fund</security>
+    <security code="IWB" currency="USD">iShares Russell 1000 Index Fund</security>
+    <security code="IWD" currency="USD">iShares Russell 1000 Value Index Fund</security>
+    <security code="IWO" currency="USD">iShares Russell 2000 Growth Index Fund</security>
+    <security code="IWM" currency="USD">iShares Russell 2000 Index Fund</security>
+    <security code="IWN" currency="USD">iShares Russell 2000 Value Index Fund</security>
+    <security code="IWZ" currency="USD">iShares Russell 3000 Growth Index Fund</security>
+    <security code="IWV" currency="USD">iShares Russell 3000 Index Fund</security>
+    <security code="IWW" currency="USD">iShares Russell 3000 Value Index Fund</security>
+    <security code="IWP" currency="USD">iShares Russell Midcap Growth Index</security>
+    <security code="IWR" currency="USD">iShares Russell Midcap Index Fund</security>
+    <security code="IWS" currency="USD">iShares Russell Midcap Value Index</security>
+    <security code="ISI" currency="USD">iShares S&amp;P 1500 Index Fund</security>
+    <security code="IVW" currency="USD">iShares S&amp;P 500 Growth Index Fund</security>
+    <security code="IVV" currency="USD">iShares S&amp;P 500 Index</security>
+    <security code="IVE" currency="USD">iShares S&amp;P 500 Value Index Fund</security>
+    <security code="IEV" currency="USD">iShares S&amp;P Europe 350 Index Fund</security>
+    <security code="IXC" currency="USD">iShares S&amp;P Global Energy Sector</security>
+    <security code="IXG" currency="USD">iShares S&amp;P Global Financial Sector</security>
+    <security code="IXJ" currency="USD">iShares S&amp;P Global Healthcare Sector</security>
+    <security code="IXN" currency="USD">iShares S&amp;P Global Information Technology Sector</security>
+    <security code="IXP" currency="USD">iShares S&amp;P Global Telecommunications Sector</security>
+    <security code="ILF" currency="USD">iShares S&amp;P Latin America 40</security>
+    <security code="IJK" currency="USD">iShares S&amp;P MidCap 400 Growth Index Fund</security>
+    <security code="IJH" currency="USD">iShares S&amp;P MidCap 400 Index Fund</security>
+    <security code="IJJ" currency="USD">iShares S&amp;P MidCap 400 Value Index Fund</security>
+    <security code="IJT" currency="USD">iShares S&amp;P SmallCap 600 Growth Index Fund</security>
+    <security code="IJR" currency="USD">iShares S&amp;P SmallCap 600 Index Fund</security>
+    <security code="IJS" currency="USD">iShares S&amp;P SmallCap 600 Value Index Fund</security>
+    <security code="ITF" currency="USD">iShares S&amp;P/TOPIX 150</security>
+    <security code="SLV" currency="USD">iShares Silver Trust</security>
+    <security code="GVI" currency="USD">iShares Trust iShares Lehman Intermediate Government/Credit Bond Fund</security>
+    <security code="LQD" currency="USD">iShares iBoxx $ InvesTop Investment Grade Corporate Bond Fund</security>
+    <security code="NSO" currency="USD">nStor Technologies, Inc</security>
+</data>

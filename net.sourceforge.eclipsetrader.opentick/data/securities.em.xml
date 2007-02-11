@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<data>
+    <security code="/EEDQ7" currency="USD">CME E-mini Eurodollar Futures Future August 7</security>
+    <security code="/EEDZ0" currency="USD">CME E-mini Eurodollar Futures Future December 0</security>
+    <security code="/EEDZ1" currency="USD">CME E-mini Eurodollar Futures Future December 1</security>
+    <security code="/EEDZ2" currency="USD">CME E-mini Eurodollar Futures Future December 2</security>
+    <security code="/EEDZ3" currency="USD">CME E-mini Eurodollar Futures Future December 3</security>
+    <security code="/EEDZ4" currency="USD">CME E-mini Eurodollar Futures Future December 4</security>
+    <security code="/EEDZ5" currency="USD">CME E-mini Eurodollar Futures Future December 5</security>
+    <security code="/EEDN7" currency="USD">CME E-mini Eurodollar Futures Future July 2007</security>
+    <security code="/EEDM0" currency="USD">CME E-mini Eurodollar Futures Future June 0</security>
+    <security code="/EEDM1" currency="USD">CME E-mini Eurodollar Futures Future June 1</security>
+    <security code="/EEDM2" currency="USD">CME E-mini Eurodollar Futures Future June 2</security>
+    <security code="/EEDM3" currency="USD">CME E-mini Eurodollar Futures Future June 3</security>
+    <security code="/EEDM4" currency="USD">CME E-mini Eurodollar Futures Future June 4</security>
+    <security code="/EEDM5" currency="USD">CME E-mini Eurodollar Futures Future June 5</security>
+    <security code="/EEDM6" currency="USD">CME E-mini Eurodollar Futures Future June 6</security>
+    <security code="/EEDH0" currency="USD">CME E-mini Eurodollar Futures Future March 0</security>
+    <security code="/EEDH1" currency="USD">CME E-mini Eurodollar Futures Future March 1</security>
+    <security code="/EEDH2" currency="USD">CME E-mini Eurodollar Futures Future March 2</security>
+    <security code="/EEDH3" currency="USD">CME E-mini Eurodollar Futures Future March 3</security>
+    <security code="/EEDH4" currency="USD">CME E-mini Eurodollar Futures Future March 4</security>
+    <security code="/EEDH5" currency="USD">CME E-mini Eurodollar Futures Future March 5</security>
+    <security code="/EEDH6" currency="USD">CME E-mini Eurodollar Futures Future March 6</security>
+    <security code="/EEDK7" currency="USD">CME E-mini Eurodollar Futures Future May 2007</security>
+    <security code="/EEDU0" currency="USD">CME E-mini Eurodollar Futures Future September 0</security>
+    <security code="/EEDU1" currency="USD">CME E-mini Eurodollar Futures Future September 1</security>
+    <security code="/EEDU2" currency="USD">CME E-mini Eurodollar Futures Future September 2</security>
+    <security code="/EEDU3" currency="USD">CME E-mini Eurodollar Futures Future September 3</security>
+    <security code="/EEDU4" currency="USD">CME E-mini Eurodollar Futures Future September 4</security>
+    <security code="/EEDU5" currency="USD">CME E-mini Eurodollar Futures Future September 5</security>
+    <security code="/E5BZ8" currency="USD">CME Eurodollar 5-Year E-mini Bundle Futures Future December 2008</security>
+    <security code="/E7Z6" currency="USD">E-Mini Euro FX  Future December 2006</security>
+    <security code="/E7M6" currency="USD">E-Mini Euro FX  Future June 2006</security>
+    <security code="/E7M7" currency="USD">E-Mini Euro FX  Future June 2007</security>
+    <security code="/E7H6" currency="USD">E-Mini Euro FX  Future March 2006</security>
+    <security code="/E7H7" currency="USD">E-Mini Euro FX  Future March 2007</security>
+    <security code="/E7U6" currency="USD">E-Mini Euro FX  Future September 2006</security>
+    <security code="/NQZ6" currency="USD">E-Mini NASDAQ 100  Future December 2006</security>
+    <security code="/NQM6" currency="USD">E-Mini NASDAQ 100  Future June 2006</security>
+    <security code="/NQM7" currency="USD">E-Mini NASDAQ 100  Future June 2007</security>
+    <security code="/NQH6" currency="USD">E-Mini NASDAQ 100  Future March 2006</security>
+    <security code="/NQH7" currency="USD">E-Mini NASDAQ 100  Future March 2007</security>
+    <security code="/NQU6" currency="USD">E-Mini NASDAQ 100  Future September 2006</security>
+    <security code="/ER2Z6" currency="USD">E-Mini Russell 2000 Future December 2006</security>
+    <security code="/ER2M6" currency="USD">E-Mini Russell 2000 Future June 2006</security>
+    <security code="/ER2M7" currency="USD">E-Mini Russell 2000 Future June 2007</security>
+    <security code="/ER2H6" currency="USD">E-Mini Russell 2000 Future March 2006</security>
+    <security code="/ER2H7" currency="USD">E-Mini Russell 2000 Future March 2007</security>
+    <security code="/ER2U6" currency="USD">E-Mini Russell 2000 Future September 2006</security>
+    <security code="/J7Z6" currency="USD">Japanese Yen Mini Currency Future December 2006</security>
+    <security code="/J7M6" currency="USD">Japanese Yen Mini Currency Future June 2006</security>
+    <security code="/J7M7" currency="USD">Japanese Yen Mini Currency Future June 2007</security>
+    <security code="/J7H6" currency="USD">Japanese Yen Mini Currency Future March 2006</security>
+    <security code="/J7H7" currency="USD">Japanese Yen Mini Currency Future March 2007</security>
+    <security code="/J7U6" currency="USD">Japanese Yen Mini Currency Future September 2006</security>
+    <security code="/ESZ6" currency="USD">Mini S&amp;P 500  Future December 2006</security>
+    <security code="/ESM6" currency="USD">Mini S&amp;P 500  Future June 2006</security>
+    <security code="/ESM7" currency="USD">Mini S&amp;P 500  Future June 2007</security>
+    <security code="/ESH6" currency="USD">Mini S&amp;P 500  Future March 2006</security>
+    <security code="/ESH7" currency="USD">Mini S&amp;P 500  Future March 2007</security>
+    <security code="/ESU6" currency="USD">Mini S&amp;P 500  Future September 2006</security>
+    <security code="/RS1Z6" currency="USD">Russell 1000 Index Future December 2006</security>
+    <security code="/RS1M6" currency="USD">Russell 1000 Index Future June 2006</security>
+    <security code="/RS1M7" currency="USD">Russell 1000 Index Future June 2007</security>
+    <security code="/RS1H6" currency="USD">Russell 1000 Index Future March 2006</security>
+    <security code="/RS1H7" currency="USD">Russell 1000 Index Future March 2007</security>
+    <security code="/RS1U6" currency="USD">Russell 1000 Index Future September 2006</security>
+</data>
