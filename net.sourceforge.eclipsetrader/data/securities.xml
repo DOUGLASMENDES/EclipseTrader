@@ -179,7 +179,7 @@
         </data>
     </security>
     <security id="12">
-        <code>RHAT</code>
+        <code>RHT</code>
         <description>Red Hat</description>
         <currency>USD</currency>
         <feeds>
