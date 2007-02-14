@@ -555,6 +555,8 @@ public class WatchlistTableViewer extends AbstractLayout
                 tableItem = new WatchlistTableItem(table, SWT.NONE, index, watchlistItem);
             tableItem.setBackground(((index & 1) == 1) ? oddBackground : evenBackground);
             tableItem.setForeground(((index & 1) == 1) ? oddForeground : evenForeground);
+            
+            tableItem.ticker.setBackground(tickBackground);
 
             index++;
         }
