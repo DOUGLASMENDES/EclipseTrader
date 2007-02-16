@@ -374,7 +374,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 public void run()
                 {
                     if (!sashForm.isDisposed())
+                    {
+                        setPartName(chart.getTitle());
                         sashForm.getDisplay().timerExec(200, updateViewRunnable);
+                    }
                 }
             });
         }
