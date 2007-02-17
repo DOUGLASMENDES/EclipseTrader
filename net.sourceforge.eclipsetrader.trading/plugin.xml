@@ -390,7 +390,7 @@
             name="%view.name.transactions"/>
       <view
             category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.trading.views.PortfolioView"
+            class="net.sourceforge.eclipsetrader.trading.portfolio.PortfolioView"
             icon="icons/eview16/money.png"
             id="net.sourceforge.eclipsetrader.views.portfolio"
             name="%view.name.portfolio"/>
