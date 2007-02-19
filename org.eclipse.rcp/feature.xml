@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.rcp"
       label="%featureName"
-      version="3.2.1.r321_v20060801-2ekW2BxmcpPUOoq"
+      version="3.2.2.r322_v20070104-8pcviKVqd8J7C1U"
       provider-name="%providerName"
       plugin="org.eclipse.rcp"
       image="eclipse_update_120.jpg">
@@ -20,14 +20,15 @@
    </license>
 
    <url>
-      <update label="%updateSiteName" url="http://update.eclipse.org/updates/3.2"/>
+      <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+      <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
 
    <plugin
          id="com.ibm.icu"
          download-size="0"
          install-size="0"
-         version="3.4.5"
+         version="3.4.5.20061213"
          unpack="false"/>
 
    <plugin
@@ -48,7 +49,7 @@
          id="org.eclipse.core.expressions"
          download-size="0"
          install-size="0"
-         version="3.2.1.r321_v20060721"
+         version="3.2.2.r322_v20070109a"
          unpack="false"/>
 
    <plugin
@@ -69,28 +70,28 @@
          id="org.eclipse.osgi"
          download-size="0"
          install-size="0"
-         version="3.2.1.R32x_v20060919"
+         version="3.2.2.R32x_v20070118"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help"
          download-size="0"
          install-size="0"
-         version="3.2.1.R321_v20060920"
+         version="3.2.2.R322_v20061213"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.swt"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235e"
+         version="3.2.2.v3236b"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jface"
          download-size="0"
          install-size="0"
-         version="3.2.1.M20060908-1000"
+         version="3.2.2.M20061214-1200"
          unpack="false"/>
 
    <plugin
@@ -104,21 +105,21 @@
          id="org.eclipse.ui"
          download-size="0"
          install-size="0"
-         version="3.2.1.M20060913-0800"
+         version="3.2.1.M20061108"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.workbench"
          download-size="0"
          install-size="0"
-         version="3.2.1.M20060906-0800"
+         version="3.2.2.M20070119-0800"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.configurator"
          download-size="0"
          install-size="0"
-         version="3.2.1.v20092006"
+         version="3.2.2.R32x_v20070111"
          unpack="false"/>
 
    <plugin
@@ -128,7 +129,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -139,7 +140,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -150,7 +151,7 @@
          arch="sparc"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -161,7 +162,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.0.R3_2_maintenance"
+         version="3.2.2.R3_2_maintenance"
          fragment="true"
          unpack="false"/>
 
@@ -172,7 +173,7 @@
          arch="ppc"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -183,7 +184,7 @@
          arch="x86_64"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -193,7 +194,7 @@
          ws="carbon"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -204,7 +205,7 @@
          arch="ppc"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -215,7 +216,7 @@
          arch="PA_RISC"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -226,7 +227,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -237,7 +238,7 @@
          arch="ia64"
          download-size="0"
          install-size="0"
-         version="3.2.0.R3_2_maintenance"
+         version="3.2.2.R3_2_maintenance"
          fragment="true"
          unpack="false"/>
 
@@ -248,7 +249,7 @@
          arch="sparc"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.2.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -259,7 +260,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="3.2.1.v3235"
+         version="3.2.1.v3236"
          fragment="true"
          unpack="false"/>
 
@@ -270,7 +271,7 @@
          arch="ia64_32"
          download-size="0"
          install-size="0"
-         version="3.2.1"
+         version="3.2.2.R3_2_maintenance"
          fragment="true"
          unpack="false"/>
 
@@ -313,67 +314,85 @@
          id="org.apache.lucene"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="1.4.103.v20060601"/>
 
    <plugin
          id="org.eclipse.help.appserver"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.1.100.v20060602"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help.base"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.2.R322_v20061207"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20060602"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help.webapp"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="3.2.2.R322_v20061114"/>
 
    <plugin
          id="org.eclipse.update.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.3.R32x_v20070118"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.scheduler"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.2.R32x_v20061214"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.2.R32x_v20070111"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.tomcat"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="4.1.130.v20060601"/>
 
    <plugin
          id="org.eclipse.ui.forms"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20060602"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.update.core.linux"
+         os="linux"
+         download-size="0"
+         install-size="0"
+         version="3.2.0.v20060605"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.update.core.win32"
+         os="win32"
+         download-size="0"
+         install-size="0"
+         version="3.2.2.R32x_v20061214"
+         fragment="true"
          unpack="false"/>
 
 </feature>
