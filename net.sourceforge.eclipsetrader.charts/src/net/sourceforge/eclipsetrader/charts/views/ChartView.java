@@ -65,7 +65,6 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.FeedMonitor;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.IHistoryFeed;
-import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.BarData;
 import net.sourceforge.eclipsetrader.core.db.Chart;
 import net.sourceforge.eclipsetrader.core.db.ChartIndicator;
@@ -678,7 +677,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         
                         if (period != PERIOD_ALL && size != 0)
                         {
-                            Date end = ((Bar)security.getHistory().get(size - 1)).getDate();
+                            Date end = barData.getEnd(); 
                             Calendar calendar = Calendar.getInstance();
                             calendar.setTime(end);
                             switch(period)
@@ -697,7 +696,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                                     end = chart.getEndDate(); 
                                     break;
                             }
-                            barData = new BarData(security.getHistory().getList()).getPeriod(calendar.getTime(), end);
+                            barData = barData.getPeriod(calendar.getTime(), end);
                         }
 
                         if (datePlot.getInterval() != BarData.INTERVAL_DAILY)
@@ -1157,7 +1156,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             
             if (period != PERIOD_ALL && size != 0)
             {
-                Date end = ((Bar)security.getHistory().get(size - 1)).getDate();
+                Date end = barData.getEnd();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(end);
                 switch(period)
@@ -1176,7 +1175,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                         end = chart.getEndDate(); 
                         break;
                 }
-                barData = new BarData(security.getHistory().getList()).getPeriod(calendar.getTime(), end);
+                barData = barData.getPeriod(calendar.getTime(), end);
             }
 
             if (datePlot.getInterval() != BarData.INTERVAL_DAILY)
