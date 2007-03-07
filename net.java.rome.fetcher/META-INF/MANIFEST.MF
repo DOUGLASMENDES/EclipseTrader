@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ROME Fetcher Plugin
 Bundle-SymbolicName: net.java.rome.fetcher
-Bundle-Version: 0.9.0.v200701091200
+Bundle-Version: 0.9.0.v200703071050
 Bundle-Vendor: Sourceforge.net
 Bundle-Localization: plugin
 Export-Package: com.sun.syndication.fetcher,
@@ -11,3 +11,11 @@ Export-Package: com.sun.syndication.fetcher,
 Bundle-ClassPath: rome-fetcher-0.9.jar
 Eclipse-LazyStart: true
 Require-Bundle: net.java.rome
+Import-Package: org.apache.commons.httpclient,
+ org.apache.commons.httpclient.auth,
+ org.apache.commons.httpclient.cookie,
+ org.apache.commons.httpclient.methods,
+ org.apache.commons.httpclient.methods.multipart,
+ org.apache.commons.httpclient.params,
+ org.apache.commons.httpclient.protocol,
+ org.apache.commons.httpclient.util
