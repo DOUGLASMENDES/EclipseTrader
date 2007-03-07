@@ -27,6 +27,9 @@ import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -40,21 +43,19 @@ import org.w3c.dom.NodeList;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.fetcher.FeedFetcher;
 import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
-import com.sun.syndication.fetcher.impl.HttpURLFeedFetcher;
+import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class FrenchNewsProvider implements Runnable, INewsProvider
 {
 	private final static String NEWS_NAME =  "Yahoo! News (France)";
 	private final static String NEWS_CONFIG_FILE =  "categories.fr.xml";
 	private final static String NEWS_SECURITY_URL_BASE =  "http://fr.search.news.yahoo.com/search/compnews_fr?p=ytic:";
-	
 	private Thread thread;
     private boolean stopping = false;
     private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
-    private FeedFetcher fetcher = new HttpURLFeedFetcher(feedInfoCache);
+    private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
 
     public FrenchNewsProvider()
     {
@@ -228,7 +229,18 @@ public class FrenchNewsProvider implements Runnable, INewsProvider
     	boolean subscribersOnly = YahooPlugin.getDefault().getPreferenceStore().getBoolean(YahooPlugin.PREFS_SHOW_SUBSCRIBERS_ONLY);
         
         try {
-            SyndFeed feed = fetcher.retrieveFeed(feedUrl);
+            HttpClient client = new HttpClient();
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+
+            IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+            if (store.getBoolean(CorePlugin.PREFS_ENABLE_HTTP_PROXY))
+            {
+                client.getHostConfiguration().setProxy(store.getString(CorePlugin.PREFS_PROXY_HOST_ADDRESS), store.getInt(CorePlugin.PREFS_PROXY_PORT_ADDRESS));
+                if (store.getBoolean(CorePlugin.PREFS_ENABLE_PROXY_AUTHENTICATION))
+                    client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(store.getString(CorePlugin.PREFS_PROXY_USER), store.getString(CorePlugin.PREFS_PROXY_PASSWORD)));
+            }
+
+            SyndFeed feed = fetcher.retrieveFeed(feedUrl, client);
             for (Iterator iter = feed.getEntries().iterator(); iter.hasNext(); )
             {
                 SyndEntry entry = (SyndEntry) iter.next();
