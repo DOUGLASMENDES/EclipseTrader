@@ -26,24 +26,27 @@ import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.fetcher.FeedFetcher;
 import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
-import com.sun.syndication.fetcher.impl.HttpURLFeedFetcher;
+import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class RSSNewsProvider implements Runnable, INewsProvider
 {
     private Thread thread;
     private boolean stopping = false;
     private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
-    private FeedFetcher fetcher = new HttpURLFeedFetcher(feedInfoCache);
+    private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
 
     public RSSNewsProvider()
     {
@@ -163,7 +166,18 @@ public class RSSNewsProvider implements Runnable, INewsProvider
     private void update(URL feedUrl, String source)
     {
         try {
-            SyndFeed feed = fetcher.retrieveFeed(feedUrl);
+            HttpClient client = new HttpClient();
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+
+            IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+            if (store.getBoolean(CorePlugin.PREFS_ENABLE_HTTP_PROXY))
+            {
+                client.getHostConfiguration().setProxy(store.getString(CorePlugin.PREFS_PROXY_HOST_ADDRESS), store.getInt(CorePlugin.PREFS_PROXY_PORT_ADDRESS));
+                if (store.getBoolean(CorePlugin.PREFS_ENABLE_PROXY_AUTHENTICATION))
+                    client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(store.getString(CorePlugin.PREFS_PROXY_USER), store.getString(CorePlugin.PREFS_PROXY_PASSWORD)));
+            }
+
+            SyndFeed feed = fetcher.retrieveFeed(feedUrl, client);
             for (Iterator iter = feed.getEntries().iterator(); iter.hasNext(); )
             {
                 SyndEntry entry = (SyndEntry) iter.next();

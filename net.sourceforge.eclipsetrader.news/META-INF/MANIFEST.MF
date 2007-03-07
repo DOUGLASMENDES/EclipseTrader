@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.sourceforge.eclipsetrader.core,
  net.java.rome,
- net.java.rome.fetcher
+ net.java.rome.fetcher,
+ org.apache.commons
 Export-Package: net.sourceforge.eclipsetrader.news,
  net.sourceforge.eclipsetrader.news.actions,
  net.sourceforge.eclipsetrader.news.dialogs,
