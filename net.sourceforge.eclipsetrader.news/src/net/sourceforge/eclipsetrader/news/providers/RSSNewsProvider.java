@@ -13,9 +13,11 @@ package net.sourceforge.eclipsetrader.news.providers;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,7 +31,13 @@ import net.sourceforge.eclipsetrader.news.NewsPlugin;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -47,6 +55,8 @@ public class RSSNewsProvider implements Runnable, INewsProvider
     private boolean stopping = false;
     private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
     private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
+    private Log log = LogFactory.getLog(getClass());
+    static private List oldItems = new ArrayList();
 
     public RSSNewsProvider()
     {
@@ -90,7 +100,6 @@ public class RSSNewsProvider implements Runnable, INewsProvider
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
             }
             thread = null;
         }
@@ -130,7 +139,6 @@ public class RSSNewsProvider implements Runnable, INewsProvider
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 break;
             }
         }
@@ -140,31 +148,61 @@ public class RSSNewsProvider implements Runnable, INewsProvider
 
     private void update()
     {
-        File file = new File(Platform.getLocation().toFile(), "rss.xml"); //$NON-NLS-1$
-        if (file.exists() == true)
-            try
+        Object[] o = oldItems.toArray();
+        for (int i = 0; i < o.length; i++)
+        {
+            ((NewsItem)o[i]).setRecent(false);
+            CorePlugin.getRepository().save((NewsItem)o[i]);
+        }
+        oldItems.clear();
+        
+        Job job = new Job("RSS News") {
+            protected IStatus run(IProgressMonitor monitor)
             {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document document = builder.parse(file);
-    
-                Node firstNode = document.getFirstChild();
-    
-                NodeList childNodes = firstNode.getChildNodes();
-                for (int i = 0; i < childNodes.getLength(); i++)
+                File file = new File(Platform.getLocation().toFile(), "rss.xml"); //$NON-NLS-1$
+                if (file.exists() == true)
                 {
-                    Node item = childNodes.item(i);
-                    String nodeName = item.getNodeName();
-                    if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
-                        update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getNodeValue());
+                    try
+                    {
+                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder builder = factory.newDocumentBuilder();
+                        Document document = builder.parse(file);
+            
+                        Node firstNode = document.getFirstChild();
+            
+                        NodeList childNodes = firstNode.getChildNodes();
+                        monitor.beginTask("Fetching RSS News", childNodes.getLength());
+                        log.info("Start fetching RSS News");
+
+                        for (int i = 0; i < childNodes.getLength(); i++)
+                        {
+                            Node item = childNodes.item(i);
+                            String nodeName = item.getNodeName();
+                            if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
+                                update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getNodeValue());
+
+                            monitor.worked(1);
+                        }
+                    } catch (Exception e) {
+                        log.error(e, e);
+                    }
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+
+                monitor.done();
+                return Status.OK_STATUS;
             }
+        };
+        job.setUser(false);
+        job.schedule();
     }
 
     private void update(URL feedUrl, String source)
     {
+        Calendar limit = Calendar.getInstance();
+        limit.add(Calendar.DATE, - CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
+        
+        log.debug(feedUrl.toString());
+        
         try {
             HttpClient client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
@@ -183,6 +221,7 @@ public class RSSNewsProvider implements Runnable, INewsProvider
                 SyndEntry entry = (SyndEntry) iter.next();
                 
                 NewsItem news = new NewsItem();
+                news.setRecent(true);
                 Date entryDate = entry.getPublishedDate();
                 if (entry.getUpdatedDate() != null)
                     entryDate = entry.getUpdatedDate();
@@ -196,10 +235,33 @@ public class RSSNewsProvider implements Runnable, INewsProvider
                 news.setTitle(entry.getTitle());
                 news.setSource(source);
                 news.setUrl(entry.getLink());
-                CorePlugin.getRepository().save(news);
+
+                if (!news.getDate().before(limit.getTime()) && !isDuplicated(news))
+                {
+                    log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                    CorePlugin.getRepository().save(news);
+                    oldItems.add(news);
+                }
             }
         } catch(Exception e) {
-            CorePlugin.logException(e);
+            log.error(e, e);
         }
+    }
+    
+    boolean isDuplicated(NewsItem news)
+    {
+        NewsItem[] items = (NewsItem[])CorePlugin.getRepository().allNews().toArray(new NewsItem[0]);
+        
+        for (int i = 0; i < items.length; i++)
+        {
+            if (news.getTitle().equals(items[i].getTitle()) && news.getUrl().equals(items[i].getUrl()))
+            {
+                items[i].addSecurities(news.getSecurities());
+                CorePlugin.getRepository().save(items[i]);
+                return true;
+            }
+        }
+
+        return false;
     }
 }
