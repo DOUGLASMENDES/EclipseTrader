@@ -16,10 +16,13 @@ import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -28,20 +31,144 @@ import net.sourceforge.eclipsetrader.core.IFeed;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.Quote;
 import net.sourceforge.eclipsetrader.opentick.internal.Client;
+import net.sourceforge.eclipsetrader.opentick.internal.ClientAdapter;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
+
+import com.opentick.OTBBO;
+import com.opentick.OTConstants;
+import com.opentick.OTDataEntity;
+import com.opentick.OTEquityInit;
+import com.opentick.OTError;
+import com.opentick.OTException;
+import com.opentick.OTQuote;
+import com.opentick.OTTodaysOHL;
+import com.opentick.OTTrade;
 
 public class Feed implements IFeed
 {
     boolean running = false;
-    Set map = new HashSet();
-    Client client;
+    Set subscribedSecurities = new HashSet();
+    Map streams = new HashMap();
+    Set pendingStreams = new HashSet();
+    Client client = Client.getInstance();
+    private Log log = LogFactory.getLog(getClass());
+    ClientAdapter clientListener = new ClientAdapter() {
+        public void onEquityInit(OTEquityInit msg)
+        {
+            Security security = (Security)streams.get(String.valueOf(msg.getRequestId()));
+            if (security != null)
+            {
+                if (msg.getPrevClosePrice() != 0)
+                    security.setClose(new Double(msg.getPrevClosePrice()));
+            }
+            else
+                log.warn("Unknown security for request id " + msg.getRequestId());
+            streams.remove(String.valueOf(msg.getRequestId()));
+        }
+
+        public void onError(OTError msg)
+        {
+            Security security = (Security)streams.get(String.valueOf(msg.getRequestId()));
+            if (security != null)
+            {
+                log.error(msg.getRequestId() + " / " + msg.getDescription() + " (ticks) - " + security);
+                streams.remove(String.valueOf(msg.getRequestId()));
+            }
+        }
+
+        public void onRealtimeQuote(OTQuote msg)
+        {
+            Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+            if (security != null)
+            {
+                Quote values = new Quote(security.getQuote());
+                values.setDate(new Date(msg.getTimestamp() * 1000L));
+                values.setBid(msg.getBidPrice());
+                values.setBidSize(msg.getBidSize());
+                values.setAsk(msg.getAskPrice());
+                values.setAskSize(msg.getAskSize());
+                security.setQuote(values);
+            }
+        }
+
+        public void onRealtimeBBO(OTBBO msg)
+        {
+            Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+            if (security != null)
+            {
+                Quote quote = new Quote(security.getQuote());
+                quote.setDate(new Date(msg.getTimestamp() * 1000L));
+                if (msg.getSide() == 'B')
+                {
+                    quote.setBid(msg.getPrice());
+                    quote.setBidSize(msg.getSize());
+                }
+                else if (msg.getSide() == 'A' || msg.getSide() == 'S')
+                {
+                    quote.setAsk(msg.getPrice());
+                    quote.setAskSize(msg.getSize());
+                }
+                security.setQuote(quote);
+            }
+        }
+
+        public void onRealtimeTrade(OTTrade msg)
+        {
+            Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+            if (security != null)
+            {
+                Quote quote = new Quote(security.getQuote());
+                quote.setDate(new Date(msg.getTimestamp() * 1000L));
+                quote.setLast(msg.getPrice());
+                quote.setVolume(msg.getVolume());
+                security.setQuote(quote);
+                
+                if (msg.isOpen())
+                    security.setOpen(new Double(msg.getPrice()));
+                if (msg.isHigh())
+                    security.setHigh(new Double(msg.getPrice()));
+                if (msg.isLow())
+                    security.setLow(new Double(msg.getPrice()));
+                if (msg.isClose())
+                    security.setClose(new Double(msg.getPrice()));
+            }
+        }
+
+        public void onTodaysOHL(OTTodaysOHL msg)
+        {
+            Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+            if (security != null)
+            {
+                if (msg.getOpenPrice() != 0)
+                    security.setOpen(new Double(msg.getOpenPrice()));
+                if (msg.getHighPrice() != 0)
+                    security.setHigh(new Double(msg.getHighPrice()));
+                if (msg.getLowPrice() != 0)
+                    security.setLow(new Double(msg.getLowPrice()));
+            }
+        }
+
+        public void onRestoreConnection()
+        {
+            Object[] s = streams.values().toArray();
+            streams.clear();
+
+            try {
+                for (int i = 0; i < s.length; i++)
+                    requestTickStream((Security)s[i]);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+        }
+    };
 
     public Feed()
     {
@@ -52,13 +179,13 @@ public class Feed implements IFeed
      */
     public void subscribe(Security security)
     {
-        if (!map.contains(security))
+        if (!subscribedSecurities.contains(security))
         {
-            map.add(security);
+            subscribedSecurities.add(security);
 
             try {
-                if (client != null && running)
-                    client.requestTickStream(security);
+                if (running)
+                    requestTickStream(security);
             } catch(Exception e) {
                 LogFactory.getLog(getClass()).error(e, e);
             }
@@ -70,13 +197,13 @@ public class Feed implements IFeed
      */
     public void unSubscribe(Security security)
     {
-        if (map.contains(security))
+        if (subscribedSecurities.contains(security))
         {
-            map.remove(security);
+            subscribedSecurities.remove(security);
 
             try {
-                if (client != null && running)
-                    client.cancelTickStream(security);
+                if (running)
+                    cancelTickStream(security);
             } catch(Exception e) {
                 LogFactory.getLog(getClass()).error(e, e);
             }
@@ -90,14 +217,18 @@ public class Feed implements IFeed
     {
         if (!running)
         {
-            client = Client.getInstance();
+            streams.clear();
+            pendingStreams.clear();
+
+            client.addListener(clientListener);
             try {
-                client.login();
-                for (Iterator iter = map.iterator(); iter.hasNext(); )
-                    client.requestTickStream((Security)iter.next());
+                client.login(15 * 1000);
+                for (Iterator iter = subscribedSecurities.iterator(); iter.hasNext(); )
+                    requestTickStream((Security)iter.next());
             } catch(Exception e) {
-                LogFactory.getLog(getClass()).error(e, e);
+                log.error(e, e);
             }
+
             running = true;
         }
     }
@@ -109,14 +240,16 @@ public class Feed implements IFeed
     {
         if (running && client.isLoggedIn())
         {
+            client.removeListener(clientListener);
             try {
-                for (Iterator iter = map.iterator(); iter.hasNext(); )
-                    client.cancelTickStream((Security)iter.next());
+                for (Iterator iter = subscribedSecurities.iterator(); iter.hasNext(); )
+                    cancelTickStream((Security)iter.next());
             } catch(Exception e) {
-                LogFactory.getLog(getClass()).error(e, e);
+                log.error(e, e);
             }
-            client.dispose();
             
+            streams.clear();
+            pendingStreams.clear();
             running = false;
         }
     }
@@ -133,7 +266,7 @@ public class Feed implements IFeed
 
         // Builds the url for quotes download
         StringBuffer url = new StringBuffer("http://quote.yahoo.com/download/javasoft.beans?symbols=");
-        for (Iterator iter = map.iterator(); iter.hasNext();)
+        for (Iterator iter = subscribedSecurities.iterator(); iter.hasNext();)
         {
             Security security = (Security)iter.next();
             url = url.append(security.getCode() + "+");
@@ -222,7 +355,7 @@ public class Feed implements IFeed
 
                 // 0 = Code
                 String symbol = stripQuotes(item[0]);
-                for (Iterator iter = map.iterator(); iter.hasNext();)
+                for (Iterator iter = subscribedSecurities.iterator(); iter.hasNext();)
                 {
                     Security security = (Security) iter.next();
                     if (symbol.equalsIgnoreCase(security.getCode()))
@@ -245,5 +378,47 @@ public class Feed implements IFeed
         if (s.endsWith("\""))
             s = s.substring(0, s.length() - 1);
         return s;
+    }
+    
+    void requestTickStream(Security security) throws OTException
+    {
+        if (!client.isLoggedIn())
+            pendingStreams.add(security);
+        else
+        {
+            String symbol = security.getQuoteFeed().getSymbol();
+            if (symbol == null || symbol.length() == 0)
+                symbol = security.getCode();
+            String exchange = security.getQuoteFeed().getExchange();
+            if (exchange == null || exchange.length() == 0)
+                exchange = "Q";
+
+            int id = client.requestEquityInit(new OTDataEntity(exchange, symbol));
+            streams.put(String.valueOf(id), security);
+            log.debug(String.valueOf(id) + " / Request Equity Init " + security);
+
+            id = client.requestTodaysOHL(new OTDataEntity(exchange, symbol));
+            streams.put(String.valueOf(id), security);
+            log.debug(String.valueOf(id) + " / Request Today's OHL " + security);
+            
+            id = client.requestTickStream(new OTDataEntity(exchange, symbol), OTConstants.OT_TICK_TYPE_LEVEL1);
+            streams.put(String.valueOf(id), security);
+            log.debug(String.valueOf(id) + " / Request Tick stream " + security);
+        }
+    }
+
+    public void cancelTickStream(Security security) throws OTException
+    {
+        String[] keys = (String[])streams.keySet().toArray(new String[0]);
+        for (int i = 0; i < keys.length; i++)
+        {
+            if (security.equals(streams.get(keys[i])))
+            {
+                client.cancelTickStream(Integer.parseInt(keys[i]));
+                streams.remove(keys[i]);
+                log.debug(String.valueOf(keys[i]) + " / Request cancel Tick stream " + security);
+            }
+        }
+        pendingStreams.remove(security);
     }
 }

@@ -11,21 +11,154 @@
 
 package net.sourceforge.eclipsetrader.opentick;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.eclipsetrader.core.ILevel2Feed;
 import net.sourceforge.eclipsetrader.core.db.Security;
+import net.sourceforge.eclipsetrader.opentick.internal.Book;
 import net.sourceforge.eclipsetrader.opentick.internal.Client;
+import net.sourceforge.eclipsetrader.opentick.internal.ClientAdapter;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.opentick.OTBookCancel;
+import com.opentick.OTBookChange;
+import com.opentick.OTBookDelete;
+import com.opentick.OTBookExecute;
+import com.opentick.OTBookOrder;
+import com.opentick.OTBookPurge;
+import com.opentick.OTBookReplace;
+import com.opentick.OTConstants;
+import com.opentick.OTDataEntity;
+import com.opentick.OTError;
+import com.opentick.OTException;
 
 public class Level2Feed implements ILevel2Feed
 {
     boolean running = false;
     Set map = new HashSet();
-    Client client;
+    Map streams = new HashMap();
+    Set pendingBookStreams = new HashSet();
+    Map books = new HashMap();
+    Client client = Client.getInstance();
+    private Log log = LogFactory.getLog(getClass());
+    ClientAdapter clientListener = new ClientAdapter() {
+        public void onRealtimeBookCancel(OTBookCancel msg)
+        {
+            if (streams.get(String.valueOf(msg.getRequestID())) != null)
+            {
+                Book book = (Book)books.get(String.valueOf(msg.getRequestID()));
+                if (book != null)
+                {
+                    book.remove(msg.getOrderRef(), msg.getSize());
+                    Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+                    security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+                }
+            }
+        }
+
+        public void onRealtimeBookChange(OTBookChange msg)
+        {
+            if (streams.get(String.valueOf(msg.getRequestID())) != null)
+            {
+                Book book = (Book)books.get(String.valueOf(msg.getRequestID()));
+                if (book != null)
+                {
+                    book.remove(msg.getOrderRef(), msg.getSize());
+                    Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+                    security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+                }
+            }
+        }
+
+        public void onRealtimeBookDelete(OTBookDelete msg)
+        {
+            if (streams.get(String.valueOf(msg.getRequestID())) != null)
+            {
+                Book book = (Book)books.get(String.valueOf(msg.getRequestID()));
+                if (book != null)
+                {
+                    book.delete(msg.getOrderRef(), msg.getSide(), msg.getDeleteType());
+                    Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+                    security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+                }
+            }
+        }
+
+        public void onRealtimeBookExecute(OTBookExecute msg)
+        {
+            if (streams.get(String.valueOf(msg.getRequestID())) != null)
+            {
+                Book book = (Book)books.get(String.valueOf(msg.getRequestID()));
+                if (book != null)
+                {
+                    book.remove(msg.getOrderRef(), msg.getSize());
+                    Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+                    security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+                }
+            }
+        }
+
+        public void onRealtimeBookOrder(OTBookOrder msg)
+        {
+            if (streams.get(String.valueOf(msg.getRequestID())) != null)
+            {
+                Book book = (Book)books.get(String.valueOf(msg.getRequestID()));
+                if (book != null)
+                {
+                    book.add(msg.getTimestamp(), msg.getOrderRef(), msg.getPrice(), msg.getSize(), msg.getSide());
+                    Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+                    security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+                }
+            }
+        }
+
+        public void onRealtimeBookPurge(OTBookPurge msg)
+        {
+            if (streams.get(String.valueOf(msg.getRequestID())) != null)
+            {
+                Book book = (Book)books.get(String.valueOf(msg.getRequestID()));
+                if (book != null)
+                {
+                    book.clear();
+                    Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+                    security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+                }
+            }
+        }
+
+        public void onRealtimeBookReplace(OTBookReplace msg)
+        {
+            if (streams.get(String.valueOf(msg.getRequestID())) != null)
+            {
+                Book book = (Book)books.get(String.valueOf(msg.getRequestID()));
+                if (book == null)
+                {
+                    book = new Book();
+                    books.put(String.valueOf(msg.getRequestID()), book);
+                }
+                book.replace(msg.getTimestamp(), msg.getOrderRef(), msg.getPrice(), msg.getSize(), msg.getSide());
+                Security security = (Security)streams.get(String.valueOf(msg.getRequestID()));
+                security.setLevel2(book.getLevel2Bid(), book.getLevel2Ask());
+            }
+        }
+
+        public void onError(OTError msg)
+        {
+            Security security = (Security)streams.get(String.valueOf(msg.getRequestId()));
+            if (security != null)
+            {
+                log.error(msg.getRequestId() + " / " + msg.getDescription() + " (book) - " + security);
+                streams.remove(String.valueOf(msg.getRequestId()));
+                books.remove(String.valueOf(msg.getRequestId()));
+            }
+        }
+    };
 
     public Level2Feed()
     {
@@ -41,8 +174,8 @@ public class Level2Feed implements ILevel2Feed
             map.add(security);
 
             try {
-                if (client != null && running)
-                    client.requestBookStream(security);
+                if (running)
+                    requestBookStream(security);
             } catch(Exception e) {
                 LogFactory.getLog(getClass()).error(e, e);
             }
@@ -59,8 +192,8 @@ public class Level2Feed implements ILevel2Feed
             map.remove(security);
 
             try {
-                if (client != null && running)
-                    client.cancelBookStream(security);
+                if (running)
+                    cancelBookStream(security);
             } catch(Exception e) {
                 LogFactory.getLog(getClass()).error(e, e);
             }
@@ -74,11 +207,11 @@ public class Level2Feed implements ILevel2Feed
     {
         if (!running)
         {
-            client = Client.getInstance();
+            client.addListener(clientListener);
             try {
-                client.login();
+                client.login(15 * 1000);
                 for (Iterator iter = map.iterator(); iter.hasNext(); )
-                    client.requestBookStream((Security)iter.next());
+                    requestBookStream((Security)iter.next());
             } catch(Exception e) {
                 LogFactory.getLog(getClass()).error(e, e);
             }
@@ -94,14 +227,13 @@ public class Level2Feed implements ILevel2Feed
     {
         if (running)
         {
+            client.removeListener(clientListener);
             try {
                 for (Iterator iter = map.iterator(); iter.hasNext(); )
-                    client.cancelBookStream((Security)iter.next());
+                    cancelBookStream((Security)iter.next());
             } catch(Exception e) {
                 LogFactory.getLog(getClass()).error(e, e);
             }
-            client.dispose();
-            
             running = false;
         }
     }
@@ -111,5 +243,43 @@ public class Level2Feed implements ILevel2Feed
      */
     public void snapshotLevel2()
     {
+    }
+    
+    public void requestBookStream(Security security) throws OTException
+    {
+        if (client.getStatus() != OTConstants.OT_STATUS_LOGGED_IN)
+            pendingBookStreams.add(security);
+        else
+        {
+            String symbol = security.getLevel2Feed().getSymbol();
+            if (symbol == null || symbol.length() == 0)
+                symbol = security.getCode();
+            String exchange = security.getLevel2Feed().getExchange();
+            if (exchange == null || exchange.length() == 0)
+                exchange = "Q";
+            
+            int id = client.requestBookStream(new OTDataEntity(exchange, symbol));
+            streams.put(String.valueOf(id), security);
+            books.put(String.valueOf(id), new Book());
+
+            log.debug(String.valueOf(id) + " / Request Book stream " + security);
+        }
+    }
+
+    public void cancelBookStream(Security security) throws OTException
+    {
+        for (Iterator iter = streams.keySet().iterator(); iter.hasNext(); )
+        {
+            String id = (String)iter.next();
+            if (security.equals(streams.get(id)))
+            {
+                client.cancelBookStream(Integer.parseInt(id));
+                streams.remove(id);
+                books.remove(id);
+                log.debug(String.valueOf(id) + " / Request cancel Book stream " + security);
+                break;
+            }
+        }
+        pendingBookStreams.remove(security);
     }
 }
