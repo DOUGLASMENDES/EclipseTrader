@@ -252,14 +252,15 @@ public class SecurityPage extends WizardPage
             security.setCurrency(Currency.getInstance(Locale.US));
             
             FeedSource feed = new FeedSource();
-            feed.setId("net.sourceforge.eclipsetrader.opentick");
+            feed.setId(OpenTickPlugin.PLUGIN_ID);
             feed.setExchange((String)exchange.getData(exchange.getText()));
             security.setQuoteFeed(feed);
             feed = new FeedSource();
-            feed.setId("net.sourceforge.eclipsetrader.yahoo");
+            feed.setId(OpenTickPlugin.PLUGIN_ID);
+            feed.setExchange((String)exchange.getData(exchange.getText()));
             security.setHistoryFeed(feed);
             feed = new FeedSource();
-            feed.setId("net.sourceforge.eclipsetrader.opentick");
+            feed.setId(OpenTickPlugin.PLUGIN_ID);
             feed.setExchange("is");
             security.setLevel2Feed(feed);
 
