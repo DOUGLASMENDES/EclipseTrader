@@ -2,7 +2,7 @@
 <feature
       id="net.java.rome"
       label="%featureName"
-      version="0.9.0.v200701091200"
+      version="0.9.0.v200703071050"
       provider-name="%providerName">
 
    <description>
