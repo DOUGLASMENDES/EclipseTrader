@@ -112,5 +112,12 @@
             id="org.eclipse.ui.views.ProgressView"
             name="%view.name.progressView"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.presentationFactories">
+      <factory
+            class="net.sourceforge.eclipsetrader.TraderPresentationFactory"
+            id="net.sourceforge.eclipsetrader.presentation"
+            name="EclipseTrader"/>
+   </extension>
 
 </plugin>
