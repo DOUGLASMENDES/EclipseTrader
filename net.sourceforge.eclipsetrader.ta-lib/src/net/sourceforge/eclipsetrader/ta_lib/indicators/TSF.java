@@ -64,9 +64,9 @@ public class TSF extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().TSF_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().tsfLookback(period));
                 
-                TALibPlugin.getCore().TSF(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().tsf(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

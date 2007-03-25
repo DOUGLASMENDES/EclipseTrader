@@ -11,11 +11,11 @@
 
 package net.sourceforge.eclipsetrader.ta_lib.internal;
 
-import com.tictactec.ta.lib.TA_MAType;
-
 import net.sourceforge.eclipsetrader.charts.IndicatorPlugin;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.BarData;
+
+import com.tictactec.ta.lib.MAType;
 
 public abstract class TALibIndicatorPlugin extends IndicatorPlugin
 {
@@ -61,7 +61,7 @@ public abstract class TALibIndicatorPlugin extends IndicatorPlugin
         double[] high = new double[barData.size()];
         double[] low = new double[barData.size()];
         double[] close = new double[barData.size()];
-        int[] volume = new int[barData.size()];
+        double[] volume = new double[barData.size()];
 
         for (int i = 0; i < barData.size(); i++)
         {
@@ -93,37 +93,37 @@ public abstract class TALibIndicatorPlugin extends IndicatorPlugin
         return new double[allocationSize];
     }
     
-    protected TA_MAType getTA_MAType(int type)
+    protected MAType getTA_MAType(int type)
     {
-        TA_MAType maType = TA_MAType.TA_MAType_SMA;
+        MAType maType = MAType.Sma;
         switch(type)
         {
             case 0:
-                maType = TA_MAType.TA_MAType_SMA;
+                maType = MAType.Sma;
                 break;
             case 1:
-                maType = TA_MAType.TA_MAType_EMA;
+                maType = MAType.Ema;
                 break;
             case 2:
-                maType = TA_MAType.TA_MAType_WMA;
+                maType = MAType.Wma;
                 break;
             case 3:
-                maType = TA_MAType.TA_MAType_DEMA;
+                maType = MAType.Dema;
                 break;
             case 4:
-                maType = TA_MAType.TA_MAType_TEMA;
+                maType = MAType.Tema;
                 break;
             case 5:
-                maType = TA_MAType.TA_MAType_TRIMA;
+                maType = MAType.Trima;
                 break;
             case 6:
-                maType = TA_MAType.TA_MAType_KAMA;
+                maType = MAType.Kama;
                 break;
             case 7:
-                maType = TA_MAType.TA_MAType_MAMA;
+                maType = MAType.Mama;
                 break;
             case 8:
-                maType = TA_MAType.TA_MAType_T3;
+                maType = MAType.T3;
                 break;
         }
         return maType;

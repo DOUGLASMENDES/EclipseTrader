@@ -66,9 +66,9 @@ public class AVGPRICE extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().AVGPRICE_Lookback());
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().avgPriceLookback());
                 
-                TALibPlugin.getCore().AVGPRICE(startIdx, endIdx, inOpen, inHigh, inLow, inClose, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().avgPrice(startIdx, endIdx, inOpen, inHigh, inLow, inClose, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

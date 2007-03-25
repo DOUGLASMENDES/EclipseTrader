@@ -64,9 +64,9 @@ public class BOP extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().BOP_Lookback());
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().bopLookback());
                 
-                TALibPlugin.getCore().BOP(startIdx, endIdx, inOpen, inHigh, inLow, inClose, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().bop(startIdx, endIdx, inOpen, inHigh, inLow, inClose, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

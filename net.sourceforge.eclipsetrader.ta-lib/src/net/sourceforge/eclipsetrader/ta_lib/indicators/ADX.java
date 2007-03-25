@@ -65,9 +65,9 @@ public class ADX extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ADX_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().adxLookback(period));
                 
-                TALibPlugin.getCore().ADX(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().adx(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

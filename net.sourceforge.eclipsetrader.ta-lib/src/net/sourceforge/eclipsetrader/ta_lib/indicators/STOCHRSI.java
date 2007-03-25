@@ -76,10 +76,10 @@ public class STOCHRSI extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outSlowK = getOutputArray(getBarData(), TALibPlugin.getCore().STOCHRSI_Lookback(period, fastKPeriod, fastDPeriod, getTA_MAType(fastDMAType)));
-                double[] outSlowD = getOutputArray(getBarData(), TALibPlugin.getCore().STOCHRSI_Lookback(period, fastKPeriod, fastDPeriod, getTA_MAType(fastDMAType)));
+                double[] outSlowK = getOutputArray(getBarData(), TALibPlugin.getCore().stochRsiLookback(period, fastKPeriod, fastDPeriod, getTA_MAType(fastDMAType)));
+                double[] outSlowD = getOutputArray(getBarData(), TALibPlugin.getCore().stochRsiLookback(period, fastKPeriod, fastDPeriod, getTA_MAType(fastDMAType)));
                 
-                TALibPlugin.getCore().STOCHRSI(startIdx, endIdx, inReal, period, fastKPeriod, fastDPeriod, getTA_MAType(fastDMAType), outBegIdx, outNbElement, outSlowK, outSlowD);
+                TALibPlugin.getCore().stochRsi(startIdx, endIdx, inReal, period, fastKPeriod, fastDPeriod, getTA_MAType(fastDMAType), outBegIdx, outNbElement, outSlowK, outSlowD);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

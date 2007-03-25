@@ -72,11 +72,11 @@ public class BBANDS extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outUpper = getOutputArray(getBarData(), TALibPlugin.getCore().BBANDS_Lookback(period, upperDeviation, lowerDeviation, getTA_MAType(maType)));
-                double[] outMiddle = getOutputArray(getBarData(), TALibPlugin.getCore().BBANDS_Lookback(period, upperDeviation, lowerDeviation, getTA_MAType(maType)));
-                double[] outLower = getOutputArray(getBarData(), TALibPlugin.getCore().BBANDS_Lookback(period, upperDeviation, lowerDeviation, getTA_MAType(maType)));
+                double[] outUpper = getOutputArray(getBarData(), TALibPlugin.getCore().bbandsLookback(period, upperDeviation, lowerDeviation, getTA_MAType(maType)));
+                double[] outMiddle = getOutputArray(getBarData(), TALibPlugin.getCore().bbandsLookback(period, upperDeviation, lowerDeviation, getTA_MAType(maType)));
+                double[] outLower = getOutputArray(getBarData(), TALibPlugin.getCore().bbandsLookback(period, upperDeviation, lowerDeviation, getTA_MAType(maType)));
                 
-                TALibPlugin.getCore().BBANDS(startIdx, endIdx, inReal, period, upperDeviation, lowerDeviation, getTA_MAType(maType), outBegIdx, outNbElement, outUpper, outMiddle, outLower);
+                TALibPlugin.getCore().bbands(startIdx, endIdx, inReal, period, upperDeviation, lowerDeviation, getTA_MAType(maType), outBegIdx, outNbElement, outUpper, outMiddle, outLower);
                 
                 PlotLine upperLine = new PlotLine();
                 PlotLine middleLine = new PlotLine();

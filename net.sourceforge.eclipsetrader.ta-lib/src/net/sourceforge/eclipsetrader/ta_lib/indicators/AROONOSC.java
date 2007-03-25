@@ -64,9 +64,9 @@ public class AROONOSC extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().AROONOSC_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().aroonOscLookback(period));
                 
-                TALibPlugin.getCore().AROONOSC(startIdx, endIdx, inHigh, inLow, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().aroonOsc(startIdx, endIdx, inHigh, inLow, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

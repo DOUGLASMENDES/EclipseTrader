@@ -65,9 +65,9 @@ public class DX extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().DX_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().dxLookback(period));
                 
-                TALibPlugin.getCore().DX(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().dx(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

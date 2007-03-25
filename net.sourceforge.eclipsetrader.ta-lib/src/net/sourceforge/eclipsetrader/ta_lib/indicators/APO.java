@@ -68,9 +68,9 @@ public class APO extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().APO_Lookback(fastPeriod, slowPeriod, getTA_MAType(maType)));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().apoLookback(fastPeriod, slowPeriod, getTA_MAType(maType)));
                 
-                TALibPlugin.getCore().APO(startIdx, endIdx, inReal, fastPeriod, slowPeriod, getTA_MAType(maType), outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().apo(startIdx, endIdx, inReal, fastPeriod, slowPeriod, getTA_MAType(maType), outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

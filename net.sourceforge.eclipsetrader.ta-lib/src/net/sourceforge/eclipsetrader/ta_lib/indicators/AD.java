@@ -59,14 +59,14 @@ public class AD extends Factory
                 double[] inHigh = (double[])values[BarData.HIGH];
                 double[] inLow = (double[])values[BarData.LOW];
                 double[] inClose = (double[])values[BarData.CLOSE];
-                int[] inVolume = (int[])values[BarData.VOLUME];
+                double[] inVolume = (double[])values[BarData.VOLUME];
                 
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().AD_Lookback());
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().adLookback());
                 
-                TALibPlugin.getCore().AD(startIdx, endIdx, inHigh, inLow, inClose, inVolume, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().ad(startIdx, endIdx, inHigh, inLow, inClose, inVolume, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

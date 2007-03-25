@@ -65,9 +65,9 @@ public class NATR extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().NATR_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().natrLookback(period));
                 
-                TALibPlugin.getCore().NATR(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().natr(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

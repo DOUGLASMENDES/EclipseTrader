@@ -65,9 +65,9 @@ public class ADXR extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ADXR_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().adxrLookback(period));
                 
-                TALibPlugin.getCore().ADXR(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().adxr(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

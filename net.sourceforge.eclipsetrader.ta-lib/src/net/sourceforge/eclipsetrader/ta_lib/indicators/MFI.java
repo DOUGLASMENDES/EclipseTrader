@@ -61,14 +61,14 @@ public class MFI extends Factory
                 double[] inHigh = (double[])values[BarData.HIGH];
                 double[] inLow = (double[])values[BarData.LOW];
                 double[] inClose = (double[])values[BarData.CLOSE];
-                int[] inVolume = (int[])values[BarData.VOLUME];
+                double[] inVolume = (double[])values[BarData.VOLUME];
                 
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().MFI_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().mfiLookback(period));
                 
-                TALibPlugin.getCore().MFI(startIdx, endIdx, inHigh, inLow, inClose, inVolume, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().mfi(startIdx, endIdx, inHigh, inLow, inClose, inVolume, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

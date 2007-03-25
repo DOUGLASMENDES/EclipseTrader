@@ -68,9 +68,9 @@ public class PPO extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().PPO_Lookback(fastPeriod, slowPeriod, getTA_MAType(maType)));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ppoLookback(fastPeriod, slowPeriod, getTA_MAType(maType)));
                 
-                TALibPlugin.getCore().PPO(startIdx, endIdx, inReal, fastPeriod, slowPeriod, getTA_MAType(maType), outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().ppo(startIdx, endIdx, inReal, fastPeriod, slowPeriod, getTA_MAType(maType), outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

@@ -64,9 +64,9 @@ public class ROC extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ROC_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().rocLookback(period));
                 
-                TALibPlugin.getCore().ROC(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().roc(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

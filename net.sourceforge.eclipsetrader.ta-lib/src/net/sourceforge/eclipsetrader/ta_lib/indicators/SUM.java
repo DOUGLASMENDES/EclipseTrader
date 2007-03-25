@@ -64,9 +64,9 @@ public class SUM extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().SUM_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().sumLookback(period));
                 
-                TALibPlugin.getCore().SUM(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().sum(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

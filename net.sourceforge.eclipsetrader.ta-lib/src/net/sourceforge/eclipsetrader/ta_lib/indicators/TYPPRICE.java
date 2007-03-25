@@ -63,9 +63,9 @@ public class TYPPRICE extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().TYPPRICE_Lookback());
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().typPriceLookback());
                 
-                TALibPlugin.getCore().TYPPRICE(startIdx, endIdx, inHigh, inLow, inClose, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().typPrice(startIdx, endIdx, inHigh, inLow, inClose, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

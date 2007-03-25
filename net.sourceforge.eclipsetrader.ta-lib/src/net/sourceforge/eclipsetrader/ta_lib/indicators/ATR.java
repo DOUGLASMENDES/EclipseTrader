@@ -65,9 +65,9 @@ public class ATR extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ATR_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().atrLookback(period));
                 
-                TALibPlugin.getCore().ATR(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().atr(startIdx, endIdx, inHigh, inLow, inClose, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

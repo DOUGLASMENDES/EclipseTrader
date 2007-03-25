@@ -79,10 +79,10 @@ public class STOCH extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outSlowK = getOutputArray(getBarData(), TALibPlugin.getCore().STOCH_Lookback(fastKPeriod, slowKPeriod, getTA_MAType(slowKMAType), slowDPeriod, getTA_MAType(slowDMAType)));
-                double[] outSlowD = getOutputArray(getBarData(), TALibPlugin.getCore().STOCH_Lookback(fastKPeriod, slowKPeriod, getTA_MAType(slowKMAType), slowDPeriod, getTA_MAType(slowDMAType)));
+                double[] outSlowK = getOutputArray(getBarData(), TALibPlugin.getCore().stochLookback(fastKPeriod, slowKPeriod, getTA_MAType(slowKMAType), slowDPeriod, getTA_MAType(slowDMAType)));
+                double[] outSlowD = getOutputArray(getBarData(), TALibPlugin.getCore().stochLookback(fastKPeriod, slowKPeriod, getTA_MAType(slowKMAType), slowDPeriod, getTA_MAType(slowDMAType)));
                 
-                TALibPlugin.getCore().STOCH(startIdx, endIdx, inHigh, inLow, inClose, fastKPeriod, slowKPeriod, getTA_MAType(slowKMAType), slowDPeriod, getTA_MAType(slowDMAType), outBegIdx, outNbElement, outSlowK, outSlowD);
+                TALibPlugin.getCore().stoch(startIdx, endIdx, inHigh, inLow, inClose, fastKPeriod, slowKPeriod, getTA_MAType(slowKMAType), slowDPeriod, getTA_MAType(slowDMAType), outBegIdx, outNbElement, outSlowK, outSlowD);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

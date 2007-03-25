@@ -64,9 +64,9 @@ public class RSI extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().RSI_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().rsiLookback(period));
                 
-                TALibPlugin.getCore().RSI(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().rsi(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

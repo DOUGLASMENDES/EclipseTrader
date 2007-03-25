@@ -28,8 +28,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import com.tictactec.ta.lib.MAType;
 import com.tictactec.ta.lib.MInteger;
-import com.tictactec.ta.lib.TA_MAType;
 
 public class MACD extends Factory
 {
@@ -75,18 +75,18 @@ public class MACD extends Factory
                 int endIdx = getBarData().size() - 1;
 
                 double[] inReal = getInput(getBarData(), BarData.CLOSE);
-                TA_MAType fastMA = getTA_MAType(fastMaType);
-                TA_MAType slowMA = getTA_MAType(slowMaType);
-                TA_MAType signalMA = getTA_MAType(signalMaType);
+                MAType fastMA = getTA_MAType(fastMaType);
+                MAType slowMA = getTA_MAType(slowMaType);
+                MAType signalMA = getTA_MAType(signalMaType);
                 
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outMACD = getOutputArray(getBarData(), TALibPlugin.getCore().MACDEXT_Lookback(fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA));
-                double[] outSignal = getOutputArray(getBarData(), TALibPlugin.getCore().MACDEXT_Lookback(fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA));
-                double[] outHist = getOutputArray(getBarData(), TALibPlugin.getCore().MACDEXT_Lookback(fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA));
+                double[] outMACD = getOutputArray(getBarData(), TALibPlugin.getCore().macdExtLookback(fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA));
+                double[] outSignal = getOutputArray(getBarData(), TALibPlugin.getCore().macdExtLookback(fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA));
+                double[] outHist = getOutputArray(getBarData(), TALibPlugin.getCore().macdExtLookback(fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA));
                 
-                TALibPlugin.getCore().MACDEXT(startIdx, endIdx, inReal, fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA, outBegIdx, outNbElement, outMACD, outSignal, outHist);
+                TALibPlugin.getCore().macdExt(startIdx, endIdx, inReal, fastPeriod, fastMA, slowPeriod, slowMA, signalPeriod, signalMA, outBegIdx, outNbElement, outMACD, outSignal, outHist);
                 
                 PlotLine line = new PlotLine();
                 PlotLine signal = new PlotLine();

@@ -69,9 +69,9 @@ public class ULTOSC extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ULTOSC_Lookback(shortPeriod, mediumPeriod, longPeriod));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ultOscLookback(shortPeriod, mediumPeriod, longPeriod));
                 
-                TALibPlugin.getCore().ULTOSC(startIdx, endIdx, inHigh, inLow, inClose, shortPeriod, mediumPeriod, longPeriod, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().ultOsc(startIdx, endIdx, inHigh, inLow, inClose, shortPeriod, mediumPeriod, longPeriod, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

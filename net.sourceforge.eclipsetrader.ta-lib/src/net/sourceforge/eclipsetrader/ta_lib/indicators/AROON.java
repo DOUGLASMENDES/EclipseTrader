@@ -64,10 +64,10 @@ public class AROON extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outDown = getOutputArray(getBarData(), TALibPlugin.getCore().AROON_Lookback(period));
-                double[] outUp = getOutputArray(getBarData(), TALibPlugin.getCore().AROON_Lookback(period));
+                double[] outDown = getOutputArray(getBarData(), TALibPlugin.getCore().aroonLookback(period));
+                double[] outUp = getOutputArray(getBarData(), TALibPlugin.getCore().aroonLookback(period));
                 
-                TALibPlugin.getCore().AROON(startIdx, endIdx, inHigh, inLow, period, outBegIdx, outNbElement, outDown, outUp);
+                TALibPlugin.getCore().aroon(startIdx, endIdx, inHigh, inLow, period, outBegIdx, outNbElement, outDown, outUp);
                 
                 PlotLine lineUp = new PlotLine();
                 PlotLine lineDown = new PlotLine();

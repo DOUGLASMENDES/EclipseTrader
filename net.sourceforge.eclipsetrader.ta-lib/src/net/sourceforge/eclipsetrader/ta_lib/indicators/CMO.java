@@ -64,9 +64,9 @@ public class CMO extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().CMO_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().cmoLookback(period));
                 
-                TALibPlugin.getCore().CMO(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().cmo(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

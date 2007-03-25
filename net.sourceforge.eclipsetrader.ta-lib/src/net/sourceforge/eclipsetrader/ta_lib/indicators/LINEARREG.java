@@ -66,9 +66,9 @@ public class LINEARREG extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().LINEARREG_Lookback(period));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().linearRegLookback(period));
                 
-                TALibPlugin.getCore().LINEARREG(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().linearReg(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

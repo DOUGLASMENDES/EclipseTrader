@@ -59,21 +59,21 @@ public class OBV extends Factory
 
                 Object[] values = getInput(getBarData());
                 double[] inReal = (double[])values[input];
-                int[] inVolume = (int[])values[BarData.VOLUME];
+                double[] inVolume = (double[])values[BarData.VOLUME];
                 
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                int temp = Math.max(TALibPlugin.getCore().OBV_Lookback(), startIdx);
+                int temp = Math.max(TALibPlugin.getCore().obvLookback(), startIdx);
                 int allocationSize = (temp > endIdx) ? 0 : endIdx - temp + 1;
                 
-                int[] outInt = new int[allocationSize];
+                double[] outReal = new double[allocationSize];
                 
-                TALibPlugin.getCore().OBV(startIdx, endIdx, inReal, inVolume, outBegIdx, outNbElement, outInt);
+                TALibPlugin.getCore().obv(startIdx, endIdx, inReal, inVolume, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)
-                    line.append(outInt[i]);
+                    line.append(outReal[i]);
 
                 line.setLabel(label);
                 line.setType(lineType);

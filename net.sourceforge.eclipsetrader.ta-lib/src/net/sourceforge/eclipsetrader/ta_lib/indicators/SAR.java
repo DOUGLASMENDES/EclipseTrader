@@ -66,9 +66,9 @@ public class SAR extends Factory
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().SAR_Lookback(acceleration, maximum));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().sarLookback(acceleration, maximum));
                 
-                TALibPlugin.getCore().SAR(startIdx, endIdx, inHigh, inLow, acceleration, maximum, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().sar(startIdx, endIdx, inHigh, inLow, acceleration, maximum, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)

@@ -26,7 +26,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 import com.tictactec.ta.lib.MInteger;
 
@@ -66,26 +68,67 @@ public class MA extends Factory
 
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
-                
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().MA_Lookback(period, getTA_MAType(type)));
-                
-                TALibPlugin.getCore().MA(startIdx, endIdx, inReal, period, getTA_MAType(type), outBegIdx, outNbElement, outReal);
-                
-                PlotLine line = new PlotLine();
-                for (int i = 0; i < outNbElement.value; i++)
-                    line.append(outReal[i]);
 
-                if (getBarData().getMax() > line.getHigh())
-                    line.setHigh(getBarData().getMax());
-                if (getBarData().getMin() < line.getLow())
-                    line.setLow(getBarData().getMin());
+                double[] outReal = null;
+                
+                switch(type)
+                {
+                    case 0:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().smaLookback(period));
+                        TALibPlugin.getCore().sma(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+                    case 1:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().emaLookback(period));
+                        TALibPlugin.getCore().ema(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+                    case 2:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().wmaLookback(period));
+                        TALibPlugin.getCore().wma(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+                    case 3:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().demaLookback(period));
+                        TALibPlugin.getCore().dema(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+                    case 4:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().temaLookback(period));
+                        TALibPlugin.getCore().tema(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+                    case 5:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().trimaLookback(period));
+                        TALibPlugin.getCore().trima(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+                    case 6:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().kamaLookback(period));
+                        TALibPlugin.getCore().kama(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+/*                    case 7:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().mamaLookback(period));
+                        TALibPlugin.getCore().mama(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;
+                    case 8:
+                        outReal = getOutputArray(getBarData(), TALibPlugin.getCore().t3Lookback(period));
+                        TALibPlugin.getCore().t3(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+                        break;*/
+                }
+                
+                if (outReal != null)
+                {
+                    PlotLine line = new PlotLine();
+                    for (int i = 0; i < outNbElement.value; i++)
+                        line.append(outReal[i]);
 
-                line.setLabel(label);
-                line.setType(lineType);
-                line.setColor(color);
-                getOutput().add(line);
+                    if (getBarData().getMax() > line.getHigh())
+                        line.setHigh(getBarData().getMax());
+                    if (getBarData().getMin() < line.getLow())
+                        line.setLow(getBarData().getMin());
 
-                getOutput().setScaleFlag(scaleFlag);
+                    line.setLabel(label);
+                    line.setType(lineType);
+                    line.setColor(color);
+                    getOutput().add(line);
+
+                    getOutput().setScaleFlag(scaleFlag);
+                }
             }
 
             public void setParameters(Settings settings)
@@ -127,6 +170,23 @@ public class MA extends Factory
                 addInputSelector(content, "input", Messages.MA_Input, DEFAULT_INPUT, true); //$NON-NLS-1$
                 addIntegerValueSelector(content, "period", Messages.MA_Period, 1, 9999, DEFAULT_PERIOD); //$NON-NLS-1$
                 addMovingAverageSelector(content, "type", Messages.MA_Type, DEFAULT_TYPE); //$NON-NLS-1$
+            }
+            
+            public Combo addMovingAverageSelector(Composite parent, String id, String text, int defaultValue)
+            {
+                Label label = new Label(parent, SWT.NONE);
+                label.setText(text);
+                Combo combo = new Combo(parent, SWT.READ_ONLY);
+                combo.add("Simple");
+                combo.add("Exponential");
+                combo.add("Weighted");
+                combo.add("Double Exponential");
+                combo.add("Triple Exponential");
+                combo.add("Triangular");
+                combo.add("Kaufman Adaptive");
+                combo.select(getSettings().getInteger(id, defaultValue).intValue());
+                addControl(id, combo);
+                return combo;
             }
         };
 

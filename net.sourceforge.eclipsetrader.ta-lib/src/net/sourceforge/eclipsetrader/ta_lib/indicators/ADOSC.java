@@ -63,14 +63,14 @@ public class ADOSC extends Factory
                 double[] inHigh = (double[])values[BarData.HIGH];
                 double[] inLow = (double[])values[BarData.LOW];
                 double[] inClose = (double[])values[BarData.CLOSE];
-                int[] inVolume = (int[])values[BarData.VOLUME];
+                double[] inVolume = (double[])values[BarData.VOLUME];
 
                 MInteger outBegIdx = new MInteger();
                 MInteger outNbElement = new MInteger();
                 
-                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().ADOSC_Lookback(fastPeriod, slowPeriod));
+                double[] outReal = getOutputArray(getBarData(), TALibPlugin.getCore().adOscLookback(fastPeriod, slowPeriod));
                 
-                TALibPlugin.getCore().ADOSC(startIdx, endIdx, inHigh, inLow, inClose, inVolume, fastPeriod, slowPeriod, outBegIdx, outNbElement, outReal);
+                TALibPlugin.getCore().adOsc(startIdx, endIdx, inHigh, inLow, inClose, inVolume, fastPeriod, slowPeriod, outBegIdx, outNbElement, outReal);
                 
                 PlotLine line = new PlotLine();
                 for (int i = 0; i < outNbElement.value; i++)
