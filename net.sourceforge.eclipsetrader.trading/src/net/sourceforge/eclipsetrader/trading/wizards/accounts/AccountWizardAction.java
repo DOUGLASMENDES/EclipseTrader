@@ -14,7 +14,7 @@ package net.sourceforge.eclipsetrader.trading.wizards.accounts;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.trading.views.AccountsView;
-import net.sourceforge.eclipsetrader.trading.views.TransactionsView;
+import net.sourceforge.eclipsetrader.trading.views.transactions.TransactionsView;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;

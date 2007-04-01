@@ -43,6 +43,7 @@ import net.sourceforge.eclipsetrader.trading.actions.NewAccountGroupAction;
 import net.sourceforge.eclipsetrader.trading.dialogs.TransactionDialog;
 import net.sourceforge.eclipsetrader.trading.internal.DeleteAccountAction;
 import net.sourceforge.eclipsetrader.trading.internal.TransactionAction;
+import net.sourceforge.eclipsetrader.trading.views.transactions.TransactionsView;
 import net.sourceforge.eclipsetrader.trading.wizards.accounts.AccountSettingsAction;
 
 import org.eclipse.jface.action.Action;

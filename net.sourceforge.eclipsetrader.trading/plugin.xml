@@ -384,7 +384,7 @@
       <view
             allowMultiple="true"
             category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.trading.views.TransactionsView"
+            class="net.sourceforge.eclipsetrader.trading.views.transactions.TransactionsView"
             icon="icons/eview16/book.png"
             id="net.sourceforge.eclipsetrader.views.transactions"
             name="%view.name.transactions"/>

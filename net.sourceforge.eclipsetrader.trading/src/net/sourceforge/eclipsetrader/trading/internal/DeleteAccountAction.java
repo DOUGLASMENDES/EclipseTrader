@@ -15,7 +15,7 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.PersistentObject;
 import net.sourceforge.eclipsetrader.trading.views.AccountsView;
-import net.sourceforge.eclipsetrader.trading.views.TransactionsView;
+import net.sourceforge.eclipsetrader.trading.views.transactions.TransactionsView;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.TreeItem;
