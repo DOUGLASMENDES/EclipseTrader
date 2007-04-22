@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.runtime.ListenerList;
+
 
 /**
  */
@@ -22,7 +24,7 @@ public class ObservableList extends ArrayList
 {
     private static final long serialVersionUID = 7282371672763711235L;
     private List originalList;
-    private List observers = new ArrayList();
+    private ListenerList observers = new ListenerList(ListenerList.IDENTITY);
 
     public ObservableList()
     {
@@ -46,8 +48,7 @@ public class ObservableList extends ArrayList
     
     public void addCollectionObserver(ICollectionObserver observer)
     {
-        if (!observers.contains(observer))
-            observers.add(observer);
+        observers.add(observer);
     }
     
     public void removeCollectionObserver(ICollectionObserver observer)
@@ -57,14 +58,14 @@ public class ObservableList extends ArrayList
     
     protected void notifyItemAdded(Object o)
     {
-        Object[] obs = observers.toArray();
+        Object[] obs = observers.getListeners();
         for (int i = 0; i < obs.length; i++)
             ((ICollectionObserver)obs[i]).itemAdded(o);
     }
     
     protected void notifyItemRemoved(Object o)
     {
-        Object[] obs = observers.toArray();
+        Object[] obs = observers.getListeners();
         for (int i = 0; i < obs.length; i++)
             ((ICollectionObserver)obs[i]).itemRemoved(o);
     }
