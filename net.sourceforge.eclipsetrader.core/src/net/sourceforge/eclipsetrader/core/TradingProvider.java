@@ -16,28 +16,17 @@ import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.db.Order;
 
+/**
+ * Default implementation of the ITradingProvider interface.
+ * 
+ * @author Marco Maccaferri
+ * @since 1.0
+ */
 public class TradingProvider implements ITradingProvider
 {
-    String name = "";
 
     public TradingProvider()
     {
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#getName()
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#setName(java.lang.String)
-     */
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     /* (non-Javadoc)

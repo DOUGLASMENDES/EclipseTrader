@@ -54,7 +54,7 @@ public class OrdersCleanupJob extends Job
                 if (preferences.getBoolean(CorePlugin.PREFS_DELETE_CANCELED_ORDERS) && diff >= preferences.getInt(CorePlugin.PREFS_DELETE_CANCELED_ORDERS_DAYS))
                 {
                     if (orders[i].getProvider() != null)
-                        log.info("Deleting order " + orders[i].getProvider().getName() + " / " + orders[i].getOrderId());
+                        log.info("Deleting order " + CorePlugin.getPluginName(CorePlugin.TRADING_PROVIDERS_EXTENSION_POINT, orders[i].getPluginId()) + " / " + orders[i].getOrderId());
                     else
                         log.info("Deleting order " + orders[i].getOrderId());
                     CorePlugin.getRepository().delete(orders[i]);
@@ -66,7 +66,7 @@ public class OrdersCleanupJob extends Job
                 if (preferences.getBoolean(CorePlugin.PREFS_DELETE_FILLED_ORDERS) && diff >= preferences.getInt(CorePlugin.PREFS_DELETE_FILLED_ORDERS_DAYS))
                 {
                     if (orders[i].getProvider() != null)
-                        log.info("Deleting order " + orders[i].getProvider().getName() + " / " + orders[i].getOrderId());
+                        log.info("Deleting order " + CorePlugin.getPluginName(CorePlugin.TRADING_PROVIDERS_EXTENSION_POINT, orders[i].getPluginId()) + " / " + orders[i].getOrderId());
                     else
                         log.info("Deleting order " + orders[i].getOrderId());
                     CorePlugin.getRepository().delete(orders[i]);

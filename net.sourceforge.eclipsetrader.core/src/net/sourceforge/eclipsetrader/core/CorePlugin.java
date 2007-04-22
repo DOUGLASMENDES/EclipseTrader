@@ -426,9 +426,7 @@ public class CorePlugin extends AbstractUIPlugin
                 if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                 {
                     try {
-                        ITradingProvider obj = (ITradingProvider)members[i].createExecutableExtension("class"); //$NON-NLS-1$
-                        obj.setName(item.getAttribute("name"));
-                        return obj;
+                        return (ITradingProvider)members[i].createExecutableExtension("class"); //$NON-NLS-1$
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
@@ -503,6 +501,32 @@ public class CorePlugin extends AbstractUIPlugin
         }
         
         return account;
+    }
+    
+    /**
+     * Returns the name of the extension identified by an extension point id and
+     * a plugin id.
+     * 
+     * @param extensionPointId - the extension point id
+     * @param pluginId - the plugin id
+     * @return the extension name, or null
+     */
+    public static String getPluginName(String extensionPointId, String pluginId)
+    {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(extensionPointId);
+        if (extensionPoint != null)
+        {
+            IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+            for (int i = 0; i < members.length; i++)
+            {
+                IConfigurationElement item = members[i];
+                if (item.getAttribute("id").equals(pluginId)) //$NON-NLS-1$
+                    return item.getAttribute("name"); //$NON-NLS-1$
+            }
+        }
+        
+        return null;
     }
 
     public static void logException(Exception e)

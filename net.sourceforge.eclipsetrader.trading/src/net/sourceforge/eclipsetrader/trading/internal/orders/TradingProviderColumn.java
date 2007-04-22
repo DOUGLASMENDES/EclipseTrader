@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 
 package net.sourceforge.eclipsetrader.trading.internal.orders;
 
+import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Order;
 
 import org.eclipse.jface.viewers.LabelProvider;
@@ -31,7 +32,7 @@ public class TradingProviderColumn extends LabelProvider
         {
             Order order = (Order)element;
             if (order.getProvider() != null)
-                return order.getProvider().getName();
+                return CorePlugin.getPluginName(CorePlugin.TRADING_PROVIDERS_EXTENSION_POINT, order.getPluginId());
         }
         return "";
     }

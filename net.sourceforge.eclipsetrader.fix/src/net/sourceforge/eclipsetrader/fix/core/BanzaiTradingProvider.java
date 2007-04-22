@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.ITradingProvider;
+import net.sourceforge.eclipsetrader.core.TradingProvider;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.Order;
 import net.sourceforge.eclipsetrader.core.db.OrderRoute;
@@ -84,11 +84,10 @@ import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
 
-public class BanzaiTradingProvider implements Application, ITradingProvider, IExecutableExtensionFactory
+public class BanzaiTradingProvider extends TradingProvider implements Application, IExecutableExtensionFactory
 {
     public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.fix";
     private static BanzaiTradingProvider instance;
-    String name = "";
     boolean isAvailable = true;
     boolean isMissingField;
     MessageFactory messageFactory;
@@ -116,22 +115,6 @@ public class BanzaiTradingProvider implements Application, ITradingProvider, IEx
         if (instance == null)
             instance = this;
         return instance;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#getName()
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsetrader.core.ITradingProvider#setName(java.lang.String)
-     */
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     /* (non-Javadoc)
@@ -423,7 +406,7 @@ public class BanzaiTradingProvider implements Application, ITradingProvider, IEx
      */
     public void sendNew(Order order)
     {
-        if (sessionMap.size() != 0)
+        if (sessionMap.get(order.getExchange().getId()) != null)
         {
             order.setPluginId(PLUGIN_ID);
             order.setProvider(this);
@@ -441,7 +424,10 @@ public class BanzaiTradingProvider implements Application, ITradingProvider, IEx
             order.setStatus(OrderStatus.NEW);
         }
         else
+        {
             order.setStatus(OrderStatus.REJECTED);
+            order.setMessage("Unknown session");
+        }
 
         CorePlugin.getRepository().save(order);
     }

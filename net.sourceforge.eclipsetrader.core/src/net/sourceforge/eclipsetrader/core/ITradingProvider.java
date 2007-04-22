@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,42 +16,41 @@ import java.util.List;
 import net.sourceforge.eclipsetrader.core.db.Order;
 
 /**
- * Interface for trading provider plugins.
+ * Trading providers interface.
+ * 
+ * @author Marco Maccaferri
+ * @since 1.0
  */
 public interface ITradingProvider
 {
     
-    public abstract void setName(String name);
-    
-    public abstract String getName();
-
     /**
      * Gets a list of the supported order types.
      * 
      * @return a list or OrderType objects
      */
-    public abstract List getTypes();
+    public List getTypes();
     
     /**
      * Gets a list of the supported order sides.
      * 
      * @return a list or OrderSide objects
      */
-    public abstract List getSides();
+    public List getSides();
 
     /**
      * Gets a list of the supported validity values.
      * 
      * @return a list or OrderValidity objects
      */
-    public abstract List getValidity();
+    public List getValidity();
 
     /**
      * Gets a list of the supported routes (or exchanges).
      * 
      * @return a list or OrderRoute objects
      */
-    public abstract List getRoutes();
+    public List getRoutes();
 
     /**
      * Send a new order to the receiver.
@@ -61,20 +60,19 @@ public interface ITradingProvider
      * 
      * @param order - the order to send
      */
-    public abstract void sendNew(Order order);
+    public void sendNew(Order order);
 
     /**
      * Send a request to the receiver to cancel the order.
      * 
      * @param order - the order to cancel
      */
-    public abstract void sendCancelRequest(Order order);
+    public void sendCancelRequest(Order order);
 
     /**
      * Send a request to the receiver to replace the order values.
      * 
      * @param order - the order to cancel
      */
-    public abstract void sendReplaceRequest(Order order);
-
+    public void sendReplaceRequest(Order order);
 }
