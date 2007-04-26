@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="components" name="ATS Components" schema="schema/components.exsd"/>
+   <extension-point id="strategies" name="ATS Strategies" schema="schema/strategies.exsd"/>
+   <extension-point id="systems" name="Automated Trading Systems" schema="schema/systems.exsd"/>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="net.sourceforge.eclipsetrader.ats"
+            label="Automated Trading Systems">
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="net.sourceforge.eclipsetrader.ats.ui.Perspective"
+            icon="icons/full/obj16/cog.png"
+            id="net.sourceforge.eclipsetrader.ats"
+            name="ATS"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="net.sourceforge.eclipsetrader.ats">
+         <actionSet id="net.sourceforge.eclipsetrader.ats"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup class="net.sourceforge.eclipsetrader.ats.internal.EarlyStartup"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="net.sourceforge.eclipsetrader.ats"
+            name="ATS"/>
+      <view
+            category="net.sourceforge.eclipsetrader.ats"
+            class="net.sourceforge.eclipsetrader.ats.ui.components.ComponentsExplorer"
+            icon="icons/full/view16/brick.png"
+            id="net.sourceforge.eclipsetrader.ats.components"
+            name="Components"/>
+      <view
+            category="net.sourceforge.eclipsetrader.ats"
+            class="net.sourceforge.eclipsetrader.ats.ui.tradingsystem.TradingSystemView"
+            icon="icons/full/obj16/cog.png"
+            id="net.sourceforge.eclipsetrader.ats.viewer"
+            name="Trading Systems"/>
+      <view
+            category="net.sourceforge.eclipsetrader.ats"
+            class="net.sourceforge.eclipsetrader.ats.ui.report.BacktestReportView"
+            icon="icons/full/view16/page_white_text.png"
+            id="net.sourceforge.eclipsetrader.ats.backtestreport"
+            name="Backtest Report"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.ats.components">
+      <market
+            class="net.sourceforge.eclipsetrader.ats.internal.components.EndOfDayMarketManager"
+            id="net.sourceforge.eclipsetrader.ats.market.eod"
+            name="End Of Day"/>
+      <market
+            class="net.sourceforge.eclipsetrader.ats.internal.components.LiveMarketManager"
+            id="net.sourceforge.eclipsetrader.ats.market.live"
+            name="Live"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.ats.strategies">
+      <strategy
+            class="net.sourceforge.eclipsetrader.ats.internal.strategies.FourDownDaysStrategy"
+            id="net.sourceforge.eclipsetrader.ats.strategy.fourdowndays"
+            name="Four Down Days"/>
+      <strategy
+            class="net.sourceforge.eclipsetrader.ats.internal.strategies.PanicRecoveryStrategy"
+            id="net.sourceforge.eclipsetrader.ats.strategy.panicrecovery"
+            name="Panic Recovery"/>
+      <strategy
+            class="net.sourceforge.eclipsetrader.ats.internal.strategies.MovingAverageCrossoverStrategy"
+            id="net.sourceforge.eclipsetrader.ats.strategy.macrossover"
+            name="Moving Average Crossover"/>
+      <strategy
+            class="net.sourceforge.eclipsetrader.ats.internal.strategies.TripleMovingAverageCrossoverStrategy"
+            id="net.sourceforge.eclipsetrader.ats.strategy.triplema"
+            name="Triple Moving Average Crossover"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.loggingPreferences">
+      <logger
+            defaultValue="info"
+            description="Automated Trading Systems"
+            name="net.sourceforge.eclipsetrader.ats"/>
+   </extension>
+   <extension
+         point="net.sourceforge.eclipsetrader.core.viewLabelProviders">
+      <viewContribution
+            id="net.sourceforge.eclipsetrader.ats.viewContribution1"
+            targetID="net.sourceforge.eclipsetrader.ats.viewer">
+         <provider
+               class="net.sourceforge.eclipsetrader.ats.ui.tradingsystem.providers.PositionColumn"
+               id="net.sourceforge.eclipsetrader.ats.position"
+               name="Position"
+               orientation="right"/>
+         <provider
+               class="net.sourceforge.eclipsetrader.ats.ui.tradingsystem.providers.StatusColumn"
+               id="net.sourceforge.eclipsetrader.ats.status"
+               name="Status"/>
+      </viewContribution>
+   </extension>
+
+</plugin>
