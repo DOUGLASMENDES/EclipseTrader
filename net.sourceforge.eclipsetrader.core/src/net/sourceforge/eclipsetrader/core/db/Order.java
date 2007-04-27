@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.eclipsetrader.core.ITradingProvider;
-
 
 public class Order extends PersistentObject
 {
@@ -38,6 +37,8 @@ public class Order extends PersistentObject
     Date expire;
     OrderValidity validity;
     OrderStatus status = OrderStatus.NEW;
+    String text;
+    String message;
     Map params = new HashMap();
 
     public Order()
@@ -49,6 +50,12 @@ public class Order extends PersistentObject
         super(id);
     }
 
+    /**
+     * Returns the id of the trading provider plugin that
+     * handles this order.
+     * 
+     * @return the plugin id
+     */
     public String getPluginId()
     {
         return pluginId;
@@ -236,15 +243,65 @@ public class Order extends PersistentObject
     {
         this.params = params;
     }
+
+    /**
+     * Returns the user-defined text.
+     * 
+     * @return the text.
+     */
+    public String getText()
+    {
+        return text;
+    }
+
+    /**
+     * Sets a user-defined defined text.
+     * 
+     * @param text - the text.
+     */
+    public void setText(String text)
+    {
+        this.text = text;
+    }
+
+    /**
+     * Returns the message set by the trading provider.
+     * 
+     * @return the text.
+     */
+    public String getMessage()
+    {
+        return message;
+    }
+
+    /**
+     * Allows the trading provider to set a message.
+     * 
+     * @oaram message - the text.
+     */
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
     
+    public void sendNew()
+    {
+        if (provider == null)
+            throw new RuntimeException("Invalid argument");
+        provider.sendNew(this);
+    }
+
     public void cancelRequest()
     {
-        if (provider != null)
-            provider.sendCancelRequest(this);
-        else
-        {
-            setStatus(OrderStatus.CANCELED);
-            getRepository().save(this);
-        }
+        if (provider == null)
+            throw new RuntimeException("Invalid argument");
+        provider.sendCancelRequest(this);
+    }
+
+    public void replaceRequest()
+    {
+        if (provider == null)
+            throw new RuntimeException("Invalid argument");
+        provider.sendReplaceRequest(this);
     }
 }

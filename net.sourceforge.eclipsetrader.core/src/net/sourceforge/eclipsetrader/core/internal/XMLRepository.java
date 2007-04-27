@@ -2448,6 +2448,10 @@ public class XMLRepository extends Repository
                     if (order.getAccount() != null)
                         log.warn("Cannot load account (id=" + value.getNodeValue() + ")");
                 }
+                else if (nodeName.equals("text")) //$NON-NLS-1$
+                    order.setText(value.getNodeValue());
+                else if (nodeName.equals("message")) //$NON-NLS-1$
+                    order.setMessage(value.getNodeValue());
             }
             if (nodeName.equalsIgnoreCase("param") == true)
             {
@@ -2528,6 +2532,18 @@ public class XMLRepository extends Repository
                 {
                     node = document.createElement("account");
                     node.appendChild(document.createTextNode(String.valueOf(order.getAccount().getId())));
+                    element.appendChild(node);
+                }
+                if (order.getText() != null)
+                {
+                    node = document.createElement("text");
+                    node.appendChild(document.createTextNode(order.getText()));
+                    element.appendChild(node);
+                }
+                if (order.getMessage() != null)
+                {
+                    node = document.createElement("message");
+                    node.appendChild(document.createTextNode(order.getMessage()));
                     element.appendChild(node);
                 }
 
