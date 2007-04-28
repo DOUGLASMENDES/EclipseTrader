@@ -318,6 +318,9 @@ public class HistoryFeed implements IHistoryFeed
                 date.set(Calendar.MINUTE, 0);
                 date.set(Calendar.SECOND, 0);
                 date.set(Calendar.MILLISECOND, 0);
+                date.add(Calendar.DATE, 1);
+                while(date.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+                    date.add(Calendar.DATE, 1);
                 current.setDate(date.getTime());
                 current.setValue(msg.getPrice());
                 
@@ -346,9 +349,12 @@ public class HistoryFeed implements IHistoryFeed
             date.set(Calendar.MINUTE, 0);
             date.set(Calendar.SECOND, 0);
             date.set(Calendar.MILLISECOND, 0);
+            date.add(Calendar.DATE, 1);
+            while(date.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+                date.add(Calendar.DATE, 1);
             current.setDate(date.getTime());
-            current.setFromQuantity(msg.getForFactor());
-            current.setToQuantity(msg.getToFactor());
+            current.setFromQuantity(msg.getToFactor());
+            current.setToQuantity(msg.getForFactor());
             
             if (splits.size() != 0)
             {
