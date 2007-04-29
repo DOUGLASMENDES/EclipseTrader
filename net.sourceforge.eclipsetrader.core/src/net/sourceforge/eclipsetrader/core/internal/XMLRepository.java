@@ -399,14 +399,16 @@ public class XMLRepository extends Repository
      */
     public void dispose()
     {
-        saveSecurities();
+    	saveSecurities();
         saveWatchlists();
         saveCharts();
         saveAccounts();
         saveNews();
         saveEvents();
         saveOrders();
+
         tradingRepository.saveTradingSystems();
+        
         super.dispose();
     }
 
@@ -539,7 +541,6 @@ public class XMLRepository extends Repository
                 obj.setId(eventNextId);
                 eventNextId = getNextId(eventNextId);
             }
-            saveEvents();
         }
         else if (obj instanceof Security)
         {
@@ -549,7 +550,6 @@ public class XMLRepository extends Repository
                 securitiesNextId = getNextId(securitiesNextId);
             }
             securitiesMap.put(obj.getId(), obj);
-            saveSecurities();
         }
         else if (obj instanceof SecurityGroup)
         {
@@ -558,7 +558,6 @@ public class XMLRepository extends Repository
                 obj.setId(securitiesGroupNextId);
                 securitiesGroupNextId = getNextId(securitiesGroupNextId);
             }
-            saveSecurities();
         }
         else if (obj instanceof History)
             saveHistory((History)obj);
@@ -570,7 +569,6 @@ public class XMLRepository extends Repository
                 chartsNextId = getNextId(chartsNextId);
             }
             chartsMap.put(obj.getId(), obj);
-            saveCharts();
         }
         else if (obj instanceof Watchlist)
         {
@@ -580,7 +578,6 @@ public class XMLRepository extends Repository
                 watchlistsNextId = getNextId(watchlistsNextId);
             }
             watchlistsMap.put(obj.getId(), obj);
-            saveWatchlists();
         }
         else if (obj instanceof Account)
         {
@@ -601,15 +598,9 @@ public class XMLRepository extends Repository
             accountGroupMap.put(obj.getId(), obj);
         }
         else if (obj instanceof TradingSystem)
-        {
             tradingRepository.save((TradingSystem) obj);
-            tradingRepository.saveTradingSystems();
-        }
         else if (obj instanceof TradingSystemGroup)
-        {
             tradingRepository.save((TradingSystemGroup) obj);
-            tradingRepository.saveTradingSystems();
-        }
         else if (obj instanceof Order)
         {
             if (obj.getId() == null)
@@ -617,13 +608,9 @@ public class XMLRepository extends Repository
                 obj.setId(orderNextId);
                 orderNextId = getNextId(orderNextId);
             }
-            saveOrders();
         }
         
         super.save(obj);
-
-        if (obj instanceof AccountGroup || obj instanceof Account)
-            saveAccounts();
     }
 
     /* (non-Javadoc)
@@ -647,8 +634,6 @@ public class XMLRepository extends Repository
             file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
-            saveSecurities();
-            saveWatchlists();
         }
         else if (obj instanceof History)
         {
@@ -668,25 +653,13 @@ public class XMLRepository extends Repository
             }
         }
         else if (obj instanceof Watchlist)
-        {
             watchlistsMap.remove(obj.getId());
-            saveWatchlists();
-        }
         else if (obj instanceof Chart)
-        {
             chartsMap.remove(obj.getId());
-            saveCharts();
-        }
         else if (obj instanceof Account)
-        {
             accountMap.remove(obj.getId());
-            saveAccounts();
-        }
         else if (obj instanceof AccountGroup)
-        {
             accountGroupMap.remove(obj.getId());
-            saveAccounts();
-        }
         else if (obj instanceof TradingSystem)
         {
             TradingSystem system = (TradingSystem) obj;
@@ -694,7 +667,6 @@ public class XMLRepository extends Repository
                 system.getGroup().getTradingSystems().remove(obj);
             getTradingSystems().remove(obj);
             tradingRepository.tsMap.remove(obj.getId());
-            tradingRepository.saveTradingSystems();
         }
         else if (obj instanceof TradingSystemGroup)
         {
@@ -712,7 +684,6 @@ public class XMLRepository extends Repository
                 delete((PersistentObject) members[i]);
 
             tradingRepository.tsGroupMap.remove(obj.getId());
-            tradingRepository.saveTradingSystems();
         }
     }
 
