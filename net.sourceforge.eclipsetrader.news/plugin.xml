@@ -194,35 +194,6 @@
    <extension
          point="org.eclipse.ui.viewActions">
       <viewContribution
-            id="newsView"
-            targetID="net.sourceforge.eclipsetrader.newslist">
-         <action
-               class="net.sourceforge.eclipsetrader.news.actions.ShowNextAction"
-               disabledIcon="icons/dlcl16/next_nav.gif"
-               icon="icons/elcl16/next_nav.gif"
-               id="net.sourceforge.eclipsetrader.news.next"
-               label="%action.label.next"
-               style="push"
-               toolbarPath="group1"/>
-         <action
-               class="net.sourceforge.eclipsetrader.news.actions.ShowPreviousAction"
-               disabledIcon="icons/dlcl16/prev_nav.gif"
-               icon="icons/elcl16/prev_nav.gif"
-               id="net.sourceforge.eclipsetrader.news.previous"
-               label="%action.label.previous"
-               style="push"
-               toolbarPath="group1"/>
-         <action
-               class="net.sourceforge.eclipsetrader.news.actions.RefreshFeedAction"
-               disabledIcon="icons/dlcl16/refresh.gif"
-               icon="icons/elcl16/refresh.gif"
-               id="net.sourceforge.eclipsetrader.news.refresh"
-               label="%action.label.update"
-               style="push"
-               toolbarPath="group2"
-               tooltip="%action.tooltip.updateNews"/>
-      </viewContribution>
-      <viewContribution
             id="securitiesView"
             targetID="net.sourceforge.eclipsetrader.views.securities">
          <action
