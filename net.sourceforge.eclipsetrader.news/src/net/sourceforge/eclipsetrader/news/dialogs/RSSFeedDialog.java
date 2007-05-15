@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,6 @@
  */
 
 package net.sourceforge.eclipsetrader.news.dialogs;
-
-import net.sourceforge.eclipsetrader.news.internal.Messages;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -51,8 +49,9 @@ public class RSSFeedDialog extends Dialog
      */
     protected Control createDialogArea(Composite parent)
     {
-        Composite content = new Composite(parent, SWT.NONE);
+        Composite content = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
         GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         
@@ -76,7 +75,7 @@ public class RSSFeedDialog extends Dialog
             }
         });
         
-        return super.createDialogArea(parent);
+        return content;
     }
 
     /* (non-Javadoc)

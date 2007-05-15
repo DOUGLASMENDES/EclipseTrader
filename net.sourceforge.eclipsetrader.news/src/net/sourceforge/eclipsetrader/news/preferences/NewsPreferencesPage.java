@@ -13,7 +13,6 @@ package net.sourceforge.eclipsetrader.news.preferences;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
-import net.sourceforge.eclipsetrader.news.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;

@@ -9,13 +9,13 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.news.internal;
+package net.sourceforge.eclipsetrader.news.views;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS
 {
-    private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.news.internal.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.news.views.messages"; //$NON-NLS-1$
 
     private Messages()
     {
@@ -26,6 +26,12 @@ public class Messages extends NLS
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }
-    public static String EarlyStartup_JobName;
-	public static String EarlyStartup_TaskName;
+	public static String NewsStartupJob_JobName;
+	public static String NewsView_Date;
+	public static String NewsView_NextAction;
+	public static String NewsView_PreviousAction;
+    public static String NewsView_Title;
+    public static String NewsView_Security;
+    public static String NewsView_Source;
+	public static String NewsView_UpdateAction;
 }

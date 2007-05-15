@@ -25,7 +25,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
 import net.sourceforge.eclipsetrader.news.dialogs.RSSFeedDialog;
-import net.sourceforge.eclipsetrader.news.internal.Messages;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;

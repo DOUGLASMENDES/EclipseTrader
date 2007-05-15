@@ -55,20 +55,20 @@ public class NewsLabelProvider extends LabelProvider implements ITableLabelProvi
 				return dateTimeFormat.format(newsItem.getDate());
 			case 1: {
 		        String title = newsItem.getTitle();
-		        title = title.replaceAll("&agrave;", "à");
-		        title = title.replaceAll("&egrave;", "è");
-		        title = title.replaceAll("&eacute;", "é");
-		        title = title.replaceAll("&igrave;", "ì");
-		        title = title.replaceAll("&ograve;", "ò");
-		        title = title.replaceAll("&pgrave;", "ù");
+		        title = title.replaceAll("&agrave;", "à"); //$NON-NLS-1$ //$NON-NLS-2$
+		        title = title.replaceAll("&egrave;", "è"); //$NON-NLS-1$ //$NON-NLS-2$
+		        title = title.replaceAll("&eacute;", "é"); //$NON-NLS-1$ //$NON-NLS-2$
+		        title = title.replaceAll("&igrave;", "ì"); //$NON-NLS-1$ //$NON-NLS-2$
+		        title = title.replaceAll("&ograve;", "ò"); //$NON-NLS-1$ //$NON-NLS-2$
+		        title = title.replaceAll("&pgrave;", "ù"); //$NON-NLS-1$ //$NON-NLS-2$
 		        return title;
 			}
 			case 2: {
-		        String text = "";
+		        String text = ""; //$NON-NLS-1$
 		        Object[] o = newsItem.getSecurities().toArray();
 		        for (int i = 0; i < o.length; i++) {
-		            if (!text.equals(""))
-		                text += ", ";
+		            if (!text.equals("")) //$NON-NLS-1$
+		                text += ", "; //$NON-NLS-1$
 		            text += ((Security)o[i]).getDescription();
 		        }
 		        return text;
@@ -77,7 +77,7 @@ public class NewsLabelProvider extends LabelProvider implements ITableLabelProvi
 				return newsItem.getSource();
 		}
 		
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

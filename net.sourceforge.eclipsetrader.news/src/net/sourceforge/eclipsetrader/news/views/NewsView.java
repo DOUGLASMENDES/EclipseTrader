@@ -23,7 +23,6 @@ import net.sourceforge.eclipsetrader.core.db.NewsItem;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.views.WebBrowser;
 import net.sourceforge.eclipsetrader.news.NewsPlugin;
-import net.sourceforge.eclipsetrader.news.internal.Messages;
 
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
@@ -188,11 +187,11 @@ public class NewsView extends ViewPart {
         public void controlResized(ControlEvent e) {
 	        TableColumn column = (TableColumn)e.widget;
 	        int index = viewer.getTable().indexOf(column);
-	        settings.put("column" + String.valueOf(index) + ".width", column.getWidth());
+	        settings.put("column" + String.valueOf(index) + ".width", column.getWidth()); //$NON-NLS-1$ //$NON-NLS-2$
 	    }
 	};
 	
-	Action refreshAction = new Action("Update") {
+	Action refreshAction = new Action(Messages.NewsView_UpdateAction) {
         public void run() {
             if (security != null)
                 NewsPlugin.getDefault().startFeedSnapshot(security);
@@ -201,13 +200,13 @@ public class NewsView extends ViewPart {
         }
 	};
 	
-	Action showNextAction = new Action("Next") {
+	Action showNextAction = new Action(Messages.NewsView_NextAction) {
         public void run() {
         	showNext();
         }
 	};
 	
-	Action showPreviousAction = new Action("Previous") {
+	Action showPreviousAction = new Action(Messages.NewsView_PreviousAction) {
         public void run() {
         	showPrevious();
         }
@@ -217,14 +216,14 @@ public class NewsView extends ViewPart {
 	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
 	 */
 	public void init(IViewSite site) throws PartInitException {
-		refreshAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/refresh.gif"));
-		refreshAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/refresh.gif"));
+		refreshAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/refresh.gif")); //$NON-NLS-1$
+		refreshAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/refresh.gif")); //$NON-NLS-1$
 
-		showNextAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/next_nav.gif"));
-		showNextAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/next_nav.gif"));
+		showNextAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/next_nav.gif")); //$NON-NLS-1$
+		showNextAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/next_nav.gif")); //$NON-NLS-1$
 
-		showPreviousAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/prev_nav.gif"));
-		showPreviousAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/prev_nav.gif"));
+		showPreviousAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/prev_nav.gif")); //$NON-NLS-1$
+		showPreviousAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/prev_nav.gif")); //$NON-NLS-1$
 
 		IMenuManager menuManager = site.getActionBars().getMenuManager();
 		menuManager.add(new Separator("top")); //$NON-NLS-1$
@@ -280,22 +279,22 @@ public class NewsView extends ViewPart {
 		
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setText(Messages.NewsView_Date);
-		column.setWidth(settings.get("column0.width") == null ? 120 : settings.getInt("column0.width"));
+		column.setWidth(settings.get("column0.width") == null ? 120 : settings.getInt("column0.width")); //$NON-NLS-1$ //$NON-NLS-2$
 		column.addControlListener(controlListener);
 		
 		column = new TableColumn(table, SWT.NONE);
 		column.setText(Messages.NewsView_Title);
-		column.setWidth(settings.get("column1.width") == null ? 240 : settings.getInt("column1.width"));
+		column.setWidth(settings.get("column1.width") == null ? 240 : settings.getInt("column1.width")); //$NON-NLS-1$ //$NON-NLS-2$
 		column.addControlListener(controlListener);
 		
 		column = new TableColumn(table, SWT.NONE);
 		column.setText(Messages.NewsView_Security);
-		column.setWidth(settings.get("column2.width") == null ? 120 : settings.getInt("column2.width"));
+		column.setWidth(settings.get("column2.width") == null ? 120 : settings.getInt("column2.width")); //$NON-NLS-1$ //$NON-NLS-2$
 		column.addControlListener(controlListener);
 		
 		column = new TableColumn(table, SWT.NONE);
 		column.setText(Messages.NewsView_Source);
-		column.setWidth(settings.get("column3.width") == null ? 120 : settings.getInt("column3.width"));
+		column.setWidth(settings.get("column3.width") == null ? 120 : settings.getInt("column3.width")); //$NON-NLS-1$ //$NON-NLS-2$
 		column.addControlListener(controlListener);
 
 		viewer = new TableViewer(table);

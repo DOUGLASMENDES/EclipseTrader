@@ -156,7 +156,7 @@ public class RSSNewsProvider implements Runnable, INewsProvider
         }
         oldItems.clear();
         
-        Job job = new Job("RSS News") {
+        Job job = new Job(Messages.RSSNewsProvider_JobName) {
             protected IStatus run(IProgressMonitor monitor)
             {
                 File file = new File(Platform.getLocation().toFile(), "rss.xml"); //$NON-NLS-1$
@@ -171,15 +171,15 @@ public class RSSNewsProvider implements Runnable, INewsProvider
                         Node firstNode = document.getFirstChild();
             
                         NodeList childNodes = firstNode.getChildNodes();
-                        monitor.beginTask("Fetching RSS News", childNodes.getLength());
-                        log.info("Start fetching RSS News");
+                        monitor.beginTask(Messages.RSSNewsProvider_TaskName, childNodes.getLength());
+                        log.info("Start fetching RSS News"); //$NON-NLS-1$
 
                         for (int i = 0; i < childNodes.getLength(); i++)
                         {
                             Node item = childNodes.item(i);
                             String nodeName = item.getNodeName();
                             if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
-                                update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getNodeValue());
+                                update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getNodeValue()); //$NON-NLS-1$
 
                             monitor.worked(1);
                         }
@@ -238,7 +238,7 @@ public class RSSNewsProvider implements Runnable, INewsProvider
 
                 if (!news.getDate().before(limit.getTime()) && !isDuplicated(news))
                 {
-                    log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                    log.trace(news.getTitle() + " (" + news.getSource() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                     CorePlugin.getRepository().save(news);
                     oldItems.add(news);
                 }

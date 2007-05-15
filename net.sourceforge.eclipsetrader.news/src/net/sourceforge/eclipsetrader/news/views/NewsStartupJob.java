@@ -32,7 +32,7 @@ public class NewsStartupJob extends Job {
 	}
 
 	public NewsStartupJob(Security security) {
-		super(security != null ? security + ": News Startup" : "News Startup");
+		super(security != null ? security + ": " : "" + Messages.NewsStartupJob_JobName); //$NON-NLS-1$ //$NON-NLS-2$
 		this.security = security;
 	}
 

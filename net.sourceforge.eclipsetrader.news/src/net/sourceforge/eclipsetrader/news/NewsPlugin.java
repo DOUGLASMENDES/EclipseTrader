@@ -32,12 +32,12 @@ import org.osgi.framework.BundleContext;
  */
 public class NewsPlugin extends AbstractUIPlugin
 {
-    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.news";
-    public static final String PROVIDER_EXTENSION_POINT = CorePlugin.PLUGIN_ID + ".news";
-    public static final String PREFS_UPDATE_ON_STARTUP = "UPDATE_ON_STARTUP";
-    public static final String PREFS_FOLLOW_QUOTE_FEED = "FOLLOW_QUOTE_FEED";
-    public static final String PREFS_UPDATE_INTERVAL = "UPDATE_INTERVAL";
-    public static final String FEED_RUNNING = "NEWS_FEED_RUNNING";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.news"; //$NON-NLS-1$
+    public static final String PROVIDER_EXTENSION_POINT = CorePlugin.PLUGIN_ID + ".news"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_ON_STARTUP = "UPDATE_ON_STARTUP"; //$NON-NLS-1$
+    public static final String PREFS_FOLLOW_QUOTE_FEED = "FOLLOW_QUOTE_FEED"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_INTERVAL = "UPDATE_INTERVAL"; //$NON-NLS-1$
+    public static final String FEED_RUNNING = "NEWS_FEED_RUNNING"; //$NON-NLS-1$
     private static NewsPlugin plugin;
     private IPropertyChangeListener feedPropertyListener = new IPropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent event)
@@ -84,7 +84,7 @@ public class NewsPlugin extends AbstractUIPlugin
             CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(feedPropertyListener);
         store.addPropertyChangeListener(feedPropertyListener);
 
-        CorePlugin.getDefault().getPreferenceStore().setValue(WebBrowser.VIEW_ID + ":" + PLUGIN_ID, "News Browser");
+        CorePlugin.getDefault().getPreferenceStore().setValue(WebBrowser.VIEW_ID + ":" + PLUGIN_ID, Messages.NewsPlugin_BrowserTitle); //$NON-NLS-1$
     }
 
     /**
