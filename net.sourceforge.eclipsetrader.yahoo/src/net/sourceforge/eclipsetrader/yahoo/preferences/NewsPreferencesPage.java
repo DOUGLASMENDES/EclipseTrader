@@ -59,7 +59,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         content.setLayout(gridLayout);
         
         showSubscribersOnly = new Button(content, SWT.CHECK);
-        showSubscribersOnly.setText("Get subscribers-only news");
+        showSubscribersOnly.setText(Messages.NewsPreferencesPage_GetSubscribersOnly);
         showSubscribersOnly.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         
         table = new Table(content, SWT.FULL_SELECTION|SWT.SINGLE|SWT.CHECK);
@@ -68,7 +68,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         gridData.heightHint = 250;
         table.setLayoutData(gridData);
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Provider");
+        column.setText(Messages.NewsPreferencesPage_ProviderColumnName);
 
         IPreferenceStore store = YahooPlugin.getDefault().getPreferenceStore();
         showSubscribersOnly.setSelection(store.getBoolean(YahooPlugin.PREFS_SHOW_SUBSCRIBERS_ONLY));
@@ -77,7 +77,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("categories.xml"), false));
+            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("categories.xml"), false)); //$NON-NLS-1$
 
             NodeList childNodes = document.getFirstChild().getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++)
@@ -86,7 +86,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
                 String nodeName = node.getNodeName();
                 if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
                 {
-                    String id = ((Node)node).getAttributes().getNamedItem("id").getNodeValue();
+                    String id = ((Node)node).getAttributes().getNamedItem("id").getNodeValue(); //$NON-NLS-1$
                     TableItem tableItem = new TableItem(table, SWT.NONE);
                     NodeList list = node.getChildNodes();
                     for (int x = 0; x < list.getLength(); x++)
@@ -96,7 +96,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
                         Node value = item.getFirstChild();
                         if (value != null)
                         {
-                            if (nodeName.equalsIgnoreCase("title"))
+                            if (nodeName.equalsIgnoreCase("title")) //$NON-NLS-1$
                                 tableItem.setText(value.getNodeValue());
                         }
                     }

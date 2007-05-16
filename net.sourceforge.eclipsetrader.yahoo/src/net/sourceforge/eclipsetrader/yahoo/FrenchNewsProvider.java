@@ -49,9 +49,9 @@ import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class FrenchNewsProvider implements Runnable, INewsProvider
 {
-	private final static String NEWS_NAME =  "Yahoo! News (France)";
-	private final static String NEWS_CONFIG_FILE =  "categories.fr.xml";
-	private final static String NEWS_SECURITY_URL_BASE =  "http://fr.search.news.yahoo.com/search/compnews_fr?p=ytic:";
+	private final static String NEWS_NAME =  Messages.FrenchNewsProvider_Name;
+	private final static String NEWS_CONFIG_FILE =  "categories.fr.xml"; //$NON-NLS-1$
+	private final static String NEWS_SECURITY_URL_BASE =  "http://fr.search.news.yahoo.com/search/compnews_fr?p=ytic:"; //$NON-NLS-1$
 	private Thread thread;
     private boolean stopping = false;
     private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
@@ -224,7 +224,7 @@ public class FrenchNewsProvider implements Runnable, INewsProvider
 
     private void update(URL feedUrl, Security security)
     {
-    	System.out.println("Fetching "+feedUrl.toExternalForm());
+    	System.out.println("Fetching "+feedUrl.toExternalForm()); //$NON-NLS-1$
     	
     	boolean subscribersOnly = YahooPlugin.getDefault().getPreferenceStore().getBoolean(YahooPlugin.PREFS_SHOW_SUBSCRIBERS_ONLY);
         
@@ -245,7 +245,7 @@ public class FrenchNewsProvider implements Runnable, INewsProvider
             {
                 SyndEntry entry = (SyndEntry) iter.next();
                 
-                if (!subscribersOnly && entry.getTitle().indexOf("[$$]") != -1)
+                if (!subscribersOnly && entry.getTitle().indexOf("[$$]") != -1) //$NON-NLS-1$
                     continue;
                 
                 NewsItem news = new NewsItem();
@@ -261,7 +261,7 @@ public class FrenchNewsProvider implements Runnable, INewsProvider
                     news.setDate(date.getTime());
                 }
                 String title = entry.getTitle();
-                if (title.endsWith(")"))
+                if (title.endsWith(")")) //$NON-NLS-1$
                 {
                     int s = title.lastIndexOf('(');
                     if (s != -1)

@@ -106,7 +106,7 @@ public class NewsProvider implements Runnable, INewsProvider
     public void snapshot(Security security)
     {
         try {
-            update(new URL("http://finance.yahoo.com/rss/headline?s=" + security.getCode().toLowerCase()), security);
+            update(new URL("http://finance.yahoo.com/rss/headline?s=" + security.getCode().toLowerCase()), security); //$NON-NLS-1$
         } catch(Exception e) {
             log.error(e);
         }
@@ -149,7 +149,7 @@ public class NewsProvider implements Runnable, INewsProvider
         }
         oldItems.clear();
         
-        Job job = new Job("Yahoo! News") {
+        Job job = new Job(Messages.NewsProvider_Name) {
             protected IStatus run(IProgressMonitor monitor)
             {
                 IPreferenceStore store = YahooPlugin.getDefault().getPreferenceStore();
@@ -192,8 +192,8 @@ public class NewsProvider implements Runnable, INewsProvider
                 }
                 
                 List securities = CorePlugin.getRepository().allSecurities();
-                monitor.beginTask("Fetching Yahoo! News", securities.size() + urls.size());
-                log.info("Start fetching Yahoo! News");
+                monitor.beginTask(Messages.NewsProvider_TaskName, securities.size() + urls.size());
+                log.info("Start fetching Yahoo! News"); //$NON-NLS-1$
 
                 for (Iterator iter = securities.iterator(); iter.hasNext(); )
                 {
@@ -257,14 +257,14 @@ public class NewsProvider implements Runnable, INewsProvider
             {
                 SyndEntry entry = (SyndEntry) iter.next();
                 
-                if (!subscribersOnly && entry.getTitle().indexOf("[$$]") != -1)
+                if (!subscribersOnly && entry.getTitle().indexOf("[$$]") != -1) //$NON-NLS-1$
                     continue;
                 
                 NewsItem news = new NewsItem();
                 news.setRecent(true);
 
                 String title = entry.getTitle();
-                if (title.endsWith(")"))
+                if (title.endsWith(")")) //$NON-NLS-1$
                 {
                     int s = title.lastIndexOf('(');
                     if (s != -1)
@@ -294,7 +294,7 @@ public class NewsProvider implements Runnable, INewsProvider
                 
                 if (!news.getDate().before(limit.getTime()) && !isDuplicated(news))
                 {
-                    log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                    log.trace(news.getTitle() + " (" + news.getSource() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                     CorePlugin.getRepository().save(news);
                     oldItems.add(news);
                 }

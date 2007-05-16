@@ -45,7 +45,7 @@ public class PluginPreferencesPage extends PreferencePage implements IWorkbenchP
         content.setLayout(gridLayout);
 
         updateHistory = new Button(content, SWT.CHECK);
-        updateHistory.setText("Update history with quote data on snapshot");
+        updateHistory.setText(Messages.PluginPreferencesPage_SnapshotUpdate);
         updateHistory.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
         IPreferenceStore store = YahooPlugin.getDefault().getPreferenceStore();

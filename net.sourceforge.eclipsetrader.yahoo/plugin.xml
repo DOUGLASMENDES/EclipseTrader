@@ -5,34 +5,34 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="net.sourceforge.eclipsetrader.yahoo"
-            label="Yahoo"
+            label="%actionSet.label"
             visible="true">
          <action
                class="net.sourceforge.eclipsetrader.yahoo.actions.NewSecurityAction"
                icon="icons/us.gif"
                id="net.sourceforge.eclipsetrader.yahoo.newSecurity"
-               label="U.S. Stock Security"
+               label="%securityWizard.action.label"
                menubarPath="file/newWizard/plugins"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.yahoo.actions.NewGermanSecurityAction"
                icon="icons/de.gif"
                id="net.sourceforge.eclipsetrader.yahoo.newGermanSecurity"
-               label="German Stock Security"
+               label="%german.securityWizard.action.label"
                menubarPath="file/newWizard/plugins"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.yahoo.actions.NewFrenchSecurityAction"
                icon="icons/fr.gif"
                id="net.sourceforge.eclipsetrader.yahoo.newFranceSecurity"
-               label="French Stock Security"
+               label="%french.securityWizard.action.label"
                menubarPath="file/newWizard/plugins"
                style="push"/>
          <action
                class="net.sourceforge.eclipsetrader.yahoo.actions.NewIndexAction"
                icon="icons/world.png"
                id="net.sourceforge.eclipsetrader.yahoo.newIndex"
-               label="Index"
+               label="%index.securityWizard.action.label"
                menubarPath="file/newWizard/top"
                style="push"/>
       </actionSet>
@@ -43,28 +43,28 @@
             category="net.sourceforge.eclipsetrader.plugins"
             class="net.sourceforge.eclipsetrader.yahoo.preferences.PluginPreferencesPage"
             id="net.sourceforge.eclipsetrader.yahoo.quote"
-            name="Yahoo! Finance"/>
+            name="%preferencePage.name"/>
       <page
             category="net.sourceforge.eclipsetrader.news"
             class="net.sourceforge.eclipsetrader.yahoo.preferences.NewsPreferencesPage"
             id="net.sourceforge.eclipsetrader.yahoo.news"
-            name="Yahoo! US"/>
+            name="%news.preferencePage.name"/>
       <page
             category="net.sourceforge.eclipsetrader.news"
             class="net.sourceforge.eclipsetrader.yahoo.preferences.FrenchNewsPreferencesPage"
             id="net.sourceforge.eclipsetrader.yahoo.news.france"
-            name="Yahoo! France"/>
+            name="%france.news.preferencePage.name"/>
       <page
             category="net.sourceforge.eclipsetrader.news"
             class="net.sourceforge.eclipsetrader.yahoo.preferences.ItalianNewsPreferencesPage"
             id="net.sourceforge.eclipsetrader.yahoo.news.italy"
-            name="Yahoo! Italia"/>
+            name="%italy.news.preferencePage.name"/>
    </extension>
    <extension
          point="net.sourceforge.eclipsetrader.core.feeds">
       <feed
-            id="net.sourceforge.eclipsetrader.yahoo"
-            name="Yahoo! Finance">
+            id="%feed.id"
+            name="%feed.name">
          <history class="net.sourceforge.eclipsetrader.yahoo.HistoryFeed"/>
          <quote class="net.sourceforge.eclipsetrader.yahoo.Feed">
          </quote>
@@ -75,15 +75,15 @@
       <provider
             class="net.sourceforge.eclipsetrader.yahoo.NewsProvider"
             id="net.sourceforge.eclipsetrader.yahoo.news"
-            name="Yahoo! Finance U.S."/>
+            name="%news.provider.name"/>
       <provider
             class="net.sourceforge.eclipsetrader.yahoo.ItalianNewsProvider"
             id="net.sourceforge.eclipsetrader.yahoo.news.italy"
-            name="Yahoo! Finance Italy"/>
+            name="%italy.news.provider.name"/>
       <provider
             class="net.sourceforge.eclipsetrader.yahoo.FrenchNewsProvider"
             id="net.sourceforge.eclipsetrader.yahoo.news.france"
-            name="Yahoo! Finance France"/>
+            name="%france.news.provider.name"/>
    </extension>
 
 </plugin>

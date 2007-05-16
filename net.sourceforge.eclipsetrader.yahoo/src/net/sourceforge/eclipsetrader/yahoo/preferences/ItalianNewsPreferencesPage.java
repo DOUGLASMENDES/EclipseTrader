@@ -62,7 +62,7 @@ public class ItalianNewsPreferencesPage extends PreferencePage implements IWorkb
         gridData.heightHint = 250;
         table.setLayoutData(gridData);
         TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText("Provider");
+        column.setText(Messages.ItalianNewsPreferencesPage_ProviderColumnName);
 
         IPreferenceStore store = YahooPlugin.getDefault().getPreferenceStore();
 
@@ -70,7 +70,7 @@ public class ItalianNewsPreferencesPage extends PreferencePage implements IWorkb
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("categories.it.xml"), false));
+            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("categories.it.xml"), false)); //$NON-NLS-1$
 
             NodeList childNodes = document.getFirstChild().getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++)
@@ -79,7 +79,7 @@ public class ItalianNewsPreferencesPage extends PreferencePage implements IWorkb
                 String nodeName = node.getNodeName();
                 if (nodeName.equalsIgnoreCase("category")) //$NON-NLS-1$
                 {
-                    String id = ((Node)node).getAttributes().getNamedItem("id").getNodeValue();
+                    String id = ((Node)node).getAttributes().getNamedItem("id").getNodeValue(); //$NON-NLS-1$
                     TableItem tableItem = new TableItem(table, SWT.NONE);
                     NodeList list = node.getChildNodes();
                     for (int x = 0; x < list.getLength(); x++)
@@ -89,7 +89,7 @@ public class ItalianNewsPreferencesPage extends PreferencePage implements IWorkb
                         Node value = item.getFirstChild();
                         if (value != null)
                         {
-                            if (nodeName.equalsIgnoreCase("title"))
+                            if (nodeName.equalsIgnoreCase("title")) //$NON-NLS-1$
                                 tableItem.setText(value.getNodeValue());
                         }
                     }

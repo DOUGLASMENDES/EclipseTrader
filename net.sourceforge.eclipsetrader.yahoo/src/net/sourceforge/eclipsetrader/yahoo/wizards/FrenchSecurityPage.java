@@ -64,7 +64,7 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
                 String nodeName = item.getNodeName();
                 if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
                 {
-                    String code = item.getAttributes().getNamedItem("code").getNodeValue();
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue(); //$NON-NLS-1$
                     String description = item.getFirstChild().getNodeValue();
                     if (CorePlugin.getRepository().getSecurity(code) != null)
                         continue;
@@ -83,9 +83,9 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
 
     public FrenchSecurityPage()
     {
-        super("");
-        setTitle("Security");
-        setDescription("Select one of the available securities");
+        super(""); //$NON-NLS-1$
+        setTitle(Messages.FrenchSecurityPage_Title);
+        setDescription(Messages.FrenchSecurityPage_Description);
         setPageComplete(false);
     }
 
@@ -105,9 +105,9 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
         gridData.heightHint = 250;
         table.setLayoutData(gridData);
         TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-        tableColumn.setText("Code");
+        tableColumn.setText(Messages.FrenchSecurityPage_CodeColumnName);
         tableColumn = new TableColumn(table, SWT.NONE);
-        tableColumn.setText("Description");
+        tableColumn.setText(Messages.FrenchSecurityPage_DescriptionColumnName);
         table.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -116,7 +116,7 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
         });
         
         Label label = new Label(composite, SWT.NONE);
-        label.setText("Search");
+        label.setText(Messages.FrenchSecurityPage_Search);
         label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
         search = new Text(composite, SWT.BORDER);
         search.setLayoutData(new GridData(120, SWT.DEFAULT));
@@ -131,7 +131,7 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
         {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("data/securities_fr.xml"), false));
+            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("data/securities_fr.xml"), false)); //$NON-NLS-1$
 
             Node firstNode = document.getFirstChild();
 
@@ -142,7 +142,7 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
                 String nodeName = item.getNodeName();
                 if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
                 {
-                    String code = item.getAttributes().getNamedItem("code").getNodeValue();
+                    String code = item.getAttributes().getNamedItem("code").getNodeValue(); //$NON-NLS-1$
                     if (CorePlugin.getRepository().getSecurity(code) != null)
                         continue;
                     TableItem tableItem = new TableItem(table, SWT.NONE);
@@ -170,17 +170,17 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
         {
             Node item = (Node) table.getSelection()[i].getData();
             Security security = new Security();
-            security.setCode(item.getAttributes().getNamedItem("code").getNodeValue());
+            security.setCode(item.getAttributes().getNamedItem("code").getNodeValue()); //$NON-NLS-1$
             security.setDescription(item.getFirstChild().getNodeValue());
             security.setCurrency(Currency.getInstance(Locale.FRANCE));
             
             FeedSource feed = new FeedSource();
-            feed.setId("net.sourceforge.eclipsetrader.yahoo");
-            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
+            feed.setId("net.sourceforge.eclipsetrader.yahoo"); //$NON-NLS-1$
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue()); //$NON-NLS-1$
             security.setQuoteFeed(feed);
             feed = new FeedSource();
-            feed.setId("net.sourceforge.eclipsetrader.yahoo");
-            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue());
+            feed.setId("net.sourceforge.eclipsetrader.yahoo"); //$NON-NLS-1$
+            feed.setSymbol(item.getAttributes().getNamedItem("code").getNodeValue()); //$NON-NLS-1$
             security.setHistoryFeed(feed);
 
             list.add(security);

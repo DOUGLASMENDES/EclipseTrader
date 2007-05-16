@@ -17,9 +17,9 @@ import org.osgi.framework.BundleContext;
 
 public class YahooPlugin extends AbstractUIPlugin
 {
-    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.yahoo";
-    public static final String PREFS_SHOW_SUBSCRIBERS_ONLY = "SHOW_SUBSCRIBERS_ONLY";
-    public static final String PREFS_UPDATE_HISTORY = "UPDATE_HISTORY";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.yahoo"; //$NON-NLS-1$
+    public static final String PREFS_SHOW_SUBSCRIBERS_ONLY = "SHOW_SUBSCRIBERS_ONLY"; //$NON-NLS-1$
+    public static final String PREFS_UPDATE_HISTORY = "UPDATE_HISTORY"; //$NON-NLS-1$
     private static YahooPlugin plugin;
 
     /**

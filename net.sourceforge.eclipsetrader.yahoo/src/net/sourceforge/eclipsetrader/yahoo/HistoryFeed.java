@@ -35,8 +35,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 public class HistoryFeed implements IHistoryFeed
 {
-    SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yy", Locale.US);
-    SimpleDateFormat dfAlt = new SimpleDateFormat("yy-MM-dd");
+    SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yy", Locale.US); //$NON-NLS-1$
+    SimpleDateFormat dfAlt = new SimpleDateFormat("yy-MM-dd"); //$NON-NLS-1$
     NumberFormat nf = NumberFormat.getInstance(Locale.US);
     NumberFormat pf = NumberFormat.getInstance(Locale.US);
     private Log log = LogFactory.getLog(getClass());
@@ -68,19 +68,19 @@ public class HistoryFeed implements IHistoryFeed
                 }
             }
 
-            log.info("Updating historical data for " + security.getCode() + " - " + security.getDescription());
+            log.info("Updating historical data for " + security.getCode() + " - " + security.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
 
-            StringBuffer url = new StringBuffer("http://ichart.finance.yahoo.com/table.csv" + "?s=");
+            StringBuffer url = new StringBuffer("http://ichart.finance.yahoo.com/table.csv" + "?s="); //$NON-NLS-1$ //$NON-NLS-2$
             String symbol = null;
             if (security.getHistoryFeed() != null)
                 symbol = security.getHistoryFeed().getSymbol();
             if (symbol == null || symbol.length() == 0)
                 symbol = security.getCode();
             url.append(symbol);
-            url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR));
-            url.append("&g=d");
-            url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR));
-            url.append("&ignore=.csv");
+            url.append("&d=" + to.get(Calendar.MONTH) + "&e=" + to.get(Calendar.DAY_OF_MONTH) + "&f=" + to.get(Calendar.YEAR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            url.append("&g=d"); //$NON-NLS-1$
+            url.append("&a=" + from.get(Calendar.MONTH) + "&b=" + from.get(Calendar.DAY_OF_MONTH) + "&c=" + from.get(Calendar.YEAR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            url.append("&ignore=.csv"); //$NON-NLS-1$
             log.debug(url);
 
             try {
@@ -108,9 +108,9 @@ public class HistoryFeed implements IHistoryFeed
                 while ((inputLine = in.readLine()) != null)
                 {
                     log.trace(inputLine);
-                    if (inputLine.startsWith("<"))
+                    if (inputLine.startsWith("<")) //$NON-NLS-1$
                         continue;
-                    String[] item = inputLine.split(",");
+                    String[] item = inputLine.split(","); //$NON-NLS-1$
                     if (item.length < 6)
                         continue;
 
@@ -153,6 +153,6 @@ public class HistoryFeed implements IHistoryFeed
             CorePlugin.getRepository().save(history);
         }
         else
-            log.warn("Intraday data not supported for " + security.getCode() + " - " + security.getDescription());
+            log.warn("Intraday data not supported for " + security.getCode() + " - " + security.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

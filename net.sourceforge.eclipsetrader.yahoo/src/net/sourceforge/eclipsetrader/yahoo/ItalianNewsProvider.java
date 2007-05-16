@@ -114,7 +114,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
     public void snapshot(Security security)
     {
         try {
-            update(new URL("http://it.finance.yahoo.com/rss/headline?s=" + security.getCode().toUpperCase()), security);
+            update(new URL("http://it.finance.yahoo.com/rss/headline?s=" + security.getCode().toUpperCase()), security); //$NON-NLS-1$
         } catch(Exception e) {
             CorePlugin.logException(e);
         }
@@ -157,7 +157,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
         }
         oldItems.clear();
         
-        Job job = new Job("Yahoo! News (Italy)") {
+        Job job = new Job(Messages.ItalianNewsProvider_JobName) {
             protected IStatus run(IProgressMonitor monitor)
             {
                 IPreferenceStore store = YahooPlugin.getDefault().getPreferenceStore();
@@ -200,8 +200,8 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
                 }
 
                 List securities = CorePlugin.getRepository().allSecurities();
-                monitor.beginTask("Fetching Yahoo! News (Italy)", urls.size() + securities.size());
-                log.info("Start fetching Yahoo! News (Italy)");
+                monitor.beginTask(Messages.ItalianNewsProvider_TaskName, urls.size() + securities.size());
+                log.info("Start fetching Yahoo! News (Italy)"); //$NON-NLS-1$
 
                 for (Iterator iter = securities.iterator(); iter.hasNext(); )
                 {
@@ -244,13 +244,13 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
             log.debug(url);
             Parser parser = new Parser(url);
 
-            NodeList list = parser.extractAllNodesThatMatch(new OrFilter(new TagNameFilter("dt"), new TagNameFilter("li")));
+            NodeList list = parser.extractAllNodesThatMatch(new OrFilter(new TagNameFilter("dt"), new TagNameFilter("li"))); //$NON-NLS-1$ //$NON-NLS-2$
             for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes();)
             {
                 Node root = iter.nextNode();
                 list = root.getChildren();
 
-                if (((TagNode) root).getTagName().equalsIgnoreCase("dt") && list.size() == 12)
+                if (((TagNode) root).getTagName().equalsIgnoreCase("dt") && list.size() == 12) //$NON-NLS-1$
                 {
                     LinkTag link = (LinkTag)list.elementAt(3);
 
@@ -260,22 +260,22 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
                     news.setUrl(link.getLink());
 
                     String source = list.elementAt(9).getText();
-                    source = source.replaceAll("[\r\n]", " ");
-                    source = source.replaceAll("[()]", "");
-                    source = source.replaceAll("[ ]{2,}", " ").trim();
+                    source = source.replaceAll("[\r\n]", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                    source = source.replaceAll("[()]", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    source = source.replaceAll("[ ]{2,}", " ").trim(); //$NON-NLS-1$ //$NON-NLS-2$
                     news.setSource(source);
 
                     news.setDate(parseDateString(root.getNextSibling().getNextSibling().getNextSibling().getChildren().elementAt(1).getText()));
 
                     if (!news.getDate().before(limit.getTime()))
                     {
-                        log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                        log.trace(news.getTitle() + " (" + news.getSource() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                         CorePlugin.getRepository().save(news);
                         oldItems.add(news);
                     }
                     dtCount++;
                 }
-                else if (((TagNode) root).getTagName().equalsIgnoreCase("li") && list.size() == 14)
+                else if (((TagNode) root).getTagName().equalsIgnoreCase("li") && list.size() == 14) //$NON-NLS-1$
                 {
                     LinkTag link = (LinkTag)list.elementAt(1);
 
@@ -285,16 +285,16 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
                     news.setUrl(link.getLink());
 
                     String source = list.elementAt(6).getText();
-                    source = source.replaceAll("[\r\n]", " ");
-                    source = source.replaceAll("[()]", "");
-                    source = source.replaceAll("[ ]{2,}", " ").trim();
+                    source = source.replaceAll("[\r\n]", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                    source = source.replaceAll("[()]", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    source = source.replaceAll("[ ]{2,}", " ").trim(); //$NON-NLS-1$ //$NON-NLS-2$
                     news.setSource(source);
 
                     news.setDate(parseDateString(list.elementAt(10).getText()));
 
                     if (!news.getDate().before(limit.getTime()))
                     {
-                        log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                        log.trace(news.getTitle() + " (" + news.getSource() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                         CorePlugin.getRepository().save(news);
                         oldItems.add(news);
                     }
@@ -303,9 +303,9 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
             }
             
             if (dtCount == 0 && liCount == 0)
-                log.warn("No news found on that page (" + url + ")");
+                log.warn("No news found on that page (" + url + ")"); //$NON-NLS-1$ //$NON-NLS-2$
             else if (dtCount == 0 || liCount == 0)
-                log.warn("Page not completely parsed (" + url + ")");
+                log.warn("Page not completely parsed (" + url + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         catch (Exception e) {
             log.error(e, e);
@@ -337,14 +337,14 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
             {
                 SyndEntry entry = (SyndEntry) iter.next();
                 
-                if (!subscribersOnly && entry.getTitle().indexOf("[$$]") != -1)
+                if (!subscribersOnly && entry.getTitle().indexOf("[$$]") != -1) //$NON-NLS-1$
                     continue;
                 
                 NewsItem news = new NewsItem();
                 news.setRecent(true);
 
                 String title = entry.getTitle();
-                if (title.endsWith(")"))
+                if (title.endsWith(")")) //$NON-NLS-1$
                 {
                     int s = title.lastIndexOf('(');
                     if (s != -1)
@@ -374,7 +374,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
                 if (!news.getDate().before(limit.getTime()) && !isDuplicated(news))
                 {
-                    log.trace(news.getTitle() + " (" + news.getSource() + ")");
+                    log.trace(news.getTitle() + " (" + news.getSource() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                     CorePlugin.getRepository().save(news);
                     oldItems.add(news);
                 }
@@ -387,7 +387,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
     private Date parseDateString(String date)
     {
         Calendar gc = Calendar.getInstance(Locale.ITALY);
-        StringTokenizer st = new StringTokenizer(date, " ,:");
+        StringTokenizer st = new StringTokenizer(date, " ,:"); //$NON-NLS-1$
         st.nextToken();
         Integer vint = new Integer(st.nextToken());
         gc.set(Calendar.DAY_OF_MONTH, vint.intValue());
@@ -405,29 +405,29 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
 
     private int getMonth(String t)
     {
-        if (t.equalsIgnoreCase("Gennaio") == true)
+        if (t.equalsIgnoreCase("Gennaio") == true) //$NON-NLS-1$
             return 1;
-        if (t.equalsIgnoreCase("Febbraio") == true)
+        if (t.equalsIgnoreCase("Febbraio") == true) //$NON-NLS-1$
             return 2;
-        if (t.equalsIgnoreCase("Marzo") == true)
+        if (t.equalsIgnoreCase("Marzo") == true) //$NON-NLS-1$
             return 3;
-        if (t.equalsIgnoreCase("Aprile") == true)
+        if (t.equalsIgnoreCase("Aprile") == true) //$NON-NLS-1$
             return 4;
-        if (t.equalsIgnoreCase("Maggio") == true)
+        if (t.equalsIgnoreCase("Maggio") == true) //$NON-NLS-1$
             return 5;
-        if (t.equalsIgnoreCase("Giugno") == true)
+        if (t.equalsIgnoreCase("Giugno") == true) //$NON-NLS-1$
             return 6;
-        if (t.equalsIgnoreCase("Luglio") == true)
+        if (t.equalsIgnoreCase("Luglio") == true) //$NON-NLS-1$
             return 7;
-        if (t.equalsIgnoreCase("Agosto") == true)
+        if (t.equalsIgnoreCase("Agosto") == true) //$NON-NLS-1$
             return 8;
-        if (t.equalsIgnoreCase("Settembre") == true)
+        if (t.equalsIgnoreCase("Settembre") == true) //$NON-NLS-1$
             return 9;
-        if (t.equalsIgnoreCase("Ottobre") == true)
+        if (t.equalsIgnoreCase("Ottobre") == true) //$NON-NLS-1$
             return 10;
-        if (t.equalsIgnoreCase("Novembre") == true)
+        if (t.equalsIgnoreCase("Novembre") == true) //$NON-NLS-1$
             return 11;
-        if (t.equalsIgnoreCase("Dicembre") == true)
+        if (t.equalsIgnoreCase("Dicembre") == true) //$NON-NLS-1$
             return 12;
 
         return 0;
@@ -435,7 +435,7 @@ public class ItalianNewsProvider implements Runnable, INewsProvider
     
     private String decode(String s)
     {
-        if (s.indexOf("&#") == -1)
+        if (s.indexOf("&#") == -1) //$NON-NLS-1$
             return s;
         
         int i = 0;

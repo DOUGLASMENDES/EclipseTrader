@@ -36,7 +36,7 @@ public class SecurityWizard extends Wizard
 
     public void open()
     {
-        setWindowTitle("U.S. Security Wizard");
+        setWindowTitle(Messages.SecurityWizard_WizardTitle);
 
         securityPage = new SecurityPage();
         addPage(securityPage);
@@ -48,7 +48,7 @@ public class SecurityWizard extends Wizard
 
     public void openGerman()
     {
-        setWindowTitle("German Security Wizard");
+        setWindowTitle(Messages.SecurityWizard_GermanWizardTitle);
 
         securityPage = new GermanSecurityPage();
         addPage(securityPage);
@@ -60,7 +60,7 @@ public class SecurityWizard extends Wizard
 
     public void openFrance()
     {
-        setWindowTitle("France Security Wizard");
+        setWindowTitle(Messages.SecurityWizard_FranceWizardTitle);
 
         securityPage = new FrenchSecurityPage();
         addPage(securityPage);
@@ -72,7 +72,7 @@ public class SecurityWizard extends Wizard
 
     public void openIndices()
     {
-        setWindowTitle("Indices Wizard");
+        setWindowTitle(Messages.SecurityWizard_IndexWizardTitle);
 
         securityPage = new IndicesPage();
         addPage(securityPage);
@@ -84,14 +84,14 @@ public class SecurityWizard extends Wizard
     
     private void addIntradayOptionsPage()
     {
-        WizardPage page = new WizardPage("") {
+        WizardPage page = new WizardPage("") { //$NON-NLS-1$
             public void createControl(Composite parent)
             {
                 setControl(options.createControls(parent, null));
             }
         };
-        page.setTitle("Intraday Charts");
-        page.setDescription("Set the options to automatically build intraday charts");
+        page.setTitle(Messages.SecurityWizard_IntradayChartsTitle);
+        page.setDescription(Messages.SecurityWizard_IntradayChartsDescription);
         addPage(page);
     }
     
