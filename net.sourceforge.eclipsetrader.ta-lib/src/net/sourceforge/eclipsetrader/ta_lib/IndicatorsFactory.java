@@ -32,7 +32,7 @@ public class IndicatorsFactory implements IExecutableExtension, IExecutableExten
     public Object create() throws CoreException
     {
         try {
-            Factory factory = (Factory) Class.forName(TALibPlugin.PLUGIN_ID + ".indicators." + id).newInstance();
+            Factory factory = (Factory) Class.forName(TALibPlugin.PLUGIN_ID + ".indicators." + id).newInstance(); //$NON-NLS-1$
             return factory.createIndicator();
         } catch(Exception e) {
         }

@@ -21,7 +21,7 @@ import com.tictactec.ta.lib.Core;
  */
 public class TALibPlugin extends AbstractUIPlugin
 {
-    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.ta_lib";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.ta_lib"; //$NON-NLS-1$
     private static TALibPlugin plugin;
     private static Core core;
 

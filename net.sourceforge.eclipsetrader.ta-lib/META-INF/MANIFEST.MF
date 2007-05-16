@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: TA-Lib
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.ta_lib;singleton:=true
 Bundle-Version: 0.3.0.M20070325
 Bundle-Activator: net.sourceforge.eclipsetrader.ta_lib.TALibPlugin
@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.ui,
  net.sourceforge.eclipsetrader.core,
  net.sourceforge.eclipsetrader.charts
 Eclipse-LazyStart: true
-Bundle-Vendor: Sourceforge.net
+Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: plugin.jar,
  lib/ta-lib-0.3.0.jar
