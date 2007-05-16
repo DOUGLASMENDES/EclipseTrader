@@ -568,6 +568,40 @@ public class XMLRepository extends Repository
                 obj.setId(chartsNextId);
                 chartsNextId = getNextId(chartsNextId);
             }
+            
+            Chart chart = (Chart)obj;
+            for (int r = 0; r < chart.getRows().size(); r++)
+            {
+                ChartRow row = (ChartRow)chart.getRows().get(r);
+                row.setId(new Integer(r));
+                row.setParent(chart);
+                row.setRepository(this);
+
+                for (int t = 0; t < row.getTabs().size(); t++)
+                {
+                    ChartTab tab = (ChartTab)row.getTabs().get(t);
+                    tab.setId(new Integer(t));
+                    tab.setParent(row);
+                    tab.setRepository(this);
+
+                    for (int i = 0; i < tab.getIndicators().size(); i++)
+                    {
+                        ChartIndicator indicator = (ChartIndicator)tab.getIndicators().get(i);
+                        indicator.setId(new Integer(i));
+                        indicator.setParent(tab);
+                        indicator.setRepository(this);
+                    }
+
+                    for (int i = 0; i < tab.getObjects().size(); i++)
+                    {
+                        ChartObject object = (ChartObject)tab.getObjects().get(i);
+                        object.setId(new Integer(i));
+                        object.setParent(tab);
+                        object.setRepository(this);
+                    }
+                }
+            }
+            
             chartsMap.put(obj.getId(), obj);
         }
         else if (obj instanceof Watchlist)
