@@ -23,7 +23,6 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
 import net.sourceforge.eclipsetrader.directaworld.DirectaWorldPlugin;
-import net.sourceforge.eclipsetrader.directaworld.Messages;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;

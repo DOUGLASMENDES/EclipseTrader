@@ -16,7 +16,6 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
-import net.sourceforge.eclipsetrader.directaworld.Messages;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;

@@ -17,9 +17,9 @@ import org.osgi.framework.BundleContext;
 
 public class DirectaWorldPlugin extends AbstractUIPlugin
 {
-    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.directaworld";
-    public static final String USERNAME_PREFS = "USERNAME";
-    public static final String PASSWORD_PREFS = "PASSWORD";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.directaworld"; //$NON-NLS-1$
+    public static final String USERNAME_PREFS = "USERNAME"; //$NON-NLS-1$
+    public static final String PASSWORD_PREFS = "PASSWORD"; //$NON-NLS-1$
     private static DirectaWorldPlugin plugin;
 
     public DirectaWorldPlugin()
