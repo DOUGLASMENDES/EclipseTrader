@@ -214,7 +214,7 @@ public class TestRunnerView extends ViewPart
             if (first != -1 && last != -1)
             {
                 original = new History();
-                original.addAll(original.getList().subList(first, last));
+                original.addAll(system.getSecurity().getHistory().getList().subList(first, last));
             }
 
             // Create a fake subclass of the security item that returns our history data
