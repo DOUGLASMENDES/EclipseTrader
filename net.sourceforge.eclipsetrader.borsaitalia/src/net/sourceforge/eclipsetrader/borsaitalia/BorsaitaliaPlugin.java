@@ -49,6 +49,6 @@ public class BorsaitaliaPlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipsetrader.borsaitalia", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipsetrader.borsaitalia", path); //$NON-NLS-1$
 	}
 }

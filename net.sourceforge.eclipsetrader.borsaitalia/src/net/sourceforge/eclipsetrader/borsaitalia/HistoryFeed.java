@@ -33,8 +33,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 public class HistoryFeed implements IHistoryFeed
 {
-    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.borsaitalia";
-    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.borsaitalia"; //$NON-NLS-1$
+    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); //$NON-NLS-1$
     private Log log = LogFactory.getLog(getClass());
 
     public HistoryFeed()
@@ -56,7 +56,7 @@ public class HistoryFeed implements IHistoryFeed
             from.set(Calendar.HOUR_OF_DAY, 0);
             from.set(Calendar.MINUTE, 0);
             from.set(Calendar.SECOND, 0);
-            log.info("Updating intraday data for " + security.getCode() + " - " + security.getDescription());
+            log.info("Updating intraday data for " + security.getCode() + " - " + security.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
         }
         else
         {
@@ -69,7 +69,7 @@ public class HistoryFeed implements IHistoryFeed
                 from.setTime(cd.getDate());
                 from.add(Calendar.DATE, 1);
             }
-            log.info("Updating historical data for " + security.getCode() + " - " + security.getDescription());
+            log.info("Updating historical data for " + security.getCode() + " - " + security.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         String symbol = null;
@@ -79,13 +79,13 @@ public class HistoryFeed implements IHistoryFeed
             symbol = security.getCode();
 
         try {
-            StringBuffer url = new StringBuffer("http://grafici.borsaitalia.it/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=&codneb=" + symbol + "&req_type=GRAF_DS&ascii=1&form_id=");
+            StringBuffer url = new StringBuffer("http://grafici.borsaitalia.it/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=&codneb=" + symbol + "&req_type=GRAF_DS&ascii=1&form_id="); //$NON-NLS-1$ //$NON-NLS-2$
             if (interval < IHistoryFeed.INTERVAL_DAILY)
-                url.append("&period=1MIN");
+                url.append("&period=1MIN"); //$NON-NLS-1$
             else
             {
-                url.append("&period=1DAY");
-                url.append("&From=" + df.format(from.getTime()));
+                url.append("&period=1DAY"); //$NON-NLS-1$
+                url.append("&From=" + df.format(from.getTime())); //$NON-NLS-1$
             }
             log.debug(url);
 
@@ -113,9 +113,9 @@ public class HistoryFeed implements IHistoryFeed
             while ((inputLine = in.readLine()) != null)
             {
                 log.trace(inputLine);
-                if (inputLine.startsWith("@") == true || inputLine.length() == 0)
+                if (inputLine.startsWith("@") == true || inputLine.length() == 0) //$NON-NLS-1$
                     continue;
-                String[] item = inputLine.split("\\|");
+                String[] item = inputLine.split("\\|"); //$NON-NLS-1$
 
                 Bar bar = new Bar();
                 bar.setDate(df.parse(item[0]));

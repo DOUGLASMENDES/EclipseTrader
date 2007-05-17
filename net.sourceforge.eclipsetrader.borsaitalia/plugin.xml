@@ -4,8 +4,8 @@
    <extension
          point="net.sourceforge.eclipsetrader.core.feeds">
       <feed
-            id="net.sourceforge.eclipsetrader.borsaitalia"
-            name="Borsa Italiana">
+            id="%feed.id"
+            name="%feed.name">
          <history class="net.sourceforge.eclipsetrader.borsaitalia.HistoryFeed"/>
       </feed>
    </extension>
