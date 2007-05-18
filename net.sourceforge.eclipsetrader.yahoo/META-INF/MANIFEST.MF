@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.yahoo; singleton:=true
-Bundle-Version: 0.29.0
+Bundle-Version: 0.30.0
 Bundle-Activator: net.sourceforge.eclipsetrader.yahoo.YahooPlugin
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin

@@ -2,12 +2,22 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Application
 Bundle-SymbolicName: net.sourceforge.eclipsetrader; singleton:=true
-Bundle-Version: 0.29.0
+Bundle-Version: 0.30.0
 Bundle-Activator: net.sourceforge.eclipsetrader.EclipseTraderPlugin
 Bundle-Vendor: EclipseTrader
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.update.ui,
- net.sourceforge.eclipsetrader.core
+ net.sourceforge.eclipsetrader.core,
+ net.sourceforge.eclipsetrader.charts,
+ net.sourceforge.eclipsetrader.help;resolution:=optional,
+ net.sourceforge.eclipsetrader.news,
+ net.sourceforge.eclipsetrader.trading,
+ net.sourceforge.eclipsetrader.archipelago;resolution:=optional,
+ net.sourceforge.eclipsetrader.borsaitalia;resolution:=optional,
+ net.sourceforge.eclipsetrader.directaworld;resolution:=optional,
+ net.sourceforge.eclipsetrader.yahoo;resolution:=optional,
+ net.sourceforge.eclipsetrader.opentick;resolution:=optional,
+ net.sourceforge.eclipsetrader.ta_lib;resolution:=optional
 Eclipse-LazyStart: true
