@@ -10,44 +10,63 @@
  */
 package net.sourceforge.eclipsetrader;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
-public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor
-{
+public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.application.WorkbenchAdvisor#initialize(org.eclipse.ui.application.IWorkbenchConfigurer)
-     */
-    public void initialize(IWorkbenchConfigurer configurer)
-    {
-        configurer.setSaveAndRestore(true);
-        super.initialize(configurer);
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.application.WorkbenchAdvisor#initialize(org.eclipse.ui.application.IWorkbenchConfigurer)
+	 */
+	public void initialize(IWorkbenchConfigurer configurer) {
+		configurer.setSaveAndRestore(true);
+		super.initialize(configurer);
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.application.WorkbenchAdvisor#createWorkbenchWindowAdvisor(org.eclipse.ui.application.IWorkbenchWindowConfigurer)
-     */
-    public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer)
-    {
-        return new ApplicationWorkbenchWindowAdvisor(configurer);
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.application.WorkbenchAdvisor#createWorkbenchWindowAdvisor(org.eclipse.ui.application.IWorkbenchWindowConfigurer)
+	 */
+	public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
+		return new ApplicationWorkbenchWindowAdvisor(configurer);
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.application.WorkbenchAdvisor#getInitialWindowPerspectiveId()
-     */
-    public String getInitialWindowPerspectiveId()
-    {
-        return null;
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.application.WorkbenchAdvisor#getInitialWindowPerspectiveId()
+	 */
+	public String getInitialWindowPerspectiveId() {
+		return null;
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.application.WorkbenchAdvisor#getMainPreferencePageId()
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.application.WorkbenchAdvisor#getMainPreferencePageId()
+	 */
+	public String getMainPreferencePageId() {
+		return "net.sourceforge.eclipsetrader";
+	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.application.WorkbenchAdvisor#eventLoopException(java.lang.Throwable)
      */
-    public String getMainPreferencePageId()
-    {
-      return "net.sourceforge.eclipsetrader";
+    public void eventLoopException(Throwable exception) {
+        if (exception instanceof OutOfMemoryError) {
+			try {
+				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				MessageDialog.openError(shell, shell.getText(), "An unexpected error " + exception.toString() + ". The program will be closed.");
+
+				if (!PlatformUI.getWorkbench().close())
+					System.exit(0);
+			} catch (Throwable t) {
+				System.exit(0);
+			}
+		} else {
+			super.eventLoopException(exception);
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			MessageDialog.openError(shell, shell.getText(), "An unexpected error " + exception.toString() + " occured, please check the log file.");
+		}
     }
 }
