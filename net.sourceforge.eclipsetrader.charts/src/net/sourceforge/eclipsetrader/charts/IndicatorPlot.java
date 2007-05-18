@@ -377,10 +377,31 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                         }
                         case PlotLine.HORIZONTAL:
                             break;
-                        case PlotLine.HISTOGRAM:
+                        case PlotLine.HISTOGRAM: {
+                            int ofs = barData.size() - plotLine.getSize();
+							int x = getMarginWidth() + getGridWidth() / 2 + ofs * getGridWidth();
+							int[] pointArray = new int[plotLine.getSize() * 2];
+							for (int i = 0, pa = 0; i < plotLine.getSize(); i++, x += getGridWidth()) {
+								pointArray[pa++] = x;
+								pointArray[pa++] = indicatorScaler.convertToY(plotLine.getData(i));
+							}
+							if (PixelTools.isPointOnLine(point.x, point.y, pointArray))
+								selection.add(indicator);
                             break;
-                        case PlotLine.HISTOGRAM_BAR:
+                        }
+                        case PlotLine.HISTOGRAM_BAR: {
+                            int zero = scaler.convertToY(0);
+							int ofs = barData.size() - plotLine.getSize();
+							int x = getMarginWidth() + getGridWidth() / 2 + ofs * getGridWidth();
+							for (int i = 0; i < plotLine.getSize(); i++, x += getGridWidth()) {
+								int y = scaler.convertToY(plotLine.getData(i));
+								if (point.x >= (x - 1) && point.x <= (x + 1) && point.y >= Math.min(y, zero) && point.y <= Math.max(y, zero)) {
+									selection.add(indicator);
+									break;
+								}
+							}
                             break;
+                        }
                         case PlotLine.BAR:
                         case PlotLine.CANDLE:
                         {
@@ -614,10 +635,10 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
                     switch(plotLine.getType())
                     {
                         case PlotLine.HISTOGRAM:
-                            drawHistogram(gc, plotLine, indicatorScaler);
+                            drawHistogram(gc, plotLine, indicatorScaler, selection == indicator);
                             break;
                         case PlotLine.HISTOGRAM_BAR:
-                            drawHistogramBars(gc, plotLine, indicatorScaler);
+                            drawHistogramBars(gc, plotLine, indicatorScaler, selection == indicator);
                             break;
                         case PlotLine.BAR:
                             drawBars(gc, plotLine, indicatorScaler, selection == indicator);
@@ -905,7 +926,7 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
         }
     }
 
-    private void drawHistogram(GC gc, PlotLine plotLine, Scaler scaler)
+    private void drawHistogram(GC gc, PlotLine plotLine, Scaler scaler, boolean selected)
     {
         gc.setLineStyle(SWT.LINE_SOLID);
         gc.setBackground(plotLine.getColor());
@@ -935,9 +956,36 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             x = x2;
             y = y2;
         }
+
+        // Draw the selection marks
+        if (selected && plotLine.getSize() > 0)
+        {
+            ofs = barData.size() - plotLine.getSize();
+            x = getMarginWidth() + getGridWidth() / 2 + ofs * getGridWidth();
+            pointArray = new int[plotLine.getSize() * 2];
+            for (int i = 0, pa = 0; i < plotLine.getSize(); i++, x += getGridWidth())
+            {
+                pointArray[pa++] = x;
+                pointArray[pa++] = scaler.convertToY(plotLine.getData(i));
+            }
+
+        	gc.setBackground(plotLine.getColor());
+            int length = pointArray.length / 2;
+            if (length <= 20)
+            {
+                gc.fillRectangle(pointArray[0] - 2, pointArray[1] - 2, 5, 5);
+                gc.fillRectangle(pointArray[(length / 2) * 2] - 2, pointArray[(length / 2) * 2 + 1] - 2, 5, 5);
+            }
+            else
+            {
+                for (int i = 0; i < length - 5; i += 10)
+                    gc.fillRectangle(pointArray[i * 2] - 2, pointArray[i * 2 + 1] - 2, 5, 5);
+            }
+            gc.fillRectangle(pointArray[pointArray.length - 2] - 2, pointArray[pointArray.length - 2] - 1, 5, 5);
+        }
     }
 
-    private void drawHistogramBars(GC gc, PlotLine plotLine, Scaler scaler)
+    private void drawHistogramBars(GC gc, PlotLine plotLine, Scaler scaler, boolean selected)
     {
         gc.setLineStyle(SWT.LINE_SOLID);
 
@@ -954,6 +1002,33 @@ public class IndicatorPlot extends Canvas implements ControlListener, DisposeLis
             gc.setBackground(color);
 
             gc.fillRectangle(x - 1, y, 3, zero - y);
+        }
+
+        // Draw the selection marks
+        if (selected && plotLine.getSize() > 0)
+        {
+            ofs = barData.size() - plotLine.getSize();
+            x = getMarginWidth() + getGridWidth() / 2 + ofs * getGridWidth();
+            int[] pointArray = new int[plotLine.getSize() * 2];
+            for (int i = 0, pa = 0; i < plotLine.getSize(); i++, x += getGridWidth())
+            {
+                pointArray[pa++] = x;
+                pointArray[pa++] = scaler.convertToY(plotLine.getData(i));
+            }
+
+        	gc.setBackground(plotLine.getColor());
+            int length = pointArray.length / 2;
+            if (length <= 20)
+            {
+                gc.fillRectangle(pointArray[0] - 2, pointArray[1] - 2, 5, 5);
+                gc.fillRectangle(pointArray[(length / 2) * 2] - 2, pointArray[(length / 2) * 2 + 1] - 2, 5, 5);
+            }
+            else
+            {
+                for (int i = 0; i < length - 5; i += 10)
+                    gc.fillRectangle(pointArray[i * 2] - 2, pointArray[i * 2 + 1] - 2, 5, 5);
+            }
+            gc.fillRectangle(pointArray[pointArray.length - 2] - 2, pointArray[pointArray.length - 2] - 1, 5, 5);
         }
     }
     
