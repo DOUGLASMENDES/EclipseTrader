@@ -374,7 +374,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 {
                     if (!sashForm.isDisposed())
                     {
-                        setPartName(chart.getTitle());
+                        setPartName(chart.getTitle() + ": " + security.getDescription());
+                        updateTitleTooltip();
                         sashForm.getDisplay().timerExec(200, updateViewRunnable);
                     }
                 }
@@ -524,7 +525,6 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             {
                 followSelection = toggleFollowSelectionAction.isChecked();
                 preferences.setValue(PREFS_FOLLOW_SELECTION, followSelection);
-                setContentDescription(followSelection ? security.getDescription() : "");
             }
         };
         menuManager.appendToGroup("group3", toggleFollowSelectionAction); //$NON-NLS-1$
@@ -648,15 +648,14 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         }
         
         security = chart.getSecurity();
-        setPartName(chart.getTitle());
-        setTitleToolTip(security.getDescription());
+        setPartName(chart.getTitle() + ": " + security.getDescription());
+        updateTitleTooltip();
 
         autoScale = chart.isAutoScale();
         followSelection = preferences.getBoolean(PREFS_FOLLOW_SELECTION);
         showAdjustedValues = preferences.getBoolean(PREFS_SHOW_ADJUSTED_VALUES);
         showMarketValue = preferences.getBoolean(PREFS_SHOW_MARKETVALUE);
         updateActionBars();
-        setContentDescription(followSelection ? security.getDescription() : "");
 
         IPreferenceStore pluginPreferences = ChartsPlugin.getDefault().getPreferenceStore();
         datePlot.setExtendPeriod(pluginPreferences.getInt(ChartsPlugin.PREFS_EXTEND_PERIOD));
@@ -1009,8 +1008,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             }
             
             security = newSecurity;
-            setTitleToolTip(newSecurity.getDescription());
-            setContentDescription(followSelection ? security.getDescription() : "");
+            setPartName(chart.getTitle() + ": " + security.getDescription());
+            updateTitleTooltip();
 
             chart.setSecurity(newSecurity);
             for(Iterator iter1 = chart.getRows().iterator(); iter1.hasNext(); )
@@ -1205,7 +1204,8 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             {
                 if (!sashForm.isDisposed())
                 {
-                    setPartName(chart.getTitle());
+                    setPartName(chart.getTitle() + ": " + security.getDescription());
+                    updateTitleTooltip();
                     updateActionBars();
                     updateView();
                 }
@@ -1457,6 +1457,29 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                 setSecurity(((SecuritySelection) selection).getSecurity());
         }
     }
+    
+    /**
+     * Updates the tooltip with the list of all partecipating securities.
+     */
+    protected void updateTitleTooltip() {
+		final StringBuffer text = new StringBuffer();
+		chart.accept(new ChartVisitorAdapter() {
+			public void visit(Chart chart) {
+				text.append(chart.getSecurity().getDescription());
+			}
+
+			public void visit(ChartIndicator indicator) {
+				String securityId = (String) indicator.getParameters().get("securityId");
+				if (securityId != null) {
+					Security security = (Security) CorePlugin.getRepository().load(Security.class, new Integer(securityId));
+					if (security != null)
+						text.append(", " + security.getDescription());
+				}
+			}
+		});
+		
+		setTitleToolTip(text.toString());
+	}
 
     public class ChartTabFolder extends CTabFolder implements ICollectionObserver, IPropertyChangeListener
     {
