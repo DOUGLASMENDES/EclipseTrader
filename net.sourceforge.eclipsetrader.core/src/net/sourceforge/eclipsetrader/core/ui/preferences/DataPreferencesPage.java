@@ -13,7 +13,6 @@
 package net.sourceforge.eclipsetrader.core.ui.preferences;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -68,10 +67,10 @@ public class DataPreferencesPage extends PreferencePage implements IWorkbenchPre
         securityHistoryRange.setToolTipText(Messages.DataPreferencesPage_HistoryRangeTooltip);
         securityHistoryRange.setSelection(preferences.getInt(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE));
         label = new Label(content, SWT.NONE);
-        label.setText("years");
+        label.setText(Messages.DataPreferencesPage_Years);
         
         deleteCanceledOrders = new Button(content, SWT.CHECK);
-        deleteCanceledOrders.setText("Delete canceled orders after");
+        deleteCanceledOrders.setText(Messages.DataPreferencesPage_DeleteCanceledOrders);
         deleteCanceledOrders.setSelection(preferences.getBoolean(CorePlugin.PREFS_DELETE_CANCELED_ORDERS));
         deleteCanceledOrders.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -86,10 +85,10 @@ public class DataPreferencesPage extends PreferencePage implements IWorkbenchPre
         canceledOrdersDays.setSelection(preferences.getInt(CorePlugin.PREFS_DELETE_CANCELED_ORDERS_DAYS));
         canceledOrdersDays.setEnabled(deleteCanceledOrders.getSelection());
         label = new Label(content, SWT.NONE);
-        label.setText("days");
+        label.setText(Messages.DataPreferencesPage_Days);
         
         deleteFilledOrders = new Button(content, SWT.CHECK);
-        deleteFilledOrders.setText("Delete filled orders after");
+        deleteFilledOrders.setText(Messages.DataPreferencesPage_DeleteFilledOrders);
         deleteFilledOrders.setSelection(preferences.getBoolean(CorePlugin.PREFS_DELETE_FILLED_ORDERS));
         deleteFilledOrders.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
@@ -104,7 +103,7 @@ public class DataPreferencesPage extends PreferencePage implements IWorkbenchPre
         filledOrdersDays.setSelection(preferences.getInt(CorePlugin.PREFS_DELETE_FILLED_ORDERS_DAYS));
         filledOrdersDays.setEnabled(deleteFilledOrders.getSelection());
         label = new Label(content, SWT.NONE);
-        label.setText("days");
+        label.setText(Messages.DataPreferencesPage_Days);
         
         return content;
     }

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.dialogs.Dialog;

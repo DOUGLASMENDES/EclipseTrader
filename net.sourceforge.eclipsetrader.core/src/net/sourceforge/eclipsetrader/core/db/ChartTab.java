@@ -19,7 +19,7 @@ import net.sourceforge.eclipsetrader.core.db.visitors.IChartVisitor;
 public class ChartTab extends PersistentObject
 {
     private ChartRow parent;
-    private String label = "";
+    private String label = ""; //$NON-NLS-1$
     private ObservableList indicators = new ObservableList();
     private ObservableList objects = new ObservableList();
 

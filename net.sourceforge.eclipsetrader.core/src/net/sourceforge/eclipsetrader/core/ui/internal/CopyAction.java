@@ -29,7 +29,7 @@ public class CopyAction extends Action
     public CopyAction(SecuritiesView view)
     {
         this.view = view;
-        setText("&Copy");
+        setText(Messages.CopyAction_Text);
         ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
         setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
         setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));

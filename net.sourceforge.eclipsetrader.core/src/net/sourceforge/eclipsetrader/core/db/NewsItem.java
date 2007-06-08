@@ -23,9 +23,9 @@ import java.util.List;
 public class NewsItem extends PersistentObject
 {
     Date date = Calendar.getInstance().getTime();
-    String title = "";
-    String source = "";
-    String url = "";
+    String title = ""; //$NON-NLS-1$
+    String source = ""; //$NON-NLS-1$
+    String url = ""; //$NON-NLS-1$
     List securities = new ArrayList();
     boolean recent = false;
     boolean readed = false;

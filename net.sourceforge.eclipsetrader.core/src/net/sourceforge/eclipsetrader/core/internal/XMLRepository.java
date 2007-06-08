@@ -129,7 +129,7 @@ public class XMLRepository extends Repository
         File file = new File(Platform.getLocation().toFile(), "securities.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            log.info("Loading securities");
+            log.info("Loading securities"); //$NON-NLS-1$
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -139,7 +139,7 @@ public class XMLRepository extends Repository
 
                 Node firstNode = document.getFirstChild();
                 securitiesNextId = new Integer(firstNode.getAttributes().getNamedItem("nextId").getNodeValue()); //$NON-NLS-1$
-                if (firstNode.getAttributes().getNamedItem("nextGroupId") != null)
+                if (firstNode.getAttributes().getNamedItem("nextGroupId") != null) //$NON-NLS-1$
                     securitiesGroupNextId = new Integer(firstNode.getAttributes().getNamedItem("nextGroupId").getNodeValue()); //$NON-NLS-1$
 
                 NodeList childNodes = firstNode.getChildNodes();
@@ -169,7 +169,7 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "watchlists.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            log.info("Loading watchlists");
+            log.info("Loading watchlists"); //$NON-NLS-1$
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -201,7 +201,7 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "charts.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            log.info("Loading charts");
+            log.info("Loading charts"); //$NON-NLS-1$
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -237,7 +237,7 @@ public class XMLRepository extends Repository
         for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
         {
             Security security = (Security)iter.next();
-            file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(security.getId()) + ".xml");
+            file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(security.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
             if (file.exists())
             {
                 Chart obj = loadChart(security.getId());
@@ -259,7 +259,7 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "news.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            log.info("Loading news");
+            log.info("Loading news"); //$NON-NLS-1$
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -295,7 +295,7 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "accounts.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            log.info("Loading accounts");
+            log.info("Loading accounts"); //$NON-NLS-1$
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -331,7 +331,7 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "events.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            log.info("Loading events");
+            log.info("Loading events"); //$NON-NLS-1$
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -361,7 +361,7 @@ public class XMLRepository extends Repository
         file = new File(Platform.getLocation().toFile(), "orders.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
-            log.info("Loading orders");
+            log.info("Loading orders"); //$NON-NLS-1$
             try
             {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -442,10 +442,10 @@ public class XMLRepository extends Repository
         for (Iterator iter = allSecurities().iterator(); iter.hasNext(); )
         {
             Security security = (Security)iter.next();
-            file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(security.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+            file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(security.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
             if (file.exists() == true)
                 file.delete();
-            file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(security.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+            file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(security.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
             if (file.exists() == true)
                 file.delete();
         }
@@ -659,13 +659,13 @@ public class XMLRepository extends Repository
             securitiesMap.remove(obj.getId());
             historyMap.remove(obj.getId());
             intradayHistoryMap.remove(obj.getId());
-            File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+            File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
-            file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+            file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
-            file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+            file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
         }
@@ -674,14 +674,14 @@ public class XMLRepository extends Repository
             if (obj instanceof IntradayHistory)
             {
                 intradayHistoryMap.remove(obj.getId());
-                File file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+                File file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
                 if (file.exists())
                     file.delete();
             }
             else
             {
                 historyMap.remove(obj.getId());
-                File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+                File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
                 if (file.exists())
                     file.delete();
             }
@@ -730,7 +730,7 @@ public class XMLRepository extends Repository
     {
         History barData = new History(id);
         
-        File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(id) + ".xml"); //$NON-NLS-1$  $NON-NLS-2$
+        File file = new File(Platform.getLocation().toFile(), "history/" + String.valueOf(id) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
         if (file.exists() == true)
         {
             try
@@ -754,7 +754,7 @@ public class XMLRepository extends Repository
     {
         IntradayHistory barData = new IntradayHistory(id);
         
-        File file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(id) + ".xml");
+        File file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(id) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
         if (file.exists() == true)
         {
             try
@@ -794,17 +794,17 @@ public class XMLRepository extends Repository
                     if (value != null)
                     {
                         String nodeName = item.getNodeName();
-                        if (nodeName.equalsIgnoreCase("open") == true)
+                        if (nodeName.equalsIgnoreCase("open") == true) //$NON-NLS-1$
                             bar.setOpen(Double.parseDouble(value.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("high") == true)
+                        else if (nodeName.equalsIgnoreCase("high") == true) //$NON-NLS-1$
                             bar.setHigh(Double.parseDouble(value.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("low") == true)
+                        else if (nodeName.equalsIgnoreCase("low") == true) //$NON-NLS-1$
                             bar.setLow(Double.parseDouble(value.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("close") == true)
+                        else if (nodeName.equalsIgnoreCase("close") == true) //$NON-NLS-1$
                             bar.setClose(Double.parseDouble(value.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("volume") == true)
+                        else if (nodeName.equalsIgnoreCase("volume") == true) //$NON-NLS-1$
                             bar.setVolume(Long.parseLong(value.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("date") == true)
+                        else if (nodeName.equalsIgnoreCase("date") == true) //$NON-NLS-1$
                         {
                             try {
                                 bar.setDate(dateTimeFormat.parse(value.getNodeValue()));
@@ -826,15 +826,15 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "history", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "history", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
             encodeBarData(list.getList(), root, document);
 
             if (list instanceof IntradayHistory)
-                saveDocument(document, "intraday", String.valueOf(list.getId()) + ".xml");
+                saveDocument(document, "intraday", String.valueOf(list.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
             else
-                saveDocument(document, "history", String.valueOf(list.getId()) + ".xml");
+                saveDocument(document, "history", String.valueOf(list.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -846,27 +846,27 @@ public class XMLRepository extends Repository
         {
             Bar bar = (Bar)iter.next(); 
 
-            Element element = document.createElement("data");
+            Element element = document.createElement("data"); //$NON-NLS-1$
             root.appendChild(element);
             
-            Element node = document.createElement("open");
+            Element node = document.createElement("open"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(bar.getOpen())));
             element.appendChild(node);
-            node = document.createElement("high");
+            node = document.createElement("high"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(bar.getHigh())));
             element.appendChild(node);
-            node = document.createElement("low");
+            node = document.createElement("low"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(bar.getLow())));
             element.appendChild(node);
-            node = document.createElement("close");
+            node = document.createElement("close"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(bar.getClose())));
             element.appendChild(node);
-            node = document.createElement("volume");
+            node = document.createElement("volume"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(bar.getVolume())));
             element.appendChild(node);
             if (bar.getDate() != null)
             {
-                node = document.createElement("date");
+                node = document.createElement("date"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(dateTimeFormat.format(bar.getDate())));
                 element.appendChild(node);
             }
@@ -878,10 +878,10 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
-            root.setAttribute("nextId", String.valueOf(chartsNextId));
+            root.setAttribute("nextId", String.valueOf(chartsNextId)); //$NON-NLS-1$
             
             for (Iterator iter = chartsMap.values().iterator(); iter.hasNext(); )
             {
@@ -889,7 +889,7 @@ public class XMLRepository extends Repository
                 saveChart(chart, root, document);
             }
 
-            saveDocument(document, "", "charts.xml");
+            saveDocument(document, "", "charts.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -898,34 +898,34 @@ public class XMLRepository extends Repository
     
     private void saveChart(Chart chart, Element root, Document document)
     {
-        Element element = document.createElement("chart");
-        element.setAttribute("id", String.valueOf(chart.getId()));
+        Element element = document.createElement("chart"); //$NON-NLS-1$
+        element.setAttribute("id", String.valueOf(chart.getId())); //$NON-NLS-1$
         root.appendChild(element);
 
-        Element node = document.createElement("title");
+        Element node = document.createElement("title"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(chart.getTitle()));
         element.appendChild(node);
-        node = document.createElement("security");
+        node = document.createElement("security"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(chart.getSecurity().getId())));
         element.appendChild(node);
-        node = document.createElement("compression");
+        node = document.createElement("compression"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(chart.getCompression())));
         element.appendChild(node);
-        node = document.createElement("period");
+        node = document.createElement("period"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(chart.getPeriod())));
         element.appendChild(node);
-        node = document.createElement("autoScale");
+        node = document.createElement("autoScale"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(chart.isAutoScale())));
         element.appendChild(node);
         if (chart.getBeginDate() != null)
         {
-            node = document.createElement("begin");
+            node = document.createElement("begin"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getBeginDate())));
             element.appendChild(node);
         }
         if (chart.getEndDate() != null)
         {
-            node = document.createElement("end");
+            node = document.createElement("end"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getEndDate())));
             element.appendChild(node);
         }
@@ -936,7 +936,7 @@ public class XMLRepository extends Repository
             row.setParent(chart);
             row.setRepository(this);
 
-            Element rowNode = document.createElement("row");
+            Element rowNode = document.createElement("row"); //$NON-NLS-1$
             element.appendChild(rowNode);
 
             for (int t = 0; t < row.getTabs().size(); t++)
@@ -946,8 +946,8 @@ public class XMLRepository extends Repository
                 tab.setParent(row);
                 tab.setRepository(this);
 
-                Element tabNode = document.createElement("tab");
-                tabNode.setAttribute("label", tab.getLabel());
+                Element tabNode = document.createElement("tab"); //$NON-NLS-1$
+                tabNode.setAttribute("label", tab.getLabel()); //$NON-NLS-1$
                 rowNode.appendChild(tabNode);
 
                 for (int i = 0; i < tab.getIndicators().size(); i++)
@@ -957,17 +957,17 @@ public class XMLRepository extends Repository
                     indicator.setParent(tab);
                     indicator.setRepository(this);
 
-                    Element indicatorNode = document.createElement("indicator");
-                    indicatorNode.setAttribute("pluginId", indicator.getPluginId());
+                    Element indicatorNode = document.createElement("indicator"); //$NON-NLS-1$
+                    indicatorNode.setAttribute("pluginId", indicator.getPluginId()); //$NON-NLS-1$
                     tabNode.appendChild(indicatorNode);
 
                     for (Iterator iter = indicator.getParameters().keySet().iterator(); iter.hasNext(); )
                     {
                         String key = (String)iter.next();
 
-                        node = document.createElement("param");
-                        node.setAttribute("key", key);
-                        node.setAttribute("value", (String)indicator.getParameters().get(key));
+                        node = document.createElement("param"); //$NON-NLS-1$
+                        node.setAttribute("key", key); //$NON-NLS-1$
+                        node.setAttribute("value", (String)indicator.getParameters().get(key)); //$NON-NLS-1$
                         indicatorNode.appendChild(node);
                     }
                 }
@@ -979,17 +979,17 @@ public class XMLRepository extends Repository
                     object.setParent(tab);
                     object.setRepository(this);
 
-                    Element indicatorNode = document.createElement("object");
-                    indicatorNode.setAttribute("pluginId", object.getPluginId());
+                    Element indicatorNode = document.createElement("object"); //$NON-NLS-1$
+                    indicatorNode.setAttribute("pluginId", object.getPluginId()); //$NON-NLS-1$
                     tabNode.appendChild(indicatorNode);
 
                     for (Iterator iter = object.getParameters().keySet().iterator(); iter.hasNext(); )
                     {
                         String key = (String)iter.next();
 
-                        node = document.createElement("param");
-                        node.setAttribute("key", key);
-                        node.setAttribute("value", (String)object.getParameters().get(key));
+                        node = document.createElement("param"); //$NON-NLS-1$
+                        node.setAttribute("key", key); //$NON-NLS-1$
+                        node.setAttribute("value", (String)object.getParameters().get(key)); //$NON-NLS-1$
                         indicatorNode.appendChild(node);
                     }
                 }
@@ -1003,9 +1003,9 @@ public class XMLRepository extends Repository
         chart.setRepository(this);
         chart.setSecurity((Security)load(Security.class, id));
         
-        File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(id) + ".xml");
+        File file = new File(Platform.getLocation().toFile(), "charts/" + String.valueOf(id) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
         if (file.exists() == false)
-            file = new File(Platform.getLocation().toFile(), "charts/default.xml");
+            file = new File(Platform.getLocation().toFile(), "charts/default.xml"); //$NON-NLS-1$
         if (file.exists() == true)
         {
             try
@@ -1024,13 +1024,13 @@ public class XMLRepository extends Repository
                     
                     if (valueNode != null)
                     {
-                        if (nodeName.equalsIgnoreCase("compression") == true)
+                        if (nodeName.equalsIgnoreCase("compression") == true) //$NON-NLS-1$
                             chart.setCompression(Integer.parseInt(valueNode.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("period") == true)
+                        else if (nodeName.equalsIgnoreCase("period") == true) //$NON-NLS-1$
                             chart.setPeriod(Integer.parseInt(valueNode.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("autoScale") == true)
+                        else if (nodeName.equalsIgnoreCase("autoScale") == true) //$NON-NLS-1$
                             chart.setAutoScale(new Boolean(valueNode.getNodeValue()).booleanValue());
-                        else if (nodeName.equalsIgnoreCase("begin") == true)
+                        else if (nodeName.equalsIgnoreCase("begin") == true) //$NON-NLS-1$
                         {
                             try {
                                 chart.setBeginDate(dateTimeFormat.parse(valueNode.getNodeValue()));
@@ -1038,7 +1038,7 @@ public class XMLRepository extends Repository
                                 log.warn(e.toString());
                             }
                         }
-                        else if (nodeName.equalsIgnoreCase("end") == true)
+                        else if (nodeName.equalsIgnoreCase("end") == true) //$NON-NLS-1$
                         {
                             try {
                                 chart.setEndDate(dateTimeFormat.parse(valueNode.getNodeValue()));
@@ -1063,7 +1063,7 @@ public class XMLRepository extends Repository
                                 ChartTab tab = new ChartTab(new Integer(t));
                                 tab.setRepository(this);
                                 tab.setParent(row);
-                                tab.setLabel(((Node)item).getAttributes().getNamedItem("label").getNodeValue());
+                                tab.setLabel(((Node)item).getAttributes().getNamedItem("label").getNodeValue()); //$NON-NLS-1$
 
                                 NodeList indicatorList = item.getChildNodes();
                                 for (int i = 0; i < indicatorList.getLength(); i++)
@@ -1075,7 +1075,7 @@ public class XMLRepository extends Repository
                                         ChartIndicator indicator = new ChartIndicator(new Integer(i));
                                         indicator.setRepository(this);
                                         indicator.setParent(tab);
-                                        indicator.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+                                        indicator.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue()); //$NON-NLS-1$
 
                                         NodeList parametersList = item.getChildNodes();
                                         for (int p = 0; p < parametersList.getLength(); p++)
@@ -1084,8 +1084,8 @@ public class XMLRepository extends Repository
                                             nodeName = item.getNodeName();
                                             if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                                             {
-                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
-                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue();  //$NON-NLS-1$
+                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue(); //$NON-NLS-1$
                                                 indicator.getParameters().put(key, value);
                                             }
                                         }
@@ -1097,7 +1097,7 @@ public class XMLRepository extends Repository
                                         ChartObject object = new ChartObject(new Integer(i));
                                         object.setRepository(this);
                                         object.setParent(tab);
-                                        object.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+                                        object.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue()); //$NON-NLS-1$
 
                                         NodeList parametersList = item.getChildNodes();
                                         for (int p = 0; p < parametersList.getLength(); p++)
@@ -1106,8 +1106,8 @@ public class XMLRepository extends Repository
                                             nodeName = item.getNodeName();
                                             if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                                             {
-                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
-                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue();  //$NON-NLS-1$
+                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue(); //$NON-NLS-1$
                                                 object.getParameters().put(key, value);
                                             }
                                         }
@@ -1137,7 +1137,7 @@ public class XMLRepository extends Repository
     
     private Chart loadChart(NodeList node)
     {
-        Chart chart = new Chart(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        Chart chart = new Chart(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()))); //$NON-NLS-1$
         chart.setRepository(this);
         
         for (int r = 0; r < node.getLength(); r++)
@@ -1148,23 +1148,23 @@ public class XMLRepository extends Repository
             
             if (valueNode != null)
             {
-                if (nodeName.equalsIgnoreCase("title") == true)
+                if (nodeName.equalsIgnoreCase("title") == true) //$NON-NLS-1$
                     chart.setTitle(valueNode.getNodeValue());
                 else if (nodeName.equals("security")) //$NON-NLS-1$
                 {
                     chart.setSecurity((Security)load(Security.class, new Integer(Integer.parseInt(valueNode.getNodeValue()))));
                     if (chart.getSecurity() == null)
-                        log.warn("Cannot load security (id=" + valueNode.getNodeValue() + ")");
+                        log.warn("Cannot load security (id=" + valueNode.getNodeValue() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                else if (nodeName.equalsIgnoreCase("title") == true)
+                else if (nodeName.equalsIgnoreCase("title") == true) //$NON-NLS-1$
                     chart.setTitle(valueNode.getNodeValue());
-                else if (nodeName.equalsIgnoreCase("compression") == true)
+                else if (nodeName.equalsIgnoreCase("compression") == true) //$NON-NLS-1$
                     chart.setCompression(Integer.parseInt(valueNode.getNodeValue()));
-                else if (nodeName.equalsIgnoreCase("period") == true)
+                else if (nodeName.equalsIgnoreCase("period") == true) //$NON-NLS-1$
                     chart.setPeriod(Integer.parseInt(valueNode.getNodeValue()));
-                else if (nodeName.equalsIgnoreCase("autoScale") == true)
+                else if (nodeName.equalsIgnoreCase("autoScale") == true) //$NON-NLS-1$
                     chart.setAutoScale(new Boolean(valueNode.getNodeValue()).booleanValue());
-                else if (nodeName.equalsIgnoreCase("begin") == true)
+                else if (nodeName.equalsIgnoreCase("begin") == true) //$NON-NLS-1$
                 {
                     try {
                         chart.setBeginDate(dateTimeFormat.parse(valueNode.getNodeValue()));
@@ -1172,7 +1172,7 @@ public class XMLRepository extends Repository
                         log.warn(e.toString());
                     }
                 }
-                else if (nodeName.equalsIgnoreCase("end") == true)
+                else if (nodeName.equalsIgnoreCase("end") == true) //$NON-NLS-1$
                 {
                     try {
                         chart.setEndDate(dateTimeFormat.parse(valueNode.getNodeValue()));
@@ -1197,7 +1197,7 @@ public class XMLRepository extends Repository
                         ChartTab tab = new ChartTab(new Integer(t));
                         tab.setRepository(this);
                         tab.setParent(row);
-                        tab.setLabel(((Node)item).getAttributes().getNamedItem("label").getNodeValue());
+                        tab.setLabel(((Node)item).getAttributes().getNamedItem("label").getNodeValue()); //$NON-NLS-1$
 
                         NodeList indicatorList = item.getChildNodes();
                         for (int i = 0; i < indicatorList.getLength(); i++)
@@ -1209,7 +1209,7 @@ public class XMLRepository extends Repository
                                 ChartIndicator indicator = new ChartIndicator(new Integer(i));
                                 indicator.setRepository(this);
                                 indicator.setParent(tab);
-                                indicator.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+                                indicator.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue()); //$NON-NLS-1$
 
                                 NodeList parametersList = item.getChildNodes();
                                 for (int p = 0; p < parametersList.getLength(); p++)
@@ -1218,8 +1218,8 @@ public class XMLRepository extends Repository
                                     nodeName = item.getNodeName();
                                     if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                                     {
-                                        String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
-                                        String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                        String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue();  //$NON-NLS-1$
+                                        String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue(); //$NON-NLS-1$
                                         indicator.getParameters().put(key, value);
                                     }
                                 }
@@ -1231,7 +1231,7 @@ public class XMLRepository extends Repository
                                 ChartObject object = new ChartObject(new Integer(i));
                                 object.setRepository(this);
                                 object.setParent(tab);
-                                object.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+                                object.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue()); //$NON-NLS-1$
 
                                 NodeList parametersList = item.getChildNodes();
                                 for (int p = 0; p < parametersList.getLength(); p++)
@@ -1240,8 +1240,8 @@ public class XMLRepository extends Repository
                                     nodeName = item.getNodeName();
                                     if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                                     {
-                                        String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
-                                        String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                        String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue();  //$NON-NLS-1$
+                                        String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue(); //$NON-NLS-1$
                                         object.getParameters().put(key, value);
                                     }
                                 }
@@ -1265,7 +1265,7 @@ public class XMLRepository extends Repository
 
     private SecurityGroup loadSecurityGroup(NodeList node)
     {
-        SecurityGroup group = new SecurityGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        SecurityGroup group = new SecurityGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()))); //$NON-NLS-1$
         
         for (int i = 0; i < node.getLength(); i++)
         {
@@ -1309,7 +1309,7 @@ public class XMLRepository extends Repository
 
     private Security loadSecurity(NodeList node)
     {
-        Security security = new Security(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        Security security = new Security(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()))); //$NON-NLS-1$
         
         for (int i = 0; i < node.getLength(); i++)
         {
@@ -1329,7 +1329,7 @@ public class XMLRepository extends Repository
             }
             if (nodeName.equals("dataCollector")) //$NON-NLS-1$
             {
-                security.setEnableDataCollector(new Boolean(((Node)item).getAttributes().getNamedItem("enable").getNodeValue()).booleanValue());
+                security.setEnableDataCollector(new Boolean(((Node)item).getAttributes().getNamedItem("enable").getNodeValue()).booleanValue()); //$NON-NLS-1$
                 NodeList nodeList = item.getChildNodes();
                 for (int q = 0; q < nodeList.getLength(); q++)
                 {
@@ -1338,12 +1338,12 @@ public class XMLRepository extends Repository
                     value = item.getFirstChild();
                     if (nodeName.equals("begin")) //$NON-NLS-1$
                     {
-                        String[] s = value.getNodeValue().split(":");
+                        String[] s = value.getNodeValue().split(":"); //$NON-NLS-1$
                         security.setBeginTime(Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]));
                     }
                     else if (nodeName.equals("end")) //$NON-NLS-1$
                     {
-                        String[] s = value.getNodeValue().split(":");
+                        String[] s = value.getNodeValue().split(":"); //$NON-NLS-1$
                         security.setEndTime(Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]));
                     }
                     else if (nodeName.equals("weekdays")) //$NON-NLS-1$
@@ -1481,9 +1481,9 @@ public class XMLRepository extends Repository
                 NamedNodeMap attributes = item.getAttributes();
                 Split split = new Split();
                 try {
-                    split.setDate(dateTimeFormat.parse(attributes.getNamedItem("date").getNodeValue()));
-                    split.setFromQuantity(Integer.parseInt(attributes.getNamedItem("fromQuantity").getNodeValue()));
-                    split.setToQuantity(Integer.parseInt(attributes.getNamedItem("toQuantity").getNodeValue()));
+                    split.setDate(dateTimeFormat.parse(attributes.getNamedItem("date").getNodeValue())); //$NON-NLS-1$
+                    split.setFromQuantity(Integer.parseInt(attributes.getNamedItem("fromQuantity").getNodeValue())); //$NON-NLS-1$
+                    split.setToQuantity(Integer.parseInt(attributes.getNamedItem("toQuantity").getNodeValue())); //$NON-NLS-1$
                     security.getSplits().add(split);
                 } catch (Exception e) {
                     log.error(e.toString());
@@ -1494,8 +1494,8 @@ public class XMLRepository extends Repository
                 NamedNodeMap attributes = item.getAttributes();
                 Dividend dividend = new Dividend();
                 try {
-                    dividend.setDate(dateTimeFormat.parse(attributes.getNamedItem("date").getNodeValue()));
-                    dividend.setValue(new Double(Double.parseDouble(attributes.getNamedItem("value").getNodeValue())).doubleValue());
+                    dividend.setDate(dateTimeFormat.parse(attributes.getNamedItem("date").getNodeValue())); //$NON-NLS-1$
+                    dividend.setValue(new Double(Double.parseDouble(attributes.getNamedItem("value").getNodeValue())).doubleValue()); //$NON-NLS-1$
                     security.getDividends().add(dividend);
                 } catch (Exception e) {
                     log.error(e.toString());
@@ -1512,19 +1512,19 @@ public class XMLRepository extends Repository
     
     private void saveSecurityGroup(SecurityGroup group, Document document, Element root)
     {
-        Element element = document.createElement("group");
-        element.setAttribute("id", String.valueOf(group.getId()));
+        Element element = document.createElement("group"); //$NON-NLS-1$
+        element.setAttribute("id", String.valueOf(group.getId())); //$NON-NLS-1$
         root.appendChild(element);
 
-        Element node = document.createElement("code");
+        Element node = document.createElement("code"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(group.getCode()));
         element.appendChild(node);
-        node = document.createElement("description");
+        node = document.createElement("description"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(group.getDescription()));
         element.appendChild(node);
         if (group.getCurrency() != null)
         {
-            node = document.createElement("currency");
+            node = document.createElement("currency"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(group.getCurrency().getCurrencyCode()));
             element.appendChild(node);
         }
@@ -1538,19 +1538,19 @@ public class XMLRepository extends Repository
     
     private void saveSecurity(Security security, Document document, Element root)
     {
-        Element element = document.createElement("security");
-        element.setAttribute("id", String.valueOf(security.getId()));
+        Element element = document.createElement("security"); //$NON-NLS-1$
+        element.setAttribute("id", String.valueOf(security.getId())); //$NON-NLS-1$
         root.appendChild(element);
         
-        Element node = document.createElement("code");
+        Element node = document.createElement("code"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(security.getCode()));
         element.appendChild(node);
-        node = document.createElement("description");
+        node = document.createElement("description"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(security.getDescription()));
         element.appendChild(node);
         if (security.getCurrency() != null)
         {
-            node = document.createElement("currency");
+            node = document.createElement("currency"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(security.getCurrency().getCurrencyCode()));
             element.appendChild(node);
         }
@@ -1561,50 +1561,50 @@ public class XMLRepository extends Repository
         nf.setMinimumFractionDigits(0);
         nf.setMaximumFractionDigits(0);
         
-        Element collectorNode = document.createElement("dataCollector");
-        collectorNode.setAttribute("enable", String.valueOf(security.isEnableDataCollector()));
+        Element collectorNode = document.createElement("dataCollector"); //$NON-NLS-1$
+        collectorNode.setAttribute("enable", String.valueOf(security.isEnableDataCollector())); //$NON-NLS-1$
         element.appendChild(collectorNode);
-        node = document.createElement("begin");
-        node.appendChild(document.createTextNode(nf.format(security.getBeginTime() / 60) + ":" + nf.format(security.getBeginTime() % 60)));
+        node = document.createElement("begin"); //$NON-NLS-1$
+        node.appendChild(document.createTextNode(nf.format(security.getBeginTime() / 60) + ":" + nf.format(security.getBeginTime() % 60))); //$NON-NLS-1$
         collectorNode.appendChild(node);
-        node = document.createElement("end");
-        node.appendChild(document.createTextNode(nf.format(security.getEndTime() / 60) + ":" + nf.format(security.getEndTime() % 60)));
+        node = document.createElement("end"); //$NON-NLS-1$
+        node.appendChild(document.createTextNode(nf.format(security.getEndTime() / 60) + ":" + nf.format(security.getEndTime() % 60))); //$NON-NLS-1$
         collectorNode.appendChild(node);
-        node = document.createElement("weekdays");
+        node = document.createElement("weekdays"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(security.getWeekDays())));
         collectorNode.appendChild(node);
-        node = document.createElement("keepdays");
+        node = document.createElement("keepdays"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(security.getKeepDays())));
         collectorNode.appendChild(node);
 
         if (security.getQuoteFeed() != null || security.getLevel2Feed() != null || security.getHistoryFeed() != null)
         {
-            Node feedsNode = document.createElement("feeds");
+            Node feedsNode = document.createElement("feeds"); //$NON-NLS-1$
             element.appendChild(feedsNode);
             if (security.getQuoteFeed() != null)
             {
-                node = document.createElement("quote");
-                node.setAttribute("id", security.getQuoteFeed().getId());
+                node = document.createElement("quote"); //$NON-NLS-1$
+                node.setAttribute("id", security.getQuoteFeed().getId()); //$NON-NLS-1$
                 if (security.getQuoteFeed().getExchange() != null)
-                    node.setAttribute("exchange", security.getQuoteFeed().getExchange());
+                    node.setAttribute("exchange", security.getQuoteFeed().getExchange()); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(security.getQuoteFeed().getSymbol()));
                 feedsNode.appendChild(node);
             }
             if (security.getLevel2Feed() != null)
             {
-                node = document.createElement("level2");
-                node.setAttribute("id", security.getLevel2Feed().getId());
+                node = document.createElement("level2"); //$NON-NLS-1$
+                node.setAttribute("id", security.getLevel2Feed().getId()); //$NON-NLS-1$
                 if (security.getLevel2Feed().getExchange() != null)
-                    node.setAttribute("exchange", security.getLevel2Feed().getExchange());
+                    node.setAttribute("exchange", security.getLevel2Feed().getExchange()); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(security.getLevel2Feed().getSymbol()));
                 feedsNode.appendChild(node);
             }
             if (security.getHistoryFeed() != null)
             {
-                node = document.createElement("history");
-                node.setAttribute("id", security.getHistoryFeed().getId());
+                node = document.createElement("history"); //$NON-NLS-1$
+                node.setAttribute("id", security.getHistoryFeed().getId()); //$NON-NLS-1$
                 if (security.getHistoryFeed().getExchange() != null)
-                    node.setAttribute("exchange", security.getHistoryFeed().getExchange());
+                    node.setAttribute("exchange", security.getHistoryFeed().getExchange()); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(security.getHistoryFeed().getSymbol()));
                 feedsNode.appendChild(node);
             }
@@ -1614,25 +1614,25 @@ public class XMLRepository extends Repository
         {
             TradeSource source = security.getTradeSource();
             
-            Element feedsNode = document.createElement("tradeSource");
-            feedsNode.setAttribute("id", source.getTradingProviderId());
+            Element feedsNode = document.createElement("tradeSource"); //$NON-NLS-1$
+            feedsNode.setAttribute("id", source.getTradingProviderId()); //$NON-NLS-1$
             if (source.getExchange() != null)
-                feedsNode.setAttribute("exchange", source.getExchange());
+                feedsNode.setAttribute("exchange", source.getExchange()); //$NON-NLS-1$
             element.appendChild(feedsNode);
 
-            if (!source.getSymbol().equals(""))
+            if (!source.getSymbol().equals("")) //$NON-NLS-1$
             {
-                node = document.createElement("symbol");
+                node = document.createElement("symbol"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(source.getSymbol()));
                 feedsNode.appendChild(node);
             }
             if (source.getAccountId() != null)
             {
-                node = document.createElement("account");
+                node = document.createElement("account"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(source.getAccountId())));
                 feedsNode.appendChild(node);
             }
-            node = document.createElement("quantity");
+            node = document.createElement("quantity"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(source.getQuantity())));
             feedsNode.appendChild(node);
         }
@@ -1640,84 +1640,84 @@ public class XMLRepository extends Repository
         if (security.getQuote() != null)
         {
             Quote quote = security.getQuote();
-            Node quoteNode = document.createElement("quote");
+            Node quoteNode = document.createElement("quote"); //$NON-NLS-1$
 
             if (quote.getDate() != null)
             {
-                node = document.createElement("date");
+                node = document.createElement("date"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(dateTimeFormat.format(quote.getDate())));
                 quoteNode.appendChild(node);
             }
-            node = document.createElement("last");
+            node = document.createElement("last"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(quote.getLast())));
             quoteNode.appendChild(node);
-            node = document.createElement("bid");
+            node = document.createElement("bid"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(quote.getBid())));
             quoteNode.appendChild(node);
-            node = document.createElement("ask");
+            node = document.createElement("ask"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(quote.getAsk())));
             quoteNode.appendChild(node);
-            node = document.createElement("bidSize");
+            node = document.createElement("bidSize"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(quote.getBidSize())));
             quoteNode.appendChild(node);
-            node = document.createElement("askSize");
+            node = document.createElement("askSize"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(quote.getAskSize())));
             quoteNode.appendChild(node);
-            node = document.createElement("volume");
+            node = document.createElement("volume"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(quote.getVolume())));
             quoteNode.appendChild(node);
             
             element.appendChild(quoteNode);
         }
 
-        Node dataNode = document.createElement("data");
+        Node dataNode = document.createElement("data"); //$NON-NLS-1$
         element.appendChild(dataNode);
         
         if (security.getOpen() != null)
         {
-            node = document.createElement("open");
+            node = document.createElement("open"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(security.getOpen())));
             dataNode.appendChild(node);
         }
         if (security.getHigh() != null)
         {
-            node = document.createElement("high");
+            node = document.createElement("high"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(security.getHigh())));
             dataNode.appendChild(node);
         }
         if (security.getLow() != null)
         {
-            node = document.createElement("low");
+            node = document.createElement("low"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(security.getLow())));
             dataNode.appendChild(node);
         }
         if (security.getClose() != null)
         {
-            node = document.createElement("close");
+            node = document.createElement("close"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(security.getClose())));
             dataNode.appendChild(node);
         }
 
-        node = document.createElement("comment");
+        node = document.createElement("comment"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(security.getComment()));
         element.appendChild(node);
         
         for (Iterator iter = security.getSplits().iterator(); iter.hasNext(); )
         {
             Split split = (Split)iter.next();
-            node = document.createElement("split");
-            node.setAttribute("date", dateTimeFormat.format(split.getDate()));
-            node.setAttribute("fromQuantity", String.valueOf(split.getFromQuantity()));
-            node.setAttribute("toQuantity", String.valueOf(split.getToQuantity()));
+            node = document.createElement("split"); //$NON-NLS-1$
+            node.setAttribute("date", dateTimeFormat.format(split.getDate())); //$NON-NLS-1$
+            node.setAttribute("fromQuantity", String.valueOf(split.getFromQuantity())); //$NON-NLS-1$
+            node.setAttribute("toQuantity", String.valueOf(split.getToQuantity())); //$NON-NLS-1$
             element.appendChild(node);
         }
 
         for (Iterator iter = security.getDividends().iterator(); iter.hasNext(); )
         {
             Dividend dividend = (Dividend)iter.next();
-            node = document.createElement("dividend");
-            node.setAttribute("date", dateTimeFormat.format(dividend.getDate()));
-            node.setAttribute("value", String.valueOf(dividend.getValue()));
+            node = document.createElement("dividend"); //$NON-NLS-1$
+            node.setAttribute("date", dateTimeFormat.format(dividend.getDate())); //$NON-NLS-1$
+            node.setAttribute("value", String.valueOf(dividend.getValue())); //$NON-NLS-1$
             element.appendChild(node);
         }
     }
@@ -1727,11 +1727,11 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
-            root.setAttribute("nextId", String.valueOf(securitiesNextId));
-            root.setAttribute("nextGroupId", String.valueOf(securitiesGroupNextId));
+            root.setAttribute("nextId", String.valueOf(securitiesNextId)); //$NON-NLS-1$
+            root.setAttribute("nextGroupId", String.valueOf(securitiesGroupNextId)); //$NON-NLS-1$
             
             for (Iterator iter = allSecurityGroups().iterator(); iter.hasNext(); )
             {
@@ -1747,7 +1747,7 @@ public class XMLRepository extends Repository
                     saveSecurity(security, document, root);
             }
 
-            saveDocument(document, "", "securities.xml");
+            saveDocument(document, "", "securities.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -1757,7 +1757,7 @@ public class XMLRepository extends Repository
     private Watchlist loadWatchlist(NodeList node)
     {
         int itemIndex = 1;
-        Watchlist watchlist = new Watchlist(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        Watchlist watchlist = new Watchlist(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()))); //$NON-NLS-1$
         
         for (int i = 0; i < node.getLength(); i++)
         {
@@ -1786,13 +1786,13 @@ public class XMLRepository extends Repository
                     if (nodeName.equalsIgnoreCase("column")) //$NON-NLS-1$
                     {
                         WatchlistColumn column = new WatchlistColumn();
-                        if (item.getAttributes().getNamedItem("id") != null)
-                            column.setId(item.getAttributes().getNamedItem("id").getNodeValue());
-                        else if (item.getAttributes().getNamedItem("class") != null)
+                        if (item.getAttributes().getNamedItem("id") != null) //$NON-NLS-1$
+                            column.setId(item.getAttributes().getNamedItem("id").getNodeValue()); //$NON-NLS-1$
+                        else if (item.getAttributes().getNamedItem("class") != null) //$NON-NLS-1$
                         {
-                            String id = item.getAttributes().getNamedItem("class").getNodeValue();
+                            String id = item.getAttributes().getNamedItem("class").getNodeValue(); //$NON-NLS-1$
                             id = id.substring(id.lastIndexOf('.') + 1);
-                            column.setId("watchlist." + id.substring(0, 1).toLowerCase() + id.substring(1));
+                            column.setId("watchlist." + id.substring(0, 1).toLowerCase() + id.substring(1)); //$NON-NLS-1$
                         }
                         list.add(column);
                     }
@@ -1809,11 +1809,11 @@ public class XMLRepository extends Repository
                     nodeName = item.getNodeName();
                     if (nodeName.equalsIgnoreCase("security")) //$NON-NLS-1$
                     {
-                        String id = ((Node)item).getAttributes().getNamedItem("id").getNodeValue();
+                        String id = ((Node)item).getAttributes().getNamedItem("id").getNodeValue(); //$NON-NLS-1$
                         Security security = (Security)load(Security.class, new Integer(id));
                         if (security == null)
                         {
-                            log.warn("Cannot load security (id=" + id + ")");
+                            log.warn("Cannot load security (id=" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                             continue;
                         }
                         
@@ -1838,19 +1838,19 @@ public class XMLRepository extends Repository
                             if (nodeName.equalsIgnoreCase("alert")) //$NON-NLS-1$
                             {
                                 Alert alert = new Alert(new Integer(alertIndex++));
-                                alert.setPluginId(item.getAttributes().getNamedItem("pluginId").getNodeValue());
-                                if (item.getAttributes().getNamedItem("lastSeen") != null)
+                                alert.setPluginId(item.getAttributes().getNamedItem("pluginId").getNodeValue()); //$NON-NLS-1$
+                                if (item.getAttributes().getNamedItem("lastSeen") != null) //$NON-NLS-1$
                                 {
                                     try {
-                                        alert.setLastSeen(dateTimeFormat.parse(item.getAttributes().getNamedItem("lastSeen").getNodeValue()));
+                                        alert.setLastSeen(dateTimeFormat.parse(item.getAttributes().getNamedItem("lastSeen").getNodeValue())); //$NON-NLS-1$
                                     } catch(Exception e) {
                                         log.warn(e.toString());
                                     }
                                 }
-                                if (item.getAttributes().getNamedItem("popup") != null)
-                                    alert.setPopup(new Boolean(item.getAttributes().getNamedItem("popup").getNodeValue()).booleanValue());
-                                if (item.getAttributes().getNamedItem("hilight") != null)
-                                    alert.setHilight(new Boolean(item.getAttributes().getNamedItem("hilight").getNodeValue()).booleanValue());
+                                if (item.getAttributes().getNamedItem("popup") != null) //$NON-NLS-1$
+                                    alert.setPopup(new Boolean(item.getAttributes().getNamedItem("popup").getNodeValue()).booleanValue()); //$NON-NLS-1$
+                                if (item.getAttributes().getNamedItem("hilight") != null) //$NON-NLS-1$
+                                    alert.setHilight(new Boolean(item.getAttributes().getNamedItem("hilight").getNodeValue()).booleanValue()); //$NON-NLS-1$
 
                                 NodeList paramList = item.getChildNodes();
                                 for (int p = 0; p < paramList.getLength(); p++)
@@ -1862,7 +1862,7 @@ public class XMLRepository extends Repository
                                     {
                                         if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                                         {
-                                            String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue();
+                                            String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); //$NON-NLS-1$
                                             alert.getParameters().put(key, value.getNodeValue());
                                         }
                                     }
@@ -1889,51 +1889,51 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
-            root.setAttribute("nextId", String.valueOf(watchlistsNextId));
+            root.setAttribute("nextId", String.valueOf(watchlistsNextId)); //$NON-NLS-1$
             
             for (Iterator iter = watchlistsMap.values().iterator(); iter.hasNext(); )
             {
                 Watchlist watchlist = (Watchlist)iter.next(); 
 
-                Element element = document.createElement("watchlist");
-                element.setAttribute("id", String.valueOf(watchlist.getId()));
+                Element element = document.createElement("watchlist"); //$NON-NLS-1$
+                element.setAttribute("id", String.valueOf(watchlist.getId())); //$NON-NLS-1$
                 root.appendChild(element);
 
-                Element node = document.createElement("title");
+                Element node = document.createElement("title"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(watchlist.getDescription()));
                 element.appendChild(node);
-                node = document.createElement("style");
+                node = document.createElement("style"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(watchlist.getStyle())));
                 element.appendChild(node);
                 if (watchlist.getCurrency() != null)
                 {
-                    node = document.createElement("currency");
+                    node = document.createElement("currency"); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(watchlist.getCurrency().getCurrencyCode()));
                     element.appendChild(node);
                 }
                 if (watchlist.getDefaultFeed() != null)
                 {
-                    node = document.createElement("feed");
+                    node = document.createElement("feed"); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(watchlist.getDefaultFeed()));
                     element.appendChild(node);
                 }
 
-                Element columnsNode = document.createElement("columns");
+                Element columnsNode = document.createElement("columns"); //$NON-NLS-1$
                 element.appendChild(columnsNode);
 
                 for (Iterator iter2 = watchlist.getColumns().iterator(); iter2.hasNext(); )
                 {
                     WatchlistColumn column = (WatchlistColumn)iter2.next();
 
-                    Element columnNode = document.createElement("column");
-                    columnNode.setAttribute("id", column.getId());
+                    Element columnNode = document.createElement("column"); //$NON-NLS-1$
+                    columnNode.setAttribute("id", column.getId()); //$NON-NLS-1$
                     columnsNode.appendChild(columnNode);
                 }
 
-                Element itemsNode = document.createElement("items");
+                Element itemsNode = document.createElement("items"); //$NON-NLS-1$
                 element.appendChild(itemsNode);
 
                 int itemIndex = 1;
@@ -1944,19 +1944,19 @@ public class XMLRepository extends Repository
                     item.setParent(watchlist);
                     item.setRepository(this);
 
-                    Element itemNode = document.createElement("security");
-                    itemNode.setAttribute("id", String.valueOf(item.getSecurity().getId()));
+                    Element itemNode = document.createElement("security"); //$NON-NLS-1$
+                    itemNode.setAttribute("id", String.valueOf(item.getSecurity().getId())); //$NON-NLS-1$
                     itemsNode.appendChild(itemNode);
 
                     if (item.getPosition() != null && item.getPosition().intValue() != 0)
                     {
-                        node = document.createElement("position");
+                        node = document.createElement("position"); //$NON-NLS-1$
                         node.appendChild(document.createTextNode(String.valueOf(item.getPosition())));
                         itemNode.appendChild(node);
                     }
                     if (item.getPaidPrice() != null && item.getPaidPrice().doubleValue() != 0)
                     {
-                        node = document.createElement("paid");
+                        node = document.createElement("paid"); //$NON-NLS-1$
                         node.appendChild(document.createTextNode(String.valueOf(item.getPaidPrice())));
                         itemNode.appendChild(node);
                     }
@@ -1967,20 +1967,20 @@ public class XMLRepository extends Repository
                         Alert alert = (Alert)alertIter.next();
                         alert.setId(new Integer(alertIndex++));
 
-                        Element alertNode = document.createElement("alert");
-                        alertNode.setAttribute("pluginId", alert.getPluginId());
+                        Element alertNode = document.createElement("alert"); //$NON-NLS-1$
+                        alertNode.setAttribute("pluginId", alert.getPluginId()); //$NON-NLS-1$
                         if (alert.getLastSeen() != null)
-                            alertNode.setAttribute("lastSeen", dateTimeFormat.format(alert.getLastSeen()));
-                        alertNode.setAttribute("popup", String.valueOf(alert.isPopup()));
-                        alertNode.setAttribute("hilight", String.valueOf(alert.isHilight()));
+                            alertNode.setAttribute("lastSeen", dateTimeFormat.format(alert.getLastSeen())); //$NON-NLS-1$
+                        alertNode.setAttribute("popup", String.valueOf(alert.isPopup())); //$NON-NLS-1$
+                        alertNode.setAttribute("hilight", String.valueOf(alert.isHilight())); //$NON-NLS-1$
                         itemNode.appendChild(alertNode);
 
                         for (Iterator paramIter = alert.getParameters().keySet().iterator(); paramIter.hasNext(); )
                         {
                             String key = (String)paramIter.next();
                             
-                            node = document.createElement("param");
-                            node.setAttribute("key", key);
+                            node = document.createElement("param"); //$NON-NLS-1$
+                            node.setAttribute("key", key); //$NON-NLS-1$
                             node.appendChild(document.createTextNode((String)alert.getParameters().get(key)));
                             alertNode.appendChild(node);
                         }
@@ -1988,7 +1988,7 @@ public class XMLRepository extends Repository
                 }
             }
             
-            saveDocument(document, "", "watchlists.xml");
+            saveDocument(document, "", "watchlists.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -1999,14 +1999,14 @@ public class XMLRepository extends Repository
     {
         NewsItem news = new NewsItem();
         
-        if (((Node)node).getAttributes().getNamedItem("security") != null)
+        if (((Node)node).getAttributes().getNamedItem("security") != null) //$NON-NLS-1$
         {
-            Security security = getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue());
+            Security security = getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue()); //$NON-NLS-1$
             if (security != null)
                 news.addSecurity(security);
         }
-        if (((Node)node).getAttributes().getNamedItem("readed") != null)
-            news.setReaded(new Boolean(((Node)node).getAttributes().getNamedItem("readed").getNodeValue()).booleanValue());
+        if (((Node)node).getAttributes().getNamedItem("readed") != null) //$NON-NLS-1$
+            news.setReaded(new Boolean(((Node)node).getAttributes().getNamedItem("readed").getNodeValue()).booleanValue()); //$NON-NLS-1$
         
         for (int i = 0; i < node.getLength(); i++)
         {
@@ -2015,7 +2015,7 @@ public class XMLRepository extends Repository
             Node value = item.getFirstChild();
             if (value != null)
             {
-                if (nodeName.equalsIgnoreCase("date") == true)
+                if (nodeName.equalsIgnoreCase("date") == true) //$NON-NLS-1$
                 {
                     try {
                         news.setDate(dateTimeFormat.parse(value.getNodeValue()));
@@ -2048,7 +2048,7 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
             
@@ -2056,33 +2056,33 @@ public class XMLRepository extends Repository
             {
                 NewsItem news = (NewsItem)iter.next(); 
 
-                Element element = document.createElement("news");
-                element.setAttribute("readed", String.valueOf(news.isReaded()));
+                Element element = document.createElement("news"); //$NON-NLS-1$
+                element.setAttribute("readed", String.valueOf(news.isReaded())); //$NON-NLS-1$
                 root.appendChild(element);
 
-                Element node = document.createElement("date");
+                Element node = document.createElement("date"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(dateTimeFormat.format(news.getDate())));
                 element.appendChild(node);
-                node = document.createElement("description");
+                node = document.createElement("description"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(news.getTitle()));
                 element.appendChild(node);
-                node = document.createElement("source");
+                node = document.createElement("source"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(news.getSource()));
                 element.appendChild(node);
-                node = document.createElement("url");
+                node = document.createElement("url"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(news.getUrl()));
                 element.appendChild(node);
                 
                 Object[] o = news.getSecurities().toArray();
                 for (int i = 0; i < o.length; i++)
                 {
-                    node = document.createElement("security");
+                    node = document.createElement("security"); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(String.valueOf(((Security)o[i]).getId())));
                     element.appendChild(node);
                 }
             }
             
-            saveDocument(document, "", "news.xml");
+            saveDocument(document, "", "news.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -2091,7 +2091,7 @@ public class XMLRepository extends Repository
 
     private AccountGroup loadAccountGroup(NodeList node, AccountGroup parent)
     {
-        AccountGroup group = new AccountGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        AccountGroup group = new AccountGroup(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()))); //$NON-NLS-1$
         if (parent != null)
         {
             group.setParent(parent);
@@ -2121,12 +2121,12 @@ public class XMLRepository extends Repository
 
     private Account loadAccount(NodeList node, AccountGroup group)
     {
-        Integer id = new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()));
-        String pluginId = "";
-        if (((Node)node).getAttributes().getNamedItem("pluginId") != null)
-            pluginId = ((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue();
-        if (pluginId.equals(""))
-            pluginId = "net.sourceforge.eclipsetrader.accounts.simple";
+        Integer id = new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())); //$NON-NLS-1$
+        String pluginId = ""; //$NON-NLS-1$
+        if (((Node)node).getAttributes().getNamedItem("pluginId") != null) //$NON-NLS-1$
+            pluginId = ((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue(); //$NON-NLS-1$
+        if (pluginId.equals("")) //$NON-NLS-1$
+            pluginId = "net.sourceforge.eclipsetrader.accounts.simple"; //$NON-NLS-1$
         PersistentPreferenceStore preferenceStore = new PersistentPreferenceStore();
         List transactions = new ArrayList();
         
@@ -2137,7 +2137,7 @@ public class XMLRepository extends Repository
             Node value = item.getFirstChild();
             if (nodeName.equals("transaction")) //$NON-NLS-1$
             {
-                Transaction transaction = new Transaction(new Integer(Integer.parseInt(item.getAttributes().getNamedItem("id").getNodeValue())));
+                Transaction transaction = new Transaction(new Integer(Integer.parseInt(item.getAttributes().getNamedItem("id").getNodeValue()))); //$NON-NLS-1$
                 
                 NodeList childs = item.getChildNodes();
                 for (int ii = 0; ii < childs.getLength(); ii++)
@@ -2160,7 +2160,7 @@ public class XMLRepository extends Repository
                         {
                             transaction.setSecurity((Security)load(Security.class, new Integer(Integer.parseInt(value.getNodeValue()))));
                             if (transaction.getSecurity() == null)
-                                log.warn("Cannot load security (id=" + value.getNodeValue() + ")");
+                                log.warn("Cannot load security (id=" + value.getNodeValue() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                         }
                         else if (nodeName.equals("price")) //$NON-NLS-1$
                             transaction.setPrice(Double.parseDouble(value.getNodeValue()));
@@ -2169,10 +2169,10 @@ public class XMLRepository extends Repository
                         else if (nodeName.equals("expenses")) //$NON-NLS-1$
                             transaction.setExpenses(Double.parseDouble(value.getNodeValue()));
                     }
-                    if (nodeName.equalsIgnoreCase("param") == true)
+                    if (nodeName.equalsIgnoreCase("param") == true) //$NON-NLS-1$
                     {
                         NamedNodeMap map = item.getAttributes();
-                        transaction.getParams().put(map.getNamedItem("key").getNodeValue(), map.getNamedItem("value").getNodeValue());
+                        transaction.getParams().put(map.getNamedItem("key").getNodeValue(), map.getNamedItem("value").getNodeValue()); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
                 if (transaction.getSecurity() != null)
@@ -2228,11 +2228,11 @@ public class XMLRepository extends Repository
     
     private void saveGroup(AccountGroup group, Document document, Element root)
     {
-        Element element = document.createElement("group");
-        element.setAttribute("id", String.valueOf(group.getId()));
+        Element element = document.createElement("group"); //$NON-NLS-1$
+        element.setAttribute("id", String.valueOf(group.getId())); //$NON-NLS-1$
         root.appendChild(element);
 
-        Element node = document.createElement("description");
+        Element node = document.createElement("description"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(group.getDescription()));
         element.appendChild(node);
 
@@ -2251,21 +2251,21 @@ public class XMLRepository extends Repository
 
     private void saveAccount(Account account, Document document, Element root)
     {
-        Element element = document.createElement("account");
-        element.setAttribute("id", String.valueOf(account.getId()));
-        element.setAttribute("pluginId", String.valueOf(account.getPluginId()));
+        Element element = document.createElement("account"); //$NON-NLS-1$
+        element.setAttribute("id", String.valueOf(account.getId())); //$NON-NLS-1$
+        element.setAttribute("pluginId", String.valueOf(account.getPluginId())); //$NON-NLS-1$
         root.appendChild(element);
         
-        Element node = document.createElement("description");
+        Element node = document.createElement("description"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(account.getDescription()));
         element.appendChild(node);
         if (account.getCurrency() != null)
         {
-            node = document.createElement("currency");
+            node = document.createElement("currency"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(account.getCurrency().getCurrencyCode()));
             element.appendChild(node);
         }
-        node = document.createElement("initialBalance");
+        node = document.createElement("initialBalance"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(account.getInitialBalance())));
         element.appendChild(node);
 
@@ -2295,32 +2295,32 @@ public class XMLRepository extends Repository
 
     private void saveTransaction(Transaction transaction, Document document, Element root)
     {
-        Element element = document.createElement("transaction");
-        element.setAttribute("id", String.valueOf(transaction.getId()));
+        Element element = document.createElement("transaction"); //$NON-NLS-1$
+        element.setAttribute("id", String.valueOf(transaction.getId())); //$NON-NLS-1$
         root.appendChild(element);
         
-        Element node = document.createElement("date");
+        Element node = document.createElement("date"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(dateTimeFormat.format(transaction.getDate())));
         element.appendChild(node);
-        node = document.createElement("security");
+        node = document.createElement("security"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(transaction.getSecurity().getId())));
         element.appendChild(node);
-        node = document.createElement("price");
+        node = document.createElement("price"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(transaction.getPrice())));
         element.appendChild(node);
-        node = document.createElement("quantity");
+        node = document.createElement("quantity"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(transaction.getQuantity())));
         element.appendChild(node);
-        node = document.createElement("expenses");
+        node = document.createElement("expenses"); //$NON-NLS-1$
         node.appendChild(document.createTextNode(String.valueOf(transaction.getExpenses())));
         element.appendChild(node);
 
         for (Iterator paramIter = transaction.getParams().keySet().iterator(); paramIter.hasNext(); )
         {
             String key = (String)paramIter.next();
-            node = document.createElement("param");
-            node.setAttribute("key", key);
-            node.setAttribute("value", (String)transaction.getParams().get(key));
+            node = document.createElement("param"); //$NON-NLS-1$
+            node.setAttribute("key", key); //$NON-NLS-1$
+            node.setAttribute("value", (String)transaction.getParams().get(key)); //$NON-NLS-1$
             element.appendChild(node);
         }
     }
@@ -2330,11 +2330,11 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
-            root.setAttribute("nextId", String.valueOf(accountNextId));
-            root.setAttribute("nextGroupId", String.valueOf(accountGroupNextId));
+            root.setAttribute("nextId", String.valueOf(accountNextId)); //$NON-NLS-1$
+            root.setAttribute("nextGroupId", String.valueOf(accountGroupNextId)); //$NON-NLS-1$
             
             for (Iterator iter = accountGroupMap.values().iterator(); iter.hasNext(); )
             {
@@ -2352,7 +2352,7 @@ public class XMLRepository extends Repository
                 saveAccount(account, document, root);
             }
 
-            saveDocument(document, "", "accounts.xml");
+            saveDocument(document, "", "accounts.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -2363,9 +2363,9 @@ public class XMLRepository extends Repository
     {
         Event event = new Event(new Integer(allEvents().size() + 1));
         
-        if (((Node)node).getAttributes().getNamedItem("security") != null)
+        if (((Node)node).getAttributes().getNamedItem("security") != null) //$NON-NLS-1$
         {
-            Security security = getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue());
+            Security security = getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue()); //$NON-NLS-1$
             event.setSecurity(security);
         }
         
@@ -2376,7 +2376,7 @@ public class XMLRepository extends Repository
             Node value = item.getFirstChild();
             if (value != null)
             {
-                if (nodeName.equalsIgnoreCase("date") == true)
+                if (nodeName.equalsIgnoreCase("date") == true) //$NON-NLS-1$
                 {
                     try {
                         event.setDate(dateTimeFormat.parse(value.getNodeValue()));
@@ -2398,16 +2398,16 @@ public class XMLRepository extends Repository
 
     private Order loadOrder(NodeList node)
     {
-        Order order = new Order(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue())));
+        Order order = new Order(new Integer(Integer.parseInt(((Node)node).getAttributes().getNamedItem("id").getNodeValue()))); //$NON-NLS-1$
 
-        order.setSecurity(getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue()));
+        order.setSecurity(getSecurity(((Node)node).getAttributes().getNamedItem("security").getNodeValue())); //$NON-NLS-1$
         if (order.getSecurity() == null)
-            log.warn("Cannot load security (id=" + ((Node)node).getAttributes().getNamedItem("security").getNodeValue() + ")");
+            log.warn("Cannot load security (id=" + ((Node)node).getAttributes().getNamedItem("security").getNodeValue() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
-        String pluginId = ((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue();
+        String pluginId = ((Node)node).getAttributes().getNamedItem("pluginId").getNodeValue(); //$NON-NLS-1$
         order.setProvider(CorePlugin.createTradeSourcePlugin(pluginId));
         if (order.getProvider() == null)
-            log.warn("Cannot load trade source '" + pluginId + "' for order (id=" + String.valueOf(order.getId()) + ")");
+            log.warn("Cannot load trade source '" + pluginId + "' for order (id=" + String.valueOf(order.getId()) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         order.setPluginId(pluginId);
 
         for (int i = 0; i < node.getLength(); i++)
@@ -2417,7 +2417,7 @@ public class XMLRepository extends Repository
             Node value = item.getFirstChild();
             if (value != null)
             {
-                if (nodeName.equalsIgnoreCase("date") == true)
+                if (nodeName.equalsIgnoreCase("date") == true) //$NON-NLS-1$
                 {
                     try {
                         order.setDate(dateTimeFormat.parse(value.getNodeValue()));
@@ -2426,7 +2426,7 @@ public class XMLRepository extends Repository
                     }
                 }
                 else if (nodeName.equals("exchange")) //$NON-NLS-1$
-                    order.setExchange(new OrderRoute(item.getAttributes().getNamedItem("id").getNodeValue(), value.getNodeValue()));
+                    order.setExchange(new OrderRoute(item.getAttributes().getNamedItem("id").getNodeValue(), value.getNodeValue())); //$NON-NLS-1$
                 else if (nodeName.equals("orderId")) //$NON-NLS-1$
                     order.setOrderId(value.getNodeValue());
                 else if (nodeName.equals("side")) //$NON-NLS-1$
@@ -2451,17 +2451,17 @@ public class XMLRepository extends Repository
                 {
                     order.setAccount((Account)this.accountMap.get(new Integer(value.getNodeValue())));
                     if (order.getAccount() != null)
-                        log.warn("Cannot load account (id=" + value.getNodeValue() + ")");
+                        log.warn("Cannot load account (id=" + value.getNodeValue() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 else if (nodeName.equals("text")) //$NON-NLS-1$
                     order.setText(value.getNodeValue());
                 else if (nodeName.equals("message")) //$NON-NLS-1$
                     order.setMessage(value.getNodeValue());
             }
-            if (nodeName.equalsIgnoreCase("param") == true)
+            if (nodeName.equalsIgnoreCase("param") == true) //$NON-NLS-1$
             {
                 NamedNodeMap map = item.getAttributes();
-                order.getParams().put(map.getNamedItem("key").getNodeValue(), map.getNamedItem("value").getNodeValue());
+                order.getParams().put(map.getNamedItem("key").getNodeValue(), map.getNamedItem("value").getNodeValue()); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         
@@ -2475,79 +2475,79 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
-            root.setAttribute("nextId", String.valueOf(orderNextId));
+            root.setAttribute("nextId", String.valueOf(orderNextId)); //$NON-NLS-1$
             
             for (Iterator iter = allOrders().iterator(); iter.hasNext(); )
             {
                 Order order = (Order)iter.next(); 
 
-                Element element = document.createElement("order");
-                element.setAttribute("id", String.valueOf(order.getId()));
-                element.setAttribute("pluginId", order.getPluginId());
-                element.setAttribute("security", String.valueOf(order.getSecurity().getId()));
+                Element element = document.createElement("order"); //$NON-NLS-1$
+                element.setAttribute("id", String.valueOf(order.getId())); //$NON-NLS-1$
+                element.setAttribute("pluginId", order.getPluginId()); //$NON-NLS-1$
+                element.setAttribute("security", String.valueOf(order.getSecurity().getId())); //$NON-NLS-1$
                 root.appendChild(element);
 
-                Element node = document.createElement("date");
+                Element node = document.createElement("date"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(dateTimeFormat.format(order.getDate())));
                 element.appendChild(node);
                 if (order.getExchange() != null)
                 {
-                    node = document.createElement("exchange");
-                    node.setAttribute("id", order.getExchange().getId());
+                    node = document.createElement("exchange"); //$NON-NLS-1$
+                    node.setAttribute("id", order.getExchange().getId()); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(order.getExchange().toString()));
                     element.appendChild(node);
                 }
-                node = document.createElement("orderId");
+                node = document.createElement("orderId"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(order.getOrderId()));
                 element.appendChild(node);
-                node = document.createElement("side");
+                node = document.createElement("side"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getSide())));
                 element.appendChild(node);
-                node = document.createElement("type");
+                node = document.createElement("type"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getType())));
                 element.appendChild(node);
-                node = document.createElement("quantity");
+                node = document.createElement("quantity"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getQuantity())));
                 element.appendChild(node);
-                node = document.createElement("price");
+                node = document.createElement("price"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getPrice())));
                 element.appendChild(node);
-                node = document.createElement("stopPrice");
+                node = document.createElement("stopPrice"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getStopPrice())));
                 element.appendChild(node);
-                node = document.createElement("filledQuantity");
+                node = document.createElement("filledQuantity"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getFilledQuantity())));
                 element.appendChild(node);
-                node = document.createElement("averagePrice");
+                node = document.createElement("averagePrice"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getAveragePrice())));
                 element.appendChild(node);
                 if (order.getValidity() != null)
                 {
-                    node = document.createElement("validity");
+                    node = document.createElement("validity"); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(String.valueOf(order.getValidity())));
                     element.appendChild(node);
                 }
-                node = document.createElement("status");
+                node = document.createElement("status"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(String.valueOf(order.getStatus())));
                 element.appendChild(node);
                 if (order.getAccount() != null)
                 {
-                    node = document.createElement("account");
+                    node = document.createElement("account"); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(String.valueOf(order.getAccount().getId())));
                     element.appendChild(node);
                 }
                 if (order.getText() != null)
                 {
-                    node = document.createElement("text");
+                    node = document.createElement("text"); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(order.getText()));
                     element.appendChild(node);
                 }
                 if (order.getMessage() != null)
                 {
-                    node = document.createElement("message");
+                    node = document.createElement("message"); //$NON-NLS-1$
                     node.appendChild(document.createTextNode(order.getMessage()));
                     element.appendChild(node);
                 }
@@ -2555,14 +2555,14 @@ public class XMLRepository extends Repository
                 for (Iterator paramIter = order.getParams().keySet().iterator(); paramIter.hasNext(); )
                 {
                     String key = (String)paramIter.next();
-                    node = document.createElement("param");
-                    node.setAttribute("key", key);
-                    node.setAttribute("value", (String)order.getParams().get(key));
+                    node = document.createElement("param"); //$NON-NLS-1$
+                    node.setAttribute("key", key); //$NON-NLS-1$
+                    node.setAttribute("value", (String)order.getParams().get(key)); //$NON-NLS-1$
                     element.appendChild(node);
                 }
             }
             
-            saveDocument(document, "", "orders.xml");
+            saveDocument(document, "", "orders.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -2574,7 +2574,7 @@ public class XMLRepository extends Repository
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             builder.setErrorHandler(errorHandler);
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
             
@@ -2582,23 +2582,23 @@ public class XMLRepository extends Repository
             {
                 Event event = (Event)iter.next(); 
 
-                Element element = document.createElement("event");
+                Element element = document.createElement("event"); //$NON-NLS-1$
                 if (event.getSecurity() != null)
-                    element.setAttribute("security", String.valueOf(event.getSecurity().getId()));
+                    element.setAttribute("security", String.valueOf(event.getSecurity().getId())); //$NON-NLS-1$
                 root.appendChild(element);
 
-                Element node = document.createElement("date");
+                Element node = document.createElement("date"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(dateTimeFormat.format(event.getDate())));
                 element.appendChild(node);
-                node = document.createElement("message");
+                node = document.createElement("message"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(event.getMessage()));
                 element.appendChild(node);
-                node = document.createElement("longMessage");
+                node = document.createElement("longMessage"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(event.getLongMessage()));
                 element.appendChild(node);
             }
             
-            saveDocument(document, "", "events.xml");
+            saveDocument(document, "", "events.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -2610,13 +2610,13 @@ public class XMLRepository extends Repository
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
             try {
-                factory.setAttribute("indent-number", new Integer(4));
+                factory.setAttribute("indent-number", new Integer(4)); //$NON-NLS-1$
             } catch(Exception e) {}
             Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
             DOMSource source = new DOMSource(document);
             
             File file = new File(Platform.getLocation().toFile(), path);

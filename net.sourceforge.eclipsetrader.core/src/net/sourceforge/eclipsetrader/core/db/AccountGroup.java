@@ -18,7 +18,7 @@ import net.sourceforge.eclipsetrader.core.ObservableList;
 public class AccountGroup extends PersistentObject
 {
     private AccountGroup parent;
-    private String description = "";
+    private String description = ""; //$NON-NLS-1$
     private ObservableList groups = new ObservableList();
     private ObservableList accounts;
 

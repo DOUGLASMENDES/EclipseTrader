@@ -13,9 +13,9 @@ package net.sourceforge.eclipsetrader.core.db.feed;
 
 public class TradeSource
 {
-    String tradingProviderId = "";
-    String exchange = "";
-    String symbol = "";
+    String tradingProviderId = ""; //$NON-NLS-1$
+    String exchange = ""; //$NON-NLS-1$
+    String symbol = ""; //$NON-NLS-1$
     Integer accountId;
     int quantity = 1;
     
@@ -40,7 +40,7 @@ public class TradeSource
 
     public void setExchange(String exchange)
     {
-        this.exchange = (exchange != null) ? exchange : "";
+        this.exchange = (exchange != null) ? exchange : ""; //$NON-NLS-1$
     }
 
     public String getSymbol()

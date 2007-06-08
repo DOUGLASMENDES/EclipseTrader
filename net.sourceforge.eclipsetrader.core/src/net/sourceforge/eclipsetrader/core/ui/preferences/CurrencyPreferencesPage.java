@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -63,7 +62,7 @@ public class CurrencyPreferencesPage extends PreferencePage implements IWorkbenc
         content.setLayout(gridLayout);
         
         autoUpdate = new Button(content, SWT.CHECK);
-        autoUpdate.setText("Update currencies when starting feed");
+        autoUpdate.setText(Messages.CurrencyPreferencesPage_AutoUpdate);
         autoUpdate.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
         autoUpdate.setSelection(CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_CURRENCIES));
         

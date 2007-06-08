@@ -32,7 +32,6 @@ import net.sourceforge.eclipsetrader.core.ui.dialogs.FeedSelectionDialog;
 import net.sourceforge.eclipsetrader.core.ui.dialogs.IntradayChartsDialog;
 import net.sourceforge.eclipsetrader.core.ui.dialogs.TradingOptionsDialog;
 import net.sourceforge.eclipsetrader.core.ui.internal.DeleteAction;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.preferences.SecurityPropertiesDialog;
 
 import org.eclipse.jface.action.Action;
@@ -193,7 +192,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
             public void run()
             {
                 Security[] selection = getSelection();
-                FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "quote");
+                FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "quote"); //$NON-NLS-1$
                 if (dlg.open() == Dialog.OK)
                 {
                     FeedSource source = dlg.getFeedSource();
@@ -204,7 +203,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                             FeedSource newSource = new FeedSource();
                             newSource.setId(source.getId());
                             newSource.setExchange(source.getExchange());
-                            newSource.setSymbol(selection[i].getQuoteFeed() != null ? selection[i].getQuoteFeed().getSymbol() : "");
+                            newSource.setSymbol(selection[i].getQuoteFeed() != null ? selection[i].getQuoteFeed().getSymbol() : ""); //$NON-NLS-1$
                             selection[i].setQuoteFeed(newSource);
                         }
                         else
@@ -214,13 +213,13 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 }
             }
         };
-        changeQuoteFeedAction.setText("Quote Feed");
+        changeQuoteFeedAction.setText(Messages.SecuritiesView_QuoteFeedAction);
 
         changeLevel2FeedAction = new Action() {
             public void run()
             {
                 Security[] selection = getSelection();
-                FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "level2");
+                FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "level2"); //$NON-NLS-1$
                 if (dlg.open() == Dialog.OK)
                 {
                     FeedSource source = dlg.getFeedSource();
@@ -231,7 +230,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                             FeedSource newSource = new FeedSource();
                             newSource.setId(source.getId());
                             newSource.setExchange(source.getExchange());
-                            newSource.setSymbol(selection[i].getLevel2Feed() != null ? selection[i].getLevel2Feed().getSymbol() : "");
+                            newSource.setSymbol(selection[i].getLevel2Feed() != null ? selection[i].getLevel2Feed().getSymbol() : ""); //$NON-NLS-1$
                             selection[i].setLevel2Feed(newSource);
                         }
                         else
@@ -241,13 +240,13 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 }
             }
         };
-        changeLevel2FeedAction.setText("Level2 Feed");
+        changeLevel2FeedAction.setText(Messages.SecuritiesView_Level2FeedAction);
 
         changeHistoryFeedAction = new Action() {
             public void run()
             {
                 Security[] selection = getSelection();
-                FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "history");
+                FeedSelectionDialog dlg = new FeedSelectionDialog(table.getShell(), "history"); //$NON-NLS-1$
                 if (dlg.open() == Dialog.OK)
                 {
                     FeedSource source = dlg.getFeedSource();
@@ -258,7 +257,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                             FeedSource newSource = new FeedSource();
                             newSource.setId(source.getId());
                             newSource.setExchange(source.getExchange());
-                            newSource.setSymbol(selection[i].getHistoryFeed() != null ? selection[i].getHistoryFeed().getSymbol() : "");
+                            newSource.setSymbol(selection[i].getHistoryFeed() != null ? selection[i].getHistoryFeed().getSymbol() : ""); //$NON-NLS-1$
                             selection[i].setHistoryFeed(newSource);
                         }
                         else
@@ -268,7 +267,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 }
             }
         };
-        changeHistoryFeedAction.setText("History Feed");
+        changeHistoryFeedAction.setText(Messages.SecuritiesView_HistoryFeedAction);
 
         changeIntradayOptionsAction = new Action() {
             public void run()
@@ -288,7 +287,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 dlg.open();
             }
         };
-        changeIntradayOptionsAction.setText("Intraday Charts");
+        changeIntradayOptionsAction.setText(Messages.SecuritiesView_IntradayChartsAction);
 
         changeTradingOptionsAction = new Action() {
             public void run()
@@ -314,13 +313,13 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 dlg.open();
             }
         };
-        changeTradingOptionsAction.setText("Trading Options");
+        changeTradingOptionsAction.setText(Messages.SecuritiesView_TradingOptionsAction);
 
         IMenuManager menuManager = site.getActionBars().getMenuManager();
         menuManager.add(new Separator("top")); //$NON-NLS-1$
         menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         menuManager.add(new Separator());
-        MenuManager changeMenu = new MenuManager("Change", "change");
+        MenuManager changeMenu = new MenuManager(Messages.SecuritiesView_11, Messages.SecuritiesView_12);
         changeMenu.add(changeQuoteFeedAction);
         changeMenu.add(changeLevel2FeedAction);
         changeMenu.add(changeHistoryFeedAction);
@@ -446,7 +445,7 @@ public class SecuritiesView extends ViewPart implements ICollectionObserver
                 menuManager.add(new Separator("top")); //$NON-NLS-1$
                 menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
                 menuManager.add(new Separator());
-                MenuManager changeMenu = new MenuManager("Change", "change");
+                MenuManager changeMenu = new MenuManager(Messages.SecuritiesView_13, Messages.SecuritiesView_14);
                 changeMenu.add(changeQuoteFeedAction);
                 changeMenu.add(changeLevel2FeedAction);
                 changeMenu.add(changeHistoryFeedAction);

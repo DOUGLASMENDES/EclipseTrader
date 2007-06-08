@@ -9,13 +9,13 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.core.ui.internal;
+package net.sourceforge.eclipsetrader.core.ui.actions;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS
 {
-    private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.core.ui.internal.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.core.ui.actions.messages"; //$NON-NLS-1$
 
     private Messages()
     {
@@ -26,8 +26,8 @@ public class Messages extends NLS
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
     }
-    public static String CopyAction_Text;
-	public static String DeleteAction_ConfirmMessage;
-	public static String DeleteAction_ConfirmTitle;
-	public static String DeleteAction_Text;
+    public static String DeleteSecurityAction_Title;
+    public static String DeleteSecurityAction_Message;
+	public static String PropertiesAction_Text;
+	public static String RefreshCurrenciesAction_JobName;
 }

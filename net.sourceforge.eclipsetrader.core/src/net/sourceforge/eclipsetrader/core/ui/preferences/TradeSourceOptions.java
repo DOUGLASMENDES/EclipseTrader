@@ -22,7 +22,6 @@ import net.sourceforge.eclipsetrader.core.ITradingProvider;
 import net.sourceforge.eclipsetrader.core.db.Account;
 import net.sourceforge.eclipsetrader.core.db.OrderRoute;
 import net.sourceforge.eclipsetrader.core.db.feed.TradeSource;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;

@@ -23,7 +23,6 @@ import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Event;
 import net.sourceforge.eclipsetrader.core.db.PopupEvent;
 import net.sourceforge.eclipsetrader.core.ui.dialogs.EventDetailsDialog;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;

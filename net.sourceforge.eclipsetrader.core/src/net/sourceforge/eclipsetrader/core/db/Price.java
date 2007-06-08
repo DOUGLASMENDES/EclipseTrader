@@ -51,6 +51,6 @@ public class Price
      */
     public String toString()
     {
-        return currency.getSymbol() + " " + String.valueOf(amount);
+        return currency.getSymbol() + " " + String.valueOf(amount); //$NON-NLS-1$
     }
 }

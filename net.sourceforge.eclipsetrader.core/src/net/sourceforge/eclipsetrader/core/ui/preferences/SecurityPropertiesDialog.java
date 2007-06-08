@@ -21,7 +21,6 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
 import net.sourceforge.eclipsetrader.core.db.History;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -414,7 +413,7 @@ public class SecurityPropertiesDialog extends PreferenceDialog
 
         public CommentsPage()
         {
-            super("Notes");
+            super(Messages.SecurityPropertiesDialog_Name);
             noDefaultAndApplyButton();
             setValid(false);
         }

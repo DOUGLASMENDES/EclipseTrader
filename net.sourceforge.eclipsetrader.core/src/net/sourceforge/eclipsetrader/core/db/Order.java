@@ -20,11 +20,11 @@ import net.sourceforge.eclipsetrader.core.ITradingProvider;
 
 public class Order extends PersistentObject
 {
-    String pluginId = "";
+    String pluginId = ""; //$NON-NLS-1$
     ITradingProvider provider;
     Account account;
     OrderRoute exchange;
-    String orderId = "";
+    String orderId = ""; //$NON-NLS-1$
     Date date = Calendar.getInstance().getTime();
     Security security;
     OrderSide side;
@@ -287,21 +287,21 @@ public class Order extends PersistentObject
     public void sendNew()
     {
         if (provider == null)
-            throw new RuntimeException("Invalid argument");
+            throw new RuntimeException("Invalid argument"); //$NON-NLS-1$
         provider.sendNew(this);
     }
 
     public void cancelRequest()
     {
         if (provider == null)
-            throw new RuntimeException("Invalid argument");
+            throw new RuntimeException("Invalid argument"); //$NON-NLS-1$
         provider.sendCancelRequest(this);
     }
 
     public void replaceRequest()
     {
         if (provider == null)
-            throw new RuntimeException("Invalid argument");
+            throw new RuntimeException("Invalid argument"); //$NON-NLS-1$
         provider.sendReplaceRequest(this);
     }
 }

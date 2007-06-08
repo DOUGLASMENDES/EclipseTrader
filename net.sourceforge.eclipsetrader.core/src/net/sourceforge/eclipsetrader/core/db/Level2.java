@@ -30,12 +30,12 @@ public abstract class Level2
 
     public void add(double price)
     {
-        add(price, 1, 1, "");
+        add(price, 1, 1, ""); //$NON-NLS-1$
     }
 
     public void add(double price, int quantity)
     {
-        add(price, quantity, 1, "");
+        add(price, quantity, 1, ""); //$NON-NLS-1$
     }
 
     public void add(double price, String id)
@@ -50,7 +50,7 @@ public abstract class Level2
 
     public void add(double price, int quantity, int number)
     {
-        add(price, quantity, number, "");
+        add(price, quantity, number, ""); //$NON-NLS-1$
     }
 
     public abstract void add(double price, int quantity, int number, String id);

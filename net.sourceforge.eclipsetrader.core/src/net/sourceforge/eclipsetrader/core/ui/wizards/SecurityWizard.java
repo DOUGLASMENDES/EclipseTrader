@@ -17,7 +17,6 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.feed.FeedSource;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 import net.sourceforge.eclipsetrader.core.ui.preferences.FeedOptions;
 import net.sourceforge.eclipsetrader.core.ui.preferences.IntradayDataOptions;
 import net.sourceforge.eclipsetrader.core.ui.preferences.TradeSourceOptions;

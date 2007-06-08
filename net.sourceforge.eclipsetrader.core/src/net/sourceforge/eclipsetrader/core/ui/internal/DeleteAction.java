@@ -27,7 +27,7 @@ public class DeleteAction extends Action
     public DeleteAction(SecuritiesView view)
     {
         this.view = view;
-        setText("&Delete");
+        setText(Messages.DeleteAction_Text);
         ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
         setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
         setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
@@ -39,7 +39,7 @@ public class DeleteAction extends Action
      */
     public void run()
     {
-        if (MessageDialog.openConfirm(view.getViewSite().getShell(), "Security", "Do you really want to delete the selected securities ?"))
+        if (MessageDialog.openConfirm(view.getViewSite().getShell(), Messages.DeleteAction_ConfirmTitle, Messages.DeleteAction_ConfirmMessage))
         {
             Security[] securities = view.getSelection();
             for (int i = 0; i < securities.length; i++)

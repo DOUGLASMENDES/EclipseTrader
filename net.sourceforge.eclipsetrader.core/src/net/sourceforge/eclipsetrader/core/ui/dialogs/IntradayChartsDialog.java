@@ -33,7 +33,7 @@ public class IntradayChartsDialog extends TitleAreaDialog
      */
     protected void configureShell(Shell newShell)
     {
-        newShell.setText("Intraday Charts");
+        newShell.setText(Messages.IntradayChartsDialog_ShellTitle);
         super.configureShell(newShell);
     }
 
@@ -42,8 +42,8 @@ public class IntradayChartsDialog extends TitleAreaDialog
      */
     protected Control createDialogArea(Composite parent)
     {
-        setTitle("Change Intraday Charts");
-        setMessage("Select the options that will be applied to the selected securities");
+        setTitle(Messages.IntradayChartsDialog_DialogTitle);
+        setMessage(Messages.IntradayChartsDialog_Description);
         Control control = intradayDataOptions.createControls((Composite)super.createDialogArea(parent));
         return control;
     }

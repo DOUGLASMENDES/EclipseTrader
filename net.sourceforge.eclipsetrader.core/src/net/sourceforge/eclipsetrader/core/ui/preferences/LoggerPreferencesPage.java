@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -139,7 +138,7 @@ public class LoggerPreferencesPage extends PreferencePage implements IWorkbenchP
         gridLayout.verticalSpacing = 3;
         group.setLayout(gridLayout);
 
-        rootLogger = createLevelCombo(group, Messages.LoggerPreferencesPage_General, preferences.getString("log4j.rootLogger")); //$NON-NLS-2$
+        rootLogger = createLevelCombo(group, Messages.LoggerPreferencesPage_General, preferences.getString("log4j.rootLogger")); //$NON-NLS-1$
 
         List list = Arrays.asList(extensionPoint.getConfigurationElements());
         Collections.sort(list, new Comparator() {

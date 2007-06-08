@@ -45,7 +45,7 @@ public class TradingOptionsDialog extends TitleAreaDialog
      */
     protected void configureShell(Shell newShell)
     {
-        newShell.setText("Trading Options");
+        newShell.setText(Messages.TradingOptionsDialog_ShellTitle);
         super.configureShell(newShell);
     }
 
@@ -54,8 +54,8 @@ public class TradingOptionsDialog extends TitleAreaDialog
      */
     protected Control createDialogArea(Composite parent)
     {
-        setTitle("Change Trading Options");
-        setMessage("Select the trading options that will be applied to the selected securities");
+        setTitle(Messages.TradingOptionsDialog_DialogTitle);
+        setMessage(Messages.TradingOptionsDialog_Description);
         Control control = options.createControls((Composite)super.createDialogArea(parent));
         return control;
     }

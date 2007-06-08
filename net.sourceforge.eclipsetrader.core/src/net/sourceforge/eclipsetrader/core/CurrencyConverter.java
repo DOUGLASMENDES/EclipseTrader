@@ -149,8 +149,8 @@ public class CurrencyConverter extends Observable
             {
                 History history = new History();
                 try {
-                    history.date = dateFormat.parse(item.getAttributes().getNamedItem("date").getNodeValue());
-                    history.ratio = new Double(item.getAttributes().getNamedItem("ratio").getNodeValue());
+                    history.date = dateFormat.parse(item.getAttributes().getNamedItem("date").getNodeValue()); //$NON-NLS-1$
+                    history.ratio = new Double(item.getAttributes().getNamedItem("ratio").getNodeValue()); //$NON-NLS-1$
                 } catch (Exception e) {
                     logger.warn(e);
                 }
@@ -258,7 +258,7 @@ public class CurrencyConverter extends Observable
     public IStatus updateExchanges(IProgressMonitor monitor)
     {
         if (monitor != null)
-            monitor.beginTask("Updating currencies", currencies.size() + 1);
+            monitor.beginTask(Messages.CurrencyConverter_UpdatingTaskName, currencies.size() + 1);
         map.clear();
         
         Object[] symbols = currencies.toArray();
@@ -392,13 +392,13 @@ public class CurrencyConverter extends Observable
     {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, "data", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "data", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
             
             for (Iterator iter = currencies.iterator(); iter.hasNext(); )
             {
-                Element node = document.createElement("currency");
+                Element node = document.createElement("currency"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode((String)iter.next()));
                 root.appendChild(node);
             }
@@ -406,25 +406,25 @@ public class CurrencyConverter extends Observable
             for (Iterator iter = map.keySet().iterator(); iter.hasNext(); )
             {
                 String symbol = (String)iter.next();
-                Element node = document.createElement("conversion");
-                node.setAttribute("symbol", symbol);
-                node.setAttribute("ratio", String.valueOf((Double)map.get(symbol)));
+                Element node = document.createElement("conversion"); //$NON-NLS-1$
+                node.setAttribute("symbol", symbol); //$NON-NLS-1$
+                node.setAttribute("ratio", String.valueOf((Double)map.get(symbol))); //$NON-NLS-1$
                 saveHistory(node, symbol);
                 root.appendChild(node);
             }
 
             TransformerFactory factory = TransformerFactory.newInstance();
             try {
-                factory.setAttribute("indent-number", new Integer(4));
+                factory.setAttribute("indent-number", new Integer(4)); //$NON-NLS-1$
             } catch(Exception e) {}
             Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
             DOMSource source = new DOMSource(document);
             
-            File file = new File(Platform.getLocation().toFile(), "currencies.xml");
+            File file = new File(Platform.getLocation().toFile(), "currencies.xml"); //$NON-NLS-1$
             
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
             StreamResult result = new StreamResult(out);
@@ -458,9 +458,9 @@ public class CurrencyConverter extends Observable
             for (Iterator iter = list.iterator(); iter.hasNext(); )
             {
                 History history = (History)iter.next();
-                Element node = document.createElement("history");
-                node.setAttribute("date", dateFormat.format(history.date));
-                node.setAttribute("ratio", String.valueOf(history.ratio));
+                Element node = document.createElement("history"); //$NON-NLS-1$
+                node.setAttribute("date", dateFormat.format(history.date)); //$NON-NLS-1$
+                node.setAttribute("ratio", String.valueOf(history.ratio)); //$NON-NLS-1$
                 root.appendChild(node);
             }
         }
@@ -470,11 +470,11 @@ public class CurrencyConverter extends Observable
     {
         Double result = null;
         
-        StringBuffer url = new StringBuffer("http://quote.yahoo.com/download/javasoft.beans?symbols=");
-        url = url.append(symbol + "=X");
-        url.append("&format=sl1d1t1c1ohgvbap");
+        StringBuffer url = new StringBuffer("http://quote.yahoo.com/download/javasoft.beans?symbols="); //$NON-NLS-1$
+        url = url.append(symbol + "=X"); //$NON-NLS-1$
+        url.append("&format=sl1d1t1c1ohgvbap"); //$NON-NLS-1$
         
-        String line = "";
+        String line = ""; //$NON-NLS-1$
         try
         {
             HttpClient client = new HttpClient();
@@ -495,12 +495,12 @@ public class CurrencyConverter extends Observable
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((line = in.readLine()) != null)
             {
-                String[] item = line.split(",");
-                if (line.indexOf(";") != -1)
-                    item = line.split(";");
+                String[] item = line.split(","); //$NON-NLS-1$
+                if (line.indexOf(";") != -1) //$NON-NLS-1$
+                    item = line.split(";"); //$NON-NLS-1$
                 
                 // 1 = Last price or N/A
-                if (item[1].equalsIgnoreCase("N/A") == false)
+                if (item[1].equalsIgnoreCase(Messages.CurrencyConverter_NA) == false)
                     result = new Double(numberFormat.parse(item[1]).doubleValue());
                 // 2 = Date
                 // 3 = Time

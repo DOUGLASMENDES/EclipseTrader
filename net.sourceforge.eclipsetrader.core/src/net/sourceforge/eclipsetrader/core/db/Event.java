@@ -18,8 +18,8 @@ public class Event extends PersistentObject
 {
     private Date date;
     private Security security;
-    private String message = "";
-    private String longMessage = "";
+    private String message = ""; //$NON-NLS-1$
+    private String longMessage = ""; //$NON-NLS-1$
 
     public Event()
     {

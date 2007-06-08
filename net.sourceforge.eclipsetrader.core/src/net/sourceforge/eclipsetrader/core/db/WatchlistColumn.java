@@ -16,7 +16,7 @@ package net.sourceforge.eclipsetrader.core.db;
  */
 public class WatchlistColumn
 {
-    String id = "";
+    String id = ""; //$NON-NLS-1$
     
     public WatchlistColumn()
     {

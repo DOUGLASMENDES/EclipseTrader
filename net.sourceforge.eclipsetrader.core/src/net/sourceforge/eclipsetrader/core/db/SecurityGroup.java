@@ -17,8 +17,8 @@ import net.sourceforge.eclipsetrader.core.ObservableList;
 
 public class SecurityGroup extends PersistentObject
 {
-    String code = "";
-    String description = "";
+    String code = ""; //$NON-NLS-1$
+    String description = ""; //$NON-NLS-1$
     Currency currency;
     SecurityGroup group;
     ObservableList groups = new ObservableList();

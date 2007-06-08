@@ -21,7 +21,7 @@ import net.sourceforge.eclipsetrader.core.db.visitors.IChartVisitor;
 
 public class Chart extends PersistentObject implements Observer
 {
-    private String title = "";
+    private String title = ""; //$NON-NLS-1$
     private Security security;
     private int compression = BarData.INTERVAL_DAILY;
     private int period = 0;

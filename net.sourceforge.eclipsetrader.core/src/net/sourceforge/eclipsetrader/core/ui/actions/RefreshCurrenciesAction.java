@@ -53,7 +53,7 @@ public class RefreshCurrenciesAction implements IWorkbenchWindowActionDelegate, 
     public void run(final IAction action)
     {
         action.setEnabled(false);
-        Job job = new Job("Update currencies") {
+        Job job = new Job(Messages.RefreshCurrenciesAction_JobName) {
             protected IStatus run(IProgressMonitor monitor)
             {
                 IStatus result = CurrencyConverter.getInstance().updateExchanges(monitor); 

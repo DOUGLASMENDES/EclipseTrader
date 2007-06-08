@@ -13,9 +13,9 @@ package net.sourceforge.eclipsetrader.core.db.feed;
 
 public class FeedSource
 {
-    private String id = "";
-    private String exchange = "";
-    private String symbol = "";
+    private String id = ""; //$NON-NLS-1$
+    private String exchange = ""; //$NON-NLS-1$
+    private String symbol = ""; //$NON-NLS-1$
     
     public FeedSource()
     {
@@ -38,7 +38,7 @@ public class FeedSource
 
     public void setExchange(String exchange)
     {
-        this.exchange = (exchange != null) ? exchange : "";
+        this.exchange = (exchange != null) ? exchange : ""; //$NON-NLS-1$
     }
 
     public String getSymbol()

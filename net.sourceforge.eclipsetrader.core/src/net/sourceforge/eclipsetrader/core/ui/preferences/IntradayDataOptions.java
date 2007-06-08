@@ -17,7 +17,6 @@ import java.util.Calendar;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;

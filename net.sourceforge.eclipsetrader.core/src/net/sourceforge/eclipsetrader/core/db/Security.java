@@ -33,8 +33,8 @@ public class Security extends PersistentObject
     public static final int THU = 0x0010;
     public static final int FRI = 0x0020;
     public static final int SAT = 0x0040;
-    String code = "";
-    String description = "";
+    String code = ""; //$NON-NLS-1$
+    String description = ""; //$NON-NLS-1$
     Currency currency;
     SecurityGroup group;
     FeedSource quoteFeed;
@@ -57,7 +57,7 @@ public class Security extends PersistentObject
     int keepDays = 1;
     List splits = new ArrayList();
     List dividends = new ArrayList();
-    String comment = "";
+    String comment = ""; //$NON-NLS-1$
 
     public Security()
     {
@@ -500,6 +500,6 @@ public class Security extends PersistentObject
      */
     public String toString()
     {
-        return getCode() + " - " + getDescription();
+        return getCode() + " - " + getDescription(); //$NON-NLS-1$
     }
 }

@@ -98,7 +98,7 @@
   <page
         class="net.sourceforge.eclipsetrader.core.ui.preferences.LoggerPreferencesPage"
         id="net.sourceforge.eclipsetrader.core.logging"
-        name="Logging"/>
+        name="%loggin.preferencePage.name"/>
    </extension>
    <extension
          point="org.eclipse.ui.themes">
@@ -167,7 +167,7 @@
          <action
                class="net.sourceforge.eclipsetrader.core.ui.actions.SetExchangeRateAction"
                id="net.sourceforge.eclipsetrader.setExchangeRate"
-               label="Set Exchange Rate..."
+               label="%exchangeRate.action.label"
                menubarPath="additions"
                style="push"/>
          <action
@@ -182,10 +182,10 @@
          point="net.sourceforge.eclipsetrader.core.loggingPreferences">
       <logger
             defaultValue="info"
-            description="Apache HttpClient"
+            description="%logger.httpclient.description"
             name="org.apache.commons.httpclient;httpclient"/>
       <layout
-            description="Extended"
+            description="%logger.layout.extended.description"
             pattern="%%d{ABSOLUTE} %5p %c:%L - %m%n"/>
    </extension>
 

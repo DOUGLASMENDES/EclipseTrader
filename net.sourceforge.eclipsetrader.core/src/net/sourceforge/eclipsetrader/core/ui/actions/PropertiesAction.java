@@ -27,7 +27,7 @@ public abstract class PropertiesAction extends Action
 
     public PropertiesAction()
     {
-        setText("P&roperties");
+        setText(Messages.PropertiesAction_Text);
         setActionDefinitionId("org.eclipse.ui.file.properties"); //$NON-NLS-1$
         setEnabled(false);
     }

@@ -24,7 +24,7 @@ import net.sourceforge.eclipsetrader.core.ObservableList;
 public class Watchlist extends PersistentObject
 {
     private int style = 0;
-    private String description = "";
+    private String description = ""; //$NON-NLS-1$
     private Currency currency;
     private String defaultFeed;
     private List columns = new ArrayList();

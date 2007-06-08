@@ -132,7 +132,7 @@ public class CorePlugin extends AbstractUIPlugin
     {
         super.start(context);
 
-        System.setProperty("workspace_loc", Platform.getLocation().toPortableString());
+        System.setProperty("workspace_loc", Platform.getLocation().toPortableString()); //$NON-NLS-1$
         configureLogging();
         
         LogListener logListener = new LogListener();
@@ -173,13 +173,13 @@ public class CorePlugin extends AbstractUIPlugin
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement element = members[i]; 
-                if (element.getName().equals("logger"))
+                if (element.getName().equals("logger")) //$NON-NLS-1$
                 {
-                    if (element.getAttribute("defaultValue") != null)
+                    if (element.getAttribute("defaultValue") != null) //$NON-NLS-1$
                     {
-                        String[] item = element.getAttribute("name").split(";");
+                        String[] item = element.getAttribute("name").split(";"); //$NON-NLS-1$ //$NON-NLS-2$
                         for (int x = 0; x < item.length; x++)
-                            preferences.setDefault("log4j.logger." + item[x], element.getAttribute("defaultValue"));
+                            preferences.setDefault("log4j.logger." + item[x], element.getAttribute("defaultValue")); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
             }
@@ -196,7 +196,7 @@ public class CorePlugin extends AbstractUIPlugin
                 }
 
                 // Read the values from the user's configuration
-                File file = CorePlugin.getDefault().getStateLocation().append("log4j.properties").toFile();
+                File file = CorePlugin.getDefault().getStateLocation().append("log4j.properties").toFile(); //$NON-NLS-1$
                 if (file.exists())
                     preferences.load(new FileInputStream(file));
             } catch(Exception e) {
@@ -247,7 +247,7 @@ public class CorePlugin extends AbstractUIPlugin
         {
             try
             {
-                Class clazz = Class.forName("net.sourceforge.eclipsetrader.core.RepositoryImpl");
+                Class clazz = Class.forName("net.sourceforge.eclipsetrader.core.RepositoryImpl"); //$NON-NLS-1$
                 repository = (Repository)clazz.newInstance();
             }
             catch (Exception e)

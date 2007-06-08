@@ -30,8 +30,8 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 
 public abstract class Account extends PersistentObject implements Cloneable
 {
-    private String pluginId = "";
-    private String description = "";
+    private String pluginId = ""; //$NON-NLS-1$
+    private String description = ""; //$NON-NLS-1$
     private Currency currency = null;
     private double initialBalance = 0;
     private AccountGroup group = null;

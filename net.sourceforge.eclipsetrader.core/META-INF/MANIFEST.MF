@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Core
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.core; singleton:=true
 Bundle-Version: 0.30.0
 Bundle-Activator: net.sourceforge.eclipsetrader.core.CorePlugin
-Bundle-Vendor: EclipseTrader
+Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
@@ -13,7 +13,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Export-Package: net.sourceforge.eclipsetrader.core,
  net.sourceforge.eclipsetrader.core.db,
  net.sourceforge.eclipsetrader.core.db.feed,
- net.sourceforge.eclipsetrader.core.db.internal,
  net.sourceforge.eclipsetrader.core.db.trading,
  net.sourceforge.eclipsetrader.core.db.visitors,
  net.sourceforge.eclipsetrader.core.internal,

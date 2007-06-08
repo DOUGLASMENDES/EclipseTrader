@@ -50,12 +50,12 @@ public class LabelProvidersRegistry
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("targetID").equals(targetId))
+                if (item.getAttribute("targetID").equals(targetId)) //$NON-NLS-1$
                 {
                     IConfigurationElement[] children = item.getChildren();
                     for (int ii = 0; ii < children.length; ii++)
                     {
-                        String id = children[ii].getAttribute("id");
+                        String id = children[ii].getAttribute("id"); //$NON-NLS-1$
                         map.put(id, children[ii]);
                     }
                 }
@@ -70,12 +70,12 @@ public class LabelProvidersRegistry
      */
     public String getName(String id)
     {
-        String name = "";
+        String name = ""; //$NON-NLS-1$
         IConfigurationElement element = (IConfigurationElement)map.get(id);
         if (element != null)
         {
-            if (element.getAttribute("name") != null)
-                name = element.getAttribute("name");
+            if (element.getAttribute("name") != null) //$NON-NLS-1$
+                name = element.getAttribute("name"); //$NON-NLS-1$
         }
         return name;
     }
@@ -91,11 +91,11 @@ public class LabelProvidersRegistry
         IConfigurationElement element = (IConfigurationElement)map.get(id);
         if (element != null)
         {
-            if ("left".equals(element.getAttribute("orientation")))
+            if ("left".equals(element.getAttribute("orientation"))) //$NON-NLS-1$ //$NON-NLS-2$
                 return SWT.LEFT;
-            if ("right".equals(element.getAttribute("orientation")))
+            if ("right".equals(element.getAttribute("orientation"))) //$NON-NLS-1$ //$NON-NLS-2$
                 return SWT.RIGHT;
-            if ("center".equals(element.getAttribute("orientation")))
+            if ("center".equals(element.getAttribute("orientation"))) //$NON-NLS-1$ //$NON-NLS-2$
                 return SWT.CENTER;
         }
         return SWT.LEFT;
@@ -112,12 +112,12 @@ public class LabelProvidersRegistry
         Collections.sort(list, new Comparator() {
             public int compare(Object o1, Object o2)
             {
-                String s1 = "";
-                String s2 = "";
-                if (((IConfigurationElement)o1).getAttribute("name") != null)
-                    s1 = ((IConfigurationElement)o1).getAttribute("name");
-                if (((IConfigurationElement)o2).getAttribute("name") != null)
-                    s2 = ((IConfigurationElement)o2).getAttribute("name");
+                String s1 = ""; //$NON-NLS-1$
+                String s2 = ""; //$NON-NLS-1$
+                if (((IConfigurationElement)o1).getAttribute("name") != null) //$NON-NLS-1$
+                    s1 = ((IConfigurationElement)o1).getAttribute("name"); //$NON-NLS-1$
+                if (((IConfigurationElement)o2).getAttribute("name") != null) //$NON-NLS-1$
+                    s2 = ((IConfigurationElement)o2).getAttribute("name"); //$NON-NLS-1$
                 return s1.compareTo(s2);
             }
         });
@@ -138,7 +138,7 @@ public class LabelProvidersRegistry
         if (element != null)
         {
             try {
-                Object obj = element.createExecutableExtension("class");
+                Object obj = element.createExecutableExtension("class"); //$NON-NLS-1$
                 return (ILabelProvider)obj;
             } catch(Exception e) {
                 LogFactory.getLog(LabelProvidersRegistry.class).error(e, e);

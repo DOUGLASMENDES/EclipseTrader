@@ -62,7 +62,7 @@ public class WizardPageAdapter extends WizardPage
 
     public WizardPageAdapter(IPreferencePage preferencePage)
     {
-        super("");
+        super(""); //$NON-NLS-1$
         setTitle(preferencePage.getTitle());
         setDescription(preferencePage.getDescription());
         preferencePage.setContainer(preferencePageContainer);

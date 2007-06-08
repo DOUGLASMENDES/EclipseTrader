@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 
 import net.sourceforge.eclipsetrader.core.CurrencyConverter;
-import net.sourceforge.eclipsetrader.core.ui.internal.Messages;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;

@@ -42,7 +42,7 @@ public class FeedSelectionDialog extends TitleAreaDialog
      */
     protected void configureShell(Shell newShell)
     {
-        newShell.setText("Feed");
+        newShell.setText(Messages.FeedSelectionDialog_ShellTitle);
         super.configureShell(newShell);
     }
 
@@ -51,8 +51,8 @@ public class FeedSelectionDialog extends TitleAreaDialog
      */
     protected Control createDialogArea(Composite parent)
     {
-        setTitle("Change Feed");
-        setMessage("Select the feed that will be applied to the selected securities");
+        setTitle(Messages.FeedSelectionDialog_DialogTitle);
+        setMessage(Messages.FeedSelectionDialog_Description);
         Control control = feedOptions.createControls((Composite)super.createDialogArea(parent));
         return control;
     }

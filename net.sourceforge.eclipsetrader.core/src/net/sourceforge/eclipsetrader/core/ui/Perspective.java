@@ -16,8 +16,8 @@ import org.eclipse.ui.IPerspectiveFactory;
 
 public class Perspective implements IPerspectiveFactory
 {
-    public static final String PERSPECTIVE_ID = "net.sourceforge.eclipsetrader";
-    public static final String EDITOR_AREA = "center";
+    public static final String PERSPECTIVE_ID = "net.sourceforge.eclipsetrader"; //$NON-NLS-1$
+    public static final String EDITOR_AREA = "center"; //$NON-NLS-1$
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui.IPageLayout)
@@ -26,8 +26,8 @@ public class Perspective implements IPerspectiveFactory
     {
         layout.setEditorAreaVisible(false);
         layout.createPlaceholderFolder(EDITOR_AREA, IPageLayout.LEFT, 1.00f, IPageLayout.ID_EDITOR_AREA);
-        layout.createPlaceholderFolder("left", IPageLayout.LEFT, 0.20f, EDITOR_AREA);
-        layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.80f, EDITOR_AREA);
-        layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.70f, EDITOR_AREA);
+        layout.createPlaceholderFolder("left", IPageLayout.LEFT, 0.20f, EDITOR_AREA); //$NON-NLS-1$
+        layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.80f, EDITOR_AREA); //$NON-NLS-1$
+        layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.70f, EDITOR_AREA); //$NON-NLS-1$
     }
 }

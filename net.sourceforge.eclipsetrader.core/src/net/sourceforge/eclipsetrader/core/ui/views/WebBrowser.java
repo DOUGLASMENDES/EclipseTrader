@@ -38,7 +38,7 @@ import org.eclipse.ui.part.ViewPart;
 
 public class WebBrowser extends ViewPart
 {
-    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.webbrowser";
+    public static final String VIEW_ID = "net.sourceforge.eclipsetrader.webbrowser"; //$NON-NLS-1$
     private ToolItem back;
     private ToolItem forward;
     private Combo combo;
@@ -55,7 +55,7 @@ public class WebBrowser extends ViewPart
     {
         if (site.getSecondaryId() != null)
         {
-            String partName = CorePlugin.getDefault().getPreferenceStore().getString(WebBrowser.VIEW_ID + ":" + site.getSecondaryId());
+            String partName = CorePlugin.getDefault().getPreferenceStore().getString(WebBrowser.VIEW_ID + ":" + site.getSecondaryId()); //$NON-NLS-1$
             if (partName.length() != 0)
                 setPartName(partName);
         }
@@ -119,7 +119,7 @@ public class WebBrowser extends ViewPart
         back.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_BACKWARD));
         back.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_BACKWARD));
         back.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_BACKWARD));
-        back.setToolTipText("Back");
+        back.setToolTipText(Messages.WebBrowser_Back);
         back.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event)
             {
@@ -131,7 +131,7 @@ public class WebBrowser extends ViewPart
         forward.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_FORWARD));
         forward.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_FORWARD));
         forward.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_FORWARD));
-        forward.setToolTipText("Forward");
+        forward.setToolTipText(Messages.WebBrowser_Forward);
         forward.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event)
             {
@@ -144,7 +144,7 @@ public class WebBrowser extends ViewPart
         stop.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_STOP));
         stop.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_STOP));
         stop.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_STOP));
-        stop.setToolTipText("Stop");
+        stop.setToolTipText(Messages.WebBrowser_Stop);
         stop.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event)
             {
@@ -156,7 +156,7 @@ public class WebBrowser extends ViewPart
         refresh.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_REFRESH));
         refresh.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_REFRESH));
         refresh.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_REFRESH));
-        refresh.setToolTipText("Refresh");
+        refresh.setToolTipText(Messages.WebBrowser_Refresh);
         refresh.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event)
             {
@@ -195,7 +195,7 @@ public class WebBrowser extends ViewPart
         go.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_GO));
         go.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_GO));
         go.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_GO));
-        go.setToolTipText("Go");
+        go.setToolTipText(Messages.WebBrowser_Go);
         go.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event)
             {
