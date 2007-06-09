@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,9 @@
 
 package net.sourceforge.eclipsetrader.yahoo.wizards;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -26,6 +29,7 @@ import net.sourceforge.eclipsetrader.yahoo.YahooPlugin;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -129,9 +133,16 @@ public class SecurityPage extends WizardPage implements ISecurityPage
 
         try
         {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        	InputStream is = null;
+        	File file = YahooPlugin.getDefault().getStateLocation().append("securities.xml").toFile(); //$NON-NLS-1$
+        	if (file.exists())
+        		is = new FileInputStream(file);
+        	if (is == null)
+        		FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("data/securities.xml"), false); //$NON-NLS-1$
+            
+        	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("data/securities.xml"), false)); //$NON-NLS-1$
+            Document document = builder.parse(is);
 
             Node firstNode = document.getFirstChild();
 
@@ -152,7 +163,8 @@ public class SecurityPage extends WizardPage implements ISecurityPage
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+        	Status status = new Status(Status.ERROR, YahooPlugin.PLUGIN_ID, -1, Messages.SecurityPage_ErrorMessage, ex);
+            YahooPlugin.getDefault().getLog().log(status);
         }
         
         for (int i = 0; i < table.getColumnCount(); i++)
@@ -161,9 +173,9 @@ public class SecurityPage extends WizardPage implements ISecurityPage
         search.setFocus();
     }
     
-    public List getSelectedSecurities()
+    public List<Security> getSelectedSecurities()
     {
-        List list = new ArrayList();
+        List<Security> list = new ArrayList<Security>();
 
         TableItem[] tableItem = table.getSelection();
         for (int i = 0; i < tableItem.length; i++)

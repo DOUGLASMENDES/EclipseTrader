@@ -38,6 +38,18 @@
       </actionSet>
    </extension>
    <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            class="net.sourceforge.eclipsetrader.yahoo.internal.updater.ui.SecuritiesListImportWizard"
+            icon="icons/yahoo.gif"
+            id="net.sourceforge.eclipsetrader.yahoo.import.securities"
+            name="%securities.import.wizard.name">
+         <description>
+            %securities.import.wizard.description
+         </description>
+      </wizard>
+   </extension>
+   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="net.sourceforge.eclipsetrader.plugins"

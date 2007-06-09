@@ -48,6 +48,8 @@ public class Messages extends NLS {
 
 	public static String SecurityPage_DescriptionColumnName;
 
+	public static String SecurityPage_ErrorMessage;
+
 	public static String SecurityPage_Search;
 
 	public static String SecurityPage_Title;

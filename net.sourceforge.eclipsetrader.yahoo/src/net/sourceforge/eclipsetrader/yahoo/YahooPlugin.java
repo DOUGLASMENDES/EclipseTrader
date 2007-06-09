@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,11 @@
 
 package net.sourceforge.eclipsetrader.yahoo;
 
-import org.eclipse.ui.plugin.*;
+import java.io.File;
+import java.net.URL;
+
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 public class YahooPlugin extends AbstractUIPlugin
@@ -36,6 +39,19 @@ public class YahooPlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
+        
+        // Delete outdated securities lists
+        String[] files = new String[] { 
+        		"securities.xml", "securities_de.xml", "securities_fr.xml", }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		for (int i = 0; i < files.length; i++) {
+			URL url = context.getBundle().getEntry("/data/" + files[i]); //$NON-NLS-1$
+			if (url != null) {
+				File bundledList = new File(url.toExternalForm());
+				File userList = getStateLocation().append(files[i]).toFile();
+				if (bundledList.lastModified() > userList.lastModified())
+					userList.delete();
+			}
+		}
     }
 
     /**

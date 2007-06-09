@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2006 Marco Maccaferri and others.
+ * Copyright (c) 2004-2007 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,9 @@
 
 package net.sourceforge.eclipsetrader.yahoo.wizards;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -129,9 +132,16 @@ public class FrenchSecurityPage extends WizardPage implements ISecurityPage
 
         try
         {
+        	InputStream is = null;
+        	File file = YahooPlugin.getDefault().getStateLocation().append("securities_fr.xml").toFile(); //$NON-NLS-1$
+        	if (file.exists())
+        		is = new FileInputStream(file);
+        	if (is == null)
+        		FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("data/securities_fr.xml"), false); //$NON-NLS-1$
+            
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(FileLocator.openStream(YahooPlugin.getDefault().getBundle(), new Path("data/securities_fr.xml"), false)); //$NON-NLS-1$
+            Document document = builder.parse(is);
 
             Node firstNode = document.getFirstChild();
 
