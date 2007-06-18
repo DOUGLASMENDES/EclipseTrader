@@ -8,6 +8,7 @@
    <extension-point id="loggingPreferences" name="Logging Preferences" schema="schema/loggingPreferences.exsd"/>
    <extension-point id="tradingProviders" name="Trading Providers" schema="schema/tradingProviders.exsd"/>
    <extension-point id="viewLabelProviders" name="View Label Providers" schema="schema/viewLabelProviders.exsd"/>
+   <extension-point id="customRepository" name="Custom Repository" schema="schema/customRepository.exsd"/>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet

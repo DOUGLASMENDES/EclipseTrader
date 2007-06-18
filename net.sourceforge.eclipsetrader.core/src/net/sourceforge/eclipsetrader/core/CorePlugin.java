@@ -61,6 +61,7 @@ public class CorePlugin extends AbstractUIPlugin
     public static final String ACCOUNT_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".accountProviders"; //$NON-NLS-1$
     public static final String LABEL_PROVIDERS_EXTENSION_POINT = PLUGIN_ID + ".viewLabelProviders"; //$NON-NLS-1$
     public static final String LOGGER_PREFERENCES_EXTENSION_POINT = PLUGIN_ID + ".loggingPreferences"; //$NON-NLS-1$
+	public static final String REPOSITORY_PREFERENCES_EXTENSION_POINT = PLUGIN_ID + ".customRepository"; //$NON-NLS-1$
     public static final String FEED_RUNNING = "FEED_RUNNING"; //$NON-NLS-1$
     public static final String PREFS_ENABLE_HTTP_PROXY = "ENABLE_HTTP_PROXY"; //$NON-NLS-1$
     public static final String PREFS_PROXY_HOST_ADDRESS = "PROXY_HOST_ADDRESS"; //$NON-NLS-1$
@@ -241,22 +242,36 @@ public class CorePlugin extends AbstractUIPlugin
         return plugin;
     }
 
-    public static Repository getRepository()
-    {
-        if (repository == null)
-        {
-            try
-            {
-                Class clazz = Class.forName("net.sourceforge.eclipsetrader.core.RepositoryImpl"); //$NON-NLS-1$
-                repository = (Repository)clazz.newInstance();
-            }
-            catch (Exception e)
-            {
-                repository = new XMLRepository();
-            }
-        }
-        return repository;
-    }
+   	public static Repository getRepository() {
+		if (repository == null) {
+			IExtensionRegistry registry = Platform.getExtensionRegistry();
+			IExtensionPoint extensionPoint = registry.getExtensionPoint(CorePlugin.REPOSITORY_PREFERENCES_EXTENSION_POINT);
+			IConfigurationElement[] members = extensionPoint.getConfigurationElements();
+			if (members.length > 0) {
+				IConfigurationElement element = members[0];
+				if (element.getName().equals("repository")) {
+					if (element.getAttribute("value") != null) {
+						try {
+							Object ooo = element.createExecutableExtension("value");
+							repository = (Repository) ooo;
+						} catch (Exception e) {
+							repository = new XMLRepository();
+						}
+					}
+				}
+			}
+
+			if (repository == null) {
+				try {
+					Class clazz = Class.forName("net.sourceforge.eclipsetrader.core.RepositoryImpl");
+					repository = (Repository) clazz.newInstance();
+				} catch (Exception e) {
+					repository = new XMLRepository();
+				}
+			}
+		}
+		return repository;
+	}
 
     /**
      * Returns an image descriptor for the image file at the given
