@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="net.sourceforge.eclipsetrader"
+            class="net.sourceforge.eclipsetrader.internal.ui.views.explorer.SecurityExplorer"
+            id="net.sourceforge.eclipsetrader.views.explorer"
+            name="Security Explorer"/>
+   </extension>
+
+</plugin>
