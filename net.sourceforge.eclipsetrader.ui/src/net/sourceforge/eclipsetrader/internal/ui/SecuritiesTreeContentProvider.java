@@ -11,8 +11,8 @@
 
 package net.sourceforge.eclipsetrader.internal.ui;
 
-import java.util.List;
-
+import net.sourceforge.eclipsetrader.core.CorePlugin;
+import net.sourceforge.eclipsetrader.core.ICollectionObserver;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 
@@ -20,6 +20,19 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 public class SecuritiesTreeContentProvider implements ITreeContentProvider {
+	private Viewer viewer;
+	
+	private ICollectionObserver collectionObserver = new ICollectionObserver() {
+        public void itemAdded(Object o) {
+			((InstrumentsInput) viewer.getInput()).refresh();
+			viewer.refresh();
+        }
+
+        public void itemRemoved(Object o) {
+			((InstrumentsInput) viewer.getInput()).refresh();
+			viewer.refresh();
+        }
+	};
 
 	public SecuritiesTreeContentProvider() {
 	}
@@ -57,7 +70,9 @@ public class SecuritiesTreeContentProvider implements ITreeContentProvider {
 	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 	 */
 	public Object[] getElements(Object inputElement) {
-		return ((List)inputElement).toArray();
+		if (inputElement instanceof InstrumentsInput)
+			return ((InstrumentsInput) inputElement).getRootItems();
+		return new Object[0];
 	}
 
 	/* (non-Javadoc)
@@ -70,5 +85,16 @@ public class SecuritiesTreeContentProvider implements ITreeContentProvider {
 	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		this.viewer = viewer;
+
+		if (oldInput != null && newInput == null) {
+			CorePlugin.getRepository().allSecurities().addCollectionObserver(collectionObserver);
+			CorePlugin.getRepository().allSecurityGroups().addCollectionObserver(collectionObserver);
+		}
+		
+		if (oldInput == null && newInput != null) {
+			CorePlugin.getRepository().allSecurities().removeCollectionObserver(collectionObserver);
+			CorePlugin.getRepository().allSecurityGroups().removeCollectionObserver(collectionObserver);
+		}
 	}
 }

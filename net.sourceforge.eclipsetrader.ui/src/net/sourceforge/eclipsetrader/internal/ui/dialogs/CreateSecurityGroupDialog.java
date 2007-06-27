@@ -11,15 +11,14 @@
 
 package net.sourceforge.eclipsetrader.internal.ui.dialogs;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
-import net.sourceforge.eclipsetrader.internal.ui.SecuritiesTreeContentProvider;
+import net.sourceforge.eclipsetrader.internal.ui.InstrumentsInput;
 import net.sourceforge.eclipsetrader.internal.ui.SecuritiesLabelProvider;
+import net.sourceforge.eclipsetrader.internal.ui.SecuritiesTreeContentProvider;
 import net.sourceforge.eclipsetrader.internal.ui.SecuritiesTreeViewerComparator;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -69,7 +68,11 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
     	parent.setLayout(new GridLayout(2, false));
     	parent.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		Label label = new Label(parent, SWT.NONE);
+		label.setText("Select the parent group:");
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+
+    	viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
         viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         ((GridData)viewer.getControl().getLayoutData()).heightHint = 250;
 		viewer.setContentProvider(new SecuritiesTreeContentProvider());
@@ -81,9 +84,11 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
 		});
 		viewer.setLabelProvider(new DecoratingLabelProvider(new SecuritiesLabelProvider(), null));
 		viewer.setComparator(new SecuritiesTreeViewerComparator());
-		viewer.setInput(getInput());
 		
-		Label label = new Label(parent, SWT.NONE);
+		viewer.setInput(new InstrumentsInput());
+		viewer.expandAll();
+		
+		label = new Label(parent, SWT.NONE);
 		label.setText("Group name:");
 		groupName = new Text(parent, SWT.BORDER);
 		groupName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -150,16 +155,4 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
 		}
 		return false;
     }
-
-	protected List getInput() {
-		List list = new ArrayList();
-
-		for (Iterator<SecurityGroup> iter = CorePlugin.getRepository().allSecurityGroups().iterator(); iter.hasNext();) {
-			SecurityGroup g = iter.next();
-			if (g.getParentGroup() == null)
-				list.add(g);
-		}
-
-		return list;
-	}
 }

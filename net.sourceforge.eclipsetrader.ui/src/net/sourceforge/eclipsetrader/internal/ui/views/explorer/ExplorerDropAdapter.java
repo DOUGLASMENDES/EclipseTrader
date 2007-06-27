@@ -13,6 +13,7 @@ package net.sourceforge.eclipsetrader.internal.ui.views.explorer;
 
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
+import net.sourceforge.eclipsetrader.internal.ui.InstrumentsInput;
 
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
@@ -49,6 +50,7 @@ public class ExplorerDropAdapter extends ViewerDropAdapter {
 				((SecurityGroup) objects[i]).setParentGroup(newParentGroup);
 		}
 
+		((InstrumentsInput) getViewer().getInput()).refresh();
 		getViewer().refresh();
 
 		return true;

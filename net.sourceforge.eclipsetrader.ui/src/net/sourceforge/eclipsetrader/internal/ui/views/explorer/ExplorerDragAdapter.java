@@ -48,13 +48,9 @@ public class ExplorerDragAdapter extends DragSourceAdapter {
     public void dragSetData(DragSourceEvent event) {
     	Object[] selection = ((IStructuredSelection) viewer.getSelection()).toArray();
     	
-    	if (ExplorerTransfer.getInstance().isSupportedType(event.dataType)) {
-        	if (ExplorerTransfer.getInstance().checkMyType(selection))
-            	event.data = selection;
-    	}
-    	else if (SecurityTransfer.getInstance().isSupportedType(event.dataType)) {
-        	if (SecurityTransfer.getInstance().checkMyType(selection))
-            	event.data = selection;
-    	}
+    	if (ExplorerTransfer.getInstance().isSupportedType(event.dataType))
+           	event.data = selection;
+    	else if (SecurityTransfer.getInstance().isSupportedType(event.dataType))
+           	event.data = selection;
     }
 }
