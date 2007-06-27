@@ -355,13 +355,11 @@ public class Repository
         if (obj instanceof SecurityGroup)
         {
             SecurityGroup group = (SecurityGroup)obj;
-            for (Iterator iter = group.getSecurities().iterator(); iter.hasNext(); )
-                delete((Security)iter.next());
-            for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
-                delete((SecurityGroup)iter.next());
+            for (PersistentObject child : group.getChildrens())
+                delete(child);
             
-            if (group.getGroup() != null)
-                group.getGroup().getGroups().remove(group);
+            if (group.getParentGroup() != null)
+                group.getParentGroup().getChildrens().remove(group);
             
             allSecurityGroups().remove(obj);
         }
@@ -370,7 +368,7 @@ public class Repository
         {
             Security security = (Security)obj;
             if (security.getGroup() != null)
-                security.getGroup().getSecurities().remove(security);
+                security.getGroup().getChildrens().remove(security);
             
             for (Iterator iter = allWatchlists().iterator(); iter.hasNext(); )
             {

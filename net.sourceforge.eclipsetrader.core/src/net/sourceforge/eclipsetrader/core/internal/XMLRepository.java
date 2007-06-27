@@ -91,6 +91,7 @@ public class XMLRepository extends Repository
     Integer securitiesNextId = new Integer(1);
     Integer securitiesGroupNextId = new Integer(1);
     Map securitiesMap = new HashMap();
+    Map securityGroupsMap = new HashMap();
     Integer chartsNextId = new Integer(1);
     Map chartsMap = new HashMap();
     Integer watchlistsNextId = new Integer(1);
@@ -453,6 +454,7 @@ public class XMLRepository extends Repository
         securitiesNextId = new Integer(1);
         securitiesGroupNextId = new Integer(1);
         securitiesMap = new HashMap();
+        securityGroupsMap = new HashMap();
         chartsNextId = new Integer(1);
         chartsMap = new HashMap();
         watchlistsNextId = new Integer(1);
@@ -479,6 +481,8 @@ public class XMLRepository extends Repository
         
         if (clazz.equals(Security.class))
             obj = (PersistentObject)securitiesMap.get(id);
+        else if (clazz.equals(SecurityGroup.class))
+            obj = (PersistentObject)securityGroupsMap.get(id);
         else if (clazz.equals(IntradayHistory.class))
         {
             obj = (IntradayHistory)intradayHistoryMap.get(id);
@@ -558,6 +562,7 @@ public class XMLRepository extends Repository
                 obj.setId(securitiesGroupNextId);
                 securitiesGroupNextId = getNextId(securitiesGroupNextId);
             }
+            securityGroupsMap.put(obj.getId(), obj);
         }
         else if (obj instanceof History)
             saveHistory((History)obj);
@@ -668,6 +673,11 @@ public class XMLRepository extends Repository
             file = new File(Platform.getLocation().toFile(), "intraday/" + String.valueOf(obj.getId()) + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$  $NON-NLS-2$
             if (file.exists())
                 file.delete();
+        }
+        else if (obj instanceof SecurityGroup) {
+        	for (Iterator<PersistentObject> iter = ((SecurityGroup) obj).getChildrens().iterator(); iter.hasNext(); )
+        		delete(iter.next());
+        	securityGroupsMap.remove(obj.getId());
         }
         else if (obj instanceof History)
         {
@@ -1287,22 +1297,20 @@ public class XMLRepository extends Repository
                 obj.setGroup(group);
                 obj.setRepository(this);
                 obj.clearChanged();
-                securitiesMap.put(obj.getId(), obj);
                 allSecurities().add(obj);
-                group.getSecurities().add(obj);
             }
             else if (nodeName.equals("group")) //$NON-NLS-1$
             {
                 SecurityGroup obj = loadSecurityGroup(item.getChildNodes());
-                obj.setGroup(group);
+                obj.setParentGroup(group);
                 obj.setRepository(this);
                 obj.clearChanged();
-                group.getGroups().add(obj);
                 allSecurityGroups().add(obj);
             }
         }
         
         group.clearChanged();
+        securityGroupsMap.put(group.getId(), group);
         
         return group;
     }
@@ -1506,6 +1514,7 @@ public class XMLRepository extends Repository
         security.clearChanged();
         security.getQuoteMonitor().clearChanged();
         security.getLevel2Monitor().clearChanged();
+        securitiesMap.put(security.getId(), security);
         
         return security;
     }
@@ -1529,11 +1538,12 @@ public class XMLRepository extends Repository
             element.appendChild(node);
         }
         
-        for (Iterator iter = group.getSecurities().iterator(); iter.hasNext(); )
-            saveSecurity((Security)iter.next(), document, element);
-        
-        for (Iterator iter = group.getGroups().iterator(); iter.hasNext(); )
-            saveSecurityGroup((SecurityGroup)iter.next(), document, element);
+        for (PersistentObject child : group.getChildrens()) {
+        	if (child instanceof Security)
+        		saveSecurity((Security) child, document, element);
+        	if (child instanceof SecurityGroup)
+                saveSecurityGroup((SecurityGroup) child, document, element);
+        }
     }
     
     private void saveSecurity(Security security, Document document, Element root)
@@ -1736,7 +1746,7 @@ public class XMLRepository extends Repository
             for (Iterator iter = allSecurityGroups().iterator(); iter.hasNext(); )
             {
                 SecurityGroup group = (SecurityGroup)iter.next();
-                if (group.getGroup() == null)
+                if (group.getParentGroup() == null)
                     saveSecurityGroup(group, document, root);
             }
             

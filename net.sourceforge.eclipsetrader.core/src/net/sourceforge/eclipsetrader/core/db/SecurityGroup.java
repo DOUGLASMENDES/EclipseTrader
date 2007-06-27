@@ -11,88 +11,79 @@
 
 package net.sourceforge.eclipsetrader.core.db;
 
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
-import net.sourceforge.eclipsetrader.core.ObservableList;
+public class SecurityGroup extends PersistentObject {
+	String code = ""; //$NON-NLS-1$
 
-public class SecurityGroup extends PersistentObject
-{
-    String code = ""; //$NON-NLS-1$
-    String description = ""; //$NON-NLS-1$
-    Currency currency;
-    SecurityGroup group;
-    ObservableList groups = new ObservableList();
-    ObservableList securities = new ObservableList();
+	String description = ""; //$NON-NLS-1$
 
-    public SecurityGroup()
-    {
-    }
+	Currency currency;
 
-    public SecurityGroup(Integer id)
-    {
-        super(id);
-    }
+	SecurityGroup parentGroup;
 
-    public String getCode()
-    {
-        return code;
-    }
+	List<PersistentObject> childrens = new ArrayList<PersistentObject>();
 
-    public void setCode(String code)
-    {
-        this.code = code;
-    }
+	public SecurityGroup() {
+	}
 
-    public String getDescription()
-    {
-        return description;
-    }
+	public SecurityGroup(Integer id) {
+		super(id);
+	}
 
-    public void setDescription(String description)
-    {
-        this.description = description;
-        setChanged();
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public Currency getCurrency()
-    {
-        if (currency == null && group != null)
-            return group.getCurrency();
-        return currency;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public void setCurrency(Currency currency)
-    {
-        this.currency = currency;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public SecurityGroup getGroup()
-    {
-        return group;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+		setChanged();
+	}
 
-    public void setGroup(SecurityGroup group)
-    {
-        this.group = group;
-    }
+	public Currency getCurrency() {
+		if (currency == null && parentGroup != null)
+			return parentGroup.getCurrency();
+		return currency;
+	}
 
-    public ObservableList getGroups()
-    {
-        return groups;
-    }
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
+	}
 
-    public void setGroups(ObservableList groups)
-    {
-        this.groups = groups;
-    }
+	public SecurityGroup getParentGroup() {
+		return parentGroup;
+	}
 
-    public ObservableList getSecurities()
-    {
-        return securities;
-    }
+	public void setParentGroup(SecurityGroup group) {
+		if (group != null && !group.equals(this.parentGroup))
+			setChanged();
+		else if (group == null && this.parentGroup != null)
+			setChanged();
 
-    public void setSecurities(ObservableList securities)
-    {
-        this.securities = securities;
-    }
+		if (this.parentGroup != null)
+			this.parentGroup.childrens.remove(this);
+
+		this.parentGroup = group;
+
+		if (this.parentGroup != null)
+			this.parentGroup.childrens.add(this);
+	}
+
+	public List<PersistentObject> getChildrens() {
+		return childrens;
+	}
+
+	public void setChildrens(List<PersistentObject> childrens) {
+		this.childrens = childrens;
+	}
 }
