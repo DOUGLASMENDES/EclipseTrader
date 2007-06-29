@@ -200,15 +200,15 @@ public class NewsView extends ViewPart {
         }
 	};
 	
-	Action showNextAction = new Action(Messages.NewsView_NextAction) {
-        public void run() {
-        	showNext();
-        }
-	};
-	
 	Action showPreviousAction = new Action(Messages.NewsView_PreviousAction) {
         public void run() {
         	showPrevious();
+        }
+	};
+	
+	Action showNextAction = new Action(Messages.NewsView_NextAction) {
+        public void run() {
+        	showNext();
         }
 	};
 	
@@ -219,11 +219,11 @@ public class NewsView extends ViewPart {
 		refreshAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/refresh.gif")); //$NON-NLS-1$
 		refreshAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/refresh.gif")); //$NON-NLS-1$
 
-		showNextAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/next_nav.gif")); //$NON-NLS-1$
-		showNextAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/next_nav.gif")); //$NON-NLS-1$
+		showPreviousAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/next_nav.gif")); //$NON-NLS-1$
+		showPreviousAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/next_nav.gif")); //$NON-NLS-1$
 
-		showPreviousAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/prev_nav.gif")); //$NON-NLS-1$
-		showPreviousAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/prev_nav.gif")); //$NON-NLS-1$
+		showNextAction.setImageDescriptor(NewsPlugin.getImageDescriptor("icons/elcl16/prev_nav.gif")); //$NON-NLS-1$
+		showNextAction.setDisabledImageDescriptor(NewsPlugin.getImageDescriptor("icons/dlcl16/prev_nav.gif")); //$NON-NLS-1$
 
 		IMenuManager menuManager = site.getActionBars().getMenuManager();
 		menuManager.add(new Separator("top")); //$NON-NLS-1$
@@ -239,8 +239,8 @@ public class NewsView extends ViewPart {
 		IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
 		toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
 		toolBarManager.add(new Separator("group1")); //$NON-NLS-1$
-		toolBarManager.add(showPreviousAction);
 		toolBarManager.add(showNextAction);
+		toolBarManager.add(showPreviousAction);
 		toolBarManager.add(new Separator("group2")); //$NON-NLS-1$
 		toolBarManager.add(refreshAction);
 		toolBarManager.add(new Separator("group3")); //$NON-NLS-1$
@@ -393,7 +393,7 @@ public class NewsView extends ViewPart {
 		super.dispose();
 	}
 
-	public void showNext() {
+	public void showPrevious() {
 		NewsItem news = getSelectedItem();
 		TableItem[] items = viewer.getTable().getItems();
 		if (news == null && items.length != 0) {
@@ -415,7 +415,7 @@ public class NewsView extends ViewPart {
 		}
 	}
 
-	public void showPrevious() {
+	public void showNext() {
 		NewsItem news = getSelectedItem();
 		TableItem[] items = viewer.getTable().getItems();
 		if (news == null && items.length != 0) {
