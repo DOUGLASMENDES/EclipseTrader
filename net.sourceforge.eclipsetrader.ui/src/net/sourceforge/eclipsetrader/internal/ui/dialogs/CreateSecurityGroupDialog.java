@@ -16,16 +16,16 @@ import java.util.Iterator;
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
-import net.sourceforge.eclipsetrader.internal.ui.InstrumentsInput;
-import net.sourceforge.eclipsetrader.internal.ui.SecuritiesLabelProvider;
-import net.sourceforge.eclipsetrader.internal.ui.SecuritiesTreeContentProvider;
-import net.sourceforge.eclipsetrader.internal.ui.SecuritiesTreeViewerComparator;
+import net.sourceforge.eclipsetrader.internal.ui.views.explorer.FlatContentProvider;
+import net.sourceforge.eclipsetrader.internal.ui.views.explorer.FlatInstrumentsInput;
+import net.sourceforge.eclipsetrader.internal.ui.views.explorer.FlatLabelProvider;
+import net.sourceforge.eclipsetrader.internal.ui.views.explorer.InstrumentsViewerComparator;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class CreateSecurityGroupDialog extends TitleAreaDialog {
-	private TreeViewer viewer;
+	private TableViewer viewer;
 	private Text groupName;
 
 	public CreateSecurityGroupDialog(Shell parentShell) {
@@ -72,21 +72,20 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
 		label.setText("Select the parent group:");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 
-    	viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+    	viewer = new TableViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
         viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         ((GridData)viewer.getControl().getLayoutData()).heightHint = 250;
-		viewer.setContentProvider(new SecuritiesTreeContentProvider());
+		viewer.setContentProvider(new FlatContentProvider());
 		viewer.addFilter(new ViewerFilter() {
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
 	            return !(element instanceof Security);
             }
 		});
-		viewer.setLabelProvider(new DecoratingLabelProvider(new SecuritiesLabelProvider(), null));
-		viewer.setComparator(new SecuritiesTreeViewerComparator());
+		viewer.setLabelProvider(new DecoratingLabelProvider(new FlatLabelProvider(), null));
+		viewer.setComparator(new InstrumentsViewerComparator());
 		
-		viewer.setInput(new InstrumentsInput());
-		viewer.expandAll();
+		viewer.setInput(new FlatInstrumentsInput());
 		
 		label = new Label(parent, SWT.NONE);
 		label.setText("Group name:");

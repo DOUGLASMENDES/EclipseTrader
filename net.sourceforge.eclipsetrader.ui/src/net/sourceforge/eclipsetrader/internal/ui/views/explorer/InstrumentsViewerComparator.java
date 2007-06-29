@@ -9,11 +9,14 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.internal.ui;
+package net.sourceforge.eclipsetrader.internal.ui.views.explorer;
 
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 
+import org.eclipse.jface.viewers.ContentViewer;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 
@@ -21,9 +24,9 @@ import org.eclipse.jface.viewers.ViewerComparator;
  * Implements the security tree comparator that sorts the elements alphabetically,
  * with the groups as the topmost elements.
  */
-public class SecuritiesTreeViewerComparator extends ViewerComparator {
+public class InstrumentsViewerComparator extends ViewerComparator {
 
-	public SecuritiesTreeViewerComparator() {
+	public InstrumentsViewerComparator() {
 	}
 
 	/* (non-Javadoc)
@@ -35,15 +38,27 @@ public class SecuritiesTreeViewerComparator extends ViewerComparator {
     	String s2 = "";
     	
     	if (e1 instanceof SecurityGroup)
-    		s1 = "0" + ((SecurityGroup)e1).getDescription();
+    		s1 = "0" + getText(viewer, e1);
     	if (e1 instanceof Security)
-    		s1 = "1" + ((Security)e1).getDescription();
+    		s1 = "1" + getText(viewer, e1);
     	
     	if (e2 instanceof SecurityGroup)
-    		s2 = "0" + ((SecurityGroup)e2).getDescription();
+    		s2 = "0" + getText(viewer, e2);
     	if (e2 instanceof Security)
-    		s2 = "1" + ((Security)e2).getDescription();
+    		s2 = "1" + getText(viewer, e2);
 	    
     	return s1.compareTo(s2);
+    }
+    
+    protected String getText(Viewer viewer, Object element) {
+    	String text = "";
+    	
+    	if (viewer instanceof ContentViewer) {
+    		IBaseLabelProvider labelProvider = ((ContentViewer) viewer).getLabelProvider();
+    		if (labelProvider instanceof ILabelProvider)
+    			text = ((ILabelProvider) labelProvider).getText(element);
+    	}
+    	
+    	return text;
     }
 }

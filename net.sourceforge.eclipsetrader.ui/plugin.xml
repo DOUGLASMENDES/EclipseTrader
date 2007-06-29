@@ -2,6 +2,22 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.themes">
+      <themeElementCategory
+            id="instrumentsExplorer"
+            label="Instruments Explorer"/>
+      <colorDefinition
+            categoryId="instrumentsExplorer"
+            id="EXPLORER_BACKGROUND"
+            label="Background"
+            value="224,224,255"/>
+      <colorDefinition
+            categoryId="instrumentsExplorer"
+            id="EXPLORER_FOREGROUND"
+            label="Foreground"
+            value="0,0,0"/>
+   </extension>
+   <extension
          point="org.eclipse.ui.views">
       <view
             category="net.sourceforge.eclipsetrader"

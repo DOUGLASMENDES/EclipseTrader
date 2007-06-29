@@ -9,16 +9,16 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.internal.ui;
+package net.sourceforge.eclipsetrader.internal.ui.views.explorer;
 
 import org.eclipse.jface.viewers.IDecorationContext;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.LabelDecorator;
 import org.eclipse.swt.graphics.Image;
 
-public class SecuritiesTreeLabelDecorator extends LabelDecorator {
+public class InstrumentsLabelDecorator extends LabelDecorator {
 
-	public SecuritiesTreeLabelDecorator() {
+	public InstrumentsLabelDecorator() {
 	}
 
 	/* (non-Javadoc)

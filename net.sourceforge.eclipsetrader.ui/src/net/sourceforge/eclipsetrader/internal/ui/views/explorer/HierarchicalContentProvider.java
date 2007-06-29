@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.internal.ui;
+package net.sourceforge.eclipsetrader.internal.ui.views.explorer;
 
 import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.ICollectionObserver;
@@ -19,7 +19,7 @@ import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public class SecuritiesTreeContentProvider implements ITreeContentProvider {
+public class HierarchicalContentProvider implements ITreeContentProvider {
 	private Viewer viewer;
 	
 	private ICollectionObserver collectionObserver = new ICollectionObserver() {
@@ -34,7 +34,7 @@ public class SecuritiesTreeContentProvider implements ITreeContentProvider {
         }
 	};
 
-	public SecuritiesTreeContentProvider() {
+	public HierarchicalContentProvider() {
 	}
 
 	/* (non-Javadoc)

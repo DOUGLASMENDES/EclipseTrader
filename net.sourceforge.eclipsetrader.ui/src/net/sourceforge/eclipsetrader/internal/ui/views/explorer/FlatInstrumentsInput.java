@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.internal.ui;
+package net.sourceforge.eclipsetrader.internal.ui.views.explorer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,30 +19,23 @@ import net.sourceforge.eclipsetrader.core.CorePlugin;
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
 
-public class InstrumentsInput {
-	private List list;
+public class FlatInstrumentsInput extends InstrumentsInput {
 
-	public InstrumentsInput() {
+	public FlatInstrumentsInput() {
 		refresh();
 	}
-	
+
+	@Override
 	public void refresh() {
 		list = new ArrayList();
 
-		for (Iterator<SecurityGroup> iter = CorePlugin.getRepository().allSecurityGroups().iterator(); iter.hasNext();) {
-			SecurityGroup g = iter.next();
-			if (g.getParentGroup() == null)
-				list.add(g);
-		}
+		for (Iterator<SecurityGroup> iter = CorePlugin.getRepository().allSecurityGroups().iterator(); iter.hasNext();)
+			list.add(iter.next());
 
 		for (Iterator<Security> iter = CorePlugin.getRepository().allSecurities().iterator(); iter.hasNext();) {
 			Security s = iter.next();
 			if (s.getGroup() == null)
 				list.add(s);
 		}
-	}
-	
-	public Object[] getRootItems() {
-		return list.toArray();
 	}
 }

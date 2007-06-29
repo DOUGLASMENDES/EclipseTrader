@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package net.sourceforge.eclipsetrader.internal.ui;
+package net.sourceforge.eclipsetrader.internal.ui.views.explorer;
 
 import net.sourceforge.eclipsetrader.core.db.Security;
 import net.sourceforge.eclipsetrader.core.db.SecurityGroup;
@@ -18,12 +18,12 @@ import net.sourceforge.eclipsetrader.ui.UIImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-public class SecuritiesLabelProvider extends LabelProvider {
+public class HierarchicalLabelProvider extends LabelProvider {
 	private Image securityImage = UIImageRegistry.getImage(UIImageRegistry.ICON_SECURITY);
 
 	private Image securityGroupImage = UIImageRegistry.getImage(UIImageRegistry.ICON_SECURITY_GROUP);
 
-	public SecuritiesLabelProvider() {
+	public HierarchicalLabelProvider() {
 	}
 
 	/* (non-Javadoc)
