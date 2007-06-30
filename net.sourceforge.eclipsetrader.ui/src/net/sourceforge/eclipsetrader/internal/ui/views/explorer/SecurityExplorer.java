@@ -42,12 +42,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -60,6 +63,8 @@ public class SecurityExplorer extends ViewPart {
 	public static final String THEME_EXPLORER_FOREGROUND = "EXPLORER_FOREGROUND"; //$NON-NLS-1$
 
 	protected static final String PREFS_PRESENTATION = "presentation"; //$NON-NLS-1$
+
+	protected static final String PREFS_SYNCED = "synced"; //$NON-NLS-1$
 
 	private TreeViewer viewer;
 
@@ -94,6 +99,17 @@ public class SecurityExplorer extends ViewPart {
 		}
 	};
 
+	private ISelectionListener syncedStateListener = new ISelectionListener() {
+		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+			if (part != SecurityExplorer.this) {
+				if (selection instanceof SecuritySelection) {
+					Security security = ((SecuritySelection) selection).getSecurity();
+					viewer.setSelection(new StructuredSelection(security));
+				}
+			}
+		}
+	};
+
 	private Action createFolderAction = new Action("Create Group...") {
 		@Override
 		public void run() {
@@ -116,6 +132,13 @@ public class SecurityExplorer extends ViewPart {
 		}
 	};
 
+	private Action syncedAction = new Action("Link with selection", Action.AS_CHECK_BOX) {
+		@Override
+		public void run() {
+			updateSyncedState();
+		}
+	};
+
 	private Action deleteAction = new Action("Delete", PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE)) {
 		@Override
 		public void run() {
@@ -124,10 +147,11 @@ public class SecurityExplorer extends ViewPart {
 				CorePlugin.getRepository().delete((PersistentObject) selection[i]);
 		}
 	};
-	
+
 	private BulkChangesAction bulkChangesAction = new BulkChangesAction();
 
 	private PropertiesAction propertiesAction = new PropertiesAction() {
+		@Override
 		public void run() {
 			Object[] selection = ((IStructuredSelection) viewer.getSelection()).toArray();
 			if (selection.length == 1 && selection[0] instanceof Security) {
@@ -163,28 +187,40 @@ public class SecurityExplorer extends ViewPart {
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		IMenuManager menuManager = site.getActionBars().getMenuManager();
 		menuManager.add(new Separator("top")); //$NON-NLS-1$
-		menuManager.add(expandAllAction);
-		menuManager.add(collapseAllAction);
-		menuManager.add(new Separator());
-		menuManager.add(createFolderAction);
+		menuManager.add(new Separator("expand")); //$NON-NLS-1$
+		menuManager.add(new Separator("synced")); //$NON-NLS-1$
+		menuManager.add(new Separator("create")); //$NON-NLS-1$
 		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		menuManager.add(groupsPresentationAction);
+		menuManager.add(new Separator("presentation")); //$NON-NLS-1$
 		menuManager.add(new Separator("bottom")); //$NON-NLS-1$
-		menuManager.add(bulkChangesAction);
-		menuManager.add(new Separator());
-		menuManager.add(propertiesAction);
+		menuManager.add(new Separator("properties")); //$NON-NLS-1$
+
+		menuManager.appendToGroup("expand", expandAllAction); //$NON-NLS-1$
+		menuManager.appendToGroup("expand", collapseAllAction); //$NON-NLS-1$
+		menuManager.appendToGroup("synced", syncedAction); //$NON-NLS-1$
+		menuManager.appendToGroup("create", createFolderAction); //$NON-NLS-1$
+		menuManager.appendToGroup("presentation", groupsPresentationAction); //$NON-NLS-1$
+		menuManager.appendToGroup("properties", bulkChangesAction); //$NON-NLS-1$
+		menuManager.appendToGroup("properties", propertiesAction); //$NON-NLS-1$
 
 		IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
-		menuManager.add(new Separator("beginning")); //$NON-NLS-1$
-		toolbarManager.add(expandAllAction);
-		toolbarManager.add(collapseAllAction);
-		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		menuManager.add(new Separator("end")); //$NON-NLS-1$
+		toolbarManager.add(new Separator("beginning")); //$NON-NLS-1$
+		toolbarManager.add(new Separator("expand")); //$NON-NLS-1$
+		toolbarManager.add(new Separator("synced")); //$NON-NLS-1$
+		toolbarManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		toolbarManager.add(new Separator("end")); //$NON-NLS-1$
+
+		toolbarManager.appendToGroup("expand", expandAllAction); //$NON-NLS-1$
+		toolbarManager.appendToGroup("expand", collapseAllAction); //$NON-NLS-1$
+		toolbarManager.appendToGroup("synced", syncedAction); //$NON-NLS-1$
+
+		syncedAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/synced.gif"));
 
 		if (memento != null) {
 			Integer value = memento.getInteger(PREFS_PRESENTATION);
 			if (value != null)
 				groupsPresentationAction.setPresentation(value);
+			syncedAction.setChecked(Boolean.parseBoolean(memento.getString(PREFS_SYNCED)));
 		}
 
 		site.getActionBars().setGlobalActionHandler("delete", deleteAction); //$NON-NLS-1$
@@ -202,6 +238,7 @@ public class SecurityExplorer extends ViewPart {
 	public void saveState(IMemento memento) {
 		if (memento != null) {
 			memento.putInteger(PREFS_PRESENTATION, groupsPresentationAction.getPresentation());
+			memento.putString(PREFS_SYNCED, Boolean.toString(syncedAction.isChecked()));
 		}
 		super.saveState(memento);
 	}
@@ -248,6 +285,7 @@ public class SecurityExplorer extends ViewPart {
 				if (groupsPresentationAction.getPresentation() == GroupsPresentationAction.HIERARCHICAL)
 					viewer.setInput(new InstrumentsInput());
 				updateSelection((IStructuredSelection) viewer.getSelection());
+				updateSyncedState();
 			}
 		});
 	}
@@ -318,7 +356,7 @@ public class SecurityExplorer extends ViewPart {
 		for (Iterator iter = selection.iterator(); iter.hasNext();)
 			buildSecuritiesList(list, iter.next());
 
-		return (Security[]) list.toArray(new Security[list.size()]);
+		return list.toArray(new Security[list.size()]);
 	}
 
 	protected void buildSecuritiesList(List<Security> list, Object root) {
@@ -333,5 +371,12 @@ public class SecurityExplorer extends ViewPart {
 			for (int i = 0; i < array.length; i++)
 				buildSecuritiesList(list, array[i]);
 		}
+	}
+
+	protected void updateSyncedState() {
+		if (syncedAction.isChecked())
+			getViewSite().getPage().addSelectionListener(syncedStateListener);
+		else
+			getViewSite().getPage().removeSelectionListener(syncedStateListener);
 	}
 }
