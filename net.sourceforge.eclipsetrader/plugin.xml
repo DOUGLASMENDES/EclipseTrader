@@ -30,6 +30,10 @@
          <property
                name="windowImages"
                value="eclipse.gif,eclipse32.gif"/>
+         <property
+               name="appName"
+               value="EclipseTrader">
+         </property>
       </product>
    </extension>
    <extension

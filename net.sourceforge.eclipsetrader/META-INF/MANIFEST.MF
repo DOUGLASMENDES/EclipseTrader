@@ -9,15 +9,5 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.update.ui,
- net.sourceforge.eclipsetrader.core,
- net.sourceforge.eclipsetrader.charts,
- net.sourceforge.eclipsetrader.help;resolution:=optional,
- net.sourceforge.eclipsetrader.news,
- net.sourceforge.eclipsetrader.trading,
- net.sourceforge.eclipsetrader.archipelago;resolution:=optional,
- net.sourceforge.eclipsetrader.borsaitalia;resolution:=optional,
- net.sourceforge.eclipsetrader.directaworld;resolution:=optional,
- net.sourceforge.eclipsetrader.yahoo;resolution:=optional,
- net.sourceforge.eclipsetrader.opentick;resolution:=optional,
- net.sourceforge.eclipsetrader.ta_lib;resolution:=optional
+ net.sourceforge.eclipsetrader.core
 Eclipse-LazyStart: true
