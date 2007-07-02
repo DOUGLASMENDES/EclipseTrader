@@ -25,24 +25,25 @@ public class PanicRecoveryStrategy extends BaseComponent implements IBarListener
 
 	Order buyOrder;
 
-	IComponentContext context;
-
 	public PanicRecoveryStrategy() {
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#start(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
 	 */
+	@Override
 	public void start(IComponentContext context) {
-		this.context = context;
+		super.start(context);
 		context.addBarListener(this);
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#stop(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
 	 */
+	@Override
 	public void stop(IComponentContext context) {
 		context.removeBarListener(this);
+		super.stop(context);
 	}
 
 	/* (non-Javadoc)
@@ -68,9 +69,5 @@ public class PanicRecoveryStrategy extends BaseComponent implements IBarListener
 			sellOrder.setText("Panic Recovery - Sell");
 			sellOrder.sendNew();
 		}
-	}
-
-	public boolean hasPosition() {
-		return context.getPosition() != 0;
 	}
 }

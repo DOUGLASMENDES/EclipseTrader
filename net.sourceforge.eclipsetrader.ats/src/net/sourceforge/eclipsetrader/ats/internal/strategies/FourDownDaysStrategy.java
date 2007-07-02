@@ -25,16 +25,15 @@ public class FourDownDaysStrategy extends BaseComponent implements IBarListener 
 
 	int quantity = 100;
 
-	IComponentContext context;
-
 	public FourDownDaysStrategy() {
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#start(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
 	 */
+	@Override
 	public void start(IComponentContext context) {
-		this.context = context;
+		super.start(context);
 
 		prevClose = -1;
 		count = 0;
@@ -45,8 +44,10 @@ public class FourDownDaysStrategy extends BaseComponent implements IBarListener 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#stop(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
 	 */
+	@Override
 	public void stop(IComponentContext context) {
 		context.removeBarListener(this);
+		super.stop(context);
 	}
 
 	/* (non-Javadoc)

@@ -35,23 +35,16 @@ public class TripleMovingAverageCrossoverStrategy extends BaseComponent implemen
 
 	int collectedValues = 0;
 
-	IComponentContext context;
-
 	public TripleMovingAverageCrossoverStrategy() {
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#start(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
 	 */
+	@Override
 	public void start(IComponentContext context) {
-		this.context = context;
+		super.start(context);
 		context.addBarListener(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#stop(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
-	 */
-	public void stop(IComponentContext context) {
 	}
 
 	/* (non-Javadoc)
