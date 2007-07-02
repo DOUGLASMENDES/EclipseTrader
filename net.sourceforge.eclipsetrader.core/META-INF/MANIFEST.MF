@@ -6,8 +6,10 @@ Bundle-Version: 0.30.0
 Bundle-Activator: net.sourceforge.eclipsetrader.core.CorePlugin
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.net,
+ org.eclipse.core.runtime,
  org.eclipse.ui,
+ org.eclipse.ui.net,
  org.apache.commons,
  org.apache.log4j
 Export-Package: net.sourceforge.eclipsetrader.core,

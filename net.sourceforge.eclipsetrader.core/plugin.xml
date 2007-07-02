@@ -82,11 +82,6 @@
             class="net.sourceforge.eclipsetrader.core.ui.preferences.PluginsPreferencesPage"
             id="net.sourceforge.eclipsetrader.plugins"
             name="%page.name.Plugins"/>
-      <page
-            category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.core.ui.preferences.ProxyPreferencePage"
-            id="net.sourceforge.eclipsetrader.core.proxy"
-            name="%page.name.Network"/>
 		<page
             class="net.sourceforge.eclipsetrader.core.ui.preferences.DataPreferencesPage"
             id="net.sourceforge.eclipsetrader.data"
