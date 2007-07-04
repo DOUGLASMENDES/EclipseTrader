@@ -44,6 +44,12 @@ public class GeneralPage extends AbstractReportPage {
 
 	Label percentInMarket;
 
+	Label avgTimeInTrades;
+
+	Label longestFlatPeriod;
+
+	Label maxPositions;
+
 	public GeneralPage() {
 		super("General");
 		nf.setGroupingUsed(true);
@@ -55,6 +61,7 @@ public class GeneralPage extends AbstractReportPage {
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.ui.report.AbstractReportPage#createControls(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	public Control createControls(Composite parent) {
 		Control control = super.createControls(parent);
 
@@ -80,36 +87,38 @@ public class GeneralPage extends AbstractReportPage {
 		Composite parent = createSection(getForm().getBody(), "Time Analisys");
 
 		timeInMarket = createLabel(parent, "Time in Market", "0");
-		createLabel(parent, "Max Positions", "0");
+		maxPositions = createLabel(parent, "Max Positions", "0");
 
 		percentInMarket = createLabel(parent, "Percent in Market", "0,00%");
-		createLabel(parent, "Longest Flat Period", "0");
+		longestFlatPeriod = createLabel(parent, "Longest Flat Period", "0");
 
-		createLabel(parent, "Average Time in Trades", "0");
+		avgTimeInTrades = createLabel(parent, "Average Time in Trades", "0");
 		createLabel(parent, "Average between Trades", "0");
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.ui.report.AbstractReportPage#setInput(net.sourceforge.eclipsetrader.ats.core.internal.Backtest)
 	 */
+	@Override
 	public void setInput(Backtest test) {
 		Set strategySet = new HashSet();
 		Set securitySet = new HashSet();
 		Trade[] trades = test.getTrades();
 
-		int inMarket = 0;
+		double timeInTrades = 0;
 		double profit = 0, loss = 0;
 
 		for (int i = 0; i < trades.length; i++) {
 			strategySet.add(trades[i].getStrategy());
 			securitySet.add(trades[i].getSecurity());
-			inMarket += trades[i].getBars();
 
 			double amount = (trades[i].getExitPrice() * trades[i].getQuantity()) - (trades[i].getEnterPrice() * trades[i].getQuantity());
 			if (amount > 0)
 				profit += amount;
 			else if (amount < 0)
 				loss += amount;
+
+			timeInTrades += trades[i].getBars();
 		}
 		strategies.setText(String.valueOf(strategySet.size()));
 		securities.setText(String.valueOf(securitySet.size()));
@@ -118,8 +127,12 @@ public class GeneralPage extends AbstractReportPage {
 		grossProfit.setText(nf.format(profit));
 		grossLoss.setText(nf.format(loss));
 
-		timeInMarket.setText(String.valueOf(inMarket));
-		percentInMarket.setText(nf.format((double) inMarket / test.getTotalBars() * 100.0));
+		maxPositions.setText(String.valueOf(test.getMaxPositions()));
+
+		timeInMarket.setText(String.valueOf(test.getTimeInMarket()));
+		percentInMarket.setText(nf.format((double) test.getTimeInMarket() / test.getMarketDays() * 100.0));
+		avgTimeInTrades.setText(nf.format(timeInTrades / trades.length));
+		longestFlatPeriod.setText(String.valueOf(test.getFlatPeriod()));
 
 		getForm().reflow(true);
 	}

@@ -14,13 +14,11 @@ package net.sourceforge.eclipsetrader.ats.ui.report;
 import net.sourceforge.eclipsetrader.ats.core.internal.Backtest;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -43,7 +41,7 @@ public abstract class AbstractReportPage {
 		GridLayout layout = new GridLayout(4, true);
 		layout.horizontalSpacing = 20;
 		form.getBody().setLayout(layout);
-		form.getForm().setTextBackground(new Color[] { toolkit.getColors().getColor(FormColors.TB_GBG), toolkit.getColors().getColor(FormColors.TB_FG), }, new int[] { 100 }, true);
+		toolkit.decorateFormHeading(form.getForm());
 
 		return form;
 	}

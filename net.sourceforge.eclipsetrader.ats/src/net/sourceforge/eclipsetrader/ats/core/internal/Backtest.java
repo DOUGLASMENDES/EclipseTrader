@@ -15,9 +15,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sourceforge.eclipsetrader.ats.ATSPlugin;
 import net.sourceforge.eclipsetrader.ats.core.db.Strategy;
@@ -71,6 +73,14 @@ public class Backtest extends Job {
 	TradingSystemRunnable tradingSystemRunnable;
 
 	List trades = new ArrayList();
+
+	private int timeInMarket = 0;
+
+	private int marketDays = 0;
+
+	private int flatPeriod = 0;
+
+	private int maxPositions = 0;
 
 	/**
 	 * Constructor used to backtest a trading system.
@@ -127,6 +137,7 @@ public class Backtest extends Job {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
+	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor.beginTask("Backtesting " + getName(), 3);
 
@@ -140,6 +151,10 @@ public class Backtest extends Job {
 				executionManager.addOrderListener(listener);
 				marketManager.addBarListener(listener);
 			}
+
+			TimeInMarketListener timeInMarketListener = new TimeInMarketListener();
+			executionManager.addPositionListener(timeInMarketListener);
+			marketManager.addBarListener(timeInMarketListener);
 
 			tradingSystemRunnable.start();
 			monitor.worked(1);
@@ -183,6 +198,22 @@ public class Backtest extends Job {
 		return marketManager.getBarCount();
 	}
 
+	public int getTimeInMarket() {
+		return timeInMarket;
+	}
+
+	public int getMarketDays() {
+		return marketDays;
+	}
+
+	public int getFlatPeriod() {
+		return flatPeriod;
+	}
+
+	public int getMaxPositions() {
+		return maxPositions;
+	}
+
 	static {
 		sideLabels.put(OrderSide.BUY, "Buy");
 		sideLabels.put(OrderSide.SELL, "Sell");
@@ -190,8 +221,58 @@ public class Backtest extends Job {
 		sideLabels.put(OrderSide.BUYCOVER, "Buy Cover");
 	}
 
+	private class TimeInMarketListener implements IPositionListener, IBarListener {
+		int openPositions = 0;
+
+		int outOfMarket = 0;
+
+		Set<Security> securities = new HashSet<Security>();
+
+		private TimeInMarketListener() {
+			timeInMarket = 0;
+			marketDays = 0;
+			maxPositions = 0;
+			flatPeriod = 0;
+		}
+
+		public void positionChanged(PositionEvent e) {
+		}
+
+		public void positionClosed(PositionEvent e) {
+			openPositions--;
+		}
+
+		public void positionOpened(PositionEvent e) {
+			openPositions++;
+			maxPositions = Math.max(maxPositions, openPositions);
+		}
+
+		public void positionValueChanged(PositionEvent e) {
+		}
+
+		public void barClose(BarEvent e) {
+			securities.remove(e.security);
+			if (securities.isEmpty()) {
+				if (openPositions > 0) {
+					flatPeriod = Math.max(flatPeriod, outOfMarket);
+					outOfMarket = 0;
+					timeInMarket++;
+				}
+				else
+					outOfMarket++;
+				marketDays++;
+			}
+		}
+
+		public void barOpen(BarEvent e) {
+			securities.add(e.security);
+		}
+	}
+
 	private class TradeStatisticsListener implements IPositionListener, IOrderListener, IBarListener {
 		Strategy strategy;
+
+		Set<Security> securities = new HashSet<Security>();
 
 		Map currentTrades = new HashMap();
 
@@ -199,21 +280,26 @@ public class Backtest extends Job {
 
 		private TradeStatisticsListener(Strategy strategy) {
 			this.strategy = strategy;
+			for (Iterator iter = strategy.getSecurities().iterator(); iter.hasNext();)
+				securities.add((Security) iter.next());
 		}
 
 		/* (non-Javadoc)
 		 * @see net.sourceforge.eclipsetrader.ats.core.events.IPositionListener#positionOpened(net.sourceforge.eclipsetrader.ats.core.events.PositionEvent)
 		 */
 		public void positionOpened(PositionEvent e) {
-			Trade trade = (Trade) currentTrades.get(e.security);
-			if (trade == null)
-				trade = new Trade(strategy, e.security, e.date, e.position.getQuantity(), e.position.getPrice(), "");
-			currentTrades.put(e.security, trade);
+			if (securities.contains(e.security)) {
+				Trade trade = (Trade) currentTrades.get(e.security);
+				if (trade == null) {
+					trade = new Trade(strategy, e.security, e.date, e.position.getQuantity(), e.position.getPrice(), "");
+					currentTrades.put(e.security, trade);
+				}
 
-			Order order = (Order) lastFilledOrders.get(e.security);
-			if (trade != null) {
-				trade.setEnterMessage(order.getText());
-				lastFilledOrders.remove(e.security);
+				Order order = (Order) lastFilledOrders.get(e.security);
+				if (trade != null) {
+					trade.setEnterMessage(order.getText());
+					lastFilledOrders.remove(e.security);
+				}
 			}
 		}
 
@@ -245,20 +331,23 @@ public class Backtest extends Job {
 		 * @see net.sourceforge.eclipsetrader.ats.core.events.IOrderListener#orderFilled(net.sourceforge.eclipsetrader.ats.core.events.OrderEvent)
 		 */
 		public void orderFilled(OrderEvent e) {
-			lastFilledOrders.put(e.security, e.order);
-			if (e.order.getSide() == OrderSide.SELL) {
-				Trade trade = (Trade) currentTrades.get(e.security);
-				if (trade != null) {
-					trade.setExit(e.order.getDate(), e.order.getAveragePrice(), e.order.getText());
-					trades.add(trade);
-					currentTrades.remove(e.security);
-					lastFilledOrders.remove(e.security);
+			if (securities.contains(e.security)) {
+				lastFilledOrders.put(e.security, e.order);
+				if (e.order.getSide() == OrderSide.SELL) {
+					Trade trade = (Trade) currentTrades.get(e.security);
+					if (trade != null) {
+						trade.setExit(e.order.getDate(), e.order.getAveragePrice(), e.order.getText());
+						trades.add(trade);
+						currentTrades.remove(e.security);
+						lastFilledOrders.remove(e.security);
+					}
 				}
-			} else if (e.order.getSide() == OrderSide.BUY) {
-				Trade trade = (Trade) currentTrades.get(e.security);
-				if (trade != null) {
-					trade.setEnterMessage(e.order.getText());
-					lastFilledOrders.remove(e.security);
+				else if (e.order.getSide() == OrderSide.BUY) {
+					Trade trade = (Trade) currentTrades.get(e.security);
+					if (trade != null) {
+						trade.setEnterMessage(e.order.getText());
+						lastFilledOrders.remove(e.security);
+					}
 				}
 			}
 		}
@@ -285,9 +374,11 @@ public class Backtest extends Job {
 		 * @see net.sourceforge.eclipsetrader.ats.core.events.IBarListener#barClose(net.sourceforge.eclipsetrader.ats.core.events.BarEvent)
 		 */
 		public void barClose(BarEvent e) {
-			Trade trade = (Trade) currentTrades.get(e.security);
-			if (trade != null)
-				trade.bars++;
+			if (securities.contains(e.security)) {
+				Trade trade = (Trade) currentTrades.get(e.security);
+				if (trade != null)
+					trade.bars++;
+			}
 		}
 
 		/* (non-Javadoc)

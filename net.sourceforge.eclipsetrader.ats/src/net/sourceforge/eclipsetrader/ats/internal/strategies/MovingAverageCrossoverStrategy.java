@@ -19,15 +19,12 @@ import net.sourceforge.eclipsetrader.ats.core.events.IBarListener;
 import net.sourceforge.eclipsetrader.core.db.Bar;
 import net.sourceforge.eclipsetrader.core.db.Order;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class MovingAverageCrossoverStrategy extends BaseComponent implements IBarListener {
 	int shortPeriod = 12;
 
 	int longPeriod = 26;
 
-	int quantity = 50;
+	int quantity = 100;
 
 	double previousLongValue = 0;
 
@@ -38,8 +35,6 @@ public class MovingAverageCrossoverStrategy extends BaseComponent implements IBa
 	double shortValue = 0;
 
 	int loop = 0;
-	
-	private Log log = LogFactory.getLog(getClass());
 
 	public MovingAverageCrossoverStrategy() {
 	}
@@ -47,6 +42,7 @@ public class MovingAverageCrossoverStrategy extends BaseComponent implements IBa
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#start(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
 	 */
+	@Override
 	public void start(IComponentContext context) {
 		super.start(context);
 
@@ -60,6 +56,7 @@ public class MovingAverageCrossoverStrategy extends BaseComponent implements IBa
 	/* (non-Javadoc)
 	 * @see net.sourceforge.eclipsetrader.ats.core.IComponent#stop(net.sourceforge.eclipsetrader.ats.core.IComponentContext)
 	 */
+	@Override
 	public void stop(IComponentContext context) {
 		super.stop(context);
 	}
@@ -86,14 +83,13 @@ public class MovingAverageCrossoverStrategy extends BaseComponent implements IBa
 				if (previousLongValue <= previousShortValue && longValue > shortValue) {
 					Order order = createMarketOrder(SignalSide.BUY, quantity);
 					order.setText("Buy at MA crossup");
-					log.info(order.getText() + " " + order.getSecurity() + " " + quantity + " at market price");
 					order.sendNew();
 				}
-			} else {
+			}
+			else {
 				if (previousLongValue >= previousShortValue && longValue < shortValue) {
 					Order order = createMarketOrder(SignalSide.SELL, quantity);
 					order.setText("Sell at MA crossdown");
-					log.info(order.getText() + " " + order.getSecurity() + " " + quantity + " at market price");
 					order.sendNew();
 				}
 			}
@@ -105,7 +101,8 @@ public class MovingAverageCrossoverStrategy extends BaseComponent implements IBa
 			shortValue += price;
 			if ((loop + 1) >= shortPeriod)
 				shortValue /= shortPeriod;
-		} else {
+		}
+		else {
 			double smoother = 2.0 / (shortPeriod + 1);
 			shortValue = (smoother * (price - shortValue)) + shortValue;
 		}
@@ -114,7 +111,8 @@ public class MovingAverageCrossoverStrategy extends BaseComponent implements IBa
 			longValue += price;
 			if ((loop + 1) >= longPeriod)
 				longValue /= longPeriod;
-		} else {
+		}
+		else {
 			double smoother = 2.0 / (longPeriod + 1);
 			longValue = (smoother * (price - longValue)) + longValue;
 		}

@@ -29,9 +29,15 @@ public class TripleMovingAverageCrossoverStrategy extends BaseComponent implemen
 
 	double shortValue = 0;
 
+	double previousShortValue = 0;
+
 	double middleValue = 0;
 
+	double previousMiddleValue = 0;
+
 	double longValue = 0;
+
+	double previousLongValue = 0;
 
 	int collectedValues = 0;
 
@@ -57,19 +63,26 @@ public class TripleMovingAverageCrossoverStrategy extends BaseComponent implemen
 	 * @see net.sourceforge.eclipsetrader.ats.core.events.IBarListener#barClose(net.sourceforge.eclipsetrader.ats.core.events.BarEvent)
 	 */
 	public void barClose(BarEvent e) {
+		if (collectedValues >= longPeriod) {
+			previousShortValue = shortValue;
+			previousMiddleValue = middleValue;
+			previousLongValue = longValue;
+		}
+
 		updateAverages(e.price);
 
 		if (collectedValues >= longPeriod) {
 			if (!hasPosition()) {
-				if (middleValue > longValue) {
+				if (previousMiddleValue >= previousShortValue && middleValue < shortValue) {
 					Order order = createMarketOrder(SignalSide.BUY, quantity);
-					order.setText("Triple Moving Average Crossover - Buy");
+					order.setText("Buy at Triple-MA crossdown");
 					order.sendNew();
 				}
-			} else {
-				if (shortValue < middleValue) {
+			}
+			else {
+				if (previousMiddleValue <= previousLongValue && middleValue > longValue) {
 					Order order = createMarketOrder(SignalSide.SELL, quantity);
-					order.setText("Triple Moving Average Crossover - Sell");
+					order.setText("Sell at Triple-MA crossup");
 					order.sendNew();
 				}
 			}
@@ -81,7 +94,8 @@ public class TripleMovingAverageCrossoverStrategy extends BaseComponent implemen
 			shortValue += price;
 			if ((collectedValues + 1) >= shortPeriod)
 				shortValue /= shortPeriod;
-		} else {
+		}
+		else {
 			double smoother = 2.0 / (shortPeriod + 1);
 			shortValue = (smoother * (price - shortValue)) + shortValue;
 		}
@@ -90,7 +104,8 @@ public class TripleMovingAverageCrossoverStrategy extends BaseComponent implemen
 			middleValue += price;
 			if ((collectedValues + 1) >= middlePeriod)
 				middleValue /= middlePeriod;
-		} else {
+		}
+		else {
 			double smoother = 2.0 / (middlePeriod + 1);
 			middleValue = (smoother * (price - middleValue)) + middleValue;
 		}
@@ -99,7 +114,8 @@ public class TripleMovingAverageCrossoverStrategy extends BaseComponent implemen
 			longValue += price;
 			if ((collectedValues + 1) >= longPeriod)
 				longValue /= longPeriod;
-		} else {
+		}
+		else {
 			double smoother = 2.0 / (longPeriod + 1);
 			longValue = (smoother * (price - longValue)) + longValue;
 		}
