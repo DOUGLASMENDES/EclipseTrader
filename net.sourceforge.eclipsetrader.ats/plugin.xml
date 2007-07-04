@@ -3,7 +3,7 @@
 <plugin>
    <extension-point id="components" name="ATS Components" schema="schema/components.exsd"/>
    <extension-point id="strategies" name="ATS Strategies" schema="schema/strategies.exsd"/>
-   <extension-point id="systems" name="Automated Trading Systems" schema="schema/systems.exsd"/>
+   <extension-point id="systemWizards" name="Automated Trading Systems" schema="schema/systemWizards.exsd"/>
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet

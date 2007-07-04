@@ -52,6 +52,7 @@ public class BacktestExecutionManager implements IExecutionManager {
 	Account account = new DefaultAccount();
 
 	ITradingProvider tradingProvider = new NullTradingProvider() {
+		@Override
 		public void sendNew(Order order) {
 			super.sendNew(order);
 			ordersCollectionObserver.itemAdded(order);
@@ -256,7 +257,7 @@ public class BacktestExecutionManager implements IExecutionManager {
 		for (int i = 0; i < o.length; i++)
 			((Order) o[i]).deleteObserver(orderObserver);
 
-		account.deleteObserver(accountObserver);
+		this.account.deleteObserver(accountObserver);
 	}
 
 	OrderEvent createOrderEvent(Order order) {

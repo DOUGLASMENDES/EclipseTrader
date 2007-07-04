@@ -32,7 +32,7 @@ public class ATSPlugin extends AbstractUIPlugin {
 
 	public static final String STRATEGIES_EXTENSION_ID = PLUGIN_ID + ".strategies";
 
-	public static final String SYSTEMS_EXTENSION_ID = PLUGIN_ID + ".systems";
+	public static final String SYSTEMS_EXTENSION_ID = PLUGIN_ID + ".systemWizards";
 
 	public static final String TRADING_SYSTEM_ICON = "TRADING_SYSTEM";
 
@@ -65,6 +65,7 @@ public class ATSPlugin extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
+	@Override
 	public void start(BundleContext context) throws Exception {
 		repository = new Repository();
 		repository.load();
@@ -76,6 +77,7 @@ public class ATSPlugin extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		repository.save();
 
@@ -110,6 +112,7 @@ public class ATSPlugin extends AbstractUIPlugin {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
 	 */
+	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		reg.put(ENTRY_COMPONENT_ICON, ImageDescriptor.createFromURL(getBundle().getEntry("icons/full/obj16/door_in.png")));
 		reg.put(EXIT_COMPONENT_ICON, ImageDescriptor.createFromURL(getBundle().getEntry("icons/full/obj16/door_out.png")));
