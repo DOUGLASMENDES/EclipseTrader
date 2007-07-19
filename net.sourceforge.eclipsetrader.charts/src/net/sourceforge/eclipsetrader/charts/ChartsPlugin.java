@@ -57,12 +57,12 @@ import org.w3c.dom.NodeList;
  */
 public class ChartsPlugin extends AbstractUIPlugin
 {
-    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts";
-    public static final String INDICATORS_EXTENSION_POINT = PLUGIN_ID + ".indicators";
-    public static final String OBJECTS_EXTENSION_POINT = PLUGIN_ID + ".objects";
-    public static final String PREFS_HIDE_TABS = "HIDE_TABS";
-    public static final String PREFS_EXTEND_SCALE = "EXTEND_SCALE";
-    public static final String PREFS_EXTEND_PERIOD = "EXTEND_PERIOD";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.charts"; //$NON-NLS-1$
+    public static final String INDICATORS_EXTENSION_POINT = PLUGIN_ID + ".indicators"; //$NON-NLS-1$
+    public static final String OBJECTS_EXTENSION_POINT = PLUGIN_ID + ".objects"; //$NON-NLS-1$
+    public static final String PREFS_HIDE_TABS = "HIDE_TABS"; //$NON-NLS-1$
+    public static final String PREFS_EXTEND_SCALE = "EXTEND_SCALE"; //$NON-NLS-1$
+    public static final String PREFS_EXTEND_PERIOD = "EXTEND_PERIOD"; //$NON-NLS-1$
     private static ChartsPlugin plugin;
     private static NumberFormat numberFormat;
     private static NumberFormat percentageFormat;
@@ -82,7 +82,7 @@ public class ChartsPlugin extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
-        copyFileToStateLocation("defaultChart.xml");
+        copyFileToStateLocation("defaultChart.xml"); //$NON-NLS-1$
     }
 
     /**
@@ -159,7 +159,7 @@ public class ChartsPlugin extends AbstractUIPlugin
         if (item != null)
         {
             try {
-                Object obj = item.createExecutableExtension("class");
+                Object obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                 if (obj instanceof IIndicatorPlugin)
                     return (IIndicatorPlugin)obj;
             } catch(Exception e) {
@@ -180,7 +180,7 @@ public class ChartsPlugin extends AbstractUIPlugin
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                     return item;
             }
         }
@@ -194,7 +194,7 @@ public class ChartsPlugin extends AbstractUIPlugin
         if (item != null)
         {
             try {
-                Object obj = item.createExecutableExtension("class");
+                Object obj = item.createExecutableExtension("class"); //$NON-NLS-1$
                 if (obj instanceof ObjectPlugin)
                     return (ObjectPlugin)obj;
             } catch(Exception e) {
@@ -215,7 +215,7 @@ public class ChartsPlugin extends AbstractUIPlugin
             for (int i = 0; i < members.length; i++)
             {
                 IConfigurationElement item = members[i];
-                if (item.getAttribute("id").equals(id))
+                if (item.getAttribute("id").equals(id)) //$NON-NLS-1$
                     return item;
             }
         }
@@ -229,7 +229,7 @@ public class ChartsPlugin extends AbstractUIPlugin
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
         Chart chart = new Chart();
 
-        File file = ChartsPlugin.getDefault().getStateLocation().append("defaultChart.xml").toFile();
+        File file = ChartsPlugin.getDefault().getStateLocation().append("defaultChart.xml").toFile(); //$NON-NLS-1$
         if (file.exists() == true)
         {
             try
@@ -247,13 +247,13 @@ public class ChartsPlugin extends AbstractUIPlugin
                     
                     if (valueNode != null)
                     {
-                        if (nodeName.equalsIgnoreCase("compression") == true)
+                        if (nodeName.equalsIgnoreCase("compression") == true) //$NON-NLS-1$
                             chart.setCompression(Integer.parseInt(valueNode.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("period") == true)
+                        else if (nodeName.equalsIgnoreCase("period") == true) //$NON-NLS-1$
                             chart.setPeriod(Integer.parseInt(valueNode.getNodeValue()));
-                        else if (nodeName.equalsIgnoreCase("autoScale") == true)
+                        else if (nodeName.equalsIgnoreCase("autoScale") == true) //$NON-NLS-1$
                             chart.setAutoScale(new Boolean(valueNode.getNodeValue()).booleanValue());
-                        else if (nodeName.equalsIgnoreCase("begin") == true)
+                        else if (nodeName.equalsIgnoreCase("begin") == true) //$NON-NLS-1$
                         {
                             try {
                                 chart.setBeginDate(dateTimeFormat.parse(valueNode.getNodeValue()));
@@ -261,7 +261,7 @@ public class ChartsPlugin extends AbstractUIPlugin
                                 logger.warn(e.toString());
                             }
                         }
-                        else if (nodeName.equalsIgnoreCase("end") == true)
+                        else if (nodeName.equalsIgnoreCase("end") == true) //$NON-NLS-1$
                         {
                             try {
                                 chart.setEndDate(dateTimeFormat.parse(valueNode.getNodeValue()));
@@ -284,7 +284,7 @@ public class ChartsPlugin extends AbstractUIPlugin
                             {
                                 ChartTab tab = new ChartTab(new Integer(t));
                                 tab.setParent(row);
-                                tab.setLabel(((Node)item).getAttributes().getNamedItem("label").getNodeValue());
+                                tab.setLabel(((Node)item).getAttributes().getNamedItem("label").getNodeValue()); //$NON-NLS-1$
 
                                 NodeList indicatorList = item.getChildNodes();
                                 for (int i = 0; i < indicatorList.getLength(); i++)
@@ -295,7 +295,7 @@ public class ChartsPlugin extends AbstractUIPlugin
                                     {
                                         ChartIndicator indicator = new ChartIndicator(new Integer(i));
                                         indicator.setParent(tab);
-                                        indicator.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+                                        indicator.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue()); //$NON-NLS-1$
 
                                         NodeList parametersList = item.getChildNodes();
                                         for (int p = 0; p < parametersList.getLength(); p++)
@@ -304,8 +304,8 @@ public class ChartsPlugin extends AbstractUIPlugin
                                             nodeName = item.getNodeName();
                                             if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                                             {
-                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
-                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue();  //$NON-NLS-1$
+                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue(); //$NON-NLS-1$
                                                 indicator.getParameters().put(key, value);
                                             }
                                         }
@@ -316,7 +316,7 @@ public class ChartsPlugin extends AbstractUIPlugin
                                     {
                                         ChartObject object = new ChartObject(new Integer(i));
                                         object.setParent(tab);
-                                        object.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue());
+                                        object.setPluginId(((Node)item).getAttributes().getNamedItem("pluginId").getNodeValue()); //$NON-NLS-1$
 
                                         NodeList parametersList = item.getChildNodes();
                                         for (int p = 0; p < parametersList.getLength(); p++)
@@ -325,8 +325,8 @@ public class ChartsPlugin extends AbstractUIPlugin
                                             nodeName = item.getNodeName();
                                             if (nodeName.equalsIgnoreCase("param")) //$NON-NLS-1$
                                             {
-                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue(); 
-                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue();
+                                                String key = ((Node)item).getAttributes().getNamedItem("key").getNodeValue();  //$NON-NLS-1$
+                                                String value = ((Node)item).getAttributes().getNamedItem("value").getNodeValue(); //$NON-NLS-1$
                                                 object.getParameters().put(key, value);
                                             }
                                         }
@@ -359,31 +359,31 @@ public class ChartsPlugin extends AbstractUIPlugin
 
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.getDOMImplementation().createDocument(null, "chart", null);
+            Document document = builder.getDOMImplementation().createDocument(null, "chart", null); //$NON-NLS-1$
 
             Element root = document.getDocumentElement();
             
-            Element node = document.createElement("title");
+            Element node = document.createElement("title"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(chart.getTitle()));
             root.appendChild(node);
-            node = document.createElement("compression");
+            node = document.createElement("compression"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(chart.getCompression())));
             root.appendChild(node);
-            node = document.createElement("period");
+            node = document.createElement("period"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(chart.getPeriod())));
             root.appendChild(node);
-            node = document.createElement("autoScale");
+            node = document.createElement("autoScale"); //$NON-NLS-1$
             node.appendChild(document.createTextNode(String.valueOf(chart.isAutoScale())));
             root.appendChild(node);
             if (chart.getBeginDate() != null)
             {
-                node = document.createElement("begin");
+                node = document.createElement("begin"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getBeginDate())));
                 root.appendChild(node);
             }
             if (chart.getEndDate() != null)
             {
-                node = document.createElement("end");
+                node = document.createElement("end"); //$NON-NLS-1$
                 node.appendChild(document.createTextNode(dateTimeFormat.format(chart.getEndDate())));
                 root.appendChild(node);
             }
@@ -392,7 +392,7 @@ public class ChartsPlugin extends AbstractUIPlugin
                 ChartRow row = (ChartRow)chart.getRows().get(r);
                 row.setId(new Integer(r));
 
-                Element rowNode = document.createElement("row");
+                Element rowNode = document.createElement("row"); //$NON-NLS-1$
                 root.appendChild(rowNode);
 
                 for (int t = 0; t < row.getTabs().size(); t++)
@@ -400,8 +400,8 @@ public class ChartsPlugin extends AbstractUIPlugin
                     ChartTab tab = (ChartTab)row.getTabs().get(t);
                     tab.setId(new Integer(t));
 
-                    Element tabNode = document.createElement("tab");
-                    tabNode.setAttribute("label", tab.getLabel());
+                    Element tabNode = document.createElement("tab"); //$NON-NLS-1$
+                    tabNode.setAttribute("label", tab.getLabel()); //$NON-NLS-1$
                     rowNode.appendChild(tabNode);
 
                     for (int i = 0; i < tab.getIndicators().size(); i++)
@@ -409,17 +409,17 @@ public class ChartsPlugin extends AbstractUIPlugin
                         ChartIndicator indicator = (ChartIndicator)tab.getIndicators().get(i);
                         indicator.setId(new Integer(i));
 
-                        Element indicatorNode = document.createElement("indicator");
-                        indicatorNode.setAttribute("pluginId", indicator.getPluginId());
+                        Element indicatorNode = document.createElement("indicator"); //$NON-NLS-1$
+                        indicatorNode.setAttribute("pluginId", indicator.getPluginId()); //$NON-NLS-1$
                         tabNode.appendChild(indicatorNode);
 
                         for (Iterator iter = indicator.getParameters().keySet().iterator(); iter.hasNext(); )
                         {
                             String key = (String)iter.next();
 
-                            node = document.createElement("param");
-                            node.setAttribute("key", key);
-                            node.setAttribute("value", (String)indicator.getParameters().get(key));
+                            node = document.createElement("param"); //$NON-NLS-1$
+                            node.setAttribute("key", key); //$NON-NLS-1$
+                            node.setAttribute("value", (String)indicator.getParameters().get(key)); //$NON-NLS-1$
                             indicatorNode.appendChild(node);
                         }
                     }
@@ -429,17 +429,17 @@ public class ChartsPlugin extends AbstractUIPlugin
                         ChartObject object = (ChartObject)tab.getObjects().get(i);
                         object.setId(new Integer(i));
 
-                        Element indicatorNode = document.createElement("object");
-                        indicatorNode.setAttribute("pluginId", object.getPluginId());
+                        Element indicatorNode = document.createElement("object"); //$NON-NLS-1$
+                        indicatorNode.setAttribute("pluginId", object.getPluginId()); //$NON-NLS-1$
                         tabNode.appendChild(indicatorNode);
 
                         for (Iterator iter = object.getParameters().keySet().iterator(); iter.hasNext(); )
                         {
                             String key = (String)iter.next();
 
-                            node = document.createElement("param");
-                            node.setAttribute("key", key);
-                            node.setAttribute("value", (String)object.getParameters().get(key));
+                            node = document.createElement("param"); //$NON-NLS-1$
+                            node.setAttribute("key", key); //$NON-NLS-1$
+                            node.setAttribute("value", (String)object.getParameters().get(key)); //$NON-NLS-1$
                             indicatorNode.appendChild(node);
                         }
                     }
@@ -448,16 +448,16 @@ public class ChartsPlugin extends AbstractUIPlugin
 
             TransformerFactory factory = TransformerFactory.newInstance();
             try {
-                factory.setAttribute("indent-number", new Integer(4));
+                factory.setAttribute("indent-number", new Integer(4)); //$NON-NLS-1$
             } catch(Exception e) {}
             Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1"); //$NON-NLS-1$
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+            transformer.setOutputProperty("{http\u003a//xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
             DOMSource source = new DOMSource(document);
             
-            File file = ChartsPlugin.getDefault().getStateLocation().append("defaultChart.xml").toFile();
+            File file = ChartsPlugin.getDefault().getStateLocation().append("defaultChart.xml").toFile(); //$NON-NLS-1$
             
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
             StreamResult result = new StreamResult(out);
@@ -479,7 +479,7 @@ public class ChartsPlugin extends AbstractUIPlugin
             {
                 byte[] buffer = new byte[10240];
                 OutputStream os = new FileOutputStream(f);
-                InputStream is = FileLocator.openStream(getBundle(), new Path("data/" + file), false);
+                InputStream is = FileLocator.openStream(getBundle(), new Path("data/" + file), false); //$NON-NLS-1$
                 int readed = 0;
                 do
                 {

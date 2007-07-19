@@ -21,7 +21,7 @@ import net.sourceforge.eclipsetrader.charts.Settings;
 public class UO extends IndicatorPlugin
 {
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    public static final String DEFAULT_LABEL = "UO";
+    public static final String DEFAULT_LABEL = "UO"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_SHORT_PERIOD = 7;
     public static final int DEFAULT_MEDIUM_PERIOD = 14;
@@ -100,12 +100,12 @@ public class UO extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        shortPeriod = settings.getInteger("shortPeriod", shortPeriod).intValue();
-        mediumPeriod = settings.getInteger("mediumPeriod", mediumPeriod).intValue();
-        longPeriod = settings.getInteger("longPeriod", longPeriod).intValue();
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        shortPeriod = settings.getInteger("shortPeriod", shortPeriod).intValue(); //$NON-NLS-1$
+        mediumPeriod = settings.getInteger("mediumPeriod", mediumPeriod).intValue(); //$NON-NLS-1$
+        longPeriod = settings.getInteger("longPeriod", longPeriod).intValue(); //$NON-NLS-1$
     }
 
     PlotLine getTR()

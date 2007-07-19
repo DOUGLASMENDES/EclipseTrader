@@ -143,6 +143,12 @@ public class Messages extends NLS
     public static String RSIPreferences_SellLineColor;
     public static String RSIPreferences_Smoothing;
     public static String RSIPreferences_SmoothingType;
+	public static String SAR_0;
+	public static String SAR_1;
+	public static String SAR_3;
+	public static String SAR_4;
+	public static String SAR_5;
+	public static String SAR_6;
     public static String SARPreferencePage_Add;
     public static String SARPreferencePage_Color;
     public static String SARPreferencePage_Initial;

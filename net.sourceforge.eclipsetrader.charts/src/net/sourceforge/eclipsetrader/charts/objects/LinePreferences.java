@@ -58,13 +58,13 @@ public class LinePreferences extends ObjectPluginPreferencePage
         setControl(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.LinePreferences_Color);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         colorSelector = new ColorSelector(content);
-        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB());
+        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Start date / value");
+        label.setText(Messages.LinePreferences_StartDateValue);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         Composite group = new Composite(content, SWT.NONE);
         gridLayout = new GridLayout(2, false);
@@ -73,13 +73,13 @@ public class LinePreferences extends ObjectPluginPreferencePage
         group.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
         date1 = new Text(group, SWT.BORDER);
         date1.setLayoutData(new GridData(80, SWT.DEFAULT));
-        date1.setText(df.format(getSettings().getDate("date1", null)));
+        date1.setText(df.format(getSettings().getDate("date1", null))); //$NON-NLS-1$
         value1 = new Text(group, SWT.BORDER);
         value1.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value1.setText(nf.format(getSettings().getDouble("value1", null)));
+        value1.setText(nf.format(getSettings().getDouble("value1", null))); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("End date / value");
+        label.setText(Messages.LinePreferences_EndDateValue);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         group = new Composite(content, SWT.NONE);
         gridLayout = new GridLayout(2, false);
@@ -88,20 +88,20 @@ public class LinePreferences extends ObjectPluginPreferencePage
         group.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
         date2 = new Text(group, SWT.BORDER);
         date2.setLayoutData(new GridData(80, SWT.DEFAULT));
-        date2.setText(df.format(getSettings().getDate("date2", null)));
+        date2.setText(df.format(getSettings().getDate("date2", null))); //$NON-NLS-1$
         value2 = new Text(group, SWT.BORDER);
         value2.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value2.setText(nf.format(getSettings().getDouble("value2", null)));
+        value2.setText(nf.format(getSettings().getDouble("value2", null))); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         extend1 = new Button(content, SWT.CHECK);
-        extend1.setText("Extend Start");
-        extend1.setSelection(getSettings().getBoolean("extend1", false));
+        extend1.setText(Messages.LinePreferences_ExtendStart);
+        extend1.setSelection(getSettings().getBoolean("extend1", false)); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         extend2 = new Button(content, SWT.CHECK);
-        extend2.setText("Extend End");
-        extend2.setSelection(getSettings().getBoolean("extend2", false));
+        extend2.setText(Messages.LinePreferences_ExtendEnd);
+        extend2.setSelection(getSettings().getBoolean("extend2", false)); //$NON-NLS-1$
 
     }
 
@@ -112,13 +112,13 @@ public class LinePreferences extends ObjectPluginPreferencePage
     {
         try
         {
-            getSettings().set("color", colorSelector.getColorValue());
-            getSettings().set("date1", df.parse(date1.getText()));
-            getSettings().set("date2", df.parse(date2.getText()));
-            getSettings().set("value1", nf.parse(value1.getText()).doubleValue());
-            getSettings().set("value2", nf.parse(value2.getText()).doubleValue());
-            getSettings().set("extend1", extend1.getSelection());
-            getSettings().set("extend2", extend2.getSelection());
+            getSettings().set("color", colorSelector.getColorValue()); //$NON-NLS-1$
+            getSettings().set("date1", df.parse(date1.getText())); //$NON-NLS-1$
+            getSettings().set("date2", df.parse(date2.getText())); //$NON-NLS-1$
+            getSettings().set("value1", nf.parse(value1.getText()).doubleValue()); //$NON-NLS-1$
+            getSettings().set("value2", nf.parse(value2.getText()).doubleValue()); //$NON-NLS-1$
+            getSettings().set("extend1", extend1.getSelection()); //$NON-NLS-1$
+            getSettings().set("extend2", extend2.getSelection()); //$NON-NLS-1$
         }
         catch (ParseException e) {
             CorePlugin.logException(e);

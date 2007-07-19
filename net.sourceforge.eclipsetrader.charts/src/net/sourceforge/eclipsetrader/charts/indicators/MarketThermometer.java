@@ -26,8 +26,8 @@ public class MarketThermometer extends IndicatorPlugin
     public static final RGB DEFAULT_MA_COLOR = new RGB(255, 165, 0);
     public static final int DEFAULT_LINETYPE = PlotLine.HISTOGRAM_BAR;
     public static final int DEFAULT_MA_LINETYPE = PlotLine.LINE;
-    public static final String DEFAULT_LABEL = "THERM";
-    public static final String DEFAULT_MA_LABEL = "THERM MA";
+    public static final String DEFAULT_LABEL = "THERM"; //$NON-NLS-1$
+    public static final String DEFAULT_MA_LABEL = "THERM MA"; //$NON-NLS-1$
     public static final int DEFAULT_THRESHOLD = 3;
     public static final int DEFAULT_SMOOTHING = 2;
     public static final int DEFAULT_MA_PERIOD = 22;
@@ -126,18 +126,18 @@ public class MarketThermometer extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        downColor = settings.getColor("downColor", downColor);
-        upColor = settings.getColor("upColor", upColor);
-        threshColor = settings.getColor("threshColor", threshColor);
-        maColor = settings.getColor("maColor", maColor);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        maLineType = settings.getInteger("maLineType", maLineType).intValue();
-        label = settings.getString("label", label);
-        maLabel = settings.getString("maLabel", maLabel);
-        threshold = settings.getInteger("threshold", threshold).intValue();
-        smoothing = settings.getInteger("smoothing", smoothing).intValue();
-        maPeriod = settings.getInteger("maPeriod", maPeriod).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
-        smoothType = settings.getInteger("smoothType", smoothType).intValue();
+        downColor = settings.getColor("downColor", downColor); //$NON-NLS-1$
+        upColor = settings.getColor("upColor", upColor); //$NON-NLS-1$
+        threshColor = settings.getColor("threshColor", threshColor); //$NON-NLS-1$
+        maColor = settings.getColor("maColor", maColor); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        maLineType = settings.getInteger("maLineType", maLineType).intValue(); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        maLabel = settings.getString("maLabel", maLabel); //$NON-NLS-1$
+        threshold = settings.getInteger("threshold", threshold).intValue(); //$NON-NLS-1$
+        smoothing = settings.getInteger("smoothing", smoothing).intValue(); //$NON-NLS-1$
+        maPeriod = settings.getInteger("maPeriod", maPeriod).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
+        smoothType = settings.getInteger("smoothType", smoothType).intValue(); //$NON-NLS-1$
     }
 }

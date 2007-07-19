@@ -27,8 +27,8 @@ import org.eclipse.swt.graphics.RGB;
 public class Settings
 {
     private Map map = new HashMap();
-    private DateFormat dateParser = new SimpleDateFormat("dd/MM/yy HH:mm");
-    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private DateFormat dateParser = new SimpleDateFormat("dd/MM/yy HH:mm"); //$NON-NLS-1$
+    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm"); //$NON-NLS-1$
 
     public Settings()
     {
@@ -56,12 +56,12 @@ public class Settings
     
     public void set(String key, Color color)
     {
-        map.put(key, String.valueOf(color.getRed()) + "," + String.valueOf(color.getGreen()) + "," + String.valueOf(color.getBlue()));
+        map.put(key, String.valueOf(color.getRed()) + "," + String.valueOf(color.getGreen()) + "," + String.valueOf(color.getBlue())); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     public void set(String key, RGB color)
     {
-        map.put(key, String.valueOf(color.red) + "," + String.valueOf(color.green) + "," + String.valueOf(color.blue));
+        map.put(key, String.valueOf(color.red) + "," + String.valueOf(color.green) + "," + String.valueOf(color.blue)); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     public void set(String key, Date date)
@@ -71,12 +71,12 @@ public class Settings
     
     public void set(String key, int r, int g, int b)
     {
-        map.put(key, String.valueOf(r) + "," + String.valueOf(g) + "," + String.valueOf(b));
+        map.put(key, String.valueOf(r) + "," + String.valueOf(g) + "," + String.valueOf(b)); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     public void set(String key, boolean value)
     {
-        map.put(key, value ? "1" : "0");
+        map.put(key, value ? "1" : "0"); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     public void remove(String key)
@@ -129,7 +129,7 @@ public class Settings
         String value = (String)map.get(key);
         if (value == null)
             return defaultValue;
-        return value.equals("1");
+        return value.equals("1"); //$NON-NLS-1$
     }
     
     public void setColor(String key, String value)
@@ -143,7 +143,7 @@ public class Settings
         if (value == null)
             return new Color(null, r, g, b);
 
-        String[] ar = value.split(",");
+        String[] ar = value.split(","); //$NON-NLS-1$
         return new Color(null, Integer.parseInt(ar[0]), Integer.parseInt(ar[1]), Integer.parseInt(ar[2]));
     }
     
@@ -153,7 +153,7 @@ public class Settings
         if (value == null)
             return new Color(null, rgb);
 
-        String[] ar = value.split(",");
+        String[] ar = value.split(","); //$NON-NLS-1$
         return new Color(null, Integer.parseInt(ar[0]), Integer.parseInt(ar[1]), Integer.parseInt(ar[2]));
     }
     
@@ -163,7 +163,7 @@ public class Settings
         if (value == null)
             return defaultValue;
 
-        String[] ar = value.split(",");
+        String[] ar = value.split(","); //$NON-NLS-1$
         return new Color(null, Integer.parseInt(ar[0]), Integer.parseInt(ar[1]), Integer.parseInt(ar[2]));
     }
     

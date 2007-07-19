@@ -57,11 +57,11 @@ public class UpdateAllChartsAction implements IWorkbenchWindowActionDelegate, IV
      */
     public void run(IAction action)
     {
-        Job job = new Job("Update chart data") {
+        Job job = new Job(Messages.UpdateAllChartsAction_UpdateChartData) {
             protected IStatus run(IProgressMonitor monitor)
             {
                 Object[] objs = CorePlugin.getRepository().allSecurities().toArray();
-                monitor.beginTask("Updating charts", objs.length);
+                monitor.beginTask(Messages.UpdateAllChartsAction_UpdatingCharts, objs.length);
                 for (int i = 0; i < objs.length; i++)
                 {
                     Security security = (Security)objs[i];
@@ -70,7 +70,7 @@ public class UpdateAllChartsAction implements IWorkbenchWindowActionDelegate, IV
                         IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(security.getHistoryFeed().getId());
                         if (feed != null)
                         {
-                            monitor.subTask("Updating " + security.getDescription().replaceAll("&", "&&"));
+                            monitor.subTask(Messages.UpdateAllChartsAction_Updating + security.getDescription().replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
                             feed.updateHistory(security, IHistoryFeed.INTERVAL_DAILY);
                         }
                     }

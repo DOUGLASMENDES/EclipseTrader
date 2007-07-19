@@ -54,7 +54,7 @@ public class StartupShutdownPreferencesPage extends PreferencePage implements IW
         content.setLayout(gridLayout);
         
         updateHistoryData = new Button(content, SWT.CHECK);
-        updateHistoryData.setText("Update history data on startup");
+        updateHistoryData.setText(Messages.getString("StartupShutdownPreferencesPage.UpdateHistoryDataText")); //$NON-NLS-1$
         updateHistoryData.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         updateHistoryData.setSelection(CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_HISTORY));
         updateHistoryData.addSelectionListener(new SelectionAdapter() {
@@ -68,23 +68,23 @@ public class StartupShutdownPreferencesPage extends PreferencePage implements IW
         label.setLayoutData(new GridData(26, SWT.NONE));
         
         updateOnce = new Button(content, SWT.CHECK);
-        updateOnce.setText("Update once per day");
+        updateOnce.setText(Messages.getString("StartupShutdownPreferencesPage.UpdateOnceText")); //$NON-NLS-1$
         updateOnce.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
         updateOnce.setSelection(CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_HISTORY_ONCE));
         updateOnce.setEnabled(CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_HISTORY));
 
         updateNews = new Button(content, SWT.CHECK);
-        updateNews.setText("Update news heads on startup");
+        updateNews.setText(Messages.getString("StartupShutdownPreferencesPage.UpdateNewsText")); //$NON-NLS-1$
         updateNews.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         updateNews.setSelection(CorePlugin.getDefault().getPreferenceStore().getBoolean(CorePlugin.PREFS_UPDATE_NEWS));
         
         minimizeToTray = new Button(content, SWT.CHECK);
-        minimizeToTray.setText("Minimize to system tray");
+        minimizeToTray.setText(Messages.getString("StartupShutdownPreferencesPage.MinimizeToTrayText")); //$NON-NLS-1$
         minimizeToTray.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         minimizeToTray.setSelection(EclipseTraderPlugin.getDefault().getPreferenceStore().getBoolean(EclipseTraderPlugin.MINIMIZE_TO_TRAY));
         
         confirmExit = new Button(content, SWT.CHECK);
-        confirmExit.setText("Confirm exit when closing");
+        confirmExit.setText(Messages.getString("StartupShutdownPreferencesPage.ConfirmExitText")); //$NON-NLS-1$
         confirmExit.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         confirmExit.setSelection(EclipseTraderPlugin.getDefault().getPreferenceStore().getBoolean(EclipseTraderPlugin.PROMPT_ON_EXIT));
 

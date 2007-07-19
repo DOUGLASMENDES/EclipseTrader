@@ -48,10 +48,13 @@ public class Messages extends NLS
     public static String ChartsPrefereces_OnlyOneTab;
     public static String ChartsPrefereces_Periods;
     public static String ChartsPrefereces_Settings;
+	public static String ChartView_FollowSecuritySelection;
     public static String ChartView_NewObject;
     public static String ChartView_Period;
     public static String ChartView_SetInterval;
     public static String ChartView_NoDataMessage;
+	public static String ChartView_ShowAdjustedValues;
+	public static String ChartView_ShowMarketValue;
     public static String ChartView_UpdateChartMessage;
     public static String ChartView_UpdatingMessage;
     public static String ChartView_DeleteMessagePrefix;
@@ -84,6 +87,9 @@ public class Messages extends NLS
     public static String DeleteAction_ConfirmDialogMessage;
     public static String DeleteAction_ConfirmDialogTitle;
     public static String DeleteAction_Delete;
+	public static String EarlyStartup_UpdateChartData;
+	public static String EarlyStartup_Updating;
+	public static String EarlyStartup_UpdatingCharts;
     public static String IndicatorPlugin_EMA;
     public static String IndicatorPlugin_SMA;
     public static String IndicatorPlugin_WilderMA;

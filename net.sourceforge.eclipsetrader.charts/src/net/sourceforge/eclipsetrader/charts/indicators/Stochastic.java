@@ -22,11 +22,11 @@ import net.sourceforge.eclipsetrader.charts.Settings;
 public class Stochastic extends IndicatorPlugin
 {
     public static final RGB DEFAULT_DCOLOR = new RGB(224, 0, 0);
-    public static final String DEFAULT_DLABEL = "%D";
+    public static final String DEFAULT_DLABEL = "%D"; //$NON-NLS-1$
     public static final int DEFAULT_DLINETYPE = PlotLine.DOT;
     public static final int DEFAULT_DPERIOD = 3;
     public static final int DEFAULT_KLINETYPE = PlotLine.LINE;
-    public static final String DEFAULT_KLABEL = "%K";
+    public static final String DEFAULT_KLABEL = "%K"; //$NON-NLS-1$
     public static final int DEFAULT_KPERIOD = 3;
     public static final RGB DEFAULT_KCOLOR = new RGB(0, 0, 192);
     public static final RGB DEFAULT_BUYCOLOR = new RGB(192, 192, 192);
@@ -134,19 +134,19 @@ public class Stochastic extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        dcolor = settings.getColor("dcolor", dcolor);
-        kcolor = settings.getColor("kcolor", kcolor);
-        buyColor = settings.getColor("buyColor", buyColor);
-        sellColor = settings.getColor("sellColor", sellColor);
-        dlineType = settings.getInteger("dlineType", dlineType).intValue();
-        dlabel = settings.getString("dlabel", dlabel);
-        dperiod = settings.getInteger("dperiod", dperiod).intValue();
-        klineType = settings.getInteger("klineType", klineType).intValue();
-        klabel = settings.getString("klabel", klabel);
-        kperiod = settings.getInteger("kperiod", kperiod).intValue();
-        period = settings.getInteger("period", period).intValue();
-        buyLine = settings.getInteger("buyLine", buyLine).intValue();
-        sellLine = settings.getInteger("sellLine", sellLine).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
+        dcolor = settings.getColor("dcolor", dcolor); //$NON-NLS-1$
+        kcolor = settings.getColor("kcolor", kcolor); //$NON-NLS-1$
+        buyColor = settings.getColor("buyColor", buyColor); //$NON-NLS-1$
+        sellColor = settings.getColor("sellColor", sellColor); //$NON-NLS-1$
+        dlineType = settings.getInteger("dlineType", dlineType).intValue(); //$NON-NLS-1$
+        dlabel = settings.getString("dlabel", dlabel); //$NON-NLS-1$
+        dperiod = settings.getInteger("dperiod", dperiod).intValue(); //$NON-NLS-1$
+        klineType = settings.getInteger("klineType", klineType).intValue(); //$NON-NLS-1$
+        klabel = settings.getString("klabel", klabel); //$NON-NLS-1$
+        kperiod = settings.getInteger("kperiod", kperiod).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        buyLine = settings.getInteger("buyLine", buyLine).intValue(); //$NON-NLS-1$
+        sellLine = settings.getInteger("sellLine", sellLine).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
     }
 }

@@ -26,14 +26,14 @@ public class DMI extends IndicatorPlugin
     public static final int DEFAULT_PDI_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_MDI_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_ADX_LINETYPE = PlotLine.LINE;
-    public static final String DEFAULT_PDI_LABEL = "+DM";
-    public static final String DEFAULT_MDI_LABEL = "-DM";
-    public static final String DEFAULT_ADX_LABEL = "ADX";
+    public static final String DEFAULT_PDI_LABEL = "+DM"; //$NON-NLS-1$
+    public static final String DEFAULT_MDI_LABEL = "-DM"; //$NON-NLS-1$
+    public static final String DEFAULT_ADX_LABEL = "ADX"; //$NON-NLS-1$
     public static final int DEFAULT_PERIOD = 14;
     public static final int DEFAULT_SMOOTHING = 9;
     public static final int DEFAULT_MA_TYPE = EMA;
-    public static final String DEFAULT_LINE_REQUEST = "ADX";
-    public static final String DEFAULT_LABEL = "DMI";
+    public static final String DEFAULT_LINE_REQUEST = "ADX"; //$NON-NLS-1$
+    public static final String DEFAULT_LABEL = "DMI"; //$NON-NLS-1$
     private Color mdiColor = new Color(null, DEFAULT_MDI_COLOR);
     private Color pdiColor = new Color(null, DEFAULT_PDI_COLOR);
     private Color adxColor = new Color(null, DEFAULT_ADX_COLOR);
@@ -221,17 +221,17 @@ public class DMI extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        mdiColor = settings.getColor("mdiColor", mdiColor);
-        pdiColor = settings.getColor("pdiColor", pdiColor);
-        adxColor = settings.getColor("adxColor", adxColor);
-        pdiLineType = settings.getInteger("pdiLineType", pdiLineType).intValue();
-        mdiLineType = settings.getInteger("mdiLineType", mdiLineType).intValue();
-        adxLineType = settings.getInteger("adxLineType", adxLineType).intValue();
-        pdiLabel = settings.getString("pdiLabel", pdiLabel);
-        mdiLabel = settings.getString("mdiLabel", mdiLabel);
-        adxLabel = settings.getString("adxLabel", adxLabel);
-        period = settings.getInteger("period", period).intValue();
-        smoothing = settings.getInteger("smoothing", smoothing).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
+        mdiColor = settings.getColor("mdiColor", mdiColor); //$NON-NLS-1$
+        pdiColor = settings.getColor("pdiColor", pdiColor); //$NON-NLS-1$
+        adxColor = settings.getColor("adxColor", adxColor); //$NON-NLS-1$
+        pdiLineType = settings.getInteger("pdiLineType", pdiLineType).intValue(); //$NON-NLS-1$
+        mdiLineType = settings.getInteger("mdiLineType", mdiLineType).intValue(); //$NON-NLS-1$
+        adxLineType = settings.getInteger("adxLineType", adxLineType).intValue(); //$NON-NLS-1$
+        pdiLabel = settings.getString("pdiLabel", pdiLabel); //$NON-NLS-1$
+        mdiLabel = settings.getString("mdiLabel", mdiLabel); //$NON-NLS-1$
+        adxLabel = settings.getString("adxLabel", adxLabel); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        smoothing = settings.getInteger("smoothing", smoothing).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
     }
 }

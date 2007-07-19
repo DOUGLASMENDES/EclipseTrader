@@ -54,7 +54,7 @@ public class BollingerBandsPreferencePage extends IndicatorPluginPreferencePage
         color = new ColorSelector(content);
         color.setColorValue(getSettings().getColor("color", BollingerBands.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, Messages.BollingerBandsPreferencePage_LineType, getSettings().getInteger("lineType", BollingerBands.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
+        lineType = createLineTypeCombo(content, Messages.BollingerBandsPreferencePage_LineType, getSettings().getInteger("lineType", BollingerBands.DEFAULT_LINETYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.BollingerBandsPreferencePage_Period);
@@ -72,7 +72,7 @@ public class BollingerBandsPreferencePage extends IndicatorPluginPreferencePage
         deviation.setMaximum(99);
         deviation.setSelection(getSettings().getInteger("deviation", BollingerBands.DEFAULT_DEVIATION).intValue()); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, Messages.BollingerBandsPreferencePage_SmoothingType, getSettings().getInteger("maType", BollingerBands.DEFAULT_MATYPE).intValue()); //$NON-NLS-2$
+        maType = createMovingAverageCombo(content, Messages.BollingerBandsPreferencePage_SmoothingType, getSettings().getInteger("maType", BollingerBands.DEFAULT_MATYPE).intValue()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

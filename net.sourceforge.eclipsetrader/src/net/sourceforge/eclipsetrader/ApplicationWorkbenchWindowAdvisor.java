@@ -113,7 +113,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
                 {
                     shell.setVisible(false);
                     final TrayItem trayItem = new TrayItem(display.getSystemTray(), SWT.NONE);
-                    final Image image = EclipseTraderPlugin.getImageDescriptor("eclipse.gif").createImage();
+                    final Image image = EclipseTraderPlugin.getImageDescriptor("eclipse.gif").createImage(); //$NON-NLS-1$
                     trayItem.setImage(image);
                     trayItem.setToolTipText(getWindowConfigurer().getTitle());
                     trayItem.addListener(SWT.MenuDetect, new Listener() {
@@ -126,7 +126,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
                                 items[i].dispose();
                             
                             MenuItem item = new MenuItem(menu, SWT.NONE);
-                            item.setText("Restore Window");
+                            item.setText(Messages.ApplicationWorkbenchWindowAdvisor_RestoreWindow);
                             item.addSelectionListener(new SelectionAdapter() {
                                 public void widgetSelected(SelectionEvent e)
                                 {
@@ -158,7 +158,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
         boolean promptOnExit = preferenceStore.getBoolean(EclipseTraderPlugin.PROMPT_ON_EXIT);
         if (promptOnExit)
         {
-            MessageDialogWithToggle dlg = MessageDialogWithToggle.openOkCancelConfirm(getWindowConfigurer().getWindow().getShell(), "Confirm Exit", "Exit EclipseTrader ?", "Always exit without prompt", false, null, null);
+            MessageDialogWithToggle dlg = MessageDialogWithToggle.openOkCancelConfirm(getWindowConfigurer().getWindow().getShell(), Messages.ApplicationWorkbenchWindowAdvisor_ConfirmExit, Messages.ApplicationWorkbenchWindowAdvisor_ExitEclipseTrader, Messages.ApplicationWorkbenchWindowAdvisor_AlwaysExitWithoutPrompt, false, null, null);
             if (dlg.getReturnCode() != IDialogConstants.OK_ID)
                 return false;
             EclipseTraderPlugin.getDefault().getPreferenceStore().setValue(EclipseTraderPlugin.PROMPT_ON_EXIT, !dlg.getToggleState());
@@ -185,8 +185,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
             IPerspectiveDescriptor persp = currentPage.getPerspective();
             if (persp != null)
             {
-                if (!persp.getLabel().equals("") && !persp.getLabel().equals(title))
-                    title += " - " + persp.getLabel();
+                if (!persp.getLabel().equals("") && !persp.getLabel().equals(title)) //$NON-NLS-1$
+                    title += Messages.ApplicationWorkbenchWindowAdvisor_Separator + persp.getLabel();
             }
         }
 

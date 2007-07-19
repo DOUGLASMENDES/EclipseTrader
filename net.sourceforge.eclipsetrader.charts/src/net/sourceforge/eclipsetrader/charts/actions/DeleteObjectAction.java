@@ -45,7 +45,7 @@ public class DeleteObjectAction implements IViewActionDelegate
     public void run(IAction action)
     {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (MessageDialog.openConfirm(window.getShell(), "Delete Object", "Do you really want to delete the selected object ?"))
+        if (MessageDialog.openConfirm(window.getShell(), Messages.DeleteObjectAction_Title, Messages.DeleteObjectAction_Text))
         {
             ChartTab tab = null;
             if (selection instanceof IndicatorSelection)

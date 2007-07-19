@@ -73,7 +73,7 @@ public class OpenChartForAction implements IWorkbenchWindowActionDelegate
         if (selection instanceof SecuritySelection)
         {
             security = ((SecuritySelection)selection).getSecurity();
-            action.setText(defaultText + " " + security.getDescription());
+            action.setText(defaultText + " " + security.getDescription()); //$NON-NLS-1$
         }
         else
             action.setText(defaultText);

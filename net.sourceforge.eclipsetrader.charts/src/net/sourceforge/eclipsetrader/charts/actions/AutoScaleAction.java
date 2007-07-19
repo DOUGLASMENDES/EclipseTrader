@@ -23,7 +23,7 @@ public class AutoScaleAction extends Action
 
     public AutoScaleAction(ChartView view)
     {
-        super("Auto Scale", AS_CHECK_BOX);
+        super(Messages.AutoScaleAction_Text, AS_CHECK_BOX);
         this.view = view;
     }
 

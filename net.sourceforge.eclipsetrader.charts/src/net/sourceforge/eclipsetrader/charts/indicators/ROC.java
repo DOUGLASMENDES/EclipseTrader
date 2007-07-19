@@ -22,7 +22,7 @@ import net.sourceforge.eclipsetrader.core.db.BarData;
 public class ROC extends IndicatorPlugin
 {
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    public static final String DEFAULT_LABEL = "ROC";
+    public static final String DEFAULT_LABEL = "ROC"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_PERIOD = 14;
     public static final int DEFAULT_SMOOTHING = 10;
@@ -69,12 +69,12 @@ public class ROC extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        period = settings.getInteger("period", period).intValue();
-        smoothing = settings.getInteger("smoothing", smoothing).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
-        input = settings.getInteger("input", input).intValue();
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        smoothing = settings.getInteger("smoothing", smoothing).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
+        input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
     }
 }

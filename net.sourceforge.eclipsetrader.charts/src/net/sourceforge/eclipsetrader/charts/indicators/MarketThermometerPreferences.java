@@ -77,7 +77,7 @@ public class MarketThermometerPreferences extends IndicatorPluginPreferencePage
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         lineLabel.setText(getSettings().getString("label", MarketThermometer.DEFAULT_LABEL)); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, Messages.MarketThermometerPreferences_LineType, getSettings().getInteger("lineType", MarketThermometer.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
+        lineType = createLineTypeCombo(content, Messages.MarketThermometerPreferences_LineType, getSettings().getInteger("lineType", MarketThermometer.DEFAULT_LINETYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.MarketThermometerPreferences_Threshold);
@@ -102,7 +102,7 @@ public class MarketThermometerPreferences extends IndicatorPluginPreferencePage
         maColor = new ColorSelector(content);
         maColor.setColorValue(getSettings().getColor("maColor", MarketThermometer.DEFAULT_MA_COLOR).getRGB()); //$NON-NLS-1$
 
-        maLineType = createLineTypeCombo(content, Messages.MarketThermometerPreferences_MALineType, getSettings().getInteger("maLineType", MarketThermometer.DEFAULT_MA_LINETYPE).intValue()); //$NON-NLS-2$
+        maLineType = createLineTypeCombo(content, Messages.MarketThermometerPreferences_MALineType, getSettings().getInteger("maLineType", MarketThermometer.DEFAULT_MA_LINETYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.MarketThermometerPreferences_MALabel);
@@ -119,7 +119,7 @@ public class MarketThermometerPreferences extends IndicatorPluginPreferencePage
         maPeriod.setMaximum(99);
         maPeriod.setSelection(getSettings().getInteger("maPeriod", MarketThermometer.DEFAULT_MA_PERIOD).intValue()); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, Messages.MarketThermometerPreferences_MAType, getSettings().getInteger("maType", MarketThermometer.DEFAULT_MA_TYPE).intValue()); //$NON-NLS-2$
+        maType = createMovingAverageCombo(content, Messages.MarketThermometerPreferences_MAType, getSettings().getInteger("maType", MarketThermometer.DEFAULT_MA_TYPE).intValue()); //$NON-NLS-1$
     }
     
     /* (non-Javadoc)

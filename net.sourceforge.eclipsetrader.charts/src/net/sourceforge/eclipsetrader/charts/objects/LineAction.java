@@ -45,7 +45,7 @@ public class LineAction implements IViewActionDelegate
         if (part instanceof ChartView)
         {
             ChartObject object = new ChartObject();
-            object.setPluginId("net.sourceforge.eclipsetrader.objects.line");
+            object.setPluginId("net.sourceforge.eclipsetrader.objects.line"); //$NON-NLS-1$
             ((ChartView)part).setNewChartObject(object);
         }
     }

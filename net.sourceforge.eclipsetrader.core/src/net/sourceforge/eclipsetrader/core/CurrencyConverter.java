@@ -430,8 +430,8 @@ public class CurrencyConverter extends Observable {
 	private Double downloadQuote(String symbol) {
 		Double result = null;
 
-		String host = "quote.yahoo.com";
-		StringBuffer url = new StringBuffer("http://" + host + "/download/javasoft.beans?symbols="); //$NON-NLS-1$
+		String host = "quote.yahoo.com"; //$NON-NLS-1$
+		StringBuffer url = new StringBuffer("http://" + host + "/download/javasoft.beans?symbols="); //$NON-NLS-1$ //$NON-NLS-2$
 		url = url.append(symbol + "=X"); //$NON-NLS-1$
 		url.append("&format=sl1d1t1c1ohgvbap"); //$NON-NLS-1$
 

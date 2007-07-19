@@ -45,7 +45,7 @@ public class HorizontalLineAction implements IViewActionDelegate
         if (part instanceof ChartView)
         {
             ChartObject object = new ChartObject();
-            object.setPluginId("net.sourceforge.eclipsetrader.objects.horizontalLine");
+            object.setPluginId("net.sourceforge.eclipsetrader.objects.horizontalLine"); //$NON-NLS-1$
             ((ChartView)part).setNewChartObject(object);
         }
     }

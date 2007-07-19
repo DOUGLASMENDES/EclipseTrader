@@ -24,7 +24,7 @@ public class MAOSC extends IndicatorPlugin
 {
     public static final boolean DEFAULT_SCALE_FLAG = false;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    public static final String DEFAULT_LABEL = "MAOSC";
+    public static final String DEFAULT_LABEL = "MAOSC"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.HISTOGRAM;
     public static final int DEFAULT_FAST_PERIOD = 9;
     public static final int DEFAULT_SLOW_PERIOD = 18;
@@ -77,13 +77,13 @@ public class MAOSC extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue();
-        slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue();
-        fastMaType = settings.getInteger("fastMaType", fastMaType).intValue();
-        slowMaType = settings.getInteger("slowMaType", slowMaType).intValue();
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag); //$NON-NLS-1$
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue(); //$NON-NLS-1$
+        slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue(); //$NON-NLS-1$
+        fastMaType = settings.getInteger("fastMaType", fastMaType).intValue(); //$NON-NLS-1$
+        slowMaType = settings.getInteger("slowMaType", slowMaType).intValue(); //$NON-NLS-1$
     }
 }

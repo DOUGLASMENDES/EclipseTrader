@@ -50,7 +50,7 @@ public class BollingerBands extends IndicatorPlugin
         PlotLine sma = getMA(in, maType, period);
         sma.setColor(color);
         sma.setType(lineType);
-        sma.setLabel("BBM");
+        sma.setLabel("BBM"); //$NON-NLS-1$
         int smaLoop = sma.getSize() - 1;
 
         if (sma.getSize() < period * 2)
@@ -59,12 +59,12 @@ public class BollingerBands extends IndicatorPlugin
         PlotLine bbu = new PlotLine();
         bbu.setColor(color);
         bbu.setType(lineType);
-        bbu.setLabel("BBU");
+        bbu.setLabel("BBU"); //$NON-NLS-1$
         
         PlotLine bbl = new PlotLine();
         bbl.setColor(color);
         bbl.setType(lineType);
-        bbl.setLabel("BBL");
+        bbl.setLabel("BBL"); //$NON-NLS-1$
 
         int inputLoop = in.getSize() - 1;
         while (inputLoop >= period && smaLoop >= period)
@@ -97,11 +97,11 @@ public class BollingerBands extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
-        color = settings.getColor("color", color);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        period = settings.getInteger("period", period).intValue();
-        deviation = settings.getInteger("deviation", deviation).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag); //$NON-NLS-1$
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        deviation = settings.getInteger("deviation", deviation).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
     }
 }

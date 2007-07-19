@@ -149,16 +149,16 @@ import org.eclipse.ui.themes.IThemeManager;
 public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder2Listener, ICollectionObserver, ISelectionListener
 {
     public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.chart"; //$NON-NLS-1$
-    public static final String THEME_CHART_BACKGROUND = "CHART_BACKGROUND";
-    public static final String THEME_CHART_GRID_COLOR = "CHART_GRID_COLOR";
-    public static final String THEME_SCALE_BACKGROUND = "CHART_SCALE_BACKGROUND";
-    public static final String THEME_SCALE_FOREGROUND = "CHART_SCALE_FOREGROUND";
-    public static final String THEME_SUMMARY_BACKGROUND = "CHART_SUMMARY_BACKGROUND";
-    public static final String THEME_SUMMARY_FOREGROUND = "CHART_SUMMARY_FOREGROUND";
-    public static final String THEME_PERIOD_BACKGROUND = "CHART_PERIOD_BACKGROUND";
-    public static final String THEME_PERIOD_FOREGROUND = "CHART_PERIOD_FOREGROUND";
-    public static final String THEME_PERIOD_MARKERS = "CHART_PERIOD_MARKERS";
-    public static final String THEME_CHART_SELECTION_COLOR = "CHART_SELECTION_COLOR";
+    public static final String THEME_CHART_BACKGROUND = "CHART_BACKGROUND"; //$NON-NLS-1$
+    public static final String THEME_CHART_GRID_COLOR = "CHART_GRID_COLOR"; //$NON-NLS-1$
+    public static final String THEME_SCALE_BACKGROUND = "CHART_SCALE_BACKGROUND"; //$NON-NLS-1$
+    public static final String THEME_SCALE_FOREGROUND = "CHART_SCALE_FOREGROUND"; //$NON-NLS-1$
+    public static final String THEME_SUMMARY_BACKGROUND = "CHART_SUMMARY_BACKGROUND"; //$NON-NLS-1$
+    public static final String THEME_SUMMARY_FOREGROUND = "CHART_SUMMARY_FOREGROUND"; //$NON-NLS-1$
+    public static final String THEME_PERIOD_BACKGROUND = "CHART_PERIOD_BACKGROUND"; //$NON-NLS-1$
+    public static final String THEME_PERIOD_FOREGROUND = "CHART_PERIOD_FOREGROUND"; //$NON-NLS-1$
+    public static final String THEME_PERIOD_MARKERS = "CHART_PERIOD_MARKERS"; //$NON-NLS-1$
+    public static final String THEME_CHART_SELECTION_COLOR = "CHART_SELECTION_COLOR"; //$NON-NLS-1$
     public static final int PERIOD_ALL = 0;
     public static final int PERIOD_LAST6MONTHS = 1;
     public static final int PERIOD_LASTYEAR = 2;
@@ -166,10 +166,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     public static final int PERIOD_CUSTOM = -1;
     public static final int HIDE_TABS_NEVER = 0;
     public static final int HIDE_TABS_ONLYONE = 1;
-    public static final String PREFS_FOLLOW_SELECTION = "followSelection";
-    public static final String PREFS_SHOW_ADJUSTED_VALUES = "showAdjustedValues";
-    public static final String PREFS_SHOW_MARKETVALUE = "showMarketValue";
-    public static final String PREFS_WEIGHTS = "weights";
+    public static final String PREFS_FOLLOW_SELECTION = "followSelection"; //$NON-NLS-1$
+    public static final String PREFS_SHOW_ADJUSTED_VALUES = "showAdjustedValues"; //$NON-NLS-1$
+    public static final String PREFS_SHOW_MARKETVALUE = "showMarketValue"; //$NON-NLS-1$
+    public static final String PREFS_WEIGHTS = "weights"; //$NON-NLS-1$
     static boolean DEFAULT_FOLLOW_SELECTION = false;
     static boolean DEFAULT_SHOW_ADJUSTED_VALUES = false;
     static boolean DEFAULT_SHOW_MARKET_VALUE = false;
@@ -251,10 +251,10 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     ControlListener sashResizeListener = new ControlAdapter() {
         public void controlResized(ControlEvent e)
         {
-            String values = "";
+            String values = ""; //$NON-NLS-1$
             int[] weights = sashForm.getWeights();
             for (int i = 0; i < weights.length; i++)
-                values += (i == 0 ? "" : ";") + String.valueOf(weights[i]);
+                values += (i == 0 ? "" : ";") + String.valueOf(weights[i]); //$NON-NLS-1$ //$NON-NLS-2$
             preferences.setValue(PREFS_WEIGHTS, values);
         }
     };
@@ -323,7 +323,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                                 ChartIndicator[] obj = (ChartIndicator[])tab.getIndicators().toArray(new ChartIndicator[tab.getIndicators().size()]);
                                 for (int x = 0; x < obj.length; x++)
                                 {
-                                    if (obj[x].getPluginId().equals("net.sourceforge.eclipsetrader.indicators.bars") || obj[x].getPluginId().equals("net.sourceforge.eclipsetrader.indicators.line"))
+                                    if (obj[x].getPluginId().equals("net.sourceforge.eclipsetrader.indicators.bars") || obj[x].getPluginId().equals("net.sourceforge.eclipsetrader.indicators.line")) //$NON-NLS-1$ //$NON-NLS-2$
                                     {
                                         Plot plot = ((ChartTabItem)items[i]).getPlot();
                                         if (showMarketValue && security.getQuote() != null)
@@ -408,7 +408,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
     
     public static IPath getPreferenceStoreLocation(Chart chart)
     {
-        return ChartsPlugin.getDefault().getStateLocation().append("chart." + String.valueOf(chart.getId()) + ".prefs");
+        return ChartsPlugin.getDefault().getStateLocation().append("chart." + String.valueOf(chart.getId()) + ".prefs"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /* (non-Javadoc)
@@ -427,7 +427,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         menuManager.add(new Separator("additions")); //$NON-NLS-1$
         menuManager.add(new Separator("bottom")); //$NON-NLS-1$
         
-        IMenuManager newObjectMenu = new MenuManager(Messages.ChartView_NewObject, "newObject"); //$NON-NLS-2$
+        IMenuManager newObjectMenu = new MenuManager(Messages.ChartView_NewObject, "newObject"); //$NON-NLS-1$
         menuManager.appendToGroup("group2", newObjectMenu); //$NON-NLS-1$
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -465,7 +465,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             }
         }
 
-        IMenuManager periodMenu = new MenuManager(Messages.ChartView_Period, "period"); //$NON-NLS-2$
+        IMenuManager periodMenu = new MenuManager(Messages.ChartView_Period, "period"); //$NON-NLS-1$
         menuManager.appendToGroup("group3", periodMenu); //$NON-NLS-1$
         periodMenu.add(viewAll);
         periodMenu.add(viewLast2Years);
@@ -473,7 +473,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         periodMenu.add(viewLast6Months);
         periodMenu.add(viewCustom);
         
-        IMenuManager intervalMenu = new MenuManager(Messages.ChartView_SetInterval, "interval"); //$NON-NLS-2$
+        IMenuManager intervalMenu = new MenuManager(Messages.ChartView_SetInterval, "interval"); //$NON-NLS-1$
         menuManager.appendToGroup("group3", intervalMenu); //$NON-NLS-1$
         intervalMenu.add(monthlyAction);
         intervalMenu.add(weeklyAction);
@@ -489,7 +489,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         menuManager.appendToGroup("group3", new Separator()); //$NON-NLS-1$
         menuManager.appendToGroup("group3", autoScaleAction); //$NON-NLS-1$
         
-        toggleAdjustedValuesAction = new Action("Show adjusted values", Action.AS_CHECK_BOX) {
+        toggleAdjustedValuesAction = new Action(Messages.ChartView_ShowAdjustedValues, Action.AS_CHECK_BOX) {
             public void run()
             {
                 showAdjustedValues = toggleAdjustedValuesAction.isChecked();
@@ -499,7 +499,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         };
         menuManager.appendToGroup("group3", toggleAdjustedValuesAction); //$NON-NLS-1$
         
-        toggleMarketValueAction = new Action("Show market value", Action.AS_CHECK_BOX) {
+        toggleMarketValueAction = new Action(Messages.ChartView_ShowMarketValue, Action.AS_CHECK_BOX) {
             public void run()
             {
                 showMarketValue = toggleMarketValueAction.isChecked();
@@ -520,7 +520,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
         };
         menuManager.appendToGroup("group3", toggleMarketValueAction); //$NON-NLS-1$
         
-        toggleFollowSelectionAction = new Action("Follow Security Selection", Action.AS_CHECK_BOX) {
+        toggleFollowSelectionAction = new Action(Messages.ChartView_FollowSecuritySelection, Action.AS_CHECK_BOX) {
             public void run()
             {
                 followSelection = toggleFollowSelectionAction.isChecked();
@@ -723,7 +723,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     }
                     updateObservers();
                     
-                    String[] values = preferences.getString(PREFS_WEIGHTS).split(";");
+                    String[] values = preferences.getString(PREFS_WEIGHTS).split(";"); //$NON-NLS-1$
                     int weights[] = new int[values.length];
                     if (weights.length == tabGroups.size())
                     {
@@ -1079,9 +1079,9 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                             controls[i].addControlListener(sashResizeListener);
                     }
 
-                    String values = "";
+                    String values = ""; //$NON-NLS-1$
                     for (int i = 0; i < weights.length; i++)
-                        values += (i == 0 ? "" : ";") + String.valueOf(weights[i]);
+                        values += (i == 0 ? "" : ";") + String.valueOf(weights[i]); //$NON-NLS-1$ //$NON-NLS-2$
                     preferences.setValue(PREFS_WEIGHTS, values);
                 }
             });
@@ -1118,7 +1118,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
 
             public void visit(ChartIndicator indicator)
             {
-                String securityId = (String)indicator.getParameters().get("securityId");
+                String securityId = (String)indicator.getParameters().get("securityId"); //$NON-NLS-1$
                 if (securityId != null)
                 {
                     Security security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(securityId));
@@ -1730,7 +1730,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
             {
                 plot.createNewObject(plugin, e);
                 getSite().getSelectionProvider().setSelection(new ObjectSelection(object));
-                logger.debug("object " + object.getPluginId() + " selected");
+                logger.debug("object " + object.getPluginId() + " selected"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
 
@@ -1868,7 +1868,7 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
          */
         public void plotSelected(PlotSelectionEvent e)
         {
-            logger.debug("enter plotSelected");
+            logger.debug("enter plotSelected"); //$NON-NLS-1$
             if (e.indicator != null || e.object != null)
             {
                 for(Iterator iter = tabGroups.iterator(); iter.hasNext(); )
@@ -1907,12 +1907,12 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     if (((IIndicatorPlugin)indicator.getData()).getOutput() == e.indicator)
                     {
                         getSite().getSelectionProvider().setSelection(new IndicatorSelection(indicator));
-                        logger.debug("indicator " + indicator.getPluginId() + " selected");
+                        logger.debug("indicator " + indicator.getPluginId() + " selected"); //$NON-NLS-1$ //$NON-NLS-2$
                         return;
                     }
                 }
                 getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
-                logger.debug("indicator " + e.indicator.getClass().getName() + " not found");
+                logger.debug("indicator " + e.indicator.getClass().getName() + " not found"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             else if (e.object != null)
             {
@@ -1922,17 +1922,17 @@ public class ChartView extends ViewPart implements PlotMouseListener, CTabFolder
                     if (object.getData() == e.object)
                     {
                         getSite().getSelectionProvider().setSelection(new ObjectSelection(object));
-                        logger.debug("object " + object.getPluginId() + " selected");
+                        logger.debug("object " + object.getPluginId() + " selected"); //$NON-NLS-1$ //$NON-NLS-2$
                         return;
                     }
                 }
                 getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
-                logger.debug("object " + e.object.getClass().getName() + " selected");
+                logger.debug("object " + e.object.getClass().getName() + " selected"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             else
             {
                 getSite().getSelectionProvider().setSelection(new TabSelection(this.chartTab));
-                logger.debug("nothing selected");
+                logger.debug("nothing selected"); //$NON-NLS-1$
             }
         }
         

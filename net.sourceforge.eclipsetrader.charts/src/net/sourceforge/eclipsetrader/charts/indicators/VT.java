@@ -21,9 +21,9 @@ import org.eclipse.swt.graphics.RGB;
 public class VT extends IndicatorPlugin
 {
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    public static final String DEFAULT_LABEL = "VT";
+    public static final String DEFAULT_LABEL = "VT"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
-    public static final String DEFAULT_METHOD = "OBV";
+    public static final String DEFAULT_METHOD = "OBV"; //$NON-NLS-1$
     private Color color = new Color(null, DEFAULT_COLOR);
     private String label = DEFAULT_LABEL;
     private int lineType = DEFAULT_LINETYPE;
@@ -38,11 +38,11 @@ public class VT extends IndicatorPlugin
      */
     public void calculate()
     {
-        if (method.equals("OBV"))
+        if (method.equals("OBV")) //$NON-NLS-1$
             calculateOBV();
-        else if (method.equals("NVI"))
+        else if (method.equals("NVI")) //$NON-NLS-1$
             calculateNVI();
-        else if (method.equals("PVI"))
+        else if (method.equals("PVI")) //$NON-NLS-1$
             calculatePVI();
         else
             calculatePVT();
@@ -156,9 +156,9 @@ public class VT extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        method = settings.getString("method", method);
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        method = settings.getString("method", method); //$NON-NLS-1$
     }
 }

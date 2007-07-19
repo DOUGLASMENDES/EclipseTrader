@@ -46,7 +46,7 @@ public class ParallelLineAction implements IViewActionDelegate
         if (part instanceof ChartView)
         {
             ChartObject object = new ChartObject();
-            object.setPluginId("net.sourceforge.eclipsetrader.objects.parallelLines");
+            object.setPluginId("net.sourceforge.eclipsetrader.objects.parallelLines"); //$NON-NLS-1$
             ((ChartView)part).setNewChartObject(object);
         }
     }

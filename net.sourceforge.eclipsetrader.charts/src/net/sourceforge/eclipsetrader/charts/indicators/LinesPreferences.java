@@ -68,7 +68,7 @@ public class LinesPreferences extends IndicatorPluginPreferencePage
         input.add("CLOSE"); //$NON-NLS-1$
         input.select(getSettings().getInteger("input", Lines.DEFAULT_INPUT).intValue()); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, Messages.LinesPreferences_LineType, getSettings().getInteger("lineType", Lines.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
+        lineType = createLineTypeCombo(content, Messages.LinesPreferences_LineType, getSettings().getInteger("lineType", Lines.DEFAULT_LINETYPE).intValue()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

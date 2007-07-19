@@ -26,7 +26,7 @@ import net.sourceforge.eclipsetrader.core.db.Bar;
  */
 public class Volume extends IndicatorPlugin
 {
-    public static final String DEFAULT_LABEL = "VOL";
+    public static final String DEFAULT_LABEL = "VOL"; //$NON-NLS-1$
     public static final RGB DEFAULT_NEUTRAL = new RGB(192, 192, 192);
     public static final RGB DEFAULT_POSITIVE = new RGB(0, 192, 0);
     public static final RGB DEFAULT_NEGATIVE = new RGB(192, 0, 0);
@@ -69,9 +69,9 @@ public class Volume extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        label = settings.getString("label", label);
-        neutral = settings.getColor("neutral", neutral);
-        positive = settings.getColor("positive", positive);
-        negative = settings.getColor("negative", negative);
+        label = settings.getString("label", label); //$NON-NLS-1$
+        neutral = settings.getColor("neutral", neutral); //$NON-NLS-1$
+        positive = settings.getColor("positive", positive); //$NON-NLS-1$
+        negative = settings.getColor("negative", negative); //$NON-NLS-1$
     }
 }

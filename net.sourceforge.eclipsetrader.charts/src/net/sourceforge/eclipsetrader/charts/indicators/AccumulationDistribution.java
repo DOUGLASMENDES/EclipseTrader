@@ -26,7 +26,7 @@ public class AccumulationDistribution extends IndicatorPlugin
 {
     public static final int AD = 0;
     public static final int WAD = 1;
-    public static final String DEFAULT_LABEL = "AD";
+    public static final String DEFAULT_LABEL = "AD"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_METHOD = AD;
@@ -129,9 +129,9 @@ public class AccumulationDistribution extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        method = settings.getInteger("method", method).intValue();
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        method = settings.getInteger("method", method).intValue(); //$NON-NLS-1$
     }
 }

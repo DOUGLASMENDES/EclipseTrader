@@ -23,8 +23,8 @@ public class CloseAllAction extends Action
 
     public CloseAllAction()
     {
-        setText("Close All");
-        setActionDefinitionId("org.eclipse.ui.file.closeAll"); //$NON-NLS-1$
+        setText(Messages.getString("CloseAllAction.CloseAllText")); //$NON-NLS-1$
+        setActionDefinitionId("org.eclipse.ui.file.closeAll");  //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

@@ -128,7 +128,7 @@ public class OpenChartAction implements IViewActionDelegate, IMenuCreator, Selec
         menu = new Menu(parent);
         
         MenuItem item = new MenuItem(menu, SWT.NONE);
-        item.setText("New...");
+        item.setText(Messages.OpenChartAction_New);
         item.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
@@ -138,39 +138,39 @@ public class OpenChartAction implements IViewActionDelegate, IMenuCreator, Selec
                     chart.setSecurity(security);
 
                     StringBuffer sb = new StringBuffer(security.getCode());
-                    sb.append(" middle ");
-                    String intervalTitle = "";
+                    sb.append(Messages.OpenChartAction_Middle);
+                    String intervalTitle = ""; //$NON-NLS-1$
                     switch (chart.getCompression())
                     {
                         case BarData.INTERVAL_MINUTE1:
-                            intervalTitle = "1m";
+                            intervalTitle = Messages.OpenChartAction_1Min;
                             break;
                         case BarData.INTERVAL_MINUTE2:
-                            intervalTitle = "2m";
+                            intervalTitle = Messages.OpenChartAction_2Min;
                             break;
                         case BarData.INTERVAL_MINUTE5:
-                            intervalTitle = "5m";
+                            intervalTitle = Messages.OpenChartAction_5Min;
                             break;
                         case BarData.INTERVAL_MINUTE10:
-                            intervalTitle = "10m";
+                            intervalTitle = Messages.OpenChartAction_10Min;
                             break;
                         case BarData.INTERVAL_MINUTE15:
-                            intervalTitle = "15m";
+                            intervalTitle = Messages.OpenChartAction_15Min;
                             break;
                         case BarData.INTERVAL_MINUTE30:
-                            intervalTitle = "30m";
+                            intervalTitle = Messages.OpenChartAction_30Min;
                             break;
                         case BarData.INTERVAL_MINUTE60:
-                            intervalTitle = "1h";
+                            intervalTitle = Messages.OpenChartAction_1Hr;
                             break;
                         case BarData.INTERVAL_DAILY:
-                            intervalTitle = "Daily";
+                            intervalTitle = Messages.OpenChartAction_Daily;
                             break;
                         case BarData.INTERVAL_WEEKLY:
-                            intervalTitle = "Weekly";
+                            intervalTitle = Messages.OpenChartAction_Weekly;
                             break;
                         case BarData.INTERVAL_MONTHLY:
-                            intervalTitle = "Monthly";
+                            intervalTitle = Messages.OpenChartAction_Monthly;
                             break;
                     }
                     sb.append(intervalTitle);

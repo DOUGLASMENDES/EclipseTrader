@@ -21,7 +21,7 @@ import net.sourceforge.eclipsetrader.charts.Settings;
 public class VFI extends IndicatorPlugin
 {
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    public static final String DEFAULT_LABEL = "VFI";
+    public static final String DEFAULT_LABEL = "VFI"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_SMOOTHING = 3;
     public static final int DEFAULT_MA_TYPE = EMA;
@@ -109,11 +109,11 @@ public class VFI extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        smoothing = settings.getInteger("smoothing", smoothing).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
-        period = settings.getInteger("period", period).intValue();
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        smoothing = settings.getInteger("smoothing", smoothing).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
     }
 }

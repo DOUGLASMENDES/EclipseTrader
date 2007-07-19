@@ -64,13 +64,13 @@ public class FiboLinePreferences extends ObjectPluginPreferencePage
         setControl(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.FiboLinePreferences_Color);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         colorSelector = new ColorSelector(content);
-        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB());
+        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Start date / value");
+        label.setText(Messages.FiboLinePreferences_StartDateValue);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         Composite group = new Composite(content, SWT.NONE);
         gridLayout = new GridLayout(2, false);
@@ -79,13 +79,13 @@ public class FiboLinePreferences extends ObjectPluginPreferencePage
         group.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
         date1 = new Text(group, SWT.BORDER);
         date1.setLayoutData(new GridData(80, SWT.DEFAULT));
-        date1.setText(df.format(getSettings().getDate("date1", null)));
+        date1.setText(df.format(getSettings().getDate("date1", null))); //$NON-NLS-1$
         value1 = new Text(group, SWT.BORDER);
         value1.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value1.setText(nf.format(getSettings().getDouble("value1", null)));
+        value1.setText(nf.format(getSettings().getDouble("value1", null))); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("End date / value");
+        label.setText(Messages.FiboLinePreferences_EndDateValue);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         group = new Composite(content, SWT.NONE);
         gridLayout = new GridLayout(2, false);
@@ -94,57 +94,57 @@ public class FiboLinePreferences extends ObjectPluginPreferencePage
         group.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
         date2 = new Text(group, SWT.BORDER);
         date2.setLayoutData(new GridData(80, SWT.DEFAULT));
-        date2.setText(df.format(getSettings().getDate("date2", null)));
+        date2.setText(df.format(getSettings().getDate("date2", null))); //$NON-NLS-1$
         value2 = new Text(group, SWT.BORDER);
         value2.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value2.setText(nf.format(getSettings().getDouble("value2", null)));
+        value2.setText(nf.format(getSettings().getDouble("value2", null))); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Lines");
+        label.setText(Messages.FiboLinePreferences_Lines);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         line1 = new Text(content, SWT.BORDER);
         line1.setLayoutData(new GridData(80, SWT.DEFAULT));
-        Double value = getSettings().getDouble("line1", null);
+        Double value = getSettings().getDouble("line1", null); //$NON-NLS-1$
         if (value != null)
             line1.setText(pcf.format(value));
 
         label = new Label(content, SWT.NONE);
         line2 = new Text(content, SWT.BORDER);
         line2.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value = getSettings().getDouble("line2", 38.2);
+        value = getSettings().getDouble("line2", 38.2); //$NON-NLS-1$
         if (value != null)
             line2.setText(pcf.format(value));
 
         label = new Label(content, SWT.NONE);
         line3 = new Text(content, SWT.BORDER);
         line3.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value = getSettings().getDouble("line3", 50.0);
+        value = getSettings().getDouble("line3", 50.0); //$NON-NLS-1$
         if (value != null)
             line3.setText(pcf.format(value));
 
         label = new Label(content, SWT.NONE);
         line4 = new Text(content, SWT.BORDER);
         line4.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value = getSettings().getDouble("line4", 61.8);
+        value = getSettings().getDouble("line4", 61.8); //$NON-NLS-1$
         if (value != null)
             line4.setText(pcf.format(value));
 
         label = new Label(content, SWT.NONE);
         line5 = new Text(content, SWT.BORDER);
         line5.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value = getSettings().getDouble("line5", null);
+        value = getSettings().getDouble("line5", null); //$NON-NLS-1$
         if (value != null)
             line5.setText(pcf.format(value));
         
         label = new Label(content, SWT.NONE);
         extendStart = new Button(content, SWT.CHECK);
-        extendStart.setText("Extend Start");
-        extendStart.setSelection(getSettings().getBoolean("extendStart", false));
+        extendStart.setText(Messages.FiboLinePreferences_ExtendStart);
+        extendStart.setSelection(getSettings().getBoolean("extendStart", false)); //$NON-NLS-1$
         
         label = new Label(content, SWT.NONE);
         extendEnd = new Button(content, SWT.CHECK);
-        extendEnd.setText("Extend End");
-        extendEnd.setSelection(getSettings().getBoolean("extendEnd", false));
+        extendEnd.setText(Messages.FiboLinePreferences_ExtendEnd);
+        extendEnd.setSelection(getSettings().getBoolean("extendEnd", false)); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -154,23 +154,23 @@ public class FiboLinePreferences extends ObjectPluginPreferencePage
     {
         try
         {
-            getSettings().set("color", colorSelector.getColorValue());
-            getSettings().set("date1", df.parse(date1.getText()));
-            getSettings().set("date2", df.parse(date2.getText()));
-            getSettings().set("value1", nf.parse(value1.getText()).doubleValue());
-            getSettings().set("value2", nf.parse(value2.getText()).doubleValue());
-            getSettings().set("extendStart", extendStart.getSelection());
-            getSettings().set("extendEnd", extendEnd.getSelection());
+            getSettings().set("color", colorSelector.getColorValue()); //$NON-NLS-1$
+            getSettings().set("date1", df.parse(date1.getText())); //$NON-NLS-1$
+            getSettings().set("date2", df.parse(date2.getText())); //$NON-NLS-1$
+            getSettings().set("value1", nf.parse(value1.getText()).doubleValue()); //$NON-NLS-1$
+            getSettings().set("value2", nf.parse(value2.getText()).doubleValue()); //$NON-NLS-1$
+            getSettings().set("extendStart", extendStart.getSelection()); //$NON-NLS-1$
+            getSettings().set("extendEnd", extendEnd.getSelection()); //$NON-NLS-1$
             if (line1.getText().length() != 0)
-                getSettings().set("line1", nf.parse(line1.getText()).doubleValue());
+                getSettings().set("line1", nf.parse(line1.getText()).doubleValue()); //$NON-NLS-1$
             if (line2.getText().length() != 0)
-                getSettings().set("line2", nf.parse(line2.getText()).doubleValue());
+                getSettings().set("line2", nf.parse(line2.getText()).doubleValue()); //$NON-NLS-1$
             if (line3.getText().length() != 0)
-                getSettings().set("line3", nf.parse(line3.getText()).doubleValue());
+                getSettings().set("line3", nf.parse(line3.getText()).doubleValue()); //$NON-NLS-1$
             if (line4.getText().length() != 0)
-                getSettings().set("line4", nf.parse(line4.getText()).doubleValue());
+                getSettings().set("line4", nf.parse(line4.getText()).doubleValue()); //$NON-NLS-1$
             if (line5.getText().length() != 0)
-                getSettings().set("line5", nf.parse(line5.getText()).doubleValue());
+                getSettings().set("line5", nf.parse(line5.getText()).doubleValue()); //$NON-NLS-1$
         }
         catch (ParseException e) {
             CorePlugin.logException(e);

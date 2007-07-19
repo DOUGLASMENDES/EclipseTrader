@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.RGB;
 
 public class VIDYA extends IndicatorPlugin
 {
-    public static final String DEFAULT_LABEL = "VIDYA";
+    public static final String DEFAULT_LABEL = "VIDYA"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_PERIOD = 14;
@@ -319,10 +319,10 @@ public class VIDYA extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        period = settings.getInteger("period", period).intValue();
-        volPeriod = settings.getInteger("volPeriod", volPeriod).intValue();
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        volPeriod = settings.getInteger("volPeriod", volPeriod).intValue(); //$NON-NLS-1$
     }
 }

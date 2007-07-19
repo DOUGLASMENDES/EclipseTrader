@@ -121,10 +121,10 @@ public class FanLines extends ObjectPlugin
         selected = null;
         lastX = lastY = -1;
 
-        getSettings().set("date1", date1);
-        getSettings().set("value1", value1);
-        getSettings().set("date2", date2);
-        getSettings().set("value2", value2);
+        getSettings().set("date1", date1); //$NON-NLS-1$
+        getSettings().set("value1", value1); //$NON-NLS-1$
+        getSettings().set("date2", date2); //$NON-NLS-1$
+        getSettings().set("value2", value2); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -203,7 +203,7 @@ public class FanLines extends ObjectPlugin
                     continue;
                 double k = (dx == 0) ? 1 : dy * (line[i] / 100.0) / dx;
                 drawExtendedLine(gc, p1.x, p1.y, p2.x, yOfLine(p2.x, p1.x, p1.y, k));
-                String s = pcf.format(line[i]) + "%";
+                String s = pcf.format(line[i]) + "%"; //$NON-NLS-1$
                 gc.drawString(s, p2.x + location.x, yOfLine(p2.x, p1.x, p1.y, k), true);
             }
             
@@ -250,16 +250,16 @@ public class FanLines extends ObjectPlugin
     {
         super.setSettings(settings);
 
-        date1 = settings.getDate("date1", null);
-        date2 = settings.getDate("date2", null);
-        value1 = settings.getDouble("value1", 0).doubleValue();
-        value2 = settings.getDouble("value2", 0).doubleValue();
-        color = settings.getColor("color", color.getRGB());
-        line[0] = settings.getDouble("line1", 0).doubleValue();
-        line[1] = settings.getDouble("line2", 38.2).doubleValue();
-        line[2] = settings.getDouble("line3", 50.).doubleValue();
-        line[3] = settings.getDouble("line4", 61.8).doubleValue();
-        line[4] = settings.getDouble("line5", 0).doubleValue();
+        date1 = settings.getDate("date1", null); //$NON-NLS-1$
+        date2 = settings.getDate("date2", null); //$NON-NLS-1$
+        value1 = settings.getDouble("value1", 0).doubleValue(); //$NON-NLS-1$
+        value2 = settings.getDouble("value2", 0).doubleValue(); //$NON-NLS-1$
+        color = settings.getColor("color", color.getRGB()); //$NON-NLS-1$
+        line[0] = settings.getDouble("line1", 0).doubleValue(); //$NON-NLS-1$
+        line[1] = settings.getDouble("line2", 38.2).doubleValue(); //$NON-NLS-1$
+        line[2] = settings.getDouble("line3", 50.).doubleValue(); //$NON-NLS-1$
+        line[3] = settings.getDouble("line4", 61.8).doubleValue(); //$NON-NLS-1$
+        line[4] = settings.getDouble("line5", 0).doubleValue(); //$NON-NLS-1$
         p1 = p2 = null;
     }
 }

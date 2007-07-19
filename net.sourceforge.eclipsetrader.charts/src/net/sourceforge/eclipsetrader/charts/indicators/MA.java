@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class MA extends IndicatorPlugin
 {
-    public static final String DEFAULT_LABEL = "MA";
+    public static final String DEFAULT_LABEL = "MA"; //$NON-NLS-1$
     public static final boolean DEFAULT_SCALE_FLAG = false;
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
@@ -66,12 +66,12 @@ public class MA extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        input = settings.getInteger("input", input).intValue();
-        period = settings.getInteger("period", period).intValue();
-        type = settings.getInteger("type", type).intValue();
-        color = settings.getColor("color", color);
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        type = settings.getInteger("type", type).intValue(); //$NON-NLS-1$
+        color = settings.getColor("color", color); //$NON-NLS-1$
     }
 }

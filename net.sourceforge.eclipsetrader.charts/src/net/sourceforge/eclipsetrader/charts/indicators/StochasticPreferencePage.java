@@ -62,7 +62,7 @@ public class StochasticPreferencePage extends IndicatorPluginPreferencePage
         dcolor = new ColorSelector(content);
         dcolor.setColorValue(getSettings().getColor("dcolor", Stochastic.DEFAULT_DCOLOR).getRGB()); //$NON-NLS-1$
 
-        dlineType = createLineTypeCombo(content, Messages.StochasticPreferencePage_DLineType, getSettings().getInteger("dlineType", Stochastic.DEFAULT_DLINETYPE).intValue()); //$NON-NLS-2$
+        dlineType = createLineTypeCombo(content, Messages.StochasticPreferencePage_DLineType, getSettings().getInteger("dlineType", Stochastic.DEFAULT_DLINETYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.StochasticPreferencePage_DLabel);
@@ -83,7 +83,7 @@ public class StochasticPreferencePage extends IndicatorPluginPreferencePage
         kcolor = new ColorSelector(content);
         kcolor.setColorValue(getSettings().getColor("kcolor", Stochastic.DEFAULT_KCOLOR).getRGB()); //$NON-NLS-1$
 
-        klineType = createLineTypeCombo(content, Messages.StochasticPreferencePage_KLineType, getSettings().getInteger("klineType", Stochastic.DEFAULT_KLINETYPE).intValue()); //$NON-NLS-2$
+        klineType = createLineTypeCombo(content, Messages.StochasticPreferencePage_KLineType, getSettings().getInteger("klineType", Stochastic.DEFAULT_KLINETYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.StochasticPreferencePage_KLabel);
@@ -99,7 +99,7 @@ public class StochasticPreferencePage extends IndicatorPluginPreferencePage
         kperiod.setMaximum(99);
         kperiod.setSelection(getSettings().getInteger("kperiod", Stochastic.DEFAULT_KPERIOD).intValue()); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, Messages.StochasticPreferencePage_MAType, getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue()); //$NON-NLS-2$
+        maType = createMovingAverageCombo(content, Messages.StochasticPreferencePage_MAType, getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.StochasticPreferencePage_Period);

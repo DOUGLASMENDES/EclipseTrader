@@ -129,10 +129,10 @@ public class FiboLine extends ObjectPlugin
         selected = null;
         lastX = lastY = -1;
 
-        getSettings().set("date1", date1);
-        getSettings().set("value1", value1);
-        getSettings().set("date2", date2);
-        getSettings().set("value2", value2);
+        getSettings().set("date1", date1); //$NON-NLS-1$
+        getSettings().set("value1", value1); //$NON-NLS-1$
+        getSettings().set("date2", date2); //$NON-NLS-1$
+        getSettings().set("value2", value2); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -211,7 +211,7 @@ public class FiboLine extends ObjectPlugin
                 x2 = rect.width + location.x;
 
             int y = getPlot().getScaler().convertToY(high);
-            String s = "100% - " + nf.format(high);
+            String s = "100% - " + nf.format(high); //$NON-NLS-1$
             gc.drawString(s, x1, y - gc.stringExtent(s).y, true);
             gc.drawLine (x1, y, x2, y);
             lineY[0] = y;
@@ -222,14 +222,14 @@ public class FiboLine extends ObjectPlugin
                     continue;
                 double r = getY(line[i] / 100.0, high, low);
                 y = getPlot().getScaler().convertToY(r);
-                s = pcf.format(line[i]) + "% - " + nf.format(r);
+                s = pcf.format(line[i]) + "% - " + nf.format(r); //$NON-NLS-1$
                 gc.drawString(s, x1, y - gc.stringExtent(s).y, true);
                 gc.drawLine (x1, y, x2, y);
                 lineY[i + 1] = y;
             }
 
             y = getPlot().getScaler().convertToY(low);
-            s = "0% - " + nf.format(low);
+            s = "0% - " + nf.format(low); //$NON-NLS-1$
             gc.drawString(s, x1, y - gc.stringExtent(s).y, true);
             gc.drawLine (x1, y, x2, y);
             lineY[line.length + 1] = y;
@@ -250,18 +250,18 @@ public class FiboLine extends ObjectPlugin
     {
         super.setSettings(settings);
 
-        color = settings.getColor("color", color.getRGB());
-        date1 = settings.getDate("date1", null);
-        date2 = settings.getDate("date2", null);
-        value1 = settings.getDouble("value1", 0).doubleValue();
-        value2 = settings.getDouble("value2", 0).doubleValue();
-        line[0] = settings.getDouble("line1", 0).doubleValue();
-        line[1] = settings.getDouble("line2", 38.2).doubleValue();
-        line[2] = settings.getDouble("line3", 50.).doubleValue();
-        line[3] = settings.getDouble("line4", 61.8).doubleValue();
-        line[4] = settings.getDouble("line5", 0).doubleValue();
-        extendStart = settings.getBoolean("extendStart", false);
-        extendEnd = settings.getBoolean("extendEnd", false);
+        color = settings.getColor("color", color.getRGB()); //$NON-NLS-1$
+        date1 = settings.getDate("date1", null); //$NON-NLS-1$
+        date2 = settings.getDate("date2", null); //$NON-NLS-1$
+        value1 = settings.getDouble("value1", 0).doubleValue(); //$NON-NLS-1$
+        value2 = settings.getDouble("value2", 0).doubleValue(); //$NON-NLS-1$
+        line[0] = settings.getDouble("line1", 0).doubleValue(); //$NON-NLS-1$
+        line[1] = settings.getDouble("line2", 38.2).doubleValue(); //$NON-NLS-1$
+        line[2] = settings.getDouble("line3", 50.).doubleValue(); //$NON-NLS-1$
+        line[3] = settings.getDouble("line4", 61.8).doubleValue(); //$NON-NLS-1$
+        line[4] = settings.getDouble("line5", 0).doubleValue(); //$NON-NLS-1$
+        extendStart = settings.getBoolean("extendStart", false); //$NON-NLS-1$
+        extendEnd = settings.getBoolean("extendEnd", false); //$NON-NLS-1$
         p1 = p2 = null;
     }
 

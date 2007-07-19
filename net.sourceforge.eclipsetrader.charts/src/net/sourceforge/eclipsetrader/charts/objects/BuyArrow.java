@@ -46,7 +46,7 @@ public class BuyArrow extends ObjectPlugin
     {
         try
         {
-            URL url = new URL(ChartsPlugin.getDefault().getBundle().getEntry("/"), "icons/etool16/buyarrow.gif");
+            URL url = new URL(ChartsPlugin.getDefault().getBundle().getEntry("/"), "icons/etool16/buyarrow.gif"); //$NON-NLS-1$ //$NON-NLS-2$
             ImageDescriptor descriptor = ImageDescriptor.createFromURL(url);
             image = descriptor.createImage();
             imageData = descriptor.getImageData();
@@ -129,8 +129,8 @@ public class BuyArrow extends ObjectPlugin
         selected = null;
         lastX = lastY = -1;
 
-        getSettings().set("date", date);
-        getSettings().set("value", value);
+        getSettings().set("date", date); //$NON-NLS-1$
+        getSettings().set("value", value); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -195,8 +195,8 @@ public class BuyArrow extends ObjectPlugin
     {
         super.setSettings(settings);
 
-        date = settings.getDate("date", null);
-        value = settings.getDouble("value", 0).doubleValue();
+        date = settings.getDate("date", null); //$NON-NLS-1$
+        value = settings.getDouble("value", 0).doubleValue(); //$NON-NLS-1$
         p1 = null;
     }
 }

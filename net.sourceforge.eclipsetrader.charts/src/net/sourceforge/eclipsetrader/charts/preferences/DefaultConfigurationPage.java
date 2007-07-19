@@ -237,7 +237,7 @@ public class DefaultConfigurationPage extends PreferencePage implements IWorkben
         addTab.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e)
             {
-                InputDialog dlg = new InputDialog(tree.getShell(), Messages.DefaultConfigurationPage_AddTabDialogTitle, Messages.DefaultConfigurationPage_AddTabDialogMessage, "", new IInputValidator() { //$NON-NLS-3$ //$NON-NLS-1$
+                InputDialog dlg = new InputDialog(tree.getShell(), Messages.DefaultConfigurationPage_AddTabDialogTitle, Messages.DefaultConfigurationPage_AddTabDialogMessage, "", new IInputValidator() {//$NON-NLS-1$
                     public String isValid(String newText)
                     {
                         return newText.length() == 0 ? "" : null; //$NON-NLS-1$

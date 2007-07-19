@@ -41,7 +41,7 @@ public class BarSummaryItem extends SummaryItem
         
         change = new Label(parent, SWT.NONE);
         change.setBackground(background);
-        change.setText(Messages.BarSummaryItem_CH + pcf.format(0) + "%"); //$NON-NLS-2$
+        change.setText(Messages.BarSummaryItem_CH + pcf.format(0) + "%"); //$NON-NLS-1$
         
         open = new Label(parent, SWT.NONE);
         open.setBackground(background);
@@ -84,7 +84,7 @@ public class BarSummaryItem extends SummaryItem
 
         if (previousChange != ch)
         {
-            change.setText(Messages.BarSummaryItem_CH + pcf.format(ch) + "%"); //$NON-NLS-2$
+            change.setText(Messages.BarSummaryItem_CH + pcf.format(ch) + "%"); //$NON-NLS-1$
             if (ch > 0)
                 change.setForeground(positive);
             else if (ch < 0)
@@ -105,7 +105,7 @@ public class BarSummaryItem extends SummaryItem
         {
             if (previousChange != 0)
             {
-                change.setText(Messages.BarSummaryItem_CH + pcf.format(0) + "%"); //$NON-NLS-2$
+                change.setText(Messages.BarSummaryItem_CH + pcf.format(0) + "%"); //$NON-NLS-1$
                 change.setForeground(getForeground());
                 previousChange = 0;
             }

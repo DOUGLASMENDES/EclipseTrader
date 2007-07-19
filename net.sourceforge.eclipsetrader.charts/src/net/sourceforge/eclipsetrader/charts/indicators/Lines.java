@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class Lines extends IndicatorPlugin
 {
-    public static final String DEFAULT_LABEL = "CLOSE";
+    public static final String DEFAULT_LABEL = "CLOSE"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -57,10 +57,10 @@ public class Lines extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        securityId = settings.getInteger("securityId", securityId).intValue();
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        color = settings.getColor("color", color);
-        input = settings.getInteger("input", input).intValue();
+        securityId = settings.getInteger("securityId", securityId).intValue(); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
     }
 }

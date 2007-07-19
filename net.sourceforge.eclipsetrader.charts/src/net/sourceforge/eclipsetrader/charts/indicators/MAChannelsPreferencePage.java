@@ -66,7 +66,7 @@ public class MAChannelsPreferencePage extends IndicatorPluginPreferencePage
         color = new ColorSelector(content);
         color.setColorValue(getSettings().getColor("color", MAChannels.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, Messages.MAChannelsPreferencePage_LineType, getSettings().getInteger("lineType", MAChannels.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
+        lineType = createLineTypeCombo(content, Messages.MAChannelsPreferencePage_LineType, getSettings().getInteger("lineType", MAChannels.DEFAULT_LINETYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.MAChannelsPreferencePage_Period);
@@ -82,7 +82,7 @@ public class MAChannelsPreferencePage extends IndicatorPluginPreferencePage
         percentage.setLayoutData(new GridData(25, SWT.DEFAULT));
         percentage.setText(nf.format(getSettings().getDouble("percentage", MAChannels.DEFAULT_PERCENTAGE))); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, Messages.MAChannelsPreferencePage_SmoothingType, getSettings().getInteger("maType", MAChannels.DEFAULT_MATYPE).intValue()); //$NON-NLS-2$
+        maType = createMovingAverageCombo(content, Messages.MAChannelsPreferencePage_SmoothingType, getSettings().getInteger("maType", MAChannels.DEFAULT_MATYPE).intValue()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

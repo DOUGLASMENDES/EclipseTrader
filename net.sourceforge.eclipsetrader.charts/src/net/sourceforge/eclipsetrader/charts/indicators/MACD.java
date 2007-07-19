@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class MACD extends IndicatorPlugin
 {
-    public static final String DEFAULT_LABEL = "MACD";
+    public static final String DEFAULT_LABEL = "MACD"; //$NON-NLS-1$
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 0);
     public static final int DEFAULT_FAST_PERIOD = 12;
     public static final int DEFAULT_SLOW_PERIOD = 26;
@@ -33,10 +33,10 @@ public class MACD extends IndicatorPlugin
     public static final int DEFAULT_MA_TYPE = SMA;
     public static final RGB DEFAULT_TRIGGER_COLOR = new RGB(0, 0, 224);
     public static final int DEFAULT_TRIGGER_PERIOD = 9;
-    public static final String DEFAULT_TRIGGER_LABEL = DEFAULT_LABEL + " Trig.";
+    public static final String DEFAULT_TRIGGER_LABEL = DEFAULT_LABEL + " Trig."; //$NON-NLS-1$
     public static final int DEFAULT_TRIGGER_LINETYPE = PlotLine.DOT;
     public static final RGB DEFAULT_OSC_COLOR = new RGB(192, 192, 192);
-    public static final String DEFAULT_OSC_LABEL = DEFAULT_LABEL + " Osc.";
+    public static final String DEFAULT_OSC_LABEL = DEFAULT_LABEL + " Osc."; //$NON-NLS-1$
     public static final int DEFAULT_OSC_LINETYPE = PlotLine.HISTOGRAM_BAR;
     public static final int DEFAULT_INPUT = BarData.CLOSE;
     private String label = DEFAULT_LABEL;
@@ -127,19 +127,19 @@ public class MACD extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        label = settings.getString("label", label);
-        color = settings.getColor("color", color);
-        fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue();
-        slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue();
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
-        input = settings.getInteger("input", input).intValue();
-        triggerColor = settings.getColor("triggerColor", triggerColor);
-        triggerPeriod = settings.getInteger("triggerPeriod", triggerPeriod).intValue();
-        triggerLabel = settings.getString("triggerLabel", triggerLabel);
-        triggerLineType = settings.getInteger("triggerLineType", triggerLineType).intValue();
-        oscColor = settings.getColor("oscColor", oscColor);
-        oscLabel = settings.getString("oscLabel", oscLabel);
-        oscLineType = settings.getInteger("oscLineType", oscLineType).intValue();
+        label = settings.getString("label", label); //$NON-NLS-1$
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        fastPeriod = settings.getInteger("fastPeriod", fastPeriod).intValue(); //$NON-NLS-1$
+        slowPeriod = settings.getInteger("slowPeriod", slowPeriod).intValue(); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
+        input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
+        triggerColor = settings.getColor("triggerColor", triggerColor); //$NON-NLS-1$
+        triggerPeriod = settings.getInteger("triggerPeriod", triggerPeriod).intValue(); //$NON-NLS-1$
+        triggerLabel = settings.getString("triggerLabel", triggerLabel); //$NON-NLS-1$
+        triggerLineType = settings.getInteger("triggerLineType", triggerLineType).intValue(); //$NON-NLS-1$
+        oscColor = settings.getColor("oscColor", oscColor); //$NON-NLS-1$
+        oscLabel = settings.getString("oscLabel", oscLabel); //$NON-NLS-1$
+        oscLineType = settings.getInteger("oscLineType", oscLineType).intValue(); //$NON-NLS-1$
     }
 }

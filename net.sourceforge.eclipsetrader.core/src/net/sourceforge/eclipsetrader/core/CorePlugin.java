@@ -258,10 +258,10 @@ public class CorePlugin extends AbstractUIPlugin {
 			IConfigurationElement[] members = extensionPoint.getConfigurationElements();
 			if (members.length > 0) {
 				IConfigurationElement element = members[0];
-				if (element.getName().equals("repository")) {
-					if (element.getAttribute("value") != null) {
+				if (element.getName().equals("repository")) { //$NON-NLS-1$
+					if (element.getAttribute("value") != null) { //$NON-NLS-1$
 						try {
-							Object ooo = element.createExecutableExtension("value");
+							Object ooo = element.createExecutableExtension("value"); //$NON-NLS-1$
 							repository = (Repository) ooo;
 						} catch (Exception e) {
 							repository = new XMLRepository();
@@ -272,7 +272,7 @@ public class CorePlugin extends AbstractUIPlugin {
 
 			if (repository == null) {
 				try {
-					Class clazz = Class.forName("net.sourceforge.eclipsetrader.core.RepositoryImpl");
+					Class clazz = Class.forName("net.sourceforge.eclipsetrader.core.RepositoryImpl"); //$NON-NLS-1$
 					repository = (Repository) clazz.newInstance();
 				} catch (Exception e) {
 					repository = new XMLRepository();

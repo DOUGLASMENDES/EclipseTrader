@@ -87,14 +87,14 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
      */
     protected void fillMenuBar(IMenuManager menuBar)
     {
-        MenuManager menu = new MenuManager("File", IWorkbenchActionConstants.M_FILE);
+        MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_File, IWorkbenchActionConstants.M_FILE);
         menu.add(new Separator(IWorkbenchActionConstants.FILE_START));
 
-        MenuManager wizardMenu = new MenuManager("New", "newWizard");
-        wizardMenu.add(new Separator("top"));
-        wizardMenu.add(new Separator("plugins"));
+        MenuManager wizardMenu = new MenuManager(Messages.ApplicationActionBarAdvisor_New, "newWizard"); //$NON-NLS-1$
+        wizardMenu.add(new Separator("top")); //$NON-NLS-1$
+        wizardMenu.add(new Separator("plugins")); //$NON-NLS-1$
         wizardMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        wizardMenu.add(new Separator("bottom"));
+        wizardMenu.add(new Separator("bottom")); //$NON-NLS-1$
         menu.add(wizardMenu);        
         menu.add(new Separator());
         menu.add(new CloseAction());        
@@ -109,7 +109,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menu.add(quitAction);
         menuBar.add(menu);
 
-        menu = new MenuManager("Edit", IWorkbenchActionConstants.M_EDIT);
+        menu = new MenuManager(Messages.ApplicationActionBarAdvisor_Edit, IWorkbenchActionConstants.M_EDIT);
         menu.add(cutAction);
         menu.add(copyAction);
         menu.add(pasteAction);
@@ -133,16 +133,16 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
         menuBar.add(new GroupMarker("end")); //$NON-NLS-1$
 
-        menu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW); //$NON-NLS-1$
+        menu = new MenuManager(Messages.ApplicationActionBarAdvisor_Window, IWorkbenchActionConstants.M_WINDOW);
         menu.add(new Separator("top")); //$NON-NLS-1$
         menu.add(newWindowAction);
         menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
         menu.add(new Separator());
-        MenuManager perspectiveMenu = new MenuManager("Open Perspective", "openPerspective"); //$NON-NLS-1$ //$NON-NLS-2$
+        MenuManager perspectiveMenu = new MenuManager(Messages.ApplicationActionBarAdvisor_OpenPerspective, "openPerspective"); //$NON-NLS-1$
         perspectiveMenu.add(perspectiveList);
         menu.add(perspectiveMenu);
-        MenuManager viewMenu = new MenuManager("Show View", "showView");
+        MenuManager viewMenu = new MenuManager(Messages.ApplicationActionBarAdvisor_ShowView, "showView"); //$NON-NLS-1$
         viewMenu.add(viewList);
         menu.add(viewMenu);        
 
@@ -153,7 +153,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor
         menu.add(new Separator("bottom")); //$NON-NLS-1$
         menuBar.add(menu);
 
-        menu = new MenuManager("&Help", IWorkbenchActionConstants.M_HELP); //$NON-NLS-1$
+        menu = new MenuManager(Messages.ApplicationActionBarAdvisor_Help0, IWorkbenchActionConstants.M_HELP);
         // Welcome or intro page would go here
         menu.add(helpContentsAction);
         // Tips and tricks page would go here

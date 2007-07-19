@@ -45,7 +45,7 @@ public class FiboLineAction implements IViewActionDelegate
         if (part instanceof ChartView)
         {
             ChartObject object = new ChartObject();
-            object.setPluginId("net.sourceforge.eclipsetrader.objects.fiboline");
+            object.setPluginId("net.sourceforge.eclipsetrader.objects.fiboline"); //$NON-NLS-1$
             ((ChartView)part).setNewChartObject(object);
         }
     }

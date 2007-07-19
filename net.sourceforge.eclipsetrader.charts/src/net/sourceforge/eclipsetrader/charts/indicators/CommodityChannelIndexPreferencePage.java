@@ -60,7 +60,7 @@ public class CommodityChannelIndexPreferencePage extends IndicatorPluginPreferen
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         lineLabel.setText(getSettings().getString("label", CommodityChannelIndex.DEFAULT_LABEL)); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, Messages.CommodityChannelIndexPreferencePage_LineType, getSettings().getInteger("lineType", CommodityChannelIndex.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
+        lineType = createLineTypeCombo(content, Messages.CommodityChannelIndexPreferencePage_LineType, getSettings().getInteger("lineType", CommodityChannelIndex.DEFAULT_LINETYPE).intValue()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.CommodityChannelIndexPreferencePage_Period);
@@ -78,7 +78,7 @@ public class CommodityChannelIndexPreferencePage extends IndicatorPluginPreferen
         smoothing.setMaximum(99);
         smoothing.setSelection(getSettings().getInteger("smoothing", CommodityChannelIndex.DEFAULT_SMOOTHING).intValue()); //$NON-NLS-1$
 
-        maType = createMovingAverageCombo(content, Messages.CommodityChannelIndexPreferencePage_SmoothingType, getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue()); //$NON-NLS-2$
+        maType = createMovingAverageCombo(content, Messages.CommodityChannelIndexPreferencePage_SmoothingType, getSettings().getInteger("maType", Stochastic.DEFAULT_MATYPE).intValue()); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

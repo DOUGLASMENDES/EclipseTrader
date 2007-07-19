@@ -22,7 +22,7 @@ import net.sourceforge.eclipsetrader.core.db.BarData;
 public class SD extends IndicatorPlugin
 {
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    public static final String DEFAULT_LABEL = "SD";
+    public static final String DEFAULT_LABEL = "SD"; //$NON-NLS-1$
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_PERIOD = 21;
     public static final int DEFAULT_INPUT = BarData.CLOSE;
@@ -77,10 +77,10 @@ public class SD extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        period = settings.getInteger("period", period).intValue();
-        input = settings.getInteger("input", input).intValue();
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
     }
 }

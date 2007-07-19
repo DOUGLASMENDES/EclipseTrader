@@ -131,11 +131,11 @@ public class ParallelLine extends ObjectPlugin
         selected = null;
         lastX = lastY = -1;
 
-        getSettings().set("date1", date1);
-        getSettings().set("value1", value1);
-        getSettings().set("date2", date2);
-        getSettings().set("value2", value2);
-        getSettings().set("valueOffset", valueOffset);
+        getSettings().set("date1", date1); //$NON-NLS-1$
+        getSettings().set("value1", value1); //$NON-NLS-1$
+        getSettings().set("date2", date2); //$NON-NLS-1$
+        getSettings().set("value2", value2); //$NON-NLS-1$
+        getSettings().set("valueOffset", valueOffset); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -312,14 +312,14 @@ public class ParallelLine extends ObjectPlugin
     {
         super.setSettings(settings);
 
-        date1 = settings.getDate("date1", null);
-        date2 = settings.getDate("date2", null);
-        value1 = settings.getDouble("value1", 0).doubleValue();
-        value2 = settings.getDouble("value2", 0).doubleValue();
-        valueOffset = settings.getDouble("valueOffset", 0).doubleValue();
-        color = settings.getColor("color", color.getRGB());
-        extend1 = settings.getBoolean("extend1", false);
-        extend2 = settings.getBoolean("extend2", false);
+        date1 = settings.getDate("date1", null); //$NON-NLS-1$
+        date2 = settings.getDate("date2", null); //$NON-NLS-1$
+        value1 = settings.getDouble("value1", 0).doubleValue(); //$NON-NLS-1$
+        value2 = settings.getDouble("value2", 0).doubleValue(); //$NON-NLS-1$
+        valueOffset = settings.getDouble("valueOffset", 0).doubleValue(); //$NON-NLS-1$
+        color = settings.getColor("color", color.getRGB()); //$NON-NLS-1$
+        extend1 = settings.getBoolean("extend1", false); //$NON-NLS-1$
+        extend2 = settings.getBoolean("extend2", false); //$NON-NLS-1$
         p1 = p2 = d1 = d2 = null;
     }
 }

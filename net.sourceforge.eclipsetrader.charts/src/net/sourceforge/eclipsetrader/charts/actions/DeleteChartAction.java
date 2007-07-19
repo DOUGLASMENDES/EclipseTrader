@@ -45,7 +45,7 @@ public class DeleteChartAction implements IViewActionDelegate
             Chart chart = ((ChartView)view).getChart();
 
             IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-            if (MessageDialog.openConfirm(window.getShell(), "Delete Chart", "Do you really want to delete this chart ?"))
+            if (MessageDialog.openConfirm(window.getShell(), Messages.DeleteChartAction_Title, Messages.DeleteChartAction_Text))
             {
                 window.getActivePage().hideView(view);
                 CorePlugin.getRepository().delete(chart);

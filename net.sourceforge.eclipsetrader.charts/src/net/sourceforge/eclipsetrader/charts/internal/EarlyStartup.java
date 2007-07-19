@@ -58,11 +58,11 @@ public class EarlyStartup implements IStartup
                 CorePlugin.getDefault().getPreferenceStore().setValue(CorePlugin.PREFS_UPDATE_HISTORY_LAST, dateFormat.format(today.getTime()));
             }
             
-            Job job = new Job("Update chart data") {
+            Job job = new Job(Messages.EarlyStartup_UpdateChartData) {
                 protected IStatus run(IProgressMonitor monitor)
                 {
                     Object[] objs = CorePlugin.getRepository().allSecurities().toArray();
-                    monitor.beginTask("Updating charts", objs.length);
+                    monitor.beginTask(Messages.EarlyStartup_UpdatingCharts, objs.length);
                     for (int i = 0; i < objs.length; i++)
                     {
                         Security security = (Security)objs[i];
@@ -72,7 +72,7 @@ public class EarlyStartup implements IStartup
                             IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(security.getHistoryFeed().getId());
                             if (feed != null)
                             {
-                                monitor.subTask("Updating " + security.getDescription());
+                                monitor.subTask(Messages.EarlyStartup_Updating + security.getDescription());
                                 feed.updateHistory(chart.getSecurity(), IHistoryFeed.INTERVAL_DAILY);
                             }
                         }

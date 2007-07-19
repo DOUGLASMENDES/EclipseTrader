@@ -66,7 +66,7 @@ public class UpdateChartAction implements IViewActionDelegate
 
                 public void visit(ChartIndicator indicator)
                 {
-                    String securityId = (String)indicator.getParameters().get("securityId");
+                    String securityId = (String)indicator.getParameters().get("securityId"); //$NON-NLS-1$
                     if (securityId != null)
                     {
                         Security security = (Security)CorePlugin.getRepository().load(Security.class, new Integer(securityId));
@@ -76,21 +76,21 @@ public class UpdateChartAction implements IViewActionDelegate
                 }
             });
             
-            Job job = new Job("Update chart data") {
+            Job job = new Job(Messages.UpdateChartAction_UpdateChartData) {
                 protected IStatus run(IProgressMonitor monitor)
                 {
-                    monitor.beginTask("Update chart data", securities.size());
+                    monitor.beginTask(Messages.UpdateChartAction_UpdateChartData, securities.size());
 
                     for (int i = 0; i < securities.size(); i++)
                     {
                         Security security = (Security)securities.get(i);
-                        monitor.subTask("Updating " + security.getDescription().replaceAll("&", "&&"));
+                        monitor.subTask(Messages.UpdateChartAction_Updating + security.getDescription().replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
                         
                         int interval = IHistoryFeed.INTERVAL_DAILY;
                         if (((ChartView)view).getInterval() < BarData.INTERVAL_DAILY)
                             interval = IHistoryFeed.INTERVAL_MINUTE;
                         
-                        String id = "";
+                        String id = ""; //$NON-NLS-1$
                         if (security.getHistoryFeed() != null)
                             id = security.getHistoryFeed().getId();
                         IHistoryFeed feed = CorePlugin.createHistoryFeedPlugin(id);

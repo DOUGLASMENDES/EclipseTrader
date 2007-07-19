@@ -95,13 +95,13 @@ public class Bars extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        securityId = settings.getInteger("securityId", securityId).intValue();
-        barType = settings.getInteger("barType", barType).intValue();
-        positiveBar = settings.getColor("positiveBar", positiveBar);
-        negativeBar = settings.getColor("negativeBar", negativeBar);
-        neutralBar = settings.getColor("neutralBar", neutralBar);
-        lineCandle = settings.getColor("lineCandle", lineCandle);
-        positiveCandle = settings.getColor("positiveCandle", positiveCandle);
-        negativeCandle = settings.getColor("negativeCandle", negativeCandle);
+        securityId = settings.getInteger("securityId", securityId).intValue(); //$NON-NLS-1$
+        barType = settings.getInteger("barType", barType).intValue(); //$NON-NLS-1$
+        positiveBar = settings.getColor("positiveBar", positiveBar); //$NON-NLS-1$
+        negativeBar = settings.getColor("negativeBar", negativeBar); //$NON-NLS-1$
+        neutralBar = settings.getColor("neutralBar", neutralBar); //$NON-NLS-1$
+        lineCandle = settings.getColor("lineCandle", lineCandle); //$NON-NLS-1$
+        positiveCandle = settings.getColor("positiveCandle", positiveCandle); //$NON-NLS-1$
+        negativeCandle = settings.getColor("negativeCandle", negativeCandle); //$NON-NLS-1$
     }
 }

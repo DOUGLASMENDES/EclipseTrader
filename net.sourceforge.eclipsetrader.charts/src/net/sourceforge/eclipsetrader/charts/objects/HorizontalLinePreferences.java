@@ -50,17 +50,17 @@ public class HorizontalLinePreferences extends ObjectPluginPreferencePage
         setControl(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.HorizontalLinePreferences_Color);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         colorSelector = new ColorSelector(content);
-        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB());
+        colorSelector.setColorValue(getSettings().getColor("color", Lines.DEFAULT_COLOR).getRGB()); //$NON-NLS-1$
 
         label = new Label(content, SWT.NONE);
-        label.setText("Value");
+        label.setText(Messages.HorizontalLinePreferences_Value);
         label.setLayoutData(new GridData(125, SWT.DEFAULT));
         value = new Text(content, SWT.BORDER);
         value.setLayoutData(new GridData(80, SWT.DEFAULT));
-        value.setText(nf.format(getSettings().getDouble("value", null)));
+        value.setText(nf.format(getSettings().getDouble("value", null))); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -70,8 +70,8 @@ public class HorizontalLinePreferences extends ObjectPluginPreferencePage
     {
         try
         {
-            getSettings().set("color", colorSelector.getColorValue());
-            getSettings().set("value", nf.parse(value.getText()).doubleValue());
+            getSettings().set("color", colorSelector.getColorValue()); //$NON-NLS-1$
+            getSettings().set("value", nf.parse(value.getText()).doubleValue()); //$NON-NLS-1$
         }
         catch (ParseException e) {
             CorePlugin.logException(e);

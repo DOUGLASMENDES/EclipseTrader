@@ -52,7 +52,7 @@ public class AccumulationDistributionPreferencePage extends IndicatorPluginPrefe
         lineLabel.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
         lineLabel.setText(getSettings().getString("label", AccumulationDistribution.DEFAULT_LABEL)); //$NON-NLS-1$
 
-        lineType = createLineTypeCombo(content, Messages.AccumulationDistributionPreferencePage_LineType, getSettings().getInteger("lineType", AccumulationDistribution.DEFAULT_LINETYPE).intValue()); //$NON-NLS-2$
+        lineType = createLineTypeCombo(content, Messages.AccumulationDistributionPreferencePage_LineType, getSettings().getInteger("lineType", AccumulationDistribution.DEFAULT_LINETYPE).intValue()); //$NON-NLS-1$
         
         label = new Label(content, SWT.NONE);
         label.setText(Messages.AccumulationDistributionPreferencePage_Color);

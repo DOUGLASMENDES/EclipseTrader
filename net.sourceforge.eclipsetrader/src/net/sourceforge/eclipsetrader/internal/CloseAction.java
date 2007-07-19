@@ -22,8 +22,8 @@ public class CloseAction extends Action
 
     public CloseAction()
     {
-        setText("Close");
-        setActionDefinitionId("org.eclipse.ui.file.close");
+        setText(Messages.getString("CloseAction.CloseText")); //$NON-NLS-1$
+        setActionDefinitionId("org.eclipse.ui.file.close");  //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

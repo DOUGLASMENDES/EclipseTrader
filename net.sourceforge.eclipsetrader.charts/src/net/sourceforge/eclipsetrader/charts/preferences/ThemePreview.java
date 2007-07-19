@@ -276,14 +276,14 @@ public class ThemePreview implements IThemePreview
 
         PlotLine ma = IndicatorPlugin.getEMA(line, 7);
         ma.setColor(new Color(null, 224, 0, 0));
-        ma.setLabel("MA7");
+        ma.setLabel("MA7"); //$NON-NLS-1$
         indicator = new Indicator();
         indicator.add(ma);
         indicatorPlot.addIndicator(indicator);
 
         ma = IndicatorPlugin.getEMA(line, 14);
         ma.setColor(new Color(null, 0, 224, 0));
-        ma.setLabel("MA14");
+        ma.setLabel("MA14"); //$NON-NLS-1$
         indicator = new Indicator();
         indicator.add(ma);
         indicatorPlot.addIndicator(indicator);

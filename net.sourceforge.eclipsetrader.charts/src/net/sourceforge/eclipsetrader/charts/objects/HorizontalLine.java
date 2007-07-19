@@ -84,7 +84,7 @@ public class HorizontalLine extends ObjectPlugin
      */
     public void mouseUp(PlotMouseEvent e)
     {
-        getSettings().set("value", value);
+        getSettings().set("value", value); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -146,7 +146,7 @@ public class HorizontalLine extends ObjectPlugin
     {
         super.setSettings(settings);
 
-        color = settings.getColor("color", color.getRGB());
-        value = settings.getDouble("value", null);
+        color = settings.getColor("color", color.getRGB()); //$NON-NLS-1$
+        value = settings.getDouble("value", null); //$NON-NLS-1$
     }
 }

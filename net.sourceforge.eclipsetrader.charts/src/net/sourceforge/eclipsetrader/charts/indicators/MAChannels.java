@@ -57,12 +57,12 @@ public class MAChannels extends IndicatorPlugin
         PlotLine mau = new PlotLine();
         mau.setColor(color);
         mau.setType(lineType);
-        mau.setLabel("MAU");
+        mau.setLabel("MAU"); //$NON-NLS-1$
 
         PlotLine mal = new PlotLine();
         mal.setColor(color);
         mal.setType(lineType);
-        mal.setLabel("MAL");
+        mal.setLabel("MAL"); //$NON-NLS-1$
 
         double upperMultiplier = 1.0 + percentage / 100.0;
         double lowerMultiplier = 1.0 - percentage / 100.0;
@@ -84,11 +84,11 @@ public class MAChannels extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag);
-        color = settings.getColor("color", color);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        period = settings.getInteger("period", period).intValue();
-        maType = settings.getInteger("maType", maType).intValue();
-        percentage = settings.getDouble("percentage", percentage).doubleValue();
+        scaleFlag = settings.getBoolean("scaleFlag", scaleFlag); //$NON-NLS-1$
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        maType = settings.getInteger("maType", maType).intValue(); //$NON-NLS-1$
+        percentage = settings.getDouble("percentage", percentage).doubleValue(); //$NON-NLS-1$
     }
 }

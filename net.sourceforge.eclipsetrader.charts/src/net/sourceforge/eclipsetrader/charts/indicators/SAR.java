@@ -21,7 +21,7 @@ import net.sourceforge.eclipsetrader.charts.Settings;
 public class SAR extends IndicatorPlugin
 {
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
-    public static final String DEFAULT_LABEL = "SAR";
+    public static final String DEFAULT_LABEL = Messages.SAR_0;
     public static final int DEFAULT_LINETYPE = PlotLine.DOT;
     public static final double DEFAULT_INITIAL = 0.02;
     public static final double DEFAULT_ADD = 0.02;
@@ -187,11 +187,11 @@ public class SAR extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        color = settings.getColor("color", color);
-        label = settings.getString("label", label);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        initial = settings.getDouble("initial", initial).doubleValue();
-        add = settings.getDouble("add", add).doubleValue();
-        limit = settings.getDouble("limit", limit).doubleValue();
+        color = settings.getColor(Messages.SAR_1, color);
+        label = settings.getString("label", label); //$NON-NLS-1$
+        lineType = settings.getInteger(Messages.SAR_3, lineType).intValue();
+        initial = settings.getDouble(Messages.SAR_4, initial).doubleValue();
+        add = settings.getDouble(Messages.SAR_5, add).doubleValue();
+        limit = settings.getDouble(Messages.SAR_6, limit).doubleValue();
     }
 }

@@ -84,7 +84,7 @@ public class SecurityTransfer extends ByteArrayTransfer {
 			writeOut.close();
 			super.javaToNative(buffer, transferData);
 		} catch (IOException e) {
-			CorePlugin.getDefault().getLog().log(new Status(Status.ERROR, CorePlugin.PLUGIN_ID, 0, "Exception while transfering data", e));
+			CorePlugin.getDefault().getLog().log(new Status(Status.ERROR, CorePlugin.PLUGIN_ID, 0, Messages.SecurityTransfer_Exception, e));
 		}
 	}
 
@@ -123,7 +123,7 @@ public class SecurityTransfer extends ByteArrayTransfer {
 				readIn.close();
 				return security;
 			} catch (Exception e) {
-				CorePlugin.getDefault().getLog().log(new Status(Status.ERROR, CorePlugin.PLUGIN_ID, 0, "Exception while transfering data", e));
+				CorePlugin.getDefault().getLog().log(new Status(Status.ERROR, CorePlugin.PLUGIN_ID, 0, Messages.SecurityTransfer_Exception, e));
 			}
 		}
 

@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class RSI extends IndicatorPlugin
 {
-    public static final String DEFAULT_LABEL = "RSI";
+    public static final String DEFAULT_LABEL = "RSI"; //$NON-NLS-1$
     public static final RGB DEFAULT_COLOR = new RGB(0, 0, 192);
     public static final int DEFAULT_LINETYPE = PlotLine.LINE;
     public static final int DEFAULT_PERIOD = 14;
@@ -124,16 +124,16 @@ public class RSI extends IndicatorPlugin
      */
     public void setParameters(Settings settings)
     {
-        label = settings.getString("label", label);
-        color = settings.getColor("color", color);
-        lineType = settings.getInteger("lineType", lineType).intValue();
-        period = settings.getInteger("period", period).intValue();
-        smoothing = settings.getInteger("smoothing", smoothing).intValue();
-        smoothingType = settings.getInteger("smoothingType", smoothingType).intValue();
-        input = settings.getInteger("input", input).intValue();
-        buyLine = settings.getInteger("buyLine", buyLine).intValue();
-        buyLineColor = settings.getColor("buyLineColor", buyLineColor);
-        sellLine = settings.getInteger("sellLine", sellLine).intValue();
-        sellLineColor = settings.getColor("sellLineColor", sellLineColor);
+        label = settings.getString("label", label); //$NON-NLS-1$
+        color = settings.getColor("color", color); //$NON-NLS-1$
+        lineType = settings.getInteger("lineType", lineType).intValue(); //$NON-NLS-1$
+        period = settings.getInteger("period", period).intValue(); //$NON-NLS-1$
+        smoothing = settings.getInteger("smoothing", smoothing).intValue(); //$NON-NLS-1$
+        smoothingType = settings.getInteger("smoothingType", smoothingType).intValue(); //$NON-NLS-1$
+        input = settings.getInteger("input", input).intValue(); //$NON-NLS-1$
+        buyLine = settings.getInteger("buyLine", buyLine).intValue(); //$NON-NLS-1$
+        buyLineColor = settings.getColor("buyLineColor", buyLineColor); //$NON-NLS-1$
+        sellLine = settings.getInteger("sellLine", sellLine).intValue(); //$NON-NLS-1$
+        sellLineColor = settings.getColor("sellLineColor", sellLineColor); //$NON-NLS-1$
     }
 }
