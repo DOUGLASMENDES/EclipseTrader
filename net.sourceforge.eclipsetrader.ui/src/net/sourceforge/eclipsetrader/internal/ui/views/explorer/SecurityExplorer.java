@@ -110,7 +110,7 @@ public class SecurityExplorer extends ViewPart {
 		}
 	};
 
-	private Action createFolderAction = new Action("Create Group...") {
+	private Action createFolderAction = new Action(Messages.SecurityExplorer_CreateGroupAction) {
 		@Override
 		public void run() {
 			CreateSecurityGroupDialog dlg = new CreateSecurityGroupDialog(getViewSite().getShell());
@@ -118,28 +118,28 @@ public class SecurityExplorer extends ViewPart {
 		}
 	};
 
-	private Action expandAllAction = new Action("Expand all", Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/expandall.gif")) {
+	private Action expandAllAction = new Action(Messages.SecurityExplorer_ExpandAllAction, Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/expandall.gif")) { //$NON-NLS-2$
 		@Override
 		public void run() {
 			viewer.expandAll();
 		}
 	};
 
-	private Action collapseAllAction = new Action("Collapse all", Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/collapseall.gif")) {
+	private Action collapseAllAction = new Action(Messages.SecurityExplorer_CollapseAllAction, Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/collapseall.gif")) { //$NON-NLS-2$
 		@Override
 		public void run() {
 			viewer.collapseAll();
 		}
 	};
 
-	private Action syncedAction = new Action("Link with selection", Action.AS_CHECK_BOX) {
+	private Action syncedAction = new Action(Messages.SecurityExplorer_LinkSelectionAction, Action.AS_CHECK_BOX) {
 		@Override
 		public void run() {
 			updateSyncedState();
 		}
 	};
 
-	private Action deleteAction = new Action("Delete", PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE)) {
+	private Action deleteAction = new Action(Messages.SecurityExplorer_DeleteAction, PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE)) {
 		@Override
 		public void run() {
 			Object[] selection = ((IStructuredSelection) viewer.getSelection()).toArray();
@@ -192,8 +192,8 @@ public class SecurityExplorer extends ViewPart {
 		menuManager.add(new Separator("create")); //$NON-NLS-1$
 		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		menuManager.add(new Separator("presentation")); //$NON-NLS-1$
-		menuManager.add(new Separator("bottom")); //$NON-NLS-1$
 		menuManager.add(new Separator("properties")); //$NON-NLS-1$
+		menuManager.add(new Separator("bottom")); //$NON-NLS-1$
 
 		menuManager.appendToGroup("expand", expandAllAction); //$NON-NLS-1$
 		menuManager.appendToGroup("expand", collapseAllAction); //$NON-NLS-1$
@@ -214,7 +214,7 @@ public class SecurityExplorer extends ViewPart {
 		toolbarManager.appendToGroup("expand", collapseAllAction); //$NON-NLS-1$
 		toolbarManager.appendToGroup("synced", syncedAction); //$NON-NLS-1$
 
-		syncedAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/synced.gif"));
+		syncedAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/synced.gif")); //$NON-NLS-1$
 
 		if (memento != null) {
 			Integer value = memento.getInteger(PREFS_PRESENTATION);
@@ -363,10 +363,12 @@ public class SecurityExplorer extends ViewPart {
 		if (root instanceof Security) {
 			if (!list.contains(root))
 				list.add((Security) root);
-		} else if (root instanceof SecurityGroup) {
+		}
+		else if (root instanceof SecurityGroup) {
 			for (Object child : ((SecurityGroup) root).getChildrens())
 				buildSecuritiesList(list, child);
-		} else if (root instanceof Object[]) {
+		}
+		else if (root instanceof Object[]) {
 			Object[] array = (Object[]) root;
 			for (int i = 0; i < array.length; i++)
 				buildSecuritiesList(list, array[i]);

@@ -38,7 +38,7 @@ public class GroupsPresentationAction extends Action implements IMenuCreator {
 	private int presentation = FLAT;
 
 	public GroupsPresentationAction() {
-		super("Groups Presentation", Action.AS_DROP_DOWN_MENU);
+		super(Messages.GroupsPresentationAction_Label, Action.AS_DROP_DOWN_MENU);
 		setMenuCreator(this);
 	}
 
@@ -67,7 +67,7 @@ public class GroupsPresentationAction extends Action implements IMenuCreator {
 			menu = new Menu(parent);
 
 			flatItem = new MenuItem(menu, SWT.RADIO);
-			flatItem.setText("Flat");
+			flatItem.setText(Messages.GroupsPresentationAction_FlatLabel);
 			flatItem.setSelection(presentation == FLAT);
 			flatItem.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -78,7 +78,7 @@ public class GroupsPresentationAction extends Action implements IMenuCreator {
 			});
 
 			hierarchicalItem = new MenuItem(menu, SWT.RADIO);
-			hierarchicalItem.setText("Hierarchical");
+			hierarchicalItem.setText(Messages.GroupsPresentationAction_HierarchicalLabel);
 			hierarchicalItem.setSelection(presentation == HIERARCHICAL);
 			hierarchicalItem.addSelectionListener(new SelectionAdapter() {
 				@Override

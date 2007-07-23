@@ -16,8 +16,8 @@ import net.sourceforge.eclipsetrader.internal.ui.Activator;
 import org.eclipse.swt.graphics.Image;
 
 public class UIImageRegistry {
-	public static final String ICON_SECURITY = "SECURITY";
-	public static final String ICON_SECURITY_GROUP = "SECURITY_GROUP";
+	public static final String ICON_SECURITY = "SECURITY"; //$NON-NLS-1$
+	public static final String ICON_SECURITY_GROUP = "SECURITY_GROUP"; //$NON-NLS-1$
 
 	private UIImageRegistry() {
 	}

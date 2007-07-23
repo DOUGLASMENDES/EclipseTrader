@@ -11,7 +11,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-	public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.ui";
+	public static final String PLUGIN_ID = "net.sourceforge.eclipsetrader.ui"; //$NON-NLS-1$
 	private static Activator plugin;
 
 	/**
@@ -52,7 +52,7 @@ public class Activator extends AbstractUIPlugin {
      */
     @Override
     protected void initializeImageRegistry(ImageRegistry reg) {
-    	reg.put(UIImageRegistry.ICON_SECURITY, ImageDescriptor.createFromURL(getBundle().getEntry("icons/full/obj16/file_obj.gif")));
-    	reg.put(UIImageRegistry.ICON_SECURITY_GROUP, ImageDescriptor.createFromURL(getBundle().getEntry("icons/full/obj16/fldr_obj.gif")));
+    	reg.put(UIImageRegistry.ICON_SECURITY, ImageDescriptor.createFromURL(getBundle().getEntry("icons/full/obj16/file_obj.gif"))); //$NON-NLS-1$
+    	reg.put(UIImageRegistry.ICON_SECURITY_GROUP, ImageDescriptor.createFromURL(getBundle().getEntry("icons/full/obj16/fldr_obj.gif"))); //$NON-NLS-1$
     }
 }

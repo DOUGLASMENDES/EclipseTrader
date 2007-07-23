@@ -53,7 +53,7 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
 	    super.configureShell(newShell);
-	    newShell.setText("Create Group");
+	    newShell.setText(Messages.CreateSecurityGroupDialog_ShellTitle);
     }
 
 	/* (non-Javadoc)
@@ -61,15 +61,15 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
      */
     @Override
     protected Control createDialogArea(Composite parent) {
-		setTitle("Group");
-		setMessage("Create a new group.");
+		setTitle(Messages.CreateSecurityGroupDialog_DialogTitle);
+		setMessage(Messages.CreateSecurityGroupDialog_Description);
 
 		parent = new Composite(parent, SWT.NONE);
     	parent.setLayout(new GridLayout(2, false));
     	parent.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label label = new Label(parent, SWT.NONE);
-		label.setText("Select the parent group:");
+		label.setText(Messages.CreateSecurityGroupDialog_SelectParentGroup);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 
     	viewer = new TableViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
@@ -88,7 +88,7 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
 		viewer.setInput(new FlatInstrumentsInput());
 		
 		label = new Label(parent, SWT.NONE);
-		label.setText("Group name:");
+		label.setText(Messages.CreateSecurityGroupDialog_GroupName);
 		groupName = new Text(parent, SWT.BORDER);
 		groupName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		groupName.addModifyListener(new ModifyListener() {
@@ -134,12 +134,12 @@ public class CreateSecurityGroupDialog extends TitleAreaDialog {
     }
 
 	protected boolean isValid() {
-    	if (groupName.getText().equals("")) {
-    		setMessage("The 'group' name is empty");
+    	if (groupName.getText().equals("")) { //$NON-NLS-1$
+    		setMessage(Messages.CreateSecurityGroupDialog_EmptyNameMessage);
     		return false;
     	}
     	if (isExistingFolder(groupName.getText())) {
-    		setErrorMessage("The same name already exists");
+    		setErrorMessage(Messages.CreateSecurityGroupDialog_ExistingNameMessage);
     		return false;
     	}
     	setErrorMessage(null);

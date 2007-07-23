@@ -50,7 +50,7 @@ public class FlatLabelProvider extends LabelProvider {
 			String text = group.getDescription();
 			group = group.getParentGroup();
 			while(group != null) {
-				text = group.getDescription() + " - " + text;
+				text = group.getDescription() + Messages.FlatLabelProvider_Separator + text;
 				group = group.getParentGroup();
 			}
 			return text;

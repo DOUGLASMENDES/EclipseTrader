@@ -49,7 +49,7 @@ public class BulkChangesAction extends Action implements IMenuCreator {
 	private MenuItem changeTradingOptionsAction;
 
 	public BulkChangesAction() {
-		super("Change", Action.AS_DROP_DOWN_MENU);
+		super(Messages.BulkChangesAction_Label, Action.AS_DROP_DOWN_MENU);
 		setMenuCreator(this);
 		setEnabled(false);
 	}
@@ -79,7 +79,7 @@ public class BulkChangesAction extends Action implements IMenuCreator {
 			menu = new Menu(parent);
 
 			changeQuoteFeedAction = new MenuItem(menu, SWT.NONE);
-			changeQuoteFeedAction.setText("Quote Feed");
+			changeQuoteFeedAction.setText(Messages.BulkChangesAction_QuoteFeedLabel);
 			changeQuoteFeedAction.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -88,7 +88,7 @@ public class BulkChangesAction extends Action implements IMenuCreator {
 			});
 
 			changeLevel2FeedAction = new MenuItem(menu, SWT.NONE);
-			changeLevel2FeedAction.setText("Level 2 Feed");
+			changeLevel2FeedAction.setText(Messages.BulkChangesAction_Level2FeedLabel);
 			changeLevel2FeedAction.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -97,7 +97,7 @@ public class BulkChangesAction extends Action implements IMenuCreator {
 			});
 
 			changeHistoryFeedAction = new MenuItem(menu, SWT.NONE);
-			changeHistoryFeedAction.setText("History Feed");
+			changeHistoryFeedAction.setText(Messages.BulkChangesAction_HistoryFeedLabel);
 			changeHistoryFeedAction.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -108,7 +108,7 @@ public class BulkChangesAction extends Action implements IMenuCreator {
 			new MenuItem(menu, SWT.SEPARATOR);
 
 			changeIntradayOptionsAction = new MenuItem(menu, SWT.NONE);
-			changeIntradayOptionsAction.setText("Intraday Charts");
+			changeIntradayOptionsAction.setText(Messages.BulkChangesAction_IntradayChartLabel);
 			changeIntradayOptionsAction.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -119,7 +119,7 @@ public class BulkChangesAction extends Action implements IMenuCreator {
 			new MenuItem(menu, SWT.SEPARATOR);
 
 			changeTradingOptionsAction = new MenuItem(menu, SWT.NONE);
-			changeTradingOptionsAction.setText("Trading Provider");
+			changeTradingOptionsAction.setText(Messages.BulkChangesAction_TradingLabel);
 			changeTradingOptionsAction.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {

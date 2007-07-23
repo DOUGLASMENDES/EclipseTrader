@@ -24,17 +24,17 @@ import org.eclipse.jface.viewers.Viewer;
 
 public class FlatContentProvider implements ITreeContentProvider {
 	private Viewer viewer;
-	
-	private ICollectionObserver collectionObserver = new ICollectionObserver() {
-        public void itemAdded(Object o) {
-			((InstrumentsInput) viewer.getInput()).refresh();
-			viewer.refresh();
-        }
 
-        public void itemRemoved(Object o) {
+	private ICollectionObserver collectionObserver = new ICollectionObserver() {
+		public void itemAdded(Object o) {
 			((InstrumentsInput) viewer.getInput()).refresh();
 			viewer.refresh();
-        }
+		}
+
+		public void itemRemoved(Object o) {
+			((InstrumentsInput) viewer.getInput()).refresh();
+			viewer.refresh();
+		}
 	};
 
 	public FlatContentProvider() {
@@ -60,7 +60,7 @@ public class FlatContentProvider implements ITreeContentProvider {
 	 */
 	public Object getParent(Object element) {
 		if (element instanceof Security)
-			return ((Security)element).getGroup();
+			return ((Security) element).getGroup();
 		return null;
 	}
 
@@ -100,12 +100,12 @@ public class FlatContentProvider implements ITreeContentProvider {
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = viewer;
 
-		if (oldInput != null && newInput == null) {
+		if (oldInput == null && newInput != null) {
 			CorePlugin.getRepository().allSecurities().addCollectionObserver(collectionObserver);
 			CorePlugin.getRepository().allSecurityGroups().addCollectionObserver(collectionObserver);
 		}
-		
-		if (oldInput == null && newInput != null) {
+
+		if (oldInput != null && newInput == null) {
 			CorePlugin.getRepository().allSecurities().removeCollectionObserver(collectionObserver);
 			CorePlugin.getRepository().allSecurityGroups().removeCollectionObserver(collectionObserver);
 		}
