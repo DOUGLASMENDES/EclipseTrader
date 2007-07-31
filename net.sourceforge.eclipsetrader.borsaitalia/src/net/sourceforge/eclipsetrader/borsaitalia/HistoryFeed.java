@@ -58,7 +58,8 @@ public class HistoryFeed implements IHistoryFeed {
 			from.set(Calendar.MINUTE, 0);
 			from.set(Calendar.SECOND, 0);
 			log.info("Updating intraday data for " + security.getCode() + " - " + security.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
-		} else {
+		}
+		else {
 			history = security.getHistory();
 			if (history.size() == 0)
 				from.add(Calendar.YEAR, -CorePlugin.getDefault().getPreferenceStore().getInt(CorePlugin.PREFS_HISTORICAL_PRICE_RANGE));
@@ -76,9 +77,13 @@ public class HistoryFeed implements IHistoryFeed {
 		if (symbol == null || symbol.length() == 0)
 			symbol = security.getCode();
 
+		String code = security.getCode();
+		if (code.indexOf('.') != -1)
+			code = code.substring(0, code.indexOf('.'));
+
 		try {
-			String host = "grafici.borsaitalia.it";
-			StringBuffer url = new StringBuffer("http://" + host + "/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=&codneb=" + symbol + "&req_type=GRAF_DS&ascii=1&form_id="); //$NON-NLS-1$ //$NON-NLS-2$
+			String host = "194.185.192.223"; // "grafici.borsaitalia.it";
+			StringBuffer url = new StringBuffer("http://" + host + "/scripts/cligipsw.dll?app=tic_d&action=dwnld4push&cod=" + code + "&codneb=" + symbol + "&req_type=GRAF_DS&ascii=1&form_id="); //$NON-NLS-1$ //$NON-NLS-2$
 			if (interval < IHistoryFeed.INTERVAL_DAILY)
 				url.append("&period=1MIN"); //$NON-NLS-1$
 			else {
