@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.sourceforge.eclipsetrader.nls1"
+      label="EclipseTrader Language Pack 1"
+      version="1.0.0.qualifier"
+      provider-name="Eclipsetrader.org">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license>
+      %license
+   </license>
+
+   <url>
+      <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+   </url>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.ui.nl1"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.core.nl1"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.news.nl1"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.nl1"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.eclipsetrader.charts.nl1"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+</feature>

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core NLS Support
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.core.nl1
+Bundle-Version: 1.0.0
+Bundle-Vendor: Eclipsetrader.org
+Fragment-Host: net.sourceforge.eclipsetrader.core;bundle-version="0.30.0"
