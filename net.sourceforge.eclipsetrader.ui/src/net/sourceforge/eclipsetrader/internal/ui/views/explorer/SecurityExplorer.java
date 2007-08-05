@@ -34,6 +34,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -58,6 +59,8 @@ import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
 
 public class SecurityExplorer extends ViewPart {
+	public static final String VIEW_ID = "net.sourceforge.eclipsetrader.views.securities"; //$NON-NLS-1$
+
 	public static final String THEME_EXPLORER_BACKGROUND = "EXPLORER_BACKGROUND"; //$NON-NLS-1$
 
 	public static final String THEME_EXPLORER_FOREGROUND = "EXPLORER_FOREGROUND"; //$NON-NLS-1$
@@ -118,14 +121,14 @@ public class SecurityExplorer extends ViewPart {
 		}
 	};
 
-	private Action expandAllAction = new Action(Messages.SecurityExplorer_ExpandAllAction, Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/expandall.gif")) { //$NON-NLS-2$
+	private Action expandAllAction = new Action(Messages.SecurityExplorer_ExpandAllAction, Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/expandall.gif")) { //$NON-NLS-1$
 		@Override
 		public void run() {
 			viewer.expandAll();
 		}
 	};
 
-	private Action collapseAllAction = new Action(Messages.SecurityExplorer_CollapseAllAction, Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/collapseall.gif")) { //$NON-NLS-2$
+	private Action collapseAllAction = new Action(Messages.SecurityExplorer_CollapseAllAction, Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/full/elcl16/collapseall.gif")) { //$NON-NLS-1$
 		@Override
 		public void run() {
 			viewer.collapseAll();
@@ -143,8 +146,12 @@ public class SecurityExplorer extends ViewPart {
 		@Override
 		public void run() {
 			Object[] selection = ((IStructuredSelection) viewer.getSelection()).toArray();
-			for (int i = 0; i < selection.length; i++)
-				CorePlugin.getRepository().delete((PersistentObject) selection[i]);
+			if (selection.length != 0) {
+				if (MessageDialog.openConfirm(getViewSite().getShell(), Messages.DeleteSecurityAction_Title, Messages.DeleteSecurityAction_Message)) {
+					for (int i = 0; i < selection.length; i++)
+						CorePlugin.getRepository().delete((PersistentObject) selection[i]);
+				}
+			}
 		}
 	};
 

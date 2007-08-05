@@ -23,8 +23,8 @@
             category="net.sourceforge.eclipsetrader"
             class="net.sourceforge.eclipsetrader.internal.ui.views.explorer.SecurityExplorer"
             icon="icons/full/eview16/database.png"
-            id="net.sourceforge.eclipsetrader.views.explorer"
-            name="Instruments Explorer"/>
+            id="net.sourceforge.eclipsetrader.views.securities"
+            name="%securitiesView"/>
    </extension>
 
 </plugin>

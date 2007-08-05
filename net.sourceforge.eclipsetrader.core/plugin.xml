@@ -134,12 +134,6 @@
             id="net.sourceforge.eclipsetrader.views.events"
             name="%eventsView"/>
       <view
-            category="net.sourceforge.eclipsetrader"
-            class="net.sourceforge.eclipsetrader.core.ui.views.SecuritiesView"
-            icon="icons/eview16/database.png"
-            id="net.sourceforge.eclipsetrader.views.securities"
-            name="%securitiesView"/>
-      <view
             allowMultiple="true"
             class="net.sourceforge.eclipsetrader.core.ui.views.WebBrowser"
             icon="icons/eview16/internal_browser.gif"

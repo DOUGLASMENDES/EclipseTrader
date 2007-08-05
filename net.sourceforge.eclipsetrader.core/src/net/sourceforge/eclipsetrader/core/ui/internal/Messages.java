@@ -13,21 +13,14 @@ package net.sourceforge.eclipsetrader.core.ui.internal;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages extends NLS
-{
-    private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.core.ui.internal.messages"; //$NON-NLS-1$
+public class Messages extends NLS {
+	private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.core.ui.internal.messages"; //$NON-NLS-1$
 
-    private Messages()
-    {
-    }
+	private Messages() {
+	}
 
-    static
-    {
-        // initialize resource bundle
-        NLS.initializeMessages(BUNDLE_NAME, Messages.class);
-    }
-    public static String CopyAction_Text;
-	public static String DeleteAction_ConfirmMessage;
-	public static String DeleteAction_ConfirmTitle;
-	public static String DeleteAction_Text;
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
 }

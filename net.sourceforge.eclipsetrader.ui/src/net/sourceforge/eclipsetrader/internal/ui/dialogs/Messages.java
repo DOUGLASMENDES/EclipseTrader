@@ -14,7 +14,7 @@ package net.sourceforge.eclipsetrader.internal.ui.dialogs;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = Messages.class.getPackage().getName() + ".messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.internal.ui.dialogs.messages"; //$NON-NLS-1$
 
 	private Messages() {
 	}

@@ -14,7 +14,7 @@ package net.sourceforge.eclipsetrader.internal.ui.views.explorer;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = Messages.class.getPackage().getName() + ".messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.internal.ui.views.explorer.messages"; //$NON-NLS-1$
 
 	private Messages() {
 	}
@@ -39,4 +39,6 @@ public class Messages extends NLS {
 	public static String SecurityExplorer_DeleteAction;
 	public static String SecurityExplorer_ExpandAllAction;
 	public static String SecurityExplorer_LinkSelectionAction;
+	public static String DeleteSecurityAction_Message;
+	public static String DeleteSecurityAction_Title;
 }

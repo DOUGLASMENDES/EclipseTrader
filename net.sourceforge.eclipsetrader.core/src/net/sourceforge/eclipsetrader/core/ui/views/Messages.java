@@ -13,37 +13,23 @@ package net.sourceforge.eclipsetrader.core.ui.views;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages extends NLS
-{
-    private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.core.ui.views.messages"; //$NON-NLS-1$
+public class Messages extends NLS {
+	private static final String BUNDLE_NAME = "net.sourceforge.eclipsetrader.core.ui.views.messages"; //$NON-NLS-1$
 
-    private Messages()
-    {
-    }
+	private Messages() {
+	}
 
-    static
-    {
-        // initialize resource bundle
-        NLS.initializeMessages(BUNDLE_NAME, Messages.class);
-    }
-    public static String EventsView_RemoveActionTooltip;
-    public static String EventsView_RemoveAllActionTooltip;
-    public static String EventsView_Date;
-    public static String EventsView_Time;
-    public static String EventsView_Security;
-    public static String EventsView_Message;
-	public static String SecuritiesView_11;
-	public static String SecuritiesView_12;
-	public static String SecuritiesView_13;
-	public static String SecuritiesView_14;
-    public static String SecuritiesView_Code;
-    public static String SecuritiesView_Description;
-    public static String SecuritiesView_Currency;
-	public static String SecuritiesView_HistoryFeedAction;
-	public static String SecuritiesView_IntradayChartsAction;
-	public static String SecuritiesView_Level2FeedAction;
-	public static String SecuritiesView_QuoteFeedAction;
-	public static String SecuritiesView_TradingOptionsAction;
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
+
+	public static String EventsView_RemoveActionTooltip;
+	public static String EventsView_RemoveAllActionTooltip;
+	public static String EventsView_Date;
+	public static String EventsView_Time;
+	public static String EventsView_Security;
+	public static String EventsView_Message;
 	public static String WebBrowser_Back;
 	public static String WebBrowser_Forward;
 	public static String WebBrowser_Go;
