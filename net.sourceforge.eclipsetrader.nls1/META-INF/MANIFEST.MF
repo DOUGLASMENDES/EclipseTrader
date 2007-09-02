@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseTrader Language Pack 1
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.nls1
+Bundle-Version: 1.0.0
+Bundle-Vendor: Eclipsetrader.org
