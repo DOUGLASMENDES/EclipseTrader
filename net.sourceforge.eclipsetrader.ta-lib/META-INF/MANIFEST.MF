@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: net.sourceforge.eclipsetrader.ta_lib;singleton:=true
-Bundle-Version: 0.3.0.M20070516
+Bundle-Version: 0.4.0.M20070916
 Bundle-Activator: net.sourceforge.eclipsetrader.ta_lib.TALibPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
@@ -13,10 +13,11 @@ Eclipse-LazyStart: true
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: plugin.jar,
- lib/ta-lib-0.3.0.jar
+ lib/ta-lib-0.4.0.jar
 Export-Package: com.tictactec.ta.lib,
  com.tictactec.ta.lib.meta,
- com.tictactec.ta.lib.test,
+ com.tictactec.ta.lib.meta.annotation,
+ com.tictactec.ta.lib.meta.helpers,
  net.sourceforge.eclipsetrader.ta_lib,
  net.sourceforge.eclipsetrader.ta_lib.indicators,
  net.sourceforge.eclipsetrader.ta_lib.internal
