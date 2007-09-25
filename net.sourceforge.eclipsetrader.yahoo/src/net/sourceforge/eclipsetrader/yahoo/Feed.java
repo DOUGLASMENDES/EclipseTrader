@@ -145,8 +145,8 @@ public class Feed implements IFeed, Runnable {
 
 	private void update() {
 		// Builds the url for quotes download
-		String host = "quote.yahoo.com";
-		StringBuffer url = new StringBuffer("http://" + host + "/download/javasoft.beans?symbols="); //$NON-NLS-1$
+		String host = "quote.yahoo.com"; //$NON-NLS-1$
+		StringBuffer url = new StringBuffer("http://" + host + "/download/javasoft.beans?symbols="); //$NON-NLS-1$ //$NON-NLS-2$
 		for (Iterator iter = map.values().iterator(); iter.hasNext();)
 			url = url.append((String) iter.next() + "+"); //$NON-NLS-1$
 		if (url.charAt(url.length() - 1) == '+')
