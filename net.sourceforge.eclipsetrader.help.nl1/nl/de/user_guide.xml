@@ -37,14 +37,14 @@
 		    <topic label="Copying indicators" href="guide/chart06.html" />
 		    <topic label="Deleting objects" href="guide/chart07.html" />
 	    </topic>
-	    <topic label="Working with accounts and transactions">
-		    <topic label="Creating an account" href="guide/account01.html" />
-		    <topic label="Editing accounts" href="guide/account04.html" />
-		    <topic label="Deleting accounts" href="guide/account05.html" />
-		    <topic label="Creating a transaction" href="guide/account02.html" />
-		    <topic label="Editing transactions" href="guide/account06.html" />
-		    <topic label="Deleting transactions" href="guide/account07.html" />
-		    <topic label="Using the portfolio" href="guide/account03.html" />
+	    <topic label="Arbeiten mit Konten und Transaktionen">
+		    <topic label="Konto erstellen" href="guide/account01.html" />
+		    <topic label="Konten bearbeiten" href="guide/account04.html" />
+		    <topic label="Konten löschen" href="guide/account05.html" />
+		    <topic label="Transaktion anlegen" href="guide/account02.html" />
+		    <topic label="Transaktionen bearbeiten" href="guide/account06.html" />
+		    <topic label="Transaktionen löschen" href="guide/account07.html" />
+		    <topic label="Das Portfolio benutzen" href="guide/account03.html" />
 	    </topic>
 	    <topic label="Working with trading orders">
 		    <topic label="Submit an order" href="guide/order01.html" />
