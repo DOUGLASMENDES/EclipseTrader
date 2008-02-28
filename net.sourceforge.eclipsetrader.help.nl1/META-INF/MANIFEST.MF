@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nl1 Fragment
+Bundle-SymbolicName: net.sourceforge.eclipsetrader.help.nl1
+Bundle-Version: 0.30.0
+Bundle-Vendor: Sourceforge.net
+Fragment-Host: net.sourceforge.eclipsetrader.help;bundle-version="0.30.0"
