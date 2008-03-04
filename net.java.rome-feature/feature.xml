@@ -2,7 +2,7 @@
 <feature
       id="net.java.rome"
       label="%featureName"
-      version="0.9.0.v200703071050"
+      version="0.9.0.v200803041200"
       provider-name="%providerName">
 
    <description>
@@ -29,7 +29,8 @@
          id="net.java.rome"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="net.java.rome.fetcher"
