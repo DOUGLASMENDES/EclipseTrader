@@ -14,7 +14,6 @@ Export-Package: com.sun.syndication.feed;version="0.9.0",
  com.sun.syndication.feed.synd.impl;version="0.9.0",
  com.sun.syndication.io;version="0.9.0",
  com.sun.syndication.io.impl;version="0.9.0"
-Require-Bundle: org.apache.commons;bundle-version="[1.0.0,2.0.0)"
 Eclipse-LazyStart: true
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

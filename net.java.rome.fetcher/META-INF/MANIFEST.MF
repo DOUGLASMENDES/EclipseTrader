@@ -4,7 +4,6 @@ Bundle-Name: ROME Fetcher Plugin
 Bundle-SymbolicName: net.java.rome.fetcher
 Bundle-Version: 0.9.0.v200703071050
 Bundle-Vendor: Sourceforge.net
-Bundle-Localization: plugin
 Export-Package: com.sun.syndication.fetcher,
  com.sun.syndication.fetcher.impl,
  com.sun.syndication.fetcher.samples
@@ -19,3 +18,4 @@ Import-Package: org.apache.commons.httpclient,
  org.apache.commons.httpclient.params,
  org.apache.commons.httpclient.protocol,
  org.apache.commons.httpclient.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
