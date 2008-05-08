@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commons Logging Source
+Bundle-SymbolicName: org.apache.commons.logging.source
+Bundle-Version: 1.1.1.qualifier
+Bundle-Vendor: Apache Software Foundation
+Eclipse-SourceBundle: org.apache.commons.logging;version="1.1.1.qualifier"

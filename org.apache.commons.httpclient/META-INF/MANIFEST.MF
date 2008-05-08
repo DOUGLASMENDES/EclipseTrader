@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: HTTP Client
+Bundle-SymbolicName: org.apache.commons.httpclient
+Bundle-Version: 3.1.0.qualifier
+Bundle-Vendor: Apache Software Foundation
+Import-Package: org.apache.commons.codec,
+ org.apache.commons.codec.binary,
+ org.apache.commons.codec.digest,
+ org.apache.commons.codec.language,
+ org.apache.commons.codec.net,
+ org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Export-Package: org.apache.commons.httpclient;version="3.1.0",
+ org.apache.commons.httpclient.auth;version="3.1.0",
+ org.apache.commons.httpclient.cookie;version="3.1.0",
+ org.apache.commons.httpclient.methods;version="3.1.0",
+ org.apache.commons.httpclient.methods.multipart;version="3.1.0",
+ org.apache.commons.httpclient.params;version="3.1.0",
+ org.apache.commons.httpclient.protocol;version="3.1.0",
+ org.apache.commons.httpclient.util;version="3.1.0"
