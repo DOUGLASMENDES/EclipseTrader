@@ -1,0 +1,67 @@
+/*
+ * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Marco Maccaferri - initial API and implementation
+ */
+
+package org.eclipsetrader.ui.internal.views;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipsetrader.core.internal.CoreActivator;
+import org.eclipsetrader.core.internal.views.WatchListColumn;
+import org.eclipsetrader.core.views.IColumn;
+import org.eclipsetrader.core.views.IWatchListColumn;
+
+public class ColumnsPage extends WizardPage {
+	private ColumnsViewer providers;
+
+	public ColumnsPage() {
+		super("columns", "Columns", null);
+		setDescription("Select the columns to display");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+	 */
+	public void createControl(Composite parent) {
+		Composite content = new Composite(parent, SWT.NONE);
+		content.setLayout(new GridLayout(1, false));
+		setControl(content);
+		initializeDialogUnits(content);
+
+		providers = new ColumnsViewer(content);
+		providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		providers.setInput(CoreActivator.getDefault().getDataProviderFactories());
+	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
+     */
+    @Override
+    public boolean isPageComplete() {
+	    return true;
+    }
+
+    public IWatchListColumn[] getColumns() {
+		List<IWatchListColumn> c = new ArrayList<IWatchListColumn>();
+		for (IColumn column : providers.getSelection()) {
+			if (column instanceof IWatchListColumn)
+				c.add((IWatchListColumn) column);
+			else
+				c.add(new WatchListColumn(column));
+		}
+		return c.toArray(new IWatchListColumn[c.size()]);
+    }
+}

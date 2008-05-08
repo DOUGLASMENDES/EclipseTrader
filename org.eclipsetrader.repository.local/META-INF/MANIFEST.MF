@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Local Repository Plug-in
+Bundle-SymbolicName: org.eclipsetrader.repository.local;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipsetrader.repository.local.internal.Activator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipsetrader.core
+Eclipse-LazyStart: true
+Import-Package: javax.xml.bind;version="[2.1.0,2.2.0)",
+ javax.xml.bind.annotation;version="[2.1.0,2.2.0)",
+ javax.xml.bind.annotation.adapters;version="[2.1.0,2.2.0)",
+ javax.xml.bind.attachment;version="[2.1.0,2.2.0)",
+ javax.xml.bind.helpers;version="[2.1.0,2.2.0)",
+ javax.xml.bind.util;version="[2.1.0,2.2.0)"
+Export-Package: org.eclipsetrader.repository.local,
+ org.eclipsetrader.repository.local.internal;x-internal:=true,
+ org.eclipsetrader.repository.local.internal.stores;x-internal:=true,
+ org.eclipsetrader.repository.local.internal.types;x-internal:=true

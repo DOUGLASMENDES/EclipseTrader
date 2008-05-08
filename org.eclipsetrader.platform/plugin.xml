@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         id="workbench"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipsetrader.ui.workbench"
+            description="%aboutText"
+            name="EclipseTrader">
+         <property
+               name="windowImages"
+               value="eclipse.gif,eclipse32.gif,eclipse48.gif"/>
+         <property
+               name="aboutImage"
+               value="about.gif"/>
+         <property
+               name="aboutText"
+               value="%aboutText"/>
+         <property
+               name="appName"
+               value="EclipseTrader"/>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini"/>
+      </product>
+   </extension>
+
+</plugin>

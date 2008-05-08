@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         name="OpenTick"
+         point="org.eclipsetrader.core.connectors">
+      <connector
+            class="org.eclipsetrader.opentick.internal.core.FeedConnector"
+            id="org.eclipsetrader.opentick"
+            name="OpenTick">
+      </connector>
+      <property
+            id="org.eclipsetrader.opentick.symbol"
+            name="Symbol">
+      </property>
+      <property
+            id="org.eclipsetrader.opentick.exchange"
+            name="Exchange">
+      </property>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipsetrader.ui.preferences.plugins"
+            class="org.eclipsetrader.opentick.internal.ui.preferences.AuthenticationPage"
+            id="org.eclipsetrader.opentick.authentication"
+            name="OpenTick">
+      </page>
+   </extension>
+
+</plugin>

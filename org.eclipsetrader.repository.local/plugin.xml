@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipsetrader.core.repositories">
+      <repository
+            class="org.eclipsetrader.repository.local.internal.RepositoryFactory"
+            id="org.eclipsetrader.repository.local"
+            name="Local"
+            scheme="local">
+      </repository>
+   </extension>
+
+</plugin>

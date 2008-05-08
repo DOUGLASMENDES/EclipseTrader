@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipsetrader.ui.indicators">
+      <indicator
+            class="org.eclipsetrader.ui.charts.indicators.AD"
+            id="org.eclipsetrader.indicators.ad"
+            name="Chaikin A/D Line - AD">
+      </indicator>
+      <indicator
+            class="org.eclipsetrader.ui.charts.indicators.BBANDS"
+            id="org.eclipsetrader.indicators.bbands"
+            name="Bollinger Bands - BBANDS">
+      </indicator>
+      <indicator
+            class="org.eclipsetrader.ui.charts.indicators.MA"
+            id="org.eclipsetrader.indicators.ma"
+            name="Moving Average - MA">
+      </indicator>
+      <indicator
+            class="org.eclipsetrader.ui.charts.indicators.RSI"
+            id="org.eclipsetrader.indicators.ma"
+            name="Relative Strength Index - RSI">
+      </indicator>
+      <indicator
+            class="org.eclipsetrader.ui.charts.indicators.VOLUME"
+            id="org.eclipsetrader.indicators.volume"
+            name="Volume - VOL">
+      </indicator>
+   </extension>
+
+</plugin>

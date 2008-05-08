@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.1"?>
+
+<product name="EclipseTrader" id="org.eclipsetrader.platform.workbench" application="org.eclipsetrader.ui.workbench" useFeatures="true">
+
+   <aboutInfo>
+      <image path="/org.eclipsetrader.platform/about.gif"/>
+      <text>
+         %aboutText
+      </text>
+   </aboutInfo>
+
+   <configIni use="default"/>
+
+   <launcherArgs>
+   </launcherArgs>
+
+   <windowImages i16="/org.eclipsetrader.platform/eclipse.gif" i32="/org.eclipsetrader.platform/eclipse32.gif" i48="/org.eclipsetrader.platform/eclipse48.gif"/>
+
+
+   <launcher name="trader">
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.rcp" version="0.0.0"/>
+      <feature id="org.eclipse.rcp.extras" version="0.0.0"/>
+      <feature id="org.apache.commons" version="0.0.0"/>
+      <feature id="org.apache.log4j" version="0.0.0"/>
+      <feature id="org.jdom" version="0.0.0"/>
+      <feature id="net.java.rome" version="0.0.0"/>
+      <feature id="org.eclipsetrader.platform" version="0.0.0"/>
+   </features>
+
+</product>

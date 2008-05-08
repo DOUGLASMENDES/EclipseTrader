@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Chart Indicators Plug-in
+Bundle-SymbolicName: org.eclipsetrader.ui.charts.indicators;singleton:=true
+Bundle-Version: 1.0.0.qualifer
+Bundle-Activator: org.eclipsetrader.ui.internal.charts.indicators.Activator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipsetrader.core,
+ org.eclipsetrader.core.charts,
+ org.eclipsetrader.ui.charts
+Eclipse-LazyStart: true
+Import-Package: com.tictactec.ta.lib;version="0.4.0",
+ com.tictactec.ta.lib.meta;version="0.4.0",
+ com.tictactec.ta.lib.meta.annotation;version="0.4.0",
+ com.tictactec.ta.lib.meta.helpers;version="0.4.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipsetrader.ui.charts,
+ org.eclipsetrader.ui.charts.indicators,
+ org.eclipsetrader.ui.internal.charts;x-internal:=true,
+ org.eclipsetrader.ui.internal.charts.indicators;x-internal:=true

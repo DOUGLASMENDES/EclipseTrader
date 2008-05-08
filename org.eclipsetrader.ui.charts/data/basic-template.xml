@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chart>
+	<name>Basic</name>
+	<section id="a91d6bb9-3ffb-4aeb-ab36-dd39356f746f" name="Top">
+		<indicator id="org.eclipsetrader.indicators.bars">
+			<param name="style" value="bars"/>
+			<param name="positive-color" value="0,255,0"/>
+			<param name="negative-color" value="255,0,0"/>
+		</indicator>
+		<indicator id="org.eclipsetrader.indicators.ma" name="MA7">
+			<param name="field" value="close"/>
+			<param name="period" value="7"/>
+			<param name="type" value="ema"/>
+			<param name="color" value="255,0,0"/>
+		</indicator>
+		<indicator id="org.eclipsetrader.indicators.ma" name="MA14">
+			<param name="field" value="close"/>
+			<param name="period" value="14"/>
+			<param name="type" value="ema"/>
+			<param name="color" value="0,255,0"/>
+		</indicator>
+	</section>
+	<section id="29236de6-1f09-44d2-bfa6-b455e6741465" name="Bottom">
+		<indicator id="org.eclipsetrader.indicators.volume" name="VOLUME">
+			<param name="style" value="histogram-bars"/>
+			<param name="positive-color" value="0,255,0"/>
+			<param name="negative-color" value="255,0,0"/>
+		</indicator>
+	</section>
+</chart>

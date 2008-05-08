@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="org.eclipsetrader.core.repositories" name="Repository" schema="schema/repository.exsd"/>
+   <extension-point id="org.eclipsetrader.core.elementFactories" name="Element Factories" schema="schema/elementFactory.exsd"/>
+   <extension-point id="org.eclipsetrader.core.connectors" name="Feed Connectors" schema="schema/connectors.exsd"/>
+   <extension-point id="org.eclipsetrader.core.providers" name="Data Providers" schema="schema/providers.exsd"/>
+
+</plugin>

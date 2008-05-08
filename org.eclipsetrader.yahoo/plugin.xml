@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         name="Yahoo! Finance"
+         point="org.eclipsetrader.core.connectors">
+      <connector
+            class="org.eclipsetrader.yahoo.internal.core.connector.FeedConnector"
+            id="org.eclipsetrader.yahoo"
+            name="Yahoo! Finance">
+      </connector>
+      <property
+            id="org.eclipsetrader.yahoo.symbol"
+            name="Symbol">
+      </property>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipsetrader.ui.preferences.plugins"
+            class="org.eclipsetrader.yahoo.internal.ui.preferences.AuthenticationPage"
+            id="org.eclipsetrader.yahoo.general"
+            name="Yahoo! Finance">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            category="org.eclipsetrader.ui.import.data"
+            class="org.eclipsetrader.yahoo.internal.ui.wizards.DataImportWizard"
+            icon="yahoo16.gif"
+            id="org.eclipsetrader.yahoo.data"
+            name="Yahoo! Finance">
+         <description>
+            Import historical data from Yahoo! Finance.
+         </description>
+      </wizard>
+   </extension>
+
+</plugin>

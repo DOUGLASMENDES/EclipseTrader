@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Charts UI Plug-in
+Bundle-SymbolicName: org.eclipsetrader.ui.charts;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipsetrader.ui.internal.charts.ChartsUIActivator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipsetrader.core,
+ org.eclipsetrader.core.charts
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipsetrader.ui.charts,
+ org.eclipsetrader.ui.internal.charts;x-internal:=true,
+ org.eclipsetrader.ui.internal.charts.views;x-internal:=true
+Import-Package: javax.xml.bind;version="[2.1.0,2.2.0)",
+ javax.xml.bind.annotation;version="[2.1.0,2.2.0)",
+ javax.xml.bind.annotation.adapters;version="[2.1.0,2.2.0)",
+ javax.xml.bind.attachment;version="[2.1.0,2.2.0)",
+ javax.xml.bind.helpers;version="[2.1.0,2.2.0)",
+ javax.xml.bind.util;version="[2.1.0,2.2.0)"

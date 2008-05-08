@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipsetrader.platform"
+      label="EclipseTrader Platform"
+      version="1.0.0.qualifier"
+      provider-name="EclipseTrader.org">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license>
+      %license
+   </license>
+
+   <url>
+      <update label="Main Update Site" url="http://www.eclipsetrader.org/updates"/>
+      <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+   </url>
+
+   <includes
+         id="org.eclipse.rcp"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.rcp.extras"
+         version="0.0.0"/>
+
+   <requires>
+      <import feature="net.java.rome" version="0.9.0" match="compatible"/>
+      <import feature="org.apache.commons" version="1.0.0" match="compatible"/>
+      <import feature="org.eclipse.rcp" version="3.3.0" match="compatible"/>
+      <import feature="org.jdom" version="1.0.0" match="compatible"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.nebula.widgets.cdatetime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.bind"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipsetrader.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipsetrader.platform"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipsetrader.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipsetrader.ui.application"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipsetrader.repository.local"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipsetrader.directaworld"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipsetrader.opentick"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipsetrader.yahoo"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

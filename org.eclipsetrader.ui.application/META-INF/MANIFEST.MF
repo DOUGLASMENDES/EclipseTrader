@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Application Plug-in
+Bundle-SymbolicName: org.eclipsetrader.ui.application;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipsetrader.ui.internal.application.Activator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipsetrader.ui,
+ org.eclipse.update.ui
+Eclipse-LazyStart: true
+Bundle-Localization: plugin

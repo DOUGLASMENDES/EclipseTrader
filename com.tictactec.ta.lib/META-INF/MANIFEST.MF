@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Technical Analysis Library Plug-in
+Bundle-SymbolicName: com.tictactec.ta.lib
+Bundle-Version: 0.4.0.R20070915
+Bundle-Vendor: EclipseTrader.org
+Export-Package: com.tictactec.ta.lib;version="0.4.0",
+ com.tictactec.ta.lib.meta;version="0.4.0",
+ com.tictactec.ta.lib.meta.annotation;version="0.4.0",
+ com.tictactec.ta.lib.meta.helpers;version="0.4.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ClassPath: .

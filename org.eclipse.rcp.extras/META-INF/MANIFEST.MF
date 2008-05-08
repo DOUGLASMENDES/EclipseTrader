@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.rcp.extras
+Bundle-Version: 3.2.0.v20070612
+Bundle-Vendor: %providerName
