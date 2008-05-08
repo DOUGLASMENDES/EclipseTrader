@@ -4,8 +4,8 @@
 # This file does not need to be translated.
 
 0=1.0.0
-1=v200701071427
-2=Copyright 2006 The Apache Software Foundation\n\
+1=@build@
+2=Copyright 2006-2008 The Apache Software Foundation\n\
 \n\
 Licensed under the Apache License, Version 2.0 (the "License");\n\
 you may not use this file except in compliance with the License.\n\

@@ -2,7 +2,7 @@
 <feature
       id="org.apache.commons"
       label="%featureName"
-      version="1.0.0.v200701071427"
+      version="1.0.0.qualifier"
       provider-name="%providerName">
 
    <description>
@@ -18,7 +18,7 @@
    </license>
 
    <url>
-      <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+      <update label="Main Update Site" url="http://www.eclipsetrader.org/updates"/>
       <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
 
@@ -26,6 +26,35 @@
          id="org.apache.commons"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.codec"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.collections"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.httpclient"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
