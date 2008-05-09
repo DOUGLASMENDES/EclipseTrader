@@ -1,14 +1,20 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: net.sourceforge.eclipsetrader.borsaitalia; singleton:=true
-Bundle-Version: 0.30.0
-Bundle-Activator: net.sourceforge.eclipsetrader.borsaitalia.BorsaitaliaPlugin
-Bundle-Vendor: %Bundle-Vendor
-Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.net,
- org.eclipse.ui,
+Bundle-Name: Borsa Italiana
+Bundle-SymbolicName: org.eclipsetrader.borsaitalia;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipsetrader.borsaitalia.internal.Activator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sourceforge.eclipsetrader.core,
- org.apache.commons
+ org.eclipsetrader.core
 Eclipse-LazyStart: true
+Import-Package: org.apache.commons.httpclient;version="3.1.0",
+ org.apache.commons.httpclient.auth;version="3.1.0",
+ org.apache.commons.httpclient.cookie;version="3.1.0",
+ org.apache.commons.httpclient.methods;version="3.1.0",
+ org.apache.commons.httpclient.methods.multipart;version="3.1.0",
+ org.apache.commons.httpclient.params;version="3.1.0",
+ org.apache.commons.httpclient.protocol;version="3.1.0",
+ org.apache.commons.httpclient.util;version="3.1.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

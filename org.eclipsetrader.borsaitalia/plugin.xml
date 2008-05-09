@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
+<?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="net.sourceforge.eclipsetrader.core.feeds">
-      <feed
-            id="%feed.id"
-            name="%feed.name">
-         <history class="net.sourceforge.eclipsetrader.borsaitalia.HistoryFeed"/>
-      </feed>
+         name="Borsa Italiana"
+         point="org.eclipsetrader.core.connectors">
+      <property
+            id="org.eclipsetrader.borsaitalia.isin"
+            name="ISIN">
+      </property>
+      <property
+            id="org.eclipsetrader.borsaitalia.code"
+            name="Code">
+      </property>
+   </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            category="org.eclipsetrader.ui.import.data"
+            class="org.eclipsetrader.borsaitalia.internal.ui.wizards.DataImportWizard"
+            icon="borsaitalia16.gif"
+            id="org.eclipsetrader.borsaitalia.wizard1"
+            name="Borsa Italiana">
+         <description>
+            Import historical data from Borsa Italiana.
+         </description>
+      </wizard>
    </extension>
 
 </plugin>
