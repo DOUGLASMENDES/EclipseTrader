@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipsetrader.ui.preferences.plugins"
+            class="org.eclipsetrader.directa.internal.ui.preferences.AuthenticationPage"
+            id="org.eclipsetrader.directa.authentication"
+            name="Directa">
+      </page>
+   </extension>
+   <extension
+         name="Directa"
+         point="org.eclipsetrader.core.connectors">
+      <connector
+            class="org.eclipsetrader.directa.internal.core.connector.StreamingConnector"
+            id="org.eclipsetrader.directa.connector"
+            name="Directa">
+      </connector>
+      <property
+            id="org.eclipsetrader.directa.symbol"
+            name="Symbol">
+      </property>
+   </extension>
+   <extension
+         name="Borsa Italiana"
+         point="org.eclipsetrader.core.connectors">
+      <property
+            id="org.eclipsetrader.borsaitalia.isin"
+            name="ISIN">
+      </property>
+      <property
+            id="org.eclipsetrader.borsaitalia.code"
+            name="Code">
+      </property>
+   </extension>
+
+</plugin>
