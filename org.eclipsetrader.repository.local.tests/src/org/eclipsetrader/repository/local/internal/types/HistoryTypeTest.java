@@ -40,7 +40,7 @@ public class HistoryTypeTest extends TestCase {
 	}
 
 	public void testMarshalDate() throws Exception {
-		HistoryType object = new HistoryType(new IOHLC[] {
+		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(getTime(2007, Calendar.NOVEMBER, 11, 0, 0), null, null, null, null, null),
 		});
 		assertEquals(prefix + "<history><data><bar date=\"2007-11-11 00:00:00\"/></data></history>", marshal(object));
@@ -52,7 +52,7 @@ public class HistoryTypeTest extends TestCase {
 	}
 
 	public void testMarshalOpen() throws Exception {
-		HistoryType object = new HistoryType(new IOHLC[] {
+		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, 12.5, null, null, null, null),
 		});
 		assertEquals(prefix + "<history><data><bar open=\"12.5\"/></data></history>", marshal(object));
@@ -64,7 +64,7 @@ public class HistoryTypeTest extends TestCase {
 	}
 
 	public void testMarshalHigh() throws Exception {
-		HistoryType object = new HistoryType(new IOHLC[] {
+		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, 12.5, null, null, null),
 		});
 		assertEquals(prefix + "<history><data><bar high=\"12.5\"/></data></history>", marshal(object));
@@ -76,7 +76,7 @@ public class HistoryTypeTest extends TestCase {
 	}
 
 	public void testMarshalLow() throws Exception {
-		HistoryType object = new HistoryType(new IOHLC[] {
+		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, null, 12.5, null, null),
 		});
 		assertEquals(prefix + "<history><data><bar low=\"12.5\"/></data></history>", marshal(object));
@@ -88,7 +88,7 @@ public class HistoryTypeTest extends TestCase {
 	}
 
 	public void testMarshalClose() throws Exception {
-		HistoryType object = new HistoryType(new IOHLC[] {
+		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, null, null, 12.5, null),
 		});
 		assertEquals(prefix + "<history><data><bar close=\"12.5\"/></data></history>", marshal(object));
@@ -100,7 +100,7 @@ public class HistoryTypeTest extends TestCase {
 	}
 
 	public void testMarshalVolume() throws Exception {
-		HistoryType object = new HistoryType(new IOHLC[] {
+		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, null, null, null, 12500L),
 		});
 		assertEquals(prefix + "<history><data><bar volume=\"12500\"/></data></history>", marshal(object));
