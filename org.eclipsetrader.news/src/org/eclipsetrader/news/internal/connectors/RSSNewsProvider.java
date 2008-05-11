@@ -21,15 +21,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.news.core.IHeadLine;
 import org.eclipsetrader.news.core.INewsFetcher;
@@ -37,9 +41,6 @@ import org.eclipsetrader.news.internal.Activator;
 import org.eclipsetrader.news.internal.repository.HeadLine;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -48,6 +49,8 @@ import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class RSSNewsProvider implements INewsFetcher {
+	public static final String HEADLINES_FILE = "rss.xml"; //$NON-NLS-1$
+
 	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
 	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
 
@@ -60,29 +63,52 @@ public class RSSNewsProvider implements INewsFetcher {
 	 * @see org.eclipsetrader.news.core.INewsFetcher#fetchHeadLines()
 	 */
 	public IHeadLine[] fetchHeadLines() {
-		File file = new File(Platform.getLocation().toFile(), "rss.xml"); //$NON-NLS-1$
-		if (file.exists() == true) {
-			try {
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				Document document = builder.parse(file);
+		List<IHeadLine> list = new ArrayList<IHeadLine>();
+		FeedSource[] sources = new FeedSource[0];
 
-				Node firstNode = document.getFirstChild();
+		try {
+			File file = Activator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
+			if (file.exists()) {
+				JAXBContext jaxbContext = JAXBContext.newInstance(FeedSource[].class);
+		        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+	            unmarshaller.setEventHandler(new ValidationEventHandler() {
+	            	public boolean handleEvent(ValidationEvent event) {
+	            		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+	            		Activator.getDefault().getLog().log(status);
+	            		return true;
+	            	}
+	            });
+		        JAXBElement<FeedSource[]> element = unmarshaller.unmarshal(new StreamSource(file), FeedSource[].class);
+		        sources = element.getValue();
+			}
+		} catch(Exception e) {
+    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscriptions", null); //$NON-NLS-1$
+    		Activator.getDefault().getLog().log(status);
+		}
 
-				NodeList childNodes = firstNode.getChildNodes();
-
-				for (int i = 0; i < childNodes.getLength(); i++) {
-					Node item = childNodes.item(i);
-					String nodeName = item.getNodeName();
-					if (nodeName.equalsIgnoreCase("source")) //$NON-NLS-1$
-						update(new URL(item.getFirstChild().getNodeValue()), item.getAttributes().getNamedItem("name").getNodeValue()); //$NON-NLS-1$
+		if (sources != null) {
+			for (int i = 0; i < sources.length; i++) {
+				try {
+					HeadLine[] headLines = update(new URL(sources[i].getUrl()), sources[i].getName());
+					for (HeadLine h : headLines) {
+						int index = oldItems.indexOf(h);
+						if (index != -1) {
+							if (!list.contains(h))
+								oldItems.get(index).setRecent(false);
+						}
+						else {
+							oldItems.add(h);
+							list.add(h);
+						}
+					}
+				} catch(Exception e) {
+		    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error updating headlines from " + sources[i].getUrl(), null); //$NON-NLS-1$
+		    		Activator.getDefault().getLog().log(status);
 				}
-			} catch (Exception e) {
-				// TODO Log
-				e.printStackTrace();
 			}
 		}
-		return null;
+
+		return list.toArray(new IHeadLine[list.size()]);
 	}
 
 	/* (non-Javadoc)
@@ -92,7 +118,7 @@ public class RSSNewsProvider implements INewsFetcher {
 		return null;
 	}
 
-	private IHeadLine[] update(URL feedUrl, String source) {
+	private HeadLine[] update(URL feedUrl, String source) {
 		Map<String, SyndEntry> titles = new HashMap<String, SyndEntry>();
 		Map<SyndEntry, Set<ISecurity>> entries = new HashMap<SyndEntry, Set<ISecurity>>();
 		Set<HeadLine> headLines = new HashSet<HeadLine>();
@@ -161,17 +187,6 @@ public class RSSNewsProvider implements INewsFetcher {
 			// TODO Log
 			e.printStackTrace();
 		}
-		return headLines.toArray(new IHeadLine[headLines.size()]);
-	}
-
-	boolean isDuplicated(IHeadLine news) {
-		IHeadLine[] items = oldItems.toArray(new IHeadLine[0]);
-
-		for (int i = 0; i < items.length; i++) {
-			if (news.getText().equals(items[i].getText()) && news.getLink().equals(items[i].getLink()))
-				return true;
-		}
-
-		return false;
+		return headLines.toArray(new HeadLine[headLines.size()]);
 	}
 }

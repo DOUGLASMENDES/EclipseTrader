@@ -20,5 +20,7 @@ public interface IHeadLine {
 
 	public boolean isReaded();
 
+	public void setReaded(boolean readed);
+
 	public String getLink();
 }

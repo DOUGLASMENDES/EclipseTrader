@@ -11,10 +11,16 @@
 
 package org.eclipsetrader.news.internal;
 
+import java.util.Hashtable;
+
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.news.core.INewsService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -23,9 +29,6 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipsetrader.news"; //$NON-NLS-1$
-
-	public static final String VIEWER_ID = "org.eclipsetrader.news.viewer"; //$NON-NLS-1$
-	public static final String FACTORY_ID = "org.eclipsetrader.news.viewerInputFactory"; //$NON-NLS-1$
 
 	public static final String PREFS_UPDATE_INTERVAL = "UPDATE_INTERVAL"; //$NON-NLS-1$
 
@@ -46,6 +49,14 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+
+		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+		context.getService(serviceReference);
+		context.ungetService(serviceReference);
+
+		NewsService service = new NewsService();
+		context.registerService(new String[] { INewsService.class.getName(), NewsService.class.getName() }, service, new Hashtable<Object,Object>());
+		service.startUp(null);
 	}
 
 	/*
@@ -54,6 +65,14 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
+		ServiceReference serviceReference = context.getServiceReference(NewsService.class.getName());
+		if (serviceReference != null) {
+			NewsService service = (NewsService) context.getService(serviceReference);
+			if (service != null)
+				service.shutDown(null);
+			context.ungetService(serviceReference);
+		}
+
 		plugin = null;
 		super.stop(context);
 	}
@@ -67,6 +86,11 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
+	public static void log(IStatus status) {
+		if (plugin != null)
+			plugin.getLog().log(status);
+	}
+
 	/* (non-Javadoc)
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
      */
@@ -75,4 +99,15 @@ public class Activator extends AbstractUIPlugin {
 	    reg.put("readed_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/readed_ovr.gif")));
 	    reg.put("unreaded_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/unreaded_ovr.gif")));
     }
+
+    /**
+	 * Returns an image descriptor for the image file at the given
+	 * plug-in relative path.
+	 *
+	 * @param path the path
+	 * @return the image descriptor
+	 */
+	public static ImageDescriptor getImageDescriptor(String path) {
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
 }

@@ -25,12 +25,9 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
-import org.eclipse.osgi.util.NLS;
-import org.eclipsetrader.core.feed.FeedIdentifier;
-import org.eclipsetrader.core.feed.FeedProperties;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
+import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.news.core.IHeadLine;
 import org.eclipsetrader.news.core.INewsFetcher;
 import org.eclipsetrader.news.internal.Activator;
@@ -90,23 +87,40 @@ public class YahooNewsFetcher implements INewsFetcher {
 
 			for (ISecurity security : securities) {
 				IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-				String feedUrl = "http://" + HOST + "/rss/headline?s=" + identifier.getSymbol();
+				if (identifier == null)
+					continue;
 
-				SyndFeed feed = fetcher.retrieveFeed(new URL(feedUrl), client);
-				for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
-					SyndEntry entry = (SyndEntry) iter.next();
+				String symbol = identifier.getSymbol();
 
-					if (titles.containsKey(entry.getTitle()))
-						entry = titles.get(entry.getTitle());
-					else
-						titles.put(entry.getTitle(), entry);
+				IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+				if (properties != null) {
+					if (properties.getProperty("org.eclipsetrader.yahoo.symbol") != null)
+						symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
+				}
 
-					Set<ISecurity> set = entries.get(entry);
-					if (set == null) {
-						set = new HashSet<ISecurity>();
-						entries.put(entry, set);
+				String feedUrl = "http://" + HOST + "/rss/headline?s=" + symbol;
+
+				try {
+					SyndFeed feed = fetcher.retrieveFeed(new URL(feedUrl), client);
+					for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
+						SyndEntry entry = (SyndEntry) iter.next();
+
+						if (titles.containsKey(entry.getTitle()))
+							entry = titles.get(entry.getTitle());
+						else
+							titles.put(entry.getTitle(), entry);
+
+						Set<ISecurity> set = entries.get(entry);
+						if (set == null) {
+							set = new HashSet<ISecurity>();
+							entries.put(entry, set);
+						}
+						set.add(security);
 					}
-					set.add(security);
+				} catch (IllegalArgumentException e) {
+					// Do nothing, could be an invalid URL
+				} catch (Exception e) {
+			        e.printStackTrace();
 				}
 			}
 
@@ -118,7 +132,11 @@ public class YahooNewsFetcher implements INewsFetcher {
 					url = url.substring(url.indexOf('*') + 1);
 
 				String source = null;
+
 				String title = entry.getTitle();
+				if (title.startsWith("[$$]"))
+					title = title.substring(4, title.length());
+
 				if (title.endsWith(")")) {
 					int s = title.lastIndexOf('(');
 					if (s != -1) {
@@ -131,6 +149,7 @@ public class YahooNewsFetcher implements INewsFetcher {
 
 				HeadLine headLine = new HeadLine(entry.getPublishedDate(), source, title, set.toArray(new ISecurity[set.size()]), url);
 				if (!oldItems.contains(headLine)) {
+					headLine.setRecent(true);
 					oldItems.add(headLine);
 					headLines.add(headLine);
 				}
@@ -139,23 +158,5 @@ public class YahooNewsFetcher implements INewsFetcher {
 	        e.printStackTrace();
 		}
 	    return headLines.toArray(new IHeadLine[headLines.size()]);
-    }
-
-	public static void main(String[] args) {
-        YahooNewsFetcher c = new YahooNewsFetcher();
-        IHeadLine[] headLines = c.fetchHeadLines(new ISecurity[] {
-        		new Security("Microsoft", new FeedIdentifier("MSFT", new FeedProperties())),
-        		new Security("Google", new FeedIdentifier("GOOG", new FeedProperties())),
-        		new Security("Google", new FeedIdentifier("AAPL", new FeedProperties())),
-        	});
-        for (IHeadLine h : headLines) {
-    		System.out.println(NLS.bind("{0} - {3} / {1} - {2}", new Object[] { h.getDate(), h.getText(), h.getLink(), h.getSource() }));
-        	if (h.getMembers() != null && h.getMembers().length != 0) {
-        		ISecurity[] members = h.getMembers();
-        		for (int i = 0; i < members.length; i++)
-        			System.out.print((i != 0 ? " / " : "   ") + members[i].getName());
-        		System.out.println();
-        	}
-        }
     }
 }

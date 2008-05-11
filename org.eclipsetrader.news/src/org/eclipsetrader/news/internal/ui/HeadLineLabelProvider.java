@@ -27,7 +27,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.news.core.IHeadLine;
 
 public class HeadLineLabelProvider extends LabelProvider implements ITableLabelProvider, IColorProvider, IFontProvider {
-	private DateFormat formatter = DateFormat.getTimeInstance(SimpleDateFormat.MEDIUM);
+	private DateFormat formatter = DateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.MEDIUM);
 	private Color addedBackground;
 	private Color addedForeground;
 	private Font addedFont;
@@ -37,7 +37,7 @@ public class HeadLineLabelProvider extends LabelProvider implements ITableLabelP
 
 	public HeadLineLabelProvider() {
 		addedForeground = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION);
-		readedForeground = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		readedForeground = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	}
 
 	/* (non-Javadoc)

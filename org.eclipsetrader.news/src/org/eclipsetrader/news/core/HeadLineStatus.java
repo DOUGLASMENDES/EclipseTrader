@@ -11,20 +11,24 @@
 
 package org.eclipsetrader.news.core;
 
-public class NewsEvent {
-	private INewsService service;
-	private HeadLineStatus[] status;
+public class HeadLineStatus {
+	public static final int UPDATED = 0;
+	public static final int ADDED = 1;
+	public static final int REMOVED = 2;
 
-	public NewsEvent(INewsService service, HeadLineStatus[] status) {
-	    this.service = service;
-	    this.status = status;
+	private int kind;
+	private IHeadLine headLine;
+
+	public HeadLineStatus(int kind, IHeadLine headLine) {
+	    this.kind = kind;
+	    this.headLine = headLine;
     }
 
-	public HeadLineStatus[] getStatus() {
-    	return status;
+	public int getKind() {
+    	return kind;
     }
 
-	public INewsService getService() {
-    	return service;
+	public IHeadLine getHeadLine() {
+    	return headLine;
     }
 }

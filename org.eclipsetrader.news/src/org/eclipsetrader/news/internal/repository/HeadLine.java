@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -35,25 +34,24 @@ public class HeadLine implements IHeadLine {
 	@XmlJavaTypeAdapter(DateTimeAdapter.class)
 	private Date date;
 
-	@XmlAttribute(name = "source")
-	private String source;
-
-	@XmlValue
-	private String text;
-
-	@XmlElementWrapper(name = "members")
-    @XmlElement(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	private List<ISecurity> members;
-
-	@XmlAttribute(name = "recent")
 	private boolean recent;
 
 	@XmlAttribute(name = "readed")
 	private boolean readed;
 
-	@XmlAttribute(name = "link")
+    @XmlElement(name = "text")
+	private String text;
+
+	@XmlElement(name = "link")
 	private String link;
+
+	@XmlElement(name = "source")
+	private String source;
+
+	@XmlElementWrapper(name = "members")
+    @XmlElement(name = "security")
+	@XmlJavaTypeAdapter(SecurityAdapter.class)
+	private List<ISecurity> members;
 
 	public HeadLine() {
 	}
@@ -62,7 +60,7 @@ public class HeadLine implements IHeadLine {
 	    this.date = date;
 	    this.source = source;
 	    this.text = text;
-	    this.members = new ArrayList<ISecurity>(Arrays.asList(members));
+	    this.members = members != null ? new ArrayList<ISecurity>(Arrays.asList(members)) : null;
 	    this.link = link;
     }
 
@@ -113,7 +111,10 @@ public class HeadLine implements IHeadLine {
 	    return readed;
     }
 
-	public void setReaded(boolean readed) {
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.IHeadLine#setReaded(boolean)
+     */
+    public void setReaded(boolean readed) {
     	this.readed = readed;
     }
 
@@ -145,6 +146,8 @@ public class HeadLine implements IHeadLine {
     	if (!(obj instanceof IHeadLine))
     		return false;
     	IHeadLine other = (IHeadLine) obj;
+    	if (link.equals(other.getLink()))
+    		return true;
 	    return text.equals(other.getText()) && (source == other.getSource() || (source != null && source.equals(other.getSource())));
     }
 

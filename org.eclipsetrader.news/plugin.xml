@@ -16,22 +16,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.eclipsetrader.news.internal.ui.NewsViewer"
-            icon="icons/eview16/internal_browser.gif"
-            id="org.eclipsetrader.news.viewer"
-            name="News">
-      </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.elementFactories">
-      <factory
-            class="org.eclipsetrader.news.internal.ui.NewsViewerInputFactory"
-            id="org.eclipsetrader.news.viewerInputFactory">
-      </factory>
-   </extension>
-   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipsetrader.news.internal.ui.Perspective"
@@ -39,6 +23,25 @@
             id="org.eclipsetrader.news.perspective"
             name="News">
       </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.news.internal.ui.NewsViewer"
+            icon="icons/eview16/internal_browser.gif"
+            id="org.eclipsetrader.news.browser"
+            name="Browser">
+      </view>
+      <view
+            allowMultiple="true"
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.news.internal.ui.HeadLineViewer"
+            icon="icons/eview16/newspaper.png"
+            id="org.eclipsetrader.ui.views.headlines"
+            name="Headlines">
+      </view>
    </extension>
 
 </plugin>

@@ -37,160 +37,164 @@ public class SecurityAdapter extends XmlAdapter<String, ISecurity> {
 		private URI uri;
 
 		public FailsafeSecurity(URI uri) {
-	        this.uri = uri;
-        }
+			this.uri = uri;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.instruments.ISecurity#getIdentifier()
-         */
-        public IFeedIdentifier getIdentifier() {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.instruments.ISecurity#getIdentifier()
+		 */
+		public IFeedIdentifier getIdentifier() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.instruments.ISecurity#getName()
-         */
-        public String getName() {
-	        return uri.toString();
-        }
+		 * @see org.eclipsetrader.core.instruments.ISecurity#getName()
+		 */
+		public String getName() {
+			return uri.toString();
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.instruments.ISecurity#getProperties()
-         */
-        public IUserProperties getProperties() {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.instruments.ISecurity#getProperties()
+		 */
+		public IUserProperties getProperties() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-        	if (adapter.isAssignableFrom(getClass()))
-        		return this;
-	        return null;
-        }
+		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+		 */
+		@SuppressWarnings("unchecked")
+		public Object getAdapter(Class adapter) {
+			if (adapter.isAssignableFrom(getClass()))
+				return this;
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
-         */
-        public IStore getStore() {
-	        return this;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
+		 */
+		public IStore getStore() {
+			return this;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
-         */
-        public IStoreProperties getStoreProperties() {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
+		 */
+		public IStoreProperties getStoreProperties() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
-         */
-        public void setStore(IStore store) {
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
+		 */
+		public void setStore(IStore store) {
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
-         */
-        public void setStoreProperties(IStoreProperties storeProperties) {
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
+		 */
+		public void setStoreProperties(IStoreProperties storeProperties) {
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
-         */
-        public void delete(IProgressMonitor monitor) throws CoreException {
-        }
+		 * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
+		 */
+		public void delete(IProgressMonitor monitor) throws CoreException {
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
-         */
-        public IStoreProperties fetchProperties(IProgressMonitor monitor) {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
+		 */
+		public IStoreProperties fetchProperties(IProgressMonitor monitor) {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
-         */
-        public IStore[] fetchChilds(IProgressMonitor monitor) {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
+		 */
+		public IStore[] fetchChilds(IProgressMonitor monitor) {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStore#createChild()
-         */
-        public IStore createChild() {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStore#createChild()
+		 */
+		public IStore createChild() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStore#getRepository()
-         */
-        public IRepository getRepository() {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStore#getRepository()
+		 */
+		public IRepository getRepository() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStore#putProperties(org.eclipsetrader.core.repositories.IStoreProperties, org.eclipse.core.runtime.IProgressMonitor)
-         */
-        public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
-        }
+		 * @see org.eclipsetrader.core.repositories.IStore#putProperties(org.eclipsetrader.core.repositories.IStoreProperties, org.eclipse.core.runtime.IProgressMonitor)
+		 */
+		public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStore#toURI()
-         */
-        public URI toURI() {
-	        return uri;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStore#toURI()
+		 */
+		public URI toURI() {
+			return uri;
+		}
 	}
 
 	public SecurityAdapter() {
 	}
 
 	public static void setRepositoryService(IRepositoryService service) {
-    	SecurityAdapter.repositoryService = service;
-    }
+		SecurityAdapter.repositoryService = service;
+	}
 
 	/* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
-     */
-    @Override
-    public String marshal(ISecurity v) throws Exception {
-    	if (v == null)
-    		return null;
-    	IStoreObject storeObject = (IStoreObject) v.getAdapter(IStoreObject.class);
-	    return storeObject.getStore().toURI().toString();
-    }
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public String marshal(ISecurity v) throws Exception {
+		if (v == null)
+			return null;
+		IStoreObject storeObject = (IStoreObject) v.getAdapter(IStoreObject.class);
+		return storeObject.getStore().toURI().toString();
+	}
 
 	/* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
-     */
-    @Override
-    public ISecurity unmarshal(String v) throws Exception {
-    	if (v == null)
-    		return null;
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public ISecurity unmarshal(String v) throws Exception {
+		if (v == null)
+			return null;
 
 		URI uri = new URI(v);
-		if (repositoryService == null) {
-	    	try {
-	    		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-	    		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-	    		repositoryService = (IRepositoryService) context.getService(serviceReference);
-	    		context.ungetService(serviceReference);
-	    	} catch(Exception e) {
-	    		Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
-	    		Activator.getDefault().getLog().log(status);
-	    	}
-		}
 
-		ISecurity security = repositoryService.getSecurityFromURI(uri);
+		ISecurity security = getSecurity(uri);
 		if (security == null) {
-    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
-    		Activator.getDefault().getLog().log(status);
+			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
+			Activator.log(status);
 			return new FailsafeSecurity(uri);
 		}
 
 		return security;
-    }
+	}
+
+	protected ISecurity getSecurity(URI uri) {
+		if (repositoryService == null && Activator.getDefault() != null) {
+			try {
+				BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+				ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+				repositoryService = (IRepositoryService) context.getService(serviceReference);
+				context.ungetService(serviceReference);
+			} catch (Exception e) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
+				Activator.log(status);
+			}
+		}
+		return repositoryService != null ? repositoryService.getSecurityFromURI(uri) : null;
+	}
 }

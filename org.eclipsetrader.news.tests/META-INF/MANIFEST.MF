@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: News Tests Fragment
+Bundle-SymbolicName: org.eclipsetrader.news.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: EclipseTrader.org
+Fragment-Host: org.eclipsetrader.news;bundle-version="1.0.0"
+Require-Bundle: org.junit

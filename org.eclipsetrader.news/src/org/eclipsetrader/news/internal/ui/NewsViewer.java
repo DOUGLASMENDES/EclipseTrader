@@ -11,49 +11,98 @@
 
 package org.eclipsetrader.news.internal.ui;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.browser.TitleEvent;
 import org.eclipse.swt.browser.TitleListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.part.ViewPart;
+import org.eclipsetrader.news.core.IHeadLine;
+import org.eclipsetrader.news.internal.repository.HeadLine;
 
-public class NewsViewer extends EditorPart {
-	private ToolItem back;
-	private ToolItem forward;
-	private Combo combo;
+public class NewsViewer extends ViewPart {
+	public static final String VIEW_ID = "org.eclipsetrader.news.browser";
+
+	private Action stopAction;
+	private Action refreshAction;
 	private Browser browser;
+
+	private IHeadLine headLine;
 
 	public NewsViewer() {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.EditorPart#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
-	 */
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		if (!(input instanceof NewsViewerInput))
-			throw new PartInitException("Cannot handle input");
+     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+	    super.init(site, memento);
 
-		setSite(site);
-		setInput(input);
-	}
+	    if (memento != null) {
+	    	String title = memento.getString("title");
+	    	String url = memento.getString("url");
+	    	if (url != null)
+	    		headLine = new HeadLine(null, null, title != null ? title : "", null, url);
+	    }
+
+	    stopAction = new Action("Stop") {
+            @Override
+            public void run() {
+        		browser.stop();
+            }
+	    };
+	    stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_STOP));
+	    stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
+    	stopAction.setEnabled(false);
+
+	    refreshAction = new Action("Refresh") {
+            @Override
+            public void run() {
+            	stopAction.setEnabled(true);
+        	    refreshAction.setEnabled(false);
+        	    browser.refresh();
+            }
+	    };
+	    refreshAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_REFRESH));
+	    refreshAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_REFRESH));
+	    refreshAction.setEnabled(false);
+
+	    IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
+	    toolbarManager.add(refreshAction);
+	    toolbarManager.add(stopAction);
+	    toolbarManager.add(new Separator("additions"));
+
+	    site.getActionBars().updateActionBars();
+
+	    site.setSelectionProvider(new SelectionProvider());
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void saveState(IMemento memento) {
+	    super.saveState(memento);
+
+	    if (headLine != null) {
+		    memento.putString("title", headLine.getText());
+		    memento.putString("url", headLine.getLink());
+	    }
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -66,36 +115,36 @@ public class NewsViewer extends EditorPart {
 		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
 		content.setLayout(gridLayout);
 
-		Composite toolbarComp = new Composite(content, SWT.NONE);
-		toolbarComp.setLayout(new ToolbarLayout());
-		toolbarComp.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL));
-		createToolbar(toolbarComp);
-		createLocationBar(toolbarComp);
-
 		browser = new Browser(content, SWT.NONE);
 		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		browser.addLocationListener(new LocationListener() {
-			public void changed(LocationEvent event) {
-				String[] items = combo.getItems();
-				for (int i = 0; i < items.length; i++) {
-					if (items[i].equals(event.location))
-						return;
-				}
-				combo.add(event.location, 0);
-				combo.setText(event.location);
-			}
-
-			public void changing(LocationEvent event) {
-				combo.setText(event.location);
-			}
-		});
 		browser.addTitleListener(new TitleListener() {
 			public void changed(TitleEvent event) {
-				setPartName(event.title);
+		    	setTitleToolTip(event.title);
 			}
+		});
+		browser.addProgressListener(new ProgressListener() {
+            public void changed(ProgressEvent event) {
+            }
+
+            public void completed(ProgressEvent event) {
+            	stopAction.setEnabled(false);
+        	    refreshAction.setEnabled(true);
+            }
+		});
+		browser.addLocationListener(new LocationListener() {
+            public void changed(LocationEvent event) {
+            }
+
+            public void changing(LocationEvent event) {
+            	stopAction.setEnabled(true);
+        	    refreshAction.setEnabled(false);
+            }
 		});
 
 		setTitleToolTip(getPartName());
+
+		if (headLine != null)
+			setHeadLine(headLine);
 	}
 
 	/* (non-Javadoc)
@@ -106,246 +155,14 @@ public class NewsViewer extends EditorPart {
 		browser.setFocus();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
+	public IHeadLine getHeadLine() {
+    	return headLine;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.EditorPart#doSaveAs()
-	 */
-	@Override
-	public void doSaveAs() {
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.EditorPart#isDirty()
-	 */
-	@Override
-	public boolean isDirty() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
-	 */
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
-
-	private ToolBar createToolbar(Composite parent) {
-		ToolBar toolbar = new ToolBar(parent, SWT.FLAT);
-
-		// create back and forward actions
-		back = new ToolItem(toolbar, SWT.NONE);
-		back.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_BACKWARD));
-		back.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_BACKWARD));
-		back.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_BACKWARD));
-		back.setToolTipText("Back");
-		back.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent event) {
-				back();
-			}
-		});
-
-		forward = new ToolItem(toolbar, SWT.NONE);
-		forward.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_FORWARD));
-		forward.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_FORWARD));
-		forward.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_FORWARD));
-		forward.setToolTipText("Forward");
-		forward.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent event) {
-				forward();
-			}
-		});
-
-		// create refresh, stop, and print actions
-		ToolItem stop = new ToolItem(toolbar, SWT.NONE);
-		stop.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_STOP));
-		stop.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_STOP));
-		stop.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_STOP));
-		stop.setToolTipText("Stop");
-		stop.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent event) {
-				stop();
-			}
-		});
-
-		ToolItem refresh = new ToolItem(toolbar, SWT.NONE);
-		refresh.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_REFRESH));
-		refresh.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_REFRESH));
-		refresh.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_REFRESH));
-		refresh.setToolTipText("Refresh");
-		refresh.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent event) {
-				refresh();
-			}
-		});
-
-		return toolbar;
-	}
-
-	private ToolBar createLocationBar(Composite parent) {
-		combo = new Combo(parent, SWT.DROP_DOWN);
-		combo.setVisibleItemCount(20);
-		combo.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent we) {
-				try {
-					if (combo.getSelectionIndex() != -1)
-						browser.setUrl(combo.getItem(combo.getSelectionIndex()));
-				} catch (Exception e) {
-					// ignore
-				}
-			}
-		});
-		combo.addListener(SWT.DefaultSelection, new Listener() {
-			public void handleEvent(Event e) {
-				browser.setUrl(combo.getText());
-			}
-		});
-
-		ToolBar toolbar = new ToolBar(parent, SWT.FLAT);
-
-		ToolItem go = new ToolItem(toolbar, SWT.NONE);
-		go.setImage(ImageResource.getImage(ImageResource.IMG_ELCL_NAV_GO));
-		go.setHotImage(ImageResource.getImage(ImageResource.IMG_CLCL_NAV_GO));
-		go.setDisabledImage(ImageResource.getImage(ImageResource.IMG_DLCL_NAV_GO));
-		go.setToolTipText("Go");
-		go.addSelectionListener(new SelectionAdapter() {
-			@Override
-            public void widgetSelected(SelectionEvent event) {
-				if (browser.getUrl().length() != 0 && combo.indexOf(browser.getUrl()) == -1)
-					combo.add(browser.getUrl());
-				browser.setUrl(combo.getText());
-			}
-		});
-
-		return toolbar;
-	}
-
-	/**
-	 * Navigate to the next session history item. Convenience method that calls
-	 * the underlying SWT browser.
-	 *
-	 * @return <code>true</code> if the operation was successful and
-	 *         <code>false</code> otherwise
-	 * @exception SWTException
-	 * <ul>
-	 * <li>ERROR_THREAD_INVALID_ACCESS when called from the
-	 * wrong thread</li>
-	 * <li>ERROR_WIDGET_DISPOSED when the widget has been
-	 * disposed</li>
-	 * </ul>
-	 * @see #back
-	 */
-	public boolean forward() {
-		if (browser == null)
-			return false;
-		return browser.forward();
-	}
-
-	/**
-	 * Navigate to the previous session history item. Convenience method that
-	 * calls the underlying SWT browser.
-	 *
-	 * @return <code>true</code> if the operation was successful and
-	 *         <code>false</code> otherwise
-	 * @exception SWTException
-	 * <ul>
-	 * <li>ERROR_THREAD_INVALID_ACCESS when called from the
-	 * wrong thread</li>
-	 * <li>ERROR_WIDGET_DISPOSED when the widget has been
-	 * disposed</li>
-	 * </ul>
-	 * @see #forward
-	 */
-	public boolean back() {
-		if (browser == null)
-			return false;
-		return browser.back();
-	}
-
-	/**
-	 * Returns <code>true</code> if the receiver can navigate to the previous
-	 * session history item, and <code>false</code> otherwise. Convenience
-	 * method that calls the underlying SWT browser.
-	 *
-	 * @return the receiver's back command enabled state
-	 * @exception SWTException
-	 * <ul>
-	 * <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 * disposed</li>
-	 * <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
-	 * thread that created the receiver</li>
-	 * </ul>
-	 * @see #back
-	 */
-	public boolean isBackEnabled() {
-		if (browser == null)
-			return false;
-		return browser.isBackEnabled();
-	}
-
-	/**
-	 * Returns <code>true</code> if the receiver can navigate to the next
-	 * session history item, and <code>false</code> otherwise. Convenience
-	 * method that calls the underlying SWT browser.
-	 *
-	 * @return the receiver's forward command enabled state
-	 * @exception SWTException
-	 * <ul>
-	 * <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 * disposed</li>
-	 * <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
-	 * thread that created the receiver</li>
-	 * </ul>
-	 * @see #forward
-	 */
-	public boolean isForwardEnabled() {
-		if (browser == null)
-			return false;
-		return browser.isForwardEnabled();
-	}
-
-	/**
-	 * Stop any loading and rendering activity. Convenience method that calls
-	 * the underlying SWT browser.
-	 *
-	 * @exception SWTException
-	 * <ul>
-	 * <li>ERROR_THREAD_INVALID_ACCESS when called from the
-	 * wrong thread</li>
-	 * <li>ERROR_WIDGET_DISPOSED when the widget has been
-	 * disposed</li>
-	 * </ul>
-	 */
-	public void stop() {
-		if (browser != null)
-			browser.stop();
-	}
-
-	/**
-	 * Refresh the current page. Convenience method that calls the underlying
-	 * SWT browser.
-	 *
-	 * @exception SWTException
-	 * <ul>
-	 * <li>ERROR_THREAD_INVALID_ACCESS when called from the
-	 * wrong thread</li>
-	 * <li>ERROR_WIDGET_DISPOSED when the widget has been
-	 * disposed</li>
-	 * </ul>
-	 */
-	public void refresh() {
-		if (browser != null)
-			browser.refresh();
-	}
+	public void setHeadLine(IHeadLine headLine) {
+    	this.headLine = headLine;
+    	browser.setUrl(headLine.getLink());
+		setPartName(headLine.getText());
+		getSite().getSelectionProvider().setSelection(new StructuredSelection(headLine));
+    }
 }
