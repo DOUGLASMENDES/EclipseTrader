@@ -134,6 +134,7 @@ public class IdentifierType {
     	this.lastClose = close;
     }
 
+	@XmlTransient
 	public long getLastUpdate() {
     	return lastUpdate;
     }

@@ -34,7 +34,11 @@ public class YahooActivator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipsetrader.yahoo";
 	public static final String REPOSITORY_FILE = "identifiers.xml"; //$NON-NLS-1$
+
 	public static final String PREFS_DRIVER = "DRIVER"; //$NON-NLS-1$
+	public static final String PREFS_NEWS_UPDATE_INTERVAL = "NEWS_UPDATE_INTERVAL"; //$NON-NLS-1$
+	public static final String PREFS_UPDATE_SECURITIES_NEWS = "UPDATE_SECURITIES_NEWS"; //$NON-NLS-1$
+	public static final String PREFS_SUBSCRIBE_PREFIX = "SUBSCRIBE_"; //$NON-NLS-1$
 
 	// The shared instance
 	private static YahooActivator plugin;

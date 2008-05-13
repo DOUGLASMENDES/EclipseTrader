@@ -7,14 +7,28 @@ Bundle-Activator: org.eclipsetrader.yahoo.internal.YahooActivator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.net,
  org.eclipse.ui,
- org.eclipsetrader.core
+ org.eclipsetrader.core,
+ org.eclipsetrader.news
 Eclipse-LazyStart: true
 Bundle-Vendor: EclipseTrader.org
 Export-Package: org.eclipsetrader.yahoo.internal;x-internal:=true,
  org.eclipsetrader.yahoo.internal.core;x-internal:=true,
  org.eclipsetrader.yahoo.internal.core.connector;x-internal:=true,
  org.eclipsetrader.yahoo.internal.core.repository;x-internal:=true
-Import-Package: javax.xml.bind;version="[2.1.0,2.2.0)",
+Import-Package: com.sun.syndication.feed,
+ com.sun.syndication.feed.atom,
+ com.sun.syndication.feed.impl,
+ com.sun.syndication.feed.module,
+ com.sun.syndication.feed.module.impl,
+ com.sun.syndication.feed.rss,
+ com.sun.syndication.feed.synd,
+ com.sun.syndication.feed.synd.impl,
+ com.sun.syndication.fetcher,
+ com.sun.syndication.fetcher.impl,
+ com.sun.syndication.fetcher.samples,
+ com.sun.syndication.io,
+ com.sun.syndication.io.impl,
+ javax.xml.bind;version="[2.1.0,2.2.0)",
  javax.xml.bind.annotation;version="[2.1.0,2.2.0)",
  javax.xml.bind.annotation.adapters;version="[2.1.0,2.2.0)",
  javax.xml.bind.attachment;version="[2.1.0,2.2.0)",

@@ -22,6 +22,12 @@
             id="org.eclipsetrader.yahoo.general"
             name="Yahoo! Finance">
       </page>
+      <page
+            category="org.eclipsetrader.ui.preferences.news"
+            class="org.eclipsetrader.yahoo.internal.ui.preferences.NewsPreferencesPage"
+            id="org.eclipsetrader.yahoo.news"
+            name="Yahoo! Finance">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.importWizards">
@@ -35,6 +41,14 @@
             Import historical data from Yahoo! Finance.
          </description>
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipsetrader.news.providers">
+      <provider
+            class="org.eclipsetrader.yahoo.internal.news.NewsProvider"
+            id="org.eclipsetrader.news.yahoo"
+            name="Yahoo! Finance">
+      </provider>
    </extension>
 
 </plugin>
