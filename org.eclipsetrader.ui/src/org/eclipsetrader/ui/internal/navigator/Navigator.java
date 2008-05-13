@@ -44,6 +44,7 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepository;
@@ -101,7 +102,7 @@ public class Navigator extends ViewPart {
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
 		viewer.setUseHashlookup(true);
-		viewer.setLabelProvider(new DecoratingLabelProvider(new NavigatorLabelProvider(), null));
+		viewer.setLabelProvider(new DecoratingLabelProvider(new NavigatorLabelProvider(), WorkbenchPlugin.getDefault().getDecoratorManager()));
 		viewer.setContentProvider(new NavigatorContentProvider());
 		viewer.setSorter(new ViewerSorter() {
             @Override
