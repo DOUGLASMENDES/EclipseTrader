@@ -39,4 +39,6 @@ public interface INewsService {
 	public IStatus runInService(INewsServiceRunnable runnable, IProgressMonitor monitor);
 
 	public IStatus runInService(INewsServiceRunnable runnable, ISchedulingRule rule, IProgressMonitor monitor);
+
+	public INewsProvider[] getProviders();
 }

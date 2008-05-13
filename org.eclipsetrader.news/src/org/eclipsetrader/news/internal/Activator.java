@@ -30,7 +30,12 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipsetrader.news"; //$NON-NLS-1$
 
+	public static final String PROVIDER_EXTENSION_POINT = "org.eclipsetrader.news.providers"; //$NON-NLS-1$
+
 	public static final String PREFS_UPDATE_INTERVAL = "UPDATE_INTERVAL"; //$NON-NLS-1$
+	public static final String PREFS_DATE_RANGE = "DATE_RANGE"; //$NON-NLS-1$
+	public static final String PREFS_UPDATE_ON_STARTUP = "UPDATE_ON_STARTUP"; //$NON-NLS-1$
+	public static final String PREFS_FOLLOW_QUOTE_FEED = "FOLLOW_QUOTE_FEED"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;

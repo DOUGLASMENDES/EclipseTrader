@@ -11,17 +11,21 @@
 
 package org.eclipsetrader.news.internal.connectors;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-@XmlRootElement(name = "headline")
+@XmlRootElement(name = "source")
 public class FeedSource {
     @XmlElement(name = "name")
 	private String name;
 
     @XmlElement(name = "url")
 	private String url;
+
+    @XmlAttribute(name = "enabled")
+	private boolean enabled;
 
 	public FeedSource() {
 	}
@@ -47,5 +51,14 @@ public class FeedSource {
 
 	public void setUrl(String url) {
     	this.url = url;
+    }
+
+	@XmlTransient
+	public boolean isEnabled() {
+    	return enabled;
+    }
+
+	public void setEnabled(boolean enabled) {
+    	this.enabled = enabled;
     }
 }

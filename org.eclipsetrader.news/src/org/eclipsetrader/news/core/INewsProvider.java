@@ -11,11 +11,25 @@
 
 package org.eclipsetrader.news.core;
 
-import org.eclipsetrader.core.instruments.ISecurity;
+/**
+ * Interface for news data provider plugins.
+ *
+ * @since 1.0
+ */
+public interface INewsProvider {
 
-public interface INewsFetcher {
+	/**
+	 * Starts the news feed.
+	 */
+	public void start();
 
-	public IHeadLine[] fetchHeadLines();
+	/**
+	 * Stops the news feed.
+	 */
+	public void stop();
 
-	public IHeadLine[] fetchHeadLines(ISecurity[] securities);
+	/**
+	 * Force an immediate update.
+	 */
+	public void refresh();
 }

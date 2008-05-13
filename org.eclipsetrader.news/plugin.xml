@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="org.eclipsetrader.news.providers" name="News Providers" schema="schema/newsProviders.exsd"/>
+
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="org.eclipsetrader.news.internal.preferences.NewsPreferencesPage"
-            id="org.eclipsetrader.news"
+            id="org.eclipsetrader.ui.preferences.news"
             name="News">
       </page>
       <page
-            category="org.eclipsetrader.news"
+            category="org.eclipsetrader.ui.preferences.news"
             class="org.eclipsetrader.news.internal.preferences.RSSPreferencesPage"
             id="org.eclipsetrader.news.rss"
             name="RSS News">
@@ -42,6 +44,30 @@
             id="org.eclipsetrader.ui.views.headlines"
             name="Headlines">
       </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.eclipsetrader.news.internal.ui.NewsDecorator"
+            id="org.eclipsetrader.news.decorator"
+            label="News Decorator"
+            lightweight="true"
+            location="BOTTOM_LEFT"
+            state="true">
+         <enablement>
+            <objectClass
+                  name="org.eclipsetrader.core.views.IViewItem">
+            </objectClass>
+         </enablement>
+      </decorator>
+   </extension>
+   <extension
+         point="org.eclipsetrader.news.providers">
+      <provider
+            class="org.eclipsetrader.news.internal.connectors.RSSNewsProvider"
+            id="org.eclipsetrader.news.rss"
+            name="RSS News">
+      </provider>
    </extension>
 
 </plugin>

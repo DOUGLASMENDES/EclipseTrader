@@ -27,7 +27,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.news.core.IHeadLine;
 
 public class HeadLineLabelProvider extends LabelProvider implements ITableLabelProvider, IColorProvider, IFontProvider {
-	private DateFormat formatter = DateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.MEDIUM);
+	private DateFormat formatter = DateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.SHORT);
 	private Color addedBackground;
 	private Color addedForeground;
 	private Font addedFont;

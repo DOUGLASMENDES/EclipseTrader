@@ -11,8 +11,16 @@
 
 package org.eclipsetrader.news.internal.preferences;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -23,8 +31,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipsetrader.news.internal.Activator;
 
 public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage {
+	private static final String K_ID = "id"; //$NON-NLS-1$
+	private static final String K_NAME = "name"; //$NON-NLS-1$
+
 	private Button updateStartup;
 	private Button followQuoteFeed;
 	private Spinner daysToKeep;
@@ -40,74 +52,90 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
-    protected Control createContents(Composite parent) {
+	protected Control createContents(Composite parent) {
 		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
+		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
 		content.setLayout(gridLayout);
 
 		updateStartup = new Button(content, SWT.CHECK);
-		updateStartup.setText("Update on startup");
+		updateStartup.setText(Messages.NewsPreferencesPage_StartupUpdate);
 		updateStartup.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
 		followQuoteFeed = new Button(content, SWT.CHECK);
-		followQuoteFeed.setText("Follow quote feed running status");
+		followQuoteFeed.setText(Messages.NewsPreferencesPage_FollowQuoteFeed);
 		followQuoteFeed.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
 		Label label = new Label(content, SWT.NONE);
-		label.setText("Days to keep");
+		label.setText(Messages.NewsPreferencesPage_DaysToKeep);
 		daysToKeep = new Spinner(content, SWT.BORDER);
 		daysToKeep.setMinimum(1);
 		daysToKeep.setMaximum(9999);
 
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.NewsPreferencesPage_Providers);
+		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+
 		providers = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		gridData.heightHint = providers.getTable().getItemHeight() * 15 + providers.getTable().getBorderWidth() * 2;
-		providers.getTable().setLayoutData(gridData);
+		providers.getControl().setLayoutData(gridData);
+		providers.setContentProvider(new ArrayContentProvider());
+		providers.setLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return ((IConfigurationElement) element).getAttribute(K_NAME);
+			}
+		});
+		providers.setSorter(new ViewerSorter());
 
-		/*IPreferenceStore store = NewsPlugin.getDefault().getPreferenceStore();
-		updateStartup.setSelection(store.getBoolean(NewsPlugin.PREFS_UPDATE_ON_STARTUP));
-		followQuoteFeed.setSelection(store.getBoolean(NewsPlugin.PREFS_FOLLOW_QUOTE_FEED));
-		daysToKeep.setSelection(store.getInt(CorePlugin.PREFS_NEWS_DATE_RANGE));
-
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = registry.getExtensionPoint(NewsPlugin.PROVIDER_EXTENSION_POINT);
-		if (extensionPoint != null)
-		{
-		    IConfigurationElement[] elements = extensionPoint.getConfigurationElements();
-		    for (int i = 0; i < elements.length; i++)
-		    {
-		        String id = elements[i].getAttribute("id"); //$NON-NLS-1$
-		        TableItem tableItem = new TableItem(table, SWT.NONE);
-		        tableItem.setText(elements[i].getAttribute("name")); //$NON-NLS-1$
-		        tableItem.setChecked(store.getBoolean(id));
-		        tableItem.setData(id);
-		    }
-		}
-
-		table.getColumn(0).pack();*/
+		performDefaults();
 
 		return content;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+	 */
+	@Override
+	protected void performDefaults() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+
+		updateStartup.setSelection(store.getBoolean(Activator.PREFS_UPDATE_ON_STARTUP));
+		followQuoteFeed.setSelection(store.getBoolean(Activator.PREFS_FOLLOW_QUOTE_FEED));
+		daysToKeep.setSelection(store.getInt(Activator.PREFS_DATE_RANGE));
+
+		IConfigurationElement[] elements = getProvidersConfigurationElements();
+		providers.setInput(elements);
+		for (int i = 0; i < elements.length; i++)
+			providers.setChecked(elements[i], store.getBoolean(elements[i].getAttribute(K_ID)));
+
+		super.performDefaults();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
 	 */
 	@Override
-    public boolean performOk() {
-		/*IPreferenceStore store = NewsPlugin.getDefault().getPreferenceStore();
+	public boolean performOk() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		store.setValue(NewsPlugin.PREFS_UPDATE_ON_STARTUP, updateStartup.getSelection());
-		store.setValue(NewsPlugin.PREFS_FOLLOW_QUOTE_FEED, followQuoteFeed.getSelection());
-		store.setValue(CorePlugin.PREFS_NEWS_DATE_RANGE, daysToKeep.getSelection());
+		store.setValue(Activator.PREFS_UPDATE_ON_STARTUP, updateStartup.getSelection());
+		store.setValue(Activator.PREFS_FOLLOW_QUOTE_FEED, followQuoteFeed.getSelection());
+		store.setValue(Activator.PREFS_DATE_RANGE, daysToKeep.getSelection());
 
-		TableItem[] items = table.getItems();
-		for (int i = 0; i < items.length; i++) {
-			String id = (String) items[i].getData();
-			store.setValue(id, items[i].getChecked());
-		}*/
+		IConfigurationElement[] elements = getProvidersConfigurationElements();
+		for (int i = 0; i < elements.length; i++) {
+			String id = elements[i].getAttribute(K_ID);
+			store.setValue(id, providers.getChecked(elements[i]));
+		}
 
 		return super.performOk();
+	}
+
+	protected IConfigurationElement[] getProvidersConfigurationElements() {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = registry.getExtensionPoint(Activator.PROVIDER_EXTENSION_POINT);
+		return extensionPoint != null ? extensionPoint.getConfigurationElements() : new IConfigurationElement[0];
 	}
 }

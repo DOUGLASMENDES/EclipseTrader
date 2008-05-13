@@ -16,7 +16,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,25 +33,31 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.MultiRule;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.news.core.HeadLineStatus;
 import org.eclipsetrader.news.core.IHeadLine;
+import org.eclipsetrader.news.core.INewsProvider;
 import org.eclipsetrader.news.core.INewsService;
 import org.eclipsetrader.news.core.INewsServiceListener;
 import org.eclipsetrader.news.core.INewsServiceRunnable;
 import org.eclipsetrader.news.core.NewsEvent;
 import org.eclipsetrader.news.internal.repository.HeadLine;
 
-public class NewsService implements INewsService, Runnable, ISchedulingRule {
+public class NewsService implements INewsService, ISchedulingRule {
 	public static final String HEADLINES_FILE = "headlines.xml"; //$NON-NLS-1$
 
 	private List<IHeadLine> headLines = new ArrayList<IHeadLine>();
@@ -57,6 +66,8 @@ public class NewsService implements INewsService, Runnable, ISchedulingRule {
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 	private List<HeadLineStatus> status = new ArrayList<HeadLineStatus>();
 	private boolean holdNotifications;
+
+	private List<INewsProvider> providers = new ArrayList<INewsProvider>();
 
 	private IJobManager jobManager;
 	private final ILock lock;
@@ -67,6 +78,8 @@ public class NewsService implements INewsService, Runnable, ISchedulingRule {
 	}
 
 	public void startUp(IProgressMonitor monitor) throws JAXBException {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+
 		File file = Activator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
 		if (file.exists()) {
 			JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
@@ -81,9 +94,32 @@ public class NewsService implements INewsService, Runnable, ISchedulingRule {
 	        JAXBElement<HeadLine[]> element = unmarshaller.unmarshal(new StreamSource(file), HeadLine[].class);
 	        headLines.addAll(Arrays.asList(element.getValue()));
 		}
+
+		Date limitDate = getLimitDate();
+		for (Iterator<IHeadLine> iter = headLines.iterator(); iter.hasNext(); ) {
+			if (iter.next().getDate().before(limitDate))
+				iter.remove();
+		}
+
+		updateSecurityMap();
+
+		IConfigurationElement[] elements = getProvidersConfigurationElements();
+		for (int i = 0; i < elements.length; i++) {
+			try {
+				INewsProvider newsProvider = (INewsProvider) elements[i].createExecutableExtension("class");
+				if (store.getBoolean(Activator.PREFS_UPDATE_ON_STARTUP))
+					newsProvider.start();
+				providers.add(newsProvider);
+			} catch(Exception e) {
+				// TODO Log
+			}
+		}
 	}
 
 	public void shutDown(IProgressMonitor monitor) throws JAXBException, IOException {
+		for (INewsProvider newsProvider : providers)
+			newsProvider.stop();
+
 		File file = Activator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
 		if (file.exists())
 			file.delete();
@@ -162,17 +198,14 @@ public class NewsService implements INewsService, Runnable, ISchedulingRule {
 	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    public void run() {
-    }
-
-	/* (non-Javadoc)
      * @see org.eclipsetrader.news.core.INewsService#addHeadLines(org.eclipsetrader.news.core.IHeadLine[])
      */
     public void addHeadLines(IHeadLine[] newHeadLines) {
     	synchronized(status) {
+    		Date limitDate = getLimitDate();
     		for (int i = 0; i < newHeadLines.length; i++) {
+    			if (newHeadLines[i].getDate().before(limitDate))
+    				continue;
     			if (!headLines.contains(newHeadLines[i])) {
     				headLines.add(newHeadLines[i]);
     				status.add(new HeadLineStatus(HeadLineStatus.ADDED, newHeadLines[i]));
@@ -210,6 +243,21 @@ public class NewsService implements INewsService, Runnable, ISchedulingRule {
     		}
         	if (!holdNotifications)
         		fireHeadLineStatusEvent();
+    	}
+    }
+
+    protected void updateSecurityMap() {
+    	securityMap.clear();
+    	for (IHeadLine headLine : headLines) {
+    		for (ISecurity security : headLine.getMembers()) {
+        		List<IHeadLine> list = securityMap.get(security);
+    			if (list == null) {
+    				list = new ArrayList<IHeadLine>();
+    				securityMap.put(security, list);
+    			}
+    			if (!list.contains(headLine))
+    				list.add(headLine);
+    		}
     	}
     }
 
@@ -256,6 +304,7 @@ public class NewsService implements INewsService, Runnable, ISchedulingRule {
     			status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
     			Activator.getDefault().getLog().log(status);
     		}
+    		updateSecurityMap();
     		fireHeadLineStatusEvent();
 		} catch (Exception e) {
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
@@ -292,5 +341,35 @@ public class NewsService implements INewsService, Runnable, ISchedulingRule {
 		if (this == rule)
 			return true;
 	    return false;
+    }
+
+	protected IConfigurationElement[] getProvidersConfigurationElements() {
+		List<IConfigurationElement> elements = new ArrayList<IConfigurationElement>();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = registry.getExtensionPoint(Activator.PROVIDER_EXTENSION_POINT);
+		if (extensionPoint != null) {
+			for (IConfigurationElement e : extensionPoint.getConfigurationElements()) {
+				if (e.getName().equals("provider"))
+					elements.add(e);
+			}
+		}
+		return elements.toArray(new IConfigurationElement[elements.size()]);
+	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsService#getProviders()
+     */
+    public INewsProvider[] getProviders() {
+	    return providers.toArray(new INewsProvider[providers.size()]);
+    }
+
+    protected Date getLimitDate() {
+		Calendar limit = Calendar.getInstance();
+		limit.set(Calendar.HOUR_OF_DAY, 0);
+		limit.set(Calendar.MINUTE, 0);
+		limit.set(Calendar.SECOND, 0);
+		limit.set(Calendar.MILLISECOND, 0);
+		limit.add(Calendar.DATE, - Activator.getDefault().getPreferenceStore().getInt(Activator.PREFS_DATE_RANGE));
+		return limit.getTime();
     }
 }

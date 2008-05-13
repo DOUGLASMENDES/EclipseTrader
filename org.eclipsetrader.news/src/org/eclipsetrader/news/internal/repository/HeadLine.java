@@ -92,7 +92,21 @@ public class HeadLine implements IHeadLine {
      * @see org.eclipsetrader.news.core.IHeadLine#contains(org.eclipsetrader.core.instruments.ISecurity)
      */
 	public boolean contains(ISecurity security) {
+		if (members == null)
+			return false;
 		return members.contains(security);
+	}
+
+	/**
+	 * Adds a member to the receiver.
+	 *
+	 * @param security the member to add.
+	 */
+	public void addMember(ISecurity security) {
+		if (members == null)
+			members = new ArrayList<ISecurity>();
+		if (!members.contains(security))
+			members.add(security);
 	}
 
 	/* (non-Javadoc)
@@ -100,7 +114,7 @@ public class HeadLine implements IHeadLine {
      */
 	@XmlTransient
 	public ISecurity[] getMembers() {
-    	return members.toArray(new ISecurity[members.size()]);
+    	return members != null ? members.toArray(new ISecurity[members.size()]) : new ISecurity[0];
     }
 
 	/* (non-Javadoc)

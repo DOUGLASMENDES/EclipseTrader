@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -29,8 +31,10 @@ import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -47,17 +51,18 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.news.core.HeadLineStatus;
 import org.eclipsetrader.news.core.IHeadLine;
+import org.eclipsetrader.news.core.INewsProvider;
 import org.eclipsetrader.news.core.INewsService;
 import org.eclipsetrader.news.core.INewsServiceListener;
 import org.eclipsetrader.news.core.NewsEvent;
 import org.eclipsetrader.news.internal.Activator;
-import org.eclipsetrader.news.internal.NewsUpdateJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -67,6 +72,10 @@ public class HeadLineViewer extends ViewPart {
 	private Action refreshAction;
 	private Action showPreviousAction;
 	private Action showNextAction;
+
+	private Action openAction;
+	private Action markAsReadAction;
+	private Action markAllAsReadAction;
 
 	private TableViewer viewer;
 	private IDialogSettings dialogSettings;
@@ -95,7 +104,7 @@ public class HeadLineViewer extends ViewPart {
         		if (status.getKind() == HeadLineStatus.ADDED)
         			input.add(status.getHeadLine());
         		else if (status.getKind() == HeadLineStatus.REMOVED)
-        			input.add(status.getHeadLine());
+        			input.remove(status.getHeadLine());
         	}
         	if (!viewer.getControl().isDisposed()) {
         		try {
@@ -137,28 +146,9 @@ public class HeadLineViewer extends ViewPart {
         refreshAction = new Action("Refresh") {
 			@Override
             public void run() {
-				NewsUpdateJob job = new NewsUpdateJob();
-				refreshAction.setEnabled(false);
-				job.addJobChangeListener(new JobChangeAdapter() {
-                    @Override
-                    public void done(IJobChangeEvent event) {
-                    	if (!viewer.getControl().isDisposed()) {
-                    		try {
-                    			viewer.getControl().getDisplay().asyncExec(new Runnable() {
-                                    public void run() {
-                                    	if (!viewer.getControl().isDisposed())
-                            				refreshAction.setEnabled(true);
-                                    }
-                    			});
-                    		} catch(SWTException e) {
-                    			if (e.code != SWT.ERROR_WIDGET_DISPOSED)
-                    				throw e;
-                    		}
-                    	}
-                    }
-				});
-				job.setUser(true);
-				job.schedule();
+				INewsProvider[] providers = service.getProviders();
+				for (int i = 0; i < providers.length; i++)
+					providers[i].refresh();
 			}
 		};
         refreshAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/refresh.gif")); //$NON-NLS-1$
@@ -190,6 +180,37 @@ public class HeadLineViewer extends ViewPart {
         showNextAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/next_nav.gif")); //$NON-NLS-1$
         showNextAction.setDisabledImageDescriptor(Activator.getImageDescriptor("icons/dlcl16/next_nav.gif")); //$NON-NLS-1$
 
+        openAction = new Action("Open") {
+			@Override
+        	public void run() {
+				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+            	if (!selection.isEmpty()) {
+            		IHeadLine headLine = (IHeadLine) selection.getFirstElement();
+            		doOpenHeadLine(headLine, false);
+            	}
+        	}
+        };
+    	markAsReadAction = new Action("Mark as Read") {
+			@Override
+        	public void run() {
+				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+				List<?> list = selection.toList();
+				final IHeadLine[] headLines = list.toArray(new IHeadLine[list.size()]);
+				for (int i = 0; i < headLines.length; i++)
+					headLines[i].setReaded(true);
+				service.updateHeadLines(headLines);
+        	}
+        };
+    	markAllAsReadAction = new Action("Mark All as Read") {
+			@Override
+        	public void run() {
+				final IHeadLine[] headLines = input.toArray(new IHeadLine[input.size()]);
+				for (int i = 0; i < headLines.length; i++)
+					headLines[i].setReaded(true);
+				service.updateHeadLines(headLines);
+        	}
+        };
+
 		IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
         toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
         toolBarManager.add(showPreviousAction);
@@ -220,6 +241,32 @@ public class HeadLineViewer extends ViewPart {
 		}
 
 		viewer.setInput(input);
+
+		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager menuManager) {
+				menuManager.add(new Separator("group.new"));
+				menuManager.add(new GroupMarker("group.goto"));
+				menuManager.add(new Separator("group.open"));
+				menuManager.add(new GroupMarker("group.openWith"));
+				menuManager.add(new Separator("group.show"));
+				menuManager.add(new Separator("group.edit"));
+				menuManager.add(new GroupMarker("group.reorganize"));
+				menuManager.add(new GroupMarker("group.port"));
+				menuManager.add(new Separator("group.generate"));
+				menuManager.add(new Separator("group.search"));
+				menuManager.add(new Separator("group.build"));
+				menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				menuManager.add(new Separator("group.properties"));
+
+				menuManager.appendToGroup("group.open", openAction);
+				menuManager.appendToGroup("group.edit", markAsReadAction);
+				menuManager.appendToGroup("group.edit", markAllAsReadAction);
+			}
+		});
+		viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
+		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
 		getSite().getPage().addSelectionListener(selectionListener);
        	viewer.setSelection(getSite().getPage().getSelection(), true);
@@ -292,6 +339,13 @@ public class HeadLineViewer extends ViewPart {
             		IHeadLine headLine = (IHeadLine) ((IStructuredSelection) event.getSelection()).getFirstElement();
             		doOpenHeadLine(headLine, false);
             	}
+            }
+		});
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+            	openAction.setEnabled(!event.getSelection().isEmpty());
+            	markAsReadAction.setEnabled(!event.getSelection().isEmpty());
+            	markAllAsReadAction.setEnabled(input.size() != 0);
             }
 		});
 	}

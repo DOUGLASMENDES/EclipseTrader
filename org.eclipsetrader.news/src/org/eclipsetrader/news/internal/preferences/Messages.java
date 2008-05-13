@@ -23,17 +23,19 @@ public class Messages extends NLS {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
+
 	public static String RSSFeedDialog_Title;
 	public static String RSSFeedDialog_Source;
 	public static String RSSFeedDialog_URL;
-    public static String NewsPreferencesPage_StartupUpdate;
+
+	public static String NewsPreferencesPage_StartupUpdate;
     public static String NewsPreferencesPage_FollowQuoteFeed;
     public static String NewsPreferencesPage_DaysToKeep;
-    public static String NewsPreferencesPage_Provider;
+    public static String NewsPreferencesPage_Providers;
+
     public static String RSSPreferencesPage_AutoUpdate;
     public static String RSSPreferencesPage_Minutes;
-    public static String RSSPreferencesPage_Source;
-    public static String RSSPreferencesPage_URL;
+    public static String RSSPreferencesPage_Subscriptions;
     public static String RSSPreferencesPage_Add;
     public static String RSSPreferencesPage_Edit;
     public static String RSSPreferencesPage_Remove;

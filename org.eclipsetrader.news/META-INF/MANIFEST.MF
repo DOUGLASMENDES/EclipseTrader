@@ -38,3 +38,9 @@ Import-Package: com.sun.syndication.feed,
  org.apache.commons.httpclient.protocol;version="3.0.1",
  org.apache.commons.httpclient.util;version="3.0.1"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipsetrader.news.core,
+ org.eclipsetrader.news.internal;x-internal:=true,
+ org.eclipsetrader.news.internal.connectors;x-internal:=true,
+ org.eclipsetrader.news.internal.preferences;x-internal:=true,
+ org.eclipsetrader.news.internal.repository;x-internal:=true,
+ org.eclipsetrader.news.internal.ui;x-internal:=true
