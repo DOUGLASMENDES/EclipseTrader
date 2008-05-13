@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Platform User Guide
-Bundle-SymbolicName: org.eclipsetrader.platform.doc.user; singleton:=true
+Bundle-Name: Platform Developer Guide
+Bundle-SymbolicName: org.eclipsetrader.platform.doc.isv;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: EclipseTrader.org
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.apache.lucene,
  org.eclipse.core.runtime,
  org.eclipse.help.appserver,
@@ -13,4 +14,3 @@ Require-Bundle: org.apache.lucene,
  org.eclipse.help.webapp,
  org.eclipse.ui
 Eclipse-LazyStart: true
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
