@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Platform Doc Isv Build" default="all"  basedir="." >
+
+	<target name="init">
+		<available file="${basedir}/index" property="index.present"/>
+	</target>
+
+	<target name="all" depends="init" unless="index.present">
+		<antcall target="convertSchemaToHtml" />
+		<antcall target="generateJavadoc" />
+	</target>
+
+	<target name="convertSchemaToHtml" if="eclipse.running">
+		<property name="dest" value="reference/extension-points" />
+		<pde.convertSchemaToHTML manifest="../org.eclipsetrader.core/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../org.eclipsetrader.core.charts/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../org.eclipsetrader.news/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../org.eclipsetrader.ui/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../org.eclipsetrader.ui.charts/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../org.eclipsetrader.ui.charts.indicators/plugin.xml" destination="${dest}" />
+	</target>
+
+	<target name="getJavadocPath">
+		<available file="${java.home}/../bin/javadoc.exe" property="javadoc" value="${java.home}/../bin/javadoc.exe"/>
+		<available file="${java.home}/../bin/javadoc" property="javadoc" value="${java.home}/../bin/javadoc" />
+	</target>
+
+	<target name="generateJavadoc" depends="getJavadocPath" if="javadoc">
+
+		<property name="optionsFile" value="platformOptions.tmp.txt" />
+		<copy file="platformOptions.txt" tofile="${optionsFile}" overwrite="true" />
+		
+		<condition property="argsListDelimiter" value=":">
+			<os family="unix" />
+		</condition>
+		<condition property="argsListDelimiter" value=";">
+			<os family="windows" />
+		</condition>
+		
+		<replaceregexp file="${basedir}/${optionsFile}" flags="g" match="(\r\n?|\n);" replace="${argsListDelimiter}" />
+		<replace file="${basedir}/${optionsFile}" token="@rt@" value="${bootclasspath}" />
+
+		<!--scrub isv plugin directories of any preexisting api doc content-->
+		<delete dir="reference/api"/>
+		<mkdir dir="reference/api"/>
+
+		<exec dir="." executable="${javadoc}" output="doc.bin.log">
+			<arg line="@${basedir}/${optionsFile} -J-Xmx1000M" />
+		</exec>
+		
+		<!--workaround for bug 101048-->
+		<replace dir="reference/api" token="=&quot;/../misc/api-usage-rules.html" value="=&quot;./../misc/api-usage-rules.html">
+			<include name="*htm*" />
+		</replace>
+
+		<delete file="${basedir}/${optionsFile}"/>
+	</target>
+</project>

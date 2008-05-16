@@ -1,0 +1,37 @@
+-quiet
+-encoding "iso-8859-1"
+-charset "iso-8859-1"
+-sourcepath "
+;../org.eclipsetrader.core/src
+;../org.eclipsetrader.core.charts/src
+;../org.eclipsetrader.news/src
+;../org.eclipsetrader.ui/src
+;../org.eclipsetrader.ui.charts/src
+-d reference/api
+-breakiterator
+-use
+-splitIndex
+-tag 'TrackedGetter:cm:"TrackedGetter"'
+-tag 'noimplement:a:Restriction'
+-tag 'noextend:a:Restriction'
+-tag 'noreference:a:Restriction'
+-tag 'noinstantiate:a:Restriction'
+-tag 'nooverride:a:Restriction'
+-windowtitle "EclipseTrader Platform API Specification"
+-doctitle "EclipseTrader Platform API Specification"
+-header "<b>EclipseTrader Platform</b><br>Release 1.0"
+-bottom '<font size="-1"><p><a href="{@docRoot}/../misc/api-usage-rules.html">Guidelines for using EclipseTrader APIs</a>.</p><p>Copyright (c) EclipseTrader contributors and others 2004, 2008. All rights reserved.</p></font>'
+-link http://java.sun.com/j2se/1.4.2/docs/api
+-link http://www.osgi.org/javadoc/r4
+
+org.eclipsetrader.core.charts
+org.eclipsetrader.core.charts.repository
+org.eclipsetrader.core.feed
+org.eclipsetrader.core.instruments
+org.eclipsetrader.core.markets
+org.eclipsetrader.core.repositories
+org.eclipsetrader.core.views
+org.eclipsetrader.news.core
+org.eclipsetrader.ui
+org.eclipsetrader.ui.charts
+org.eclipsetrader.ui.navigator
