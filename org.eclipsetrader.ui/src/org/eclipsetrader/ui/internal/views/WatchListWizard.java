@@ -11,6 +11,10 @@
 
 package org.eclipsetrader.ui.internal.views;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -19,6 +23,8 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipsetrader.core.internal.views.WatchList;
 import org.eclipsetrader.core.repositories.IRepository;
+import org.eclipsetrader.core.repositories.IRepositoryRunnable;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.ui.internal.UIActivator;
 
@@ -26,9 +32,6 @@ public class WatchListWizard extends Wizard implements INewWizard {
 	private Image image;
 	private NamePage namePage;
 	private ColumnsPage columnsPage;
-
-	private IWatchList resource;
-	private IRepository repository;
 
 	public WatchListWizard() {
 		ImageDescriptor descriptor = ImageDescriptor.createFromURL(UIActivator.getDefault().getBundle().getResource("icons/wizban/newfile_wiz.gif"));
@@ -81,16 +84,17 @@ public class WatchListWizard extends Wizard implements INewWizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		repository = namePage.getRepository();
-		resource = new WatchList(namePage.getResourceName(), columnsPage.getColumns());
+		final IRepository repository = namePage.getRepository();
+		final IWatchList resource = new WatchList(namePage.getResourceName(), columnsPage.getColumns());
+		final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
+
+		service.runInService(new IRepositoryRunnable() {
+			public IStatus run(IProgressMonitor monitor) throws Exception {
+				service.moveAdaptable(new IAdaptable[] { resource }, repository);
+	            return Status.OK_STATUS;
+            }
+		}, null);
+
 		return true;
 	}
-
-	public IWatchList getResource() {
-    	return resource;
-    }
-
-	public IRepository getRepository() {
-    	return repository;
-    }
 }

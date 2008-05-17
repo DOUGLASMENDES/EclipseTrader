@@ -11,6 +11,10 @@
 
 package org.eclipsetrader.ui.internal.securities.wizards;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -21,6 +25,8 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.repositories.IRepository;
+import org.eclipsetrader.core.repositories.IRepositoryRunnable;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class SecurityWizard extends Wizard implements INewWizard {
@@ -28,10 +34,6 @@ public class SecurityWizard extends Wizard implements INewWizard {
 	private NamePage namePage;
 	private IdentifierPage identifierPage;
 	private MarketsPage marketsPage;
-
-	private ISecurity security;
-	private IRepository repository;
-	private IMarket[] markets;
 
 	public SecurityWizard() {
 		ImageDescriptor descriptor = ImageDescriptor.createFromURL(UIActivator.getDefault().getBundle().getResource("icons/wizban/newfile_wiz.gif"));
@@ -85,21 +87,20 @@ public class SecurityWizard extends Wizard implements INewWizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		repository = namePage.getRepository();
-		security = new Security(namePage.getSecurityName(), identifierPage.getFeedIdentifier());
-		markets = marketsPage.getSelectedMarkets();
+		final IRepository repository = namePage.getRepository();
+		final ISecurity resource = new Security(namePage.getSecurityName(), identifierPage.getFeedIdentifier());
+		final IMarket[] markets = marketsPage.getSelectedMarkets();
+
+		final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
+		service.runInService(new IRepositoryRunnable() {
+			public IStatus run(IProgressMonitor monitor) throws Exception {
+				service.moveAdaptable(new IAdaptable[] { resource }, repository);
+				for (int i = 0; i < markets.length; i++)
+					markets[i].addMembers(new ISecurity[] { resource });
+	            return Status.OK_STATUS;
+            }
+		}, null);
+
 		return true;
 	}
-
-	public ISecurity getSecurity() {
-    	return security;
-    }
-
-	public IMarket[] getMarkets() {
-    	return markets;
-    }
-
-	public IRepository getRepository() {
-    	return repository;
-    }
 }
