@@ -11,9 +11,8 @@
 
 package org.eclipsetrader.ui.internal.securities;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -215,7 +214,7 @@ public class FeedPropertiesControl {
 
 	public class PropertyElementContainer {
 		private String name;
-		private List<PropertyElement> childs = new ArrayList<PropertyElement>();
+		private Map<String, PropertyElement> childs = new HashMap<String, PropertyElement>();
 
 		public PropertyElementContainer(String name) {
 	        this.name = name;
@@ -226,12 +225,16 @@ public class FeedPropertiesControl {
         }
 
 		public PropertyElement[] getChilds() {
-        	return childs.toArray(new PropertyElement[childs.size()]);
+			Collection<PropertyElement> c = childs.values();
+        	return c.toArray(new PropertyElement[c.size()]);
         }
 
 		public PropertyElement createChild(String id, String name) {
-			PropertyElement element = new PropertyElement(id, name, this);
-			childs.add(element);
+			PropertyElement element = childs.get(id);
+			if (element == null) {
+				element = new PropertyElement(id, name, this);
+				childs.put(id, element);
+			}
 			return element;
 		}
 
