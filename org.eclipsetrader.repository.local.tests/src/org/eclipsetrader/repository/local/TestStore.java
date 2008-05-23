@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.tests.core;
+package org.eclipsetrader.repository.local;
 
 import java.net.URI;
 

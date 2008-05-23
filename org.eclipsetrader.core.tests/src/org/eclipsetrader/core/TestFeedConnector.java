@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.tests.core;
+package org.eclipsetrader.core;
 
 import java.util.HashSet;
 import java.util.Set;

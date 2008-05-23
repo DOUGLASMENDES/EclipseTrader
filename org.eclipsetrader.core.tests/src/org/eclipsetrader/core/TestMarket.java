@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.tests.core;
+package org.eclipsetrader.core;
 
 import java.util.Arrays;
 import java.util.Date;

@@ -24,8 +24,8 @@ import junit.framework.TestCase;
 
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.views.Holding;
-import org.eclipsetrader.tests.core.TestRepositoryService;
-import org.eclipsetrader.tests.core.TestSecurity;
+import org.eclipsetrader.repository.local.TestRepositoryService;
+import org.eclipsetrader.repository.local.TestSecurity;
 
 public class HoldingTypeTest extends TestCase {
 	private String prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";

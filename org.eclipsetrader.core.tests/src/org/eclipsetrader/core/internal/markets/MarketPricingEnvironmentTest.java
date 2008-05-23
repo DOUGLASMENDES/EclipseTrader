@@ -13,12 +13,12 @@ package org.eclipsetrader.core.internal.markets;
 
 import junit.framework.TestCase;
 
+import org.eclipsetrader.core.TestFeedConnector;
+import org.eclipsetrader.core.TestMarket;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.markets.IMarket;
-import org.eclipsetrader.tests.core.TestFeedConnector;
-import org.eclipsetrader.tests.core.TestMarket;
 
 public class MarketPricingEnvironmentTest extends TestCase {
 	private TestMarket market1;

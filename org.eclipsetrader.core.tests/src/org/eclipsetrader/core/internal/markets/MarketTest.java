@@ -24,7 +24,7 @@ import javax.xml.bind.Unmarshaller;
 
 import junit.framework.TestCase;
 
-import org.eclipsetrader.tests.core.TestFeedConnector;
+import org.eclipsetrader.core.TestFeedConnector;
 
 public class MarketTest extends TestCase {
 	private String prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";

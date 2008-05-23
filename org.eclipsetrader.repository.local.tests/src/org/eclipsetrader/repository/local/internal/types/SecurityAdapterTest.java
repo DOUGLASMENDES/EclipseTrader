@@ -14,8 +14,8 @@ package org.eclipsetrader.repository.local.internal.types;
 import junit.framework.TestCase;
 
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.tests.core.TestRepositoryService;
-import org.eclipsetrader.tests.core.TestSecurity;
+import org.eclipsetrader.repository.local.TestRepositoryService;
+import org.eclipsetrader.repository.local.TestSecurity;
 
 public class SecurityAdapterTest extends TestCase {
 

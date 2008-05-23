@@ -29,10 +29,10 @@ import org.eclipsetrader.core.views.Column;
 import org.eclipsetrader.core.views.Holding;
 import org.eclipsetrader.core.views.IColumn;
 import org.eclipsetrader.core.views.IHolding;
+import org.eclipsetrader.repository.local.TestRepositoryService;
+import org.eclipsetrader.repository.local.TestSecurity;
+import org.eclipsetrader.repository.local.TestStore;
 import org.eclipsetrader.repository.local.internal.types.SecurityAdapter;
-import org.eclipsetrader.tests.core.TestRepositoryService;
-import org.eclipsetrader.tests.core.TestSecurity;
-import org.eclipsetrader.tests.core.TestStore;
 
 public class WatchListStoreTest extends TestCase {
 	private String prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
