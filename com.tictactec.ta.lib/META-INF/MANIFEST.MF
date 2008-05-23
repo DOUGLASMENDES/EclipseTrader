@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Technical Analysis Library Plug-in
+Bundle-Name: Technical Analysis Library
 Bundle-SymbolicName: com.tictactec.ta.lib
 Bundle-Version: 0.4.0.R20070915
 Bundle-Vendor: EclipseTrader.org
