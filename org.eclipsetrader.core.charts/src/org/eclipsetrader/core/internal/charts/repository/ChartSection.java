@@ -11,8 +11,11 @@
 
 package org.eclipsetrader.core.internal.charts.repository;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -20,7 +23,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipsetrader.core.charts.repository.IChartSection;
 import org.eclipsetrader.core.charts.repository.IChartVisitor;
-import org.eclipsetrader.core.charts.repository.IIndicatorSection;
+import org.eclipsetrader.core.charts.repository.IElementSection;
 import org.eclipsetrader.core.charts.repository.ISecuritySection;
 
 @XmlRootElement(name = "section")
@@ -31,9 +34,9 @@ public class ChartSection implements IChartSection {
 	@XmlAttribute(name = "name")
 	private String name;
 
-	@XmlElement(name = "indicator")
-	@XmlJavaTypeAdapter(IndicatorSectionAdapter.class)
-	private IIndicatorSection[] indicators;
+	@XmlElementRef
+	@XmlJavaTypeAdapter(ElementSectionAdapter.class)
+	private IElementSection[] indicators;
 
 	@XmlElement(name = "security")
 	@XmlJavaTypeAdapter(SecuritySectionAdapter.class)
@@ -71,10 +74,15 @@ public class ChartSection implements IChartSection {
 	    this.name = name;
     }
 
+	public ChartSection(String name) {
+		this.id = UUID.randomUUID().toString();
+	    this.name = name;
+    }
+
 	public ChartSection(IChartSection section) {
 	    this.id = section.getId();
 	    this.name = section.getName();
-    	this.indicators = section.getIndicators();
+    	this.indicators = section.getElements();
     	this.securities = section.getSecurities();
     }
 
@@ -102,17 +110,17 @@ public class ChartSection implements IChartSection {
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.repository.IChartSection#getIndicators()
+     * @see org.eclipsetrader.core.charts.repository.IElementSection#getElements()
      */
 	@XmlTransient
-	public IIndicatorSection[] getIndicators() {
-    	return indicators != null ? indicators : new IIndicatorSection[0];
+	public IElementSection[] getElements() {
+    	return indicators != null ? indicators : new IElementSection[0];
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.repository.IChartSection#setIndicators(org.eclipsetrader.core.charts.repository.IIndicatorSection[])
+     * @see org.eclipsetrader.core.charts.repository.IChartSection#setElements(org.eclipsetrader.core.charts.repository.IElementSection[])
      */
-    public void setIndicators(IIndicatorSection[] indicators) {
+    public void setElements(IElementSection[] indicators) {
     	this.indicators = indicators;
     }
 
@@ -140,7 +148,7 @@ public class ChartSection implements IChartSection {
 			for (int i = 0; i < s.length; i++)
 				s[i].accept(visitor);
 
-			IIndicatorSection[] d = getIndicators();
+			IElementSection[] d = getElements();
 			for (int i = 0; i < d.length; i++)
 				d[i].accept(visitor);
 		}

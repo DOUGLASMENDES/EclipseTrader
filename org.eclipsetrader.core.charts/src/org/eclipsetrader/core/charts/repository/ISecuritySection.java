@@ -22,9 +22,9 @@ public interface ISecuritySection {
 
 	public ISecurity getSecurity();
 
-	public IIndicatorSection[] getIndicators();
+	public IElementSection[] getIndicators();
 
-	public void setIndicators(IIndicatorSection[] indicators);
+	public void setIndicators(IElementSection[] indicators);
 
 	public void accept(IChartVisitor visitor);
 }

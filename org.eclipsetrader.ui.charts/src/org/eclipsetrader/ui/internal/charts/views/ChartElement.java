@@ -12,8 +12,8 @@
 package org.eclipsetrader.ui.internal.charts.views;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipsetrader.core.charts.repository.IIndicatorSection;
-import org.eclipsetrader.core.internal.charts.repository.IndicatorSection;
+import org.eclipsetrader.core.charts.repository.IElementSection;
+import org.eclipsetrader.core.internal.charts.repository.ElementSection;
 import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.IChartIndicator;
 
@@ -64,8 +64,8 @@ public class ChartElement implements IAdaptable {
 	 *
 	 * @return the template object.
 	 */
-	public IIndicatorSection getTemplate() {
-		IndicatorSection section = new IndicatorSection(id);
+	public IElementSection getTemplate() {
+		IElementSection section = new ElementSection(id, indicator.getId());
 		section.setParameters(parameters.toParametersArray());
 		return section;
 	}

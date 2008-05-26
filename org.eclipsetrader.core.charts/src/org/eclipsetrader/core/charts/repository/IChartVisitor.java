@@ -24,5 +24,5 @@ public interface IChartVisitor {
 
 	public boolean visit(ISecuritySection section);
 
-	public void visit(IIndicatorSection section);
+	public void visit(IElementSection section);
 }

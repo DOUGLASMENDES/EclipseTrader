@@ -48,6 +48,6 @@ public class ChartVisitorAdapter implements IChartVisitor {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.charts.repository.IChartVisitor#visit(org.eclipsetrader.core.charts.repository.IndicatorSection)
 	 */
-	public void visit(IIndicatorSection section) {
+	public void visit(IElementSection section) {
 	}
 }

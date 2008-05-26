@@ -41,9 +41,9 @@ public interface IChartSection {
 	 */
 	public void setName(String name);
 
-	public IIndicatorSection[] getIndicators();
+	public IElementSection[] getElements();
 
-	public void setIndicators(IIndicatorSection[] indicators);
+	public void setElements(IElementSection[] indicators);
 
 	public ISecuritySection[] getSecurities();
 

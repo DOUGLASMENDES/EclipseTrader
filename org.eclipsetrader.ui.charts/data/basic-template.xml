@@ -2,29 +2,23 @@
 <chart>
 	<name>Basic</name>
 	<section id="a91d6bb9-3ffb-4aeb-ab36-dd39356f746f" name="Top">
-		<indicator id="org.eclipsetrader.indicators.bars">
+		<element id="f807bc72-94a7-4f2a-bdc4-6f175f4a6fba" plugin-id="org.eclipsetrader.indicators.bars">
 			<param name="style" value="bars"/>
-			<param name="positive-color" value="0,255,0"/>
-			<param name="negative-color" value="255,0,0"/>
-		</indicator>
-		<indicator id="org.eclipsetrader.indicators.ma" name="MA7">
+		</element>
+		<element id="89d73db2-a27a-42e6-b4e8-8eaa6ac7adb7" plugin-id="org.eclipsetrader.indicators.ma" name="MA7">
 			<param name="field" value="close"/>
 			<param name="period" value="7"/>
 			<param name="type" value="ema"/>
-			<param name="color" value="255,0,0"/>
-		</indicator>
-		<indicator id="org.eclipsetrader.indicators.ma" name="MA14">
+		</element>
+		<element id="120c66c6-c138-44ef-8bea-ccd2c6ca612d" plugin-id="org.eclipsetrader.indicators.ma" name="MA14">
 			<param name="field" value="close"/>
 			<param name="period" value="14"/>
 			<param name="type" value="ema"/>
-			<param name="color" value="0,255,0"/>
-		</indicator>
+		</element>
 	</section>
 	<section id="29236de6-1f09-44d2-bfa6-b455e6741465" name="Bottom">
-		<indicator id="org.eclipsetrader.indicators.volume" name="VOLUME">
+		<element id="d3f7197d-611e-4f59-82c5-eeaffd780d9e" plugin-id="org.eclipsetrader.indicators.volume" name="VOLUME">
 			<param name="style" value="histogram-bars"/>
-			<param name="positive-color" value="0,255,0"/>
-			<param name="negative-color" value="255,0,0"/>
-		</indicator>
+		</element>
 	</section>
 </chart>

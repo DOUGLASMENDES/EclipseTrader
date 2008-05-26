@@ -13,26 +13,26 @@ package org.eclipsetrader.core.internal.charts.repository;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.eclipsetrader.core.charts.repository.IIndicatorSection;
+import org.eclipsetrader.core.charts.repository.IElementSection;
 
-public class IndicatorSectionAdapter extends XmlAdapter<IndicatorSection, IIndicatorSection> {
+public class ElementSectionAdapter extends XmlAdapter<ElementSection, IElementSection> {
 
-	public IndicatorSectionAdapter() {
+	public ElementSectionAdapter() {
 	}
 
 	/* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
     @Override
-    public IndicatorSection marshal(IIndicatorSection v) throws Exception {
-	    return v != null ? new IndicatorSection(v) : null;
+    public ElementSection marshal(IElementSection v) throws Exception {
+	    return v != null ? new ElementSection(v) : null;
     }
 
 	/* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
     @Override
-    public IIndicatorSection unmarshal(IndicatorSection v) throws Exception {
+    public IElementSection unmarshal(ElementSection v) throws Exception {
 	    return v;
     }
 }

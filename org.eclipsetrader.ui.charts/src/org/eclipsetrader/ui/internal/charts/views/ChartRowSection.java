@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.charts.DataSeries;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartSection;
-import org.eclipsetrader.core.charts.repository.IIndicatorSection;
+import org.eclipsetrader.core.charts.repository.IElementSection;
 import org.eclipsetrader.core.charts.repository.IParameter;
 import org.eclipsetrader.core.internal.charts.repository.ChartSection;
 import org.eclipsetrader.ui.charts.AdaptableWrapper;
@@ -34,19 +34,19 @@ public class ChartRowSection implements IAdaptable {
 	private IDataSeries root;
 	private IDataSeries dataSeries;
 
-	public ChartRowSection(String id, String name) {
+	protected ChartRowSection(String id, String name) {
 	    this.id = id;
 	    this.name = name;
 		this.root = new DataSeries(name, new IAdaptable[0]);
 		this.dataSeries = new DataSeries(name, new IAdaptable[0]);
     }
 
-	public ChartRowSection(IDataSeries root, IChartSection section) {
+	protected ChartRowSection(IDataSeries root, IChartSection section) {
 		this.id = section.getId();
 		this.name = section.getName();
 		this.root = root;
 
-		for (IIndicatorSection s : section.getIndicators())
+		for (IElementSection s : section.getElements())
 			addIndicator(s);
 
 		List<IDataSeries> l = new ArrayList<IDataSeries>();
@@ -75,10 +75,10 @@ public class ChartRowSection implements IAdaptable {
     	return id;
     }
 
-	public void addIndicator(IIndicatorSection template) {
+	public void addIndicator(IElementSection template) {
 		IChartIndicator indicator = null;
 		if (ChartsUIActivator.getDefault() != null)
-			indicator = ChartsUIActivator.getDefault().getIndicator(template.getId());
+			indicator = ChartsUIActivator.getDefault().getIndicator(template.getPluginId());
 
 		ChartParameters parameters = new ChartParameters();
 		for (IParameter p : template.getParameters())
@@ -127,15 +127,13 @@ public class ChartRowSection implements IAdaptable {
 	 * @return the template section object.
 	 */
 	public IChartSection getTemplate() {
-		List<IIndicatorSection> indicators = new ArrayList<IIndicatorSection>();
-		for (ChartElement element : elements) {
-			if (element.getId() != null)
-				indicators.add(element.getTemplate());
-		}
+		List<IElementSection> indicators = new ArrayList<IElementSection>();
+		for (ChartElement element : elements)
+			indicators.add(element.getTemplate());
 
 		ChartSection section = new ChartSection(id, name);
 		if (indicators.size() != 0)
-			section.setIndicators(indicators.toArray(new IIndicatorSection[indicators.size()]));
+			section.setElements(indicators.toArray(new IElementSection[indicators.size()]));
 
 		return section;
 	}

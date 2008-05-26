@@ -16,9 +16,11 @@ package org.eclipsetrader.core.charts.repository;
  *
  * @since 1.0
  */
-public interface IIndicatorSection {
+public interface IElementSection {
 
 	public String getId();
+
+	public String getPluginId();
 
 	public IParameter[] getParameters();
 

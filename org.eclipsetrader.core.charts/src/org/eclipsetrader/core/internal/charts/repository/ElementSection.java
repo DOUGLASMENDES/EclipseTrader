@@ -13,6 +13,7 @@ package org.eclipsetrader.core.internal.charts.repository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -22,13 +23,16 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipsetrader.core.charts.repository.IChartVisitor;
-import org.eclipsetrader.core.charts.repository.IIndicatorSection;
+import org.eclipsetrader.core.charts.repository.IElementSection;
 import org.eclipsetrader.core.charts.repository.IParameter;
 
-@XmlRootElement(name = "indicator")
-public class IndicatorSection implements IIndicatorSection {
+@XmlRootElement(name = "element")
+public class ElementSection implements IElementSection {
 	@XmlAttribute(name = "id")
 	private String id;
+
+	@XmlAttribute(name = "plugin-id")
+	private String pluginId;
 
     @XmlElement(name = "param")
     @XmlJavaTypeAdapter(ParameterAdapter.class)
@@ -56,20 +60,27 @@ public class IndicatorSection implements IIndicatorSection {
         }
     }
 
-	protected IndicatorSection() {
+	protected ElementSection() {
 	}
 
-	protected IndicatorSection(IIndicatorSection section) {
+	protected ElementSection(IElementSection section) {
 		this.id = section.getId();
+		this.pluginId = section.getPluginId();
     	this.parameters = section.getParameters() != null ? Arrays.asList(section.getParameters()) : null;
 	}
 
-	public IndicatorSection(String id) {
+	public ElementSection(String pluginId) {
+	    this.id = UUID.randomUUID().toString();
+	    this.pluginId = pluginId;
+    }
+
+	public ElementSection(String id, String pluginId) {
 	    this.id = id;
+	    this.pluginId = pluginId;
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.repository.IIndicatorSection#getId()
+     * @see org.eclipsetrader.core.charts.repository.IElementSection#getId()
      */
 	@XmlTransient
 	public String getId() {
@@ -77,7 +88,15 @@ public class IndicatorSection implements IIndicatorSection {
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.repository.IIndicatorSection#getParameters()
+     * @see org.eclipsetrader.core.charts.repository.IElementSection#getPluginId()
+     */
+	@XmlTransient
+    public String getPluginId() {
+	    return pluginId;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.charts.repository.IElementSection#getParameters()
      */
 	@XmlTransient
     public IParameter[] getParameters() {
@@ -85,14 +104,14 @@ public class IndicatorSection implements IIndicatorSection {
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.repository.IIndicatorSection#setParameters(org.eclipsetrader.core.charts.repository.IParameter[])
+     * @see org.eclipsetrader.core.charts.repository.IElementSection#setParameters(org.eclipsetrader.core.charts.repository.IParameter[])
      */
     public void setParameters(IParameter[] parameters) {
     	this.parameters = parameters != null ? Arrays.asList(parameters) : null;
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.repository.IIndicatorSection#accept(org.eclipsetrader.core.charts.repository.IChartVisitor)
+     * @see org.eclipsetrader.core.charts.repository.IElementSection#accept(org.eclipsetrader.core.charts.repository.IChartVisitor)
      */
 	public void accept(IChartVisitor visitor) {
 		visitor.visit(this);

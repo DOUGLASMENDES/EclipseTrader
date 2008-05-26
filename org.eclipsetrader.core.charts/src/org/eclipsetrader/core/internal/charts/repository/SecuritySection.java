@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipsetrader.core.charts.repository.IChartVisitor;
-import org.eclipsetrader.core.charts.repository.IIndicatorSection;
+import org.eclipsetrader.core.charts.repository.IElementSection;
 import org.eclipsetrader.core.charts.repository.ISecuritySection;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.markets.SecurityAdapter;
@@ -34,8 +34,8 @@ public class SecuritySection implements ISecuritySection {
 	private ISecurity security;
 
 	@XmlElement(name = "indicator")
-	@XmlJavaTypeAdapter(IndicatorSectionAdapter.class)
-	private List<IIndicatorSection> indicators;
+	@XmlJavaTypeAdapter(ElementSectionAdapter.class)
+	private List<IElementSection> indicators;
 
 	protected SecuritySection() {
 	}
@@ -61,14 +61,14 @@ public class SecuritySection implements ISecuritySection {
      * @see org.eclipsetrader.core.charts.repository.ISecuritySection#getIndicators()
      */
 	@XmlTransient
-	public IIndicatorSection[] getIndicators() {
-    	return indicators.toArray(new IndicatorSection[indicators.size()]);
+	public IElementSection[] getIndicators() {
+    	return indicators.toArray(new ElementSection[indicators.size()]);
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.repository.ISecuritySection#setIndicators(org.eclipsetrader.core.charts.repository.IIndicatorSection[])
+     * @see org.eclipsetrader.core.charts.repository.ISecuritySection#setIndicators(org.eclipsetrader.core.charts.repository.IElementSection[])
      */
-    public void setIndicators(IIndicatorSection[] indicators) {
+    public void setIndicators(IElementSection[] indicators) {
     	this.indicators = indicators != null ? Arrays.asList(indicators) : null;
     }
 
@@ -77,7 +77,7 @@ public class SecuritySection implements ISecuritySection {
      */
 	public void accept(IChartVisitor visitor) {
 		if (visitor.visit(this)) {
-			IIndicatorSection[] d = getIndicators();
+			IElementSection[] d = getIndicators();
 			for (int i = 0; i < d.length; i++)
 				d[i].accept(visitor);
 		}

@@ -23,15 +23,24 @@ import org.eclipsetrader.core.charts.repository.IChartTemplate;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
 
+/**
+ * Charts UI model root.
+ *
+ * @since 1.0
+ */
 public class ChartDocument implements IAdaptable {
 	private String name;
 	private List<ChartRowSection> sections = new ArrayList<ChartRowSection>();
 
 	private IDataSeries root;
 
-	public ChartDocument(String name, IHistory history) {
+	public ChartDocument(String name, IDataSeries root) {
 		this.name = name;
-		this.root = new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", history.getOHLC());
+		this.root = root;
+	}
+
+	public ChartDocument(String name, IHistory history) {
+		this(name, new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", history.getOHLC()));
 	}
 
 	public ChartDocument(IChartTemplate template, IHistory history) {
@@ -52,22 +61,51 @@ public class ChartDocument implements IAdaptable {
     	}
 	}
 
+	/**
+	 * Returns the chart's name.
+	 *
+	 * @return the name
+	 */
 	public String getName() {
     	return name;
     }
 
+	/**
+	 * Sets the chart name.
+	 *
+	 * @param name the new name to set.
+	 */
 	public void setName(String name) {
     	this.name = name;
     }
 
-	public void addSection(ChartRowSection section) {
-		sections.add(section);
+	/**
+	 * Creates a new section at the end of the chart.
+	 *
+	 * @param name the name of the new section.
+	 * @return the new section object.
+	 */
+	public ChartRowSection createSection(String name) {
+		ChartRowSection s = new ChartRowSection(UUID.randomUUID().toString(), name);
+		sections.add(s);
+		return s;
 	}
 
+	/**
+	 * Returns a possibly empty array of the sections defined on the receiver.
+	 *
+	 * @return the sections array.
+	 */
 	public ChartRowSection[] getSections() {
     	return sections.toArray(new ChartRowSection[sections.size()]);
     }
 
+	/**
+	 * Returns the section with the given id.
+	 *
+	 * @param id the id to search.
+	 * @return the section object, or <code>null</code> if no section with the given id is found.
+	 */
 	public ChartRowSection getSectionWithId(String id) {
 		for (ChartRowSection row : sections) {
 			if (row.getId().equals(id))
@@ -76,6 +114,12 @@ public class ChartDocument implements IAdaptable {
 		return null;
 	}
 
+	/**
+	 * Returns the section with the given name.
+	 *
+	 * @param name the name to search.
+	 * @return the section object, or <code>null</code> if no section with the given name is found.
+	 */
 	public ChartRowSection getSectionWithName(String name) {
 		for (ChartRowSection row : sections) {
 			if (row.getName().equals(name))
