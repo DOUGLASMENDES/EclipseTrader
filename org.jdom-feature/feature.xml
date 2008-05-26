@@ -2,7 +2,7 @@
 <feature
       id="org.jdom"
       label="%featureName"
-      version="1.0.0.v200701091200"
+      version="1.0.0.v200805261200"
       provider-name="%providerName">
 
    <description>
@@ -18,8 +18,8 @@
    </license>
 
    <url>
-      <update label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net"/>
-      <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net"/>
+      <update label="EclipseTrader.org" url="http://www.eclipsetrader.org/updates"/>
+      <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
 
    <plugin

@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Document Object Model Plug-in
+Bundle-Name: Document Object Model
 Bundle-SymbolicName: org.jdom
-Bundle-Version: 1.0.0.v200701091200
+Bundle-Version: 1.0.0.v200805261200
 Bundle-Vendor: EclipseTrader.org
 Export-Package: org.jdom;version="1.0.0",
  org.jdom.adapters;version="1.0.0",
@@ -11,6 +11,4 @@ Export-Package: org.jdom;version="1.0.0",
  org.jdom.output;version="1.0.0",
  org.jdom.transform;version="1.0.0",
  org.jdom.xpath;version="1.0.0"
-Bundle-ClassPath: jdom.jar
-Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
