@@ -227,19 +227,7 @@ public class HeadLineViewer extends ViewPart {
 	public void createPartControl(Composite parent) {
 		createViewer(parent);
 
-		input = new ArrayList<IHeadLine>();
-
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(INewsService.class.getName());
-		if (serviceReference != null) {
-			service = (INewsService) context.getService(serviceReference);
-			if (service != null) {
-				input.addAll(Arrays.asList(service.getHeadLines()));
-				service.addNewsServiceListener(newsListener);
-			}
-			context.ungetService(serviceReference);
-		}
-
+		input = new ArrayList<IHeadLine>(Arrays.asList(getHeadLines()));
 		viewer.setInput(input);
 
 		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -266,10 +254,13 @@ public class HeadLineViewer extends ViewPart {
 			}
 		});
 		viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
-		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
-		getSite().getPage().addSelectionListener(selectionListener);
-       	viewer.setSelection(getSite().getPage().getSelection(), true);
+		if (getSite() != null) {
+			getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
+
+			getSite().getPage().addSelectionListener(selectionListener);
+	       	viewer.setSelection(getSite().getPage().getSelection(), true);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -329,7 +320,17 @@ public class HeadLineViewer extends ViewPart {
 		viewer.setSorter(new ViewerSorter() {
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
+                int cat1 = category(e1);
+                int cat2 = category(e2);
+                if (cat1 != cat2)
+        			return cat1 - cat2;
 	            return ((IHeadLine) e2).getDate().compareTo(((IHeadLine) e1).getDate());
+            }
+
+            @Override
+            public int category(Object element) {
+            	IHeadLine headLine = (IHeadLine) element;
+	            return headLine.isRecent() ? 0 : 1;
             }
 		});
 
@@ -428,5 +429,26 @@ public class HeadLineViewer extends ViewPart {
 			return (IHeadLine) viewer.getTable().getItem(index).getData();
 
 		return null;
+	}
+
+	TableViewer getViewer() {
+    	return viewer;
+    }
+
+	protected IHeadLine[] getHeadLines() {
+		IHeadLine[] result = new IHeadLine[0];
+
+		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+		ServiceReference serviceReference = context.getServiceReference(INewsService.class.getName());
+		if (serviceReference != null) {
+			service = (INewsService) context.getService(serviceReference);
+			if (service != null) {
+				result = service.getHeadLines();
+				service.addNewsServiceListener(newsListener);
+			}
+			context.ungetService(serviceReference);
+		}
+
+		return result;
 	}
 }
