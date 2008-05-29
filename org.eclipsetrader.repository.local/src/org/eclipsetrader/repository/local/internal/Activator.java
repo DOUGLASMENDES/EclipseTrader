@@ -43,7 +43,7 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 
-		repository = new LocalRepository();
+		repository = new LocalRepository(getStateLocation());
 		repository.startUp();
 	}
 

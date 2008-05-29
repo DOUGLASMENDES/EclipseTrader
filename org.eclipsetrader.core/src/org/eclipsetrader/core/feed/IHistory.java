@@ -31,4 +31,8 @@ public interface IHistory extends IAdaptable {
 	public IOHLC getLast();
 
 	public IHistory getSubset(Date first, Date last);
+
+	public IHistory getSubset(Date first, Date last, TimeSpan aggregation);
+
+	public TimeSpan getTimeSpan();
 }

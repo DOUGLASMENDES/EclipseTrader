@@ -172,7 +172,7 @@ public class SecurityAdapter extends XmlAdapter<String, ISecurity> {
     		return null;
 
 		URI uri = new URI(v);
-		if (repositoryService == null) {
+		if (repositoryService == null && Activator.getDefault() != null) {
 	    	try {
 	    		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 	    		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
@@ -184,10 +184,12 @@ public class SecurityAdapter extends XmlAdapter<String, ISecurity> {
 	    	}
 		}
 
-		ISecurity security = repositoryService.getSecurityFromURI(uri);
+		ISecurity security = repositoryService != null ? repositoryService.getSecurityFromURI(uri) : null;
 		if (security == null) {
-    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
-    		Activator.getDefault().getLog().log(status);
+			if (Activator.getDefault() != null) {
+	    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
+	    		Activator.getDefault().getLog().log(status);
+			}
 			return new FailsafeSecurity(uri);
 		}
 

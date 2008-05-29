@@ -71,7 +71,22 @@ public interface IPropertyConstants {
 	 */
 	public static final String ELEMENT_FACTORY = "factory";
 
+	/**
+	 * An array of IOHLC elements.
+	 */
 	public static final String BARS = "bars";
+
+	/**
+	 * An instance of <code>TimeSpan</code> class representing the aggregation
+	 * level of an IOHLC array.
+	 */
+	public static final String TIME_SPAN = "bars-time-span";
+
+	/**
+	 * An instance of java.util.Date representing the starting date of
+	 * an IOHLC array.
+	 */
+	public static final String BARS_DATE = "bars-date";
 
 	public static final String SYMBOL = "symbol";
 

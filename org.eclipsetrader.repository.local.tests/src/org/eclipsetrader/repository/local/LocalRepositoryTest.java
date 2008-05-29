@@ -32,7 +32,7 @@ public class LocalRepositoryTest extends TestCase {
     }
 
 	public void testCreateSecurityObject() throws Exception {
-		LocalRepository repository = new LocalRepository();
+		LocalRepository repository = new LocalRepository(null);
 		Security security = new Security("Test", null);
 		IStore store = repository.createObject();
 		store.putProperties(security.getStoreProperties(), null);
@@ -41,7 +41,7 @@ public class LocalRepositoryTest extends TestCase {
     }
 
 	public void testCreateWatchListObject() throws Exception {
-		LocalRepository repository = new LocalRepository();
+		LocalRepository repository = new LocalRepository(null);
 		WatchList watchlist = new WatchList("Test", new IWatchListColumn[0]);
 		IStore store = repository.createObject();
 		store.putProperties(watchlist.getStoreProperties(), null);
@@ -50,7 +50,7 @@ public class LocalRepositoryTest extends TestCase {
     }
 
 	public void testGetObjectFromURI() throws Exception {
-		LocalRepository repository = new LocalRepository();
+		LocalRepository repository = new LocalRepository(null);
 		Security security = new Security("Test", null);
 		IStore store = repository.createObject();
 		store.putProperties(security.getStoreProperties(), null);

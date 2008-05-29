@@ -15,6 +15,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -149,5 +150,9 @@ public class SecurityStore implements IStore {
 	public HistoryStore createHistoryStore() {
 		historyStore = new HistoryStore(id);
     	return historyStore;
+    }
+
+	public IStore createHistoryStore(Date date) {
+    	return new AggregateHistoryStore(id, null);
     }
 }

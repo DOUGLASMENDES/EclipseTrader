@@ -14,6 +14,7 @@ package org.eclipsetrader.core.feed;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -29,6 +30,7 @@ import org.eclipsetrader.core.repositories.StoreProperties;
 public class History implements IHistory, IStoreObject {
 	private ISecurity security;
 	private IOHLC[] bars = new IOHLC[0];
+	private TimeSpan timeSpan;
 
 	private IOHLC highest;
 	private IOHLC lowest;
@@ -44,7 +46,14 @@ public class History implements IHistory, IStoreObject {
 	public History(ISecurity security, IOHLC[] bars) {
 		setSecurity(security);
 		setOHLC(bars);
+	    this.timeSpan = TimeSpan.days(1);
 	}
+
+	public History(ISecurity security, IOHLC[] bars, TimeSpan aggregation) {
+		setSecurity(security);
+		setOHLC(bars);
+	    this.timeSpan = aggregation;
+    }
 
 	public History(IStore store, IStoreProperties storeProperties) {
 		setStore(store);
@@ -126,6 +135,71 @@ public class History implements IHistory, IStoreObject {
 	}
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IHistory#getSubset(java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
+     */
+    public IHistory getSubset(Date first, Date last, TimeSpan timeSpan) {
+    	if (this.timeSpan != null && this.timeSpan.equals(timeSpan))
+    		return getSubset(first, last);
+
+    	Calendar c = Calendar.getInstance();
+    	if (first != null) {
+    		c.setTime(first);
+    		c.set(Calendar.HOUR_OF_DAY, 0);
+    		c.set(Calendar.MINUTE, 0);
+    		c.set(Calendar.SECOND, 0);
+    		c.set(Calendar.MILLISECOND, 0);
+    		first = c.getTime();
+    	}
+    	if (last != null) {
+    		c.setTime(last);
+    		c.set(Calendar.HOUR_OF_DAY, 23);
+    		c.set(Calendar.MINUTE, 59);
+    		c.set(Calendar.SECOND, 59);
+    		c.set(Calendar.MILLISECOND, 999);
+    		last = c.getTime();
+    	}
+
+    	List<IOHLC> l = new ArrayList<IOHLC>();
+
+		if (store != null) {
+    		IStore[] childStores = store.fetchChilds(null);
+    		if (childStores != null) {
+        		for (IStore childStore : childStores) {
+        			IStoreProperties properties = childStore.fetchProperties(null);
+        			String type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
+        			if (!IHistory.class.getName().equals(type))
+        				continue;
+
+    				Date barsDate = (Date) properties.getProperty(IPropertyConstants.BARS_DATE);
+    				if ((first != null && barsDate.before(first)) || (last != null && barsDate.after(last)))
+    					continue;
+
+		    		IStore[] aggregateChilds = childStore.fetchChilds(null);
+		    		if (aggregateChilds != null) {
+    		    		for (IStore aggregateChild : aggregateChilds) {
+    		    			properties = aggregateChild.fetchProperties(null);
+    		    			if (timeSpan.equals(properties.getProperty(IPropertyConstants.TIME_SPAN))) {
+    		    				IOHLC[] bars = (IOHLC[]) properties.getProperty(IPropertyConstants.BARS);
+    		    			    if (bars != null)
+    		    			    	l.addAll(Arrays.asList(bars));
+    		    			}
+    		    		}
+		    		}
+        		}
+    		}
+    	}
+
+		return new History(security, l.toArray(new IOHLC[l.size()]));
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IHistory#getTimeSpan()
+     */
+    public TimeSpan getTimeSpan() {
+	    return timeSpan;
+    }
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
     @SuppressWarnings("unchecked")
@@ -164,6 +238,10 @@ public class History implements IHistory, IStoreObject {
 
 		storeProperties.setProperty(IPropertyConstants.SECURITY, security);
 		storeProperties.setProperty(IPropertyConstants.BARS, bars);
+		storeProperties.setProperty(IPropertyConstants.TIME_SPAN, timeSpan);
+
+		if (bars != null && bars.length != 0)
+			storeProperties.setProperty(IPropertyConstants.BARS_DATE, bars[0].getDate());
 
 		return storeProperties;
     }
@@ -184,6 +262,8 @@ public class History implements IHistory, IStoreObject {
             }
 		});
 		this.bars = l.toArray(new IOHLC[l.size()]);
+
+		this.timeSpan = (TimeSpan) storeProperties.getProperty(IPropertyConstants.TIME_SPAN);
 
 	    updateRange();
     }

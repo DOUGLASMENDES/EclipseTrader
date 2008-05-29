@@ -17,22 +17,24 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 
 @XmlRootElement(name = "history")
 public class HistoryType {
 
-	@XmlAttribute(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
+	@XmlTransient
 	private ISecurity security;
 
-	@XmlElementWrapper(name = "data")
+	@XmlAttribute(name = "period")
+	@XmlJavaTypeAdapter(TimeSpanAdapter.class)
+	private TimeSpan period;
+
 	@XmlElementRef
 	@XmlJavaTypeAdapter(OHLCAdapter.class)
 	List<IOHLC> data = new ArrayList<IOHLC>();
@@ -41,7 +43,12 @@ public class HistoryType {
 	}
 
 	public HistoryType(ISecurity security, IOHLC[] data) {
+		this(security, data, null);
+	}
+
+	public HistoryType(ISecurity security, IOHLC[] data, TimeSpan period) {
 		this.security = security;
+		this.period = period;
 		if (data != null)
 			this.data = new ArrayList<IOHLC>(Arrays.asList(data));
 	}
@@ -57,5 +64,9 @@ public class HistoryType {
 
 	public ISecurity getSecurity() {
     	return security;
+    }
+
+	public TimeSpan getPeriod() {
+    	return period;
     }
 }

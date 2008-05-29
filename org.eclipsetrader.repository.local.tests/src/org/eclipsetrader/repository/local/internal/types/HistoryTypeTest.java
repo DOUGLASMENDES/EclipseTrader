@@ -30,36 +30,36 @@ public class HistoryTypeTest extends TestCase {
 
 	public void testMarshalEmpty() throws Exception {
 		HistoryType object = new HistoryType();
-		assertEquals(prefix + "<history><data/></history>", marshal(object));
+		assertEquals(prefix + "<history/>", marshal(object));
 	}
 
 	public void testUnmarshalEmpty() throws Exception {
-		HistoryType object = unmarshal(prefix + "<history><data/></history>");
+		HistoryType object = unmarshal(prefix + "<history/>");
 		assertNotNull(object);
 		assertEquals(0, object.getData().size());
 	}
 
 	public void testMarshalDate() throws Exception {
 		HistoryType object = new HistoryType(null, new IOHLC[] {
-				new OHLC(getTime(2007, Calendar.NOVEMBER, 11, 0, 0), null, null, null, null, null),
+				new OHLC(getTime(2007, Calendar.NOVEMBER, 5, 0, 0), null, null, null, null, null),
 		});
-		assertEquals(prefix + "<history><data><bar date=\"2007-11-11 00:00:00\"/></data></history>", marshal(object));
+		assertEquals(prefix + "<history><bar date=\"2007-11-05 00:00:00\"/></history>", marshal(object));
 	}
 
 	public void testUnmarshalDate() throws Exception {
-		HistoryType object = unmarshal(prefix + "<history><data><bar date=\"2007-11-11 00:00:00\"/></data></history>");
-		assertEquals(getTime(2007, Calendar.NOVEMBER, 11, 0, 0), object.getData().get(0).getDate());
+		HistoryType object = unmarshal(prefix + "<history><bar date=\"2007-11-05 00:00:00\"/></history>");
+		assertEquals(getTime(2007, Calendar.NOVEMBER, 5, 0, 0), object.getData().get(0).getDate());
 	}
 
 	public void testMarshalOpen() throws Exception {
 		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, 12.5, null, null, null, null),
 		});
-		assertEquals(prefix + "<history><data><bar open=\"12.5\"/></data></history>", marshal(object));
+		assertEquals(prefix + "<history><bar open=\"12.5\"/></history>", marshal(object));
 	}
 
 	public void testUnmarshalOpen() throws Exception {
-		HistoryType object = unmarshal(prefix + "<history><data><bar open=\"12.5\"/></data></history>");
+		HistoryType object = unmarshal(prefix + "<history><bar open=\"12.5\"/></history>");
 		assertEquals(12.5, object.getData().get(0).getOpen());
 	}
 
@@ -67,11 +67,11 @@ public class HistoryTypeTest extends TestCase {
 		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, 12.5, null, null, null),
 		});
-		assertEquals(prefix + "<history><data><bar high=\"12.5\"/></data></history>", marshal(object));
+		assertEquals(prefix + "<history><bar high=\"12.5\"/></history>", marshal(object));
 	}
 
 	public void testUnmarshalHigh() throws Exception {
-		HistoryType object = unmarshal(prefix + "<history><data><bar high=\"12.5\"/></data></history>");
+		HistoryType object = unmarshal(prefix + "<history><bar high=\"12.5\"/></history>");
 		assertEquals(12.5, object.getData().get(0).getHigh());
 	}
 
@@ -79,11 +79,11 @@ public class HistoryTypeTest extends TestCase {
 		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, null, 12.5, null, null),
 		});
-		assertEquals(prefix + "<history><data><bar low=\"12.5\"/></data></history>", marshal(object));
+		assertEquals(prefix + "<history><bar low=\"12.5\"/></history>", marshal(object));
 	}
 
 	public void testUnmarshalLow() throws Exception {
-		HistoryType object = unmarshal(prefix + "<history><data><bar low=\"12.5\"/></data></history>");
+		HistoryType object = unmarshal(prefix + "<history><bar low=\"12.5\"/></history>");
 		assertEquals(12.5, object.getData().get(0).getLow());
 	}
 
@@ -91,11 +91,11 @@ public class HistoryTypeTest extends TestCase {
 		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, null, null, 12.5, null),
 		});
-		assertEquals(prefix + "<history><data><bar close=\"12.5\"/></data></history>", marshal(object));
+		assertEquals(prefix + "<history><bar close=\"12.5\"/></history>", marshal(object));
 	}
 
 	public void testUnmarshalClose() throws Exception {
-		HistoryType object = unmarshal(prefix + "<history><data><bar close=\"12.5\"/></data></history>");
+		HistoryType object = unmarshal(prefix + "<history><bar close=\"12.5\"/></history>");
 		assertEquals(12.5, object.getData().get(0).getClose());
 	}
 
@@ -103,11 +103,11 @@ public class HistoryTypeTest extends TestCase {
 		HistoryType object = new HistoryType(null, new IOHLC[] {
 				new OHLC(null, null, null, null, null, 12500L),
 		});
-		assertEquals(prefix + "<history><data><bar volume=\"12500\"/></data></history>", marshal(object));
+		assertEquals(prefix + "<history><bar volume=\"12500\"/></history>", marshal(object));
 	}
 
 	public void testUnmarshalVolume() throws Exception {
-		HistoryType object = unmarshal(prefix + "<history><data><bar volume=\"12500\"/></data></history>");
+		HistoryType object = unmarshal(prefix + "<history><bar volume=\"12500\"/></history>");
 		assertEquals(new Long(12500), object.getData().get(0).getVolume());
 	}
 

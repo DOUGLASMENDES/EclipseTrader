@@ -24,6 +24,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -45,12 +46,16 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 	public static final String URI_SCHEMA = "local";
 	public static final String URI_SECURITY_PART = "securities";
 	public static final String URI_SECURITY_HISTORY_PART = "securities/history";
+	public static final String URI_SECURITY_INTRADAY_HISTORY_PART = "securities/history/{0}/{1}";
 	public static final String URI_WATCHLIST_PART = "watchlists";
 
 	public static final String IDENTIFIERS_FILE = "identifiers.xml"; //$NON-NLS-1$
 	public static final String SECURITIES_FILE = "securities.xml"; //$NON-NLS-1$
 	public static final String SECURITIES_HISTORY_FILE = ".history"; //$NON-NLS-1$
 	public static final String WATCHLISTS_FILE = "watchlists.xml"; //$NON-NLS-1$
+
+	private static LocalRepository instance;
+	private IPath location;
 
 	private IdentifiersCollection identifiers;
 	private SecurityCollection securities;
@@ -59,7 +64,10 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 	private IJobManager jobManager;
 	private final ILock lock;
 
-	public LocalRepository() {
+	public LocalRepository(IPath location) {
+		this.location = location;
+		instance = this;
+
 		jobManager = Job.getJobManager();
 		lock = jobManager.newLock();
 
@@ -67,13 +75,21 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 		securities = new SecurityCollection();
 	}
 
+	public static LocalRepository getInstance() {
+    	return instance;
+    }
+
+	public IPath getLocation() {
+    	return location;
+    }
+
 	public void startUp() {
-		File file = Activator.getDefault().getStateLocation().append(IDENTIFIERS_FILE).toFile();
+		File file = location.append(IDENTIFIERS_FILE).toFile();
 		identifiers = (IdentifiersCollection) unmarshal(IdentifiersCollection.class, file);
 		if (identifiers == null)
 			identifiers = new IdentifiersCollection();
 
-		file = Activator.getDefault().getStateLocation().append(SECURITIES_FILE).toFile();
+		file = location.append(SECURITIES_FILE).toFile();
 		securities = (SecurityCollection) unmarshal(SecurityCollection.class, file);
 		if (securities == null)
 			securities = new SecurityCollection();
@@ -95,14 +111,14 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 
 	public void shutDown() {
 		if (watchlists != null) {
-			File file = Activator.getDefault().getStateLocation().append(WATCHLISTS_FILE).toFile();
+			File file = location.append(WATCHLISTS_FILE).toFile();
 			marshal(watchlists, WatchListCollection.class, file);
 		}
 
-		File file = Activator.getDefault().getStateLocation().append(SECURITIES_FILE).toFile();
+		File file = location.append(SECURITIES_FILE).toFile();
 		marshal(securities, SecurityCollection.class, file);
 
-		file = Activator.getDefault().getStateLocation().append(IDENTIFIERS_FILE).toFile();
+		file = location.append(IDENTIFIERS_FILE).toFile();
 		marshal(identifiers, IdentifiersCollection.class, file);
 	}
 

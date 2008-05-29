@@ -12,6 +12,7 @@
 package org.eclipsetrader.repository.local.internal.stores;
 
 import java.net.URI;
+import java.util.Date;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -71,8 +72,12 @@ public class RepositoryStore implements IStore {
 				IStore securityStore = storeObject.getStore();
 				if (securityStore instanceof RepositoryStore)
 					securityStore = ((RepositoryStore) securityStore).getStore();
-				if (securityStore instanceof SecurityStore)
-					store = ((SecurityStore) securityStore).createHistoryStore();
+				if (securityStore instanceof SecurityStore) {
+					if (properties.getProperty(IPropertyConstants.BARS_DATE) != null)
+						store = ((SecurityStore) securityStore).createHistoryStore((Date) properties.getProperty(IPropertyConstants.BARS_DATE));
+					else
+						store = ((SecurityStore) securityStore).createHistoryStore();
+				}
 			}
 		}
 		if (store != null)

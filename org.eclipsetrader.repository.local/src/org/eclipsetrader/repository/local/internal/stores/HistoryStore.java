@@ -12,14 +12,19 @@
 package org.eclipsetrader.repository.local.internal.stores;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileWriter;
-import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
@@ -29,6 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepository;
@@ -41,9 +47,7 @@ import org.eclipsetrader.repository.local.internal.types.HistoryType;
 
 public class HistoryStore implements IStore {
 	private Integer id;
-
 	private ISecurity security;
-	private WeakReference<HistoryType> historyTypeRef = new WeakReference<HistoryType>(null);
 
 	public HistoryStore(Integer id) {
 		this.id = id;
@@ -53,19 +57,12 @@ public class HistoryStore implements IStore {
 	 * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public IStoreProperties fetchProperties(IProgressMonitor monitor) {
-		StoreProperties properties = new StoreProperties();
+		StoreProperties properties = new LazyStoreProperties(id);
 
 		properties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
 
-    	HistoryType historyType = historyTypeRef.get();
-    	if (historyType == null) {
-        	historyType = loadHistoryType();
-        	security = historyType.getSecurity();
-    		historyTypeRef = new WeakReference<HistoryType>(historyType);
-    	}
-
-    	properties.setProperty(IPropertyConstants.SECURITY, historyType.getSecurity());
-		properties.setProperty(IPropertyConstants.BARS, historyType != null ? historyType.toArray() : new IOHLC[0]);
+		properties.setProperty(IPropertyConstants.SECURITY, security);
+    	properties.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.days(1));
 
 		return properties;
 	}
@@ -76,10 +73,8 @@ public class HistoryStore implements IStore {
 	public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
 		security = (ISecurity) properties.getProperty(IPropertyConstants.SECURITY);
 
-		IOHLC[] h = (IOHLC[]) properties.getProperty(IPropertyConstants.BARS);
-		HistoryType historyType = new HistoryType(security, h);
-		historyTypeRef = new WeakReference<HistoryType>(historyType);
-
+		IOHLC[] bars = (IOHLC[]) properties.getProperty(IPropertyConstants.BARS);
+		HistoryType historyType = new HistoryType(security, bars);
 		saveHistoryType(historyType);
 	}
 
@@ -87,17 +82,52 @@ public class HistoryStore implements IStore {
 	 * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void delete(IProgressMonitor monitor) throws CoreException {
-		IPath path = Activator.getDefault().getStateLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
+		IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
 		File file = path.append(String.valueOf(id) + ".xml").toFile();
 		if (file.exists())
 			file.delete();
+
+		file = path.append("." + String.valueOf(id)).toFile();
+		if (file.exists()) {
+			File[] childFiles = file.listFiles(new FileFilter() {
+                public boolean accept(File pathname) {
+	                return pathname.isFile() && pathname.getName().endsWith(".xml");
+                }
+			});
+			for (int i = 0; i < childFiles.length; i++)
+				childFiles[i].delete();
+			file.delete();
+		}
 	}
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
      */
     public IStore[] fetchChilds(IProgressMonitor monitor) {
-	    return new IStore[0];
+    	DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
+    	List<IStore> l = new ArrayList<IStore>();
+
+    	IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
+		File file = path.append("." + String.valueOf(id)).toFile();
+		if (file.exists()) {
+			File[] childFiles = file.listFiles(new FileFilter() {
+                public boolean accept(File pathname) {
+	                return pathname.isFile() && pathname.getName().endsWith(".xml");
+                }
+			});
+			for (int i = 0; i < childFiles.length; i++) {
+				String name = childFiles[i].getName();
+				try {
+	                Date date = dateFormat.parse(name.substring(0, name.length() - 4));
+	                l.add(new IntradayHistoryStore(id, security, date));
+                } catch (ParseException e) {
+	                // Do nothing
+                }
+			}
+		}
+
+		return l.toArray(new IStore[l.size()]);
     }
 
 	/* (non-Javadoc)
@@ -123,19 +153,6 @@ public class HistoryStore implements IStore {
 	 */
 	public IRepository getRepository() {
 	    return Activator.getDefault().getRepository();
-	}
-
-	protected HistoryType loadHistoryType() {
-    	HistoryType historyType = historyTypeRef.get();
-		if (historyType == null) {
-			IPath path = Activator.getDefault().getStateLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
-			path.toFile().mkdirs();
-			historyType = (HistoryType) unmarshal(HistoryType.class, path.append(String.valueOf(id) + ".xml").toFile());
-			if (historyType == null)
-				historyType = new HistoryType();
-    		historyTypeRef = new WeakReference<HistoryType>(historyType);
-		}
-		return historyType;
 	}
 
 	protected void saveHistoryType(HistoryType historyType) {
@@ -165,27 +182,5 @@ public class HistoryStore implements IStore {
     		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error saving securities", null); //$NON-NLS-1$
     		Activator.getDefault().getLog().log(status);
         }
-	}
-
-	@SuppressWarnings("unchecked")
-    protected Object unmarshal(Class clazz, File file) {
-		try {
-			if (file.exists()) {
-	            JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-	            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-	            unmarshaller.setEventHandler(new ValidationEventHandler() {
-	            	public boolean handleEvent(ValidationEvent event) {
-	            		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-	            		Activator.getDefault().getLog().log(status);
-	            		return true;
-	            	}
-	            });
-	            return unmarshaller.unmarshal(file);
-			}
-        } catch (Exception e) {
-    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error loading identifiers", null); //$NON-NLS-1$
-    		Activator.getDefault().getLog().log(status);
-        }
-        return null;
 	}
 }
