@@ -38,12 +38,15 @@ import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepository;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 import org.eclipsetrader.core.repositories.StoreProperties;
 import org.eclipsetrader.repository.local.LocalRepository;
 import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.types.HistoryType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class HistoryStore implements IStore {
 	private Integer id;
@@ -51,6 +54,11 @@ public class HistoryStore implements IStore {
 
 	public HistoryStore(Integer id) {
 		this.id = id;
+	    try {
+	        URI uri = new URI(LocalRepository.URI_SCHEMA, LocalRepository.URI_SECURITY_PART, String.valueOf(id));
+			this.security = getSecurity(uri);
+        } catch (URISyntaxException e) {
+        }
 	}
 
 	/* (non-Javadoc)
@@ -182,5 +190,23 @@ public class HistoryStore implements IStore {
     		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error saving securities", null); //$NON-NLS-1$
     		Activator.getDefault().getLog().log(status);
         }
+	}
+
+	protected ISecurity getSecurity(URI uri) {
+		IRepositoryService repositoryService = null;
+
+		if (Activator.getDefault() != null) {
+	    	try {
+	    		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+	    		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+	    		repositoryService = (IRepositoryService) context.getService(serviceReference);
+	    		context.ungetService(serviceReference);
+	    	} catch(Exception e) {
+	    		Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
+	    		Activator.getDefault().getLog().log(status);
+	    	}
+		}
+
+		return repositoryService != null ? repositoryService.getSecurityFromURI(uri) : null;
 	}
 }

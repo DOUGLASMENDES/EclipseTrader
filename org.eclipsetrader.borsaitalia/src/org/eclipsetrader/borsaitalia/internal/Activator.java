@@ -21,7 +21,10 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipsetrader.borsaitalia";
+	public static final String PLUGIN_ID = "org.eclipsetrader.borsaitalia"; //$NON-NLS-1$
+
+	public static final String PROP_CODE = "org.eclipsetrader.borsaitalia.code"; //$NON-NLS-1$
+	public static final String PROP_ISIN = "org.eclipsetrader.borsaitalia.isin"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -65,8 +68,8 @@ public class Activator extends AbstractUIPlugin {
 		if (plugin == null) {
 			if (status.getException() != null)
 				status.getException().printStackTrace();
-			throw new RuntimeException(status.getException());
 		}
-		plugin.getLog().log(status);
+		else
+			plugin.getLog().log(status);
 	}
 }

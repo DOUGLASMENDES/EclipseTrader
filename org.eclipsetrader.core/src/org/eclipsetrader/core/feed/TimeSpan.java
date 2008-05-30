@@ -72,6 +72,14 @@ public class TimeSpan {
 	}
 
 	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    return length * 11 + units.hashCode() * 7;
+    }
+
+	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
