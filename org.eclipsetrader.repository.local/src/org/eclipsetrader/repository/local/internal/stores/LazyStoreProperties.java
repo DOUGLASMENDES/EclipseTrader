@@ -40,7 +40,7 @@ public class LazyStoreProperties extends StoreProperties {
     public Object getProperty(String name) {
     	if (IPropertyConstants.BARS.equals(name)) {
     		if (getProperties().get(name) == null) {
-    			IPath path = Activator.getDefault().getStateLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
+    			IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
     			path.toFile().mkdirs();
     			HistoryType historyType = (HistoryType) unmarshal(HistoryType.class, path.append(String.valueOf(id) + ".xml").toFile());
     			if (historyType != null)

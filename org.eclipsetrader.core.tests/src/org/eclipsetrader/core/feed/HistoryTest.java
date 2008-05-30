@@ -151,6 +151,36 @@ public class HistoryTest extends TestCase {
 	    assertEquals(6, subset.getOHLC().length);
     }
 
+	public void testBuildMissingAggregatedSubset() throws Exception {
+		StoreProperties aggregateStoreProperties1 = new StoreProperties();
+		aggregateStoreProperties1.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.minutes(1));
+		IOHLC[] bars = new IOHLC[] {
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 6), 26.52, 26.52, 26.47, 26.47, 41756L),
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 8), 26.38, 26.41, 26.38, 26.41, 58018L),
+			};
+		aggregateStoreProperties1.setProperty(IPropertyConstants.BARS, bars);
+
+		StoreProperties day22StoreProperties = new StoreProperties();
+		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
+
+	    TestStore historyStore = new TestStore(new StoreProperties(), new IStore[] {
+	    		new TestStore(day22StoreProperties, new IStore[] {
+	    				new TestStore(aggregateStoreProperties1),
+		    		}),
+	    	});
+
+	    History history = new History(historyStore, historyStore.fetchProperties(null));
+	    IHistory subset = history.getSubset(getTime(2008, Calendar.MAY, 22), getTime(2008, Calendar.MAY, 22), TimeSpan.minutes(2));
+	    assertEquals(3, subset.getOHLC().length);
+	    assertEquals(new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L), subset.getOHLC()[0]);
+	    assertEquals(new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.47, 26.47, 76839L), subset.getOHLC()[1]);
+	    assertEquals(new OHLC(getTime(2008, Calendar.MAY, 22, 9, 7), 26.47, 26.47, 26.37, 26.41, 202512L), subset.getOHLC()[2]);
+    }
+
 	private Date getTime(int year, int month, int day) {
 	    Calendar date = Calendar.getInstance();
 	    date.set(year, month, day, 0, 0, 0);

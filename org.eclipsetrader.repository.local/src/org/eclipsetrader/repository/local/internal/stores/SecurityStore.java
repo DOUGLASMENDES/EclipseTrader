@@ -120,7 +120,7 @@ public class SecurityStore implements IStore {
      */
     public IStore[] fetchChilds(IProgressMonitor monitor) {
     	if (historyStore == null) {
-        	IPath path = Activator.getDefault().getStateLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
+        	IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
     		File file = path.append(String.valueOf(id) + ".xml").toFile();
     		if (file.exists())
 				historyStore = new HistoryStore(id);

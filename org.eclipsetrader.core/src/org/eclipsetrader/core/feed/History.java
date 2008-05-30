@@ -44,15 +44,13 @@ public class History implements IHistory, IStoreObject {
 	}
 
 	public History(ISecurity security, IOHLC[] bars) {
-		setSecurity(security);
-		setOHLC(bars);
-	    this.timeSpan = TimeSpan.days(1);
+		this(security, bars, TimeSpan.days(1));
 	}
 
-	public History(ISecurity security, IOHLC[] bars, TimeSpan aggregation) {
+	public History(ISecurity security, IOHLC[] bars, TimeSpan timeSpan) {
 		setSecurity(security);
 		setOHLC(bars);
-	    this.timeSpan = aggregation;
+	    this.timeSpan = timeSpan;
     }
 
 	public History(IStore store, IStoreProperties storeProperties) {
@@ -131,7 +129,7 @@ public class History implements IHistory, IStoreObject {
 			if ((first == null || !b.getDate().before(first)) && (last == null || !b.getDate().after(last)))
 				l.add(b);
 		}
-		return new History(security, l.toArray(new IOHLC[l.size()]));
+		return new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
 	}
 
 	/* (non-Javadoc)
@@ -166,9 +164,6 @@ public class History implements IHistory, IStoreObject {
     		if (childStores != null) {
         		for (IStore childStore : childStores) {
         			IStoreProperties properties = childStore.fetchProperties(null);
-        			String type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
-        			if (!IHistory.class.getName().equals(type))
-        				continue;
 
     				Date barsDate = (Date) properties.getProperty(IPropertyConstants.BARS_DATE);
     				if ((first != null && barsDate.before(first)) || (last != null && barsDate.after(last)))
@@ -189,7 +184,41 @@ public class History implements IHistory, IStoreObject {
     		}
     	}
 
-		return new History(security, l.toArray(new IOHLC[l.size()]));
+		if (l.size() == 0 && !TimeSpan.minutes(1).equals(timeSpan)) {
+			IHistory temp = getSubset(first, last, TimeSpan.minutes(1));
+
+			Date startDate = null, endDate = null;
+			Double open = null, high = null, low = null, close = null;
+			Long volume = 0L;
+
+			for (IOHLC currentBar : temp.getOHLC()) {
+				if (startDate != null && !currentBar.getDate().before(endDate)) {
+					l.add(new OHLC(startDate, open, high, low, close, volume));
+					startDate = null;
+				}
+
+				if (startDate == null) {
+		    		c.setTime(currentBar.getDate());
+		    		startDate = c.getTime();
+		    		c.add(Calendar.MINUTE, timeSpan.getLength());
+		    		endDate = c.getTime();
+					open = high = low = close = null;
+					volume = 0L;
+				}
+
+				if (open == null)
+					open = currentBar.getOpen();
+				high = high != null ? Math.max(high, currentBar.getHigh()) : currentBar.getHigh();
+				low = low != null ? Math.min(low, currentBar.getLow()) : currentBar.getLow();
+				close = currentBar.getClose();
+				volume += currentBar.getVolume();
+			}
+
+			if (startDate != null)
+				l.add(new OHLC(startDate, open, high, low, close, volume));
+		}
+
+		return new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
     }
 
 	/* (non-Javadoc)

@@ -13,6 +13,7 @@ package org.eclipsetrader.repository.local.internal.stores;
 
 import java.io.File;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
@@ -69,8 +70,9 @@ public class IntradayHistoryStore implements IStore {
 	 */
 	public IStore[] fetchChilds(IProgressMonitor monitor) {
 		if (childs == null) {
-	    	IPath path = Activator.getDefault().getStateLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
-			File file = path.append("." + String.valueOf(id)).toFile();
+	    	IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
+			File file = path.append("." + String.valueOf(id)).append(new SimpleDateFormat("yyyyMMdd").format(date) + ".xml").toFile();
+
 			HistoryDayType dayType = (HistoryDayType) unmarshal(HistoryDayType.class, file);
 			if (dayType != null) {
 				HistoryType[] periods = dayType.getPeriods();
