@@ -27,5 +27,18 @@
             name="OpenTick">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            category="org.eclipsetrader.ui.import.data"
+            class="org.eclipsetrader.opentick.internal.ui.DataImportWizard"
+            icon="opentick16.gif"
+            id="org.eclipsetrader.opentick.wizard1"
+            name="OpenTick">
+         <description>
+            Import historical data from OpenTick.
+         </description>
+      </wizard>
+   </extension>
 
 </plugin>

@@ -233,15 +233,27 @@ public class FeedSubscription implements IFeedSubscription {
 
 	protected void cancelRequests() throws Exception {
 		if (equityInitRequest != null && !equityInitRequest.isCompleted()) {
-			equityInitRequest.cancel();
+			try {
+				equityInitRequest.cancel();
+			} catch (IllegalStateException e) {
+				// Do nothing
+			}
 			equityInitRequest = null;
 		}
 		if (ohlRequest != null && !ohlRequest.isCompleted()) {
-			ohlRequest.cancel();
+			try {
+				ohlRequest.cancel();
+			} catch (IllegalStateException e) {
+				// Do nothing
+			}
 			ohlRequest = null;
 		}
 		if (quoteStreamRequest != null && !quoteStreamRequest.isCompleted()) {
-			quoteStreamRequest.cancel();
+			try {
+				quoteStreamRequest.cancel();
+			} catch (IllegalStateException e) {
+				// Do nothing
+			}
 			quoteStreamRequest = null;
 		}
 	}

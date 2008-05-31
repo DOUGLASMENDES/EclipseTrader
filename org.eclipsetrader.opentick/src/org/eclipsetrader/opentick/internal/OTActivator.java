@@ -59,6 +59,7 @@ public class OTActivator extends AbstractUIPlugin {
 		plugin = this;
 
 		startupRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
+		new Connector();
 	}
 
 	/*

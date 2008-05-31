@@ -25,8 +25,8 @@ import org.eclipsetrader.core.feed.IFeedProperties;
 @XmlRootElement(name = "list")
 @XmlType(name = "org.eclipsetrader.opentick.IdentifiersList")
 public class IdentifiersList {
-	private static final String SYMBOL_PROPERTY = "org.eclipsetrader.opentick.symbol";
-	private static final String EXCHANGE_PROPERTY = "org.eclipsetrader.opentick.exchange";
+	public static final String SYMBOL_PROPERTY = "org.eclipsetrader.opentick.symbol";
+	public static final String EXCHANGE_PROPERTY = "org.eclipsetrader.opentick.exchange";
 	private static IdentifiersList instance;
 
     @XmlElementRef

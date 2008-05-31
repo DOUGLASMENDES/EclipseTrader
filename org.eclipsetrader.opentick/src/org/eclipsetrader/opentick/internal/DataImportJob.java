@@ -9,12 +9,8 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.borsaitalia.internal.ui.wizards;
+package org.eclipsetrader.opentick.internal;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -24,17 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
-import org.eclipsetrader.borsaitalia.internal.Activator;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
@@ -45,8 +37,15 @@ import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.opentick.internal.core.repository.IdentifiersList;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.otfeed.IConnection;
+import org.otfeed.IRequest;
+import org.otfeed.command.AggregationSpan;
+import org.otfeed.command.HistDataCommand;
+import org.otfeed.event.IDataDelegate;
+import org.otfeed.event.OTOHLC;
 
 public class DataImportJob extends Job {
 	public static final int FULL = 0;
@@ -59,9 +58,8 @@ public class DataImportJob extends Job {
 	private Date fromDate;
 	private Date toDate;
 
-	private String host = "grafici.borsaitalia.it"; //$NON-NLS-1$
-	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); //$NON-NLS-1$
+	private int marketOpen = 9 * 60 + 30;
+	private int marketClose = 16 * 60 + 0;
 
 	public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
 		super("Import Data");
@@ -83,6 +81,13 @@ public class DataImportJob extends Job {
 		try {
 			IRepositoryService repository = getRepositoryService();
 
+			monitor.subTask("Connecting");
+
+			Connector.getInstance().connect();
+			IConnection connection = Connector.getInstance().getConnection();
+			if (connection == null)
+				return Status.OK_STATUS;
+
 			for (ISecurity security : filteredList) {
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
@@ -101,14 +106,7 @@ public class DataImportJob extends Job {
 						if (history != null && mode != FULL) {
 							for (IOHLC d : history.getOHLC())
 								map.put(d.getDate(), d);
-							if (mode == FULL_INCREMENTAL) {
-								if (history.getFirst() != null) {
-									beginDate = history.getFirst().getDate();
-									if (fromDate.before(beginDate))
-										beginDate = fromDate;
-								}
-							}
-							else if (mode == INCREMENTAL) {
+							if (mode == INCREMENTAL) {
 								if (history.getLast() != null)
 									beginDate = history.getLast().getDate();
 								endDate = Calendar.getInstance().getTime();
@@ -122,7 +120,7 @@ public class DataImportJob extends Job {
 							if (currentTimeSpan.equals(TimeSpan.days(1))) {
 								monitor.subTask(security.getName().replace("&", "&&"));
 
-								IOHLC[] ohlc = backfill(identifier, beginDate, endDate, currentTimeSpan);
+								IOHLC[] ohlc = backfill(connection, identifier, beginDate, endDate, currentTimeSpan);
 								if (ohlc != null && ohlc.length != 0) {
 									for (IOHLC d : ohlc)
 										map.put(d.getDate(), d);
@@ -139,7 +137,7 @@ public class DataImportJob extends Job {
 							else {
 								monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
 
-								IOHLC[] ohlc = backfill(identifier, beginDate, endDate, currentTimeSpan);
+								IOHLC[] ohlc = backfill(connection, identifier, beginDate, endDate, currentTimeSpan);
 								if (ohlc != null && ohlc.length != 0) {
 									Calendar c = Calendar.getInstance();
 									int dayOfYear = -1;
@@ -168,10 +166,13 @@ public class DataImportJob extends Job {
 						}
 					}
 				} catch (Exception e) {
-					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error downloading data for " + security, e);
-					Activator.log(status);
+					Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error downloading data for " + security, e);
+					OTActivator.log(status);
 				}
 			}
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error downloading data", e);
+			OTActivator.log(status);
 		} finally {
 			monitor.done();
 		}
@@ -184,18 +185,18 @@ public class DataImportJob extends Job {
 		for (ISecurity security : list) {
 			IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 			if (identifier != null) {
-				String code = identifier.getSymbol();
-				String isin = null;
+				String symbol = identifier.getSymbol();
+				String exchange = null;
 
 				IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
 				if (properties != null) {
-					if (properties.getProperty(Activator.PROP_ISIN) != null)
-						isin = properties.getProperty(Activator.PROP_ISIN);
-					if (properties.getProperty(Activator.PROP_CODE) != null)
-						code = properties.getProperty(Activator.PROP_CODE);
+					if (properties.getProperty(IdentifiersList.SYMBOL_PROPERTY) != null)
+						symbol = properties.getProperty(IdentifiersList.SYMBOL_PROPERTY);
+					if (properties.getProperty(IdentifiersList.EXCHANGE_PROPERTY) != null)
+						exchange = properties.getProperty(IdentifiersList.EXCHANGE_PROPERTY);
 				}
 
-				if (code != null && isin != null)
+				if (symbol != null && exchange != null)
 					l.add(security);
 			}
 		}
@@ -209,80 +210,93 @@ public class DataImportJob extends Job {
 		return l.toArray(new ISecurity[l.size()]);
 	}
 
-	protected IOHLC[] backfill(IFeedIdentifier identifier, Date begin, Date end, TimeSpan timeSpan) {
-		String code = identifier.getSymbol();
-		String isin = null;
+	protected IOHLC[] backfill(IConnection connection, IFeedIdentifier identifier, Date begin, Date end, TimeSpan timeSpan) {
+		String symbol = identifier.getSymbol();
+		String exchange = null;
 
 		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
 		if (properties != null) {
-			if (properties.getProperty(Activator.PROP_ISIN) != null)
-				isin = properties.getProperty(Activator.PROP_ISIN);
-			if (properties.getProperty(Activator.PROP_CODE) != null)
-				code = properties.getProperty(Activator.PROP_CODE);
+			if (properties.getProperty(IdentifiersList.SYMBOL_PROPERTY) != null)
+				symbol = properties.getProperty(IdentifiersList.SYMBOL_PROPERTY);
+			if (properties.getProperty(IdentifiersList.EXCHANGE_PROPERTY) != null)
+				exchange = properties.getProperty(IdentifiersList.EXCHANGE_PROPERTY);
 		}
 
-		if (code == null || isin == null)
+		if (symbol == null || exchange == null)
 			return new IOHLC[0];
 
-		String period = String.valueOf(timeSpan.getLength()) + (timeSpan.getUnits() == Units.Minutes ? "MIN" : "DAY");
+		AggregationSpan period = timeSpan.getUnits() == Units.Minutes ? AggregationSpan.minutes(timeSpan.getLength()) : AggregationSpan.days(timeSpan.getLength());
 
-		List<OHLC> list = new ArrayList<OHLC>();
+		final List<OHLC> list = new ArrayList<OHLC>(4096);
 
 		try {
-			HttpMethod method = new GetMethod("http://" + host + "/scripts/cligipsw.dll");
-			method.setQueryString(new NameValuePair[] {
-					new NameValuePair("app", "tic_d"),
-					new NameValuePair("action", "dwnld4push"),
-					new NameValuePair("cod", code),
-					new NameValuePair("codneb", isin),
-					new NameValuePair("req_type", "GRAF_DS"),
-					new NameValuePair("ascii", "1"),
-					new NameValuePair("form_id", ""),
-					new NameValuePair("period", period),
-					new NameValuePair("From", new SimpleDateFormat("yyyyMMdd000000").format(begin.getTime())),
-					new NameValuePair("To", new SimpleDateFormat("yyyyMMdd000000").format(end.getTime())),
-				});
-			method.setFollowRedirects(true);
-
-			HttpClient client = new HttpClient();
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-			client.executeMethod(method);
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-
-			String inputLine = in.readLine();
-			if (inputLine.startsWith("@")) {
-				while ((inputLine = in.readLine()) != null) {
-					if (inputLine.startsWith("@") || inputLine.length() == 0) //$NON-NLS-1$
-						continue;
-
-					try {
-						String[] item = inputLine.split("\\|"); //$NON-NLS-1$
-						OHLC bar = new OHLC(
-								df.parse(item[0]),
-								nf.parse(item[1]).doubleValue(),
-								nf.parse(item[2]).doubleValue(),
-								nf.parse(item[3]).doubleValue(),
-								nf.parse(item[4]).doubleValue(),
-								nf.parse(item[5]).longValue()
-							);
-						list.add(bar);
-					} catch (Exception e) {
-						Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing data: " + inputLine, e); //$NON-NLS-1$
-						Activator.getDefault().getLog().log(status);
-					}
+			if (timeSpan.getUnits() == Units.Minutes) {
+				if (begin != null) {
+					Calendar c = Calendar.getInstance(Locale.US);
+					c.setTime(begin);
+					c.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+					c.set(Calendar.HOUR_OF_DAY, 0);
+					c.set(Calendar.MINUTE, 0);
+					c.set(Calendar.SECOND, 0);
+					c.set(Calendar.MILLISECOND, 0);
+					begin = c.getTime();
 				}
+				if (end != null) {
+					Calendar c = Calendar.getInstance(Locale.US);
+					c.setTime(end);
+					c.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+					c.set(Calendar.HOUR_OF_DAY, 0);
+					c.set(Calendar.MINUTE, 0);
+					c.set(Calendar.SECOND, 0);
+					c.set(Calendar.MILLISECOND, 0);
+					end = c.getTime();
+				}
+
+				final Calendar c = Calendar.getInstance(Locale.US);
+				c.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+				HistDataCommand command = new HistDataCommand(exchange, symbol, begin, end, period, new IDataDelegate<OTOHLC>() {
+		            public void onData(OTOHLC event) {
+						c.setTime(event.getTimestamp());
+						if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+							return;
+						int minutesOfDay = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
+						if (minutesOfDay >= marketOpen && minutesOfDay < marketClose) {
+							OHLC bar = new OHLC(
+									event.getTimestamp(),
+									event.getOpenPrice(),
+									event.getHighPrice(),
+									event.getLowPrice(),
+									event.getClosePrice(),
+									event.getVolume());
+							list.add(bar);
+						}
+		            }
+				});
+				IRequest request = connection.prepareRequest(command);
+				request.submit();
+				request.waitForCompletion();
 			}
 			else {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, NLS.bind("Unexpected response from {0}: {1}", new Object[] { method.getURI().toString(), inputLine}), null);
-				Activator.getDefault().getLog().log(status);
+				HistDataCommand command = new HistDataCommand(exchange, symbol, begin, end, period, new IDataDelegate<OTOHLC>() {
+		            public void onData(OTOHLC event) {
+						OHLC bar = new OHLC(
+								event.getTimestamp(),
+								event.getOpenPrice(),
+								event.getHighPrice(),
+								event.getLowPrice(),
+								event.getClosePrice(),
+								event.getVolume());
+						list.add(bar);
+		            }
+				});
+				IRequest request = connection.prepareRequest(command);
+				request.submit();
+				request.waitForCompletion();
 			}
-
-			in.close();
-
 		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(status);
+			Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error reading data", e);
+			OTActivator.getDefault().getLog().log(status);
 		}
 
 		return list.toArray(new IOHLC[list.size()]);
@@ -290,7 +304,7 @@ public class DataImportJob extends Job {
 
 	protected IRepositoryService getRepositoryService() {
 		IRepositoryService service = null;
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+		BundleContext context = OTActivator.getDefault().getBundle().getBundleContext();
 		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
 		if (serviceReference != null) {
 			service = (IRepositoryService) context.getService(serviceReference);

@@ -25,20 +25,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
+import org.eclipsetrader.opentick.internal.Connector;
 import org.eclipsetrader.opentick.internal.OTActivator;
 import org.eclipsetrader.opentick.internal.core.repository.IdentifierType;
 import org.eclipsetrader.opentick.internal.core.repository.IdentifiersList;
 import org.otfeed.IConnection;
-import org.otfeed.OTConnectionFactory;
-import org.otfeed.event.IConnectionStateListener;
-import org.otfeed.event.OTError;
-import org.otfeed.event.OTHost;
 
 public class FeedConnector implements IFeedConnector, IExecutableExtension, IExecutableExtensionFactory, Runnable, PropertyChangeListener {
 	private static FeedConnector instance;
@@ -50,40 +44,12 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension, IExe
 
 	private Thread thread;
 	private boolean stopping = false;
-	private String userName;
-	private String password;
-
 	private IConnection connection;
-	private IConnectionStateListener connectionStateListener = new IConnectionStateListener() {
-		public void onConnected() {
-		}
-
-		public void onConnecting(OTHost host) {
-		}
-
-		public void onError(OTError error) {
-			connection = null;
-		}
-
-		public void onLogin() {
-			synchronized (symbolSubscriptions) {
-				for (FeedSubscription subscription : symbolSubscriptions.values())
-					subscription.submitRequests(connection);
-			}
-		}
-
-		public void onRedirect(OTHost host) {
-		}
-	};
 
 	private IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
 		public void propertyChange(PropertyChangeEvent event) {
-			if (OTActivator.PREFS_USERNAME.equals(event.getProperty()))
-				userName = (String) event.getNewValue();
-			else if (OTActivator.PREFS_PASSWORD.equals(event.getProperty()))
-				userName = (String) event.getNewValue();
-
-			if (OTActivator.PREFS_SERVER.equals(event.getProperty()) || OTActivator.PREFS_PORT.equals(event.getProperty()) || OTActivator.PREFS_PASSWORD.equals(event.getProperty()) || OTActivator.PREFS_USERNAME.equals(event.getProperty())) {
+			String property = event.getProperty();
+			if (OTActivator.PREFS_SERVER.equals(property) || OTActivator.PREFS_PORT.equals(property) || OTActivator.PREFS_PASSWORD.equals(property) || OTActivator.PREFS_USERNAME.equals(property)) {
 				disconnect();
 				connect();
 			}
@@ -183,26 +149,8 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension, IExe
 	 * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
 	 */
 	public void connect() {
-		final IPreferenceStore preferences = getPreferenceStore();
-		userName = preferences.getString(OTActivator.PREFS_USERNAME);
-		password = preferences.getString(OTActivator.PREFS_PASSWORD);
-
-		if (userName.length() == 0 || password.length() == 0) {
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					Shell shell = PlatformUI.isWorkbenchRunning() ? PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell() : null;
-					LoginDialog dlg = new LoginDialog(shell, userName, password);
-					if (dlg.open() == LoginDialog.OK) {
-						userName = dlg.getUserName();
-						password = dlg.getPassword();
-						preferences.setValue(OTActivator.PREFS_USERNAME, userName);
-						preferences.setValue(OTActivator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
-					}
-				}
-			});
-			if (userName.length() == 0 || password.length() == 0)
-				return;
-		}
+		Connector.getInstance().connect();
+		connection = Connector.getInstance().getConnection();
 
 		if (thread == null) {
 			stopping = false;
@@ -210,13 +158,11 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension, IExe
 			thread.start();
 		}
 
-		if (connection == null) {
-			OTConnectionFactory factory = new OTConnectionFactory();
-			factory.getHostList().add(new OTHost(preferences.getString(OTActivator.PREFS_SERVER), preferences.getInt(OTActivator.PREFS_PORT)));
-			factory.setUsername(userName);
-			factory.setPassword(password);
-			connection = factory.connect(connectionStateListener);
-			connection.waitForCompletion(30 * 1000);
+		if (connection != null) {
+			synchronized (symbolSubscriptions) {
+				for (FeedSubscription subscription : symbolSubscriptions.values())
+					subscription.submitRequests(connection);
+			}
 		}
 
 		if (OTActivator.getDefault() != null)
@@ -235,19 +181,14 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension, IExe
 			OTActivator.getDefault().getPreferenceStore().removePropertyChangeListener(propertyChangeListener);
 
 		stopping = true;
-		if (connection != null) {
-			try {
-				connection.shutdown();
-			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error stopping shutting down connection", e);
-				OTActivator.log(status);
-			}
-			connection = null;
-		}
+
+		Connector.getInstance().disconnect();
+		connection = null;
+
 		if (thread != null) {
 			try {
 				synchronized (thread) {
-					thread.notify();
+					thread.notifyAll();
 				}
 				thread.join(30 * 1000);
 			} catch (InterruptedException e) {
