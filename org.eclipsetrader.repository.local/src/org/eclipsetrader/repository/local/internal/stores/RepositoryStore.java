@@ -17,6 +17,8 @@ import java.util.Date;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipsetrader.core.feed.IHistory;
+import org.eclipsetrader.core.feed.TimeSpan;
+import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepository;
@@ -73,7 +75,8 @@ public class RepositoryStore implements IStore {
 				if (securityStore instanceof RepositoryStore)
 					securityStore = ((RepositoryStore) securityStore).getStore();
 				if (securityStore instanceof SecurityStore) {
-					if (properties.getProperty(IPropertyConstants.BARS_DATE) != null)
+					TimeSpan timeSpan = (TimeSpan) properties.getProperty(IPropertyConstants.TIME_SPAN);
+					if (timeSpan != null && timeSpan.getUnits() == Units.Minutes)
 						store = ((SecurityStore) securityStore).createHistoryStore((Date) properties.getProperty(IPropertyConstants.BARS_DATE));
 					else
 						store = ((SecurityStore) securityStore).createHistoryStore();

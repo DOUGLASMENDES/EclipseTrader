@@ -8,7 +8,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.net,
  org.eclipse.ui,
  org.eclipsetrader.core,
- org.eclipsetrader.news
+ org.eclipsetrader.news,
+ org.eclipse.nebula.widgets.cdatetime
 Eclipse-LazyStart: true
 Bundle-Vendor: EclipseTrader.org
 Export-Package: org.eclipsetrader.yahoo.internal;x-internal:=true,
@@ -34,12 +35,12 @@ Import-Package: com.sun.syndication.feed,
  javax.xml.bind.attachment;version="[2.1.0,2.2.0)",
  javax.xml.bind.helpers;version="[2.1.0,2.2.0)",
  javax.xml.bind.util;version="[2.1.0,2.2.0)",
- org.apache.commons.httpclient,
- org.apache.commons.httpclient.auth,
- org.apache.commons.httpclient.cookie,
- org.apache.commons.httpclient.methods,
- org.apache.commons.httpclient.methods.multipart,
- org.apache.commons.httpclient.params,
- org.apache.commons.httpclient.protocol,
- org.apache.commons.httpclient.util
+ org.apache.commons.httpclient;version="[3.0.0,4.0.0)",
+ org.apache.commons.httpclient.auth;version="[3.0.0,4.0.0)",
+ org.apache.commons.httpclient.cookie;version="[3.0.0,4.0.0)",
+ org.apache.commons.httpclient.methods;version="[3.0.0,4.0.0)",
+ org.apache.commons.httpclient.methods.multipart;version="[3.0.0,4.0.0)",
+ org.apache.commons.httpclient.params;version="[3.0.0,4.0.0)",
+ org.apache.commons.httpclient.protocol;version="[3.0.0,4.0.0)",
+ org.apache.commons.httpclient.util;version="[3.0.0,4.0.0)"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

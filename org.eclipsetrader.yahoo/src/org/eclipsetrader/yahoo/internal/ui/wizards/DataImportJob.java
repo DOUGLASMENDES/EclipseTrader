@@ -35,6 +35,7 @@ import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.OHLC;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
@@ -43,20 +44,28 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class DataImportJob extends Job {
-	public static final int FULL_UPDATE = 0;
-	public static final int INCREMENTAL_UPDATE = 1;
-	public static final int FULL_DOWNLOAD = 2;
+	public static final int FULL = 0;
+	public static final int INCREMENTAL = 1;
+	public static final int FULL_INCREMENTAL = 2;
+
 	private ISecurity[] securities;
-	private int mode = FULL_UPDATE;
+	private int mode;
+	private TimeSpan[] timeSpan;
+	private Date fromDate;
+	private Date toDate;
 
 	private SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yy", Locale.US); //$NON-NLS-1$
 	private SimpleDateFormat dfAlt = new SimpleDateFormat("yy-MM-dd"); //$NON-NLS-1$
 	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
 	private NumberFormat pf = NumberFormat.getInstance(Locale.US);
 
-	public DataImportJob(ISecurity[] securities) {
-		super("Import Yahoo! Data");
+	public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
+		super("Import Data");
 		this.securities = securities;
+		this.mode = mode;
+		this.fromDate = fromDate;
+		this.toDate = toDate;
+		this.timeSpan = timeSpan;
 	}
 
 	/* (non-Javadoc)
@@ -69,44 +78,46 @@ public class DataImportJob extends Job {
 			IRepositoryService repository = getRepositoryService();
 
 			for (ISecurity security : securities) {
-				monitor.subTask("Import " + security.getName());
+				monitor.subTask(security.getName().replace("&", "&&"));
 
 				try {
 					IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 					if (identifier != null) {
-						Calendar today = Calendar.getInstance();
-						Date endDate = today.getTime();
-						today.add(Calendar.YEAR, -10);
-						Date beginDate = today.getTime();
+						Date beginDate = fromDate;
+						Date endDate = toDate;
 
 						IHistory history = repository.getHistoryFor(security);
 						Map<Date, IOHLC> map = new HashMap<Date, IOHLC>(2048);
 
-						if (history != null && mode != FULL_DOWNLOAD) {
-							if (mode == FULL_UPDATE) {
-								if (history.getFirst() != null)
-									beginDate = history.getFirst().getDate();
-							}
-							else if (mode == INCREMENTAL_UPDATE) {
-								for (IOHLC d : history.getOHLC())
-									map.put(d.getDate(), d);
+						if (history != null && mode != FULL) {
+							for (IOHLC d : history.getOHLC())
+								map.put(d.getDate(), d);
+							if (mode == INCREMENTAL) {
 								if (history.getLast() != null)
 									beginDate = history.getLast().getDate();
+								endDate = Calendar.getInstance().getTime();
 							}
 						}
 
-						IOHLC[] ohlc = backfill(identifier, beginDate, endDate);
-						if (ohlc != null && ohlc.length != 0) {
-							for (IOHLC d : ohlc)
-								map.put(d.getDate(), d);
-							ohlc = map.values().toArray(new IOHLC[map.values().size()]);
+						for (TimeSpan currentTimeSpan : timeSpan) {
+							if (monitor.isCanceled())
+								return Status.CANCEL_STATUS;
 
-							if (history == null)
-								history = new History(security, ohlc);
-							else if (history instanceof History)
-								((History) history).setOHLC(ohlc);
+							if (currentTimeSpan.equals(TimeSpan.days(1))) {
+								IOHLC[] ohlc = backfill(identifier, beginDate, endDate);
+								if (ohlc != null && ohlc.length != 0) {
+									for (IOHLC d : ohlc)
+										map.put(d.getDate(), d);
+									ohlc = map.values().toArray(new IOHLC[map.values().size()]);
 
-							repository.saveAdaptable(new IHistory[] { history });
+									if (history == null)
+										history = new History(security, ohlc);
+									else if (history instanceof History)
+										((History) history).setOHLC(ohlc);
+
+									repository.saveAdaptable(new IHistory[] { history });
+								}
+							}
 						}
 					}
 				} catch(Exception e) {

@@ -44,9 +44,16 @@ public class DataImportWizard extends Wizard implements IImportWizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		DataImportJob job = new DataImportJob(dataPage.getCheckedSecurities());
+		DataImportJob job = new DataImportJob(
+				dataPage.getCheckedSecurities(),
+				dataPage.getImportType(),
+				dataPage.getFromDate(),
+				dataPage.getToDate(),
+				dataPage.getAggregation());
+
 		job.setUser(true);
 		job.schedule();
+
 		return true;
 	}
 }
