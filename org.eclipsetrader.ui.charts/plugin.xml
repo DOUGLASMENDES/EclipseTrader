@@ -16,7 +16,7 @@
       <view
             allowMultiple="true"
             category="org.eclipsetrader.ui"
-            class="org.eclipsetrader.ui.internal.charts.views.ChartView"
+            class="org.eclipsetrader.ui.internal.charts.views.ChartViewPart"
             icon="icons/view16/linecharticon.gif"
             id="org.eclipsetrader.ui.chart"
             name="Chart">

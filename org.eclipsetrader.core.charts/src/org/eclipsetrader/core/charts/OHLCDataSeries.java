@@ -58,6 +58,24 @@ public class OHLCDataSeries extends DataSeries {
         }
     }
 
+    private static class DoubleWrapper implements IAdaptable {
+    	private Double value;
+
+		public DoubleWrapper(Double value) {
+	        this.value = value;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+         */
+        @SuppressWarnings("unchecked")
+        public Object getAdapter(Class adapter) {
+        	if (value != null && adapter.isAssignableFrom(value.getClass()))
+        		return value;
+	        return null;
+        }
+    }
+
     private static IAdaptable[] convertValues(IOHLC[] values) {
     	IAdaptable[] v = new OHLCWrapper[values.length];
 		for (int i = 0; i < values.length; i++)
@@ -79,5 +97,29 @@ public class OHLCDataSeries extends DataSeries {
 	@Override
     public IDataSeries getSeries(IAdaptable first, IAdaptable last) {
     	return new OHLCDataSeries(getName(), getSubset(first, last));
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.charts.DataSeries#getHighest()
+     */
+    @Override
+    public IAdaptable getHighest() {
+    	IAdaptable v = super.getHighest();
+    	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
+    	if (ohlc != null)
+    		v = new DoubleWrapper(ohlc.getHigh());
+    	return v;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.charts.DataSeries#getLowest()
+     */
+    @Override
+    public IAdaptable getLowest() {
+    	IAdaptable v = super.getLowest();
+    	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
+    	if (ohlc != null)
+    		v = new DoubleWrapper(ohlc.getLow());
+    	return v;
     }
 }

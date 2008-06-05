@@ -29,4 +29,24 @@ public class AdaptableWrapper implements IAdaptable {
 			return obj;
 		return null;
 	}
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    return obj.hashCode();
+    }
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+    	if (obj instanceof IAdaptable) {
+    		Object other = ((IAdaptable) obj).getAdapter(this.obj.getClass());
+    		return this.obj.equals(other);
+    	}
+	    return this.obj.equals(obj);
+    }
 }

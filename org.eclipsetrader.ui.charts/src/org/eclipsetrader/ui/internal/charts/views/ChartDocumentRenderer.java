@@ -140,9 +140,6 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
      * @see org.eclipsetrader.ui.charts.IChartRenderer#renderElement(org.eclipsetrader.ui.charts.RenderTarget, java.lang.Object)
      */
     public void renderElement(RenderTarget graphics, Object element) {
-		Color oldForeground = graphics.gc.getForeground();
-		Color oldBackground = graphics.gc.getBackground();
-
 		try {
 			IAdaptable adaptableElement = (IAdaptable) element;
 	    	IDataSeries series = getVisibleSeries(element, graphics.firstValue, graphics.lastValue);
@@ -175,10 +172,6 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
 			if (ChartsUIActivator.getDefault() == null)
 				throw e;
 			ChartsUIActivator.log(new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering element"));
-		} finally {
-			graphics.gc.setForeground(oldForeground);
-			graphics.gc.setBackground(oldBackground);
-			graphics.gc.setLineWidth(1);
 		}
     }
 

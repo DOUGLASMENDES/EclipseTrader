@@ -12,7 +12,7 @@
 package org.eclipsetrader.ui.charts;
 
 public enum RenderStyle {
-	Line("line", "Line"),
+	Line("line", "Solid"),
 	Dot("dot", "Dot"),
 	Dash("dash", "Dash"),
 	Histogram("histogram", "Histogram"),

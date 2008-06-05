@@ -15,16 +15,16 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.charts.repository.IElementSection;
 import org.eclipsetrader.core.internal.charts.repository.ElementSection;
 import org.eclipsetrader.ui.charts.ChartParameters;
-import org.eclipsetrader.ui.charts.IChartIndicator;
+import org.eclipsetrader.ui.charts.IChartObjectFactory;
 
 public class ChartElement implements IAdaptable {
 	private String id;
 	private ChartParameters parameters;
 
-	private IChartIndicator indicator;
+	private IChartObjectFactory indicator;
 	private IAdaptable element;
 
-	public ChartElement(String id, ChartParameters parameters, IChartIndicator indicator, IAdaptable element) {
+	public ChartElement(String id, ChartParameters parameters, IChartObjectFactory indicator, IAdaptable element) {
         this.id = id;
         this.parameters = parameters;
         this.indicator = indicator;
@@ -43,7 +43,7 @@ public class ChartElement implements IAdaptable {
         this.parameters = parameters;
     }
 
-	public IChartIndicator getIndicator() {
+	public IChartObjectFactory getIndicator() {
     	return indicator;
     }
 

@@ -42,18 +42,21 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.ui.charts.BaseChartViewer;
+import org.eclipsetrader.ui.charts.ChartRowViewItem;
+import org.eclipsetrader.ui.charts.ChartView;
 import org.eclipsetrader.ui.charts.ChartViewer;
-import org.eclipsetrader.ui.charts.DateValuesAxis;
-import org.eclipsetrader.ui.charts.DoubleValuesAxis;
+import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
-public class ChartView extends ViewPart {
+public class ChartViewPart extends ViewPart {
 	public static final String VIEW_ID = "org.eclipsetrader.ui.chart";
 
 	public static final String K_VIEWS = "Views";
@@ -64,8 +67,8 @@ public class ChartView extends ViewPart {
 	private ISecurity security;
 	private IChartTemplate template;
 
-	private ChartViewer viewer;
-	private ChartDocument view;
+	private BaseChartViewer viewer;
+	private ChartView view;
 	private IHistory history;
 
 	private IDialogSettings dialogSettings;
@@ -77,7 +80,7 @@ public class ChartView extends ViewPart {
         }
 	};
 
-	private Job job = new Job("Chart Loading") {
+	private Job job = new Job("ChartObject Loading") {
         @Override
         protected IStatus run(IProgressMonitor monitor) {
         	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
@@ -90,7 +93,8 @@ public class ChartView extends ViewPart {
                 		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
             	}
 
-    	        view = new ChartDocument(template, history);
+    	        view = new ChartView(template);
+    	        view.setRootDataSeries(new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", history.getOHLC()));
 
     	        if (!viewer.isDisposed()) {
     				try {
@@ -99,7 +103,13 @@ public class ChartView extends ViewPart {
     							if (!viewer.isDisposed()) {
     		    					BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
     		    						public void run() {
-    		   				    			viewer.setInput(view);
+    		    							ChartRowViewItem[] rowViewItem = (ChartRowViewItem[]) view.getAdapter(ChartRowViewItem[].class);
+    		    							if (rowViewItem != null) {
+    		    								IChartObject[] input = new IChartObject[rowViewItem.length];
+    		    								for (int i = 0; i < input.length; i++)
+    		    									input[i] = (IChartObject) rowViewItem[i].getAdapter(IChartObject.class);
+        		   				    			viewer.setInput(input);
+    		    							}
     		    						}
     		    					});
     							}
@@ -120,7 +130,7 @@ public class ChartView extends ViewPart {
         }
 	};
 
-	public ChartView() {
+	public ChartViewPart() {
 	}
 
 	/* (non-Javadoc)
@@ -167,14 +177,14 @@ public class ChartView extends ViewPart {
      */
     @Override
     public void createPartControl(Composite parent) {
-    	viewer = new ChartViewer(parent, SWT.NONE);
-    	viewer.setHorizontalAxis(new DateValuesAxis());
-		((DateValuesAxis) viewer.getHorizontalAxis()).fillAvailableSpace = false;
-		viewer.setVerticalAxis(new DoubleValuesAxis());
+    	viewer = new BaseChartViewer(parent, SWT.NONE);
+    	//viewer.setHorizontalAxis(new DateValuesAxis());
+		//((DateValuesAxis) viewer.getHorizontalAxis()).fillAvailableSpace = false;
+		//viewer.setVerticalAxis(new DoubleValuesAxis());
 		viewer.setHorizontalScaleVisible(true);
 		viewer.setVerticalScaleVisible(true);
-		viewer.setRenderer(new ChartDocumentRenderer());
-		viewer.setContentProvider(new ChartDocumentContentProvider());
+		//viewer.setRenderer(new ChartDocumentRenderer());
+		//viewer.setContentProvider(new ChartDocumentContentProvider());
 
 		if (security != null && template != null) {
 			setPartName(NLS.bind("{0} - {1}", new Object[] {
@@ -218,7 +228,7 @@ public class ChartView extends ViewPart {
     public Object getAdapter(Class adapter) {
     	if (adapter.isAssignableFrom(ChartViewer.class))
     		return viewer;
-    	if (adapter.isAssignableFrom(ChartDocument.class))
+    	if (adapter.isAssignableFrom(ChartView.class))
     		return view;
     	if (adapter.isAssignableFrom(IChartTemplate.class))
     		return template;

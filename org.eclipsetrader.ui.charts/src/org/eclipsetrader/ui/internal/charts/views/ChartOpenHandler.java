@@ -51,7 +51,7 @@ public class ChartOpenHandler extends AbstractHandler {
 					try {
 						IStoreObject storeObject = (IStoreObject) watchList.getAdapter(IStoreObject.class);
 						IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
-						site.getPage().showView(ChartView.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
+						site.getPage().showView(ChartViewPart.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
 		            } catch (PartInitException e) {
 		    			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error opening chart", e); //$NON-NLS-1$
 		    			ChartsUIActivator.getDefault().getLog().log(status);

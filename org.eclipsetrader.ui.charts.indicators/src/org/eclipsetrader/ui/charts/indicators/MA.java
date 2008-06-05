@@ -18,21 +18,32 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
-import org.eclipsetrader.ui.charts.IChartIndicator;
+import org.eclipsetrader.ui.charts.HistogramAreaChart;
+import org.eclipsetrader.ui.charts.HistogramBarChart;
+import org.eclipsetrader.ui.charts.IChartObject;
+import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
+import org.eclipsetrader.ui.charts.LineChart;
 import org.eclipsetrader.ui.charts.MAType;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.charts.RenderStyle;
+import org.eclipsetrader.ui.charts.LineChart.LineStyle;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
-import org.eclipsetrader.ui.internal.charts.indicators.SingleLineElement;
 
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class MA implements IChartIndicator, IExecutableExtension {
+public class MA implements IChartObjectFactory, IExecutableExtension {
     private String id;
     private String name;
+
+    private OHLCField field = OHLCField.Close;
+    private int period = 7;
+    private MAType type = MAType.EMA;
+
+    private RenderStyle renderStyle = RenderStyle.Line;
+    private RGB color;
 
 	public MA() {
 	}
@@ -60,19 +71,11 @@ public class MA implements IChartIndicator, IExecutableExtension {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.model.IChartIndicator#computeElement(org.eclipse.core.runtime.IAdaptable, org.eclipsetrader.ui.charts.model.IChartParameters)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
-    public IAdaptable computeElement(IAdaptable source, IChartParameters parameters) {
-		IDataSeries dataSeries = (IDataSeries) source.getAdapter(IDataSeries.class);
-		if (dataSeries != null) {
-		    OHLCField field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
-		    int period = parameters.getInteger("period");
-		    MAType type = MAType.getFromName(parameters.getString("type"));
-
-		    RenderStyle style = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
-		    RGB color = parameters.getColor("color");
-
-			IAdaptable[] values = dataSeries.getValues();
+    public IChartObject createObject(IDataSeries source) {
+		if (source != null) {
+			IAdaptable[] values = source.getValues();
 			Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
 		    int startIdx = 0;
@@ -85,10 +88,36 @@ public class MA implements IChartIndicator, IExecutableExtension {
 
 	        core.movingAverage(startIdx, endIdx, inReal, period, MAType.getTALib_MAType(type), outBegIdx, outNbElement, outReal);
 
-			IDataSeries result = new NumericDataSeries(getName(), outReal, dataSeries);
-			return new SingleLineElement(result, style, color);
+			IDataSeries result = new NumericDataSeries(getName(), outReal, source);
+
+		    switch(renderStyle) {
+		    	case Dash:
+					return new LineChart(result, LineStyle.Dash, color);
+		    	case Dot:
+					return new LineChart(result, LineStyle.Dot, color);
+		    	case HistogramBars:
+					return new HistogramBarChart(result);
+		    	case Histogram:
+					return new HistogramAreaChart(result);
+		    	case Invisible:
+					return new LineChart(result, LineStyle.Invisible, color);
+		    }
+
+		    return new LineChart(result, LineStyle.Solid, color);
 		}
 
 		return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
+     */
+    public void setParameters(IChartParameters parameters) {
+	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
+	    period = parameters.getInteger("period");
+	    type = parameters.hasParameter("type") ? MAType.getFromName(parameters.getString("type")) : MAType.EMA;
+
+	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
+	    color = parameters.getColor("color");
     }
 }

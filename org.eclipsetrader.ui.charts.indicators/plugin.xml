@@ -9,6 +9,11 @@
             name="Chaikin A/D Line - AD">
       </indicator>
       <indicator
+            class="org.eclipsetrader.ui.charts.indicators.BARS"
+            id="org.eclipsetrader.indicators.bars"
+            name="Bars - BAR">
+      </indicator>
+      <indicator
             class="org.eclipsetrader.ui.charts.indicators.BBANDS"
             id="org.eclipsetrader.indicators.bbands"
             name="Bollinger Bands - BBANDS">

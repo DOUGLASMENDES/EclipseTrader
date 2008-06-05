@@ -18,21 +18,39 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
-import org.eclipsetrader.ui.charts.IChartIndicator;
+import org.eclipsetrader.ui.charts.ChartObject;
+import org.eclipsetrader.ui.charts.HistogramAreaChart;
+import org.eclipsetrader.ui.charts.HistogramBarChart;
+import org.eclipsetrader.ui.charts.IChartObject;
+import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
+import org.eclipsetrader.ui.charts.LineChart;
 import org.eclipsetrader.ui.charts.MAType;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.charts.RenderStyle;
+import org.eclipsetrader.ui.charts.LineChart.LineStyle;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
-import org.eclipsetrader.ui.internal.charts.indicators.MultiLineElement;
 
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class BBANDS implements IChartIndicator, IExecutableExtension {
+public class BBANDS implements IChartObjectFactory, IExecutableExtension {
     private String id;
     private String name;
+
+    private OHLCField field = OHLCField.Close;
+    private int period = 21;
+    private double upperDeviation = 2.0;
+    private double lowerDeviation = 2.0;
+    private MAType maType = MAType.EMA;
+
+    private RenderStyle upperLineStyle = RenderStyle.Line;
+    private RGB upperLineColor;
+    private RenderStyle middleLineStyle = RenderStyle.Dot;
+    private RGB middleLineColor;
+    private RenderStyle lowerLineStyle = RenderStyle.Line;
+    private RGB lowerLineColor;
 
 	public BBANDS() {
 	}
@@ -60,25 +78,11 @@ public class BBANDS implements IChartIndicator, IExecutableExtension {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.model.IChartIndicator#computeElement(org.eclipse.core.runtime.IAdaptable, org.eclipsetrader.ui.charts.model.IChartParameters)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
-    public IAdaptable computeElement(IAdaptable source, IChartParameters parameters) {
-		IDataSeries dataSeries = (IDataSeries) source.getAdapter(IDataSeries.class);
-		if (dataSeries != null) {
-		    OHLCField field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
-		    int period = parameters.getInteger("period");
-			double upperDeviation = parameters.hasParameter("upper-deviation") ? parameters.getDouble("upper-deviation") : 2.0;
-			double lowerDeviation = parameters.hasParameter("lower-deviation") ? parameters.getDouble("lower-deviation") : 2.0;
-		    MAType maType = MAType.getFromName(parameters.getString("ma-type"));
-
-		    RenderStyle upperLineStyle = parameters.hasParameter("upper-line-style") ? RenderStyle.getStyleFromName(parameters.getString("upper-line-style")) : RenderStyle.Line;
-		    RGB upperLineColor = parameters.getColor("upper-line-color");
-		    RenderStyle middleLineStyle = parameters.hasParameter("middle-line-style") ? RenderStyle.getStyleFromName(parameters.getString("middle-line-style")) : RenderStyle.Dot;
-		    RGB middleLineColor = parameters.getColor("middle-line-color");
-		    RenderStyle lowerLineStyle = parameters.hasParameter("lower-line-style") ? RenderStyle.getStyleFromName(parameters.getString("lower-line-style")) : RenderStyle.Line;
-		    RGB lowerLineColor = parameters.getColor("lower-line-color");
-
-			IAdaptable[] values = dataSeries.getValues();
+    public IChartObject createObject(IDataSeries source) {
+		if (source != null) {
+			IAdaptable[] values = source.getValues();
 			Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
 	        int startIdx = 0;
@@ -94,13 +98,47 @@ public class BBANDS implements IChartIndicator, IExecutableExtension {
 
 			core.bbands(startIdx, endIdx, inReal, period, upperDeviation, lowerDeviation, MAType.getTALib_MAType(maType), outBegIdx, outNbElement, outUpper, outMiddle, outLower);
 
-			MultiLineElement result = new MultiLineElement();
-			result.addElement(new NumericDataSeries(getName(), outUpper, dataSeries), upperLineStyle, upperLineColor);
-			result.addElement(new NumericDataSeries(getName(), outMiddle, dataSeries), middleLineStyle, middleLineColor);
-			result.addElement(new NumericDataSeries(getName(), outLower, dataSeries), lowerLineStyle, lowerLineColor);
-			return result;
+			ChartObject object = new ChartObject();
+			object.add(createLineChartObject(new NumericDataSeries(getName(), outUpper, source), upperLineStyle, upperLineColor));
+			object.add(createLineChartObject(new NumericDataSeries(getName(), outMiddle, source), middleLineStyle, middleLineColor));
+			object.add(createLineChartObject(new NumericDataSeries(getName(), outLower, source), lowerLineStyle, lowerLineColor));
+			return object;
 		}
+	    return null;
+    }
 
-		return null;
+    protected IChartObject createLineChartObject(IDataSeries result, RenderStyle renderStyle, RGB color) {
+	    switch(renderStyle) {
+	    	case Dash:
+				return new LineChart(result, LineStyle.Dash, color);
+	    	case Dot:
+				return new LineChart(result, LineStyle.Dot, color);
+	    	case HistogramBars:
+				return new HistogramBarChart(result);
+	    	case Histogram:
+				return new HistogramAreaChart(result);
+	    	case Invisible:
+				return new LineChart(result, LineStyle.Invisible, color);
+	    }
+
+	    return new LineChart(result, LineStyle.Solid, color);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
+     */
+    public void setParameters(IChartParameters parameters) {
+	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
+	    period = parameters.getInteger("period");
+		upperDeviation = parameters.hasParameter("upper-deviation") ? parameters.getDouble("upper-deviation") : 2.0;
+		lowerDeviation = parameters.hasParameter("lower-deviation") ? parameters.getDouble("lower-deviation") : 2.0;
+	    maType = MAType.getFromName(parameters.getString("ma-type"));
+
+	    upperLineStyle = parameters.hasParameter("upper-line-style") ? RenderStyle.getStyleFromName(parameters.getString("upper-line-style")) : RenderStyle.Line;
+	    upperLineColor = parameters.getColor("upper-line-color");
+	    middleLineStyle = parameters.hasParameter("middle-line-style") ? RenderStyle.getStyleFromName(parameters.getString("middle-line-style")) : RenderStyle.Dot;
+	    middleLineColor = parameters.getColor("middle-line-color");
+	    lowerLineStyle = parameters.hasParameter("lower-line-style") ? RenderStyle.getStyleFromName(parameters.getString("lower-line-style")) : RenderStyle.Line;
+	    lowerLineColor = parameters.getColor("lower-line-color");
     }
 }

@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.core.charts;
 
+import java.util.Date;
+
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
@@ -24,6 +26,24 @@ public class DataSeriesSubsetVisitor implements IDataSeriesVisitor {
 	private IAdaptable last;
 	private IDataSeries subset;
 
+    private class DateWrapper implements IAdaptable {
+    	private Date value;
+
+		public DateWrapper(Date value) {
+	        this.value = value;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+         */
+        @SuppressWarnings("unchecked")
+        public Object getAdapter(Class adapter) {
+        	if (value != null && adapter.isAssignableFrom(value.getClass()))
+        		return value;
+	        return null;
+        }
+    }
+
 	/**
 	 * Constructor.
 	 *
@@ -33,6 +53,17 @@ public class DataSeriesSubsetVisitor implements IDataSeriesVisitor {
 	public DataSeriesSubsetVisitor(IAdaptable first, IAdaptable last) {
         this.first = first;
         this.last = last;
+    }
+
+	/**
+	 * Constructor.
+	 *
+	 * @param first the first date in the subset.
+	 * @param last the last date in the subset.
+	 */
+	public DataSeriesSubsetVisitor(Date first, Date last) {
+        this.first = new DateWrapper(first);
+        this.last = new DateWrapper(last);
     }
 
 	/* (non-Javadoc)

@@ -34,7 +34,8 @@ public class LineRenderers {
 
 		graphics.gc.setLineStyle(SWT.LINE_SOLID);
 
-		graphics.gc.setForeground(color);
+		if (color != null)
+			graphics.gc.setForeground(color);
 		graphics.gc.setLineWidth(1);
 		graphics.gc.drawPolyline(pointArray);
 	}
@@ -51,7 +52,8 @@ public class LineRenderers {
 		int[] dashes = { 1, 2 };
 		graphics.gc.setLineDash(dashes);
 
-		graphics.gc.setForeground(color);
+		if (color != null)
+			graphics.gc.setForeground(color);
 		graphics.gc.setLineWidth(1);
 		graphics.gc.drawPolyline(pointArray);
 	}
@@ -68,15 +70,18 @@ public class LineRenderers {
 		int[] dashes = { 3, 3 };
 		graphics.gc.setLineDash(dashes);
 
-		graphics.gc.setForeground(color);
+		if (color != null)
+			graphics.gc.setForeground(color);
 		graphics.gc.setLineWidth(1);
 		graphics.gc.drawPolyline(pointArray);
 	}
 
 	public static void renderHistogram(RenderTarget event, IAdaptable[] values, Color lineColor, Color fillColor) {
 		event.gc.setLineStyle(SWT.LINE_SOLID);
-		event.gc.setForeground(lineColor);
-		event.gc.setBackground(fillColor);
+		if (lineColor != null)
+			event.gc.setForeground(lineColor);
+		if (fillColor != null)
+			event.gc.setBackground(fillColor);
 
 		int zero = event.verticalAxis.mapToAxis(0.0);
 		int[] polygon = new int[8];
@@ -111,7 +116,8 @@ public class LineRenderers {
 		int zero = event.verticalAxis.mapToAxis(0.0);
 
 		event.gc.setLineStyle(SWT.LINE_SOLID);
-		event.gc.setBackground(color);
+		if (color != null)
+			event.gc.setBackground(color);
 
 		for (int i = 0; i < values.length; i++) {
 			Date date = (Date) values[i].getAdapter(Date.class);
@@ -142,7 +148,8 @@ public class LineRenderers {
 
 			int x = event.horizontalAxis.mapToAxis(ohlc.getDate()) + event.x;
 
-			event.gc.setForeground(ohlc.getClose() >= ohlc.getOpen() ? positiveColor : negativeColor);
+			if (positiveColor != null && negativeColor != null)
+				event.gc.setForeground(ohlc.getClose() >= ohlc.getOpen() ? positiveColor : negativeColor);
 			event.gc.drawLine(x, h, x, l);
 			event.gc.drawLine(x - half, o, x, o);
 			event.gc.drawLine(x, c, x + half + 1, c);
@@ -167,13 +174,15 @@ public class LineRenderers {
 
 			int x = event.horizontalAxis.mapToAxis(ohlc.getDate()) + event.x;
 
-			event.gc.setForeground(borderColor);
+			if (borderColor != null)
+				event.gc.setForeground(borderColor);
 			event.gc.drawLine(x, h, x, c);
 			event.gc.drawLine(x, o, x, l);
 			if (ohlc.getClose() == ohlc.getOpen())
 				event.gc.drawLine(x - half, c, x + half, c);
 			else {
-				event.gc.setBackground(ohlc.getClose() >= ohlc.getOpen() ? positiveColor : negativeColor);
+				if (positiveColor != null && negativeColor != null)
+					event.gc.setBackground(ohlc.getClose() >= ohlc.getOpen() ? positiveColor : negativeColor);
 				event.gc.fillRectangle(x - half, c, width, o - c);
 				event.gc.drawRectangle(x - half, c, width - 1, o - c);
 			}

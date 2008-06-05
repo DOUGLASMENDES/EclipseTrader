@@ -12,8 +12,6 @@
 package org.eclipsetrader.ui.internal.charts;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -24,7 +22,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.ui.charts.IChartIndicator;
+import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -41,8 +39,6 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static ChartsUIActivator plugin;
-
-	private Map<String, IChartIndicator> indicatorsMap = new HashMap<String, IChartIndicator>();
 
 	/**
 	 * The constructor
@@ -84,38 +80,31 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 			plugin.getLog().log(status);
 	}
 
-	public IChartIndicator getIndicator(String targetID) {
+	public IChartObjectFactory getChartObjectFactory(String targetID) {
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(INDICATORS_EXTENSION_ID);
 		if (extensionPoint == null)
 			return null;
 
-		synchronized(indicatorsMap) {
-			IChartIndicator plugin = indicatorsMap.get(targetID);
-
-			if (plugin == null) {
-				IConfigurationElement targetElement = null;
-				IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
-				for (int j = 0; j < configElements.length; j++) {
-					String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
-					if (targetID.equals(strID)) {
-						targetElement = configElements[j];
-						break;
-					}
-				}
-				if (targetElement == null)
-					return null;
-
-				try {
-					plugin = (IChartIndicator) targetElement.createExecutableExtension("class");
-					indicatorsMap.put(targetID, plugin);
-				} catch (Exception e) {
-					Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Unable to create indicator with id " + targetID, e);
-					getLog().log(status);
-				}
+		IConfigurationElement targetElement = null;
+		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+		for (int j = 0; j < configElements.length; j++) {
+			String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
+			if (targetID.equals(strID)) {
+				targetElement = configElements[j];
+				break;
 			}
-
-			return plugin;
 		}
+		if (targetElement == null)
+			return null;
+
+		try {
+			return (IChartObjectFactory) targetElement.createExecutableExtension("class");
+		} catch (Exception e) {
+			Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Unable to create indicator with id " + targetID, e);
+			getLog().log(status);
+		}
+
+		return null;
 	}
 
 	public IDialogSettings getDialogSettingsForView(URI uri) {

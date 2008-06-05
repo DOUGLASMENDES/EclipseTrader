@@ -11,18 +11,7 @@
 
 package org.eclipsetrader.ui.charts;
 
-import org.eclipse.core.runtime.IAdaptable;
+public interface IChartObjectVisitor {
 
-/**
- * This interface is implemented by indicator extensions.
- *
- * @since 1.0
- */
-public interface IChartIndicator {
-
-	public String getId();
-
-	public String getName();
-
-	public IAdaptable computeElement(IAdaptable source, IChartParameters parameters);
+	public boolean visit(IChartObject object);
 }

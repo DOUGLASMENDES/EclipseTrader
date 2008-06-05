@@ -19,19 +19,16 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.DataSeries;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.IDataSeriesVisitor;
 import org.eclipsetrader.core.feed.IOHLC;
-import org.eclipsetrader.ui.charts.IChartIndicator;
+import org.eclipsetrader.ui.charts.HistogramBarChart;
+import org.eclipsetrader.ui.charts.IChartObject;
+import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
-import org.eclipsetrader.ui.charts.IObjectRenderer;
-import org.eclipsetrader.ui.charts.RenderTarget;
 
-public class VOLUME implements IChartIndicator, IExecutableExtension {
+public class VOLUME implements IChartObjectFactory, IExecutableExtension {
     private String id;
     private String name;
 
@@ -61,68 +58,20 @@ public class VOLUME implements IChartIndicator, IExecutableExtension {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.model.IChartIndicator#computeElement(org.eclipse.core.runtime.IAdaptable, org.eclipsetrader.ui.charts.model.IChartParameters)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
-    public IAdaptable computeElement(IAdaptable source, IChartParameters parameters) {
-		IDataSeries dataSeries = (IDataSeries) source.getAdapter(IDataSeries.class);
-		if (dataSeries != null) {
-	    	IDataSeries result = new VolumeDataSeries(getName(), dataSeries.getValues());
-			return new VolumeLineElement(result, new RGB(0, 255, 0), new RGB(255, 0, 0));
+    public IChartObject createObject(IDataSeries source) {
+		if (source != null) {
+	    	IDataSeries result = new VolumeDataSeries(getName(), source.getValues());
+			return new HistogramBarChart(result);
 		}
-		return null;
+	    return null;
     }
 
-    @SuppressWarnings("restriction")
-    public class VolumeLineElement implements IAdaptable, IObjectRenderer {
-    	private IDataSeries dataSeries;
-    	private RGB positiveColor;
-    	private RGB negativeColor;
-
-    	public VolumeLineElement(IDataSeries dataSeries, RGB positiveColor, RGB negativeColor) {
-	        this.dataSeries = dataSeries;
-	        this.positiveColor = positiveColor;
-	        this.negativeColor = negativeColor;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IObjectRenderer#renderObject(org.eclipsetrader.ui.charts.RenderTarget, org.eclipsetrader.core.charts.IDataSeries)
-         */
-        public void renderObject(RenderTarget target, IDataSeries dataSeries) {
-        	Color positiveColor = target.registry.getColor(this.positiveColor);
-        	Color negativeColor = target.registry.getColor(this.negativeColor);
-        	IAdaptable[] values = dataSeries.getValues();
-        	int width = 3;
-
-    		int half = width / 2;
-    		int zero = target.verticalAxis.mapToAxis(0.0);
-
-    		target.gc.setLineStyle(SWT.LINE_SOLID);
-
-    		for (int i = 0; i < values.length; i++) {
-    			VolumeValueWrapper wrapper = (VolumeValueWrapper) values[i].getAdapter(VolumeValueWrapper.class);
-    			if (wrapper == null)
-    				continue;
-    			IOHLC ohlc = wrapper.getOhlc();
-
-    			int x = target.horizontalAxis.mapToAxis(ohlc.getDate()) + target.x;
-    			int y = target.verticalAxis.mapToAxis(ohlc.getVolume());
-
-        		target.gc.setBackground(ohlc.getClose() >= ohlc.getOpen() ? positiveColor : negativeColor);
-    			target.gc.fillRectangle(x - half, y, width, zero - y);
-    		}
-        }
-
-    	/* (non-Javadoc)
-    	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-    	 */
-    	@SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-        	if (adapter.isAssignableFrom(IDataSeries.class))
-        		return dataSeries;
-        	if (adapter.isAssignableFrom(getClass()))
-        		return this;
-    		return null;
-    	}
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
+     */
+    public void setParameters(IChartParameters parameters) {
     }
 
     private static class VolumeValueWrapper implements IAdaptable {

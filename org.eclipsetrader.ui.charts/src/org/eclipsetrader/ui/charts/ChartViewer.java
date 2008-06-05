@@ -474,8 +474,12 @@ public class ChartViewer {
 
 				Object[] elements = getContentProvider().getChildren(item.getData());
 				if (elements != null) {
-					for (int i = 0; i < elements.length; i++)
+					for (int i = 0; i < elements.length; i++) {
+						target.gc.setForeground(canvas.getForeground());
+						target.gc.setBackground(canvas.getBackground());
+						target.gc.setLineWidth(1);
 						renderer.renderElement(target, elements[i]);
+					}
 				}
 			} catch(Error e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
