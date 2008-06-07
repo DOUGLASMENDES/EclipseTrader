@@ -216,6 +216,13 @@ public class Graphics implements IGraphics {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IGraphics#setLineWidth(int)
+     */
+    public void setLineWidth(int lineWidth) {
+    	gc.setLineWidth(lineWidth);
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IGraphics#popState()
      */
     public void popState() {

@@ -1,0 +1,172 @@
+/*
+ * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Marco Maccaferri - initial API and implementation
+ */
+
+package org.eclipsetrader.ui.internal.charts.views;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.nebula.widgets.pshelf.PShelf;
+import org.eclipse.nebula.widgets.pshelf.PShelfItem;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.part.ViewPart;
+import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+
+public class PaletteView extends ViewPart {
+	public static final String K_ID = "id";
+	public static final String K_NAME = "name";
+	public static final String K_DESCRIPTION = "description";
+	public static final String K_ICON = "icon";
+	public static final String K_CATEGORY = "category";
+
+	private PShelf shelf;
+
+	public PaletteView() {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	public void createPartControl(Composite parent) {
+		shelf = new PShelf(parent, SWT.NONE);
+		createItems();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+	 */
+	@Override
+	public void setFocus() {
+		shelf.setFocus();
+	}
+
+	protected void createItems() {
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(ChartsUIActivator.INDICATORS_EXTENSION_ID);
+		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+
+		List<IConfigurationElement> contributionElements = new ArrayList<IConfigurationElement>();
+
+		List<IConfigurationElement> categories = new ArrayList<IConfigurationElement>();
+		for (int i = 0; i < configElements.length; i++) {
+			if (configElements[i].getName().equals(K_CATEGORY))
+				categories.add(configElements[i]);
+			else
+				contributionElements.add(configElements[i]);
+		}
+
+		Collections.sort(categories, new Comparator<IConfigurationElement>() {
+            public int compare(IConfigurationElement o1, IConfigurationElement o2) {
+	            return o1.getAttribute(K_NAME).compareTo(o2.getAttribute(K_NAME));
+            }
+		});
+
+		for (IConfigurationElement categoryElement : categories) {
+			PShelfItem shelfItem = new PShelfItem(shelf, SWT.NONE);
+			shelfItem.setText(categoryElement.getAttribute(K_NAME));
+			String icon = categoryElement.getAttribute(K_ICON);
+			if (icon != null) {
+				ImageDescriptor imageDescriptor = ChartsUIActivator.imageDescriptorFromPlugin(categoryElement.getContributor().getName(), icon);
+				final Image image = imageDescriptor != null ? imageDescriptor.createImage() : null;
+				if (image != null) {
+					shelfItem.setImage(image);
+					shelfItem.addDisposeListener(new DisposeListener() {
+                        public void widgetDisposed(DisposeEvent e) {
+                        	image.dispose();
+                        }
+					});
+				}
+			}
+			List<IConfigurationElement> addedElements = createContents(shelfItem, contributionElements.toArray(new IConfigurationElement[contributionElements.size()]), categoryElement.getAttribute(K_ID));
+			contributionElements.removeAll(addedElements);
+		}
+
+		PShelfItem shelfItem = new PShelfItem(shelf, SWT.NONE);
+		shelfItem.setText("Others");
+		ImageDescriptor imageDescriptor = ChartsUIActivator.imageDescriptorFromPlugin("icons/obj16/blank_obj.gif");
+		final Image image = imageDescriptor != null ? imageDescriptor.createImage() : null;
+		if (image != null) {
+			shelfItem.setImage(image);
+			shelfItem.addDisposeListener(new DisposeListener() {
+                public void widgetDisposed(DisposeEvent e) {
+                	image.dispose();
+                }
+			});
+		}
+		createContents(shelfItem, contributionElements.toArray(new IConfigurationElement[contributionElements.size()]), null);
+	}
+
+	protected List<IConfigurationElement> createContents(PShelfItem shelfItem, IConfigurationElement[] configElements, String categoryId) {
+		shelfItem.getBody().setLayout(new FillLayout());
+
+		TableViewer viewer = new TableViewer(shelfItem.getBody(), SWT.MULTI | SWT.FULL_SELECTION);
+		viewer.setContentProvider(new ArrayContentProvider());
+		viewer.setLabelProvider(new LabelProvider() {
+			private Image image;
+
+			@Override
+            public Image getImage(Object element) {
+				if (image == null) {
+	            	IConfigurationElement configurationElement = (IConfigurationElement) element;
+					String icon = configurationElement.getAttribute(K_ICON);
+					if (icon != null) {
+						ImageDescriptor imageDescriptor = ChartsUIActivator.imageDescriptorFromPlugin(configurationElement.getContributor().getName(), icon);
+						image = imageDescriptor != null ? imageDescriptor.createImage() : null;
+					}
+				}
+				return image;
+            }
+
+            @Override
+            public void dispose() {
+            	if (image != null)
+            		image.dispose();
+	            super.dispose();
+            }
+
+			@Override
+            public String getText(Object element) {
+            	IConfigurationElement configurationElement = (IConfigurationElement) element;
+            	String template = configurationElement.getAttribute(K_DESCRIPTION) != null ? "{0} - {1}" : "{0}";
+	            return NLS.bind(template, new Object[] {
+	            		configurationElement.getAttribute(K_NAME),
+	            		configurationElement.getAttribute(K_DESCRIPTION)
+	            	});
+            }
+		});
+		viewer.setSorter(new ViewerSorter());
+
+		List<IConfigurationElement> input = new ArrayList<IConfigurationElement>();
+		for (int i = 0; i < configElements.length; i++) {
+			if (categoryId == null || categoryId.equals(configElements[i].getAttribute(K_CATEGORY)))
+				input.add(configElements[i]);
+		}
+		viewer.setInput(input.toArray());
+
+		return input;
+	}
+}

@@ -21,6 +21,13 @@
             id="org.eclipsetrader.ui.chart"
             name="Chart">
       </view>
+      <view
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.ui.internal.charts.views.PaletteView"
+            icon="icons/view16/palette_view.gif"
+            id="org.eclipsetrader.ui.charts.palette"
+            name="Palette">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.activities">
@@ -123,6 +130,19 @@
                id="org.eclipsetrader.ui.charts">
          </perspectiveShortcut>
       </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipsetrader.ui.indicators">
+      <category
+            icon="icons/obj16/linecharticon.gif"
+            id="org.eclipsetrader.ui.charts.indicators"
+            name="Indicators">
+      </category>
+      <category
+            icon="icons/obj16/build_exec.png"
+            id="org.eclipsetrader.ui.charts.tools"
+            name="Tools">
+      </category>
    </extension>
 
 </plugin>

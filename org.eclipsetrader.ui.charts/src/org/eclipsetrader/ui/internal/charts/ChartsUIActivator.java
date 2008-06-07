@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
@@ -134,5 +135,9 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 		IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
 		context.ungetService(serviceReference);
 		return service;
+	}
+
+	public static ImageDescriptor imageDescriptorFromPlugin(String imageFilePath) {
+		return imageDescriptorFromPlugin(ChartsUIActivator.PLUGIN_ID, imageFilePath);
 	}
 }

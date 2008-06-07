@@ -4,34 +4,44 @@
    <extension
          point="org.eclipsetrader.ui.indicators">
       <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.AD"
+            description="Chaikin A/D Line"
             id="org.eclipsetrader.indicators.ad"
-            name="Chaikin A/D Line - AD">
+            name="AD">
       </indicator>
       <indicator
             class="org.eclipsetrader.ui.charts.indicators.BARS"
+            description="Bars"
             id="org.eclipsetrader.indicators.bars"
-            name="Bars - BAR">
+            name="BAR">
       </indicator>
       <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.BBANDS"
+            description="Bollinger Bands"
             id="org.eclipsetrader.indicators.bbands"
-            name="Bollinger Bands - BBANDS">
+            name="BBANDS">
       </indicator>
       <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.MA"
+            description="Moving Average"
             id="org.eclipsetrader.indicators.ma"
-            name="Moving Average - MA">
+            name="MA">
       </indicator>
       <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.RSI"
+            description="Relative Strength Index"
             id="org.eclipsetrader.indicators.ma"
-            name="Relative Strength Index - RSI">
+            name="RSI">
       </indicator>
       <indicator
             class="org.eclipsetrader.ui.charts.indicators.VOLUME"
+            description="Volume"
             id="org.eclipsetrader.indicators.volume"
-            name="Volume - VOL">
+            name="VOL">
       </indicator>
    </extension>
 

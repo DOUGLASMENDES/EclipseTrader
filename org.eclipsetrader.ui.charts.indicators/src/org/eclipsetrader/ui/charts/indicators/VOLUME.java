@@ -72,6 +72,7 @@ public class VOLUME implements IChartObjectFactory, IExecutableExtension {
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {
+	    name = parameters.hasParameter("name") ? parameters.getString("name") : name;
     }
 
     private static class VolumeValueWrapper implements IAdaptable {
@@ -114,6 +115,7 @@ public class VOLUME implements IChartObjectFactory, IExecutableExtension {
     	private Date lastValue;
 
     	public VolumeDataSeries(String name, IAdaptable[] values) {
+    		this.name = name;
     		this.values = new IAdaptable[values.length];
     		for (int i = 0; i < values.length; i++) {
     			IOHLC ohlc = (IOHLC) values[i].getAdapter(IOHLC.class);

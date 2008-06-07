@@ -30,10 +30,21 @@ public interface IChartObject {
 
 	public String getToolTip();
 
+	/**
+	 * Returns the tooltip string for the element at the given location.
+	 * <p>A value of <code>SWT.DEFAULT</code> for either x or y means that that value
+	 * should not be considered.</p>
+	 *
+	 * @param x the X coordinate.
+	 * @param y the Y coordinate.
+	 * @return the tooltip text, or <code>null</code>.
+	 */
 	public String getToolTip(int x, int y);
 
 	/**
 	 * Returns true if the point (x, y) is contained within this object's bounds.
+	 * <p>A value of <code>SWT.DEFAULT</code> for either x or y means that that value
+	 * should not be considered.</p>
 	 *
 	 * @param x the X coordinate.
 	 * @param y the Y coordinate.
@@ -65,6 +76,20 @@ public interface IChartObject {
 	public IChartObject getParent();
 
 	public void setParent(IChartObject parent);
+
+	/**
+	 * Called when this object has gained focus.
+	 *
+	 * @param event the focus event.
+	 */
+	public void handleFocusGained(ChartObjectFocusEvent event);
+
+	/**
+	 * Called when this object has lost focus.
+	 *
+	 * @param event the focus event.
+	 */
+	public void handleFocusLost(ChartObjectFocusEvent event);
 
 	public void accept(IChartObjectVisitor visitor);
 }

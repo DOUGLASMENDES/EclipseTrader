@@ -53,14 +53,14 @@ public class ChartCanvas {
 	ChartCanvas(BaseChartViewer viewer, Composite parent) {
 		this.viewer = viewer;
 
-		composite = new Composite(parent, SWT.NONE);
+		composite = new Composite(parent, SWT.NONE | SWT.NO_FOCUS);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
 		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 3;
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
+		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS);
 		canvas.setData(this);
 		canvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -89,7 +89,7 @@ public class ChartCanvas {
             }
 		});
 
-		verticalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
+		verticalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS);
 		verticalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		verticalScaleCanvas.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
 		((GridData) verticalScaleCanvas.getLayoutData()).widthHint = VERTICAL_SCALE_WIDTH;

@@ -15,10 +15,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -35,8 +45,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipsetrader.ui.internal.charts.ChartObjectHitVisitor;
+import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
-public class BaseChartViewer {
+public class BaseChartViewer implements ISelectionProvider {
 	public static final int VERTICAL_SCALE_WIDTH = 86;
 	public static final int HORIZONTAL_SCALE_HEIGHT = 26;
 
@@ -52,6 +64,11 @@ public class BaseChartViewer {
 
 	DateValuesAxis datesAxis = new DateValuesAxis();
 
+	private IChartObject selectedObject;
+	private ListenerList selectionListeners = new ListenerList(ListenerList.IDENTITY);
+	private boolean showTooltips;
+	private CrosshairDecorator decorator = new CrosshairDecorator();
+
 	public BaseChartViewer(Composite parent, int style) {
 		composite = new Composite(parent, style | SWT.H_SCROLL);
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -59,7 +76,7 @@ public class BaseChartViewer {
 		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 3;
 		composite.setLayout(gridLayout);
 
-		sashForm = new SashForm(composite, SWT.VERTICAL);
+		sashForm = new SashForm(composite, SWT.VERTICAL | SWT.NO_FOCUS);
 		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
 		dateScaleCanvas = new DateScaleCanvas(this, composite);
@@ -94,6 +111,8 @@ public class BaseChartViewer {
             	redraw();
             }
 		});
+
+		decorator.createSummaryLabel(sashForm);
 	}
 
 	public void dispose() {
@@ -106,6 +125,10 @@ public class BaseChartViewer {
 
 	public Control getControl() {
 		return composite;
+	}
+
+	public ChartCanvas[] getChildren() {
+		return chartCanvas;
 	}
 
 	public void setHorizontalScaleVisible(boolean visible) {
@@ -248,31 +271,45 @@ public class BaseChartViewer {
     	for (int i = 0; i < input.length; i++) {
 			if (chartCanvas[i] == null || chartCanvas[i].isDisposed()) {
 				chartCanvas[i] = new ChartCanvas(this, sashForm);
+				chartCanvas[i].getCanvas().setMenu(composite.getMenu());
 				chartCanvas[i].getCanvas().addMouseMoveListener(new MouseMoveListener() {
-		            public void mouseMove(MouseEvent e) {
-		            	final int x = e.x;
-		            	final int y = e.y;
-		            	final ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
-		            	chartCanvas.getCanvas().setToolTipText(null);
-		            	if (chartCanvas.getChartObject() != null) {
-		            		chartCanvas.getChartObject().accept(new IChartObjectVisitor() {
-		                        public boolean visit(IChartObject object) {
-		                        	if (!object.containsPoint(x, y))
-		                        		return true;
+                	private ChartObjectHitVisitor visitor = new ChartObjectHitVisitor();
 
-		                        	String s = object.getToolTip(x, y);
-		                        	if (s == null)
-		                        		s = object.getToolTip();
+                	public void mouseMove(MouseEvent e) {
+		            	if (showTooltips && !decorator.isVisible()) {
+		            		visitor.setLocation(e.x, e.y);
+			            	ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
+			            	if (chartCanvas.getChartObject() != null)
+		                    	chartCanvas.getChartObject().accept(visitor);
 
-		                        	if ((s != null && !s.equals(chartCanvas.getCanvas().getToolTipText())) || (s == null && chartCanvas.getCanvas().getToolTipText() != null))
-		                        		chartCanvas.getCanvas().setToolTipText(s);
+	                    	String s = null;
+	                    	if (visitor.getChartObject() != null)
+                        		s = visitor.getChartObject().getToolTip();
 
-		                        	return false;
-		                        }
-		                	});
+	                    	if ((s != null && !s.equals(chartCanvas.getCanvas().getToolTipText())) || (s == null && chartCanvas.getCanvas().getToolTipText() != null))
+	                    		chartCanvas.getCanvas().setToolTipText(s);
 		            	}
 		            }
 				});
+				chartCanvas[i].getCanvas().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseDown(MouseEvent e) {
+                    	ChartObjectHitVisitor visitor = new ChartObjectHitVisitor(e.x, e.y);
+		            	ChartCanvas eventCanvas = (ChartCanvas) e.widget.getData();
+		            	if (eventCanvas.getChartObject() != null)
+	                    	eventCanvas.getChartObject().accept(visitor);
+		            	if (selectedObject == null && selectedObject != visitor.getChartObject())
+		            		decorator.deactivate();
+		            	handleSelectionChanged(visitor.getChartObject());
+                    }
+
+                    @Override
+                    public void mouseUp(MouseEvent e) {
+                   		decorator.activate();
+	                    super.mouseUp(e);
+                    }
+				});
+				decorator.decorateCanvas(chartCanvas[i]);
 			}
 
 			chartCanvas[i].setChartObject(input[i]);
@@ -314,6 +351,20 @@ public class BaseChartViewer {
     	redraw();
     }
 
+	protected void handleSelectionChanged(IChartObject newSelection) {
+    	if (selectedObject != newSelection) {
+    		ChartObjectFocusEvent event = new ChartObjectFocusEvent(selectedObject, newSelection);
+    		if (selectedObject != null)
+    			selectedObject.handleFocusLost(event);
+    		selectedObject = newSelection;
+    		if (selectedObject != null)
+    			selectedObject.handleFocusGained(event);
+    		fireSelectionChangedEvent(new SelectionChangedEvent(BaseChartViewer.this, getSelection()));
+    		for (int i = 0; i < chartCanvas.length; i++)
+    			chartCanvas[i].redraw();
+    	}
+	}
+
 	public void redraw() {
 		visibleDates = null;
 
@@ -335,4 +386,63 @@ public class BaseChartViewer {
     private int blend(int v1, int v2, int ratio) {
 		return (ratio * v1 + (100 - ratio) * v2) / 100;
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+     */
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+    	selectionListeners.add(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+     */
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+    	selectionListeners.remove(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
+     */
+    public ISelection getSelection() {
+	    return selectedObject != null ? new StructuredSelection(selectedObject) : StructuredSelection.EMPTY;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
+     */
+    public void setSelection(ISelection newSelection) {
+    	if (!newSelection.isEmpty() && newSelection instanceof IStructuredSelection) {
+    		final Object element = ((IStructuredSelection) newSelection).getFirstElement();
+    		if (element instanceof IChartObject) {
+    			for (int i = 0; i < input.length; i++) {
+        			input[i].accept(new IChartObjectVisitor() {
+                        public boolean visit(IChartObject object) {
+                        	if (object == element)
+                        		handleSelectionChanged(object);
+    	                    return true;
+                        }
+        			});
+    			}
+    		}
+    	}
+    	if (selectedObject != null && newSelection.isEmpty())
+    		handleSelectionChanged(null);
+    }
+
+    protected void fireSelectionChangedEvent(SelectionChangedEvent event) {
+    	Object[] l = selectionListeners.getListeners();
+    	for (int i = 0; i < l.length; i++) {
+    		try {
+    			((ISelectionChangedListener) l[i]).selectionChanged(event);
+    		} catch(Throwable e) {
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Unexpected exception notifying selection listeners", e);
+				ChartsUIActivator.log(status);
+    		}
+    	}
+    }
+
+	public void setShowTooltips(boolean showTooltips) {
+		this.showTooltips = showTooltips;
+    }
 }

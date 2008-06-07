@@ -8,7 +8,9 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipsetrader.core,
- org.eclipsetrader.core.charts
+ org.eclipsetrader.core.charts,
+ org.eclipse.nebula.widgets.cdatetime,
+ org.eclipse.nebula.widgets.pshelf
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipsetrader.ui.charts,

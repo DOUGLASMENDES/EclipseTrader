@@ -16,7 +16,9 @@ import org.eclipse.osgi.util.NLS;
 public class TimeSpan {
 	public enum Units {
 		Minutes("min"),
-		Days("d");
+		Days("d"),
+		Months("mn"),
+		Years("yr");
 
 		private String name;
 
@@ -41,7 +43,17 @@ public class TimeSpan {
 		return new TimeSpan(Units.Days, length);
 	}
 
+	public static TimeSpan months(int length) {
+		return new TimeSpan(Units.Months, length);
+	}
+
+	public static TimeSpan years(int length) {
+		return new TimeSpan(Units.Years, length);
+	}
+
 	public static TimeSpan fromString(String s) {
+		if (s == null)
+			return null;
 		Units[] u = Units.values();
 		for (int i = 0; i < u.length; i++) {
 			if (s.endsWith(u[i].toString())) {

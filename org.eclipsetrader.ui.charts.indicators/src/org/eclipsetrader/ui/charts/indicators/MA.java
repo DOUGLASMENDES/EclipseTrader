@@ -34,6 +34,7 @@ import org.eclipsetrader.ui.internal.charts.indicators.Activator;
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
+@SuppressWarnings("restriction")
 public class MA implements IChartObjectFactory, IExecutableExtension {
     private String id;
     private String name;
@@ -69,6 +70,34 @@ public class MA implements IChartObjectFactory, IExecutableExtension {
 	public String getName() {
 		return name;
 	}
+
+	public void setName(String name) {
+    	this.name = name;
+    }
+
+	public OHLCField getField() {
+    	return field;
+    }
+
+	public void setField(OHLCField field) {
+    	this.field = field;
+    }
+
+	public int getPeriod() {
+    	return period;
+    }
+
+	public void setPeriod(int period) {
+    	this.period = period;
+    }
+
+	public MAType getType() {
+    	return type;
+    }
+
+	public void setType(MAType type) {
+    	this.type = type;
+    }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
@@ -113,6 +142,8 @@ public class MA implements IChartObjectFactory, IExecutableExtension {
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {
+	    name = parameters.hasParameter("name") ? parameters.getString("name") : name;
+
 	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
 	    period = parameters.getInteger("period");
 	    type = parameters.hasParameter("type") ? MAType.getFromName(parameters.getString("type")) : MAType.EMA;

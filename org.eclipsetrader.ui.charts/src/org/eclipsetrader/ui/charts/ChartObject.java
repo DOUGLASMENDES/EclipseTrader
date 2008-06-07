@@ -111,6 +111,18 @@ public class ChartObject implements IChartObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
      */
     public void accept(IChartObjectVisitor visitor) {

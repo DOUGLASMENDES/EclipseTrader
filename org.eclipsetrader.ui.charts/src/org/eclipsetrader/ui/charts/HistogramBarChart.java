@@ -11,11 +11,13 @@
 
 package org.eclipsetrader.ui.charts;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 
@@ -35,9 +37,17 @@ public class HistogramBarChart implements IChartObject {
 	private IAdaptable[] values;
 	private List<Bar> pointArray = new ArrayList<Bar>(2048);
 	private boolean valid;
+	private boolean hasFocus;
+
+	private NumberFormat numberFormat = NumberFormat.getInstance();
 
 	public HistogramBarChart(IDataSeries dataSeries) {
 	    this.dataSeries = dataSeries;
+
+	    numberFormat.setGroupingUsed(true);
+	    numberFormat.setMinimumIntegerDigits(1);
+	    numberFormat.setMinimumFractionDigits(0);
+	    numberFormat.setMaximumFractionDigits(4);
     }
 
 	/* (non-Javadoc)
@@ -97,6 +107,7 @@ public class HistogramBarChart implements IChartObject {
     	}
 
     	graphics.pushState();
+    	graphics.setLineWidth(hasFocus ? 2 : 1);
     	for (Bar c : pointArray)
    			c.paint(graphics);
     	graphics.popState();
@@ -172,6 +183,20 @@ public class HistogramBarChart implements IChartObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+    	hasFocus = true;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+    	hasFocus = false;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
      */
     public void accept(IChartObjectVisitor visitor) {
@@ -205,6 +230,10 @@ public class HistogramBarChart implements IChartObject {
 	        this.x = x;
 	        this.y = y;
 	        this.height = height;
+	        if (height < 0) {
+	        	this.y += height;
+	        	this.height = -height;
+	        }
         }
 
 		public void setValue(Number value) {
@@ -227,13 +256,15 @@ public class HistogramBarChart implements IChartObject {
 		}
 
 		public boolean containsPoint(int x, int y) {
-			if (x >= (this.x - width / 2) && x <= (this.x + width / 2))
-				return y >= y && y <= (y + height);
+			if (y == SWT.DEFAULT)
+				return x >= this.x && x <= (this.x + width);
+			if (x >= this.x && x <= (this.x + width))
+				return y >= this.y && y <= (this.y + height);
 			return false;
 		}
 
 		public String getToolTip() {
-			return dataSeries.getName() + " " + value;
+			return dataSeries.getName() + ": " + numberFormat.format(value);
 		}
     }
 }

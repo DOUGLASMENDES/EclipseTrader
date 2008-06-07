@@ -46,7 +46,7 @@ public class DateScaleCanvas {
 	DateScaleCanvas(BaseChartViewer viewer, Composite parent) {
 		this.viewer = viewer;
 
-		horizontalScaleCanvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
+		horizontalScaleCanvas = new Canvas(parent, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS);
 		horizontalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		horizontalScaleCanvas.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		((GridData) horizontalScaleCanvas.getLayoutData()).heightHint = BaseChartViewer.HORIZONTAL_SCALE_HEIGHT;

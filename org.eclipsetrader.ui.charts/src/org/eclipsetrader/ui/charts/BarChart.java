@@ -11,11 +11,14 @@
 
 package org.eclipsetrader.ui.charts;
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.feed.IOHLC;
@@ -31,9 +34,18 @@ public class BarChart implements IChartObject {
 	private IAdaptable[] values;
 	private List<Bar> pointArray;
 	private boolean valid;
+	private boolean hasFocus;
+
+	private DateFormat dateFormat = DateFormat.getDateInstance();
+	private NumberFormat numberFormat = NumberFormat.getInstance();
 
 	public BarChart(IDataSeries dataSeries) {
 	    this.dataSeries = dataSeries;
+
+	    numberFormat.setGroupingUsed(true);
+	    numberFormat.setMinimumIntegerDigits(1);
+	    numberFormat.setMinimumFractionDigits(2);
+	    numberFormat.setMaximumFractionDigits(4);
 	}
 
 	/* (non-Javadoc)
@@ -90,6 +102,7 @@ public class BarChart implements IChartObject {
 
     	if (pointArray != null) {
         	graphics.pushState();
+        	graphics.setLineWidth(hasFocus ? 2 : 1);
         	for (Bar c : pointArray)
        			c.paint(graphics);
         	graphics.popState();
@@ -168,6 +181,20 @@ public class BarChart implements IChartObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+    	hasFocus = true;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+    	hasFocus = false;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
      */
     public void accept(IChartObjectVisitor visitor) {
@@ -211,7 +238,9 @@ public class BarChart implements IChartObject {
 		}
 
 		public boolean containsPoint(int x, int y) {
-			if (x == this.x)
+			if (y == SWT.DEFAULT)
+				return x >= (this.x - width / 2) && x <= (this.x + width / 2);
+			if (x == this.x || x == SWT.DEFAULT)
 				return y >= yHigh && y <= yLow;
 			if (x >= (this.x - width / 2) && x <= (this.x + width / 2))
 				return y >= yHigh && y <= yLow;
@@ -219,7 +248,12 @@ public class BarChart implements IChartObject {
 		}
 
 		public String getToolTip() {
-			return dataSeries.getName() + " " + ohlc;
+			return dataSeries.getName() +
+				   "\r\nD:" + dateFormat.format(ohlc.getDate()) +
+				   "\r\nO:" + numberFormat.format(ohlc.getOpen()) +
+				   "\r\nH:" + numberFormat.format(ohlc.getHigh()) +
+				   "\r\nL:" + numberFormat.format(ohlc.getLow()) +
+				   "\r\nC:" + numberFormat.format(ohlc.getHigh());
 		}
     }
 }

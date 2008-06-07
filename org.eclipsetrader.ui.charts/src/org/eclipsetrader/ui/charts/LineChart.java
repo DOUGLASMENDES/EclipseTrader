@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.ui.charts;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,9 +33,13 @@ public class LineChart implements IChartObject {
 
 	private LineStyle style;
 	private RGB color;
+	private int width = 5;
 
 	private IAdaptable[] values;
 	private Point[] pointArray;
+	private boolean hasFocus;
+
+	private NumberFormat numberFormat = NumberFormat.getInstance();
 
 	public static enum LineStyle {
 		Solid,
@@ -47,7 +52,12 @@ public class LineChart implements IChartObject {
 	    this.dataSeries = dataSeries;
 	    this.style = style;
 	    this.color = color;
-    }
+
+	    numberFormat.setGroupingUsed(true);
+	    numberFormat.setMinimumIntegerDigits(1);
+	    numberFormat.setMinimumFractionDigits(2);
+	    numberFormat.setMaximumFractionDigits(4);
+	}
 
 	public RGB getColor() {
     	return color;
@@ -68,7 +78,22 @@ public class LineChart implements IChartObject {
         		l.add(value);
     	}
     	this.values = l.toArray(new IAdaptable[l.size()]);
+    	this.width = dataBounds.horizontalSpacing;
     	this.pointArray = null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+    	hasFocus = true;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+    	hasFocus = false;
     }
 
 	/* (non-Javadoc)
@@ -99,6 +124,7 @@ public class LineChart implements IChartObject {
 
         	graphics.pushState();
         	graphics.setForegroundColor(color);
+        	graphics.setLineWidth(hasFocus ? 2 : 1);
         	graphics.drawPolyline(pointArray);
         	graphics.popState();
     	}
@@ -108,8 +134,11 @@ public class LineChart implements IChartObject {
 	 * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
 	 */
 	public boolean containsPoint(int x, int y) {
-		if (pointArray != null)
+		if (pointArray != null) {
+			if (y == SWT.DEFAULT)
+				return true;
 			return PixelTools.isPointOnLine(x, y, pointArray);
+		}
 		return false;
 	}
 
@@ -132,9 +161,17 @@ public class LineChart implements IChartObject {
      */
     public String getToolTip(int x, int y) {
 		if (pointArray != null) {
-			for (int i = 1; i < pointArray.length; i++) {
-				if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y))
-					return dataSeries.getName() + " " + String.valueOf(values[i - 1].getAdapter(Number.class));
+			if (y == SWT.DEFAULT) {
+				for (int i = 0; i < pointArray.length; i++) {
+					if (x >= (pointArray[i].x - width / 2) && x <= (pointArray[i].x + width / 2))
+						return dataSeries.getName() + ": " + numberFormat.format(values[i].getAdapter(Number.class));
+				}
+			}
+			else {
+				for (int i = 1; i < pointArray.length; i++) {
+					if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y))
+						return dataSeries.getName() + " " + numberFormat.format(values[i - 1].getAdapter(Number.class));
+				}
 			}
 		}
 	    return null;

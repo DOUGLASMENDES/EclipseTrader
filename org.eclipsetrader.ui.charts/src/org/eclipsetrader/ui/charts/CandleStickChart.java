@@ -37,6 +37,7 @@ public class CandleStickChart implements IChartObject {
 	private IAdaptable[] values;
 	private List<Candle> pointArray;
 	private boolean valid;
+	private boolean hasFocus;
 
 	public CandleStickChart(IDataSeries dataSeries) {
 	    this.dataSeries = dataSeries;
@@ -97,6 +98,7 @@ public class CandleStickChart implements IChartObject {
 
     	if (pointArray != null) {
 			graphics.pushState();
+	    	graphics.setLineWidth(hasFocus ? 2 : 1);
         	for (Candle c : pointArray)
        			c.paint(graphics);
     		graphics.popState();
@@ -172,6 +174,20 @@ public class CandleStickChart implements IChartObject {
      */
     public void setParent(IChartObject parent) {
     	this.parent = parent;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+    	hasFocus = true;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+    	hasFocus = false;
     }
 
 	/* (non-Javadoc)

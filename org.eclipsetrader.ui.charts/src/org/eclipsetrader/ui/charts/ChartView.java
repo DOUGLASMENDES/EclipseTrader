@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartSection;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
+import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
 import org.eclipsetrader.core.views.IView;
 import org.eclipsetrader.core.views.IViewChangeListener;
 import org.eclipsetrader.core.views.IViewItem;
@@ -157,5 +158,16 @@ public class ChartView implements IView {
 			for (int i = 0; i < child.length; i++)
 				child[i].accept(visitor);
 		}
+	}
+
+	public IChartTemplate getTemplate() {
+		ChartTemplate template = new ChartTemplate(name);
+
+		IChartSection[] section = new IChartSection[rows.size()];
+		for (int i = 0; i < section.length; i++)
+			section[i] = rows.get(i).getTemplate();
+		template.setSections(section);
+
+		return template;
 	}
 }

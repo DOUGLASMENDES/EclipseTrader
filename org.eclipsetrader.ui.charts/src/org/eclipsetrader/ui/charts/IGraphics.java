@@ -53,6 +53,8 @@ public interface IGraphics {
 
 	public Point stringExtent(String s);
 
+	public void setLineWidth(int lineWidth);
+
 	/**
 	 * Pushes the current state of this graphics object onto a stack.
 	 */

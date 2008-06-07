@@ -31,6 +31,7 @@ public class HistogramAreaChart implements IChartObject {
 	private IAdaptable[] values;
 	private List<Polygon> pointArray = new ArrayList<Polygon>(2048);
 	private boolean valid;
+	private boolean hasFocus;
 
 	private RGB color = new RGB(0, 0, 0);
 	private RGB fillColor;
@@ -88,6 +89,7 @@ public class HistogramAreaChart implements IChartObject {
     		fillColor = blend(color, graphics.getBackgroundColor(), 25);
 
     	graphics.pushState();
+    	graphics.setLineWidth(hasFocus ? 2 : 1);
     	for (Polygon c : pointArray)
     		c.paint(graphics);
     	graphics.popState();
@@ -160,6 +162,20 @@ public class HistogramAreaChart implements IChartObject {
      */
     public void setParent(IChartObject parent) {
     	this.parent = parent;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+    	hasFocus = true;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+    	hasFocus = false;
     }
 
 	/* (non-Javadoc)
