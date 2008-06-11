@@ -36,7 +36,11 @@ public class ChartView implements IView {
 
 	private IDataSeries rootDataSeries;
 
-	public ChartView() {
+	protected ChartView() {
+	}
+
+	public ChartView(String name) {
+		this.name = name;
 	}
 
 	public ChartView(IChartTemplate template) {
@@ -63,32 +67,32 @@ public class ChartView implements IView {
 
 	public void addRow(ChartRowViewItem viewItem) {
 		rows.add(viewItem);
-		fireViewChangedEvent(new ViewEvent(this, new ViewItemDelta[] {
+		fireViewChangedEvent(new ViewItemDelta[] {
 				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
-			}));
+			});
 	}
 
 	public void addRowBefore(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
 		int index = rows.indexOf(referenceViewItem);
 		rows.add(index, viewItem);
-		fireViewChangedEvent(new ViewEvent(this, new ViewItemDelta[] {
+		fireViewChangedEvent(new ViewItemDelta[] {
 				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
-			}));
+			});
 	}
 
 	public void addRowAfter(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
 		int index = rows.indexOf(referenceViewItem);
 		rows.add(index + 1, viewItem);
-		fireViewChangedEvent(new ViewEvent(this, new ViewItemDelta[] {
+		fireViewChangedEvent(new ViewItemDelta[] {
 				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
-			}));
+			});
 	}
 
 	public void removeRow(ChartRowViewItem viewItem) {
 		rows.remove(viewItem);
-		fireViewChangedEvent(new ViewEvent(this, new ViewItemDelta[] {
+		fireViewChangedEvent(new ViewItemDelta[] {
 				new ViewItemDelta(ViewItemDelta.REMOVED, viewItem),
-			}));
+			});
 	}
 
 	public IDataSeries getRootDataSeries() {
@@ -102,7 +106,9 @@ public class ChartView implements IView {
     		viewItem.setRootDataSeries(rootDataSeries);
     }
 
-	protected void fireViewChangedEvent(ViewEvent event) {
+	protected void fireViewChangedEvent(ViewItemDelta[] delta) {
+		ViewEvent event = new ViewEvent(this, delta);
+
 		Object[] l = listeners.getListeners();
 		for (int i = 0; i < l.length; i++) {
 			try {

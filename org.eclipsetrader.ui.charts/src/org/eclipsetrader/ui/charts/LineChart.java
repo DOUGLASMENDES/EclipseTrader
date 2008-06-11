@@ -37,6 +37,7 @@ public class LineChart implements IChartObject {
 
 	private IAdaptable[] values;
 	private Point[] pointArray;
+	private boolean valid;
 	private boolean hasFocus;
 
 	private NumberFormat numberFormat = NumberFormat.getInstance();
@@ -79,7 +80,7 @@ public class LineChart implements IChartObject {
     	}
     	this.values = l.toArray(new IAdaptable[l.size()]);
     	this.width = dataBounds.horizontalSpacing;
-    	this.pointArray = null;
+    	this.valid = false;
     }
 
 	/* (non-Javadoc)
@@ -96,17 +97,29 @@ public class LineChart implements IChartObject {
     	hasFocus = false;
     }
 
+    protected boolean hasFocus() {
+    	return hasFocus;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
+     */
+    public void invalidate() {
+    	this.valid = false;
+    }
+
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
      */
     public void paint(IGraphics graphics) {
-    	if (pointArray == null && values != null && style != LineStyle.Invisible) {
+    	if ((!valid || pointArray == null) && values != null && style != LineStyle.Invisible) {
     		pointArray = new Point[values.length];
     		for (int i = 0; i < values.length; i++) {
     			Date date = (Date) values[i].getAdapter(Date.class);
     			Number value = (Number) values[i].getAdapter(Number.class);
     			pointArray[i] = graphics.mapToPoint(date, value);
     		}
+        	valid = true;
     	}
 
     	if (pointArray != null && style != LineStyle.Invisible) {
@@ -124,7 +137,7 @@ public class LineChart implements IChartObject {
 
         	graphics.pushState();
         	graphics.setForegroundColor(color);
-        	graphics.setLineWidth(hasFocus ? 2 : 1);
+        	graphics.setLineWidth(hasFocus() ? 2 : 1);
         	graphics.drawPolyline(pointArray);
         	graphics.popState();
     	}
@@ -189,7 +202,7 @@ public class LineChart implements IChartObject {
     public void remove(IChartObject object) {
     }
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#getChildren()
      */
     public IChartObject[] getChildren() {

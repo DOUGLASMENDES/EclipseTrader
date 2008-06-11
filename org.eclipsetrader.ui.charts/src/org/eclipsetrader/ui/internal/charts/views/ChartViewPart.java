@@ -19,6 +19,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -38,20 +39,39 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.SameShellProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.dialogs.PropertyDialogAction;
+import org.eclipse.ui.internal.dialogs.PropertyDialog;
+import org.eclipse.ui.internal.dialogs.PropertyPageContributorManager;
+import org.eclipse.ui.internal.dialogs.PropertyPageManager;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
@@ -62,13 +82,17 @@ import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.charts.BaseChartViewer;
+import org.eclipsetrader.ui.charts.ChartCanvas;
+import org.eclipsetrader.ui.charts.ChartObjectFactoryTransfer;
 import org.eclipsetrader.ui.charts.ChartRowViewItem;
 import org.eclipsetrader.ui.charts.ChartView;
-import org.eclipsetrader.ui.charts.ChartViewer;
+import org.eclipsetrader.ui.charts.ChartViewItem;
 import org.eclipsetrader.ui.charts.IChartObject;
+import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
-public class ChartViewPart extends ViewPart {
+@SuppressWarnings("restriction")
+public class ChartViewPart extends ViewPart implements ISaveablePart {
 	public static final String VIEW_ID = "org.eclipsetrader.ui.chart";
 
 	public static final String K_VIEWS = "Views";
@@ -88,6 +112,7 @@ public class ChartViewPart extends ViewPart {
 	private BaseChartViewer viewer;
 	private ChartView view;
 	private IHistory history;
+	private boolean dirty;
 
 	private IDialogSettings dialogSettings;
 	private Action cutAction;
@@ -184,6 +209,20 @@ public class ChartViewPart extends ViewPart {
         }
 	};
 
+	private IPropertyChangeListener preferenceChangeListener = new IPropertyChangeListener() {
+        public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
+        	IPreferenceStore preferences = (IPreferenceStore) event.getSource();
+        	if (ChartsUIActivator.PREFS_SHOW_TOOLTIPS.equals(event.getProperty()))
+    			viewer.setShowTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_TOOLTIPS));
+        	if (ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS.equals(event.getProperty()))
+        		viewer.setShowScaleTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
+        	if (ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION.equals(event.getProperty()))
+        		viewer.setCrosshairMode(preferences.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION));
+        	if (ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP.equals(event.getProperty()))
+        		viewer.setDecoratorSummaryTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
+        }
+	};
+
 	public ChartViewPart() {
 	}
 
@@ -229,7 +268,13 @@ public class ChartViewPart extends ViewPart {
 		actionBars.setGlobalActionHandler(copyAction.getId(), copyAction);
 		actionBars.setGlobalActionHandler(pasteAction.getId(), pasteAction);
 		actionBars.setGlobalActionHandler(deleteAction.getId(), deleteAction);
-		actionBars.setGlobalActionHandler(propertiesAction.getId(), propertiesAction);
+
+		ToolAction toolAction = new ToolAction("Line", this, "org.eclipsetrader.ui.charts.tools.line");
+		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
+		toolAction = new ToolAction("FiboLine", this, "org.eclipsetrader.ui.charts.tools.fiboline");
+		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
+		toolAction = new ToolAction("FanLine", this, "org.eclipsetrader.ui.charts.tools.fanline");
+		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
 
         IMenuManager menuManager = actionBars.getMenuManager();
 
@@ -269,17 +314,6 @@ public class ChartViewPart extends ViewPart {
     	}
 
     	menuManager.add(periodMenu);
-    	menuManager.add(new Separator());
-
-    	Action showTooltipsAction = new Action("Show tooltips", Action.AS_CHECK_BOX) {
-            @Override
-            public void run() {
-	            dialogSettings.put(K_SHOW_TOOLTIPS, isChecked());
-	            viewer.setShowTooltips(isChecked());
-            }
-    	};
-    	showTooltipsAction.setChecked(dialogSettings.get(K_SHOW_TOOLTIPS) != null && Boolean.TRUE.equals(dialogSettings.getBoolean(K_SHOW_TOOLTIPS)));
-    	menuManager.add(showTooltipsAction);
 
         actionBars.getToolBarManager().add(new Separator("additions"));
         actionBars.updateActionBars();
@@ -324,6 +358,15 @@ public class ChartViewPart extends ViewPart {
         deleteAction = new Action("Delete") {
             @Override
             public void run() {
+            	IStructuredSelection selection = (IStructuredSelection) getViewSite().getSelectionProvider().getSelection();
+            	if (!selection.isEmpty()) {
+            		if (MessageDialog.openConfirm(getViewSite().getShell(), getPartName(), "Do you want to delete the selected indicator ?")) {
+                		ChartViewItem viewItem = (ChartViewItem) selection.getFirstElement();
+                		((ChartRowViewItem) viewItem.getParent()).removeChildItem(viewItem);
+                		setDirty();
+                		job.schedule();
+            		}
+            	}
             }
 		};
 		deleteAction.setId("delete"); //$NON-NLS-1$
@@ -331,15 +374,6 @@ public class ChartViewPart extends ViewPart {
 		deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		deleteAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
 		deleteAction.setEnabled(false);
-
-        propertiesAction = new Action("Settings") {
-            @Override
-            public void run() {
-            }
-		};
-		propertiesAction.setId("settings"); //$NON-NLS-1$
-		propertiesAction.setActionDefinitionId("org.eclipse.ui.edit.settings"); //$NON-NLS-1$
-		propertiesAction.setEnabled(false);
     }
 
 	/* (non-Javadoc)
@@ -348,24 +382,80 @@ public class ChartViewPart extends ViewPart {
     @Override
     public void createPartControl(Composite parent) {
     	viewer = new BaseChartViewer(parent, SWT.NONE);
-    	//viewer.setHorizontalAxis(new DateValuesAxis());
-		//((DateValuesAxis) viewer.getHorizontalAxis()).fillAvailableSpace = false;
-		//viewer.setVerticalAxis(new DoubleValuesAxis());
 		viewer.setHorizontalScaleVisible(true);
 		viewer.setVerticalScaleVisible(true);
-		//viewer.setRenderer(new ChartDocumentRenderer());
-		//viewer.setContentProvider(new ChartDocumentContentProvider());
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
-            	cutAction.setEnabled(!event.getSelection().isEmpty());
-            	copyAction.setEnabled(!event.getSelection().isEmpty());
-            	deleteAction.setEnabled(!event.getSelection().isEmpty());
-            	propertiesAction.setEnabled(!event.getSelection().isEmpty());
+            	handleSelectionChanged((IStructuredSelection) event.getSelection());
+            	handleActionsEnablement();
             }
 		});
 
-		getSite().setSelectionProvider(viewer);
+		Transfer[] transferTypes = new Transfer[] {
+				ChartObjectFactoryTransfer.getInstance(),
+		};
+		DropTarget dropTarget = new DropTarget(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE);
+		dropTarget.setTransfer(transferTypes);
+		dropTarget.addDropListener(new DropTargetAdapter() {
+            @Override
+            public void drop(DropTargetEvent event) {
+				ChartRowViewItem rowItem = (ChartRowViewItem) view.getItems()[0];
+
+				String[] factories = (String[]) event.data;
+	            for (int i = 0; i < factories.length; i++) {
+	    			IChartObjectFactory factory = ChartsUIActivator.getDefault().getChartObjectFactory(factories[i]);
+	    			if (factory != null) {
+	    				ChartViewItem viewItem = new ChartViewItem(rowItem, factory);
+
+	    				PropertyPageManager pageManager = new PropertyPageManager();
+	    				PropertyPageContributorManager.getManager().contribute(pageManager, viewItem);
+	    				Iterator<?> pages = pageManager.getElements(PreferenceManager.PRE_ORDER).iterator();
+	    				if (pages.hasNext()) {
+		    				PropertyDialog dlg = PropertyDialog.createDialogOn(getViewSite().getShell(), null, viewItem);
+	    					if (dlg.open() == PropertyDialog.OK) {
+		    					rowItem.addChildItem(viewItem);
+		    					setDirty();
+	    					}
+	    				}
+	    				else {
+	    					rowItem.addChildItem(viewItem);
+	    					setDirty();
+	    				}
+	    			}
+	            }
+
+	            job.schedule();
+            }
+		});
+
+		if (ChartsUIActivator.getDefault() != null) {
+			IPreferenceStore preferences = ChartsUIActivator.getDefault().getPreferenceStore();
+			viewer.setShowTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_TOOLTIPS));
+			viewer.setShowScaleTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
+    		viewer.setCrosshairMode(preferences.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION));
+    		viewer.setDecoratorSummaryTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
+			preferences.addPropertyChangeListener(preferenceChangeListener);
+		}
+
+		getSite().setSelectionProvider(new SelectionProvider());
+
+		propertiesAction = new PropertyDialogAction(new SameShellProvider(getViewSite().getShell()), getSite().getSelectionProvider()) {
+            @Override
+            public void run() {
+        		PreferenceDialog dialog = createDialog();
+        		if (dialog != null) {
+        			if (dialog.open() == PreferenceDialog.OK)
+        				job.schedule();
+        		}
+            }
+		};
+		propertiesAction.setId(ActionFactory.PROPERTIES.getId());
+		propertiesAction.setActionDefinitionId("org.eclipse.ui.file.properties"); //$NON-NLS-1$
+		propertiesAction.setEnabled(false);
+        IActionBars actionBars = getViewSite().getActionBars();
+		actionBars.setGlobalActionHandler(propertiesAction.getId(), propertiesAction);
+        actionBars.updateActionBars();
 
 		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
 		menuMgr.setRemoveAllWhenShown(true);
@@ -415,7 +505,81 @@ public class ChartViewPart extends ViewPart {
         		propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
     	}
 
-    	super.dispose();
+		if (ChartsUIActivator.getDefault() != null) {
+			IPreferenceStore preferences = ChartsUIActivator.getDefault().getPreferenceStore();
+			preferences.removePropertyChangeListener(preferenceChangeListener);
+		}
+
+		super.dispose();
+    }
+
+    protected void handleSelectionChanged(IStructuredSelection selection) {
+    	if (selection.size() != 1 || !(selection.getFirstElement() instanceof IChartObject)) {
+    		getViewSite().getSelectionProvider().setSelection(StructuredSelection.EMPTY);
+    		return;
+    	}
+    	ChartViewItemFinder finder = new ChartViewItemFinder((IChartObject) selection.getFirstElement());
+    	view.accept(finder);
+    	if (finder.getViewItem() == null)
+    		getViewSite().getSelectionProvider().setSelection(new StructuredSelection(view));
+    	else
+    		getViewSite().getSelectionProvider().setSelection(new StructuredSelection(finder.getViewItem()));
+    }
+
+    protected void handleActionsEnablement() {
+    	IStructuredSelection selection = (IStructuredSelection) getViewSite().getSelectionProvider().getSelection();
+    	cutAction.setEnabled(!selection.isEmpty());
+    	copyAction.setEnabled(!selection.isEmpty());
+    	deleteAction.setEnabled(!selection.isEmpty());
+    	propertiesAction.setEnabled(!selection.isEmpty());
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.ISaveablePart#doSave(org.eclipse.core.runtime.IProgressMonitor)
+     */
+    public void doSave(IProgressMonitor monitor) {
+    	clearDirty();
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.ISaveablePart#doSaveAs()
+     */
+    public void doSaveAs() {
+    }
+
+    protected void setDirty() {
+    	if (!dirty) {
+    		dirty = true;
+    		firePropertyChange(PROP_DIRTY);
+    	}
+    }
+
+    protected void clearDirty() {
+    	if (dirty) {
+    		dirty = false;
+    		firePropertyChange(PROP_DIRTY);
+    	}
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.ISaveablePart#isDirty()
+     */
+    public boolean isDirty() {
+	    return dirty;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.ISaveablePart#isSaveAsAllowed()
+     */
+    public boolean isSaveAsAllowed() {
+	    return false;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.ISaveablePart#isSaveOnCloseNeeded()
+     */
+    public boolean isSaveOnCloseNeeded() {
+	    return dirty;
     }
 
 	/* (non-Javadoc)
@@ -424,8 +588,10 @@ public class ChartViewPart extends ViewPart {
     @Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(ChartViewer.class))
+    	if (adapter.isAssignableFrom(BaseChartViewer.class))
     		return viewer;
+    	if (adapter.isAssignableFrom(ChartCanvas.class))
+    		return viewer.getSelectedChartCanvas();
     	if (adapter.isAssignableFrom(ChartView.class))
     		return view;
     	if (adapter.isAssignableFrom(IChartTemplate.class))

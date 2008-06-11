@@ -21,7 +21,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipsetrader.core.feed.TimeSpan;
-import org.eclipsetrader.ui.charts.CustomPeriodDialog;
 
 public class PeriodMenu extends MenuManager {
 	private Shell shell;

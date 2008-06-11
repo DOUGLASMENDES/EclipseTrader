@@ -31,9 +31,11 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -64,10 +66,16 @@ public class BaseChartViewer implements ISelectionProvider {
 
 	DateValuesAxis datesAxis = new DateValuesAxis();
 
+	private ChartCanvas selectedChartCanvas;
 	private IChartObject selectedObject;
 	private ListenerList selectionListeners = new ListenerList(ListenerList.IDENTITY);
 	private boolean showTooltips;
+	private boolean showScaleTooltips;
+
 	private CrosshairDecorator decorator = new CrosshairDecorator();
+	private int decoratorMode;
+
+	private ChartToolEditor activeEditor;
 
 	public BaseChartViewer(Composite parent, int style) {
 		composite = new Composite(parent, style | SWT.H_SCROLL);
@@ -265,6 +273,7 @@ public class BaseChartViewer implements ISelectionProvider {
 		}
 
 		chartCanvas = newCanvas;
+		selectedChartCanvas = null;
 
     	datesAxis.clear();
 
@@ -272,16 +281,23 @@ public class BaseChartViewer implements ISelectionProvider {
 			if (chartCanvas[i] == null || chartCanvas[i].isDisposed()) {
 				chartCanvas[i] = new ChartCanvas(this, sashForm);
 				chartCanvas[i].getCanvas().setMenu(composite.getMenu());
+				chartCanvas[i].getCanvas().addMouseTrackListener(new MouseTrackAdapter() {
+                    @Override
+                    public void mouseExit(MouseEvent e) {
+		            	ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
+		            	if (activeEditor != null)
+		            		return;
+		            	chartCanvas.hideToolTip();
+                    	dateScaleCanvas.hideToolTip();
+                    }
+				});
 				chartCanvas[i].getCanvas().addMouseMoveListener(new MouseMoveListener() {
                 	private ChartObjectHitVisitor visitor = new ChartObjectHitVisitor();
 
                 	public void mouseMove(MouseEvent e) {
-		            	if (showTooltips && !decorator.isVisible()) {
-		            		visitor.setLocation(e.x, e.y);
-			            	ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
-			            	if (chartCanvas.getChartObject() != null)
-		                    	chartCanvas.getChartObject().accept(visitor);
+		            	ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
 
+		            	if (showTooltips && !decorator.isVisible()) {
 	                    	String s = null;
 	                    	if (visitor.getChartObject() != null)
                         		s = visitor.getChartObject().getToolTip();
@@ -289,28 +305,79 @@ public class BaseChartViewer implements ISelectionProvider {
 	                    	if ((s != null && !s.equals(chartCanvas.getCanvas().getToolTipText())) || (s == null && chartCanvas.getCanvas().getToolTipText() != null))
 	                    		chartCanvas.getCanvas().setToolTipText(s);
 		            	}
+
+		            	if (showScaleTooltips) {
+			            	chartCanvas.showToolTip(e.x, e.y);
+
+			            	int x = e.x + composite.getHorizontalBar().getSelection();
+			            	Date value = (Date) datesAxis.mapToValue(x);
+			            	if (value != null)
+			            		dateScaleCanvas.showToolTip(e.x, e.y, value);
+		            	}
+
+		            	if (activeEditor == null || !activeEditor.isActive()) {
+		            		visitor.setLocation(e.x, e.y);
+			            	if (chartCanvas.getChartObject() != null)
+		                    	chartCanvas.getChartObject().accept(visitor);
+
+	                    	if (visitor.getChartObject() == selectedObject && visitor.getChartObject() instanceof IEditableChartObject) {
+	                    		IEditableChartObject editableObject = (IEditableChartObject) visitor.getChartObject();
+	                    		if (editableObject.isOnEditHandle(e.x, e.y)) {
+	                    			Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_CROSS);
+	        		            	if (chartCanvas.getCanvas().getCursor() != cursor)
+	        		            		chartCanvas.getCanvas().setCursor(cursor);
+	                    		}
+	                    		else if (editableObject.isOnDragHandle(e.x, e.y)) {
+	                    			Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND);
+	        		            	if (chartCanvas.getCanvas().getCursor() != cursor)
+	        		            		chartCanvas.getCanvas().setCursor(cursor);
+	                    		}
+	                    	}
+	                    	else {
+	    		            	if (visitor.getChartObject() != null && chartCanvas.getCanvas().getCursor() == null)
+	    		            		chartCanvas.getCanvas().setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+	    		            	else if (visitor.getChartObject() == null && chartCanvas.getCanvas().getCursor() != null)
+	    		            		chartCanvas.getCanvas().setCursor(null);
+	                    	}
+		            	}
 		            }
 				});
 				chartCanvas[i].getCanvas().addMouseListener(new MouseAdapter() {
-                    @Override
+                	private ChartObjectHitVisitor visitor = new ChartObjectHitVisitor();
+
+                	@Override
                     public void mouseDown(MouseEvent e) {
-                    	ChartObjectHitVisitor visitor = new ChartObjectHitVisitor(e.x, e.y);
 		            	ChartCanvas eventCanvas = (ChartCanvas) e.widget.getData();
+
+	            		visitor.setLocation(e.x, e.y);
 		            	if (eventCanvas.getChartObject() != null)
 	                    	eventCanvas.getChartObject().accept(visitor);
-		            	if (selectedObject == null && selectedObject != visitor.getChartObject())
-		            		decorator.deactivate();
-		            	handleSelectionChanged(visitor.getChartObject());
-                    }
 
-                    @Override
-                    public void mouseUp(MouseEvent e) {
-                   		decorator.activate();
-	                    super.mouseUp(e);
+		            	if (selectedObject != visitor.getChartObject()) {
+		            		if (decorator.getMode() != CrosshairDecorator.MODE_MOUSE_HOVER)
+		            			decorator.deactivate();
+		            	}
+		            	else {
+		            		if (selectedObject == null)
+		            			decorator.activate();
+
+			            	if (visitor.getChartObject() instanceof IEditableChartObject) {
+		            			decorator.setMode(CrosshairDecorator.MODE_OFF);
+
+		            			IEditableChartObject object = (IEditableChartObject) visitor.getChartObject();
+		            			activeEditor.activate(BaseChartViewer.this, eventCanvas, object);
+			            		activeEditor.handleMouseDown(activeEditor.createEvent(e));
+			            	}
+		            	}
+
+		            	handleSelectionChanged(eventCanvas, visitor.getChartObject());
                     }
 				});
 				decorator.decorateCanvas(chartCanvas[i]);
 			}
+
+			if (selectedChartCanvas == null)
+				selectedChartCanvas = chartCanvas[i];
 
 			chartCanvas[i].setChartObject(input[i]);
 			chartCanvas[i].redraw();
@@ -322,7 +389,6 @@ public class BaseChartViewer implements ISelectionProvider {
     	            return true;
                 }
         	});
-        	//canvas.setChartObject(input[i]);
     	}
 
     	int[] weights = new int[chartCanvas.length];
@@ -351,14 +417,18 @@ public class BaseChartViewer implements ISelectionProvider {
     	redraw();
     }
 
-	protected void handleSelectionChanged(IChartObject newSelection) {
+	protected void handleSelectionChanged(ChartCanvas newChartCanvas, IChartObject newSelection) {
     	if (selectedObject != newSelection) {
     		ChartObjectFocusEvent event = new ChartObjectFocusEvent(selectedObject, newSelection);
     		if (selectedObject != null)
     			selectedObject.handleFocusLost(event);
+
     		selectedObject = newSelection;
+    		selectedChartCanvas = newChartCanvas;
+
     		if (selectedObject != null)
     			selectedObject.handleFocusGained(event);
+
     		fireSelectionChangedEvent(new SelectionChangedEvent(BaseChartViewer.this, getSelection()));
     		for (int i = 0; i < chartCanvas.length; i++)
     			chartCanvas[i].redraw();
@@ -415,11 +485,12 @@ public class BaseChartViewer implements ISelectionProvider {
     	if (!newSelection.isEmpty() && newSelection instanceof IStructuredSelection) {
     		final Object element = ((IStructuredSelection) newSelection).getFirstElement();
     		if (element instanceof IChartObject) {
-    			for (int i = 0; i < input.length; i++) {
-        			input[i].accept(new IChartObjectVisitor() {
+    			for (int i = 0; i < chartCanvas.length; i++) {
+    				final ChartCanvas currentCanvas = chartCanvas[i];;
+    				currentCanvas.getChartObject().accept(new IChartObjectVisitor() {
                         public boolean visit(IChartObject object) {
                         	if (object == element)
-                        		handleSelectionChanged(object);
+                        		handleSelectionChanged(currentCanvas, object);
     	                    return true;
                         }
         			});
@@ -427,7 +498,7 @@ public class BaseChartViewer implements ISelectionProvider {
     		}
     	}
     	if (selectedObject != null && newSelection.isEmpty())
-    		handleSelectionChanged(null);
+    		handleSelectionChanged(selectedChartCanvas, null);
     }
 
     protected void fireSelectionChangedEvent(SelectionChangedEvent event) {
@@ -445,4 +516,70 @@ public class BaseChartViewer implements ISelectionProvider {
 	public void setShowTooltips(boolean showTooltips) {
 		this.showTooltips = showTooltips;
     }
+
+	public void setCrosshairMode(int mode) {
+		this.decoratorMode = mode;
+    	decorator.setMode(mode);
+    }
+
+	public void setShowScaleTooltips(boolean showScaleTooltips) {
+    	this.showScaleTooltips = showScaleTooltips;
+    }
+
+	public void activateEditor(IEditableChartObject object) {
+		selectedChartCanvas.getCanvas().setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_CROSS));
+
+		decorator.setMode(CrosshairDecorator.MODE_OFF);
+		activeEditor.activate(this, selectedChartCanvas, object);
+	}
+
+	public void deactivateEditor() {
+		if (activeEditor != null) {
+			ChartCanvas chartCanvas = activeEditor.getChartCanvas();
+			chartCanvas.getCanvas().setCursor(null);
+
+			activeEditor.deactivate();
+			decorator.setMode(decoratorMode);
+		}
+	}
+
+	public ChartToolEditor getEditor() {
+    	return activeEditor;
+    }
+
+	public void setEditor(ChartToolEditor activeEditor) {
+		if (this.activeEditor != null)
+			this.activeEditor.deactivate();
+
+		this.activeEditor = activeEditor;
+    }
+
+	public ChartCanvas getSelectedChartCanvas() {
+    	return selectedChartCanvas;
+    }
+
+	/**
+	 * Returns the canvas at the given point in the receiver or null if
+	 * no such canvas exists. The point is in the coordinate system of
+	 * the receiver.
+	 *
+	 * @param x the x coordinate.
+	 * @param y the y coordinate.
+	 * @return the canvas at the given point, or null if no such canvas exists.
+	 */
+	public ChartCanvas getChartCanvas(int x, int y) {
+		Point p = getControl().toDisplay(x, y);
+
+		for (int i = 0; i < chartCanvas.length; i++) {
+			Rectangle bounds = chartCanvas[i].getCanvas().getBounds();
+			if (bounds.contains(chartCanvas[i].getCanvas().toControl(p)))
+				return chartCanvas[i];
+		}
+
+		return null;
+	}
+
+	public void setDecoratorSummaryTooltips(boolean show) {
+		decorator.setShowSummaryTooltip(show);
+	}
 }

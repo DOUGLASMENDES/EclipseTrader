@@ -40,8 +40,10 @@ public class ChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#add(org.eclipsetrader.ui.charts.IChartObject)
      */
     public void add(IChartObject object) {
-		objects.add(object);
-		object.setParent(this);
+    	if (!objects.contains(object)) {
+    		objects.add(object);
+    		object.setParent(this);
+    	}
     }
 
 	/* (non-Javadoc)
@@ -100,6 +102,12 @@ public class ChartObject implements IChartObject {
     public void paint(IGraphics graphics) {
     	for (IChartObject o : objects)
     		o.paint(graphics);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
+     */
+    public void invalidate() {
     }
 
 	/* (non-Javadoc)

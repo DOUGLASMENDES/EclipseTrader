@@ -20,15 +20,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Drawable;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Control;
 
 public class Graphics implements IGraphics {
 	private GC gc;
 	private IAxis horizontalAxis;
 	private IAxis verticalAxis;
 	private Point location;
+	private Rectangle bounds;
 
 	private RGB foregroundColor;
 	private RGB backgroundColor;
@@ -38,9 +41,15 @@ public class Graphics implements IGraphics {
 
 	public Graphics(Drawable drawable, Point location, IAxis horizontalAxis, IAxis verticalAxis) {
 	    this.gc = new GC(drawable);
+
 	    this.horizontalAxis = horizontalAxis;
 	    this.verticalAxis = verticalAxis;
 	    this.location = location;
+
+	    if (drawable instanceof Image)
+	    	this.bounds = ((Image) drawable).getBounds();
+	    if (drawable instanceof Control)
+	    	this.bounds = ((Control) drawable).getBounds();
 
 	    foregroundColor = gc.getForeground().getRGB();
 	    backgroundColor = gc.getBackground().getRGB();
@@ -55,6 +64,13 @@ public class Graphics implements IGraphics {
 		colorMap.clear();
 		gc.dispose();
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IGraphics#getBounds()
+     */
+    public Rectangle getBounds() {
+    	return bounds;
+    }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IGraphics#drawLine(int, int, int, int)
@@ -165,10 +181,24 @@ public class Graphics implements IGraphics {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IGraphics#mapToHorizontalValue(int)
+     */
+    public Object mapToHorizontalValue(int x) {
+	    return horizontalAxis.mapToValue(x + location.x);
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IGraphics#mapToVerticalAxis(java.lang.Object)
      */
     public int mapToVerticalAxis(Object value) {
 	    return verticalAxis.mapToAxis(value);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IGraphics#mapToVerticalValue(int)
+     */
+    public Object mapToVerticalValue(int y) {
+	    return verticalAxis.mapToValue(y);
     }
 
 	/* (non-Javadoc)
@@ -219,7 +249,7 @@ public class Graphics implements IGraphics {
      * @see org.eclipsetrader.ui.charts.IGraphics#setLineWidth(int)
      */
     public void setLineWidth(int lineWidth) {
-    	gc.setLineWidth(lineWidth);
+    	gc.setLineWidth(lineWidth == 1 ? 0 : lineWidth);
     }
 
 	/* (non-Javadoc)
@@ -234,7 +264,7 @@ public class Graphics implements IGraphics {
     		setBackgroundColor((RGB) state.get("background-color"));
     		gc.setLineStyle((Integer) state.get("line-style"));
     		gc.setLineDash((int[]) state.get("line-dash"));
-    		gc.setLineWidth((Integer) state.get("line-width"));
+    		gc.setLineWidth(((Integer) state.get("line-width")).intValue());
     	}
     }
 
@@ -247,7 +277,7 @@ public class Graphics implements IGraphics {
     	state.put("background-color", getBackgroundColor());
     	state.put("line-style", gc.getLineStyle());
     	state.put("line-dash", gc.getLineDash());
-    	state.put("line-width", gc.getLineWidth());
+    	state.put("line-width", new Integer(gc.getLineWidth()));
     	stack.add(0, state);
     }
 }

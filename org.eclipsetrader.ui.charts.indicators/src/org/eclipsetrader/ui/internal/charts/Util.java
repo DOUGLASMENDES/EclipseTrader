@@ -12,8 +12,16 @@
 package org.eclipsetrader.ui.internal.charts;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.ui.charts.HistogramAreaChart;
+import org.eclipsetrader.ui.charts.HistogramBarChart;
+import org.eclipsetrader.ui.charts.IChartObject;
+import org.eclipsetrader.ui.charts.LineChart;
 import org.eclipsetrader.ui.charts.OHLCField;
+import org.eclipsetrader.ui.charts.RenderStyle;
+import org.eclipsetrader.ui.charts.LineChart.LineStyle;
 
 /**
  * Generic utilities to handle TA-Lib and indicators.
@@ -106,4 +114,25 @@ public class Util {
 
 		return inReal;
 	}
+
+    public static IChartObject createLineChartObject(IDataSeries result, RenderStyle renderStyle, RGB color) {
+		LineStyle lineStyle = LineStyle.Solid;
+	    switch(renderStyle) {
+	    	case Dash:
+	    		lineStyle = LineStyle.Dash;
+	    		break;
+	    	case Dot:
+	    		lineStyle = LineStyle.Dot;
+	    		break;
+	    	case HistogramBars:
+				return new HistogramBarChart(result);
+	    	case Histogram:
+				return new HistogramAreaChart(result);
+	    	case Invisible:
+	    		lineStyle = LineStyle.Invisible;
+	    		break;
+	    }
+
+	    return new LineChart(result, lineStyle, color);
+    }
 }

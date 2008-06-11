@@ -66,6 +66,13 @@ public class HistogramBarChart implements IChartObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
+     */
+    public void invalidate() {
+    	this.valid = false;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
      */
     public void paint(IGraphics graphics) {
@@ -107,7 +114,7 @@ public class HistogramBarChart implements IChartObject {
     	}
 
     	graphics.pushState();
-    	graphics.setLineWidth(hasFocus ? 2 : 1);
+    	graphics.setLineWidth(hasFocus() ? 2 : 1);
     	for (Bar c : pointArray)
    			c.paint(graphics);
     	graphics.popState();
@@ -194,6 +201,10 @@ public class HistogramBarChart implements IChartObject {
      */
     public void handleFocusLost(ChartObjectFocusEvent event) {
     	hasFocus = false;
+    }
+
+	protected boolean hasFocus() {
+    	return hasFocus;
     }
 
 	/* (non-Javadoc)

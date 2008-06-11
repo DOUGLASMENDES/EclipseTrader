@@ -12,14 +12,12 @@
 package org.eclipsetrader.ui.charts;
 
 public enum RenderStyle {
-	Line("line", "Solid"),
+	Line("line", "Line"),
 	Dot("dot", "Dot"),
 	Dash("dash", "Dash"),
 	Histogram("histogram", "Histogram"),
 	HistogramBars("histogram-bars", "Histogram Bars"),
-	Invisible("invisible", "Invisible"),
-	Candles("candles", "Candles"),
-	Bars("bars", "Bars");
+	Invisible("invisible", "Invisible");
 
 	private String name;
 	private String description;

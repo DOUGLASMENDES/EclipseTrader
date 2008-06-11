@@ -121,6 +121,35 @@
             id="org.eclipsetrader.ui.charts.trigger"
             label="Trigger Action Set">
       </actionSet>
+      <actionSet
+            description="Chart drawing tools"
+            id="org.eclipsetrader.ui.charts.tools"
+            label="Chart Tools">
+         <action
+               icon="icons/etool16/fanline.gif"
+               id="org.eclipsetrader.ui.charts.tools.fanline"
+               label="FanLine"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/fiboline.gif"
+               id="org.eclipsetrader.ui.charts.tools.fiboline"
+               label="FiboLine"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/line.gif"
+               id="org.eclipsetrader.ui.charts.tools.line"
+               label="Line"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+      </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -143,6 +172,48 @@
             id="org.eclipsetrader.ui.charts.tools"
             name="Tools">
       </category>
+   </extension>
+   <extension
+         point="org.eclipsetrader.ui.indicators">
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.LineToolFactory"
+            icon="icons/etool16/line.gif"
+            id="org.eclipsetrader.ui.charts.tools.line"
+            name="Line">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.FibolineToolFactory"
+            icon="icons/etool16/fiboline.gif"
+            id="org.eclipsetrader.ui.charts.tools.fiboline"
+            name="FiboLine">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.FanlineToolFactory"
+            icon="icons/etool16/fanline.gif"
+            id="org.eclipsetrader.ui.charts.tools.fanline"
+            name="FanLine">
+      </indicator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.eclipsetrader.ui.internal.charts.views.GeneralPreferencesPage"
+            id="org.eclipsetrader.ui.charts.general"
+            name="Charts">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.eclipsetrader.ui.internal.charts.ChartViewItemPropertyTester"
+            id="org.eclipsetrader.ui.charts.propertyTester"
+            namespace="org.eclipsetrader.ui"
+            properties="id,chartObjectFactory,chartObjectFactoryId"
+            type="org.eclipsetrader.ui.charts.ChartViewItem">
+      </propertyTester>
    </extension>
 
 </plugin>

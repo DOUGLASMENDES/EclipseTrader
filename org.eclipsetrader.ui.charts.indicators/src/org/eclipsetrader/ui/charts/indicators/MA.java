@@ -18,16 +18,14 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
-import org.eclipsetrader.ui.charts.HistogramAreaChart;
-import org.eclipsetrader.ui.charts.HistogramBarChart;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
-import org.eclipsetrader.ui.charts.LineChart;
+import org.eclipsetrader.ui.charts.ILineDecorator;
 import org.eclipsetrader.ui.charts.MAType;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.charts.RenderStyle;
-import org.eclipsetrader.ui.charts.LineChart.LineStyle;
+import org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
 
@@ -35,7 +33,7 @@ import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
 @SuppressWarnings("restriction")
-public class MA implements IChartObjectFactory, IExecutableExtension {
+public class MA implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
     private String name;
 
@@ -71,7 +69,10 @@ public class MA implements IChartObjectFactory, IExecutableExtension {
 		return name;
 	}
 
-	public void setName(String name) {
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setName(java.lang.String)
+     */
+    public void setName(String name) {
     	this.name = name;
     }
 
@@ -100,42 +101,59 @@ public class MA implements IChartObjectFactory, IExecutableExtension {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#getRenderStyle()
+     */
+    public RenderStyle getRenderStyle() {
+    	return renderStyle;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setRenderStyle(org.eclipsetrader.ui.charts.RenderStyle)
+     */
+    public void setRenderStyle(RenderStyle renderStyle) {
+    	this.renderStyle = renderStyle;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ILineDecorator#getColor()
+     */
+    public RGB getColor() {
+    	return color;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ILineDecorator#setColor(org.eclipse.swt.graphics.RGB)
+     */
+    public void setColor(RGB color) {
+    	this.color = color;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
     public IChartObject createObject(IDataSeries source) {
-		if (source != null) {
-			IAdaptable[] values = source.getValues();
-			Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
+    	if (source == null)
+    		return null;
 
-		    int startIdx = 0;
-	        int endIdx = values.length - 1;
-			double[] inReal = Util.getValuesForField(values, field);
+    	IAdaptable[] values = source.getValues();
+		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-			MInteger outBegIdx = new MInteger();
-	        MInteger outNbElement = new MInteger();
-	        double[] outReal = new double[values.length - core.movingAverageLookback(period, MAType.getTALib_MAType(type))];
+		int lookback = core.movingAverageLookback(period, MAType.getTALib_MAType(type));
+		if (values.length < lookback)
+			return null;
 
-	        core.movingAverage(startIdx, endIdx, inReal, period, MAType.getTALib_MAType(type), outBegIdx, outNbElement, outReal);
+	    int startIdx = 0;
+        int endIdx = values.length - 1;
+		double[] inReal = Util.getValuesForField(values, field);
 
-			IDataSeries result = new NumericDataSeries(getName(), outReal, source);
+		MInteger outBegIdx = new MInteger();
+        MInteger outNbElement = new MInteger();
+        double[] outReal = new double[values.length - lookback];
 
-		    switch(renderStyle) {
-		    	case Dash:
-					return new LineChart(result, LineStyle.Dash, color);
-		    	case Dot:
-					return new LineChart(result, LineStyle.Dot, color);
-		    	case HistogramBars:
-					return new HistogramBarChart(result);
-		    	case Histogram:
-					return new HistogramAreaChart(result);
-		    	case Invisible:
-					return new LineChart(result, LineStyle.Invisible, color);
-		    }
+        core.movingAverage(startIdx, endIdx, inReal, period, MAType.getTALib_MAType(type), outBegIdx, outNbElement, outReal);
 
-		    return new LineChart(result, LineStyle.Solid, color);
-		}
-
-		return null;
+		IDataSeries result = new NumericDataSeries(getName(), outReal, source);
+		return Util.createLineChartObject(result, renderStyle, color);
     }
 
     /* (non-Javadoc)

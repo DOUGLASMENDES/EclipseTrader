@@ -22,23 +22,31 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 
-public class CrosshairDecorator implements MouseListener, MouseMoveListener, DisposeListener, PaintListener {
+public class CrosshairDecorator implements MouseListener, MouseMoveListener, MouseTrackListener, DisposeListener, PaintListener {
 	public int OFFSET_X = 12;
 	public int OFFSET_Y = 12;
 
+	public static final int MODE_OFF = 0;
+	public static final int MODE_MOUSE_DOWN = 1;
+	public static final int MODE_MOUSE_HOVER = 2;
+
 	private boolean active = true;
+
+	private int mode = MODE_OFF;
+	private boolean showSummaryTooltip;
 	private boolean mouseDown;
+	private boolean skipPaint;
 	private Point location;
 	private ChartCanvas focusCanvas;
 
@@ -147,6 +155,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 	public void decorateCanvas(ChartCanvas canvas) {
 		canvas.getCanvas().addMouseListener(this);
 		canvas.getCanvas().addMouseMoveListener(this);
+		canvas.getCanvas().addMouseTrackListener(this);
 		canvas.getCanvas().addDisposeListener(this);
 		canvas.getCanvas().addPaintListener(this);
 		decoratedCanvas.add(canvas);
@@ -162,6 +171,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 		for (ChartCanvas canvas : decoratedCanvas) {
 			canvas.getCanvas().removeMouseListener(this);
 			canvas.getCanvas().removeMouseMoveListener(this);
+			canvas.getCanvas().removeMouseTrackListener(this);
 			canvas.getCanvas().removeDisposeListener(this);
 			canvas.getCanvas().removePaintListener(this);
 		}
@@ -183,7 +193,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
     }
 
 	public boolean isVisible() {
-		return mouseDown;
+		return location != null;
 	}
 
 	/* (non-Javadoc)
@@ -208,14 +218,14 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 	 * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
 	 */
 	public void mouseDown(MouseEvent e) {
-		if (e.widget instanceof Canvas && e.button == 1 && active) {
-			if (!mouseDown) {
-				location = new Point(e.x, e.y);
-				focusCanvas = (ChartCanvas) e.widget.getData();
-				mouseDown = true;
-				drawLines(location);
-				updateLabel(location);
-			}
+		if (e.button != 1)
+			return;
+		if (mode == MODE_MOUSE_DOWN && !mouseDown && active) {
+			location = new Point(e.x, e.y);
+			focusCanvas = (ChartCanvas) e.widget.getData();
+			drawLines(location);
+			updateLabel(location);
+			mouseDown = true;
 		}
 	}
 
@@ -223,16 +233,18 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 	 * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
 	 */
 	public void mouseUp(MouseEvent e) {
-		if (e.widget instanceof Canvas && e.button == 1 && active) {
-			if (mouseDown) {
-				mouseDown = false;
-				if (location != null) {
-					restoreBackground(location);
-					if (tooltip != null)
-						tooltip.hide();
-				}
-				focusCanvas = null;
-			}
+		if (e.button != 1)
+			return;
+		if (mode == MODE_MOUSE_DOWN && mouseDown) {
+			skipPaint = true;
+			restoreBackground(location);
+			skipPaint = false;
+
+			location = null;
+			mouseDown = false;
+
+			if (tooltip != null)
+				tooltip.hide();
 		}
 	}
 
@@ -240,24 +252,49 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(org.eclipse.swt.events.MouseEvent)
 	 */
 	public void mouseEnter(MouseEvent e) {
+		if (mode == MODE_MOUSE_HOVER || mouseDown) {
+			focusCanvas = (ChartCanvas) e.widget.getData();
+			location = new Point(e.x, e.y);
+
+			drawLines(location);
+			updateLabel(location);
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(org.eclipse.swt.events.MouseEvent)
 	 */
 	public void mouseExit(MouseEvent e) {
+		if (location != null) {
+			skipPaint = true;
+			restoreBackground(location);
+			skipPaint = false;
+
+			location = null;
+
+			if (tooltip != null)
+				tooltip.hide();
+		}
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(org.eclipse.swt.events.MouseEvent)
+     */
+    public void mouseHover(MouseEvent e) {
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
 	 */
 	public void mouseMove(MouseEvent e) {
-		if (e.widget instanceof Canvas && mouseDown && active) {
-			mouseDown = false;
+		if (mode == MODE_MOUSE_HOVER || mouseDown) {
+			skipPaint = true;
 			restoreBackground(location);
-			mouseDown = true;
+			skipPaint = false;
 
+			focusCanvas = (ChartCanvas) e.widget.getData();
 			location = new Point(e.x, e.y);
+
 			drawLines(location);
 			updateLabel(location);
 		}
@@ -267,11 +304,14 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
      * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
      */
     public void paintControl(PaintEvent e) {
-    	if (mouseDown && e.widget instanceof Canvas && active)
+    	if (!skipPaint && active)
     		drawLines(location);
     }
 
 	private void drawLines(Point location) {
+		if (focusCanvas == null || location == null)
+			return;
+
 		Rectangle bounds = focusCanvas.getCanvas().getBounds();
 
 		GC gc = new GC(focusCanvas.getCanvas());
@@ -290,6 +330,9 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 	}
 
 	private void restoreBackground(Point location) {
+		if (focusCanvas == null || location == null)
+			return;
+
 		Rectangle bounds = focusCanvas.getCanvas().getBounds();
 		focusCanvas.getCanvas().redraw(location.x, 0, 1, bounds.height, false);
 		focusCanvas.getCanvas().update();
@@ -306,7 +349,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 	}
 
 	private void updateLabel(Point location) {
-		if (tooltip != null) {
+		if (tooltip != null && location != null) {
 	    	summary = new StringBuilder();
 			for (ChartCanvas canvas : decoratedCanvas) {
 		    	if (canvas.getChartObject() != null)
@@ -314,9 +357,33 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Dis
 			}
     		tooltip.setText(summary.toString());
 
-			Point p = new Point(location.x, location.y);
-			p = focusCanvas.getCanvas().toDisplay(p);
-			tooltip.show(p);
+    		if (showSummaryTooltip) {
+        		if (!"".equals(tooltip.getText())) {
+        			Point p = new Point(location.x, location.y);
+        			p = focusCanvas.getCanvas().toDisplay(p);
+        			tooltip.show(p);
+        		}
+        		else
+        			tooltip.hide();
+    		}
 		}
 	}
+
+	public int getMode() {
+    	return mode;
+    }
+
+	public void setMode(int mode) {
+    	this.mode = mode;
+    }
+
+	public boolean isShowSummaryTooltip() {
+    	return showSummaryTooltip;
+    }
+
+	public void setShowSummaryTooltip(boolean showSummaryTooltip) {
+    	this.showSummaryTooltip = showSummaryTooltip;
+    	if (!showSummaryTooltip && tooltip != null)
+			tooltip.hide();
+    }
 }

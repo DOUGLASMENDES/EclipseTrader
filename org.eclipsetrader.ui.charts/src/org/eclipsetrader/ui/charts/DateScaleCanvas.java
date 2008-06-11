@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.ui.charts;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,21 +33,24 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class DateScaleCanvas {
 	private Canvas horizontalScaleCanvas;
 	private Image horizontalScaleImage;
+	private Label label;
 
 	private BaseChartViewer viewer;
 
 	private SimpleDateFormat monthYearFormatter = new SimpleDateFormat("MMM, yyyy"); //$NON-NLS-1$
 	private SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM"); //$NON-NLS-1$
+	private DateFormat dateFormat = DateFormat.getDateInstance();
 
 	DateScaleCanvas(BaseChartViewer viewer, Composite parent) {
 		this.viewer = viewer;
 
-		horizontalScaleCanvas = new Canvas(parent, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS);
+		horizontalScaleCanvas = new Canvas(parent, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS | SWT.NO_BACKGROUND);
 		horizontalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		horizontalScaleCanvas.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		((GridData) horizontalScaleCanvas.getLayoutData()).heightHint = BaseChartViewer.HORIZONTAL_SCALE_HEIGHT;
@@ -73,6 +77,10 @@ public class DateScaleCanvas {
             	onPaint(e);
             }
 		});
+
+		label = new Label(horizontalScaleCanvas, SWT.NONE);
+		label.setBackground(horizontalScaleCanvas.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+		label.setBounds(-200, 0, 0, 0);
 	}
 
 	public Control getControl() {
@@ -154,4 +162,16 @@ public class DateScaleCanvas {
 
 		viewer.paintImage(event, horizontalScaleImage);
 	}
+
+	public void hideToolTip() {
+		label.setLocation(-200, 0);
+	}
+
+	public void showToolTip(int x, int y, Date value) {
+    	if (value != null) {
+    		label.setText(dateFormat.format(value));
+    		label.pack();
+    		label.setLocation(x - label.getSize().x / 2, 0);
+    	}
+    }
 }

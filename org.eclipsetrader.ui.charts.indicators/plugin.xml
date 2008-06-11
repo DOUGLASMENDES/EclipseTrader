@@ -11,6 +11,13 @@
             name="AD">
       </indicator>
       <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.ADOSC"
+            description="Chaikin A/D Oscillator"
+            id="org.eclipsetrader.indicators.adosc"
+            name="ADOSC">
+      </indicator>
+      <indicator
             class="org.eclipsetrader.ui.charts.indicators.BARS"
             description="Bars"
             id="org.eclipsetrader.indicators.bars"
@@ -34,7 +41,7 @@
             category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.RSI"
             description="Relative Strength Index"
-            id="org.eclipsetrader.indicators.ma"
+            id="org.eclipsetrader.indicators.rsi"
             name="RSI">
       </indicator>
       <indicator
@@ -43,6 +50,74 @@
             id="org.eclipsetrader.indicators.volume"
             name="VOL">
       </indicator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.GeneralPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.general"
+            name="General">
+         <enabledWhen>
+            <or>
+               <test
+                     property="org.eclipsetrader.ui.chartObjectFactory"
+                     value="org.eclipsetrader.indicators.ad">
+               </test>
+               <test
+                     property="org.eclipsetrader.ui.chartObjectFactory"
+                     value="org.eclipsetrader.indicators.ma">
+               </test>
+               <test
+                     property="org.eclipsetrader.ui.chartObjectFactory"
+                     value="org.eclipsetrader.indicators.rsi">
+               </test>
+            </or>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.MAPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.ma"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.ma">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.BBANDSGeneralPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.bbands.general"
+            name="General">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.bbands">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.BBANDSPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.bbands.indicator"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.bbands">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.RSIPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.rsi"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.rsi">
+            </test>
+         </enabledWhen>
+      </page>
    </extension>
 
 </plugin>

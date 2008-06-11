@@ -21,19 +21,33 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.nebula.widgets.pshelf.PShelf;
 import org.eclipse.nebula.widgets.pshelf.PShelfItem;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipsetrader.ui.charts.ChartObjectFactoryTransfer;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class PaletteView extends ViewPart {
@@ -49,12 +63,33 @@ public class PaletteView extends ViewPart {
 	}
 
 	/* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+	    super.init(site, memento);
+	    site.setSelectionProvider(new SelectionProvider());
+    }
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
 		shelf = new PShelf(parent, SWT.NONE);
+
 		createItems();
+
+		shelf.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+	            TableViewer viewer = (TableViewer) e.item.getData();
+	            if (viewer != null)
+	            	updateSiteSelection((IStructuredSelection) viewer.getSelection());
+	            else
+	            	getViewSite().getSelectionProvider().setSelection(StructuredSelection.EMPTY);
+            }
+		});
 	}
 
 	/* (non-Javadoc)
@@ -123,7 +158,7 @@ public class PaletteView extends ViewPart {
 	protected List<IConfigurationElement> createContents(PShelfItem shelfItem, IConfigurationElement[] configElements, String categoryId) {
 		shelfItem.getBody().setLayout(new FillLayout());
 
-		TableViewer viewer = new TableViewer(shelfItem.getBody(), SWT.MULTI | SWT.FULL_SELECTION);
+		final TableViewer viewer = new TableViewer(shelfItem.getBody(), SWT.MULTI | SWT.FULL_SELECTION);
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setLabelProvider(new LabelProvider() {
 			private Image image;
@@ -160,6 +195,33 @@ public class PaletteView extends ViewPart {
 		});
 		viewer.setSorter(new ViewerSorter());
 
+		shelfItem.setData(viewer);
+
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+            	updateSiteSelection((IStructuredSelection) event.getSelection());
+            }
+		});
+
+		Transfer[] transferTypes = new Transfer[] {
+				ChartObjectFactoryTransfer.getInstance(),
+		};
+		viewer.addDragSupport(DND.DROP_COPY | DND.DROP_MOVE, transferTypes, new DragSourceAdapter() {
+            @Override
+            public void dragStart(DragSourceEvent event) {
+	            event.doit = !viewer.getSelection().isEmpty();
+            }
+
+            @Override
+            public void dragSetData(DragSourceEvent event) {
+	            Object[] selection = ((IStructuredSelection) viewer.getSelection()).toArray();
+	            String[] elements = new String[selection.length];
+	            for (int i = 0; i < elements.length; i++)
+	            	elements[i] = ((IConfigurationElement) selection[i]).getAttribute("id");
+	            event.data = elements;
+            }
+		});
+
 		List<IConfigurationElement> input = new ArrayList<IConfigurationElement>();
 		for (int i = 0; i < configElements.length; i++) {
 			if (categoryId == null || categoryId.equals(configElements[i].getAttribute(K_CATEGORY)))
@@ -168,5 +230,22 @@ public class PaletteView extends ViewPart {
 		viewer.setInput(input.toArray());
 
 		return input;
+	}
+
+	protected void updateSiteSelection(IStructuredSelection selection) {
+    	if (!selection.isEmpty()) {
+        	Object[] ar = selection.toArray();
+        	Object[] o = new Object[ar.length];
+        	for (int i = 0; i < o.length; i++) {
+        		try {
+        			o[i] = ((IConfigurationElement) ar[i]).createExecutableExtension("class");
+        		} catch(Exception e) {
+        			// Do nothing
+        		}
+        	}
+        	getViewSite().getSelectionProvider().setSelection(new StructuredSelection(o));
+    	}
+    	else
+        	getViewSite().getSelectionProvider().setSelection(StructuredSelection.EMPTY);
 	}
 }

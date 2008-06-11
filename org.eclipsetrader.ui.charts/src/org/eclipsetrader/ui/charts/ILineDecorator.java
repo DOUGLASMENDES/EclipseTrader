@@ -16,4 +16,6 @@ import org.eclipse.swt.graphics.RGB;
 public interface ILineDecorator {
 
 	public RGB getColor();
+
+	public void setColor(RGB color);
 }

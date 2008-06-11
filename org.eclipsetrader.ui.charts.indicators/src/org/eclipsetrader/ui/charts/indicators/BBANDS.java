@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
-import org.eclipsetrader.ui.charts.ChartObject;
+import org.eclipsetrader.ui.charts.GroupChartObject;
 import org.eclipsetrader.ui.charts.HistogramAreaChart;
 import org.eclipsetrader.ui.charts.HistogramBarChart;
 import org.eclipsetrader.ui.charts.IChartObject;
@@ -47,7 +47,7 @@ public class BBANDS implements IChartObjectFactory, IExecutableExtension {
 
     private RenderStyle upperLineStyle = RenderStyle.Line;
     private RGB upperLineColor;
-    private RenderStyle middleLineStyle = RenderStyle.Dot;
+    private RenderStyle middleLineStyle = RenderStyle.Invisible;
     private RGB middleLineColor;
     private RenderStyle lowerLineStyle = RenderStyle.Line;
     private RGB lowerLineColor;
@@ -77,51 +77,165 @@ public class BBANDS implements IChartObjectFactory, IExecutableExtension {
 		return name;
 	}
 
+	public void setName(String name) {
+    	this.name = name;
+    }
+
+	public OHLCField getField() {
+    	return field;
+    }
+
+	public void setField(OHLCField field) {
+    	this.field = field;
+    }
+
+	public int getPeriod() {
+    	return period;
+    }
+
+	public void setPeriod(int period) {
+    	this.period = period;
+    }
+
+	public double getUpperDeviation() {
+    	return upperDeviation;
+    }
+
+	public void setUpperDeviation(double upperDeviation) {
+    	this.upperDeviation = upperDeviation;
+    }
+
+	public double getLowerDeviation() {
+    	return lowerDeviation;
+    }
+
+	public void setLowerDeviation(double lowerDeviation) {
+    	this.lowerDeviation = lowerDeviation;
+    }
+
+	public MAType getMaType() {
+    	return maType;
+    }
+
+	public void setMaType(MAType maType) {
+    	this.maType = maType;
+    }
+
+	public RenderStyle getUpperLineStyle() {
+    	return upperLineStyle;
+    }
+
+	public void setUpperLineStyle(RenderStyle upperLineStyle) {
+    	this.upperLineStyle = upperLineStyle;
+    }
+
+	public RGB getUpperLineColor() {
+    	return upperLineColor;
+    }
+
+	public void setUpperLineColor(RGB upperLineColor) {
+    	this.upperLineColor = upperLineColor;
+    }
+
+	public RenderStyle getMiddleLineStyle() {
+    	return middleLineStyle;
+    }
+
+	public void setMiddleLineStyle(RenderStyle middleLineStyle) {
+    	this.middleLineStyle = middleLineStyle;
+    }
+
+	public RGB getMiddleLineColor() {
+    	return middleLineColor;
+    }
+
+	public void setMiddleLineColor(RGB middleLineColor) {
+    	this.middleLineColor = middleLineColor;
+    }
+
+	public RenderStyle getLowerLineStyle() {
+    	return lowerLineStyle;
+    }
+
+	public void setLowerLineStyle(RenderStyle lowerLineStyle) {
+    	this.lowerLineStyle = lowerLineStyle;
+    }
+
+	public RGB getLowerLineColor() {
+    	return lowerLineColor;
+    }
+
+	public void setLowerLineColor(RGB lowerLineColor) {
+    	this.lowerLineColor = lowerLineColor;
+    }
+
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
     public IChartObject createObject(IDataSeries source) {
-		if (source != null) {
-			IAdaptable[] values = source.getValues();
-			Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
+    	if (source == null)
+    		return null;
 
-	        int startIdx = 0;
-	        int endIdx = values.length - 1;
-			double[] inReal = Util.getValuesForField(values, field);
+		IAdaptable[] values = source.getValues();
+		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-			MInteger outBegIdx = new MInteger();
-	        MInteger outNbElement = new MInteger();
-			int outputSize = values.length - core.bbandsLookback(period, upperDeviation, lowerDeviation, MAType.getTALib_MAType(maType));
-			double[] outUpper = new double[outputSize];
-			double[] outMiddle = new double[outputSize];
-			double[] outLower = new double[outputSize];
+		int lookback = core.bbandsLookback(period, upperDeviation, lowerDeviation, MAType.getTALib_MAType(maType));
+		if (values.length < lookback)
+			return null;
 
-			core.bbands(startIdx, endIdx, inReal, period, upperDeviation, lowerDeviation, MAType.getTALib_MAType(maType), outBegIdx, outNbElement, outUpper, outMiddle, outLower);
+        int startIdx = 0;
+        int endIdx = values.length - 1;
+		double[] inReal = Util.getValuesForField(values, field);
 
-			ChartObject object = new ChartObject();
-			object.add(createLineChartObject(new NumericDataSeries(getName(), outUpper, source), upperLineStyle, upperLineColor));
-			object.add(createLineChartObject(new NumericDataSeries(getName(), outMiddle, source), middleLineStyle, middleLineColor));
-			object.add(createLineChartObject(new NumericDataSeries(getName(), outLower, source), lowerLineStyle, lowerLineColor));
-			return object;
-		}
-	    return null;
+		MInteger outBegIdx = new MInteger();
+        MInteger outNbElement = new MInteger();
+		double[] outUpper = new double[values.length - lookback];
+		double[] outMiddle = new double[values.length - lookback];
+		double[] outLower = new double[values.length - lookback];
+
+		core.bbands(startIdx, endIdx, inReal, period, upperDeviation, lowerDeviation, MAType.getTALib_MAType(maType), outBegIdx, outNbElement, outUpper, outMiddle, outLower);
+
+		GroupChartObject object = new GroupChartObject();
+		object.add(createLineChartObject(new NumericDataSeries("BBU", outUpper, source), upperLineStyle, upperLineColor));
+		object.add(createLineChartObject(new NumericDataSeries("BBM", outMiddle, source), middleLineStyle, middleLineColor));
+		object.add(createLineChartObject(new NumericDataSeries("BBL", outLower, source), lowerLineStyle, lowerLineColor));
+		return object;
     }
 
     protected IChartObject createLineChartObject(IDataSeries result, RenderStyle renderStyle, RGB color) {
+		LineStyle lineStyle = LineStyle.Solid;
 	    switch(renderStyle) {
 	    	case Dash:
-				return new LineChart(result, LineStyle.Dash, color);
+	    		lineStyle = LineStyle.Dash;
+	    		break;
 	    	case Dot:
-				return new LineChart(result, LineStyle.Dot, color);
+	    		lineStyle = LineStyle.Dot;
+	    		break;
 	    	case HistogramBars:
-				return new HistogramBarChart(result);
+				return new HistogramBarChart(result) {
+		            @Override
+		            protected boolean hasFocus() {
+			            return ((GroupChartObject) getParent()).hasFocus();
+		            }
+				};
 	    	case Histogram:
-				return new HistogramAreaChart(result);
+				return new HistogramAreaChart(result) {
+		            @Override
+		            protected boolean hasFocus() {
+			            return ((GroupChartObject) getParent()).hasFocus();
+		            }
+				};
 	    	case Invisible:
-				return new LineChart(result, LineStyle.Invisible, color);
+	    		lineStyle = LineStyle.Invisible;
+	    		break;
 	    }
 
-	    return new LineChart(result, LineStyle.Solid, color);
+	    return new LineChart(result, lineStyle, color) {
+            @Override
+            protected boolean hasFocus() {
+	            return ((GroupChartObject) getParent()).hasFocus();
+            }
+	    };
     }
 
 	/* (non-Javadoc)

@@ -38,6 +38,11 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	// The extension points IDs
 	public static final String INDICATORS_EXTENSION_ID = "org.eclipsetrader.ui.indicators";
 
+	public static final String PREFS_SHOW_SCALE_TOOLTIPS = "SHOW_SCALE_TOOLTIPS";
+	public static final String PREFS_CROSSHAIR_ACTIVATION = "CROSSHAIR_ACTIVATION";
+	public static final String PREFS_CROSSHAIR_SUMMARY_TOOLTIP = "CROSSHAIR_SUMMARY_TOOLTIP";
+	public static final String PREFS_SHOW_TOOLTIPS = "SHOW_TOOLTIPS";
+
 	// The shared instance
 	private static ChartsUIActivator plugin;
 

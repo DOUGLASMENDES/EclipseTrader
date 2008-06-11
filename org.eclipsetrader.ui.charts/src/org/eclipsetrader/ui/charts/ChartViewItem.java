@@ -11,21 +11,36 @@
 
 package org.eclipsetrader.ui.charts;
 
+import java.util.UUID;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
 
-public class ChartViewItem extends PlatformObject implements IViewItem {
+public class ChartViewItem extends PlatformObject implements IViewItem, IWorkbenchAdapter {
+	private ChartRowViewItem parent;
+	private String id;
 	private IChartObjectFactory factory;
 	private IChartObject object;
 
-	public ChartViewItem() {
-	}
-
-	public ChartViewItem(IChartObjectFactory factory) {
+	public ChartViewItem(ChartRowViewItem parent, IChartObjectFactory factory, String id) {
+		this.parent = parent;
 	    this.factory = factory;
+	    this.id = id;
+    }
+
+	public ChartViewItem(ChartRowViewItem parent, IChartObjectFactory factory) {
+		this.parent = parent;
+	    this.factory = factory;
+	    this.id = UUID.randomUUID().toString();
+    }
+
+	public String getId() {
+    	return id;
     }
 
 	/* (non-Javadoc)
@@ -46,7 +61,7 @@ public class ChartViewItem extends PlatformObject implements IViewItem {
 	 * @see org.eclipsetrader.core.views.IViewItem#getParent()
 	 */
 	public IViewItem getParent() {
-		return null;
+		return parent;
 	}
 
 	/* (non-Javadoc)
@@ -55,6 +70,18 @@ public class ChartViewItem extends PlatformObject implements IViewItem {
 	public IAdaptable[] getValues() {
 		return null;
 	}
+
+	public IChartObjectFactory getFactory() {
+    	return factory;
+    }
+
+	public IChartObject getObject() {
+    	return object;
+    }
+
+	public void setObject(IChartObject object) {
+    	this.object = object;
+    }
 
 	/* (non-Javadoc)
      * @see org.eclipse.core.runtime.PlatformObject#getAdapter(java.lang.Class)
@@ -70,8 +97,17 @@ public class ChartViewItem extends PlatformObject implements IViewItem {
 		if (object != null && adapter.isAssignableFrom(object.getClass()))
 			return object;
 
-		if (factory != null && adapter.isAssignableFrom(factory.getClass()))
+		if (adapter.isAssignableFrom(IChartObjectFactory.class))
 			return factory;
+		if (factory != null) {
+			if (adapter.isAssignableFrom(factory.getClass()))
+				return factory;
+			if (factory instanceof IAdaptable) {
+				Object o = ((IAdaptable) factory).getAdapter(adapter);
+				if (o != null)
+					return o;
+			}
+		}
 
 		if (adapter.isAssignableFrom(getClass()))
 			return this;
@@ -79,7 +115,35 @@ public class ChartViewItem extends PlatformObject implements IViewItem {
 		return super.getAdapter(adapter);
     }
 
-    protected IDataSeries getSourceDataSeries() {
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getChildren(java.lang.Object)
+     */
+    public Object[] getChildren(Object o) {
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getImageDescriptor(java.lang.Object)
+     */
+    public ImageDescriptor getImageDescriptor(Object object) {
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getLabel(java.lang.Object)
+     */
+    public String getLabel(Object o) {
+	    return factory.getName();
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getParent(java.lang.Object)
+     */
+    public Object getParent(Object o) {
+	    return null;
+    }
+
+	protected IDataSeries getSourceDataSeries() {
     	IViewItem parentItem = getParent();
     	while (parentItem != null) {
     		IDataSeries dataSeries = (IDataSeries) parentItem.getAdapter(IDataSeries.class);
@@ -96,8 +160,10 @@ public class ChartViewItem extends PlatformObject implements IViewItem {
 	public void accept(IViewItemVisitor visitor) {
 		if (visitor.visit(this)) {
 			IViewItem[] child = getItems();
-			for (int i = 0; i < child.length; i++)
-				child[i].accept(visitor);
+			if (child != null) {
+				for (int i = 0; i < child.length; i++)
+					child[i].accept(visitor);
+			}
 		}
 	}
 }

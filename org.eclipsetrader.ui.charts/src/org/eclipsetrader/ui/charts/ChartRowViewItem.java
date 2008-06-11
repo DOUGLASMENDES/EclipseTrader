@@ -25,7 +25,6 @@ import org.eclipsetrader.core.internal.charts.repository.ChartSection;
 import org.eclipsetrader.core.internal.charts.repository.ElementSection;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
-import org.eclipsetrader.core.views.ViewEvent;
 import org.eclipsetrader.core.views.ViewItemDelta;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
@@ -35,45 +34,9 @@ public class ChartRowViewItem implements IViewItem {
 	private String name;
 
 	private IDataSeries rootDataSeries;
-	private List<ChartRowValue> values = new ArrayList<ChartRowValue>();
 	private IChartObject rootChart = new ChartObject();
 
-	private class ChartRowValue implements IAdaptable {
-		private String id;
-		private IChartObjectFactory factory;
-
-		public ChartRowValue(IChartObjectFactory factory) {
-			this.id = UUID.randomUUID().toString();
-	        this.factory = factory;
-        }
-
-		public ChartRowValue(String id, IChartObjectFactory factory) {
-	        this.id = id;
-	        this.factory = factory;
-        }
-
-		public String getId() {
-        	return id;
-        }
-
-		public IChartObjectFactory getFactory() {
-        	return factory;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-    		if (adapter.isAssignableFrom(IChartObjectFactory.class))
-    			return factory;
-
-    		if (adapter.isAssignableFrom(getClass()))
-    			return this;
-
-	        return null;
-        }
-	}
+	private List<ChartViewItem> items = new ArrayList<ChartViewItem>();
 
 	public ChartRowViewItem(ChartView parent, String name) {
 		this.parent = parent;
@@ -98,7 +61,7 @@ public class ChartRowViewItem implements IViewItem {
 					parameters.setParameter(p.getName(), p.getValue());
 
 				factory.setParameters(parameters);
-				values.add(new ChartRowValue(element[i].getId(), factory));
+				items.add(new ChartViewItem(this, factory, element[i].getId()));
 			}
 		}
 	}
@@ -123,42 +86,65 @@ public class ChartRowViewItem implements IViewItem {
     	this.rootDataSeries = rootDataSeries;
 
     	rootChart = new ChartObject();
-    	for (ChartRowValue value : values) {
+    	for (ChartViewItem value : items) {
     		IChartObject object = value.getFactory().createObject(rootDataSeries);
     		if (object != null)
     			rootChart.add(object);
+    		value.setObject(object);
     	}
     }
 
-	public void addFactory(IChartObjectFactory factory) {
-		values.add(new ChartRowValue(factory));
-		parent.fireViewChangedEvent(new ViewEvent(parent, new ViewItemDelta[] {
+	public void addChildItem(ChartViewItem viewItem) {
+		items.add(viewItem);
+		parent.fireViewChangedEvent(new ViewItemDelta[] {
 				new ViewItemDelta(ViewItemDelta.CHANGED, this),
-			}));
+				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
+			});
+	}
+
+	public void removeChildItem(ChartViewItem viewItem) {
+		items.remove(viewItem);
+		parent.fireViewChangedEvent(new ViewItemDelta[] {
+				new ViewItemDelta(ViewItemDelta.REMOVED, viewItem),
+				new ViewItemDelta(ViewItemDelta.CHANGED, this),
+			});
+	}
+
+	public void addFactory(IChartObjectFactory factory) {
+		addChildItem(new ChartViewItem(this, factory));
 	}
 
 	public void removeFactory(IChartObjectFactory factory) {
-		for (Iterator<ChartRowValue> iter = values.iterator(); iter.hasNext(); ) {
-			if (iter.next().getFactory() == factory)
+		ChartViewItem removedItem = null;
+		for (Iterator<ChartViewItem> iter = items.iterator(); iter.hasNext(); ) {
+			ChartViewItem viewItem = iter.next();
+			if (viewItem.getFactory() == factory) {
 				iter.remove();
+				removedItem = viewItem;
+				break;
+			}
 		}
-		parent.fireViewChangedEvent(new ViewEvent(parent, new ViewItemDelta[] {
-				new ViewItemDelta(ViewItemDelta.CHANGED, this),
-			}));
+
+		if (removedItem != null) {
+			parent.fireViewChangedEvent(new ViewItemDelta[] {
+					new ViewItemDelta(ViewItemDelta.REMOVED, removedItem),
+					new ViewItemDelta(ViewItemDelta.CHANGED, this),
+				});
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.views.IViewItem#getItemCount()
 	 */
 	public int getItemCount() {
-		return 0;
+		return items.size();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.views.IViewItem#getItems()
 	 */
 	public IViewItem[] getItems() {
-		return null;
+		return items.toArray(new IViewItem[items.size()]);
 	}
 
 	/* (non-Javadoc)
@@ -176,7 +162,7 @@ public class ChartRowViewItem implements IViewItem {
 	 * @see org.eclipsetrader.core.views.IViewItem#getValues()
 	 */
 	public IAdaptable[] getValues() {
-		return values.toArray(new IAdaptable[values.size()]);
+		return null;
 	}
 
 	/* (non-Javadoc)
@@ -205,18 +191,20 @@ public class ChartRowViewItem implements IViewItem {
 	public void accept(IViewItemVisitor visitor) {
 		if (visitor.visit(this)) {
 			IViewItem[] child = getItems();
-			for (int i = 0; i < child.length; i++)
-				child[i].accept(visitor);
+			if (child != null) {
+				for (int i = 0; i < child.length; i++)
+					child[i].accept(visitor);
+			}
 		}
 	}
 
 	public IChartSection getTemplate() {
 		ChartSection template = new ChartSection(id, name);
 
-		ElementSection[] element = new ElementSection[values.size()];
+		ElementSection[] element = new ElementSection[items.size()];
 		for (int i = 0; i < element.length; i++) {
-			IChartObjectFactory factory = values.get(i).getFactory();
-			element[i] = new ElementSection(values.get(i).getId(), factory.getId());
+			IChartObjectFactory factory = items.get(i).getFactory();
+			element[i] = new ElementSection(items.get(i).getId(), factory.getId());
 		}
 		template.setElements(element);
 

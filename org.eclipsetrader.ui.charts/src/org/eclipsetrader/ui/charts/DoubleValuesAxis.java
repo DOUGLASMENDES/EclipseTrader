@@ -114,7 +114,7 @@ public class DoubleValuesAxis implements IAxis {
 	 * @see org.eclipsetrader.charts.ui.IAxis#mapToValue(int)
 	 */
 	public Object mapToValue(int position) {
-		if (height == 0)
+		if (height == 0 || scaleLow == null)
 			return 0;
 		int p = height - position - marginHeight;
 		return scaleLow + (p / span);

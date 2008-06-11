@@ -59,6 +59,13 @@ public class CandleStickChart implements IChartObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
+     */
+    public void invalidate() {
+    	this.valid = false;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
      */
     public void paint(IGraphics graphics) {
@@ -136,10 +143,12 @@ public class CandleStickChart implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip(int, int)
      */
     public String getToolTip(int x, int y) {
-    	for (Candle c : pointArray) {
-   			if (c.containsPoint(x, y))
-   				return c.getToolTip();
-    	}
+		if (pointArray != null) {
+	    	for (Candle c : pointArray) {
+	   			if (c.containsPoint(x, y))
+	   				return c.getToolTip();
+	    	}
+		}
 	    return null;
     }
 

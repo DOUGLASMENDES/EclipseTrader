@@ -91,5 +91,7 @@ public interface IChartObject {
 	 */
 	public void handleFocusLost(ChartObjectFocusEvent event);
 
+	public void invalidate();
+
 	public void accept(IChartObjectVisitor visitor);
 }

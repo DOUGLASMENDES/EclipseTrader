@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
@@ -45,6 +46,8 @@ public class ChartCanvas {
 	private Image image;
 	private Image verticalScaleImage;
 
+	private Label label;
+
 	private BaseChartViewer viewer;
 	private IChartObject chartObject;
 	private DoubleValuesAxis verticalAxis;
@@ -53,14 +56,14 @@ public class ChartCanvas {
 	ChartCanvas(BaseChartViewer viewer, Composite parent) {
 		this.viewer = viewer;
 
-		composite = new Composite(parent, SWT.NONE | SWT.NO_FOCUS);
+		composite = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
 		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 3;
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS);
+		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 		canvas.setData(this);
 		canvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -89,7 +92,7 @@ public class ChartCanvas {
             }
 		});
 
-		verticalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS);
+		verticalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 		verticalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		verticalScaleCanvas.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
 		((GridData) verticalScaleCanvas.getLayoutData()).widthHint = VERTICAL_SCALE_WIDTH;
@@ -117,6 +120,10 @@ public class ChartCanvas {
             		onPaintVerticalScale(e);
             }
 		});
+
+		label = new Label(verticalScaleCanvas, SWT.NONE);
+		label.setBackground(verticalScaleCanvas.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+		label.setBounds(-200, 0, 0, 0);
 	}
 
 	public void dispose() {
@@ -139,10 +146,16 @@ public class ChartCanvas {
     	return verticalScaleCanvas;
     }
 
+	public DoubleValuesAxis getVerticalAxis() {
+    	return verticalAxis;
+    }
+
 	private void buildVerticalAxis() {
-		if (verticalAxis == null) {
+		if (verticalAxis == null)
 			verticalAxis = new DoubleValuesAxis();
 
+		if (Boolean.TRUE.equals(verticalScaleCanvas.getData(BaseChartViewer.K_NEEDS_REDRAW))) {
+			verticalAxis.clear();
 			chartObject.accept(new IChartObjectVisitor() {
 	            public boolean visit(IChartObject object) {
 	            	if (object.getDataSeries() != null) {
@@ -311,4 +324,17 @@ public class ChartCanvas {
 		canvas.redraw();
 		verticalScaleCanvas.redraw();
 	}
+
+	public void hideToolTip() {
+		label.setLocation(-200, 0);
+	}
+
+	public void showToolTip(int x, int y) {
+		Number value = (Number) verticalAxis.mapToValue(y);
+    	if (value != null) {
+    		label.setText(nf.format(value));
+    		label.pack();
+    		label.setLocation(0, y - label.getSize().y / 2);
+    	}
+    }
 }

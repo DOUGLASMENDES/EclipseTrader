@@ -17,6 +17,8 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public interface IGraphics {
 
+	public Rectangle getBounds();
+
 	public void drawLine(int x1, int y1, int x2, int y2);
 
 	public void drawPolyline(Point[] pointArray);
@@ -39,7 +41,11 @@ public interface IGraphics {
 
 	public int mapToVerticalAxis(Object value);
 
+	public Object mapToVerticalValue(int y);
+
 	public int mapToHorizontalAxis(Object value);
+
+	public Object mapToHorizontalValue(int x);
 
 	public RGB getBackgroundColor();
 

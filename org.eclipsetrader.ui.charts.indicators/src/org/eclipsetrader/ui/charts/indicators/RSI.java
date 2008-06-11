@@ -18,15 +18,11 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
-import org.eclipsetrader.ui.charts.HistogramAreaChart;
-import org.eclipsetrader.ui.charts.HistogramBarChart;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
-import org.eclipsetrader.ui.charts.LineChart;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.charts.RenderStyle;
-import org.eclipsetrader.ui.charts.LineChart.LineStyle;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
 import org.eclipsetrader.ui.internal.charts.indicators.AdaptableWrapper;
@@ -41,7 +37,7 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
     private OHLCField field = OHLCField.Close;
     private int period = 7;
 
-    private RenderStyle style = RenderStyle.Line;
+    private RenderStyle renderStyle = RenderStyle.Line;
     private RGB color;
 
 	public RSI() {
@@ -74,6 +70,10 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
 		return name;
 	}
 
+	public void setName(String name) {
+    	this.name = name;
+    }
+
 	public OHLCField getField() {
     	return field;
     }
@@ -90,44 +90,51 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
     	this.period = period;
     }
 
+	public RenderStyle getRenderStyle() {
+    	return renderStyle;
+    }
+
+	public void setRenderStyle(RenderStyle renderStyle) {
+    	this.renderStyle = renderStyle;
+    }
+
+	public RGB getColor() {
+    	return color;
+    }
+
+	public void setColor(RGB color) {
+    	this.color = color;
+    }
+
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
     public IChartObject createObject(IDataSeries source) {
-		if (source != null) {
-			IAdaptable[] values = source.getValues();
-			Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
+    	if (source == null)
+    		return null;
 
-	        int startIdx = 0;
-	        int endIdx = values.length - 1;
-			double[] inReal = Util.getValuesForField(values, field);
+		IAdaptable[] values = source.getValues();
+		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-			MInteger outBegIdx = new MInteger();
-	        MInteger outNbElement = new MInteger();
-	        double[] outReal = new double[values.length - core.rsiLookback(period)];
+		int lookback = core.rsiLookback(period);
+		if (values.length < lookback)
+			return null;
 
-	        core.rsi(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+        int startIdx = 0;
+        int endIdx = values.length - 1;
+		double[] inReal = Util.getValuesForField(values, field);
 
-	        NumericDataSeries result = new NumericDataSeries(getName(), outReal, source);
-	        result.setHighest(new AdaptableWrapper(100));
-	        result.setLowest(new AdaptableWrapper(0));
+		MInteger outBegIdx = new MInteger();
+        MInteger outNbElement = new MInteger();
+        double[] outReal = new double[values.length - lookback];
 
-	        switch(style) {
-		    	case Dash:
-					return new LineChart(result, LineStyle.Dash, color);
-		    	case Dot:
-					return new LineChart(result, LineStyle.Dot, color);
-		    	case HistogramBars:
-					return new HistogramBarChart(result);
-		    	case Histogram:
-					return new HistogramAreaChart(result);
-		    	case Invisible:
-					return new LineChart(result, LineStyle.Invisible, color);
-		    }
+        core.rsi(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
 
-		    return new LineChart(result, LineStyle.Solid, color);
-		}
-	    return null;
+        NumericDataSeries result = new NumericDataSeries(getName(), outReal, source);
+        result.setHighest(new AdaptableWrapper(100));
+        result.setLowest(new AdaptableWrapper(0));
+
+		return Util.createLineChartObject(result, renderStyle, color);
     }
 
 	/* (non-Javadoc)
@@ -137,7 +144,7 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
 	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
 	    period = parameters.getInteger("period");
 
-	    style = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
+	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
 	    color = parameters.getColor("color");
     }
 }
