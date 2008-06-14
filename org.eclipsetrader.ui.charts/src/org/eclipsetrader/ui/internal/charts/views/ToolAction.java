@@ -12,9 +12,12 @@
 package org.eclipsetrader.ui.internal.charts.views;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewPart;
 import org.eclipsetrader.ui.charts.BaseChartViewer;
-import org.eclipsetrader.ui.charts.ChartToolEditor;
+import org.eclipsetrader.ui.charts.ChartRowViewItem;
+import org.eclipsetrader.ui.charts.ChartView;
+import org.eclipsetrader.ui.charts.IChartEditorListener;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IEditableChartObject;
@@ -25,6 +28,23 @@ public class ToolAction extends Action {
 	private String chartObjectId;
 
 	private IChartObjectFactory factory;
+	private IChartObject chartObject;
+
+	private IChartEditorListener editorListener = new IChartEditorListener() {
+        public void applyEditorValue() {
+			BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+			viewer.getEditor().removeListener(editorListener);
+
+			handleApplyEditorValue();
+        }
+
+        public void cancelEditor() {
+			BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+			viewer.getEditor().removeListener(editorListener);
+
+        	handleCancelEditor();
+        }
+	};
 
 	public ToolAction(String title, IViewPart viewPart, String chartObjectId) {
 		super(title, AS_CHECK_BOX);
@@ -38,25 +58,41 @@ public class ToolAction extends Action {
      */
     @Override
     public void run() {
-		IChartObjectFactory factory = ChartsUIActivator.getDefault().getChartObjectFactory(chartObjectId);
+		factory = ChartsUIActivator.getDefault().getChartObjectFactory(chartObjectId);
 		if (factory != null) {
-			IChartObject chartObject = factory.createObject(null);
+			chartObject = factory.createObject(null);
 			if (chartObject instanceof IEditableChartObject) {
-				final BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
-				viewer.setEditor(new ChartToolEditor() {
-		            @Override
-		            public void deactivate() {
-		            	IChartObject object = getObject();
-		            	viewer.getSelectedChartCanvas().getChartObject().add(object);
-		                super.deactivate();
-
-		                viewer.redraw();
-		                setChecked(false);
-		            }
-		    	});
+				BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+				viewer.getEditor().addListener(editorListener);
 				viewer.activateEditor((IEditableChartObject) chartObject);
 			}
 		}
+    }
+
+    protected void handleApplyEditorValue() {
+		BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+
+		IChartObject containerObject = viewer.getSelectedChartCanvas().getChartObject();
+		int index = viewer.getSelectedChartCanvasIndex();
+
+		if (containerObject != null && index != -1) {
+			containerObject.add(chartObject);
+
+			ChartView view = (ChartView) viewPart.getAdapter(ChartView.class);
+			((ChartRowViewItem) view.getItems()[index]).addFactory(factory);
+
+			viewer.setSelection(new StructuredSelection(chartObject));
+		}
+
+    	factory = null;
+    	chartObject = null;
+    	setChecked(false);
+    }
+
+    protected void handleCancelEditor() {
+    	factory = null;
+    	chartObject = null;
+    	setChecked(false);
     }
 
 	protected IChartObjectFactory getFactory() {

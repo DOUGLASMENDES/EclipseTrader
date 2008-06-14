@@ -126,6 +126,14 @@
             id="org.eclipsetrader.ui.charts.tools"
             label="Chart Tools">
          <action
+               icon="icons/etool16/fiboarc.gif"
+               id="org.eclipsetrader.ui.charts.tools.fiboarc"
+               label="FiboArc"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+         <action
                icon="icons/etool16/fanline.gif"
                id="org.eclipsetrader.ui.charts.tools.fanline"
                label="FanLine"
@@ -196,6 +204,13 @@
             id="org.eclipsetrader.ui.charts.tools.fanline"
             name="FanLine">
       </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.FiboarcToolFactory"
+            icon="icons/etool16/fiboarc.gif"
+            id="org.eclipsetrader.ui.charts.tools.fiboarc"
+            name="FiboArc">
+      </indicator>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -211,9 +226,23 @@
             class="org.eclipsetrader.ui.internal.charts.ChartViewItemPropertyTester"
             id="org.eclipsetrader.ui.charts.propertyTester"
             namespace="org.eclipsetrader.ui"
-            properties="id,chartObjectFactory,chartObjectFactoryId"
+            properties="id,chartObjectFactory,adapts"
             type="org.eclipsetrader.ui.charts.ChartViewItem">
       </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.eclipsetrader.ui.internal.charts.tools.LinePropertiesPage"
+            id="org.eclipsetrader.ui.charts.tools.line"
+            name="Tool">
+         <enabledWhen>
+               <test
+                     property="org.eclipsetrader.ui.adapts"
+                     value="org.eclipsetrader.ui.internal.charts.tools.LineToolFactory">
+               </test>
+         </enabledWhen>
+      </page>
    </extension>
 
 </plugin>

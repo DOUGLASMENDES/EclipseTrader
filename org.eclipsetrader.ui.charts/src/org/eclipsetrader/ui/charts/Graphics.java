@@ -280,4 +280,11 @@ public class Graphics implements IGraphics {
     	state.put("line-width", new Integer(gc.getLineWidth()));
     	stack.add(0, state);
     }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IGraphics#drawArc(int, int, int, int, int, int)
+     */
+    public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+    	gc.drawArc(x, y, width, height, startAngle, arcAngle);
+    }
 }

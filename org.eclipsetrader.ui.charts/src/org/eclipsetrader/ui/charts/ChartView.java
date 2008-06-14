@@ -74,7 +74,7 @@ public class ChartView implements IView {
 
 	public void addRowBefore(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
 		int index = rows.indexOf(referenceViewItem);
-		rows.add(index, viewItem);
+		rows.add(index != -1 ? index : 0, viewItem);
 		fireViewChangedEvent(new ViewItemDelta[] {
 				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
 			});
@@ -82,7 +82,7 @@ public class ChartView implements IView {
 
 	public void addRowAfter(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
 		int index = rows.indexOf(referenceViewItem);
-		rows.add(index + 1, viewItem);
+		rows.add(index != -1 ? index + 1 : rows.size(), viewItem);
 		fireViewChangedEvent(new ViewItemDelta[] {
 				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
 			});

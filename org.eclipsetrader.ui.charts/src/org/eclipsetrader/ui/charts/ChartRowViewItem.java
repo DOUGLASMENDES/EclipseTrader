@@ -23,6 +23,7 @@ import org.eclipsetrader.core.charts.repository.IElementSection;
 import org.eclipsetrader.core.charts.repository.IParameter;
 import org.eclipsetrader.core.internal.charts.repository.ChartSection;
 import org.eclipsetrader.core.internal.charts.repository.ElementSection;
+import org.eclipsetrader.core.internal.charts.repository.Parameter;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
 import org.eclipsetrader.core.views.ViewItemDelta;
@@ -84,7 +85,10 @@ public class ChartRowViewItem implements IViewItem {
 
 	public void setRootDataSeries(IDataSeries rootDataSeries) {
     	this.rootDataSeries = rootDataSeries;
+    	refresh();
+    }
 
+	public void refresh() {
     	rootChart = new ChartObject();
     	for (ChartViewItem value : items) {
     		IChartObject object = value.getFactory().createObject(rootDataSeries);
@@ -92,7 +96,7 @@ public class ChartRowViewItem implements IViewItem {
     			rootChart.add(object);
     		value.setObject(object);
     	}
-    }
+	}
 
 	public void addChildItem(ChartViewItem viewItem) {
 		items.add(viewItem);
@@ -205,6 +209,17 @@ public class ChartRowViewItem implements IViewItem {
 		for (int i = 0; i < element.length; i++) {
 			IChartObjectFactory factory = items.get(i).getFactory();
 			element[i] = new ElementSection(items.get(i).getId(), factory.getId());
+
+			IChartParameters parameters = factory.getParameters();
+			if (parameters != null) {
+				String[] name = parameters.getParameterNames();
+
+				IParameter[] elementParam = new IParameter[name.length];
+				for (int ii = 0; ii < elementParam.length; ii++)
+					elementParam[ii] = new Parameter(name[ii], parameters.getString(name[ii]));
+
+				element[i].setParameters(elementParam);
+			}
 		}
 		template.setElements(element);
 

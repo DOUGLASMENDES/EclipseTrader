@@ -44,7 +44,7 @@ public class BarChart implements IChartObject {
 
 	    numberFormat.setGroupingUsed(true);
 	    numberFormat.setMinimumIntegerDigits(1);
-	    numberFormat.setMinimumFractionDigits(2);
+	    numberFormat.setMinimumFractionDigits(0);
 	    numberFormat.setMaximumFractionDigits(4);
 	}
 
@@ -140,6 +140,14 @@ public class BarChart implements IChartObject {
 	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
 	 */
 	public String getToolTip() {
+		if (dataSeries.getLast() != null) {
+			IOHLC ohlc = (IOHLC) dataSeries.getLast().getAdapter(IOHLC.class);
+			return dateFormat.format(ohlc.getDate()) +
+			   " O:" + numberFormat.format(ohlc.getOpen()) +
+			   " H:" + numberFormat.format(ohlc.getHigh()) +
+			   " L:" + numberFormat.format(ohlc.getLow()) +
+			   " C:" + numberFormat.format(ohlc.getHigh());
+		}
 		return dataSeries.getName();
 	}
 

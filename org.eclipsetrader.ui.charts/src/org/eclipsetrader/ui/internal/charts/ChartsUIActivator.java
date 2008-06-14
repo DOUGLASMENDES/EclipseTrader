@@ -113,6 +113,21 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 		return null;
 	}
 
+	public IConfigurationElement getChartObjectConfiguration(String targetID) {
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(INDICATORS_EXTENSION_ID);
+		if (extensionPoint == null)
+			return null;
+
+		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+		for (int j = 0; j < configElements.length; j++) {
+			String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
+			if (targetID.equals(strID))
+				return configElements[j];
+		}
+
+		return null;
+	}
+
 	public IDialogSettings getDialogSettingsForView(URI uri) {
 		String uriString = uri.toString();
 

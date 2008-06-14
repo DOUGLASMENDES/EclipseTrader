@@ -19,14 +19,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.ui.charts.indicators.RSI;
-import org.eclipsetrader.ui.internal.charts.OHLCFieldInput;
+import org.eclipsetrader.ui.charts.indicators.ADOSC;
 
-public class RSIPropertiesPage extends PropertyPage {
-	private OHLCFieldInput input;
-	private Spinner period;
+public class ADOSCPropertiesPage extends PropertyPage {
+	private Spinner fastPeriod;
+	private Spinner slowPeriod;
 
-	public RSIPropertiesPage() {
+	public ADOSCPropertiesPage() {
         noDefaultAndApplyButton();
 	}
 
@@ -43,14 +42,15 @@ public class RSIPropertiesPage extends PropertyPage {
         setTitle("Relative Strength Index");
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Input Field");
+        label.setText("Fast Period");
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
-        input = new OHLCFieldInput(content);
+        fastPeriod = new Spinner(content, SWT.BORDER);
+        fastPeriod.setValues(3, 1, 9999, 0, 1, 5);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Period");
-        period = new Spinner(content, SWT.BORDER);
-        period.setValues(7, 1, 9999, 0, 1, 5);
+        label.setText("Slow Period");
+        slowPeriod = new Spinner(content, SWT.BORDER);
+        slowPeriod.setValues(10, 1, 9999, 0, 1, 5);
 
         performDefaults();
 
@@ -62,9 +62,9 @@ public class RSIPropertiesPage extends PropertyPage {
      */
     @Override
     protected void performDefaults() {
-    	RSI object = (RSI) getElement().getAdapter(RSI.class);
-        input.setSelection(object.getField());
-        period.setSelection(object.getPeriod());
+    	ADOSC object = (ADOSC) getElement().getAdapter(ADOSC.class);
+        fastPeriod.setSelection(object.getFastPeriod());
+        slowPeriod.setSelection(object.getSlowPeriod());
 	    super.performDefaults();
     }
 
@@ -73,9 +73,9 @@ public class RSIPropertiesPage extends PropertyPage {
      */
     @Override
     public boolean performOk() {
-    	RSI object = (RSI) getElement().getAdapter(RSI.class);
-    	object.setField(input.getSelection());
-    	object.setPeriod(period.getSelection());
+    	ADOSC object = (ADOSC) getElement().getAdapter(ADOSC.class);
+    	object.setFastPeriod(fastPeriod.getSelection());
+    	object.setSlowPeriod(slowPeriod.getSelection());
 	    return super.performOk();
     }
 }

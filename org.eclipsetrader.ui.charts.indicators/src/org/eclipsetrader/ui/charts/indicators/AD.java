@@ -18,20 +18,23 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
+import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
+import org.eclipsetrader.ui.charts.ILineDecorator;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.charts.RenderStyle;
-import org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
+import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter;
 
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class AD implements IChartObjectFactory, IGeneralPropertiesAdapter, IExecutableExtension {
+public class AD implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
+    private String factoryName;
     private String name;
 
     private RenderStyle renderStyle = RenderStyle.Line;
@@ -45,6 +48,7 @@ public class AD implements IChartObjectFactory, IGeneralPropertiesAdapter, IExec
      */
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
     	id = config.getAttribute("id");
+    	factoryName = config.getAttribute("name");
     	name = config.getAttribute("name");
     }
 
@@ -84,6 +88,20 @@ public class AD implements IChartObjectFactory, IGeneralPropertiesAdapter, IExec
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ILineDecorator#getColor()
+     */
+    public RGB getColor() {
+	    return color;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ILineDecorator#setColor(org.eclipse.swt.graphics.RGB)
+     */
+    public void setColor(RGB color) {
+    	this.color = color;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
     public IChartObject createObject(IDataSeries source) {
@@ -114,10 +132,28 @@ public class AD implements IChartObjectFactory, IGeneralPropertiesAdapter, IExec
 		return Util.createLineChartObject(result, renderStyle, color);
     }
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+     */
+    public IChartParameters getParameters() {
+    	ChartParameters parameters = new ChartParameters();
+
+    	if (!factoryName.equals(name))
+    		parameters.setParameter("name", name);
+
+    	parameters.setParameter("style", renderStyle.getName());
+    	if (color != null)
+        	parameters.setParameter("color", color);
+
+    	return parameters;
+    }
+
     /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {
+	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
+
 	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
 	    color = parameters.getColor("color");
     }

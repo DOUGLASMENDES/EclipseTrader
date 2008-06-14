@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.ui.charts.ILineDecorator;
-import org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter;
 import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
 public class GeneralPropertiesPage extends PropertyPage {

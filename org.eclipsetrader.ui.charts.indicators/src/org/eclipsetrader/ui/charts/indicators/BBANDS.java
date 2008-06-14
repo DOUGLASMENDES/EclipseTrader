@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
+import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.GroupChartObject;
 import org.eclipsetrader.ui.charts.HistogramAreaChart;
 import org.eclipsetrader.ui.charts.HistogramBarChart;
@@ -37,6 +38,7 @@ import com.tictactec.ta.lib.MInteger;
 
 public class BBANDS implements IChartObjectFactory, IExecutableExtension {
     private String id;
+    private String factoryName;
     private String name;
 
     private OHLCField field = OHLCField.Close;
@@ -61,6 +63,7 @@ public class BBANDS implements IChartObjectFactory, IExecutableExtension {
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
     	id = config.getAttribute("id");
     	name = config.getAttribute("name");
+    	factoryName = config.getAttribute("name");
     }
 
 	/* (non-Javadoc)
@@ -239,9 +242,39 @@ public class BBANDS implements IChartObjectFactory, IExecutableExtension {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+     */
+    public IChartParameters getParameters() {
+    	ChartParameters parameters = new ChartParameters();
+
+    	if (!factoryName.equals(name))
+    		parameters.setParameter("name", name);
+
+    	parameters.setParameter("field", field.getName());
+    	parameters.setParameter("period", period);
+    	parameters.setParameter("upper-deviation", upperDeviation);
+    	parameters.setParameter("lower-deviation", lowerDeviation);
+    	parameters.setParameter("ma-type", maType.getName());
+
+    	parameters.setParameter("upper-line-style", upperLineStyle.getName());
+    	if (upperLineColor != null)
+        	parameters.setParameter("upper-line-color", upperLineColor);
+    	parameters.setParameter("middle-line-style", middleLineStyle.getName());
+    	if (middleLineColor != null)
+        	parameters.setParameter("middle-line-color", middleLineColor);
+    	parameters.setParameter("lower-line-style", lowerLineStyle.getName());
+    	if (lowerLineColor != null)
+        	parameters.setParameter("lower-line-color", lowerLineColor);
+
+    	return parameters;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {
+	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
+
 	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
 	    period = parameters.getInteger("period");
 		upperDeviation = parameters.hasParameter("upper-deviation") ? parameters.getDouble("upper-deviation") : 2.0;

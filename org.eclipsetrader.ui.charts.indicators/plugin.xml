@@ -20,6 +20,7 @@
       <indicator
             class="org.eclipsetrader.ui.charts.indicators.BARS"
             description="Bars"
+            exclusive="false"
             id="org.eclipsetrader.indicators.bars"
             name="BAR">
       </indicator>
@@ -27,6 +28,7 @@
             category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.BBANDS"
             description="Bollinger Bands"
+            exclusive="false"
             id="org.eclipsetrader.indicators.bbands"
             name="BBANDS">
       </indicator>
@@ -34,6 +36,7 @@
             category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.MA"
             description="Moving Average"
+            exclusive="false"
             id="org.eclipsetrader.indicators.ma"
             name="MA">
       </indicator>
@@ -58,20 +61,16 @@
             id="org.eclipsetrader.ui.charts.indicators.general"
             name="General">
          <enabledWhen>
-            <or>
+            <and>
                <test
-                     property="org.eclipsetrader.ui.chartObjectFactory"
-                     value="org.eclipsetrader.indicators.ad">
+                     property="org.eclipsetrader.ui.adapts"
+                     value="org.eclipsetrader.ui.charts.ILineDecorator">
                </test>
                <test
-                     property="org.eclipsetrader.ui.chartObjectFactory"
-                     value="org.eclipsetrader.indicators.ma">
+                     property="org.eclipsetrader.ui.adapts"
+                     value="org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter">
                </test>
-               <test
-                     property="org.eclipsetrader.ui.chartObjectFactory"
-                     value="org.eclipsetrader.indicators.rsi">
-               </test>
-            </or>
+            </and>
          </enabledWhen>
       </page>
       <page
@@ -115,6 +114,17 @@
             <test
                   property="org.eclipsetrader.ui.chartObjectFactory"
                   value="org.eclipsetrader.indicators.rsi">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.ADOSCPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.adosc"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.adosc">
             </test>
          </enabledWhen>
       </page>

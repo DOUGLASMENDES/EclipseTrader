@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.internal.charts;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.charts.IDataSeries;
+import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.ChartViewItem;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
@@ -81,6 +82,14 @@ public class ChartViewItemPropertyTesterTest extends TestCase {
          */
         public String getName() {
 	        return null;
+        }
+
+    	/* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+         */
+        public IChartParameters getParameters() {
+        	ChartParameters parameters = new ChartParameters();
+    	    return parameters;
         }
 
 		/* (non-Javadoc)

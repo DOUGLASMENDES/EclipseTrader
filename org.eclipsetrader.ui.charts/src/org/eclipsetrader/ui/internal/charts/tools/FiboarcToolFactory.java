@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipsetrader.core.charts.DataSeries;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.ui.charts.ChartObjectFocusEvent;
@@ -36,7 +35,7 @@ import org.eclipsetrader.ui.charts.IGraphics;
 import org.eclipsetrader.ui.charts.PixelTools;
 import org.eclipsetrader.ui.charts.ChartToolEditor.ChartObjectEditorEvent;
 
-public class FanlineToolFactory implements IChartObjectFactory, IExecutableExtension {
+public class FiboarcToolFactory implements IChartObjectFactory, IExecutableExtension {
     private String id;
     private String factoryName;
     private String name;
@@ -322,18 +321,31 @@ public class FanlineToolFactory implements IChartObjectFactory, IExecutableExten
 
             	graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
 
-            	factorLine = new int[factors.length];
-            	double range = value2.getValue().doubleValue() - value1.getValue().doubleValue();
-            	for (int i = 0; i < factors.length; i++) {
-                    double value = value1.getValue().doubleValue() + factors[i] * range;
-                    factorLine[i] = graphics.mapToVerticalAxis(value);
-                    drawExtendedLine(graphics, p1.x, p1.y, p2.x, factorLine[i]);
+                int size = p2.y - p1.y;
+                graphics.drawArc(p1.x - size, p1.y - size, size * 2, size * 2, 0, 180);
 
-                    String s = NLS.bind("{0} - {1}", new Object[] {
-                    		numberFormat.format(value),
+                String s = NLS.bind("{0} - {1}", new Object[] {
+                		percentageFormat.format(1.0),
+                		numberFormat.format(value2.getValue()),
+                	});
+                Point p = graphics.stringExtent(s);
+                graphics.drawString(s, p1.x, p2.y - p.y);
+
+            	factorLine = new int[factors.length];
+            	double range = value1.getValue().doubleValue() - value2.getValue().doubleValue();
+            	for (int i = 0; i < factors.length; i++) {
+                    double value = value2.getValue().doubleValue() + factors[i] * range;
+                    factorLine[i] = graphics.mapToVerticalAxis(value);
+
+                    size = factorLine[i] - p1.y;
+                    graphics.drawArc(p1.x - size, p1.y - size, size * 2, size * 2, 0, 180);
+
+                    s = NLS.bind("{0} - {1}", new Object[] {
                     		percentageFormat.format(factors[i]),
+                    		numberFormat.format(value),
                     	});
-                    graphics.drawString(s, p2.x, factorLine[i]);
+                    p = graphics.stringExtent(s);
+                    graphics.drawString(s, p1.x, factorLine[i] - p.y);
             	}
 
             	if (hasFocus()) {
@@ -364,27 +376,9 @@ public class FanlineToolFactory implements IChartObjectFactory, IExecutableExten
         public void accept(IChartObjectVisitor visitor) {
         	visitor.visit(this);
         }
-
-        private void drawExtendedLine(IGraphics graphics, int x, int y, int x2, int y2) {
-    		int ydiff = y - y2;
-    		int xdiff = x2 - x;
-
-    		graphics.drawLine(x, y, x2, y2);
-
-    		Rectangle bounds = graphics.getBounds();
-    		if (xdiff != 0 || ydiff != 0) {
-    			while (x2 > 0 && x2 < bounds.width && y2 > 0 && y2 < bounds.height) {
-    				x = x2;
-    				y = y2;
-    				x2 += xdiff;
-    				y2 -= ydiff;
-    				graphics.drawLine(x, y, x2, y2);
-    			}
-    		}
-    	}
     }
 
-	public FanlineToolFactory() {
+	public FiboarcToolFactory() {
 		object = new FanlineToolObject();
 	}
 

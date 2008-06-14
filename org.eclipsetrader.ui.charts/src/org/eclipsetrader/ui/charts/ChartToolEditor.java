@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.charts;
 
 import java.util.Date;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -24,6 +25,8 @@ public class ChartToolEditor {
 	private ChartCanvas chartCanvas;
 	private Graphics graphics;
 	private IEditableChartObject object;
+
+	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	public static class ChartObjectEditorEvent {
 		public int x;
@@ -78,27 +81,60 @@ public class ChartToolEditor {
 		return this.object != null;
 	}
 
-	public void deactivate() {
-		if (this.chartCanvas != null) {
-			chartCanvas.getCanvas().removeMouseListener(mouseListener);
-			chartCanvas.getCanvas().removeMouseMoveListener(mouseMoveListener);
-			this.chartCanvas = null;
+	public void cancelEditing() {
+		if (this.object != null) {
+			Object[] l = listeners.getListeners();
+			for (int i = 0; i < l.length; i++) {
+				try {
+					((IChartEditorListener) l[i]).cancelEditor();
+				} catch(Throwable e) {
+					e.printStackTrace();
+				}
+			}
+			deactivate();
 		}
-		if (this.graphics != null) {
-			this.graphics.dispose();
-			this.graphics = null;
+	}
+
+	public void applyEditing() {
+		if (this.object != null) {
+			Object[] l = listeners.getListeners();
+			for (int i = 0; i < l.length; i++) {
+				try {
+					((IChartEditorListener) l[i]).applyEditorValue();
+				} catch(Throwable e) {
+					e.printStackTrace();
+				}
+			}
+			deactivate();
 		}
-		this.object = null;
+	}
+
+	private void deactivate() {
+		if (this.object != null) {
+			if (this.chartCanvas != null) {
+				chartCanvas.getCanvas().removeMouseListener(mouseListener);
+				chartCanvas.getCanvas().removeMouseMoveListener(mouseMoveListener);
+				this.chartCanvas = null;
+			}
+			if (this.graphics != null) {
+				this.graphics.dispose();
+				this.graphics = null;
+			}
+			this.object = null;
+		}
 	}
 
 	protected void handleMouseDown(ChartObjectEditorEvent e) {
-		if (object != null)
+		if (object != null) {
 			object.handleMouseDown(e);
+			chartCanvas.getCanvas().setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.TRUE);
+		}
     }
 
     protected void handleMouseUp(ChartObjectEditorEvent e) {
 		if (object != null) {
 			object.handleMouseUp(e);
+			applyEditing();
 			viewer.deactivateEditor();
 		}
     }
@@ -130,4 +166,24 @@ public class ChartToolEditor {
     	event.graphics = graphics;
     	return event;
     }
+
+    /**
+     * Adds a listener to this chart editor.
+     * Has no effect if an identical listener is already registered.
+     *
+     * @param listener a chart editor listener
+     */
+	public void addListener(IChartEditorListener listener) {
+		listeners.add(listener);
+	}
+
+    /**
+     * Removes the given listener from this chart editor.
+     * Has no affect if an identical listener is not registered.
+     *
+     * @param listener a chart editor listener
+     */
+	public void removeListener(IChartEditorListener listener) {
+		listeners.remove(listener);
+	}
 }

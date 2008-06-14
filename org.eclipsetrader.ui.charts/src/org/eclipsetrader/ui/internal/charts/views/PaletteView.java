@@ -14,7 +14,9 @@ package org.eclipsetrader.ui.internal.charts.views;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -161,16 +163,18 @@ public class PaletteView extends ViewPart {
 		final TableViewer viewer = new TableViewer(shelfItem.getBody(), SWT.MULTI | SWT.FULL_SELECTION);
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setLabelProvider(new LabelProvider() {
-			private Image image;
+			private Map<Object, Image> imageMap = new HashMap<Object, Image>();
 
 			@Override
             public Image getImage(Object element) {
+				Image image = imageMap.get(element);
 				if (image == null) {
 	            	IConfigurationElement configurationElement = (IConfigurationElement) element;
 					String icon = configurationElement.getAttribute(K_ICON);
 					if (icon != null) {
 						ImageDescriptor imageDescriptor = ChartsUIActivator.imageDescriptorFromPlugin(configurationElement.getContributor().getName(), icon);
 						image = imageDescriptor != null ? imageDescriptor.createImage() : null;
+						imageMap.put(element, image);
 					}
 				}
 				return image;
@@ -178,7 +182,7 @@ public class PaletteView extends ViewPart {
 
             @Override
             public void dispose() {
-            	if (image != null)
+            	for (Image image : imageMap.values())
             		image.dispose();
 	            super.dispose();
             }

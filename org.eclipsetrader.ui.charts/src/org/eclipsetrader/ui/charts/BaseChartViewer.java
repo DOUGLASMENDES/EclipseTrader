@@ -13,7 +13,9 @@ package org.eclipsetrader.ui.charts;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
@@ -36,12 +38,14 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -75,7 +79,7 @@ public class BaseChartViewer implements ISelectionProvider {
 	private CrosshairDecorator decorator = new CrosshairDecorator();
 	private int decoratorMode;
 
-	private ChartToolEditor activeEditor;
+	private ChartToolEditor activeEditor = new ChartToolEditor();
 
 	public BaseChartViewer(Composite parent, int style) {
 		composite = new Composite(parent, style | SWT.H_SCROLL);
@@ -212,6 +216,36 @@ public class BaseChartViewer implements ISelectionProvider {
 		}
 	}
 
+	public void print(Printer printer) {
+		GC gc = new GC(printer);
+		try {
+			Rectangle printerBounds = printer.getClientArea();
+			Rectangle trimBounds = printer.computeTrim(printerBounds.x, printerBounds.y, printerBounds.width, printerBounds.height);
+
+			printerBounds.x -= trimBounds.x;
+			printerBounds.y -= trimBounds.y;
+			printerBounds.width -= printerBounds.x;
+			printerBounds.height -= printerBounds.y;
+			System.out.println(printerBounds);
+
+			System.out.println(printerBounds);
+			double ratio = (double) printerBounds.width / (double) printerBounds.height;
+			int y = printerBounds.y;
+			for (int i = 0; i < chartCanvas.length; i++) {
+				Image image = chartCanvas[i].getImage();
+				if (image != null) {
+					Rectangle imageBounds = image.getBounds();
+					int destHeight = (int) (imageBounds.height * ratio);
+					gc.drawImage(image, 0, 0, imageBounds.width, imageBounds.height, printerBounds.x, y, printerBounds.width, destHeight);
+					y += destHeight;
+					gc.drawLine(printerBounds.x, y, printerBounds.x + printerBounds.width, y);
+				}
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected void updateScrollbars() {
 		Rectangle clientArea = dateScaleCanvas.getCanvas().getClientArea();
 		ScrollBar hScroll = composite.getHorizontalBar();
@@ -263,8 +297,10 @@ public class BaseChartViewer implements ISelectionProvider {
 
     	int length = Math.min(chartCanvas.length, newCanvas.length);
 		System.arraycopy(chartCanvas, 0, newCanvas, 0, length);
-		for (int i = length; i < chartCanvas.length; i++)
+		for (int i = length; i < chartCanvas.length; i++) {
+			chartCanvas[i].getCanvas().setMenu(null);
 			chartCanvas[i].dispose();
+		}
 
 		if (chartCanvas.length == 0) {
 			Control[] c = sashForm.getChildren();
@@ -285,7 +321,7 @@ public class BaseChartViewer implements ISelectionProvider {
                     @Override
                     public void mouseExit(MouseEvent e) {
 		            	ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
-		            	if (activeEditor != null)
+		            	if (activeEditor.isActive())
 		            		return;
 		            	chartCanvas.hideToolTip();
                     	dateScaleCanvas.hideToolTip();
@@ -315,12 +351,12 @@ public class BaseChartViewer implements ISelectionProvider {
 			            		dateScaleCanvas.showToolTip(e.x, e.y, value);
 		            	}
 
-		            	if (activeEditor == null || !activeEditor.isActive()) {
+		            	if (activeEditor != null && !activeEditor.isActive()) {
 		            		visitor.setLocation(e.x, e.y);
 			            	if (chartCanvas.getChartObject() != null)
 		                    	chartCanvas.getChartObject().accept(visitor);
 
-	                    	if (visitor.getChartObject() == selectedObject && visitor.getChartObject() instanceof IEditableChartObject) {
+	                    	if (visitor.getChartObject() instanceof IEditableChartObject) {
 	                    		IEditableChartObject editableObject = (IEditableChartObject) visitor.getChartObject();
 	                    		if (editableObject.isOnEditHandle(e.x, e.y)) {
 	                    			Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_CROSS);
@@ -356,21 +392,23 @@ public class BaseChartViewer implements ISelectionProvider {
 		            	if (selectedObject != visitor.getChartObject()) {
 		            		if (decorator.getMode() != CrosshairDecorator.MODE_MOUSE_HOVER)
 		            			decorator.deactivate();
+
 		            	}
 		            	else {
 		            		if (selectedObject == null)
 		            			decorator.activate();
-
-			            	if (visitor.getChartObject() instanceof IEditableChartObject) {
-		            			decorator.setMode(CrosshairDecorator.MODE_OFF);
-
-		            			IEditableChartObject object = (IEditableChartObject) visitor.getChartObject();
-		            			activeEditor.activate(BaseChartViewer.this, eventCanvas, object);
-			            		activeEditor.handleMouseDown(activeEditor.createEvent(e));
-			            	}
 		            	}
 
 		            	handleSelectionChanged(eventCanvas, visitor.getChartObject());
+
+		            	if (visitor.getChartObject() instanceof IEditableChartObject && e.button == 1) {
+		            		eventCanvas.getCanvas().update();
+	            			decorator.setMode(CrosshairDecorator.MODE_OFF);
+
+	            			IEditableChartObject object = (IEditableChartObject) visitor.getChartObject();
+	            			activeEditor.activate(BaseChartViewer.this, eventCanvas, object);
+		            		activeEditor.handleMouseDown(activeEditor.createEvent(e));
+		            	}
                     }
 				});
 				decorator.decorateCanvas(chartCanvas[i]);
@@ -413,6 +451,18 @@ public class BaseChartViewer implements ISelectionProvider {
     		((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
     	}
     	composite.layout();
+
+    	final Map<String, Object> set = new HashMap<String, Object>();
+    	for (int i = 0; i < chartCanvas.length; i++) {
+    		chartCanvas[i].getChartObject().accept(new IChartObjectVisitor() {
+                public boolean visit(IChartObject object) {
+                	if (object == selectedObject)
+                		set.put("selectedObject", object);
+	                return true;
+                }
+    		});
+    	}
+		handleSelectionChanged(selectedChartCanvas, (IChartObject) set.get("selectedObject"));
 
     	redraw();
     }
@@ -527,6 +577,14 @@ public class BaseChartViewer implements ISelectionProvider {
     }
 
 	public void activateEditor(IEditableChartObject object) {
+		if (activeEditor.isActive())
+			activeEditor.cancelEditing();
+
+		if (selectedObject != null) {
+			handleSelectionChanged(selectedChartCanvas, null);
+			selectedChartCanvas.getCanvas().update();
+		}
+
 		selectedChartCanvas.getCanvas().setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_CROSS));
 
 		decorator.setMode(CrosshairDecorator.MODE_OFF);
@@ -535,10 +593,7 @@ public class BaseChartViewer implements ISelectionProvider {
 
 	public void deactivateEditor() {
 		if (activeEditor != null) {
-			ChartCanvas chartCanvas = activeEditor.getChartCanvas();
-			chartCanvas.getCanvas().setCursor(null);
-
-			activeEditor.deactivate();
+			selectedChartCanvas.getCanvas().setCursor(null);
 			decorator.setMode(decoratorMode);
 		}
 	}
@@ -549,13 +604,21 @@ public class BaseChartViewer implements ISelectionProvider {
 
 	public void setEditor(ChartToolEditor activeEditor) {
 		if (this.activeEditor != null)
-			this.activeEditor.deactivate();
+			this.activeEditor.cancelEditing();
 
 		this.activeEditor = activeEditor;
     }
 
 	public ChartCanvas getSelectedChartCanvas() {
     	return selectedChartCanvas;
+    }
+
+	public int getSelectedChartCanvasIndex() {
+		for (int i = 0; i < chartCanvas.length; i++) {
+			if (selectedChartCanvas == chartCanvas[i])
+				return i;
+		}
+		return -1;
     }
 
 	/**

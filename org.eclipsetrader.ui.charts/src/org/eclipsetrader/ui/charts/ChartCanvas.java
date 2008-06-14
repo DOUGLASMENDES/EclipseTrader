@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -40,6 +41,7 @@ public class ChartCanvas {
 	public static final int VERTICAL_SCALE_WIDTH = 86;
 
 	private Composite composite;
+	private Composite summary;
 	private Canvas canvas;
 	private Canvas verticalScaleCanvas;
 
@@ -59,9 +61,24 @@ public class ChartCanvas {
 		composite = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 3;
+		gridLayout.horizontalSpacing = 3;
+		gridLayout.verticalSpacing = 0;
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		summary = new Composite(composite, SWT.NONE);
+		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
+		rowLayout.marginTop = rowLayout.marginBottom = 1;
+		summary.setLayout(rowLayout);
+		summary.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		summary.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+		summary.setBackgroundMode(SWT.INHERIT_FORCE);
+		summary.addPaintListener(new PaintListener() {
+            public void paintControl(PaintEvent e) {
+            	Rectangle bounds = summary.getBounds();
+            	e.gc.drawLine(0, bounds.height - 1, bounds.width, bounds.height - 1);
+            }
+		});
 
 		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 		canvas.setData(this);
@@ -237,7 +254,6 @@ public class ChartCanvas {
 
 		    	DataBounds dataBounds = new DataBounds(viewer.visibleDates, lowestValue, highestValue, clientArea, (int) viewer.datesAxis.gridSize);
 				chartObject.setDataBounds(dataBounds);
-
 				chartObject.paint(graphics);
 			} catch(Error e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
@@ -314,12 +330,12 @@ public class ChartCanvas {
 
 	public void setChartObject(IChartObject chartObject) {
     	this.chartObject = chartObject;
+		updateSummary();
     }
 
 	public void redraw() {
 		canvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.TRUE);
 		verticalScaleCanvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.TRUE);
-		verticalAxis = null;
 
 		canvas.redraw();
 		verticalScaleCanvas.redraw();
@@ -337,4 +353,34 @@ public class ChartCanvas {
     		label.setLocation(0, y - label.getSize().y / 2);
     	}
     }
+
+	public Image getImage() {
+    	return image;
+    }
+
+	public Image getVerticalScaleImage() {
+    	return verticalScaleImage;
+    }
+
+	protected void updateSummary() {
+		Control[] children = summary.getChildren();
+		for (int i = 0; i < children.length; i++)
+			children[i].dispose();
+
+		if (chartObject != null) {
+			chartObject.accept(new IChartObjectVisitor() {
+		        public boolean visit(IChartObject object) {
+		    		String s = object.getToolTip();
+		        	if (s != null) {
+		        		Label label = new Label(summary, SWT.NONE);
+		        		label.setText(s);
+		        	}
+			        return true;
+		        }
+			});
+		}
+
+		summary.layout();
+		summary.getParent().layout();
+	}
 }

@@ -56,7 +56,7 @@ public class LineChart implements IChartObject {
 
 	    numberFormat.setGroupingUsed(true);
 	    numberFormat.setMinimumIntegerDigits(1);
-	    numberFormat.setMinimumFractionDigits(2);
+	    numberFormat.setMinimumFractionDigits(0);
 	    numberFormat.setMaximumFractionDigits(4);
 	}
 
@@ -166,6 +166,8 @@ public class LineChart implements IChartObject {
 	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
 	 */
 	public String getToolTip() {
+		if (dataSeries.getLast() != null)
+			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class));
 		return dataSeries.getName();
 	}
 

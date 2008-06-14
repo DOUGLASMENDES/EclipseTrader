@@ -15,18 +15,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -42,7 +43,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -58,6 +58,10 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.printing.PrintDialog;
+import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
@@ -69,9 +73,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.dialogs.PropertyDialogAction;
-import org.eclipse.ui.internal.dialogs.PropertyDialog;
-import org.eclipse.ui.internal.dialogs.PropertyPageContributorManager;
-import org.eclipse.ui.internal.dialogs.PropertyPageManager;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
@@ -81,14 +82,18 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.views.IViewChangeListener;
+import org.eclipsetrader.core.views.ViewEvent;
 import org.eclipsetrader.ui.charts.BaseChartViewer;
 import org.eclipsetrader.ui.charts.ChartCanvas;
 import org.eclipsetrader.ui.charts.ChartObjectFactoryTransfer;
 import org.eclipsetrader.ui.charts.ChartRowViewItem;
 import org.eclipsetrader.ui.charts.ChartView;
 import org.eclipsetrader.ui.charts.ChartViewItem;
+import org.eclipsetrader.ui.charts.IChartEditorListener;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
+import org.eclipsetrader.ui.charts.IEditableChartObject;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 @SuppressWarnings("restriction")
@@ -98,6 +103,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	public static final String K_VIEWS = "Views";
 	public static final String K_URI = "uri";
 	public static final String K_TEMPLATE = "template";
+	public static final String K_PRIVATE_TEMPLATE = "private-template";
 
 	public static final String K_PERIOD = "period";
 	public static final String K_CUSTOM = "custom";
@@ -128,6 +134,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         }
 	};
 
+	private IViewChangeListener viewChangeListener = new IViewChangeListener() {
+        public void viewChanged(ViewEvent event) {
+        	refreshChart();
+    		setDirty();
+        }
+	};
+
 	private Job job = new Job("ChartObject Loading") {
         @Override
         protected IStatus run(IProgressMonitor monitor) {
@@ -141,8 +154,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
                 		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
             	}
 
-            	if (view == null)
+            	if (view == null) {
             		view = new ChartView(template);
+            		view.addViewChangeListener(viewChangeListener);
+            	}
 
             	IHistory activeHistory = history;
 
@@ -179,19 +194,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     				try {
     					viewer.getDisplay().asyncExec(new Runnable() {
     						public void run() {
-    							if (!viewer.isDisposed()) {
-    		    					BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-    		    						public void run() {
-    		    							ChartRowViewItem[] rowViewItem = (ChartRowViewItem[]) view.getAdapter(ChartRowViewItem[].class);
-    		    							if (rowViewItem != null) {
-    		    								IChartObject[] input = new IChartObject[rowViewItem.length];
-    		    								for (int i = 0; i < input.length; i++)
-    		    									input[i] = (IChartObject) rowViewItem[i].getAdapter(IChartObject.class);
-        		   				    			viewer.setInput(input);
-    		    							}
-    		    						}
-    		    					});
-    							}
+    							if (!viewer.isDisposed())
+    								refreshChart();
     						}
     					});
     				} catch (SWTException e) {
@@ -223,6 +227,35 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         }
 	};
 
+	private Action printAction = new Action("Print") {
+		@Override
+        public void run() {
+			PrintDialog dialog = new PrintDialog(getViewSite().getShell(), SWT.NONE);
+			PrinterData data = dialog.open();
+			if (data == null)
+				return;
+			if (data.printToFile) {
+				data.fileName = "print.out"; // TODO you probably want to ask the user for a filename
+			}
+
+			Printer printer = new Printer(data);
+			try {
+				Rectangle printerBounds = printer.getClientArea();
+				Rectangle trimBounds = printer.computeTrim(printerBounds.x, printerBounds.y, printerBounds.width, printerBounds.height);
+				System.out.println(printerBounds + ", " + trimBounds);
+
+				if (printer.startJob(getPartName())) {
+					viewer.print(printer);
+					printer.endJob();
+				}
+			} catch(Throwable e) {
+				e.printStackTrace();
+			} finally {
+				printer.dispose();
+			}
+		}
+	};
+
 	public ChartViewPart() {
 	}
 
@@ -240,21 +273,15 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         	IRepositoryService repositoryService = ChartsUIActivator.getDefault().getRepositoryService();
         	security = repositoryService.getSecurityFromURI(uri);
 
-			JAXBContext jaxbContext = JAXBContext.newInstance(ChartTemplate.class);
-	        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-	        unmarshaller.setEventHandler(new ValidationEventHandler() {
-				public boolean handleEvent(ValidationEvent event) {
-					System.out.println("Error validating XML: " + event.getMessage());
-					if (event.getLinkedException() != null)
-						event.getLinkedException().printStackTrace(System.out);
-					return true;
-				}
-			});
+        	String privateTemplate = dialogSettings.get(K_PRIVATE_TEMPLATE);
+        	if (privateTemplate != null)
+    	        template = unmarshal(privateTemplate);
 
-        	IPath templatePath = new Path("data").append(dialogSettings.get(K_TEMPLATE)); //$NON-NLS-1$
-        	InputStream stream = FileLocator.openStream(ChartsUIActivator.getDefault().getBundle(), templatePath, false);
-	        template = (IChartTemplate) unmarshaller.unmarshal(stream);
-
+        	if (template == null) {
+            	IPath templatePath = new Path("data").append(dialogSettings.get(K_TEMPLATE)); //$NON-NLS-1$
+            	InputStream stream = FileLocator.openStream(ChartsUIActivator.getDefault().getBundle(), templatePath, false);
+    	        template = unmarshal(stream);
+        	}
         } catch (Exception e) {
         	Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
         	ChartsUIActivator.getDefault().getLog().log(status);
@@ -269,11 +296,15 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		actionBars.setGlobalActionHandler(pasteAction.getId(), pasteAction);
 		actionBars.setGlobalActionHandler(deleteAction.getId(), deleteAction);
 
+		actionBars.setGlobalActionHandler(ActionFactory.PRINT.getId(), printAction);
+
 		ToolAction toolAction = new ToolAction("Line", this, "org.eclipsetrader.ui.charts.tools.line");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
 		toolAction = new ToolAction("FiboLine", this, "org.eclipsetrader.ui.charts.tools.fiboline");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
 		toolAction = new ToolAction("FanLine", this, "org.eclipsetrader.ui.charts.tools.fanline");
+		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
+		toolAction = new ToolAction("FiboArc", this, "org.eclipsetrader.ui.charts.tools.fiboarc");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
 
         IMenuManager menuManager = actionBars.getMenuManager();
@@ -362,9 +393,11 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             	if (!selection.isEmpty()) {
             		if (MessageDialog.openConfirm(getViewSite().getShell(), getPartName(), "Do you want to delete the selected indicator ?")) {
                 		ChartViewItem viewItem = (ChartViewItem) selection.getFirstElement();
-                		((ChartRowViewItem) viewItem.getParent()).removeChildItem(viewItem);
-                		setDirty();
-                		job.schedule();
+                		ChartRowViewItem rowViewItem = (ChartRowViewItem) viewItem.getParent();
+                		if (rowViewItem.getItemCount() == 1)
+                			rowViewItem.getParentView().removeRow(rowViewItem);
+                		else
+                			rowViewItem.removeChildItem(viewItem);
             		}
             	}
             }
@@ -391,6 +424,15 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             	handleActionsEnablement();
             }
 		});
+		viewer.getEditor().addListener(new IChartEditorListener() {
+	        public void applyEditorValue() {
+	        	refreshChart();
+	        	setDirty();
+	        }
+
+	        public void cancelEditor() {
+	        }
+		});
 
 		Transfer[] transferTypes = new Transfer[] {
 				ChartObjectFactoryTransfer.getInstance(),
@@ -398,34 +440,77 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		DropTarget dropTarget = new DropTarget(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE);
 		dropTarget.setTransfer(transferTypes);
 		dropTarget.addDropListener(new DropTargetAdapter() {
-            @Override
+			@Override
             public void drop(DropTargetEvent event) {
-				ChartRowViewItem rowItem = (ChartRowViewItem) view.getItems()[0];
+            	ChartRowViewItem rowItem = null;
+
+            	ChartCanvas[] chartCanvas = viewer.getChildren();
+            	for (int i = 0; i < chartCanvas.length; i++) {
+            		Rectangle bounds = chartCanvas[i].getCanvas().getBounds();
+            		if (bounds.contains(chartCanvas[i].getCanvas().toControl(event.x, event.y))) {
+            			rowItem = (ChartRowViewItem) view.getItems()[i];
+            			break;
+            		}
+            	}
 
 				String[] factories = (String[]) event.data;
 	            for (int i = 0; i < factories.length; i++) {
-	    			IChartObjectFactory factory = ChartsUIActivator.getDefault().getChartObjectFactory(factories[i]);
+	    			final IChartObjectFactory factory = ChartsUIActivator.getDefault().getChartObjectFactory(factories[i]);
 	    			if (factory != null) {
-	    				ChartViewItem viewItem = new ChartViewItem(rowItem, factory);
+		            	final IChartObject chartObject = factory.createObject(null);
+		            	if (chartObject instanceof IEditableChartObject) {
+		    				viewer.getEditor().addListener(new IChartEditorListener() {
+		    			        public void applyEditorValue() {
+		    						viewer.getEditor().removeListener(this);
 
-	    				PropertyPageManager pageManager = new PropertyPageManager();
+		    						IChartObject containerObject = viewer.getSelectedChartCanvas().getChartObject();
+		    						int index = viewer.getSelectedChartCanvasIndex();
+
+		    						if (containerObject != null && index != -1) {
+		    							containerObject.add(chartObject);
+		    							((ChartRowViewItem) view.getItems()[index]).addFactory(factory);
+		    							viewer.setSelection(new StructuredSelection(chartObject));
+		    						}
+		    			        }
+
+		    			        public void cancelEditor() {
+		    						viewer.getEditor().removeListener(this);
+		    			        }
+		    				});
+		    				viewer.activateEditor((IEditableChartObject) chartObject);
+		            	}
+		            	else {
+		    				boolean addToNewRow = false;
+			            	IConfigurationElement configurationElement = ChartsUIActivator.getDefault().getChartObjectConfiguration(factories[i]);
+			            	if (!"false".equals(configurationElement.getAttribute("exclusive")))
+			            		addToNewRow = true;
+
+		    				if (addToNewRow) {
+			    				ChartRowViewItem newRowItem = new ChartRowViewItem(view, factory.getName());
+			    				ChartViewItem viewItem = new ChartViewItem(newRowItem, factory);
+			    				newRowItem.addChildItem(viewItem);
+			    				view.addRowAfter(rowItem, newRowItem);
+		    				}
+		    				else {
+			    				ChartViewItem viewItem = new ChartViewItem(rowItem, factory);
+			    				rowItem.addChildItem(viewItem);
+		    				}
+		            	}
+
+	    				/*PropertyPageManager pageManager = new PropertyPageManager();
 	    				PropertyPageContributorManager.getManager().contribute(pageManager, viewItem);
 	    				Iterator<?> pages = pageManager.getElements(PreferenceManager.PRE_ORDER).iterator();
 	    				if (pages.hasNext()) {
 		    				PropertyDialog dlg = PropertyDialog.createDialogOn(getViewSite().getShell(), null, viewItem);
 	    					if (dlg.open() == PropertyDialog.OK) {
-		    					rowItem.addChildItem(viewItem);
+		    					view.addRowAfter(rowItem, newRowItem);
 		    					setDirty();
 	    					}
 	    				}
-	    				else {
-	    					rowItem.addChildItem(viewItem);
-	    					setDirty();
-	    				}
+	    				else {*/
+	    				//}
 	    			}
 	            }
-
-	            job.schedule();
             }
 		});
 
@@ -445,8 +530,15 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             public void run() {
         		PreferenceDialog dialog = createDialog();
         		if (dialog != null) {
-        			if (dialog.open() == PreferenceDialog.OK)
-        				job.schedule();
+        			if (dialog.open() == PreferenceDialog.OK) {
+        				IStructuredSelection selection = (IStructuredSelection) getSite().getSelectionProvider().getSelection();
+
+        				ChartViewItem viewItem = (ChartViewItem) selection.getFirstElement();
+        				((ChartRowViewItem) viewItem.getParent()).refresh();
+
+        				refreshChart();
+        				setDirty();
+        			}
         		}
             }
 		};
@@ -538,7 +630,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
      * @see org.eclipse.ui.ISaveablePart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
     public void doSave(IProgressMonitor monitor) {
-    	clearDirty();
+    	try {
+	        String privateTemplate = marshal(view.getTemplate());
+	        dialogSettings.put(K_PRIVATE_TEMPLATE, privateTemplate);
+	    	clearDirty();
+        } catch (Exception e) {
+	        e.printStackTrace();
+        }
     }
 
 	/* (non-Javadoc)
@@ -602,4 +700,40 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     		return dialogSettings;
 	    return super.getAdapter(adapter);
     }
+
+	private String marshal(IChartTemplate object) throws Exception {
+		StringWriter string = new StringWriter();
+		JAXBContext jaxbContext = JAXBContext.newInstance(ChartTemplate.class);
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //$NON-NLS-1$
+		marshaller.marshal(object, string);
+		return string.toString();
+	}
+
+	private ChartTemplate unmarshal(String string) throws Exception {
+		JAXBContext jaxbContext = JAXBContext.newInstance(ChartTemplate.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		return (ChartTemplate) unmarshaller.unmarshal(new StringReader(string));
+	}
+
+	private ChartTemplate unmarshal(InputStream stream) throws Exception {
+		JAXBContext jaxbContext = JAXBContext.newInstance(ChartTemplate.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		return (ChartTemplate) unmarshaller.unmarshal(stream);
+	}
+
+	protected void refreshChart() {
+		BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+			public void run() {
+				ChartRowViewItem[] rowViewItem = (ChartRowViewItem[]) view.getAdapter(ChartRowViewItem[].class);
+				if (rowViewItem != null) {
+					IChartObject[] input = new IChartObject[rowViewItem.length];
+					for (int i = 0; i < input.length; i++)
+						input[i] = (IChartObject) rowViewItem[i].getAdapter(IChartObject.class);
+		    			viewer.setInput(input);
+				}
+			}
+		});
+	}
 }

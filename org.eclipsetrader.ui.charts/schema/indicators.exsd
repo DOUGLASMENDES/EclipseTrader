@@ -104,6 +104,13 @@
                </appInfo>
             </annotation>
          </attribute>
+         <attribute name="exclusive" type="boolean">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

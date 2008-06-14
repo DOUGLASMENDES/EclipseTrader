@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
+import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
@@ -25,9 +26,9 @@ import org.eclipsetrader.ui.charts.ILineDecorator;
 import org.eclipsetrader.ui.charts.MAType;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.charts.RenderStyle;
-import org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
+import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter;
 
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
@@ -35,6 +36,7 @@ import com.tictactec.ta.lib.MInteger;
 @SuppressWarnings("restriction")
 public class MA implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
+    private String factoryName;
     private String name;
 
     private OHLCField field = OHLCField.Close;
@@ -53,6 +55,7 @@ public class MA implements IChartObjectFactory, IGeneralPropertiesAdapter, ILine
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
     	id = config.getAttribute("id");
     	name = config.getAttribute("name");
+    	factoryName = config.getAttribute("name");
     }
 
 	/* (non-Javadoc)
@@ -156,11 +159,31 @@ public class MA implements IChartObjectFactory, IGeneralPropertiesAdapter, ILine
 		return Util.createLineChartObject(result, renderStyle, color);
     }
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+     */
+    public IChartParameters getParameters() {
+    	ChartParameters parameters = new ChartParameters();
+
+    	if (!factoryName.equals(name))
+    		parameters.setParameter("name", name);
+
+    	parameters.setParameter("field", field.getName());
+    	parameters.setParameter("period", period);
+    	parameters.setParameter("type", type.getName());
+
+    	parameters.setParameter("style", renderStyle.getName());
+    	if (color != null)
+        	parameters.setParameter("color", color);
+
+	    return parameters;
+    }
+
     /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {
-	    name = parameters.hasParameter("name") ? parameters.getString("name") : name;
+	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
 
 	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
 	    period = parameters.getInteger("period");

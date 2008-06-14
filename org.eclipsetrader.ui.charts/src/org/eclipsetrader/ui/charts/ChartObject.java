@@ -100,8 +100,9 @@ public class ChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
      */
     public void paint(IGraphics graphics) {
-    	for (IChartObject o : objects)
-    		o.paint(graphics);
+		IChartObject[] o = getChildren();
+    	for (int i = 0; i < o.length; i++)
+    		o[i].paint(graphics);
     }
 
 	/* (non-Javadoc)
@@ -114,8 +115,9 @@ public class ChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
      */
     public void setDataBounds(DataBounds bounds) {
-    	for (IChartObject o : objects)
-    		o.setDataBounds(bounds);
+		IChartObject[] o = getChildren();
+    	for (int i = 0; i < o.length; i++)
+    		o[i].setDataBounds(bounds);
     }
 
 	/* (non-Javadoc)
@@ -135,8 +137,9 @@ public class ChartObject implements IChartObject {
      */
     public void accept(IChartObjectVisitor visitor) {
     	if (visitor.visit(this)) {
-        	for (IChartObject o : objects)
-        		o.accept(visitor);
+    		IChartObject[] o = getChildren();
+        	for (int i = 0; i < o.length; i++)
+        		o[i].accept(visitor);
     	}
     }
 }

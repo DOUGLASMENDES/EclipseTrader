@@ -18,20 +18,24 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
+import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
+import org.eclipsetrader.ui.charts.ILineDecorator;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.charts.RenderStyle;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
 import org.eclipsetrader.ui.internal.charts.indicators.AdaptableWrapper;
+import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter;
 
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class RSI implements IChartObjectFactory, IExecutableExtension {
+public class RSI implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
+    private String factoryName;
     private String name;
 
     private OHLCField field = OHLCField.Close;
@@ -53,6 +57,7 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
      */
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
     	id = config.getAttribute("id");
+    	factoryName = config.getAttribute("name");
     	name = config.getAttribute("name");
     }
 
@@ -70,6 +75,9 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
 		return name;
 	}
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setName(java.lang.String)
+     */
 	public void setName(String name) {
     	this.name = name;
     }
@@ -90,18 +98,30 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
     	this.period = period;
     }
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#getRenderStyle()
+     */
 	public RenderStyle getRenderStyle() {
     	return renderStyle;
     }
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setRenderStyle(org.eclipsetrader.ui.charts.RenderStyle)
+     */
 	public void setRenderStyle(RenderStyle renderStyle) {
     	this.renderStyle = renderStyle;
     }
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ILineDecorator#getColor()
+     */
 	public RGB getColor() {
     	return color;
     }
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ILineDecorator#setColor(org.eclipse.swt.graphics.RGB)
+     */
 	public void setColor(RGB color) {
     	this.color = color;
     }
@@ -138,9 +158,30 @@ public class RSI implements IChartObjectFactory, IExecutableExtension {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+     */
+    public IChartParameters getParameters() {
+    	ChartParameters parameters = new ChartParameters();
+
+    	if (!factoryName.equals(name))
+    		parameters.setParameter("name", name);
+
+    	parameters.setParameter("field", field.getName());
+    	parameters.setParameter("period", period);
+
+    	parameters.setParameter("style", renderStyle.getName());
+    	if (color != null)
+        	parameters.setParameter("color", color);
+
+	    return parameters;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {
+	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
+
 	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
 	    period = parameters.getInteger("period");
 

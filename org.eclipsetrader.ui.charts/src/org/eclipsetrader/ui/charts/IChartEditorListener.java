@@ -11,22 +11,9 @@
 
 package org.eclipsetrader.ui.charts;
 
-import org.eclipsetrader.core.charts.IDataSeries;
+public interface IChartEditorListener {
 
-/**
- * This interface is implemented by chart object factories.
- *
- * @since 1.0
- */
-public interface IChartObjectFactory {
+	public void applyEditorValue();
 
-	public String getId();
-
-	public String getName();
-
-	public IChartObject createObject(IDataSeries source);
-
-	public void setParameters(IChartParameters parameters);
-
-	public IChartParameters getParameters();
+	public void cancelEditor();
 }

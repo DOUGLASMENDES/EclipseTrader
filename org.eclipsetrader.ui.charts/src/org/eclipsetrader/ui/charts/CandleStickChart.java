@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.ui.charts;
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,8 +41,16 @@ public class CandleStickChart implements IChartObject {
 	private boolean valid;
 	private boolean hasFocus;
 
+	private DateFormat dateFormat = DateFormat.getDateInstance();
+	private NumberFormat numberFormat = NumberFormat.getInstance();
+
 	public CandleStickChart(IDataSeries dataSeries) {
 	    this.dataSeries = dataSeries;
+
+	    numberFormat.setGroupingUsed(true);
+	    numberFormat.setMinimumIntegerDigits(1);
+	    numberFormat.setMinimumFractionDigits(0);
+	    numberFormat.setMaximumFractionDigits(4);
 	}
 
 	/* (non-Javadoc)
@@ -136,6 +146,14 @@ public class CandleStickChart implements IChartObject {
 	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
 	 */
 	public String getToolTip() {
+		if (dataSeries.getLast() != null) {
+			IOHLC ohlc = (IOHLC) dataSeries.getLast().getAdapter(IOHLC.class);
+			return dateFormat.format(ohlc.getDate()) +
+			   " O:" + numberFormat.format(ohlc.getOpen()) +
+			   " H:" + numberFormat.format(ohlc.getHigh()) +
+			   " L:" + numberFormat.format(ohlc.getLow()) +
+			   " C:" + numberFormat.format(ohlc.getHigh());
+		}
 		return dataSeries.getName();
 	}
 
@@ -264,7 +282,12 @@ public class CandleStickChart implements IChartObject {
 		}
 
 		public String getToolTip() {
-			return dataSeries.getName() + " " + ohlc;
+			return dataSeries.getName() +
+			   "\r\nD:" + dateFormat.format(ohlc.getDate()) +
+			   "\r\nO:" + numberFormat.format(ohlc.getOpen()) +
+			   "\r\nH:" + numberFormat.format(ohlc.getHigh()) +
+			   "\r\nL:" + numberFormat.format(ohlc.getLow()) +
+			   "\r\nC:" + numberFormat.format(ohlc.getHigh());
 		}
     }
 }

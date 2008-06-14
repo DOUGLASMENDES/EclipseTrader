@@ -59,6 +59,8 @@ public interface IGraphics {
 
 	public Point stringExtent(String s);
 
+	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle);
+
 	public void setLineWidth(int lineWidth);
 
 	/**

@@ -11,11 +11,13 @@
 
 package org.eclipsetrader.ui.charts;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
 
@@ -36,8 +38,15 @@ public class HistogramAreaChart implements IChartObject {
 	private RGB color = new RGB(0, 0, 0);
 	private RGB fillColor;
 
+	private NumberFormat numberFormat = NumberFormat.getInstance();
+
 	public HistogramAreaChart(IDataSeries dataSeries) {
 	    this.dataSeries = dataSeries;
+
+	    numberFormat.setGroupingUsed(true);
+	    numberFormat.setMinimumIntegerDigits(1);
+	    numberFormat.setMinimumFractionDigits(0);
+	    numberFormat.setMaximumFractionDigits(4);
     }
 
 	/* (non-Javadoc)
@@ -124,6 +133,8 @@ public class HistogramAreaChart implements IChartObject {
 	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
 	 */
 	public String getToolTip() {
+		if (dataSeries.getLast() != null)
+			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class));
 		return dataSeries.getName();
 	}
 
@@ -214,6 +225,7 @@ public class HistogramAreaChart implements IChartObject {
 		int y2;
 		int yZero;
 		int[] polygon = new int[8];
+		Point[] points = new Point[5];
 
 		public Polygon() {
 		}
@@ -224,6 +236,12 @@ public class HistogramAreaChart implements IChartObject {
 	        this.x2 = x2;
 	        this.y1 = y1;
 	        this.y2 = y2;
+
+	        points[0] = new Point(x1, yZero);
+	        points[1] = new Point(x1, y1);
+	        points[2] = new Point(x2, y2);
+	        points[3] = new Point(x2, yZero);
+	        points[4] = points[0];
 
 	        polygon[0] = x1;
 			polygon[1] = yZero;
@@ -240,10 +258,23 @@ public class HistogramAreaChart implements IChartObject {
 			graphics.fillPolygon(polygon);
 	    	graphics.setForegroundColor(color);
 	    	graphics.drawLine(x1, y1, x2, y2);
+	    	graphics.drawLine(x1, yZero, x2, yZero);
 		}
 
 		public boolean containsPoint(int x, int y) {
-			return false;
+			int crossings = 0;
+			for (int i = 0; i < points.length - 1; i++) {
+				int div = (points[i + 1].y - points[i].y);
+				if (div == 0)
+					div = 1;
+				double slope = (points[i + 1].x - points[i].x) / div;
+				boolean cond1 = (points[i].y <= y) && (y < points[i + 1].y);
+				boolean cond2 = (points[i + 1].y <= y) && (y < points[i].y);
+				boolean cond3 = x < slope * (y - points[i].y) + points[i].x;
+				if ((cond1 || cond2) && cond3)
+					crossings++;
+			}
+			return (crossings % 2 != 0);
 		}
 
 		public String getToolTip() {

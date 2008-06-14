@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.ui.internal.charts;
+package org.eclipsetrader.ui.internal.charts.indicators;
 
 import org.eclipsetrader.ui.charts.RenderStyle;
 

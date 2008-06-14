@@ -61,6 +61,13 @@ public class BARS implements IChartObjectFactory, IExecutableExtension {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+     */
+    public IChartParameters getParameters() {
+	    return null;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {

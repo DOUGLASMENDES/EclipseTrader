@@ -76,6 +76,8 @@ public class ChartViewItem extends PlatformObject implements IViewItem, IWorkben
     }
 
 	public IChartObject getObject() {
+		if (object == null && factory != null)
+			object = factory.createObject(getSourceDataSeries());
     	return object;
     }
 

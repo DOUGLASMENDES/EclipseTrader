@@ -142,6 +142,8 @@ public class HistogramBarChart implements IChartObject {
 	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
 	 */
 	public String getToolTip() {
+		if (dataSeries.getLast() != null)
+			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class));
 		return dataSeries.getName();
 	}
 
