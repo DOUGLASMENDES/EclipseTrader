@@ -43,5 +43,8 @@ public class TraderPerspective implements IPerspectiveFactory {
         layout.addShowViewShortcut("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
         layout.addShowViewShortcut("org.eclipsetrader.ui.views.markets"); //$NON-NLS-1$
         layout.addShowViewShortcut("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
+
+        // Add default action sets
+        layout.addActionSet("org.eclipsetrader.ui.launcher");
 	}
 }
