@@ -317,5 +317,28 @@
             name="Data">
       </category>
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.eclipsetrader.ui.launcher"
+            label="Launcher">
+         <action
+               class="org.eclipsetrader.ui.internal.StopFeedAction"
+               disabledIcon="icons/dtool16/stop.gif"
+               icon="icons/etool16/stop.gif"
+               id="org.eclipsetrader.ui.launcher.stop"
+               label="Stop"
+               toolbarPath="additions">
+         </action>
+         <action
+               class="org.eclipsetrader.ui.internal.StartFeedAction"
+               disabledIcon="icons/dtool16/run.gif"
+               icon="icons/etool16/run.gif"
+               id="org.eclipsetrader.ui.launcher.run"
+               label="Start"
+               toolbarPath="additions">
+         </action>
+      </actionSet>
+   </extension>
 
 </plugin>
