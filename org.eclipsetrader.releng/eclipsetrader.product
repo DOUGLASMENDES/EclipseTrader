@@ -17,14 +17,12 @@
 
    <windowImages i16="/org.eclipsetrader.platform/eclipse.gif" i32="/org.eclipsetrader.platform/eclipse32.gif" i48="/org.eclipsetrader.platform/eclipse48.gif"/>
 
-
    <launcher name="trader">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
@@ -33,13 +31,14 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.rcp" version="0.0.0"/>
-      <feature id="org.eclipse.rcp.extras" version="0.0.0"/>
+      <feature id="com.tictactec.ta.lib" version="0.0.0"/>
+      <feature id="net.java.rome" version="0.0.0"/>
       <feature id="org.apache.commons" version="0.0.0"/>
       <feature id="org.apache.log4j" version="0.0.0"/>
-      <feature id="org.jdom" version="0.0.0"/>
-      <feature id="net.java.rome" version="0.0.0"/>
+      <feature id="org.eclipse.rcp" version="0.0.0"/>
+      <feature id="org.eclipse.rcp.extras" version="0.0.0"/>
       <feature id="org.eclipsetrader.platform" version="0.0.0"/>
+      <feature id="org.jdom" version="0.0.0"/>
    </features>
 
 </product>

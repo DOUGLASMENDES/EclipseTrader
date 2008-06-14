@@ -30,7 +30,7 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="true"
-            category="org.eclipsetrader.ui"
+            category="org.eclipsetrader.ui.news"
             class="org.eclipsetrader.news.internal.ui.NewsViewer"
             icon="icons/eview16/internal_browser.gif"
             id="org.eclipsetrader.news.browser"
@@ -38,12 +38,16 @@
       </view>
       <view
             allowMultiple="true"
-            category="org.eclipsetrader.ui"
+            category="org.eclipsetrader.ui.news"
             class="org.eclipsetrader.news.internal.ui.HeadLineViewer"
             icon="icons/eview16/newspaper.png"
             id="org.eclipsetrader.ui.views.headlines"
             name="Headlines">
       </view>
+      <category
+            id="org.eclipsetrader.ui.news"
+            name="News">
+      </category>
    </extension>
    <extension
          point="org.eclipse.ui.decorators">

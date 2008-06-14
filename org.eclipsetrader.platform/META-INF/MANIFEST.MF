@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: EclipseTrader Platform Plug-in
+Bundle-Name: EclipseTrader Platform
 Bundle-SymbolicName: org.eclipsetrader.platform; singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.ui.internal.Activator

@@ -48,6 +48,7 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction saveAction;
 	private IWorkbenchAction saveAsAction;
 	private IWorkbenchAction saveAllAction;
+	private IWorkbenchAction printAction;
 
 	private IWorkbenchAction importResourcesAction;
     private IWorkbenchAction exportResourcesAction;
@@ -102,6 +103,9 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
 		register(saveAllAction);
+
+		printAction = ActionFactory.PRINT.create(window);
+		register(printAction);
 
         importResourcesAction = ActionFactory.IMPORT.create(window);
 		register(importResourcesAction);
@@ -171,8 +175,8 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
             fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.NEW_EXT));
             fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_GROUP));
             fileToolBar.add(saveAction);
-            fileToolBar.add(saveAllAction);
             fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_EXT));
+            fileToolBar.add(printAction);
             fileToolBar.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
             // Add to the cool bar manager
@@ -235,6 +239,8 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
+        menu.add(new Separator());
+		menu.add(printAction);
 
         menu.add(new Separator());
         menu.add(importResourcesAction);
