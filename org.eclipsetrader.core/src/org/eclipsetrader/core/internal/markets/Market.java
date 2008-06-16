@@ -333,6 +333,14 @@ public class Market implements IMarket, IAdaptable {
     }
 
 	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    return 7 * name.hashCode();
+    }
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

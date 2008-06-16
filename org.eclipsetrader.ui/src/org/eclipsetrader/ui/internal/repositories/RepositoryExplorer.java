@@ -12,8 +12,10 @@
 package org.eclipsetrader.ui.internal.repositories;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -66,6 +68,9 @@ import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
+import org.eclipsetrader.core.views.IView;
+import org.eclipsetrader.core.views.IViewItem;
+import org.eclipsetrader.core.views.IViewVisitor;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.SelectionProvider;
@@ -75,7 +80,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class RepositoryExplorer extends ViewPart {
+	private static final String K_EXPANDED = "expanded";
+
 	private TreeViewer viewer;
+	private IMemento memento;
 
 	private Action refreshAction;
 	private Action collapseAllAction;
@@ -98,8 +106,34 @@ public class RepositoryExplorer extends ViewPart {
 					viewer.getControl().getDisplay().asyncExec(new Runnable() {
 						public void run() {
 							if (!viewer.getControl().isDisposed()) {
-								if (viewer.getInput() == null)
+								if (viewer.getInput() == null) {
 									viewer.setInput(tree);
+									if (memento != null) {
+										String s = memento.getString("expanded");
+										if (s != null) {
+											String[] sr = s.split(";");
+											final Set<Integer> itemHash = new HashSet<Integer>();
+											for (int i = 0; i < sr.length; i++) {
+												try {
+													itemHash.add(Integer.parseInt(sr[i]));
+												} catch(Exception e) {
+													// Do nothing
+												}
+											}
+											tree.accept(new IViewVisitor() {
+							                    public boolean visit(IView view) {
+								                    return true;
+							                    }
+
+							                    public boolean visit(IViewItem viewItem) {
+							                    	if (itemHash.contains(viewItem.hashCode()))
+							                    		viewer.setExpandedState(viewItem, true);
+								                    return true;
+							                    }
+											});
+										}
+									}
+								}
 								else
 									viewer.refresh();
 							}
@@ -136,6 +170,7 @@ public class RepositoryExplorer extends ViewPart {
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
+		this.memento = memento;
 
 		ImageRegistry imageRegistry = UIActivator.getDefault().getImageRegistry();
 
@@ -433,6 +468,25 @@ public class RepositoryExplorer extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void saveState(IMemento memento) {
+    	Object[] o = viewer.getExpandedElements();
+    	if (o != null && o.length != 0) {
+    	    StringBuffer s = new StringBuffer();
+    	    for (int i = 0; i < o.length; i++) {
+    	    	if (i != 0)
+    	    		s.append(";");
+    	    	s.append(o[i].hashCode());
+    	    }
+    	    memento.putString(K_EXPANDED, s.toString());
+    	}
+
+    	super.saveState(memento);
+    }
 
 	@Override
 	public void dispose() {

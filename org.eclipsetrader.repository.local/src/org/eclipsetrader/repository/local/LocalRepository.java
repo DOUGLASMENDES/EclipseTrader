@@ -287,6 +287,14 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 	}
 
 	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    return 3 * URI_SCHEMA.hashCode();
+    }
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

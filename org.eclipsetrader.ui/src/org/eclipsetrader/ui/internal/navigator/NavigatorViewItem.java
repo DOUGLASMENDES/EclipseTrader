@@ -155,6 +155,15 @@ public class NavigatorViewItem implements IViewItem {
     }
 
 	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    return 7 * (reference != null ? reference.hashCode() : 0) +
+	           11 * (parent != null ? parent.hashCode() : 0);
+    }
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

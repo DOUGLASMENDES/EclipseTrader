@@ -48,8 +48,10 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepository;
+import org.eclipsetrader.core.views.IView;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
+import org.eclipsetrader.core.views.IViewVisitor;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
@@ -58,6 +60,7 @@ import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
 
 public class Navigator extends ViewPart {
 	private TreeViewer viewer;
+	private IMemento memento;
 
 	private Action collapseAllAction;
 	private Action expandAllAction;
@@ -71,6 +74,7 @@ public class Navigator extends ViewPart {
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
+		this.memento = memento;
 
 		ImageRegistry imageRegistry = UIActivator.getDefault().getImageRegistry();
 
@@ -192,6 +196,32 @@ public class Navigator extends ViewPart {
 			});
 		view.update();
 		viewer.setInput(view);
+
+		if (memento != null) {
+			String s = memento.getString("expanded");
+			if (s != null) {
+				String[] sr = s.split(";");
+				final Set<Integer> itemHash = new HashSet<Integer>();
+				for (int i = 0; i < sr.length; i++) {
+					try {
+						itemHash.add(Integer.parseInt(sr[i]));
+					} catch(Exception e) {
+						// Do nothing
+					}
+				}
+				view.accept(new IViewVisitor() {
+                    public boolean visit(IView view) {
+	                    return true;
+                    }
+
+                    public boolean visit(IViewItem viewItem) {
+                    	if (itemHash.contains(viewItem.hashCode()))
+                    		viewer.setExpandedState(viewItem, true);
+	                    return true;
+                    }
+				});
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -202,6 +232,25 @@ public class Navigator extends ViewPart {
 		if (!viewer.getControl().isDisposed())
 			viewer.getControl().setFocus();
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void saveState(IMemento memento) {
+    	Object[] o = viewer.getExpandedElements();
+    	if (o != null && o.length != 0) {
+    	    StringBuffer s = new StringBuffer();
+    	    for (int i = 0; i < o.length; i++) {
+    	    	if (i != 0)
+    	    		s.append(";");
+    	    	s.append(o[i].hashCode());
+    	    }
+    	    memento.putString("expanded", s.toString());
+    	}
+
+    	super.saveState(memento);
+    }
 
 	/* (non-Javadoc)
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()

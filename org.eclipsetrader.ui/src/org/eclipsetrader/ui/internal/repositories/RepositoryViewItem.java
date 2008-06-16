@@ -141,4 +141,13 @@ public class RepositoryViewItem implements IViewItem {
     			viewItem.accept(visitor);
     	}
     }
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    return 7 * (object != null ? object.hashCode() : 0) +
+	           11 * (parent != null ? parent.hashCode() : 0);
+    }
 }
