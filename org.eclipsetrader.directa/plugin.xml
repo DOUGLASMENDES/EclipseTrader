@@ -35,5 +35,195 @@
             name="Code">
       </property>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipsetrader.ui.directa"
+            class="org.eclipsetrader.directa.internal.ui.WebBrowserView"
+            icon="icons/d.gif"
+            id="org.eclipsetrader.directa.browser"
+            name="Web Browser">
+      </view>
+      <category
+            id="org.eclipsetrader.ui.directa"
+            name="Directa">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Directa"
+            visible="false"
+            id="org.eclipsetrader.directa.actionSet">
+         <menu
+               label="Directa"
+               path="additions"
+               id="directa">
+            <separator name="group.start"/>
+            <separator name="group.top"/>
+            <separator name="group.views"/>
+            <separator name="group.info1"/>
+            <separator name="group.estrattoConto"/>
+            <separator name="group.info2"/>
+            <separator name="group.info3"/>
+            <separator name="additions"/>
+            <separator name="group.bottom"/>
+         </menu>
+         <menu
+               label="Performance"
+               path="directa/group.estrattoConto"
+               id="performance">
+            <separator name="group.info1"/>
+            <separator name="group.info2"/>
+            <separator name="group.info3"/>
+         </menu>
+         <menu
+               label="Estratto Conto"
+               path="directa/group.estrattoConto"
+               id="estrattoConto">
+            <separator name="group.info1"/>
+            <separator name="group.info2"/>
+            <separator name="group.info3"/>
+         </menu>
+         <action
+               label="Cambio giornaliero Euro / Dollaro"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.5"/>
+         <action
+               label="Derivati: margini-codici"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.4"/>
+         <action
+               label="Situazione scoperti"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.3"/>
+         <action
+               label="Warrant più trattati"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.2"/>
+         <action
+               label="Titoli più trattati"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info1"
+               id="directa.browsePage.1"/>
+         <action
+               label="Titoli Derivati US"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info3"
+               id="directa.browsePage.11"/>
+         <action
+               label="Titoli Derivati EU"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info3"
+               id="directa.browsePage.10"/>
+         <action
+               label="Titoli US"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info2"
+               id="directa.browsePage.9"/>
+         <action
+               label="Titoli EU"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info2"
+               id="directa.browsePage.8"/>
+         <action
+               label="Euro Derivati"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info1"
+               id="directa.browsePage.7"/>
+         <action
+               label="Euro"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/estrattoConto/group.info1"
+               id="directa.browsePage.6"/>
+         <action
+               label="Situazione Prestiti in Corso"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.17"/>
+         <action
+               label="Riepilogo Dividendi Esteri"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.16"/>
+         <action
+               label="Valorizzazione Sez. Derivati"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.15"/>
+         <action
+               label="Rienute su Capital Gain / Ricalcoli"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.14"/>
+         <action
+               label="Mensile"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/performance/group.info2"
+               id="directa.browsePage.21"/>
+         <action
+               label="Giornaliera"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/performance/group.info2"
+               id="directa.browsePage.13"/>
+         <action
+               label="Conferme / Note informative"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info2"
+               id="directa.browsePage.12"/>
+         <action
+               label="Agenda"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info3"
+               id="directa.browsePage.20"/>
+         <action
+               label="News Affari Italiani"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info3"
+               id="directa.browsePage.19"/>
+         <action
+               label="News ASCA"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.info3"
+               id="directa.browsePage.18"/>
+         <action
+               label="Calendario di Borsa"
+               class="org.eclipsetrader.directa.internal.ui.BrowserActionReceiver"
+               style="push"
+               menubarPath="directa/group.top"
+               id="directa.browsePage.0"/>
+         <action
+               class="org.eclipsetrader.directa.internal.ui.LoginAction"
+               id="org.eclipsetrader.directa.login"
+               label="Login"
+               menubarPath="directa/group.start"
+               style="push"/>
+      </actionSet>
+   </extension>
 
 </plugin>

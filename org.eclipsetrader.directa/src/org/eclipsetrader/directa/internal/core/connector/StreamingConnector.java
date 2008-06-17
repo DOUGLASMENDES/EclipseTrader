@@ -48,9 +48,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipsetrader.core.feed.BookEntry;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IBookEntry;
@@ -67,6 +64,7 @@ import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.TodayOHL;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.directa.internal.Activator;
+import org.eclipsetrader.directa.internal.core.WebConnector;
 import org.eclipsetrader.directa.internal.core.messages.AstaApertura;
 import org.eclipsetrader.directa.internal.core.messages.AstaChiusura;
 import org.eclipsetrader.directa.internal.core.messages.BidAsk;
@@ -81,11 +79,6 @@ import org.eclipsetrader.directa.internal.core.messages.Util;
 import org.eclipsetrader.directa.internal.core.repository.IdentifierType;
 import org.eclipsetrader.directa.internal.core.repository.IdentifiersList;
 import org.eclipsetrader.directa.internal.core.repository.PriceDataType;
-import org.htmlparser.Parser;
-import org.htmlparser.filters.NodeClassFilter;
-import org.htmlparser.nodes.RemarkNode;
-import org.htmlparser.util.NodeList;
-import org.htmlparser.util.SimpleNodeIterator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -109,7 +102,6 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
     //private static final String DESCRIPTION = "d";
     private static final String DATI = "t2";
     //private static final String GRAPH = "g";
-    private static final String HOST = "www1.directatrading.com";
 
     private String id;
     private String name;
@@ -120,13 +112,6 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 	private TimeZone timeZone;
 	private SimpleDateFormat df;
 	private SimpleDateFormat df2;
-
-	private HttpClient client;
-	private String userName;
-	private String password;
-
-	private String prt = "";
-	private String urt = "";
 
 	private Thread thread;
 	private Thread notificationThread;
@@ -185,6 +170,7 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
     	id = config.getAttribute("id");
     	name = config.getAttribute("name");
+    	instance = this;
     }
 
 	/* (non-Javadoc)
@@ -243,57 +229,9 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
      * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
      */
     public synchronized void connect() {
-		final IPreferenceStore preferences = getPreferenceStore();
-		userName = preferences.getString(Activator.PREFS_USERNAME);
-		password = preferences.getString(Activator.PREFS_PASSWORD);
+    	WebConnector.getInstance().login();
 
-		if (userName.length() == 0 || password.length() == 0) {
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					Shell shell = PlatformUI.isWorkbenchRunning() ? PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell() : null;
-					LoginDialog dlg = new LoginDialog(shell, userName, password);
-					if (dlg.open() == LoginDialog.OK) {
-						userName = dlg.getUserName();
-						password = dlg.getPassword();
-						preferences.setValue(Activator.PREFS_USERNAME, userName);
-						preferences.setValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
-					}
-				}
-			});
-			if (userName.length() == 0 || password.length() == 0)
-				return;
-		}
-
-		if (client == null) {
-			client = new HttpClient();
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-			setupProxy(client, HOST);
-		}
-
-		try {
-			HttpMethod method = new GetMethod("http://" + HOST + "/trading/collegc_3?USER=" + userName + "&PASSW=" + password + "&PAG=VT4.4.0.0&TAPPO=X");
-			method.setFollowRedirects(true);
-			client.executeMethod(method);
-
-			Parser parser = Parser.createParser(method.getResponseBodyAsString(), "");
-			NodeList list = parser.extractAllNodesThatMatch(new NodeClassFilter(RemarkNode.class));
-			for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes();) {
-				RemarkNode node = (RemarkNode) iter.nextNode();
-				String text = node.getText();
-				//if (text.startsWith("USER"))
-				//	user = text.substring(4);
-				if (text.startsWith("URT"))
-					urt = text.substring(3);
-				else if (text.startsWith("PRT"))
-					prt = text.substring(3);
-			}
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to login server", e);
-			Activator.log(status);
-			return;
-		}
-
-		stopping = false;
+    	stopping = false;
 
 		if (notificationThread == null || !notificationThread.isAlive()) {
 			notificationThread = new Thread(notificationRunnable, name + " - Notification");
@@ -349,6 +287,7 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 		Set<String> sTit = new HashSet<String>();
 
 		// Apertura del socket verso il server
+		streamingServer = null;
 		for (int i = 0; streamingServer == null && i < availableServers.length; i++) {
 			try {
 				Proxy socksProxy = Proxy.NO_PROXY;
@@ -386,7 +325,7 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 
 		// Login
 		try {
-			os.write(CreaMsg.creaLoginMsg(urt, prt, streamingVersion));
+			os.write(CreaMsg.creaLoginMsg(WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt(), streamingVersion));
 			os.flush();
 
 			byte bHeaderLogin[] = new byte[4];
@@ -406,6 +345,9 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 			Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server", e));
 			return;
 		}
+
+		// Forces the subscriptions update on startup
+		subscriptionsChanged = true;
 
 		while (!isStopping()) {
 			if (subscriptionsChanged) {
@@ -634,6 +576,10 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 		} catch (Exception e) {
 			Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error closing connection to streaming server", e));
 		}
+
+		os = null;
+		is = null;
+		socket = null;
     }
 
 	protected IPreferenceStore getPreferenceStore() {
@@ -651,9 +597,10 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 
 			Hashtable<String, String[]> hashtable = new Hashtable<String, String[]>();
 			try {
-				HttpMethod method = createMethod(sTit, DATI, streamingServer, urt, prt);
+				HttpMethod method = createMethod(sTit, DATI, streamingServer, WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
 				method.setFollowRedirects(true);
 
+				HttpClient client = new HttpClient();
 				setupProxy(client, streamingServer);
 				client.executeMethod(method);
 
