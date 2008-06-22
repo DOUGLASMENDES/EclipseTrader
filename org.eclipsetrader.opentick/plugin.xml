@@ -33,10 +33,20 @@
             category="org.eclipsetrader.ui.import.data"
             class="org.eclipsetrader.opentick.internal.ui.DataImportWizard"
             icon="opentick16.gif"
-            id="org.eclipsetrader.opentick.wizard1"
+            id="org.eclipsetrader.opentick.importData"
             name="OpenTick">
          <description>
             Import historical data from OpenTick.
+         </description>
+      </wizard>
+      <wizard
+            category="org.eclipsetrader.ui.import.instruments"
+            class="org.eclipsetrader.opentick.internal.ui.InstrumentsImportWizard"
+            icon="opentick16.gif"
+            id="org.eclipsetrader.opentick.importInstrument"
+            name="OpenTick">
+         <description>
+            Import instruments from OpenTick.
          </description>
       </wizard>
    </extension>

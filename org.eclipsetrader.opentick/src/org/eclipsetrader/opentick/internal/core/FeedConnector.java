@@ -241,7 +241,8 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension, IExe
     	if (evt.getSource() instanceof IFeedIdentifier) {
     		IFeedIdentifier identifier = (IFeedIdentifier) evt.getSource();
 			synchronized(symbolSubscriptions) {
-				for (FeedSubscription subscription : symbolSubscriptions.values()) {
+				Collection<FeedSubscription> c = symbolSubscriptions.values();
+				for (FeedSubscription subscription : c.toArray(new FeedSubscription[c.size()])) {
 					if (subscription.getIdentifier() == identifier) {
 						symbolSubscriptions.remove(subscription.getIdentifierType().getSymbol());
 						try {

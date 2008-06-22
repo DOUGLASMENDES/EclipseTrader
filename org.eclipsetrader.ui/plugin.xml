@@ -316,6 +316,10 @@
             id="org.eclipsetrader.ui.import.data"
             name="Data">
       </category>
+      <category
+            id="org.eclipsetrader.ui.import.instruments"
+            name="Instruments">
+      </category>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
