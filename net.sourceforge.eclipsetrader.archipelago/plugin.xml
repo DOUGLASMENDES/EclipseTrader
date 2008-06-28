@@ -2,12 +2,12 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
-         point="net.sourceforge.eclipsetrader.core.feeds">
-      <feed
-            id="net.sourceforge.eclipsetrader.archipelago"
+         point="org.eclipsetrader.core.connectors">
+      <connector
+            class="org.eclipsetrader.archipelago.Level2Feed"
+            id="org.eclipsetrader.connectors.archipelago"
             name="Archipelago">
-         <level2 class="net.sourceforge.eclipsetrader.archipelago.Level2Feed"/>
-      </feed>
+      </connector>
    </extension>
 
 </plugin>
