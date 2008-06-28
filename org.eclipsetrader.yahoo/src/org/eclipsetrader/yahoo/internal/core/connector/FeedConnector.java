@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
@@ -115,4 +116,18 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension {
 			connector.connect();
     	}
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void addConnectorListener(IConnectorListener listener) {
+    	connector.addConnectorListener(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void removeConnectorListener(IConnectorListener listener) {
+    	connector.removeConnectorListener(listener);
+    }
 }

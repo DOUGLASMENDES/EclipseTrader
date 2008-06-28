@@ -32,11 +32,13 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
@@ -80,6 +82,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     private String name;
 
 	protected Map<String,FeedSubscription> symbolSubscriptions;
+	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	protected TimeZone timeZone;
 	private SimpleDateFormat dateTimeParser;
@@ -390,4 +393,18 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			}
 		}
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void addConnectorListener(IConnectorListener listener) {
+    	listeners.add(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void removeConnectorListener(IConnectorListener listener) {
+    	listeners.remove(listener);
+    }
 }

@@ -14,6 +14,7 @@ package org.eclipsetrader.core.internal.markets;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedService;
@@ -63,6 +64,18 @@ public class FeedConnectorAdapter extends XmlAdapter<String, IFeedConnector> {
          */
         public IFeedSubscription subscribe(IFeedIdentifier identifier) {
 	        return null;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+         */
+        public void addConnectorListener(IConnectorListener listener) {
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+         */
+        public void removeConnectorListener(IConnectorListener listener) {
         }
 	}
 

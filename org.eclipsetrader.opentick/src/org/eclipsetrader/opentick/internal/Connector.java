@@ -111,8 +111,7 @@ public class Connector {
 			try {
 				connection.shutdown();
 			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error stopping shutting down connection", e);
-				OTActivator.log(status);
+				// For some reasons, shutdown almost always throws an exception, so ignore it for now
 			}
 			connection = null;
 		}

@@ -13,6 +13,11 @@ package org.eclipsetrader.core.feed;
 
 public interface IFeedConnector {
 
+	public static final int STATUS_INACTIVE = 0;
+	public static final int STATUS_CONNECTING = 1;
+	public static final int STATUS_CONNECTED = 2;
+	public static final int STATUS_LOGGED_IN = 3;
+
 	public String getId();
 
 	public String getName();
@@ -22,4 +27,8 @@ public interface IFeedConnector {
 	public void connect();
 
 	public void disconnect();
+
+	public void addConnectorListener(IConnectorListener listener);
+
+	public void removeConnectorListener(IConnectorListener listener);
 }

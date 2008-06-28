@@ -21,10 +21,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
@@ -41,6 +43,7 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension, IExe
 	private String name;
 
 	protected Map<String, FeedSubscription> symbolSubscriptions;
+	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private Thread thread;
 	private boolean stopping = false;
@@ -267,5 +270,19 @@ public class FeedConnector implements IFeedConnector, IExecutableExtension, IExe
 				}
 			}
     	}
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void addConnectorListener(IConnectorListener listener) {
+    	listeners.add(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void removeConnectorListener(IConnectorListener listener) {
+    	listeners.remove(listener);
     }
 }
