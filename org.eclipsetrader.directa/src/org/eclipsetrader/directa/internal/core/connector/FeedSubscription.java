@@ -16,8 +16,9 @@ import java.util.List;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
-import org.eclipsetrader.core.feed.IFeedSubscription;
+import org.eclipsetrader.core.feed.IFeedSubscription2;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ISubscriptionListener;
@@ -28,22 +29,22 @@ import org.eclipsetrader.core.feed.QuoteEvent;
 import org.eclipsetrader.directa.internal.Activator;
 import org.eclipsetrader.directa.internal.core.repository.IdentifierType;
 
-public class FeedSubscription implements IFeedSubscription {
+public class FeedSubscription implements IFeedSubscription2 {
 	private StreamingConnector connector;
-	private IFeedIdentifier identifier;
 	private ITrade trade;
 	private IQuote quote;
 	private ITodayOHL todayOHL;
 	private ILastClose lastClose;
+	private IBook book;
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 	private IdentifierType identifierType;
 	private List<QuoteDelta> deltaList = new ArrayList<QuoteDelta>();
 	private int instanceCount = 0;
+	private int level2InstanceCount = 0;
 
 	public FeedSubscription(StreamingConnector connector, IdentifierType identifierType) {
 		this.connector = connector;
 		this.identifierType = identifierType;
-	    this.identifier = identifierType.getIdentifier();
 	    this.trade = identifierType.getTrade();
 	    this.quote = identifierType.getQuote();
 	    this.todayOHL = identifierType.getTodayOHL();
@@ -65,8 +66,9 @@ public class FeedSubscription implements IFeedSubscription {
 		connector.disposeSubscription(this);
     }
 
-    protected void incrementInstanceCount() {
+    protected int incrementInstanceCount() {
     	instanceCount++;
+    	return instanceCount;
     }
 
     protected int decrementInstanceCount() {
@@ -76,6 +78,20 @@ public class FeedSubscription implements IFeedSubscription {
 
 	protected int getInstanceCount() {
     	return instanceCount;
+    }
+
+    protected int incrementLevel2InstanceCount() {
+    	level2InstanceCount++;
+    	return level2InstanceCount;
+    }
+
+    protected int decrementLevel2InstanceCount() {
+    	level2InstanceCount--;
+    	return level2InstanceCount;
+    }
+
+	public int getLevel2InstanceCount() {
+    	return level2InstanceCount;
     }
 
 	/* (non-Javadoc)
@@ -96,8 +112,15 @@ public class FeedSubscription implements IFeedSubscription {
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getIdentifier()
 	 */
 	public IFeedIdentifier getIdentifier() {
-		return identifier;
+		return identifierType.getIdentifier();
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedSubscription#getSymbol()
+     */
+    public String getSymbol() {
+	    return identifierType.getSymbol();
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getQuote()
@@ -108,6 +131,7 @@ public class FeedSubscription implements IFeedSubscription {
 
 	public void setQuote(IQuote quote) {
     	this.quote = quote;
+    	this.identifierType.setQuote(quote);
     }
 
 	/* (non-Javadoc)
@@ -119,6 +143,7 @@ public class FeedSubscription implements IFeedSubscription {
 
 	public void setTodayOHL(ITodayOHL todayOHL) {
     	this.todayOHL = todayOHL;
+    	this.identifierType.setTodayOHL(todayOHL);
     }
 
 	/* (non-Javadoc)
@@ -130,6 +155,7 @@ public class FeedSubscription implements IFeedSubscription {
 
 	public void setTrade(ITrade trade) {
     	this.trade = trade;
+    	this.identifierType.setTrade(trade);
     }
 
 	/* (non-Javadoc)
@@ -141,6 +167,18 @@ public class FeedSubscription implements IFeedSubscription {
 
 	public void setLastClose(ILastClose lastClose) {
     	this.lastClose = lastClose;
+    	this.identifierType.setLastClose(lastClose);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedSubscription2#getBook()
+     */
+    public IBook getBook() {
+	    return book;
+    }
+
+	public void setBook(IBook book) {
+    	this.book = book;
     }
 
 	public void addDelta(QuoteDelta delta) {

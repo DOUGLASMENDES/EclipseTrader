@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IQuote;
@@ -42,7 +41,6 @@ public class IdentifierType {
 	private IQuote quote;
 	private ITodayOHL todayOHL;
 	private ILastClose lastClose;
-	private IBook book;
 
 	protected IdentifierType() {
 	}
@@ -130,15 +128,6 @@ public class IdentifierType {
 
 	public void setLastClose(ILastClose close) {
     	this.lastClose = close;
-    }
-
-	@XmlTransient
-	public IBook getBook() {
-    	return book;
-    }
-
-	public void setBook(IBook book) {
-    	this.book = book;
     }
 
 	/* (non-Javadoc)

@@ -57,7 +57,11 @@ public class SingleFeedPricingEnvironmentTest extends TestCase {
 	                    return identifier;
                     }
 
-                    public ILastClose getLastClose() {
+                    public String getSymbol() {
+	                    return identifier.getSymbol();
+                    }
+
+					public ILastClose getLastClose() {
 	                    return null;
                     }
 
@@ -78,6 +82,12 @@ public class SingleFeedPricingEnvironmentTest extends TestCase {
             	};
             	subscriptions.add(s);
 	            return s;
+            }
+
+            public void addConnectorListener(IConnectorListener listener) {
+            }
+
+            public void removeConnectorListener(IConnectorListener listener) {
             }
 	    };
     }

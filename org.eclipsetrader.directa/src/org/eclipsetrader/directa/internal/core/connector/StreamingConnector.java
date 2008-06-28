@@ -41,19 +41,24 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipsetrader.core.feed.BookEntry;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IBookEntry;
-import org.eclipsetrader.core.feed.IFeedConnector;
+import org.eclipsetrader.core.feed.IConnectorListener;
+import org.eclipsetrader.core.feed.IFeedConnector2;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
+import org.eclipsetrader.core.feed.IFeedSubscription2;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITodayOHL;
@@ -82,7 +87,7 @@ import org.eclipsetrader.directa.internal.core.repository.PriceDataType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class StreamingConnector implements Runnable, IFeedConnector, IExecutableExtension, PropertyChangeListener {
+public class StreamingConnector implements Runnable, IFeedConnector2, IExecutableExtension, PropertyChangeListener {
     private static StreamingConnector instance;
 
 	public static final int PREZZO = 0;
@@ -94,7 +99,7 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 	public static final int MASSIMO = 6;
 	public static final int APERTURA = 7;
 	public static final int PRECEDENTE = 8;
-	public static final int INZIO_BOOK = 9;
+	public static final int INIZIO_BOOK = 9;
 	public static final int BID_QUANTITA = 39;
 	public static final int BID_PREZZO = 40;
 	public static final int ASK_QUANTITA = 41;
@@ -106,8 +111,10 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
     private String id;
     private String name;
 
-    private Map<String,FeedSubscription> symbolSubscriptions;
+    private Map<String, FeedSubscription> symbolSubscriptions;
+	private Map<String, FeedSubscription2> symbolSubscriptions2;
 	private boolean subscriptionsChanged = false;
+	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private TimeZone timeZone;
 	private SimpleDateFormat df;
@@ -124,6 +131,8 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 	private Socket socket;
 	private OutputStream os;
 	private DataInputStream is;
+
+	private Log logger = LogFactory.getLog(getClass());
 
 	private Runnable notificationRunnable = new Runnable() {
 		public void run() {
@@ -148,7 +157,8 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 	};
 
 	public StreamingConnector() {
-		symbolSubscriptions = new HashMap<String,FeedSubscription>();
+		symbolSubscriptions = new HashMap<String, FeedSubscription>();
+		symbolSubscriptions2 = new HashMap<String, FeedSubscription2>();
 
 		timeZone = TimeZone.getTimeZone("Europe/Rome");
 
@@ -193,7 +203,57 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
     public IFeedSubscription subscribe(IFeedIdentifier identifier) {
 		synchronized(symbolSubscriptions) {
 	    	IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
-	    	FeedSubscription subscription = symbolSubscriptions.get(identifier.getSymbol());
+	    	FeedSubscription subscription = symbolSubscriptions.get(identifierType.getSymbol());
+	    	if (subscription == null) {
+	    		subscription = new FeedSubscription(this, identifierType);
+
+	    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
+	    	    if (propertyChangeSupport != null)
+	    	    	propertyChangeSupport.addPropertyChangeListener(this);
+
+	    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
+	        	subscriptionsChanged = true;
+	    	}
+	    	if (identifierType.getIdentifier() == null) {
+	    		identifierType.setIdentifier(identifier);
+
+	    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
+	    	    if (propertyChangeSupport != null)
+	    	    	propertyChangeSupport.addPropertyChangeListener(this);
+	    	}
+	    	if (subscription.incrementInstanceCount() == 1)
+	        	subscriptionsChanged = true;
+		    return subscription;
+		}
+    }
+
+    protected void disposeSubscription(FeedSubscription subscription) {
+		synchronized(symbolSubscriptions) {
+	    	if (subscription.decrementInstanceCount() <= 0) {
+		    	IdentifierType identifierType = subscription.getIdentifierType();
+
+		    	if (subscription.getIdentifier() != null) {
+		    	    PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subscription.getIdentifier().getAdapter(PropertyChangeSupport.class);
+		    	    if (propertyChangeSupport != null)
+		    	    	propertyChangeSupport.removePropertyChangeListener(this);
+		    	}
+
+	    		symbolSubscriptions.remove(identifierType.getSymbol());
+	        	subscriptionsChanged = true;
+	    	}
+		}
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector2#subscribeLevel2(org.eclipsetrader.core.feed.IFeedIdentifier)
+     */
+    public IFeedSubscription2 subscribeLevel2(IFeedIdentifier identifier) {
+    	FeedSubscription subscription;
+    	IdentifierType identifierType;
+
+    	synchronized(symbolSubscriptions) {
+	    	identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
+	    	subscription = symbolSubscriptions.get(identifierType.getSymbol());
 	    	if (subscription == null) {
 	    		subscription = new FeedSubscription(this, identifierType);
 
@@ -201,14 +261,67 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 	    	    if (propertyChangeSupport != null)
 	    	    	propertyChangeSupport.addPropertyChangeListener(this);
 
-	    		symbolSubscriptions.put(identifier.getSymbol(), subscription);
+	    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
 	        	subscriptionsChanged = true;
 	    	}
+	    	if (subscription.incrementInstanceCount() == 1)
+	        	subscriptionsChanged = true;
+		}
+
+		synchronized(symbolSubscriptions2) {
+	    	FeedSubscription2 subscription2 = symbolSubscriptions2.get(identifierType.getSymbol());
+	    	if (subscription2 == null) {
+	    		subscription2 = new FeedSubscription2(this, subscription);
+	    		symbolSubscriptions2.put(identifierType.getSymbol(), subscription2);
+	        	subscriptionsChanged = true;
+	    	}
+	    	if (subscription.incrementLevel2InstanceCount() == 1)
+	        	subscriptionsChanged = true;
 		    return subscription;
 		}
     }
 
-    protected void disposeSubscription(FeedSubscription subscription) {
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector2#subscribeLevel2(java.lang.String)
+     */
+    public IFeedSubscription2 subscribeLevel2(String symbol) {
+    	FeedSubscription subscription;
+    	IdentifierType identifierType;
+
+    	synchronized(symbolSubscriptions) {
+	    	identifierType = IdentifiersList.getInstance().getIdentifierFor(symbol);
+	    	subscription = symbolSubscriptions.get(identifierType.getSymbol());
+	    	if (subscription == null) {
+	    		subscription = new FeedSubscription(this, identifierType);
+
+	    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
+	        	subscriptionsChanged = true;
+	    	}
+	    	if (subscription.incrementInstanceCount() == 1)
+	        	subscriptionsChanged = true;
+		}
+
+		synchronized(symbolSubscriptions2) {
+	    	FeedSubscription2 subscription2 = symbolSubscriptions2.get(identifierType.getSymbol());
+	    	if (subscription2 == null) {
+	    		subscription2 = new FeedSubscription2(this, subscription);
+	    		symbolSubscriptions2.put(identifierType.getSymbol(), subscription2);
+	        	subscriptionsChanged = true;
+	    	}
+	    	if (subscription.incrementLevel2InstanceCount() == 1)
+	        	subscriptionsChanged = true;
+		    return subscription;
+		}
+    }
+
+	protected void disposeSubscription2(FeedSubscription subscription, FeedSubscription2 subscription2) {
+		synchronized(symbolSubscriptions2) {
+	    	if (subscription.decrementLevel2InstanceCount() <= 0) {
+		    	IdentifierType identifierType = subscription.getIdentifierType();
+	    		symbolSubscriptions2.remove(identifierType.getSymbol());
+	        	subscriptionsChanged = true;
+	    	}
+		}
 		synchronized(symbolSubscriptions) {
 	    	if (subscription.decrementInstanceCount() <= 0) {
 		    	IdentifierType identifierType = subscription.getIdentifierType();
@@ -285,6 +398,7 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 		int n = 0;
 		byte bHeader[] = new byte[4];
 		Set<String> sTit = new HashSet<String>();
+		Set<String> sTit2 = new HashSet<String>();
 
 		// Apertura del socket verso il server
 		streamingServer = null;
@@ -353,21 +467,32 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 			if (subscriptionsChanged) {
 	        	Set<String> toAdd = new HashSet<String>();
 	        	Set<String> toRemove = new HashSet<String>();
+	        	Set<String> toAdd2 = new HashSet<String>();
+	        	Set<String> toRemove2 = new HashSet<String>();
 
 	        	synchronized(symbolSubscriptions) {
-		        	for (String s : symbolSubscriptions.keySet()) {
-		        		if (!sTit.contains(s))
-		        			toAdd.add(s);
+		        	for (FeedSubscription s : symbolSubscriptions.values()) {
+		        		if (!sTit.contains(s.getIdentifierType().getSymbol()))
+		        			toAdd.add(s.getIdentifierType().getSymbol());
+		        		if (s.getLevel2InstanceCount() != 0) {
+			        		if (!sTit2.contains(s.getIdentifierType().getSymbol()))
+			        			toAdd2.add(s.getIdentifierType().getSymbol());
+		        		}
 		        	}
 		        	for (String s : sTit) {
 		        		if (!symbolSubscriptions.containsKey(s))
 		        			toRemove.add(s);
+		        	}
+		        	for (String s : sTit2) {
+		        		if (!symbolSubscriptions2.containsKey(s))
+		        			toRemove2.add(s);
 		        	}
 		        	subscriptionsChanged = false;
 				}
 
 				if (toRemove.size() != 0) {
 					try {
+						logger.info("Removing " + toRemove);
 						int flag[] = new int[toRemove.size()];
 						for (int i = 0; i < flag.length; i++)
 							flag[i] = 1;
@@ -382,11 +507,40 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 
 				if (toAdd.size() != 0) {
 					try {
-						int flag[] = new int[toAdd.size()];
+						logger.info("Adding " + toAdd);
+						String s[] = toAdd.toArray(new String[toAdd.size()]);
+						int flag[] = new int[s.length];
 						for (int i = 0; i < flag.length; i++)
-							flag[i] = 1;
-						os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_ADD, toAdd.toArray(new String[toAdd.size()]), flag));
+							flag[i] = sTit2.contains(s[i]) || toAdd2.contains(s[i]) ? 1 : 0;
+						os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_ADD, s, flag));
 						os.flush();
+					} catch (Exception e) {
+						thread = null;
+						Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error adding symbols from stream", e));
+						break;
+					}
+				}
+
+				if (toAdd2.size() != 0 || toRemove2.size() != 0) {
+					try {
+			        	Map<String, Integer> toMod = new HashMap<String, Integer>();
+			        	for (String s : toAdd2) {
+			        		if (!toAdd.contains(s))
+			        			toMod.put(s, new Integer(1));
+			        	}
+			        	for (String s : toRemove2)
+		        			toMod.put(s, new Integer(0));
+
+			        	if (toMod.size() != 0) {
+							logger.info("Modifying " + toMod);
+
+				        	String s[] = toMod.keySet().toArray(new String[toMod.keySet().size()]);
+							int flag[] = new int[s.length];
+							for (int i = 0; i < flag.length; i++)
+								flag[i] = toMod.get(s[i]).intValue();
+							os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_MOD, s, flag));
+							os.flush();
+			        	}
 					} catch (Exception e) {
 						thread = null;
 						Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error adding symbols from stream", e));
@@ -403,10 +557,12 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 						Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error starting data stream", e));
 						break;
 					}
-
-					sTit.removeAll(toRemove);
-					sTit.addAll(toAdd);
 				}
+
+				sTit.removeAll(toRemove);
+				sTit.addAll(toAdd);
+				sTit2.removeAll(toRemove2);
+				sTit2.addAll(toAdd2);
 
 				if (toAdd.size() != 0)
 					fetchLatestSnapshot(toAdd.toArray(new String[toAdd.size()]));
@@ -458,37 +614,36 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 
 					FeedSubscription subscription = symbolSubscriptions.get(obj.head.key);
 					if (subscription != null) {
-						IdentifierType identifierType = subscription.getIdentifierType();
-						PriceDataType priceData = identifierType.getPriceData();
+						PriceDataType priceData = subscription.getIdentifierType().getPriceData();
 
 						if (obj instanceof Price) {
 							Price pm = (Price) obj;
 
-							Object oldValue = identifierType.getQuote();
+							Object oldValue = subscription.getQuote();
 							priceData.setLast(pm.val_ult);
 							priceData.setLastSize(pm.qta_ult);
 							priceData.setVolume(pm.qta_prgs);
 							priceData.setTime(new Date(pm.ora_ult));
 							Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
 							if (!newValue.equals(oldValue)) {
-								identifierType.setTrade((ITrade) newValue);
-								subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+								subscription.setTrade((ITrade) newValue);
+								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 								wakeupNotifyThread();
 							}
 
-							oldValue = identifierType.getTodayOHL();
+							oldValue = subscription.getTodayOHL();
 							priceData.setHigh(pm.max);
 							priceData.setLow(pm.min);
 							newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
 							if (!newValue.equals(oldValue)) {
-								identifierType.setTodayOHL((ITodayOHL) newValue);
-								subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+								subscription.setTodayOHL((ITodayOHL) newValue);
+								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 								wakeupNotifyThread();
 							}
 						}
 						else if (obj instanceof Book) {
 							Book bm = (Book) obj;
-							IBook oldValue = identifierType.getBook();
+							IBook oldValue = subscription.getBook();
 							IBook newValue = new org.eclipsetrader.core.feed.Book(
 									new IBookEntry[] {
 											new BookEntry(null, bm.val_c[0], new Long(bm.q_pdn_c[0]), new Long(bm.n_pdn_c[0]), null),
@@ -504,49 +659,49 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 											new BookEntry(null, bm.val_v[3], new Long(bm.q_pdn_v[3]), new Long(bm.n_pdn_v[3]), null),
 											new BookEntry(null, bm.val_v[4], new Long(bm.q_pdn_v[4]), new Long(bm.n_pdn_v[4]), null),
 										});
-							identifierType.setBook(newValue);
-							subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+							subscription.setBook(newValue);
+							subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 							wakeupNotifyThread();
 						}
 						else if (obj instanceof BidAsk) {
 							BidAsk bam = (BidAsk) obj;
 
-							Object oldValue = identifierType.getQuote();
+							Object oldValue = subscription.getQuote();
 							priceData.setBid(bam.bid);
 							priceData.setBidSize(bam.num_bid);
 							priceData.setAsk(bam.ask);
 							priceData.setAskSize(bam.num_ask);
 							Object newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
 							if (!newValue.equals(oldValue)) {
-								identifierType.setQuote((IQuote) newValue);
-								subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+								subscription.setQuote((IQuote) newValue);
+								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 								wakeupNotifyThread();
 							}
 						}
 						else if (obj instanceof AstaApertura) {
 							AstaApertura ap = (AstaApertura) obj;
 
-							Object oldValue = identifierType.getTrade();
+							Object oldValue = subscription.getTrade();
 							priceData.setLast(ap.val_aper);
 							priceData.setVolume(ap.qta_aper);
 							priceData.setTime(new Date(ap.ora_aper));
 							Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
 							if (!newValue.equals(oldValue)) {
-								identifierType.setTrade((ITrade) newValue);
-								subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+								subscription.setTrade((ITrade) newValue);
+								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 								wakeupNotifyThread();
 							}
 						}
 						else if (obj instanceof AstaChiusura) {
 							AstaChiusura ac = (AstaChiusura) obj;
 
-							Object oldValue = identifierType.getTrade();
+							Object oldValue = subscription.getTrade();
 							priceData.setLast(ac.val_chiu);
 							priceData.setTime(new Date(ac.ora_chiu));
 							Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
 							if (!newValue.equals(oldValue)) {
-								identifierType.setTrade((ITrade) newValue);
-								subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+								subscription.setTrade((ITrade) newValue);
+								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 								wakeupNotifyThread();
 							}
 						}
@@ -710,17 +865,15 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 					identifierType.setLastClose((ILastClose) newValue);
 				}
 
-				/*
-				Level2Bid bid = new Level2Bid();
-				Level2Ask ask = new Level2Ask();
-				int k = INZIO_BOOK;
-				for (int x = 0; x < 5; x++, k += 6) {
-					bid.add(Double.parseDouble(sVal[k + 2]), Integer.parseInt(sVal[k + 1]), Integer.parseInt(sVal[k]));
-					ask.add(Double.parseDouble(sVal[k + 5]), Integer.parseInt(sVal[k + 4]), Integer.parseInt(sVal[k + 3]));
+				IBookEntry[] bidEntry = new IBookEntry[5];
+				IBookEntry[] askEntry = new IBookEntry[5];
+				for (int x = 0, k = INIZIO_BOOK; x < 5; x++, k += 6) {
+					bidEntry[x] = new BookEntry(null, Double.parseDouble(sVal[k + 2]), Long.parseLong(sVal[k + 1]), Long.parseLong(sVal[k]), null);
+					askEntry[x] = new BookEntry(null, Double.parseDouble(sVal[k + 5]), Long.parseLong(sVal[k + 4]), Long.parseLong(sVal[k + 3]), null);
 				}
-
-				security.setLevel2(bid, ask);
-				*/
+				newValue = new org.eclipsetrader.core.feed.Book(bidEntry, askEntry);
+				subscription.setBook((IBook) newValue);
+				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 			}
 
 			wakeupNotifyThread();
@@ -793,5 +946,19 @@ public class StreamingConnector implements Runnable, IFeedConnector, IExecutable
 				}
 			}
     	}
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void addConnectorListener(IConnectorListener listener) {
+    	listeners.add(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void removeConnectorListener(IConnectorListener listener) {
+    	listeners.remove(listener);
     }
 }

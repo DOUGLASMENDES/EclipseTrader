@@ -140,6 +140,9 @@ public class UIActivator extends AbstractUIPlugin {
     	reg.put(UIConstants.TREND_STABLE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_stable.gif")));
     	reg.put(UIConstants.TREND_UP_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_up.gif")));
     	reg.put(UIConstants.TREND_DOWN_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_down.gif")));
+
+    	reg.put(UIConstants.TOOLBAR_ARROW_DOWN, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" + UIConstants.TOOLBAR_ARROW_DOWN)));
+    	reg.put(UIConstants.TOOLBAR_ARROW_RIGHT, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" + UIConstants.TOOLBAR_ARROW_RIGHT)));
     }
 
 	public IRepositoryService getRepositoryService() {

@@ -180,6 +180,13 @@ public class FeedSubscription implements IFeedSubscription {
 	}
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedSubscription#getSymbol()
+     */
+    public String getSymbol() {
+	    return identifierType.getExchange() + ":" + identifierType.getSymbol();
+    }
+
+	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getQuote()
 	 */
 	public IQuote getQuote() {

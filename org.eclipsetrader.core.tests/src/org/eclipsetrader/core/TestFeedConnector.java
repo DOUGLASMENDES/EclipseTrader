@@ -14,6 +14,7 @@ package org.eclipsetrader.core;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
@@ -86,6 +87,13 @@ public class TestFeedConnector implements IFeedConnector {
             }
 
 			/* (non-Javadoc)
+             * @see org.eclipsetrader.core.feed.IFeedSubscription#getSymbol()
+             */
+            public String getSymbol() {
+	            return identifier.getSymbol();
+            }
+
+			/* (non-Javadoc)
              * @see org.eclipsetrader.core.feed.IFeedSubscription#getLastClose()
              */
             public ILastClose getLastClose() {
@@ -125,5 +133,17 @@ public class TestFeedConnector implements IFeedConnector {
 
 	public Set<IFeedSubscription> getSubscriptions() {
     	return subscriptions;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void addConnectorListener(IConnectorListener listener) {
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+     */
+    public void removeConnectorListener(IConnectorListener listener) {
     }
 }

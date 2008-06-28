@@ -65,4 +65,8 @@ public class UIConstants {
 	public static final String TREND_UP_ICON = "trend_up"; //$NON-NLS-1$
 
 	public static final String TREND_DOWN_ICON = "trend_down"; //$NON-NLS-1$
+
+	public static final String TOOLBAR_ARROW_DOWN = "toolbar-arrow-down.gif"; //$NON-NLS-1$
+
+	public static final String TOOLBAR_ARROW_RIGHT = "toolbar-arrow-right.gif"; //$NON-NLS-1$
 }

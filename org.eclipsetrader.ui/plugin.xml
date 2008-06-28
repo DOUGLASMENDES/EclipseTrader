@@ -58,6 +58,14 @@
             id="org.eclipsetrader.ui.views.watchlist"
             name="WatchList">
       </view>
+      <view
+            allowMultiple="true"
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.ui.internal.views.Level2View"
+            icon="icons/eview16/watchlist.gif"
+            id="org.eclipsetrader.ui.views.level2"
+            name="Level II">
+      </view>
    </extension>
    <extension
          point="org.eclipsetrader.core.providers">
@@ -273,6 +281,24 @@
             </and>
          </activeWhen>
       </handler>
+      <handler
+            commandId="org.eclipsetrader.ui.level2.open">
+         <class
+               class="org.eclipsetrader.ui.internal.handlers.Level2OpenHandler">
+         </class>
+         <activeWhen>
+            <and>
+               <count
+                     value="1">
+               </count>
+               <iterate>
+                  <adapt
+                        type="org.eclipsetrader.core.instruments.Security">
+                  </adapt>
+               </iterate>
+            </and>
+         </activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -293,6 +319,25 @@
                      </adapt>
                   </iterate>
                </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.open">
+         <command
+               commandId="org.eclipsetrader.ui.level2.open"
+               mnemonic="O">
+            <visibleWhen>
+            <and>
+               <count
+                     value="1">
+               </count>
+               <iterate>
+                  <adapt
+                        type="org.eclipsetrader.core.instruments.Security">
+                  </adapt>
+               </iterate>
+            </and>
             </visibleWhen>
          </command>
       </menuContribution>
@@ -343,6 +388,13 @@
                toolbarPath="additions">
          </action>
       </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.eclipsetrader.ui.level2.open"
+            name="Open Level II">
+      </command>
    </extension>
 
 </plugin>

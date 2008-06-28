@@ -79,4 +79,15 @@ public class IdentifiersList {
 		identifiers.add(type);
 		return type;
 	}
+
+	public IdentifierType getIdentifierFor(String symbol) {
+		for (IdentifierType type : identifiers) {
+			if (type.getSymbol().equals(symbol))
+				return type;
+		}
+
+		IdentifierType type = new IdentifierType(symbol);
+		identifiers.add(type);
+		return type;
+	}
 }

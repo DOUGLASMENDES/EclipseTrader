@@ -26,6 +26,13 @@ public interface IFeedSubscription {
 	public IFeedIdentifier getIdentifier();
 
 	/**
+	 * Gets the data feed-specific symbol.
+	 *
+	 * @return the feed symbol.
+	 */
+	public String getSymbol();
+
+	/**
 	 * Disposes the receiver and all associated resources.
 	 */
 	public void dispose();
