@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Archipelago
-Bundle-SymbolicName: net.sourceforge.eclipsetrader.archipelago;singleton:=true
+Bundle-SymbolicName: org.eclipsetrader.archipelago;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.archipelago.ArchipelagoPlugin
 Bundle-Vendor: EclipseTrader.org
