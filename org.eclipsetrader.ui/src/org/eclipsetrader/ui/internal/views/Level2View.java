@@ -14,9 +14,14 @@ package org.eclipsetrader.ui.internal.views;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
@@ -81,6 +86,7 @@ public class Level2View extends ViewPart {
 	private Text symbol;
 	private Label activeConnector;
 
+	private Composite summaryGroup;
 	private Label time;
 	private Label volume;
 	private Label last;
@@ -94,7 +100,6 @@ public class Level2View extends ViewPart {
 	private NumberFormat numberFormatter = NumberFormat.getInstance();
 	private NumberFormat priceFormatter = NumberFormat.getInstance();
 	private NumberFormat percentageFormatter = NumberFormat.getInstance();
-	private Color emptyBackground = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
 	private Color tickBackgroundColor = Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
 	private Color[] tickFade = new Color[3];
 
@@ -105,6 +110,7 @@ public class Level2View extends ViewPart {
 	private IBook book;
 
 	private Action showMarketMakerAction;
+	private Action hideSummaryAction;
 
 	private ISubscriptionListener subscriptionListener = new ISubscriptionListener() {
         public void quoteUpdate(QuoteEvent event) {
@@ -180,10 +186,25 @@ public class Level2View extends ViewPart {
             }
 	    };
 
+	    hideSummaryAction = new Action("Hide Summary", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+            	summaryGroup.setVisible(!isChecked());
+            	((GridData) summaryGroup.getLayoutData()).exclude = isChecked();
+            	summaryGroup.getParent().layout();
+            }
+	    };
+
+	    if (memento != null) {
+	    	hideSummaryAction.setChecked("true".equals(memento.getString("hide-summary")));
+	    }
+
 	    IActionBars actionBars = site.getActionBars();
 
 	    IMenuManager menuManager = actionBars.getMenuManager();
 	    menuManager.add(showMarketMakerAction);
+	    menuManager.add(new Separator());
+	    menuManager.add(hideSummaryAction);
 
 	    actionBars.updateActionBars();
     }
@@ -199,7 +220,77 @@ public class Level2View extends ViewPart {
 		gridLayout.verticalSpacing = 0;
 		content.setLayout(gridLayout);
 
-		createSummary(content);
+		GC gc = new GC(content);
+		gc.setFont(JFaceResources.getDialogFont());
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		gc.dispose();
+
+		Composite group = new Composite(content, SWT.NONE);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		group.setLayout(new GridLayout(4, false));
+
+		Label label = new Label(group, SWT.NONE);
+		label.setText("Symbol");
+		symbol = new Text(group, SWT.BORDER);
+		symbol.setLayoutData(new GridData(Dialog.convertWidthInCharsToPixels(fontMetrics, 15), SWT.DEFAULT));
+		symbol.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+	            onSetSymbol();
+            }
+		});
+		symbol.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+	            onSetSymbol();
+            }
+		});
+
+		final ImageHyperlink connectorButton = new ImageHyperlink(group, SWT.NONE);
+		connectorButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		connectorButton.setImage(UIActivator.getDefault().getImageRegistry().get(UIConstants.TOOLBAR_ARROW_RIGHT));
+		connectorButton.setToolTipText("Select Data Source");
+		connectorButton.addHyperlinkListener(new IHyperlinkListener() {
+			private Menu dropDownMenu;
+
+			public void linkActivated(HyperlinkEvent e) {
+				if (dropDownMenu != null)
+					dropDownMenu.dispose();
+
+				dropDownMenu = new Menu(connectorButton);
+				List<IFeedConnector> c = Arrays.asList(getFeedService().getConnectors());
+				Collections.sort(c, new Comparator<IFeedConnector>() {
+                    public int compare(IFeedConnector o1, IFeedConnector o2) {
+	                    return o1.getName().compareTo(o2.getName());
+                    }
+				});
+				for (IFeedConnector connector : c) {
+					if (connector instanceof IFeedConnector2) {
+						MenuItem menuItem = new MenuItem(dropDownMenu, SWT.CHECK);
+						menuItem.setText(connector.getName());
+						menuItem.setData(connector);
+						menuItem.setSelection(Level2View.this.connector == connector);
+						menuItem.addSelectionListener(connectionSelectionListener);
+					}
+				}
+				dropDownMenu.setVisible(true);
+            }
+
+            public void linkEntered(HyperlinkEvent e) {
+            }
+
+            public void linkExited(HyperlinkEvent e) {
+            }
+		});
+
+		activeConnector = new Label(group, SWT.NONE);
+		activeConnector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		summaryGroup = createSummary(content);
+		if (hideSummaryAction != null) {
+        	summaryGroup.setVisible(!hideSummaryAction.isChecked());
+        	((GridData) summaryGroup.getLayoutData()).exclude = hideSummaryAction.isChecked();
+		}
 
 		pressureBar = new PressureBar(content, SWT.NONE);
 		GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -247,6 +338,8 @@ public class Level2View extends ViewPart {
     	memento.putString("symbol", symbol.getText());
     	if (connector != null)
     		memento.putString("connector", connector.getId());
+    	if (hideSummaryAction.isChecked())
+    		memento.putString("hide-summary", "true");
 	    super.saveState(memento);
     }
 
@@ -275,14 +368,12 @@ public class Level2View extends ViewPart {
 	protected void createBookViewer(Composite parent) {
 		Composite content = new Composite(parent, SWT.NONE);
 		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		content.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		TableColumnLayout tableLayout = new TableColumnLayout();
 		content.setLayout(tableLayout);
 
 		table = new Table(content, SWT.MULTI | SWT.FULL_SELECTION | SWT.NO_FOCUS);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
-		// table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		table.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -350,75 +441,14 @@ public class Level2View extends ViewPart {
 		table.getParent().layout();
 	}
 
-	protected void createSummary(Composite parent) {
+	protected Composite createSummary(Composite parent) {
 		Composite content = new Composite(parent, SWT.NONE);
 		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout gridLayout = new GridLayout(4, false);
 		gridLayout.horizontalSpacing = gridLayout.horizontalSpacing * 2;
 		content.setLayout(gridLayout);
 
-		Composite group = new Composite(content, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
-		gridLayout = new GridLayout(4, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		group.setLayout(gridLayout);
-
-		GC gc = new GC(group);
-		gc.setFont(JFaceResources.getDialogFont());
-		FontMetrics fontMetrics = gc.getFontMetrics();
-		gc.dispose();
-
-		Label label = new Label(group, SWT.NONE);
-		label.setText("Symbol");
-		symbol = new Text(group, SWT.BORDER);
-		symbol.setLayoutData(new GridData(Dialog.convertWidthInCharsToPixels(fontMetrics, 15), SWT.DEFAULT));
-		symbol.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-	            onSetSymbol();
-            }
-		});
-		symbol.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-	            onSetSymbol();
-            }
-		});
-
-		final ImageHyperlink connectorButton = new ImageHyperlink(group, SWT.NONE);
-		connectorButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		connectorButton.setImage(UIActivator.getDefault().getImageRegistry().get(UIConstants.TOOLBAR_ARROW_RIGHT));
-		connectorButton.setToolTipText("Select Data Source");
-		connectorButton.addHyperlinkListener(new IHyperlinkListener() {
-			private Menu dropDownMenu;
-
-			public void linkActivated(HyperlinkEvent e) {
-				if (dropDownMenu != null)
-					dropDownMenu.dispose();
-
-				dropDownMenu = new Menu(connectorButton);
-				for (IFeedConnector connector : getFeedService().getConnectors()) {
-					if (connector instanceof IFeedConnector2) {
-						MenuItem menuItem = new MenuItem(dropDownMenu, SWT.NONE);
-						menuItem.setText(connector.getName());
-						menuItem.setData(connector);
-						menuItem.addSelectionListener(connectionSelectionListener);
-					}
-				}
-				dropDownMenu.setVisible(true);
-            }
-
-            public void linkEntered(HyperlinkEvent e) {
-            }
-
-            public void linkExited(HyperlinkEvent e) {
-            }
-		});
-
-		activeConnector = new Label(group, SWT.NONE);
-		activeConnector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-		label = new Label(content, SWT.SEPARATOR | SWT.HORIZONTAL);
+		Label label = new Label(content, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
 
 		label = new Label(content, SWT.NONE);
@@ -450,6 +480,8 @@ public class Level2View extends ViewPart {
 		label.setText("Low");
 		low = new Label(content, SWT.RIGHT);
 		low.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		return content;
 	}
 
 	protected void updateBackground(TableItem tableItem, int columnIndex) {
@@ -511,20 +543,20 @@ public class Level2View extends ViewPart {
 			if (showMarketMakerAction.isChecked()) {
 				tableItem.setText(columnIndex, "");
 				timers[columnIndex] = 0;
-				tableItem.setBackground(columnIndex++, emptyBackground);
+				tableItem.setBackground(columnIndex++, null);
 			}
 
 			tableItem.setText(columnIndex, "");
 			timers[columnIndex] = 0;
-			tableItem.setBackground(columnIndex++, emptyBackground);
+			tableItem.setBackground(columnIndex++, null);
 
 			tableItem.setText(columnIndex, "");
 			timers[columnIndex] = 0;
-			tableItem.setBackground(columnIndex++, emptyBackground);
+			tableItem.setBackground(columnIndex++, null);
 
 			tableItem.setText(columnIndex, "");
 			timers[columnIndex] = 0;
-			tableItem.setBackground(columnIndex++, emptyBackground);
+			tableItem.setBackground(columnIndex++, null);
 		}
 	}
 
@@ -563,20 +595,20 @@ public class Level2View extends ViewPart {
 			if (showMarketMakerAction.isChecked()) {
 				tableItem.setText(columnIndex, "");
 				timers[columnIndex] = 0;
-				tableItem.setBackground(columnIndex--, emptyBackground);
+				tableItem.setBackground(columnIndex--, null);
 			}
 
 			tableItem.setText(columnIndex, "");
 			timers[columnIndex] = 0;
-			tableItem.setBackground(columnIndex--, emptyBackground);
+			tableItem.setBackground(columnIndex--, null);
 
 			tableItem.setText(columnIndex, "");
 			timers[columnIndex] = 0;
-			tableItem.setBackground(columnIndex--, emptyBackground);
+			tableItem.setBackground(columnIndex--, null);
 
 			tableItem.setText(columnIndex, "");
 			timers[columnIndex] = 0;
-			tableItem.setBackground(columnIndex--, emptyBackground);
+			tableItem.setBackground(columnIndex--, null);
 		}
 	}
 
@@ -609,11 +641,11 @@ public class Level2View extends ViewPart {
 			table.setRedraw(true);
 		}
 
-		long[] leftWeights = new long[Math.max(bidEntries.length, 5)];
+		long[] leftWeights = new long[Math.min(bidEntries.length, 5)];
 		for (int i = 0; i < leftWeights.length; i++)
 			leftWeights[i] = bidEntries[i].getQuantity();
 
-		long[] rightWeights = new long[Math.max(askEntries.length, 5)];
+		long[] rightWeights = new long[Math.min(askEntries.length, 5)];
 		for (int i = 0; i < rightWeights.length; i++)
 			rightWeights[i] = askEntries[i].getQuantity();
 
@@ -668,6 +700,7 @@ public class Level2View extends ViewPart {
         	}
 
         	connector = newConnector;
+        	activeConnector.setText(connector != null ? connector.getName() : "");
 
         	if (connector != null && !symbol.getText().equals("")) {
     			subscription = connector.subscribeLevel2(symbol.getText());
