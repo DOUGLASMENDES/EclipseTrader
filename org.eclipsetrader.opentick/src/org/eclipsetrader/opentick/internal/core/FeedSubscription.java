@@ -36,9 +36,11 @@ import org.otfeed.IRequest;
 import org.otfeed.command.EquityInitCommand;
 import org.otfeed.command.TickStreamWithSnapshotCommand;
 import org.otfeed.command.TodaysOHLCommand;
+import org.otfeed.event.ICompletionDelegate;
 import org.otfeed.event.IDataDelegate;
 import org.otfeed.event.OTBBO;
 import org.otfeed.event.OTEquityInit;
+import org.otfeed.event.OTError;
 import org.otfeed.event.OTQuote;
 import org.otfeed.event.OTTodaysOHL;
 import org.otfeed.event.OTTrade;
@@ -46,7 +48,6 @@ import org.otfeed.event.TradeSideEnum;
 
 public class FeedSubscription implements IFeedSubscription {
 	private FeedConnector connector;
-	private IFeedIdentifier identifier;
 	private ITrade trade;
 	private IQuote quote;
 	private ITodayOHL todayOHL;
@@ -140,10 +141,9 @@ public class FeedSubscription implements IFeedSubscription {
         }
 	};
 
-	public FeedSubscription(FeedConnector connector, IdentifierType identifierType) throws Exception {
+	public FeedSubscription(FeedConnector connector, IdentifierType identifierType) {
 		this.connector = connector;
 		this.identifierType = identifierType;
-	    this.identifier = identifierType.getIdentifier();
 	    this.trade = identifierType.getTrade();
 	    this.quote = identifierType.getQuote();
 	    this.todayOHL = identifierType.getTodayOHL();
@@ -176,14 +176,14 @@ public class FeedSubscription implements IFeedSubscription {
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getIdentifier()
 	 */
 	public IFeedIdentifier getIdentifier() {
-		return identifier;
+		return identifierType.getIdentifier();
 	}
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.feed.IFeedSubscription#getSymbol()
      */
     public String getSymbol() {
-	    return identifierType.getExchange() + ":" + identifierType.getSymbol();
+	    return identifierType.getCompoundSymbol();
     }
 
 	/* (non-Javadoc)
@@ -234,8 +234,16 @@ public class FeedSubscription implements IFeedSubscription {
     	tickStreamCommand.setQuoteDelegate(quoteDelegate);
     	tickStreamCommand.setTradeDelegate(tradeDelegate);
     	tickStreamCommand.setBboDelegate(bboDelegate);
+    	tickStreamCommand.setCompletionDelegate(new ICompletionDelegate() {
+            public void onDataEnd(OTError error) {
+            	System.err.println(getSymbol() + ": " + error);
+            }
+    	});
     	quoteStreamRequest = connection.prepareRequest(tickStreamCommand);
     	quoteStreamRequest.submit();
+
+    	if (getSymbol().endsWith("MSFT"))
+    		System.out.println("Requesting data for " + getSymbol());
 	}
 
 	protected void cancelRequests() throws Exception {
@@ -272,8 +280,9 @@ public class FeedSubscription implements IFeedSubscription {
     	connector.disposeSubscription(this);
 	}
 
-    protected void incrementInstanceCount() {
+    protected int incrementInstanceCount() {
     	instanceCount++;
+    	return instanceCount;
     }
 
     protected int decrementInstanceCount() {

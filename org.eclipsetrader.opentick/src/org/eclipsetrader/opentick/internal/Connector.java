@@ -16,6 +16,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipsetrader.core.feed.ConnectorEvent;
+import org.eclipsetrader.core.feed.IFeedConnector;
+import org.eclipsetrader.opentick.internal.core.FeedConnector;
 import org.eclipsetrader.opentick.internal.core.LoginDialog;
 import org.otfeed.IConnection;
 import org.otfeed.OTConnectionFactory;
@@ -30,6 +33,8 @@ public class Connector {
 	private String password;
 	private IConnection connection;
 
+	private FeedConnector feedConnector;
+
 	Connector() {
 		instance = this;
 	}
@@ -41,6 +46,11 @@ public class Connector {
 	public IConnection getConnection() {
     	return connection;
     }
+
+	public synchronized void connect(FeedConnector feedConnector) {
+		this.feedConnector = feedConnector;
+		connect();
+	}
 
 	public synchronized void connect() {
 		if (connection == null) {
@@ -71,14 +81,21 @@ public class Connector {
 			factory.setPassword(password);
 			connection = factory.connect(new IConnectionStateListener() {
 				public void onConnected() {
+					if (feedConnector != null)
+						feedConnector.fireConnectionEvent(new ConnectorEvent(feedConnector, IFeedConnector.STATUS_CONNECTED));
 				}
 
 				public void onConnecting(OTHost host) {
+					if (feedConnector != null)
+						feedConnector.fireConnectionEvent(new ConnectorEvent(feedConnector, IFeedConnector.STATUS_CONNECTING));
 				}
 
 				public void onError(OTError error) {
 					Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, error.toString(), null);
 					OTActivator.log(status);
+
+					if (feedConnector != null)
+						feedConnector.fireConnectionEvent(new ConnectorEvent(feedConnector, error.toString()));
 
 					synchronized(connection) {
 						connection.notifyAll();
@@ -87,6 +104,9 @@ public class Connector {
 				}
 
 				public void onLogin() {
+					if (feedConnector != null)
+						feedConnector.fireConnectionEvent(new ConnectorEvent(feedConnector, IFeedConnector.STATUS_LOGGED_IN));
+
 					synchronized(connection) {
 						connection.notifyAll();
 					}
@@ -113,6 +133,8 @@ public class Connector {
 			} catch (Exception e) {
 				// For some reasons, shutdown almost always throws an exception, so ignore it for now
 			}
+			if (feedConnector != null)
+				feedConnector.fireConnectionEvent(new ConnectorEvent(feedConnector, IFeedConnector.STATUS_INACTIVE));
 			connection = null;
 		}
 	}

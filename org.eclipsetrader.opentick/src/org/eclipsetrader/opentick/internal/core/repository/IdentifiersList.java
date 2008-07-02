@@ -74,4 +74,19 @@ public class IdentifiersList {
 		identifiers.add(type);
 		return type;
 	}
+
+	public IdentifierType getIdentifierFor(String compoundSymbol) {
+		String[] ar = compoundSymbol.split("[:/\\\\]");
+		String symbol = ar.length != 0 ? (ar.length == 2 ? ar[1] : ar[0]) : compoundSymbol;
+		String exchange = ar.length == 2 ? ar[0] : "@";
+
+		for (IdentifierType type : identifiers) {
+			if (type.getSymbol().equals(symbol) && type.getExchange().equals(exchange))
+				return type;
+		}
+
+		IdentifierType type = new IdentifierType(symbol, exchange);
+		identifiers.add(type);
+		return type;
+	}
 }

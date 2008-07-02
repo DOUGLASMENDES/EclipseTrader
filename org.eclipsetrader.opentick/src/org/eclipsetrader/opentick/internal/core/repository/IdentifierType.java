@@ -71,6 +71,10 @@ public class IdentifierType {
     	this.exchange = exchange;
     }
 
+	public String getCompoundSymbol() {
+		return exchange + ":" + symbol;
+	}
+
 	@XmlTransient
 	public PriceDataType getPriceData() {
 		if (priceData == null)
