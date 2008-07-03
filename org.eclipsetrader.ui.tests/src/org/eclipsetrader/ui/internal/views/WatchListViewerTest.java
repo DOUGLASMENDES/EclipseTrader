@@ -15,8 +15,10 @@ import java.util.UUID;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -26,6 +28,10 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipsetrader.core.views.Column;
+import org.eclipsetrader.core.views.IColumn;
+import org.eclipsetrader.core.views.IDataProvider;
+import org.eclipsetrader.core.views.IDataProviderFactory;
 
 public class WatchListViewerTest extends TestCase {
 	private Shell shell;
@@ -51,6 +57,296 @@ public class WatchListViewerTest extends TestCase {
 		TestWatchListViewer part = new TestWatchListViewer();
 		part.createPartControl(shell);
 		assertNull(part.getViewer());
+    }
+
+	public void testCreateViewer() throws Exception {
+		TestWatchListViewer part = new TestWatchListViewer();
+	    TableViewer viewer = part.createViewer(shell);
+		assertEquals(0, viewer.getTable().getColumnCount());
+		assertEquals(0, viewer.getTable().getItemCount());
+    }
+
+	public void testCreateColumns() throws Exception {
+		TestWatchListViewer part = new TestWatchListViewer();
+	    TableViewer viewer = part.createViewer(shell);
+		IColumn[] columns = new IColumn[] {
+				new Column("Column1", new IDataProviderFactory() {
+	                public IDataProvider createProvider() {
+		                return null;
+	                }
+
+	                public String getId() {
+		                return "test.id1";
+	                }
+
+	                public String getName() {
+		                return "Test1";
+	                }
+
+	                @SuppressWarnings("unchecked")
+	                public Class[] getType() {
+		                return new Class[] { String.class };
+	                }
+				}),
+			};
+		part.updateColumns(columns);
+		assertEquals(1, viewer.getTable().getColumnCount());
+		assertEquals("Column1", viewer.getTable().getColumn(0).getText());
+		assertSame(columns[0], viewer.getTable().getColumn(0).getData());
+    }
+
+	public void testAddColumns() throws Exception {
+		TestWatchListViewer part = new TestWatchListViewer();
+	    TableViewer viewer = part.createViewer(shell);
+		IColumn[] columns = new IColumn[] {
+				new Column("Column1", new IDataProviderFactory() {
+	                public IDataProvider createProvider() {
+		                return null;
+	                }
+
+	                public String getId() {
+		                return "test.id1";
+	                }
+
+	                public String getName() {
+		                return "Test1";
+	                }
+
+	                @SuppressWarnings("unchecked")
+	                public Class[] getType() {
+		                return new Class[] { String.class };
+	                }
+				}),
+			};
+		part.updateColumns(columns);
+		assertEquals(1, viewer.getTable().getColumnCount());
+		columns = new IColumn[] {
+				new Column("Column1", new IDataProviderFactory() {
+	                public IDataProvider createProvider() {
+		                return null;
+	                }
+
+	                public String getId() {
+		                return "test.id1";
+	                }
+
+	                public String getName() {
+		                return "Test1";
+	                }
+
+	                @SuppressWarnings("unchecked")
+	                public Class[] getType() {
+		                return new Class[] { String.class };
+	                }
+				}),
+				new Column("Column2", new IDataProviderFactory() {
+	                public IDataProvider createProvider() {
+		                return null;
+	                }
+
+	                public String getId() {
+		                return "test.id2";
+	                }
+
+	                public String getName() {
+		                return "Test2";
+	                }
+
+	                @SuppressWarnings("unchecked")
+	                public Class[] getType() {
+		                return new Class[] { String.class };
+	                }
+				}),
+			};
+		part.updateColumns(columns);
+		assertEquals(2, viewer.getTable().getColumnCount());
+		assertEquals("Column1", viewer.getTable().getColumn(0).getText());
+		assertSame(columns[0], viewer.getTable().getColumn(0).getData());
+		assertEquals("Column2", viewer.getTable().getColumn(1).getText());
+		assertSame(columns[1], viewer.getTable().getColumn(1).getData());
+    }
+
+	public void testRemoveColumns() throws Exception {
+		TestWatchListViewer part = new TestWatchListViewer();
+	    TableViewer viewer = part.createViewer(shell);
+		IColumn[] columns = new IColumn[] {
+				new Column("Column1", new IDataProviderFactory() {
+	                public IDataProvider createProvider() {
+		                return null;
+	                }
+
+	                public String getId() {
+		                return "test.id1";
+	                }
+
+	                public String getName() {
+		                return "Test1";
+	                }
+
+	                @SuppressWarnings("unchecked")
+	                public Class[] getType() {
+		                return new Class[] { String.class };
+	                }
+				}),
+				new Column("Column2", new IDataProviderFactory() {
+	                public IDataProvider createProvider() {
+		                return null;
+	                }
+
+	                public String getId() {
+		                return "test.id2";
+	                }
+
+	                public String getName() {
+		                return "Test2";
+	                }
+
+	                @SuppressWarnings("unchecked")
+	                public Class[] getType() {
+		                return new Class[] { String.class };
+	                }
+				}),
+			};
+		part.updateColumns(columns);
+		assertEquals(2, viewer.getTable().getColumnCount());
+		columns = new IColumn[] {
+				new Column("Column1", new IDataProviderFactory() {
+	                public IDataProvider createProvider() {
+		                return null;
+	                }
+
+	                public String getId() {
+		                return "test.id1";
+	                }
+
+	                public String getName() {
+		                return "Test1";
+	                }
+
+	                @SuppressWarnings("unchecked")
+	                public Class[] getType() {
+		                return new Class[] { String.class };
+	                }
+				}),
+			};
+		part.updateColumns(columns);
+		assertEquals(1, viewer.getTable().getColumnCount());
+		assertEquals("Column1", viewer.getTable().getColumn(0).getText());
+		assertSame(columns[0], viewer.getTable().getColumn(0).getData());
+    }
+
+	public void testCompareDoubleValues() throws Exception {
+	    IAdaptable[] v1 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(Double.class))
+	                		return new Double(10.5);
+	                    return null;
+                    }
+	    		},
+	    	};
+	    IAdaptable[] v2 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(Double.class))
+	                		return new Double(10.6);
+	                    return null;
+                    }
+	    		},
+	    	};
+		TestWatchListViewer part = new TestWatchListViewer();
+	    assertEquals(-1, part.compareValues(v1, v2, 0));
+    }
+
+	public void testCompareLongValues() throws Exception {
+	    IAdaptable[] v1 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(Long.class))
+	                		return new Long(100000);
+	                    return null;
+                    }
+	    		},
+	    	};
+	    IAdaptable[] v2 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(Long.class))
+	                		return new Long(110000);
+	                    return null;
+                    }
+	    		},
+	    	};
+		TestWatchListViewer part = new TestWatchListViewer();
+	    assertEquals(-1, part.compareValues(v1, v2, 0));
+    }
+
+	public void testCompareStringValues() throws Exception {
+	    IAdaptable[] v1 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(String.class))
+	                		return "A";
+	                    return null;
+                    }
+	    		},
+	    	};
+	    IAdaptable[] v2 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(String.class))
+	                		return "B";
+	                    return null;
+                    }
+	    		},
+	    	};
+		TestWatchListViewer part = new TestWatchListViewer();
+	    assertEquals(-1, part.compareValues(v1, v2, 0));
+    }
+
+	public void testCompareValueWithNull() throws Exception {
+	    IAdaptable[] v1 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(Double.class))
+	                		return new Double(10.5);
+	                    return null;
+                    }
+	    		},
+	    	};
+	    IAdaptable[] v2 = new IAdaptable[] { null };
+		TestWatchListViewer part = new TestWatchListViewer();
+	    assertEquals(0, part.compareValues(v1, v2, 0));
+    }
+
+	public void testCompareNullWithValue() throws Exception {
+	    IAdaptable[] v1 = new IAdaptable[] { null };
+	    IAdaptable[] v2 = new IAdaptable[] {
+	    		new IAdaptable() {
+	                @SuppressWarnings("unchecked")
+                    public Object getAdapter(Class adapter) {
+	                	if (adapter.isAssignableFrom(Double.class))
+	                		return new Double(10.5);
+	                    return null;
+                    }
+	    		},
+	    	};
+		TestWatchListViewer part = new TestWatchListViewer();
+	    assertEquals(0, part.compareValues(v1, v2, 0));
+    }
+
+	public void testCompareNullValues() throws Exception {
+	    IAdaptable[] v1 = new IAdaptable[] { null };
+	    IAdaptable[] v2 = new IAdaptable[] { null };
+		TestWatchListViewer part = new TestWatchListViewer();
+	    assertEquals(0, part.compareValues(v1, v2, 0));
     }
 
 	private class TestWatchListViewer extends WatchListViewer implements IViewSite {

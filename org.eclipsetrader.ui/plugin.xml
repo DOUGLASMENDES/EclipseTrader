@@ -59,6 +59,12 @@
             name="WatchList">
       </view>
       <view
+            class="org.eclipsetrader.ui.internal.views.TickersView"
+            icon="icons/eview16/watchlist.gif"
+            id="org.eclipsetrader.ui.views.tickers"
+            name="Tickers">
+      </view>
+      <view
             allowMultiple="true"
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.views.Level2View"

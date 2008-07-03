@@ -14,10 +14,10 @@ package org.eclipsetrader.ui.internal.views;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
@@ -30,21 +30,33 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.IViewSite;
@@ -62,6 +74,7 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
+import org.eclipsetrader.core.views.IColumn;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.core.views.IWatchListElement;
@@ -76,23 +89,55 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	public static final String VIEW_ID = "org.eclipsetrader.ui.views.watchlist";
 	public static final String K_VIEWS = "Views";
 	public static final String K_URI = "uri";
-	public static final String K_PRESENTATION = "presentation";
 
 	private URI uri;
 	private IWatchList view;
 	private WatchListView activeView;
 
 	private Action deleteAction;
-	private Action tableLayoutAction;
-	private Action ribbonLayoutAction;
 	private Action settingsAction;
 
-	private Composite parent;
-	private IWatchListViewerPresentation presentation;
-	private StructuredViewer viewer;
+	private TableViewer viewer;
 	private boolean dirty = false;
 
 	private IDialogSettings dialogSettings;
+	private int sortColumn = 0;
+	private int sortDirection = SWT.UP;
+
+	private ControlAdapter columnControlListener = new ControlAdapter() {
+        @Override
+        public void controlResized(ControlEvent e) {
+        	TableColumn tableColumn = (TableColumn) e.widget;
+        	if (dialogSettings != null) {
+        		IDialogSettings columnsSection = dialogSettings.getSection("columns");
+        		if (columnsSection == null)
+        			columnsSection = dialogSettings.addNewSection("columns");
+        		columnsSection.put(tableColumn.getText(), tableColumn.getWidth());
+        	}
+        }
+	};
+
+	private SelectionAdapter columnSelectionAdapter = new SelectionAdapter() {
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+        	TableColumn tableColumn = (TableColumn) e.widget;
+        	Table table = tableColumn.getParent();
+
+        	sortColumn = tableColumn.getParent().indexOf(tableColumn);
+        	if (table.getSortColumn() == tableColumn)
+            	sortDirection = sortDirection == SWT.UP ? SWT.DOWN : SWT.UP;
+            else {
+            	sortDirection = SWT.UP;
+            	table.setSortColumn(table.getColumn(sortColumn));
+            }
+        	table.setSortDirection(sortDirection);
+
+        	IColumn column = (IColumn) tableColumn.getData();
+            dialogSettings.put("sortColumn", column.getDataProviderFactory().getId());
+            dialogSettings.put("sortDirection", sortDirection == SWT.UP ? 1 : -1);
+            viewer.refresh();
+        }
+	};
 
 	private IRepositoryChangeListener repositoryListener = new IRepositoryChangeListener() {
         public void repositoryResourceChanged(RepositoryChangeEvent event) {
@@ -124,7 +169,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
                 	        			setDirty();
                 	        	}
                 	        	else if (IWatchList.COLUMNS.equals(evt.getPropertyName())) {
-                	        		presentation.updateColumns(activeView.getColumns());
+                	        		updateColumns(activeView.getColumns());
                 	        		viewer.refresh();
                 	        		if (evt.getSource() == activeView)
                 	        			setDirty();
@@ -178,30 +223,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
 		deleteAction.setEnabled(false);
 
-		tableLayoutAction = new Action("Table", Action.AS_RADIO_BUTTON) {
-			@Override
-			public void run() {
-				dialogSettings.put(K_PRESENTATION, TablePresentation.class.getName());
-				presentation.dispose();
-				createContents(parent);
-				parent.layout();
-			}
-		};
-		ribbonLayoutAction = new Action("Ribbon", Action.AS_RADIO_BUTTON) {
-			@Override
-			public void run() {
-				dialogSettings.put(K_PRESENTATION, RibbonPresentation.class.getName());
-				presentation.dispose();
-				createContents(parent);
-				parent.layout();
-			}
-		};
-
-		IMenuManager menuManager = site.getActionBars().getMenuManager();
-        IMenuManager layoutMenu = new MenuManager("Layout", "layout");
-        layoutMenu.add(tableLayoutAction);
-        layoutMenu.add(ribbonLayoutAction);
-        menuManager.add(layoutMenu);
+		//IMenuManager menuManager = site.getActionBars().getMenuManager();
 
 		site.getActionBars().setGlobalActionHandler(deleteAction.getId(), deleteAction);
 		site.getActionBars().updateActionBars();
@@ -224,7 +246,6 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 
 		activeView = (WatchListView) ((WatchList) view).getView();
 		createContents(parent);
-		this.parent = parent;
 
 		settingsAction = new SettingsAction(getViewSite().getShell(), activeView);
 		getViewSite().getActionBars().setGlobalActionHandler(settingsAction.getId(), settingsAction);
@@ -242,18 +263,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	}
 
     protected void createContents(Composite parent) {
-		try {
-	        String clazz = dialogSettings.get(K_PRESENTATION);
-	        Constructor<?> c = Class.forName(clazz).getConstructor(Composite.class, IDialogSettings.class);
-	        presentation = (IWatchListViewerPresentation) c.newInstance(parent, dialogSettings);
-        } catch (Exception e) {
-   			presentation = new TablePresentation(parent, dialogSettings);
-        }
-
-        tableLayoutAction.setChecked(presentation instanceof TablePresentation);
-        ribbonLayoutAction.setChecked(presentation instanceof RibbonPresentation);
-
-		viewer = presentation.getViewer();
+		viewer = createViewer(parent);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
 				deleteAction.setEnabled(!event.getSelection().isEmpty());
@@ -289,7 +299,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
                     }
 				});
 
-		presentation.updateColumns(activeView.getColumns());
+		updateColumns(activeView.getColumns());
 
 		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
 		menuMgr.setRemoveAllWhenShown(true);
@@ -395,6 +405,121 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	    return dirty;
     }
 
+	protected TableViewer createViewer(Composite parent) {
+    	Composite container = new Composite(parent, SWT.NONE);
+		TableColumnLayout tableLayout = new TableColumnLayout();
+		container.setLayout(tableLayout);
+
+		viewer = new TableViewer(container, SWT.MULTI | SWT.FULL_SELECTION) {
+            @Override
+            protected void inputChanged(Object input, Object oldInput) {
+	            super.inputChanged(input, oldInput);
+	    		if (sortColumn >= getTable().getColumnCount()) {
+	    			sortColumn = 0;
+	    			sortDirection = SWT.UP;
+	    		}
+	    		getTable().setSortDirection(sortDirection);
+	    		getTable().setSortColumn(getTable().getColumn(sortColumn));
+            }
+		};
+		viewer.getTable().setHeaderVisible(true);
+		viewer.getTable().setLinesVisible(false);
+		viewer.setUseHashlookup(true);
+
+		viewer.setLabelProvider(new ViewItemLabelProvider());
+		viewer.setContentProvider(new ViewContentProvider());
+		viewer.setSorter(new ViewerSorter() {
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2) {
+            	IAdaptable[] v1 = ((IViewItem) e1).getValues();
+            	IAdaptable[] v2 = ((IViewItem) e2).getValues();
+            	if (sortDirection == SWT.DOWN) {
+                	v1 = ((IViewItem) e2).getValues();
+                	v2 = ((IViewItem) e1).getValues();
+            	}
+            	return compareValues(v1, v2, sortColumn);
+            }
+		});
+
+		return viewer;
+	}
+
+    @SuppressWarnings("unchecked")
+    protected int compareValues(IAdaptable[] v1, IAdaptable[] v2, int sortColumn) {
+    	if (sortColumn < 0 || sortColumn >= v1.length || sortColumn >= v2.length)
+    		return 0;
+    	if (v1[sortColumn] == null || v2[sortColumn] == null)
+    		return 0;
+
+    	Object o1 = v1[sortColumn].getAdapter(Comparable.class);
+    	Object o2 = v2[sortColumn].getAdapter(Comparable.class);
+    	if (o1 != null && o2 != null)
+    		return ((Comparable) o1).compareTo(o2);
+
+    	o1 = v1[sortColumn].getAdapter(Number.class);
+    	o2 = v2[sortColumn].getAdapter(Number.class);
+    	if (o1 != null && o2 != null) {
+    		if (((Number) o1).doubleValue() < ((Number) o2).doubleValue())
+    			return -1;
+    		if (((Number) o1).doubleValue() > ((Number) o2).doubleValue())
+    			return 1;
+    		return 0;
+    	}
+
+    	return 0;
+    }
+
+	public void updateColumns(IColumn[] columns) {
+		String[] properties = createColumns(viewer.getTable(), columns);
+		viewer.setColumnProperties(properties);
+	}
+
+    @SuppressWarnings("unchecked")
+	protected String[] createColumns(Table table, IColumn[] columns) {
+		TableColumnLayout tableLayout = (TableColumnLayout) table.getParent().getLayout();
+		IDialogSettings columnsSection = dialogSettings != null ? dialogSettings.getSection("columns") : null;
+
+		String[] properties = new String[columns.length];
+
+		int index = 0;
+		for (IColumn column : columns) {
+			int alignment = SWT.LEFT;
+			if (column.getDataProviderFactory().getType() != null && column.getDataProviderFactory().getType().length != 0) {
+				Class type = column.getDataProviderFactory().getType()[0];
+				if (type == Long.class || type == Double.class || type == Date.class)
+					alignment = SWT.RIGHT;
+			}
+			TableColumn tableColumn = index < table.getColumnCount() ? table.getColumn(index) : new TableColumn(table, SWT.NONE);
+			tableColumn.setAlignment(alignment);
+			tableColumn.setText(column.getName() != null ? column.getName() : column.getDataProviderFactory().getName());
+			tableColumn.setData(column);
+
+			properties[index] = String.valueOf(index);
+
+			if ("org.eclipsetrader.ui.providers.SecurityName".equals(column.getDataProviderFactory().getId()))
+				tableLayout.setColumnData(tableColumn, new ColumnWeightData(100));
+			else {
+				int width = columnsSection != null && columnsSection.get(tableColumn.getText()) != null ? columnsSection.getInt(tableColumn.getText()) : 100;
+				tableLayout.setColumnData(tableColumn, new ColumnPixelData(width));
+			}
+
+			tableColumn.addControlListener(columnControlListener);
+			tableColumn.addSelectionListener(columnSelectionAdapter);
+
+			if (dialogSettings != null) {
+				if (column.getDataProviderFactory().getId().equals(dialogSettings.get("sortColumn")))
+					sortColumn = index;
+			}
+
+			index++;
+		}
+
+		while(table.getColumnCount() > index)
+			table.getColumn(table.getColumnCount() - 1).dispose();
+
+		return properties;
+	}
+
 	protected IRepositoryService getRepositoryService() {
 		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
 		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
@@ -402,4 +527,8 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		context.ungetService(serviceReference);
 		return service;
 	}
+
+    Table getTable() {
+    	return viewer.getTable();
+    }
 }

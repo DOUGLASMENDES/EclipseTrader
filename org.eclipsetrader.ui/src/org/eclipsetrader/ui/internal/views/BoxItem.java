@@ -38,6 +38,7 @@ public class BoxItem extends Item {
 	private Canvas canvas;
 	private Composite row1;
 	private Composite row2;
+	private Composite group;
 	private Label[] columns = new Label[5];
 	private Color background = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 	private Color foreground = Display.getDefault().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
@@ -121,21 +122,21 @@ public class BoxItem extends Item {
 		columns[2].setForeground(foreground);
 		columns[2].setBackground(background);
 
-		Composite composite = new Composite(row2, SWT.NONE);
+		group = new Composite(row2, SWT.NONE);
 		gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
 		gridLayout.horizontalSpacing = 3;
 		gridLayout.verticalSpacing = 0;
-		composite.setLayout(gridLayout);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		composite.setBackground(background);
+		group.setLayout(gridLayout);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		group.setBackground(background);
 
-		columns[3] = new Label(composite, SWT.NONE);
+		columns[3] = new Label(group, SWT.NONE);
 		columns[3].setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		columns[3].setForeground(foreground);
 		columns[3].setBackground(background);
 
-		columns[4] = new Label(composite, SWT.NONE);
+		columns[4] = new Label(group, SWT.NONE);
 		columns[4].setBackground(background);
 
 		canvas.addListener(SWT.MouseDown, eventListener);
@@ -144,6 +145,8 @@ public class BoxItem extends Item {
 		row1.addListener(SWT.MouseUp, eventListener);
 		row2.addListener(SWT.MouseDown, eventListener);
 		row2.addListener(SWT.MouseUp, eventListener);
+		group.addListener(SWT.MouseUp, eventListener);
+		group.addListener(SWT.MouseDown, eventListener);
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].addListener(SWT.MouseDown, eventListener);
 			columns[i].addListener(SWT.MouseUp, eventListener);
@@ -155,11 +158,19 @@ public class BoxItem extends Item {
      */
     @Override
     public void dispose() {
-    	if (canvas != null)
+		canvas.setMenu(null);
+		row1.setMenu(null);
+		row2.setMenu(null);
+		group.setMenu(null);
+		for (int i = 0; i < columns.length; i++)
+			columns[i].setMenu(null);
+
+		if (canvas != null)
     		canvas.dispose();
     	if (boldFont != null)
     		boldFont.dispose();
-	    super.dispose();
+
+    	super.dispose();
     }
 
 	public Canvas getCanvas() {
@@ -230,6 +241,7 @@ public class BoxItem extends Item {
 		canvas.setMenu(menu);
 		row1.setMenu(menu);
 		row2.setMenu(menu);
+		group.setMenu(menu);
 		for (int i = 0; i < columns.length; i++)
 			columns[i].setMenu(menu);
     }
