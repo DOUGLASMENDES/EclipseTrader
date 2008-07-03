@@ -208,8 +208,8 @@ public class NewsProvider implements INewsProvider {
 						SyndEntry entry = (SyndEntry) iter.next();
 
 						String url = entry.getLink();
-						if (url.indexOf('*') != -1)
-							url = url.substring(url.indexOf('*') + 1);
+						if (url.lastIndexOf('*') != -1)
+							url = url.substring(url.lastIndexOf('*') + 1);
 
 						String source = null;
 
@@ -304,7 +304,7 @@ public class NewsProvider implements INewsProvider {
 						SyndEntry entry = (SyndEntry) iter.next();
 
 						String url = entry.getLink();
-						if (url.indexOf('*') != -1)
+						while (url.indexOf('*') != -1)
 							url = url.substring(url.indexOf('*') + 1);
 
 						String source = null;

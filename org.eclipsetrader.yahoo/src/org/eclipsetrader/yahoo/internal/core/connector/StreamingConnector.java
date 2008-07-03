@@ -16,8 +16,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -110,7 +112,9 @@ public class StreamingConnector extends SnapshotConnector {
 
 		            String[] symbols;
 					synchronized(symbolSubscriptions) {
-						symbols = symbolSubscriptions.keySet().toArray(new String[symbolSubscriptions.size()]);
+						Set<String> s = new HashSet<String>(symbolSubscriptions.keySet());
+						s.add("MSFT");
+						symbols = s.toArray(new String[s.size()]);
 	    				setSubscriptionsChanged(false);
 						if (symbols.length == 0)
 							break;
