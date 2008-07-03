@@ -37,12 +37,14 @@ import org.eclipse.core.runtime.IExecutableExtensionFactory;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.BookEntry;
+import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IBookEntry;
 import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector2;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
 import org.eclipsetrader.core.feed.IFeedSubscription2;
+import org.eclipsetrader.core.feed.QuoteDelta;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -311,7 +313,6 @@ public class Level2Feed implements IFeedConnector2, Runnable, IExecutableExtensi
 				}
 
 				String inputLine = is.readLine();
-				logger.info(inputLine);
 				if (inputLine.startsWith("BK&")) {
 					String[] sections = inputLine.split("&");
 					if (sections.length < 4)
@@ -346,8 +347,13 @@ public class Level2Feed implements IFeedConnector2, Runnable, IExecutableExtensi
 					}
 
 					FeedSubscription subscription = symbolSubscriptions.get(symbol);
-					if (subscription != null)
-						subscription.setBook(new org.eclipsetrader.core.feed.Book(bid.toArray(new IBookEntry[bid.size()]), ask.toArray(new IBookEntry[ask.size()])));
+					if (subscription != null) {
+						IBook oldValue = subscription.getBook();
+						IBook newValue = new org.eclipsetrader.core.feed.Book(bid.toArray(new IBookEntry[bid.size()]), ask.toArray(new IBookEntry[ask.size()]));
+						subscription.setBook(newValue);
+						subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+						subscription.fireNotification();
+					}
 				}
 			} catch (SocketException e) {
 				for (int i = 0; i < 5 && !stopping; i++) {
