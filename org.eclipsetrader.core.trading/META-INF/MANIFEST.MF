@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Trading Core
+Bundle-SymbolicName: org.eclipsetrader.core.trading;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipsetrader.core.internal.trading.Activator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipsetrader.core
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-LazyStart: true
+Import-Package: javax.xml.bind;version="[2.0.0,3.0.0)",
+ javax.xml.bind.annotation;version="[2.0.0,3.0.0)",
+ javax.xml.bind.annotation.adapters;version="[2.0.0,3.0.0)",
+ javax.xml.bind.attachment;version="[2.0.0,3.0.0)",
+ javax.xml.bind.helpers;version="[2.0.0,3.0.0)",
+ javax.xml.bind.util;version="[2.0.0,3.0.0)",
+ javax.xml.stream;version="[2.0.0,3.0.0)",
+ javax.xml.stream.events;version="[2.0.0,3.0.0)",
+ javax.xml.stream.util;version="[2.0.0,3.0.0)"
+Export-Package: org.eclipsetrader.core.internal.trading,
+ org.eclipsetrader.core.trading

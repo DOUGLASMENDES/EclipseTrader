@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Marco Maccaferri - initial API and implementation
+ */
+
+package org.eclipsetrader.core.trading;
+
+public class BrokerException extends Exception {
+	private static final long serialVersionUID = -6958337327113420072L;
+
+	public BrokerException() {
+	}
+
+	public BrokerException(String message) {
+		super(message);
+	}
+
+	public BrokerException(Throwable cause) {
+		super(cause);
+	}
+
+	public BrokerException(String message, Throwable cause) {
+		super(message, cause);
+	}
+}

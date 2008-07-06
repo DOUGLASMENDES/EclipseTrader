@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.internal.ui.trading.OrdersView"
+            icon="icons/eview16/orders.png"
+            id="org.eclipsetrader.ui.views.orders"
+            name="Orders">
+      </view>
+   </extension>
+
+</plugin>
