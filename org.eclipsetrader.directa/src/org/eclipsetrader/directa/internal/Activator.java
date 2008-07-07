@@ -23,6 +23,8 @@ import javax.xml.bind.ValidationEventHandler;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipsetrader.directa.internal.core.BrokerConnector;
+import org.eclipsetrader.directa.internal.core.WebConnector;
 import org.eclipsetrader.directa.internal.core.repository.IdentifiersList;
 import org.osgi.framework.BundleContext;
 
@@ -33,8 +35,13 @@ public class Activator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "org.eclipsetrader.directa";
 	public static final String REPOSITORY_FILE = "identifiers.xml"; //$NON-NLS-1$
 
+	public static final String PROP_CODE = "org.eclipsetrader.borsaitalia.code"; //$NON-NLS-1$
+	public static final String PROP_ISIN = "org.eclipsetrader.borsaitalia.isin"; //$NON-NLS-1$
+
 	public static final String PREFS_USERNAME = "USERNAME";
     public static final String PREFS_PASSWORD = "PASSWORD";
+	public static final String PREFS_CONNECTION_METHOD = "CONNECTION_METHOD";
+	public static final String PREFS_TRADING_HOST = "TRADING_HOST";
 
 	// The shared instance
 	private static Activator plugin;
@@ -57,6 +64,9 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 
 		startupRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
+
+		WebConnector.getInstance();
+		BrokerConnector.getInstance();
 	}
 
 	/*
@@ -105,7 +115,7 @@ public class Activator extends AbstractUIPlugin {
 				identifiersList = (IdentifiersList) unmarshaller.unmarshal(file);
 			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
-				getLog().log(status);
+				log(status);
 			}
         }
 
@@ -133,7 +143,7 @@ public class Activator extends AbstractUIPlugin {
 			marshaller.marshal(identifiersList, new FileWriter(file));
 		} catch (Exception e) {
 			Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error saving repository", e); //$NON-NLS-1$
-			getLog().log(status);
+			log(status);
 		}
 	}
 }

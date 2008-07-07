@@ -21,6 +21,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
+import org.eclipsetrader.core.trading.IBrokerConnector;
+import org.eclipsetrader.core.trading.ITradingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -53,6 +55,10 @@ public class StopFeedAction implements IWorkbenchWindowActionDelegate {
     				IFeedConnector[] connector = getFeedService().getConnectors();
     				for (int i = 0; i < connector.length; i++)
     					connector[i].disconnect();
+
+    				IBrokerConnector[] brokerConnector = getTradingService().getBrokerConnectors();
+    				for (int i = 0; i < brokerConnector.length; i++)
+    					brokerConnector[i].disconnect();
             	} finally {
             		monitor.done();
             	}
@@ -78,6 +84,20 @@ public class StopFeedAction implements IWorkbenchWindowActionDelegate {
     		return service;
     	} catch(Exception e) {
     		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+    		UIActivator.getDefault().getLog().log(status);
+    	}
+    	return null;
+    }
+
+    protected ITradingService getTradingService() {
+    	try {
+    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+    		ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
+    		ITradingService service = (ITradingService) context.getService(serviceReference);
+    		context.ungetService(serviceReference);
+    		return service;
+    	} catch(Exception e) {
+    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading trading service", e);
     		UIActivator.getDefault().getLog().log(status);
     	}
     	return null;

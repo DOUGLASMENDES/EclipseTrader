@@ -21,17 +21,12 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
+import org.eclipsetrader.directa.internal.core.WebConnector;
 
 @XmlRootElement(name = "list")
 @XmlType(name = "org.eclipsetrader.directaworld.IdentifiersList")
 public class IdentifiersList {
 	private static IdentifiersList instance;
-
-	private static String[] PROPERTIES = new String[] {
-			"org.eclipsetrader.directa.symbol",
-			"org.eclipsetrader.directaworld.symbol",
-			"org.eclipsetrader.borsaitalia.code",
-		};
 
     @XmlElementRef
 	private List<IdentifierType> identifiers;
@@ -59,9 +54,9 @@ public class IdentifiersList {
 
 		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
 		if (properties != null) {
-			for (int i = 0; i < PROPERTIES.length; i++) {
-				if (properties.getProperty(PROPERTIES[i]) != null) {
-					symbol = properties.getProperty(PROPERTIES[i]);
+			for (int i = 0; i < WebConnector.PROPERTIES.length; i++) {
+				if (properties.getProperty(WebConnector.PROPERTIES[i]) != null) {
+					symbol = properties.getProperty(WebConnector.PROPERTIES[i]);
 					break;
 				}
 			}

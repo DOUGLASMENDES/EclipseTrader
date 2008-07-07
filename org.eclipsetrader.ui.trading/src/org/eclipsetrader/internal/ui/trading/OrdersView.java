@@ -124,15 +124,14 @@ public class OrdersView extends ViewPart {
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
     		try {
-    			final IOrder order = (IOrder) evt.getSource();
     			tabFolder.getDisplay().asyncExec(new Runnable() {
                     public void run() {
                     	if (!tabFolder.isDisposed()) {
-                			all.update(order, null);
-                		    pending.update(order, null);
-                		    filled.update(order, null);
-                		    canceled.update(order, null);
-                		    rejected.update(order, null);
+                			all.refresh();
+                		    pending.refresh();
+                		    filled.refresh();
+                		    canceled.refresh();
+                		    rejected.refresh();
                     	}
                     }
     			});

@@ -8,8 +8,10 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.net,
  org.eclipse.core.runtime,
  org.eclipse.ui,
- org.eclipsetrader.core
-Eclipse-LazyStart: true
+ org.eclipsetrader.core,
+ org.eclipsetrader.core.trading,
+ org.eclipse.core.expressions
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  htmlparser.jar
 Import-Package: javax.xml.bind;version="[2.0.0,2.2.0)",
@@ -31,3 +33,10 @@ Import-Package: javax.xml.bind;version="[2.0.0,2.2.0)",
  org.apache.commons.httpclient.util,
  org.apache.commons.logging;version="[1.1.0,1.2.0)"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipsetrader.directa.internal,
+ org.eclipsetrader.directa.internal.core,
+ org.eclipsetrader.directa.internal.core.connector,
+ org.eclipsetrader.directa.internal.core.messages,
+ org.eclipsetrader.directa.internal.core.repository,
+ org.eclipsetrader.directa.internal.ui,
+ org.eclipsetrader.directa.internal.ui.preferences

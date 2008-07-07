@@ -71,8 +71,6 @@ public class TradingService implements ITradingService {
 		}
 
 		for (IBrokerConnector connector : brokers.values()) {
-			connector.connect();
-
 			IOrder[] o = connector.getOrders();
             if (o != null)
             	orders.addAll(Arrays.asList(o));

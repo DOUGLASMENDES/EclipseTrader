@@ -60,6 +60,7 @@ public class Order implements IOrder, IAdaptable {
 	    this.security = security;
 	    this.quantity = quantity;
 	    this.price = price;
+	    this.date = new Date();
     }
 
 	public Order(IBrokerConnector broker, IAccount account, OrderType type, OrderSide side, ISecurity security, Long quantity, Double price, IOrderRoute route) {
@@ -71,6 +72,7 @@ public class Order implements IOrder, IAdaptable {
 	    this.quantity = quantity;
 	    this.price = price;
 	    this.route = route;
+	    this.date = new Date();
     }
 
 	public Order(IBrokerConnector broker, IAccount account, OrderSide side, ISecurity security, Long quantity) {
@@ -80,6 +82,7 @@ public class Order implements IOrder, IAdaptable {
 	    this.side = side;
 	    this.security = security;
 	    this.quantity = quantity;
+	    this.date = new Date();
     }
 
 	/* (non-Javadoc)
@@ -105,7 +108,11 @@ public class Order implements IOrder, IAdaptable {
 	}
 
 	public void setDate(Date date) {
-    	this.date = date;
+    	Object oldValue = this.date;
+		if (date != null && !date.equals(this.date)) {
+	    	this.date = date;
+    		propertyChangeSupport.firePropertyChange("date", oldValue, this.date);
+		}
     }
 
 	/* (non-Javadoc)
