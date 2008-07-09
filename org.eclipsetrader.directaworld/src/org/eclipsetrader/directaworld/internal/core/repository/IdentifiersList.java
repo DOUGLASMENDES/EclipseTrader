@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
+import org.eclipsetrader.directaworld.internal.Activator;
 
 @XmlRootElement(name = "list")
 @XmlType(name = "org.eclipsetrader.directaworld.IdentifiersList")
@@ -53,8 +54,10 @@ public class IdentifiersList {
 
 		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
 		if (properties != null) {
-			if (properties.getProperty("org.eclipsetrader.directaworld.symbol") != null)
-				symbol = properties.getProperty("org.eclipsetrader.directaworld.symbol");
+			if (properties.getProperty(Activator.PROP_SYMBOL) != null)
+				symbol = properties.getProperty(Activator.PROP_SYMBOL);
+			else if (properties.getProperty(Activator.PROP_SYMBOL_ALT) != null)
+				symbol = properties.getProperty(Activator.PROP_SYMBOL_ALT);
 		}
 
 		for (IdentifierType type : identifiers) {

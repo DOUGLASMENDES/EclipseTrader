@@ -144,10 +144,10 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     public IFeedSubscription subscribe(IFeedIdentifier identifier) {
 		synchronized(symbolSubscriptions) {
 	    	IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
-	    	FeedSubscription subscription = symbolSubscriptions.get(identifier.getSymbol());
+	    	FeedSubscription subscription = symbolSubscriptions.get(identifierType.getSymbol());
 	    	if (subscription == null) {
 	    		subscription = new FeedSubscription(this, identifierType);
-	    		symbolSubscriptions.put(identifier.getSymbol(), subscription);
+	    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
 	    	}
 	    	subscription.incrementInstanceCount();
 		    return subscription;
@@ -167,9 +167,11 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
      * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
      */
     public synchronized void connect() {
-		final IPreferenceStore preferences = getPreferenceStore();
-		userName = preferences.getString(Activator.PREFS_USERNAME);
-		password = preferences.getString(Activator.PREFS_PASSWORD);
+    	final IPreferenceStore preferences = getPreferenceStore();
+		if (userName == null)
+			userName = preferences.getString(Activator.PREFS_USERNAME);
+		if (password == null)
+			password = preferences.getString(Activator.PREFS_PASSWORD);
 
 		if (userName.length() == 0 || password.length() == 0) {
 			Display.getDefault().syncExec(new Runnable() {
@@ -179,12 +181,18 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 					if (dlg.open() == LoginDialog.OK) {
 						userName = dlg.getUserName();
 						password = dlg.getPassword();
-						preferences.setValue(Activator.PREFS_USERNAME, userName);
-						preferences.setValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
+						if (dlg.isSavePassword()) {
+							preferences.setValue(Activator.PREFS_USERNAME, userName);
+							preferences.setValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
+						}
+					}
+					else {
+						userName = null;
+						password = null;
 					}
 				}
 			});
-			if (userName.length() == 0 || password.length() == 0)
+			if (userName == null || password == null)
 				return;
 		}
 
@@ -211,7 +219,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 
 		if (thread == null) {
 			stopping = false;
-			thread = new Thread(this);
+			thread = new Thread(this, name + " - Data Reader");
 			thread.start();
 		}
     }
@@ -221,7 +229,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
      */
     public synchronized void disconnect() {
         stopping = true;
-		if (thread != null) {
+        if (thread != null) {
 			try {
 				synchronized(thread) {
 					thread.notify();
@@ -249,7 +257,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     public void run() {
 		synchronized(thread) {
 			while (!isStopping()) {
-				fetchLatestSnapshot();
+				if (symbolSubscriptions.size() != 0)
+					fetchLatestSnapshot();
 				try {
 					thread.wait(requiredDelay * 1000);
 				} catch (InterruptedException e) {
@@ -257,6 +266,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 				}
 			}
 		}
+		thread = null;
     }
 
 	protected IPreferenceStore getPreferenceStore() {
@@ -301,7 +311,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 					}
 				}
 				else if (inputLine.indexOf("Sara' possibile ricaricare la pagina tra") != -1) {
-					System.err.println(inputLine);
 					int beginIndex = inputLine.indexOf("tra ") + 4;
 					int endIndex = inputLine.indexOf("sec") - 1;
 					try {

@@ -9,9 +9,17 @@
             id="org.eclipsetrader.directaworld.connector"
             name="DirectaWorld">
       </connector>
+   </extension>
+   <extension
+         name="Borsa Italiana"
+         point="org.eclipsetrader.core.connectors">
       <property
-            id="org.eclipsetrader.directaworld.symbol"
-            name="Symbol">
+            id="org.eclipsetrader.borsaitalia.isin"
+            name="ISIN">
+      </property>
+      <property
+            id="org.eclipsetrader.borsaitalia.code"
+            name="Code">
       </property>
    </extension>
    <extension
