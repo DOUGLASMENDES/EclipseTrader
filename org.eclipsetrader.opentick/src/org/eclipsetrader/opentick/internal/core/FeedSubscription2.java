@@ -57,7 +57,6 @@ import org.otfeed.event.TradeSideEnum;
 public class FeedSubscription2 implements IFeedSubscription2 {
 	private FeedConnector connector;
 	private IdentifierType identifierType;
-	private FeedSubscription subscription;
 
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
@@ -239,11 +238,9 @@ public class FeedSubscription2 implements IFeedSubscription2 {
 		this.identifierType = identifierType;
 	}
 
-	public FeedSubscription2(FeedConnector connector, FeedSubscription subscription) {
-		this.connector = connector;
-		this.subscription = subscription;
-		this.identifierType = subscription.getIdentifierType();
-	}
+	public IdentifierType getIdentifierType() {
+    	return identifierType;
+    }
 
 	protected void submitRequests(org.otfeed.IConnection connection) {
 		logger.info("Adding " + identifierType.getCompoundSymbol());
@@ -291,7 +288,7 @@ public class FeedSubscription2 implements IFeedSubscription2 {
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#dispose()
 	 */
 	public void dispose() {
-		connector.disposeSubscription2(subscription, this);
+		connector.disposeSubscription2(this);
 	}
 
     protected int incrementInstanceCount() {
@@ -328,28 +325,28 @@ public class FeedSubscription2 implements IFeedSubscription2 {
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getLastClose()
 	 */
 	public ILastClose getLastClose() {
-		return subscription.getLastClose();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getQuote()
 	 */
 	public IQuote getQuote() {
-		return subscription.getQuote();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getTodayOHL()
 	 */
 	public ITodayOHL getTodayOHL() {
-		return subscription.getTodayOHL();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getTrade()
 	 */
 	public ITrade getTrade() {
-		return subscription.getTrade();
+		return null;
 	}
 
 	/* (non-Javadoc)
@@ -357,7 +354,6 @@ public class FeedSubscription2 implements IFeedSubscription2 {
 	 */
 	public void addSubscriptionListener(ISubscriptionListener listener) {
 		listeners.add(listener);
-		subscription.addSubscriptionListener(listener);
 	}
 
 	/* (non-Javadoc)
@@ -365,7 +361,6 @@ public class FeedSubscription2 implements IFeedSubscription2 {
 	 */
 	public void removeSubscriptionListener(ISubscriptionListener listener) {
 		listeners.remove(listener);
-		subscription.removeSubscriptionListener(listener);
 	}
 
     protected void fireNotification() {

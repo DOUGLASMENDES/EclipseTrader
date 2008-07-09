@@ -163,42 +163,11 @@ public class FeedConnector implements IFeedConnector2, IExecutableExtension, IEx
      * @see org.eclipsetrader.core.feed.IFeedConnector2#subscribeLevel2(org.eclipsetrader.core.feed.IFeedIdentifier)
      */
     public IFeedSubscription2 subscribeLevel2(IFeedIdentifier identifier) {
-		IdentifierType identifierType;
-		FeedSubscription subscription;
-
-		synchronized (symbolSubscriptions) {
-			identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
-			subscription = symbolSubscriptions.get(identifierType.getCompoundSymbol());
-			if (subscription == null) {
-				subscription = new FeedSubscription(this, identifierType);
-				symbolSubscriptions.put(identifierType.getCompoundSymbol(), subscription);
-
-	    	    PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
-	    	    if (propertyChangeSupport != null)
-	    	    	propertyChangeSupport.addPropertyChangeListener(this);
-			}
-	    	if (identifierType.getIdentifier() == null) {
-	    		identifierType.setIdentifier(identifier);
-
-	    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
-	    	    if (propertyChangeSupport != null)
-	    	    	propertyChangeSupport.addPropertyChangeListener(this);
-	    	}
-	    	if (subscription.incrementInstanceCount() == 1) {
-				try {
-					if (connection != null)
-						subscription.submitRequests(connection);
-                } catch (Exception e) {
-    				Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error submitting requests", e);
-    				OTActivator.log(status);
-                }
-	    	}
-		}
-
 		synchronized (symbolSubscriptions2) {
+			IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);;
 			FeedSubscription2 subscription2 = symbolSubscriptions2.get(identifierType.getCompoundSymbol());
 			if (subscription2 == null) {
-				subscription2 = new FeedSubscription2(this, subscription);
+				subscription2 = new FeedSubscription2(this, identifierType);
 				symbolSubscriptions2.put(identifierType.getCompoundSymbol(), subscription2);
 			}
 	    	if (subscription2.incrementInstanceCount() == 1) {
@@ -218,31 +187,11 @@ public class FeedConnector implements IFeedConnector2, IExecutableExtension, IEx
      * @see org.eclipsetrader.core.feed.IFeedConnector2#subscribeLevel2(java.lang.String)
      */
     public IFeedSubscription2 subscribeLevel2(String symbol) {
-		IdentifierType identifierType;
-		FeedSubscription subscription;
-
-		synchronized (symbolSubscriptions) {
-			identifierType = IdentifiersList.getInstance().getIdentifierFor(symbol);
-			subscription = symbolSubscriptions.get(identifierType.getCompoundSymbol());
-			if (subscription == null) {
-				subscription = new FeedSubscription(this, identifierType);
-				symbolSubscriptions.put(identifierType.getCompoundSymbol(), subscription);
-			}
-	    	if (subscription.incrementInstanceCount() == 1) {
-				try {
-					if (connection != null)
-						subscription.submitRequests(connection);
-                } catch (Exception e) {
-    				Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error submitting requests", e);
-    				OTActivator.log(status);
-                }
-	    	}
-		}
-
 		synchronized (symbolSubscriptions2) {
+			IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(symbol);
 			FeedSubscription2 subscription2 = symbolSubscriptions2.get(identifierType.getCompoundSymbol());
 			if (subscription2 == null) {
-				subscription2 = new FeedSubscription2(this, subscription);
+				subscription2 = new FeedSubscription2(this, identifierType);
 				symbolSubscriptions2.put(identifierType.getCompoundSymbol(), subscription2);
 			}
 	    	if (subscription2.incrementInstanceCount() == 1) {
@@ -258,10 +207,10 @@ public class FeedConnector implements IFeedConnector2, IExecutableExtension, IEx
 		}
     }
 
-	protected void disposeSubscription2(FeedSubscription subscription, FeedSubscription2 subscription2) {
+	protected void disposeSubscription2(FeedSubscription2 subscription2) {
 		synchronized(symbolSubscriptions2) {
 	    	if (subscription2.decrementInstanceCount() <= 0) {
-		    	IdentifierType identifierType = subscription.getIdentifierType();
+		    	IdentifierType identifierType = subscription2.getIdentifierType();
 	    		symbolSubscriptions2.remove(identifierType.getCompoundSymbol());
 				try {
 					subscription2.cancelRequests();
@@ -270,23 +219,6 @@ public class FeedConnector implements IFeedConnector2, IExecutableExtension, IEx
 					OTActivator.log(status);
 				}
 	    	}
-		}
-		if (subscription.decrementInstanceCount() <= 0) {
-			IdentifierType identifierType = subscription.getIdentifierType();
-
-	    	if (subscription.getIdentifier() != null) {
-	    	    PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subscription.getIdentifier().getAdapter(PropertyChangeSupport.class);
-	    	    if (propertyChangeSupport != null)
-	    	    	propertyChangeSupport.removePropertyChangeListener(this);
-	    	}
-
-			symbolSubscriptions.remove(identifierType.getCompoundSymbol());
-			try {
-				subscription.cancelRequests();
-			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID, 0, "Error canceling requests", e);
-				OTActivator.log(status);
-			}
 		}
     }
 

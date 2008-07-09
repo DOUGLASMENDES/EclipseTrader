@@ -88,6 +88,7 @@ public class OTActivator extends AbstractUIPlugin {
 			System.err.println(status.getMessage());
 			if (status.getException() != null)
 				status.getException().printStackTrace();
+			return;
 		}
 		plugin.getLog().log(status);
 	}
