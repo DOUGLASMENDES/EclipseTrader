@@ -13,6 +13,9 @@ package org.eclipsetrader.core.markets;
 
 import java.util.Date;
 
+import org.eclipsetrader.core.feed.IPricingEnvironment;
+import org.eclipsetrader.core.instruments.ISecurity;
+
 /**
  * @since 1.0
  */
@@ -63,4 +66,20 @@ public interface IMarketService {
 	 * @param listener the listener to remove.
 	 */
 	public void removeMarketStatusListener(IMarketStatusListener listener);
+
+	/**
+	 * Returns a pricing environment instance based on the markets managed by
+	 * this market service.
+	 *
+	 * @return the pricing environment.
+	 */
+	public IPricingEnvironment getPricingEnvironment();
+
+	/**
+	 * Gets the market associated with the given security.
+	 *
+	 * @param security the security.
+	 * @return the associated market, or <code>null</code> if the security doesn't belong to any market.
+	 */
+	public IMarket getMarketForSecurity(ISecurity security);
 }

@@ -34,8 +34,8 @@ import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
-import org.eclipsetrader.core.internal.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.ISessionData;
 import org.eclipsetrader.core.views.IView;
@@ -73,7 +73,7 @@ public class WatchListView implements IView, IPricingListener {
 		this.name = parent.getName();
 
 		if (marketService != null) {
-			pricingEnvironment = new MarketPricingEnvironment(marketService, new ISecurity[0]);
+			pricingEnvironment = (MarketPricingEnvironment) marketService.getPricingEnvironment();
 			pricingEnvironment.addPricingListener(this);
 		}
 

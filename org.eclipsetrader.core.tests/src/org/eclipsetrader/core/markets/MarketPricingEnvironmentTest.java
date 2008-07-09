@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.markets;
+package org.eclipsetrader.core.markets;
 
 import junit.framework.TestCase;
 
@@ -19,6 +19,7 @@ import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.markets.IMarket;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 
 public class MarketPricingEnvironmentTest extends TestCase {
 	private TestMarket market1;

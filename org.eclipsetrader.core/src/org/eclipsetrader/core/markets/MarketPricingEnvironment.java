@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.markets;
+package org.eclipsetrader.core.markets;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -39,9 +39,15 @@ import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.QuoteEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
-import org.eclipsetrader.core.markets.IMarket;
-import org.eclipsetrader.core.markets.IMarketService;
 
+/**
+ * Pricing environment implementation based on markets.
+ *
+ * <p>Feed connectors are choosen based on the market that holds a security.
+ * If securities don't belong to a market, the default feed connector is used.</p>
+ *
+ * @since 1.0
+ */
 public class MarketPricingEnvironment implements IPricingEnvironment {
 	private IMarketService marketService;
 
@@ -78,6 +84,10 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 	protected MarketPricingEnvironment() {
 	}
 
+	public MarketPricingEnvironment(IMarketService marketService) {
+		this(marketService, null);
+    }
+
 	public MarketPricingEnvironment(IMarketService marketService, ISecurity[] securities) {
 	    this.marketService = marketService;
 
@@ -87,7 +97,8 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
     			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
 	    }
 
-	    addSecurities(securities);
+	    if (securities != null)
+	    	addSecurities(securities);
     }
 
 	protected IMarket[] getMarketsForSecurity(ISecurity security) {
@@ -101,19 +112,22 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		return list.toArray(new IMarket[list.size()]);
 	}
 
-	public void addSecurities(ISecurity[] securities) {
-		for (ISecurity security : securities) {
-			Set<IFeedConnector> connectors = new HashSet<IFeedConnector>();
-			for (IMarket market : getMarketsForSecurity(security)) {
-				if (market.getLiveFeedConnector() != null)
-					connectors.add(market.getLiveFeedConnector());
-			}
-			if (connectors.size() == 0)
-				connectors.add(getDefaultConnector());
-
-			subscribeSecurity(security, connectors.toArray(new IFeedConnector[connectors.size()]));
+    public void addSecurity(ISecurity security) {
+		Set<IFeedConnector> connectors = new HashSet<IFeedConnector>();
+		for (IMarket market : getMarketsForSecurity(security)) {
+			if (market.getLiveFeedConnector() != null)
+				connectors.add(market.getLiveFeedConnector());
 		}
-	}
+		if (connectors.size() == 0)
+			connectors.add(getDefaultConnector());
+
+		subscribeSecurity(security, connectors.toArray(new IFeedConnector[connectors.size()]));
+    }
+
+    public void addSecurities(ISecurity[] securities) {
+		for (ISecurity security : securities)
+			addSecurity(security);
+    }
 
 	protected IFeedConnector getDefaultConnector() {
 		return CoreActivator.getDefault().getDefaultConnector();
@@ -155,30 +169,33 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		}
 	}
 
-	public void removeSecurities(ISecurity[] securities) {
-		for (ISecurity security : securities) {
-			IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+    public void removeSecurity(ISecurity security) {
+		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
-			synchronized(securitiesMap) {
-				securitiesMap.remove(security);
-			}
+		synchronized(securitiesMap) {
+			securitiesMap.remove(security);
+		}
 
-			if (identifier != null) {
-				SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
-				if (subscriptionStatus != null) {
-					subscriptionStatus.securities.remove(security);
+		if (identifier != null) {
+			SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
+			if (subscriptionStatus != null) {
+				subscriptionStatus.securities.remove(security);
 
-					if (subscriptionStatus.securities.size() == 0) {
-						for (IFeedSubscription subscription : subscriptionStatus.subscriptions.values()) {
-							subscription.removeSubscriptionListener(listener);
-							subscription.dispose();
-						}
-						identifiersMap.remove(identifier);
+				if (subscriptionStatus.securities.size() == 0) {
+					for (IFeedSubscription subscription : subscriptionStatus.subscriptions.values()) {
+						subscription.removeSubscriptionListener(listener);
+						subscription.dispose();
 					}
+					identifiersMap.remove(identifier);
 				}
 			}
 		}
-	}
+    }
+
+    public void removeSecurities(ISecurity[] securities) {
+		for (ISecurity security : securities)
+			removeSecurity(security);
+    }
 
 	protected void handleMarketChanges(IMarket market, String propertyName, Object oldValue, Object newValue) {
 		if ("liveFeedConnector".equals(propertyName)) {

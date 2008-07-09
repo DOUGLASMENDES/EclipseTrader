@@ -58,58 +58,64 @@ public class SingleFeedPricingEnvironment implements IPricingEnvironment {
 		this.connector = connector;
 	}
 
-	public void addSecurities(ISecurity[] securities) {
-		for (ISecurity security : securities) {
-			IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+    public void addSecurity(ISecurity security) {
+		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
-			PricingStatus pricingStatus = securitiesMap.get(security);
-			if (pricingStatus == null) {
-				pricingStatus = new PricingStatus();
-				securitiesMap.put(security, pricingStatus);
+		PricingStatus pricingStatus = securitiesMap.get(security);
+		if (pricingStatus == null) {
+			pricingStatus = new PricingStatus();
+			securitiesMap.put(security, pricingStatus);
+		}
+
+		if (identifier != null) {
+			SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
+			if (subscriptionStatus == null) {
+				subscriptionStatus = new SubscriptionStatus();
+				identifiersMap.put(identifier, subscriptionStatus);
 			}
 
-			if (identifier != null) {
-				SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
-				if (subscriptionStatus == null) {
-					subscriptionStatus = new SubscriptionStatus();
-					identifiersMap.put(identifier, subscriptionStatus);
+			subscriptionStatus.securities.add(security);
+
+			if (subscriptionStatus.subscription == null) {
+				subscriptionStatus.subscription = connector.subscribe(identifier);
+				subscriptionStatus.subscription.addSubscriptionListener(listener);
+			}
+
+			pricingStatus.trade = subscriptionStatus.subscription.getTrade();
+			pricingStatus.quote = subscriptionStatus.subscription.getQuote();
+			pricingStatus.todayOHL = subscriptionStatus.subscription.getTodayOHL();
+			pricingStatus.lastClose = subscriptionStatus.subscription.getLastClose();
+		}
+    }
+
+    public void addSecurities(ISecurity[] securities) {
+		for (ISecurity security : securities)
+			addSecurity(security);
+    }
+
+    public void removeSecurity(ISecurity security) {
+		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+
+		securitiesMap.remove(security);
+
+		if (identifier != null) {
+			SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
+			if (subscriptionStatus != null) {
+				subscriptionStatus.securities.remove(security);
+
+				if (subscriptionStatus.securities.size() == 0) {
+					subscriptionStatus.subscription.removeSubscriptionListener(listener);
+					identifiersMap.remove(identifier);
+					subscriptionStatus.subscription.dispose();
 				}
-
-				subscriptionStatus.securities.add(security);
-
-				if (subscriptionStatus.subscription == null) {
-					subscriptionStatus.subscription = connector.subscribe(identifier);
-					subscriptionStatus.subscription.addSubscriptionListener(listener);
-				}
-
-				pricingStatus.trade = subscriptionStatus.subscription.getTrade();
-				pricingStatus.quote = subscriptionStatus.subscription.getQuote();
-				pricingStatus.todayOHL = subscriptionStatus.subscription.getTodayOHL();
-				pricingStatus.lastClose = subscriptionStatus.subscription.getLastClose();
 			}
 		}
-	}
+    }
 
-	public void removeSecurities(ISecurity[] securities) {
-		for (ISecurity security : securities) {
-			IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-
-			securitiesMap.remove(security);
-
-			if (identifier != null) {
-				SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
-				if (subscriptionStatus != null) {
-					subscriptionStatus.securities.remove(security);
-
-					if (subscriptionStatus.securities.size() == 0) {
-						subscriptionStatus.subscription.removeSubscriptionListener(listener);
-						identifiersMap.remove(identifier);
-						subscriptionStatus.subscription.dispose();
-					}
-				}
-			}
-		}
-	}
+    public void removeSecurities(ISecurity[] securities) {
+		for (ISecurity security : securities)
+			removeSecurity(security);
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IPricingEnvironment#addPricingListener(org.eclipsetrader.core.feed.IPricingListener)
