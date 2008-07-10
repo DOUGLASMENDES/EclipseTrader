@@ -15,7 +15,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -41,6 +43,7 @@ import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.WatchListCollection;
 import org.eclipsetrader.repository.local.internal.types.ColumnAdapter;
 import org.eclipsetrader.repository.local.internal.types.HoldingAdapter;
+import org.eclipsetrader.repository.local.internal.types.PropertyType;
 import org.eclipsetrader.repository.local.internal.types.RepositoryFactoryAdapter;
 
 @XmlRootElement(name = "watchlist")
@@ -65,6 +68,20 @@ public class WatchListStore implements IStore {
 	@XmlElementRef
 	@XmlJavaTypeAdapter(HoldingAdapter.class)
 	private List<IHolding> elements = new ArrayList<IHolding>();
+
+	@XmlElementWrapper(name = "properties")
+	@XmlElementRef
+	private List<PropertyType> unknownProperties;
+
+	private static Set<String> knownProperties = new HashSet<String>();
+	static {
+		knownProperties.add(IPropertyConstants.ELEMENT_FACTORY);
+		knownProperties.add(IPropertyConstants.OBJECT_TYPE);
+
+		knownProperties.add(IPropertyConstants.NAME);
+		knownProperties.add(IPropertyConstants.COLUMNS);
+		knownProperties.add(IPropertyConstants.HOLDINGS);
+	}
 
 	public WatchListStore() {
 	}
@@ -97,6 +114,11 @@ public class WatchListStore implements IStore {
 		properties.setProperty(IPropertyConstants.COLUMNS, columns.toArray(new IColumn[columns.size()]));
 		properties.setProperty(IPropertyConstants.HOLDINGS, elements.toArray(new IHolding[elements.size()]));
 
+		if (unknownProperties != null) {
+			for (PropertyType property : unknownProperties)
+				properties.setProperty(property.getName(), PropertyType.convert(property));
+		}
+
 		return properties;
     }
 
@@ -113,6 +135,12 @@ public class WatchListStore implements IStore {
 
 		IColumn[] c = (IColumn[]) properties.getProperty(IPropertyConstants.COLUMNS);
 		this.columns = c != null ? new ArrayList<IColumn>(Arrays.asList(c)) : new ArrayList<IColumn>();
+
+		this.unknownProperties = new ArrayList<PropertyType>();
+		for (String name : properties.getPropertyNames()) {
+			if (!knownProperties.contains(name))
+				this.unknownProperties.add(PropertyType.create(name, properties.getProperty(name)));
+		}
     }
 
 	/* (non-Javadoc)

@@ -11,6 +11,12 @@
 
 package org.eclipsetrader.repository.local.internal.types;
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -21,14 +27,60 @@ public class PropertyType {
 	@XmlAttribute(name = "name")
 	private String name;
 
+	@XmlAttribute(name = "type")
+	private String type;
+
 	@XmlValue
 	private String value;
+
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+	private static NumberFormat numberFormat = NumberFormat.getInstance();
+
+	public static PropertyType create(String name, Object value) {
+		if (value instanceof Date)
+			return new PropertyType(name, Date.class.getName(), dateFormat.format(value));
+		if (value instanceof Number)
+			return new PropertyType(name, value.getClass().getName(), numberFormat.format(value));
+		if (value instanceof Boolean)
+			return new PropertyType(name, Boolean.class.getName(), Boolean.TRUE.equals(value) ? "true" : "false");
+		return new PropertyType(name, value.toString());
+	}
+
+	public static Object convert(PropertyType property) {
+        try {
+    		if (Date.class.getName().equals(property.getType()))
+                return dateFormat.parse(property.getValue());
+    		if (Double.class.getName().equals(property.getType()))
+                return numberFormat.parse(property.getValue()).doubleValue();
+    		if (Float.class.getName().equals(property.getType()))
+                return numberFormat.parse(property.getValue()).floatValue();
+    		if (Integer.class.getName().equals(property.getType()))
+                return numberFormat.parse(property.getValue()).intValue();
+    		if (Long.class.getName().equals(property.getType()))
+                return numberFormat.parse(property.getValue()).longValue();
+    		if (Byte.class.getName().equals(property.getType()))
+                return numberFormat.parse(property.getValue()).byteValue();
+    		if (Short.class.getName().equals(property.getType()))
+                return numberFormat.parse(property.getValue()).shortValue();
+    		if (Boolean.class.getName().equals(property.getType()))
+    			return "true".equals(property.getValue());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+		return property.getValue();
+	}
 
 	public PropertyType() {
 	}
 
 	public PropertyType(String name, String value) {
 	    this.name = name;
+	    this.value = value;
+    }
+
+	public PropertyType(String name, String type, String value) {
+	    this.name = name;
+	    this.type = type;
 	    this.value = value;
     }
 
@@ -40,5 +92,10 @@ public class PropertyType {
 	@XmlTransient
 	public String getValue() {
     	return value;
+    }
+
+	@XmlTransient
+	public String getType() {
+    	return type;
     }
 }

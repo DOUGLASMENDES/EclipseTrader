@@ -16,10 +16,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -40,6 +44,7 @@ import org.eclipsetrader.repository.local.LocalRepository;
 import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
 import org.eclipsetrader.repository.local.internal.types.FeedIdentifierAdapter;
+import org.eclipsetrader.repository.local.internal.types.PropertyType;
 import org.eclipsetrader.repository.local.internal.types.RepositoryFactoryAdapter;
 
 @XmlRootElement(name = "security")
@@ -61,7 +66,21 @@ public class SecurityStore implements IStore {
 
 	private IUserProperties userProperties;
 
+	@XmlElementWrapper(name = "properties")
+	@XmlElementRef
+	private List<PropertyType> unknownProperties;
+
 	private HistoryStore historyStore;
+
+	private static Set<String> knownProperties = new HashSet<String>();
+	static {
+		knownProperties.add(IPropertyConstants.ELEMENT_FACTORY);
+		knownProperties.add(IPropertyConstants.OBJECT_TYPE);
+
+		knownProperties.add(IPropertyConstants.NAME);
+		knownProperties.add(IPropertyConstants.IDENTIFIER);
+		knownProperties.add(IPropertyConstants.USER_PROPERTIES);
+	}
 
 	public SecurityStore() {
 	}
@@ -94,6 +113,11 @@ public class SecurityStore implements IStore {
 		properties.setProperty(IPropertyConstants.IDENTIFIER, identifier);
 		properties.setProperty(IPropertyConstants.USER_PROPERTIES, userProperties);
 
+		if (unknownProperties != null) {
+			for (PropertyType property : unknownProperties)
+				properties.setProperty(property.getName(), PropertyType.convert(property));
+		}
+
 		return properties;
     }
 
@@ -106,6 +130,12 @@ public class SecurityStore implements IStore {
 		this.name = (String) properties.getProperty(IPropertyConstants.NAME);
 		this.identifier = (IFeedIdentifier) properties.getProperty(IPropertyConstants.IDENTIFIER);
 		this.userProperties = (IUserProperties) properties.getProperty(IPropertyConstants.USER_PROPERTIES);
+
+		this.unknownProperties = new ArrayList<PropertyType>();
+		for (String name : properties.getPropertyNames()) {
+			if (!knownProperties.contains(name))
+				this.unknownProperties.add(PropertyType.create(name, properties.getProperty(name)));
+		}
     }
 
 	/* (non-Javadoc)

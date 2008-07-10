@@ -57,10 +57,10 @@ public class IdentifiersCollectionTest extends TestCase {
 	public void testReplaceFeedIdentifier() throws Exception {
 		IdentifiersCollection collection = new IdentifiersCollection();
 		collection.putFeedIdentifier(new FeedIdentifier("MSFT", null));
-		IdentifierType type = collection.getList().get(0);
+		IdentifierType type = collection.getList().first();
 		collection.putFeedIdentifier(new FeedIdentifier("MSFT", null));
 		assertEquals(1, collection.getList().size());
-		assertNotSame(type, collection.getList().get(0));
+		assertNotSame(type, collection.getList().first());
 	}
 
 	public void testMarshalEmpty() throws Exception {
@@ -82,7 +82,7 @@ public class IdentifiersCollectionTest extends TestCase {
 	public void testUnmarshalidentifier() throws Exception {
 		IdentifiersCollection object = unmarshal(prefix + "<list><identifier symbol=\"MSFT\"/></list>");
 		assertEquals(1, object.getList().size());
-	    assertEquals("MSFT", object.getList().get(0).getIdentifier().getSymbol());
+	    assertEquals("MSFT", object.getList().first().getIdentifier().getSymbol());
 	}
 
 	private String marshal(IdentifiersCollection object) throws Exception {

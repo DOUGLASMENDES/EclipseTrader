@@ -20,6 +20,9 @@ import javax.xml.bind.Unmarshaller;
 
 import junit.framework.TestCase;
 
+import org.eclipsetrader.core.repositories.IStoreProperties;
+import org.eclipsetrader.core.repositories.StoreProperties;
+
 public class SecurityStoreTest extends TestCase {
 	private String prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
@@ -31,6 +34,20 @@ public class SecurityStoreTest extends TestCase {
 	public void testUnmarshalEmpty() throws Exception {
 		SecurityStore object = unmarshal(prefix + "<security/>");
 		assertNotNull(object);
+	}
+
+	public void testMarshalUnknownProperties() throws Exception {
+		SecurityStore object = new SecurityStore();
+    	StoreProperties properties = new StoreProperties();
+		properties.setProperty("option-expiration", "2008/08/30");
+		object.putProperties(properties, null);
+		assertEquals(prefix + "<security><properties><property name=\"option-expiration\">2008/08/30</property></properties></security>", marshal(object));
+	}
+
+	public void testUnmarshalUnknownProperties() throws Exception {
+		SecurityStore object = unmarshal(prefix + "<security><properties><property name=\"option-expiration\">2008/08/30</property></properties></security>");
+		IStoreProperties properties = object.fetchProperties(null);
+		assertEquals("2008/08/30", properties.getProperty("option-expiration"));
 	}
 
 	private String marshal(SecurityStore object) throws Exception {

@@ -26,7 +26,7 @@ import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 
 @XmlRootElement(name = "identifier")
-public class IdentifierType {
+public class IdentifierType implements Comparable<IdentifierType> {
 	@XmlAttribute(name = "symbol")
 	private String symbol;
 
@@ -72,5 +72,12 @@ public class IdentifierType {
 	@XmlTransient
 	public String getSymbol() {
     	return symbol;
+    }
+
+	/* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(IdentifierType o) {
+	    return getSymbol().compareTo(o.getSymbol());
     }
 }

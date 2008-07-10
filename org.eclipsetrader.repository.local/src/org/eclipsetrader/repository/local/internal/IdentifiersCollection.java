@@ -11,11 +11,10 @@
 
 package org.eclipsetrader.repository.local.internal;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,13 +27,13 @@ public class IdentifiersCollection {
 	private static IdentifiersCollection instance;
 
 	@XmlElementRef
-	private List<IdentifierType> list;
+	private TreeSet<IdentifierType> list;
 
 	private Map<String,IFeedIdentifier> identifierMap;
 
 	public IdentifiersCollection() {
 		instance = this;
-		list = new ArrayList<IdentifierType>();
+		list = new TreeSet<IdentifierType>();
 	}
 
 	public static IdentifiersCollection getInstance() {
@@ -72,7 +71,7 @@ public class IdentifiersCollection {
 			identifierMap.put(feedIdentifier.getSymbol(), feedIdentifier);
 	}
 
-	public List<IdentifierType> getList() {
+	public TreeSet<IdentifierType> getList() {
     	return list;
     }
 }

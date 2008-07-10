@@ -52,7 +52,7 @@ public class WatchListStoreTest extends TestCase {
 		properties.setProperty(IPropertyConstants.NAME, "Name");
 		WatchListStore object = new WatchListStore();
 		object.putProperties(properties, null);
-		assertEquals(prefix + "<watchlist><name>Name</name><columns/><elements/></watchlist>", marshal(object));
+		assertEquals(prefix + "<watchlist><name>Name</name><columns/><elements/><properties/></watchlist>", marshal(object));
 	}
 
 	public void testUnmarshalName() throws Exception {
@@ -68,7 +68,7 @@ public class WatchListStoreTest extends TestCase {
 			});
 		WatchListStore object = new WatchListStore();
 		object.putProperties(properties, null);
-		assertEquals(prefix + "<watchlist><columns/><elements><holding security=\"local:securities#1\"/></elements></watchlist>", marshal(object));
+		assertEquals(prefix + "<watchlist><columns/><elements><holding security=\"local:securities#1\"/></elements><properties/></watchlist>", marshal(object));
 	}
 
 	public void testUnmarshalElements() throws Exception {
@@ -91,7 +91,7 @@ public class WatchListStoreTest extends TestCase {
 			});
 		WatchListStore object = new WatchListStore();
 		object.putProperties(properties, null);
-		assertEquals(prefix + "<watchlist><columns><column>Test</column></columns><elements/></watchlist>", marshal(object));
+		assertEquals(prefix + "<watchlist><columns><column>Test</column></columns><elements/><properties/></watchlist>", marshal(object));
 	}
 
 	public void testUnmarshalColumns() throws Exception {
@@ -113,6 +113,20 @@ public class WatchListStoreTest extends TestCase {
 		WatchListStore object = unmarshal(prefix + "<watchlist><elements><holding security=\"local:securities#1\"/></elements></watchlist>");
 		security.setStore(new TestStore(null, null, new URI("new", "security", "2")));
 		assertEquals(prefix + "<watchlist><columns/><elements><holding security=\"new:security#2\"/></elements></watchlist>", marshal(object));
+	}
+
+	public void testMarshalUnknownProperties() throws Exception {
+		WatchListStore object = new WatchListStore();
+    	StoreProperties properties = new StoreProperties();
+		properties.setProperty("option-expiration", "2008/08/30");
+		object.putProperties(properties, null);
+		assertEquals(prefix + "<watchlist><columns/><elements/><properties><property name=\"option-expiration\">2008/08/30</property></properties></watchlist>", marshal(object));
+	}
+
+	public void testUnmarshalUnknownProperties() throws Exception {
+		WatchListStore object = unmarshal(prefix + "<watchlist><properties><property name=\"option-expiration\">2008/08/30</property></properties></watchlist>");
+		IStoreProperties properties = object.fetchProperties(null);
+		assertEquals("2008/08/30", properties.getProperty("option-expiration"));
 	}
 
 	private String marshal(WatchListStore object) throws Exception {
