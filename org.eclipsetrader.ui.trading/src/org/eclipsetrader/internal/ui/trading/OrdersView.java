@@ -52,6 +52,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
@@ -148,7 +149,7 @@ public class OrdersView extends ViewPart {
 	        if (!selection.isEmpty()) {
 	        	for (Object o : selection.toList()) {
 	        		try {
-	                    ((IOrder) o).cancel();
+	                    ((IOrderMonitor) o).cancel();
                     } catch (BrokerException e) {
 	                    e.printStackTrace();
                     }
@@ -286,7 +287,7 @@ public class OrdersView extends ViewPart {
 				new ViewerFilter() {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrder order = (IOrder) element;
+                    	IOrderMonitor order = (IOrderMonitor) element;
 	                    return order.getStatus() == OrderStatus.PendingCancel ||
 	                           order.getStatus() == OrderStatus.PendingNew;
                     }
@@ -301,7 +302,7 @@ public class OrdersView extends ViewPart {
 				new ViewerFilter() {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrder order = (IOrder) element;
+                    	IOrderMonitor order = (IOrderMonitor) element;
 	                    return order.getStatus() == OrderStatus.Filled;
                     }
 				}
@@ -315,7 +316,7 @@ public class OrdersView extends ViewPart {
 				new ViewerFilter() {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrder order = (IOrder) element;
+                    	IOrderMonitor order = (IOrderMonitor) element;
 	                    return order.getStatus() == OrderStatus.Canceled ||
 	                           order.getStatus() == OrderStatus.Expired;
                     }
@@ -330,7 +331,7 @@ public class OrdersView extends ViewPart {
 				new ViewerFilter() {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrder order = (IOrder) element;
+                    	IOrderMonitor order = (IOrderMonitor) element;
 	                    return order.getStatus() == OrderStatus.Rejected;
                     }
 				}
@@ -362,8 +363,8 @@ public class OrdersView extends ViewPart {
 		viewer.setSorter(new ViewerSorter() {
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
-            	IOrder o1 = (IOrder) e1;
-            	IOrder o2 = (IOrder) e2;
+            	IOrder o1 = ((IOrderMonitor) e1).getOrder();
+            	IOrder o2 = ((IOrderMonitor) e2).getOrder();
 	            return o2.getDate().compareTo(o1.getDate());
             }
 		});
@@ -422,7 +423,7 @@ public class OrdersView extends ViewPart {
 		return viewer;
 	}
 
-    protected void hookListeners(IOrder[] order) {
+    protected void hookListeners(IOrderMonitor[] order) {
     	IAdapterManager adapterManager = Platform.getAdapterManager();
     	for (int i = 0; i < order.length; i++) {
     		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(order[i], PropertyChangeSupport.class);
@@ -433,7 +434,7 @@ public class OrdersView extends ViewPart {
     	}
     }
 
-    protected void unhookListeners(IOrder[] order) {
+    protected void unhookListeners(IOrderMonitor[] order) {
     	IAdapterManager adapterManager = Platform.getAdapterManager();
     	for (int i = 0; i < order.length; i++) {
     		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(order[i], PropertyChangeSupport.class);

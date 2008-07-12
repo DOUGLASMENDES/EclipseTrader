@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class DateTimeColumn extends ColumnLabelProvider {
 	protected DateFormat formatter = DateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.MEDIUM);
@@ -28,11 +29,15 @@ public class DateTimeColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
-			if (order.getDate() != null)
-				return formatter.format(order.getDate());
-		}
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null && order.getDate() != null)
+			return formatter.format(order.getDate());
+
 		return "";
 	}
 }

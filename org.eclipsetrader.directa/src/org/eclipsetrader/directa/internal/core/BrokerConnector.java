@@ -25,9 +25,13 @@ import org.eclipse.core.runtime.IExecutableExtensionFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IFeedIdentifier;
+import org.eclipsetrader.core.feed.IFeedProperties;
+import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBrokerConnector;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.ITradingServiceRunnable;
@@ -50,12 +54,12 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
 	private String id;
 	private String name;
 
-	private Set<IOrder> orders;
+	private Set<OrderMonitor> orders;
 
 	private Thread thread;
 	private Runnable updateRunnable = new Runnable() {
         public void run() {
-            orders = new HashSet<IOrder>();
+            orders = new HashSet<OrderMonitor>();
 
             for (;;) {
             	synchronized(thread) {
@@ -137,16 +141,28 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
     }
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#submitOrder(org.eclipsetrader.core.trading.IOrder)
-	 */
-	public void submitOrder(IOrder order) throws BrokerException {
-		WebConnector connector = WebConnector.getInstance();
-		if (!connector.isLoggedIn()) {
-			connector.login();
-			if (!connector.isLoggedIn())
-				throw new BrokerException("Unable to login");
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#canTrade(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    public boolean canTrade(ISecurity security) {
+		IFeedIdentifier identifier = security.getIdentifier();
+		if (identifier == null)
+			return false;
+
+		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+		if (properties != null) {
+			for (int p = 0; p < WebConnector.PROPERTIES.length; p++) {
+				if (properties.getProperty(WebConnector.PROPERTIES[p]) != null)
+					return true;
+			}
 		}
 
+	    return false;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#prepareOrder(org.eclipsetrader.core.trading.IOrder)
+     */
+    public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
 		if (order.getType() != OrderType.Limit && order.getType() != OrderType.Market)
 			throw new BrokerException("Invalid order type, must be Limit or Market");
 		if (order.getSide() != OrderSide.Buy && order.getSide() != OrderSide.Sell)
@@ -154,14 +170,14 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
 		if (order.getValidity() != null && order.getValidity() != OrderValidity.GoodTillCancel)
 			throw new BrokerException("Invalid order validity, must be null or GoodTillCancel");
 
-		connector.sendOrder(order);
+		OrderMonitor tracker = new OrderMonitor(WebConnector.getInstance(), this, order);
 
 		if (Activator.getDefault() != null) {
 			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 			ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
 			if (serviceReference != null) {
 				ITradingService service = (ITradingService) context.getService(serviceReference);
-				final IOrder[] addedOrders = new IOrder[] { order };
+				final IOrderMonitor[] addedOrders = new IOrderMonitor[] { tracker };
 				service.runInService(new ITradingServiceRunnable() {
                     public IStatus run(ITradingService service, IProgressMonitor monitor) throws Exception {
             		    service.addOrders(addedOrders);
@@ -175,41 +191,8 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
 		synchronized(thread) {
 			thread.notifyAll();
 		}
-	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#cancelOrder(org.eclipsetrader.core.trading.IOrder)
-	 */
-	public void cancelOrder(IOrder order) throws BrokerException {
-		WebConnector connector = WebConnector.getInstance();
-		if (!connector.isLoggedIn()) {
-			connector.login();
-			if (!connector.isLoggedIn())
-				throw new BrokerException("Unable to login");
-		}
-
-		if (order.getId() == null)
-			throw new BrokerException("Invalid order");
-
-		connector.cancelOrder(order);
-
-		synchronized(thread) {
-			thread.notifyAll();
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#allowModify()
-	 */
-	public boolean allowModify() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#modifyOrder(org.eclipsetrader.core.trading.IOrder)
-	 */
-	public void modifyOrder(IOrder order) throws BrokerException {
-		throw new BrokerException("Modify not allowed");
+		return tracker;
 	}
 
 	/* (non-Javadoc)
@@ -244,28 +227,28 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getOrders()
 	 */
-	public IOrder[] getOrders() {
+	public IOrderMonitor[] getOrders() {
 		if (orders == null)
-			return new IOrder[0];
-		return orders.toArray(new IOrder[orders.size()]);
+			return new IOrderMonitor[0];
+		return orders.toArray(new IOrderMonitor[orders.size()]);
 	}
 
 	public void updateOrders() {
-		final List<IOrder> toAdd = new ArrayList<IOrder>();
-		final List<IOrder> toRemove = new ArrayList<IOrder>();
+		final List<IOrderMonitor> toAdd = new ArrayList<IOrderMonitor>();
+		final List<IOrderMonitor> toRemove = new ArrayList<IOrderMonitor>();
 
 		synchronized(orders) {
 			WebConnector.getInstance().updateOrders();
 
-			Collection<IOrder> repositoryOrder = WebConnector.getInstance().getOrders();
-	        for (IOrder order : repositoryOrder) {
+			Collection<OrderMonitor> repositoryOrder = WebConnector.getInstance().getOrders();
+	        for (OrderMonitor order : repositoryOrder) {
 	        	if (!orders.contains(order)) {
 	        		orders.add(order);
 	        		toAdd.add(order);
 	        	}
 	        }
-			for (Iterator<IOrder> iter = orders.iterator(); iter.hasNext(); ) {
-				IOrder order = iter.next();
+			for (Iterator<OrderMonitor> iter = orders.iterator(); iter.hasNext(); ) {
+				OrderMonitor order = iter.next();
 	        	if (!repositoryOrder.contains(order)) {
 	        		iter.remove();
 	        		toRemove.add(order);
@@ -280,13 +263,19 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
 				ITradingService service = (ITradingService) context.getService(serviceReference);
 				service.runInService(new ITradingServiceRunnable() {
                     public IStatus run(ITradingService service, IProgressMonitor monitor) throws Exception {
-            		    service.removeOrders(toRemove.toArray(new IOrder[toRemove.size()]));
-            		    service.addOrders(toAdd.toArray(new IOrder[toAdd.size()]));
+            		    service.removeOrders(toRemove.toArray(new IOrderMonitor[toRemove.size()]));
+            		    service.addOrders(toAdd.toArray(new IOrderMonitor[toAdd.size()]));
                         return Status.OK_STATUS;
                     }
 				}, null);
 				context.ungetService(serviceReference);
 			}
+		}
+	}
+
+	public void wakeupOrdersUpdateThread() {
+		synchronized(thread) {
+			thread.notifyAll();
 		}
 	}
 }

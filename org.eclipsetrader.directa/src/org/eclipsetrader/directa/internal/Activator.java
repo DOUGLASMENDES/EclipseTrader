@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.directa.internal;
 
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileWriter;
 
@@ -20,10 +21,14 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
+import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.directa.internal.core.BrokerConnector;
+import org.eclipsetrader.directa.internal.core.OrderMonitor;
 import org.eclipsetrader.directa.internal.core.WebConnector;
 import org.eclipsetrader.directa.internal.core.repository.IdentifiersList;
 import org.osgi.framework.BundleContext;
@@ -64,6 +69,25 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 
 		startupRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
+
+		IAdapterManager adapterManager = Platform.getAdapterManager();
+		adapterManager.registerAdapters(new IAdapterFactory() {
+            @SuppressWarnings("unchecked")
+            public Object getAdapter(Object adaptableObject, Class adapterType) {
+            	if (adaptableObject instanceof OrderMonitor) {
+            		if (adapterType.isAssignableFrom(PropertyChangeSupport.class))
+            			return ((OrderMonitor) adaptableObject).getPropertyChangeSupport();
+            	}
+	            return null;
+            }
+
+            @SuppressWarnings("unchecked")
+            public Class[] getAdapterList() {
+	            return new Class[] {
+	            		PropertyChangeSupport.class,
+	            	};
+            }
+		}, OrderMonitor.class);
 
 		WebConnector.getInstance();
 		BrokerConnector.getInstance();

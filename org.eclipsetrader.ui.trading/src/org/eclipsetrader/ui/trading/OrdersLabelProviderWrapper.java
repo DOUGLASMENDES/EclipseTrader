@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.OrderStatus;
 
 public class OrdersLabelProviderWrapper extends CellLabelProvider {
@@ -54,7 +54,7 @@ public class OrdersLabelProviderWrapper extends CellLabelProvider {
     }
 
     public Color getForeground(Object element) {
-		IOrder order = (IOrder) element;
+		IOrderMonitor order = (IOrderMonitor) element;
 		if (order.getStatus() == OrderStatus.Canceled || order.getStatus() == OrderStatus.Expired)
 			return canceledColor;
 		if (order.getStatus() == OrderStatus.Rejected)

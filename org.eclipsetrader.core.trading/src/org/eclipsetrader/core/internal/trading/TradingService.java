@@ -33,8 +33,8 @@ import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.trading.IBrokerConnector;
-import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.ITradingServiceRunnable;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
@@ -42,7 +42,7 @@ import org.eclipsetrader.core.trading.OrderDelta;
 
 public class TradingService implements ITradingService {
 	private Map<String, IBrokerConnector> brokers = new HashMap<String, IBrokerConnector>();
-	private List<IOrder> orders = new ArrayList<IOrder>();
+	private List<IOrderMonitor> orders = new ArrayList<IOrderMonitor>();
 
 	private List<OrderDelta> deltas = new ArrayList<OrderDelta>();
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
@@ -71,7 +71,7 @@ public class TradingService implements ITradingService {
 		}
 
 		for (IBrokerConnector connector : brokers.values()) {
-			IOrder[] o = connector.getOrders();
+			IOrderMonitor[] o = connector.getOrders();
             if (o != null)
             	orders.addAll(Arrays.asList(o));
 		}
@@ -100,8 +100,8 @@ public class TradingService implements ITradingService {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.ITradingService#getOrders()
 	 */
-	public IOrder[] getOrders() {
-		return orders.toArray(new IOrder[orders.size()]);
+	public IOrderMonitor[] getOrders() {
+		return orders.toArray(new IOrderMonitor[orders.size()]);
 	}
 
 	/* (non-Javadoc)
@@ -119,9 +119,9 @@ public class TradingService implements ITradingService {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.ITradingService#addOrders(org.eclipsetrader.core.trading.IOrder[])
+     * @see org.eclipsetrader.core.trading.ITradingService#addOrders(org.eclipsetrader.core.trading.IOrderMonitor[])
      */
-    public void addOrders(IOrder[] order) {
+    public void addOrders(IOrderMonitor[] order) {
     	for (int i = 0; i < order.length; i++) {
     		if (!orders.contains(order[i])) {
     			orders.add(order[i]);
@@ -131,9 +131,9 @@ public class TradingService implements ITradingService {
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.ITradingService#removeOrders(org.eclipsetrader.core.trading.IOrder[])
+     * @see org.eclipsetrader.core.trading.ITradingService#removeOrders(org.eclipsetrader.core.trading.IOrderMonitor[])
      */
-    public void removeOrders(IOrder[] order) {
+    public void removeOrders(IOrderMonitor[] order) {
     	for (int i = 0; i < order.length; i++) {
     		if (orders.contains(order[i])) {
     			orders.remove(order[i]);
@@ -143,9 +143,9 @@ public class TradingService implements ITradingService {
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.ITradingService#updateOrders(org.eclipsetrader.core.trading.IOrder[])
+     * @see org.eclipsetrader.core.trading.ITradingService#updateOrders(org.eclipsetrader.core.trading.IOrderMonitor[])
      */
-    public void updateOrders(IOrder[] order) {
+    public void updateOrders(IOrderMonitor[] order) {
     	for (int i = 0; i < order.length; i++) {
     		if (orders.contains(order[i])) {
     			orders.remove(order[i]);

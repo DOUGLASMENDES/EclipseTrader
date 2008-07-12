@@ -14,6 +14,7 @@ package org.eclipsetrader.ui.trading;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class SymbolColumn extends ColumnLabelProvider {
 
@@ -25,12 +26,18 @@ public class SymbolColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null && order.getSecurity() != null) {
 			IFeedIdentifier properties = order.getSecurity().getIdentifier();
 			if (properties != null)
 				return properties.getSymbol();
 		}
+
 		return "";
 	}
 }

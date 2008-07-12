@@ -14,7 +14,7 @@ package org.eclipsetrader.ui.trading;
 import java.text.NumberFormat;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class FilledQuantityColumn extends ColumnLabelProvider {
 	private NumberFormat formatter = NumberFormat.getInstance();
@@ -31,8 +31,8 @@ public class FilledQuantityColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
+		if (element instanceof IOrderMonitor) {
+			IOrderMonitor order = (IOrderMonitor) element;
 			if (order.getFilledQuantity() != null)
 				return formatter.format(order.getFilledQuantity());
 		}
@@ -44,6 +44,6 @@ public class FilledQuantityColumn extends ColumnLabelProvider {
      */
     @Override
     public boolean isLabelProperty(Object element, String property) {
-	    return IOrder.PROP_FILLED_QUANTITY.equals(property);
+	    return IOrderMonitor.PROP_FILLED_QUANTITY.equals(property);
     }
 }

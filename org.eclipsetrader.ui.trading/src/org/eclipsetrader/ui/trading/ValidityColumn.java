@@ -16,16 +16,17 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.OrderValidity;
 
 public class ValidityColumn extends ColumnLabelProvider {
 	static Map<OrderValidity, String> labels = new HashMap<OrderValidity, String>();
 	static {
-		labels.put(OrderValidity.Day, "Day");
-		labels.put(OrderValidity.ImmediateOrCancel, "Imm. or Cancel");
-		labels.put(OrderValidity.AtOpening, "At Opening");
-		labels.put(OrderValidity.AtClosing, "At Closing");
-		labels.put(OrderValidity.GoodTillDate, "Good Till Cancel");
+		labels.put(OrderValidity.Day, Messages.ValidityColumn_Day);
+		labels.put(OrderValidity.ImmediateOrCancel, Messages.ValidityColumn_ImmediateOrCancel);
+		labels.put(OrderValidity.AtOpening, Messages.ValidityColumn_AtOpening);
+		labels.put(OrderValidity.AtClosing, Messages.ValidityColumn_AtClosing);
+		labels.put(OrderValidity.GoodTillDate, Messages.ValidityColumn_GoodTillCancel);
 	}
 
 	public ValidityColumn() {
@@ -36,11 +37,17 @@ public class ValidityColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null) {
 			String text = labels.get(order.getValidity());
 			return text != null ? text : order.getValidity().toString();
 		}
-		return "";
+
+		return ""; //$NON-NLS-1$
 	}
 }

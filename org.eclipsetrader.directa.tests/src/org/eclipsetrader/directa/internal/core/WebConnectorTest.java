@@ -22,8 +22,9 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
-import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitorListener;
 import org.eclipsetrader.core.trading.Order;
+import org.eclipsetrader.core.trading.OrderMonitorEvent;
 import org.eclipsetrader.core.trading.OrderSide;
 import org.eclipsetrader.core.trading.OrderStatus;
 import org.eclipsetrader.core.trading.OrderType;
@@ -31,66 +32,66 @@ import org.eclipsetrader.core.trading.OrderType;
 public class WebConnectorTest extends TestCase {
 
 	public void testParseBuyOrderLine() throws Exception {
-	    IOrder order = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;n;4/07/2008;09:56:38;C;5;21,5000;4/07/2008;10:03:02;;;;M;\";");
-	    assertNotNull(order);
-	    assertEquals(getTime(2008, Calendar.JULY, 4, 9, 56, 38), order.getDate());
-	    assertEquals("R8609563873834", order.getId());
-	    assertEquals("ENI", order.getSecurity().getName());
-	    assertEquals(OrderSide.Buy, order.getSide());
-	    assertEquals(new Long(5), order.getQuantity());
-	    assertEquals(21.5, order.getPrice());
-	    assertEquals(OrderStatus.PendingNew, order.getStatus());
-	    assertNull(order.getFilledQuantity());
-	    assertNull(order.getAveragePrice());
-	    assertNotNull(order.getBroker());
+	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;n;4/07/2008;09:56:38;C;5;21,5000;4/07/2008;10:03:02;;;;M;\";");
+	    assertNotNull(monitor);
+	    assertEquals(getTime(2008, Calendar.JULY, 4, 9, 56, 38), monitor.getOrder().getDate());
+	    assertEquals("R8609563873834", monitor.getId());
+	    assertEquals("ENI", monitor.getOrder().getSecurity().getName());
+	    assertEquals(OrderSide.Buy, monitor.getOrder().getSide());
+	    assertEquals(new Long(5), monitor.getOrder().getQuantity());
+	    assertEquals(21.5, monitor.getOrder().getPrice());
+	    assertEquals(OrderStatus.PendingNew, monitor.getStatus());
+	    assertNull(monitor.getFilledQuantity());
+	    assertNull(monitor.getAveragePrice());
+	    assertNotNull(monitor.getBrokerConnector());
     }
 
 	public void testParseSellOrderLine() throws Exception {
-	    IOrder order = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;n;4/07/2008;09:56:38;V;5;21,5000;4/07/2008;10:03:02;;;;M;\";");
-	    assertNotNull(order);
-	    assertEquals(getTime(2008, Calendar.JULY, 4, 9, 56, 38), order.getDate());
-	    assertEquals("R8609563873834", order.getId());
-	    assertEquals("ENI", order.getSecurity().getName());
-	    assertEquals(OrderSide.Sell, order.getSide());
-	    assertEquals(new Long(5), order.getQuantity());
-	    assertEquals(21.5, order.getPrice());
-	    assertEquals(OrderStatus.PendingNew, order.getStatus());
-	    assertNull(order.getFilledQuantity());
-	    assertNull(order.getAveragePrice());
-	    assertNotNull(order.getBroker());
+	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;n;4/07/2008;09:56:38;V;5;21,5000;4/07/2008;10:03:02;;;;M;\";");
+	    assertNotNull(monitor);
+	    assertEquals(getTime(2008, Calendar.JULY, 4, 9, 56, 38), monitor.getOrder().getDate());
+	    assertEquals("R8609563873834", monitor.getId());
+	    assertEquals("ENI", monitor.getOrder().getSecurity().getName());
+	    assertEquals(OrderSide.Sell, monitor.getOrder().getSide());
+	    assertEquals(new Long(5), monitor.getOrder().getQuantity());
+	    assertEquals(21.5, monitor.getOrder().getPrice());
+	    assertEquals(OrderStatus.PendingNew, monitor.getStatus());
+	    assertNull(monitor.getFilledQuantity());
+	    assertNull(monitor.getAveragePrice());
+	    assertNotNull(monitor.getBrokerConnector());
     }
 
 	public void testParseCanceledOrderLine() throws Exception {
-	    IOrder order = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;zA;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;;;;M;\";");
-	    assertNotNull(order);
-	    assertEquals(OrderStatus.Canceled, order.getStatus());
+	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;zA;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;;;;M;\";");
+	    assertNotNull(monitor);
+	    assertEquals(OrderStatus.Canceled, monitor.getStatus());
     }
 
 	public void testParseFilledOrderLine() throws Exception {
-	    IOrder order = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;5;21,500;;M;\";");
-	    assertNotNull(order);
-	    assertEquals(OrderStatus.Filled, order.getStatus());
-	    assertEquals(new Long(5), order.getFilledQuantity());
-	    assertEquals(21.5, order.getAveragePrice());
+	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;5;21,500;;M;\";");
+	    assertNotNull(monitor);
+	    assertEquals(OrderStatus.Filled, monitor.getStatus());
+	    assertEquals(new Long(5), monitor.getFilledQuantity());
+	    assertEquals(21.5, monitor.getAveragePrice());
     }
 
 	public void testParsePartialOrderLine() throws Exception {
-	    IOrder order = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;2;21,500;;M;\";");
-	    assertNotNull(order);
-	    assertEquals(OrderStatus.Partial, order.getStatus());
-	    assertEquals(new Long(2), order.getFilledQuantity());
-	    assertEquals(21.5, order.getAveragePrice());
+	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;2;21,500;;M;\";");
+	    assertNotNull(monitor);
+	    assertEquals(OrderStatus.Partial, monitor.getStatus());
+	    assertEquals(new Long(2), monitor.getFilledQuantity());
+	    assertEquals(21.5, monitor.getAveragePrice());
     }
 
 	public void testParseUnknownOrderStatusLine() throws Exception {
-	    IOrder order = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;??;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;;;;M;\";");
-	    assertNotNull(order);
-	    assertEquals(OrderStatus.PendingNew, order.getStatus());
+	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;??;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;;;;M;\";");
+	    assertNotNull(monitor);
+	    assertEquals(OrderStatus.PendingNew, monitor.getStatus());
     }
 
 	public void testUpdateSameOrderInstance() throws Exception {
 		ISecurity security = new Security("ENI", new FeedIdentifier("ENI", null));
-		Order order = new Order(null, null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5);
+		OrderMonitor order = new OrderMonitor(null, null, new Order(null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5));
 		order.setId("R8609563873834");
 		WebConnector connector = new WebConnector();
 		connector.orders.put(order.getId(), order);
@@ -113,6 +114,26 @@ public class WebConnectorTest extends TestCase {
 		query.add(new NameValuePair("MODO", "V"));
 		assertEquals(1, query.size());
 		assertTrue(query.contains(new NameValuePair("MODO", "V")));
+    }
+
+	public void testFireOrderCompleteEvent() throws Exception {
+		ISecurity security = new Security("ENI", new FeedIdentifier("ENI", null));
+		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5));
+		monitor.setId("R8609563873834");
+		WebConnector connector = new WebConnector();
+		connector.orders.put(monitor.getId(), monitor);
+
+	    final List<OrderMonitorEvent> events = new ArrayList<OrderMonitorEvent>();
+	    monitor.addOrderMonitorListener(new IOrderMonitorListener() {
+            public void orderCompleted(OrderMonitorEvent event) {
+            	events.add(event);
+            }
+	    });
+	    connector.parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;5;21,500;;M;\";");
+
+	    assertEquals(1, events.size());
+	    assertSame(monitor, events.get(0).monitor);
+	    assertSame(monitor.getOrder(), events.get(0).order);
     }
 
 	private Date getTime(int year, int month, int day, int hour, int minute, int second) {

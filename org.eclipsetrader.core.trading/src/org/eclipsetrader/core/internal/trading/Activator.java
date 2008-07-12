@@ -1,19 +1,13 @@
 package org.eclipsetrader.core.internal.trading;
 
-import java.beans.PropertyChangeSupport;
 import java.util.Hashtable;
 
-import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.ITradingService;
-import org.eclipsetrader.core.trading.Order;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -54,24 +48,6 @@ public class Activator extends Plugin {
 				tradingService,
 				new Hashtable<Object,Object>()
 			);
-
-    	IAdapterManager adapterManager = Platform.getAdapterManager();
-    	adapterManager.registerAdapters(new IAdapterFactory() {
-            @SuppressWarnings("unchecked")
-            public Object getAdapter(Object adaptableObject, Class adapterType) {
-            	if (adaptableObject instanceof Order)
-            		return ((Order) adaptableObject).getAdapter(adapterType);
-	            return null;
-            }
-
-            @SuppressWarnings("unchecked")
-            public Class[] getAdapterList() {
-	            return new Class[] {
-	            		IOrder.class,
-	            		PropertyChangeSupport.class,
-	            };
-            }
-    	}, Order.class);
 
 		Job job = new Job("Trading Service Startup") {
             @Override

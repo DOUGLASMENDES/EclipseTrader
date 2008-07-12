@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.trading;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class RouteColumn extends LabelProvider {
 
@@ -24,11 +25,15 @@ public class RouteColumn extends LabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
-			if (order.getRoute() != null)
-				return order.getRoute().toString();
-		}
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null && order.getRoute() != null)
+			return order.getRoute().toString();
+
 		return "";
 	}
 }

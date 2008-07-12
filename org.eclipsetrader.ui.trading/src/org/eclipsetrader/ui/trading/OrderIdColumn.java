@@ -12,7 +12,7 @@
 package org.eclipsetrader.ui.trading;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class OrderIdColumn extends ColumnLabelProvider {
 
@@ -24,8 +24,8 @@ public class OrderIdColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
+		if (element instanceof IOrderMonitor) {
+			IOrderMonitor order = (IOrderMonitor) element;
 			return order.getId();
 		}
 		return "";

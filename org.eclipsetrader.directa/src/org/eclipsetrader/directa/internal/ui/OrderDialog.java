@@ -46,6 +46,7 @@ import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.core.trading.OrderSide;
@@ -255,7 +256,6 @@ public class OrderDialog extends TitleAreaDialog {
     protected void okPressed() {
 		try {
 	    	Order order = new Order(
-	    			BrokerConnector.getInstance(),
 	    			null,
 	    			OrderType.Limit,
 	    			(OrderSide) ((IStructuredSelection) sideCombo.getSelection()).getFirstElement(),
@@ -264,7 +264,10 @@ public class OrderDialog extends TitleAreaDialog {
 	    			priceFormat.parse(price.getText()).doubleValue(),
 	    			(IOrderRoute) ((IStructuredSelection) routeCombo.getSelection()).getFirstElement()
 	    		);
-	        order.submit();
+
+			BrokerConnector connector = BrokerConnector.getInstance();
+	    	IOrderMonitor tracker = connector.prepareOrder(order);
+	    	tracker.submit();
 
 	    	super.okPressed();
 		} catch(Exception e) {

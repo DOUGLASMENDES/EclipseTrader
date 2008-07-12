@@ -90,7 +90,7 @@ public class WebConnector {
 	private String prt = "";
 	private String urt = "";
 	private String user = "";
-	Map<String, IOrder> orders = new HashMap<String, IOrder>();
+	Map<String, OrderMonitor> orders = new HashMap<String, OrderMonitor>();
 
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	private NumberFormat numberFormatter = NumberFormat.getInstance(Locale.ITALY);
@@ -222,7 +222,7 @@ public class WebConnector {
 		return user;
 	}
 
-	public Collection<IOrder> getOrders() {
+	public Collection<OrderMonitor> getOrders() {
 		return orders.values();
 	}
 
@@ -248,13 +248,13 @@ public class WebConnector {
 			while ((line = in.readLine()) != null) {
 				logger.trace(line);
 				if (line.startsWith("tr01[")) {
-					IOrder newOrder = parseOrderLine(line);
-					orders.put(newOrder.getId(), newOrder);
-					set.add(newOrder.getId());
+					OrderMonitor tracker = parseOrderLine(line);
+					orders.put(tracker.getId(), tracker);
+					set.add(tracker.getId());
 				}
 			}
 
-			for (Iterator<IOrder> iter = orders.values().iterator(); iter.hasNext(); ) {
+			for (Iterator<OrderMonitor> iter = orders.values().iterator(); iter.hasNext(); ) {
 				if (!set.contains(iter.next().getId()))
 					iter.remove();
 			}
@@ -277,15 +277,14 @@ public class WebConnector {
 	private static final int IDX_FILLED_QUANTITY = 10;
 	private static final int IDX_AVERAGE_PRICE = 11;
 
-	protected IOrder parseOrderLine(String line) throws ParseException {
+	protected OrderMonitor parseOrderLine(String line) throws ParseException {
 		int sidx = line.indexOf("\"") + 1;
 		int eidx = line.indexOf("\"", sidx);
 		String[] item = line.substring(sidx, eidx).split(";");
 
-		IOrder order = orders.get(item[IDX_ID]);
-		if (order == null) {
-			order = new Order(
-					BrokerConnector.getInstance(),
+		OrderMonitor tracker = orders.get(item[IDX_ID]);
+		if (tracker == null) {
+			Order order = new Order(
 					null,
 					!item[IDX_PRICE].equals("") ? OrderType.Limit : OrderType.Market,
 					item[IDX_SIDE].equalsIgnoreCase("V") ? OrderSide.Sell : OrderSide.Buy,
@@ -293,9 +292,11 @@ public class WebConnector {
 					Long.parseLong(item[IDX_QUANTITY]),
 					!item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null
 				);
-
-			((Order) order).setId(item[IDX_ID]);
+			tracker = new OrderMonitor(this, BrokerConnector.getInstance(), order);
+			tracker.setId(item[IDX_ID]);
 		}
+
+		IOrder order = tracker.getOrder();;
 
 		try {
 			Method classMethod = order.getClass().getMethod("setDate", Date.class);
@@ -306,23 +307,19 @@ public class WebConnector {
 
 		if (!item[IDX_AVERAGE_PRICE].equals("")) {
 			try {
-				Method classMethod = order.getClass().getMethod("setAveragePrice", Double.class);
-				if (classMethod != null)
-					classMethod.invoke(order, numberFormatter.parse(item[IDX_AVERAGE_PRICE]).doubleValue());
+				tracker.setAveragePrice(numberFormatter.parse(item[IDX_AVERAGE_PRICE]).doubleValue());
 			} catch(Exception e) {
 			}
 		}
 
 		if (!item[IDX_FILLED_QUANTITY].equals("")) {
 			try {
-				Method classMethod = order.getClass().getMethod("setFilledQuantity", Long.class);
-				if (classMethod != null)
-					classMethod.invoke(order, Long.parseLong(item[IDX_FILLED_QUANTITY]));
+				tracker.setFilledQuantity(numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue());
 			} catch(Exception e) {
 			}
 		}
 
-		OrderStatus status = order.getStatus();
+		OrderStatus status = tracker.getStatus();
 		if (item[IDX_STATUS].equals("e"))
 			status = OrderStatus.Filled;
 		else if (item[IDX_STATUS].equals("n"))
@@ -333,18 +330,18 @@ public class WebConnector {
 			status = OrderStatus.PendingNew;
 
 		if (status != OrderStatus.Canceled) {
-			if (order.getFilledQuantity() != null && !order.getQuantity().equals(order.getFilledQuantity()))
+			if (tracker.getFilledQuantity() != null && !tracker.getFilledQuantity().equals(order.getQuantity()))
 				status = OrderStatus.Partial;
 		}
 
-		try {
-			Method classMethod = order.getClass().getMethod("setStatus", OrderStatus.class);
-			if (classMethod != null)
-				classMethod.invoke(order, status);
-		} catch(Exception e) {
+		if ((status == OrderStatus.Filled || status == OrderStatus.Canceled || status == OrderStatus.Rejected) && tracker.getStatus() != status) {
+			tracker.setStatus(status);
+			tracker.fireOrderCompletedEvent();
 		}
+		else
+			tracker.setStatus(status);
 
-		return order;
+		return tracker;
 	}
 
 	protected ISecurity getSecurityFromSymbol(String symbol) {
@@ -394,10 +391,12 @@ public class WebConnector {
 		return symbol;
 	}
 
-	public boolean sendOrder(IOrder order) {
+	public boolean sendOrder(OrderMonitor tracker) {
 		boolean ok = false;
 		boolean confirm = false;
 		String inputLine;
+
+		IOrder order = tracker.getOrder();
 
 		List<NameValuePair> query = new ArrayList<NameValuePair>();
 		query.add(new NameValuePair("ACQAZ", order.getSide() == OrderSide.Buy ? String.valueOf(order.getQuantity()) : ""));
@@ -439,13 +438,8 @@ public class WebConnector {
 					if (s != -1) {
 						s = inputLine.indexOf(">", s + 13) + 1;
 						int e = inputLine.indexOf("<", s);
-						try {
-							Method classMethod = order.getClass().getMethod("setId", String.class);
-							if (classMethod != null)
-								classMethod.invoke(order, inputLine.substring(s, e));
-						} catch(Exception e1) {
-						}
-						logger.info(order.toString());
+						tracker.setId(inputLine.substring(s, e));
+						logger.info(tracker.toString());
 					}
 				}
 			}
@@ -480,13 +474,8 @@ public class WebConnector {
 						if (s != -1) {
 							s = inputLine.indexOf(">", s) + 1;
 							int e = inputLine.indexOf("<", s);
-							try {
-								Method classMethod = order.getClass().getMethod("setId", String.class);
-								if (classMethod != null)
-									classMethod.invoke(order, inputLine.substring(s, e));
-							} catch(Exception e1) {
-							}
-							logger.info(order.toString());
+							tracker.setId(inputLine.substring(s, e));
+							logger.info(tracker.toString());
 						}
 					}
 				}
@@ -497,32 +486,25 @@ public class WebConnector {
 			}
 		}
 
-		if (order.getId() != null)
-			orders.put(order.getId(), order);
+		if (tracker.getId() != null)
+			orders.put(tracker.getId(), tracker);
 
-		if (ok) {
-			try {
-				Method classMethod = order.getClass().getMethod("setStatus", OrderStatus.class);
-				if (classMethod != null)
-					classMethod.invoke(order, OrderStatus.PendingNew);
-			} catch(Exception e) {
-			}
-		}
+		tracker.setStatus(OrderStatus.PendingNew);
 
 		return ok;
 	}
 
-	public boolean cancelOrder(IOrder order) {
+	public boolean cancelOrder(OrderMonitor tracker) {
 		boolean ok = false;
 		String inputLine;
 
 		try {
 			PostMethod method = new PostMethod("http://" + HOST + "/trading/ordmod5c");
 			method.addParameter("USER", user);
-			method.addParameter("RIF", order.getId());
+			method.addParameter("RIF", tracker.getId());
 			method.addParameter("TIPO", "I");
 			method.addParameter("PRZO", "");
-			method.addParameter("TITO", getSecurityFeedSymbol(order.getSecurity()));
+			method.addParameter("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity()));
 			method.addParameter("FILL", "REVOCA");
 
 			logger.info(method.getURI().toString());
@@ -539,14 +521,8 @@ public class WebConnector {
 			logger.error(e, e);
 		}
 
-		if (ok) {
-			try {
-				Method classMethod = order.getClass().getMethod("setStatus", OrderStatus.class);
-				if (classMethod != null)
-					classMethod.invoke(order, OrderStatus.PendingCancel);
-			} catch(Exception e) {
-			}
-		}
+		if (ok)
+			tracker.setStatus(OrderStatus.PendingCancel);
 
 		return ok;
 	}

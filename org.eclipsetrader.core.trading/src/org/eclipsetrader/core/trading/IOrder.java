@@ -22,16 +22,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
  */
 public interface IOrder {
 
-	public static final String PROP_ID = "id";
-	public static final String PROP_STATUS = "status";
-	public static final String PROP_FILLED_QUANTITY = "filledQuantity";
-	public static final String PROP_AVERAGE_PRICE = "averagePrice";
-
-	public String getId();
-
 	public Date getDate();
-
-	public IBrokerConnector getBroker();
 
 	public IOrderRoute getRoute();
 
@@ -52,16 +43,4 @@ public interface IOrder {
 	public OrderValidity getValidity();
 
 	public Date getExpire();
-
-	public void submit() throws BrokerException;
-
-	public void cancel() throws BrokerException;
-
-	public void modify() throws BrokerException;
-
-	public OrderStatus getStatus();
-
-	public Long getFilledQuantity();
-
-	public Double getAveragePrice();
 }

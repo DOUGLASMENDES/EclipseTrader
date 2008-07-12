@@ -12,7 +12,7 @@
 package org.eclipsetrader.ui.trading;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class BrokerNameColumn extends ColumnLabelProvider {
 
@@ -24,10 +24,10 @@ public class BrokerNameColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
-			if (order.getBroker() != null)
-				return order.getBroker().getName();
+		if (element instanceof IOrderMonitor) {
+			IOrderMonitor order = (IOrderMonitor) element;
+			if (order.getBrokerConnector() != null)
+				return order.getBrokerConnector().getName();
 		}
 		return "";
 	}

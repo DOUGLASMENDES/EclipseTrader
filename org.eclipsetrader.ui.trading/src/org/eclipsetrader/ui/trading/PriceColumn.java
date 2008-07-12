@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class PriceColumn extends ColumnLabelProvider {
 	private NumberFormat formatter = NumberFormat.getInstance();
@@ -31,10 +32,15 @@ public class PriceColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null && order.getPrice() != null)
 			return formatter.format(order.getPrice());
-		}
+
 		return "";
 	}
 }

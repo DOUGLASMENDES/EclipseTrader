@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.trading;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class SecurityNameColumn extends ColumnLabelProvider {
 
@@ -24,11 +25,15 @@ public class SecurityNameColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
-			if (order.getSecurity() != null)
-				return order.getSecurity().getName();
-		}
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null && order.getSecurity() != null)
+			return order.getSecurity().getName();
+
 		return "";
 	}
 }

@@ -16,15 +16,16 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.OrderSide;
 
 public class SideColumn extends ColumnLabelProvider {
 	static Map<OrderSide, String> labels = new HashMap<OrderSide, String>();
 	static {
-		labels.put(OrderSide.Buy, "Buy");
-		labels.put(OrderSide.Sell, "Sell");
-		labels.put(OrderSide.SellShort, "Sell Short");
-		labels.put(OrderSide.BuyCover, "Buy Cover");
+		labels.put(OrderSide.Buy, Messages.SideColumn_Buy);
+		labels.put(OrderSide.Sell, Messages.SideColumn_Sell);
+		labels.put(OrderSide.SellShort, Messages.SideColumn_SellShort);
+		labels.put(OrderSide.BuyCover, Messages.SideColumn_BuyCover);
 	}
 
 	public SideColumn() {
@@ -35,11 +36,17 @@ public class SideColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null) {
 			String text = labels.get(order.getSide());
 			return text != null ? text : order.getSide().toString();
 		}
-		return "";
+
+		return ""; //$NON-NLS-1$
 	}
 }

@@ -21,13 +21,13 @@ public interface ITradingService {
 
 	public IBrokerConnector getBrokerConnector(String id);
 
-	public void addOrders(IOrder[] order);
+	public void addOrders(IOrderMonitor[] order);
 
-	public void removeOrders(IOrder[] order);
+	public void removeOrders(IOrderMonitor[] order);
 
-	public void updateOrders(IOrder[] order);
+	public void updateOrders(IOrderMonitor[] order);
 
-	public IOrder[] getOrders();
+	public IOrderMonitor[] getOrders();
 
 	public void addOrderChangeListener(IOrderChangeListener listener);
 

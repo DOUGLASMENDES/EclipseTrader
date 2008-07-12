@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.core.trading;
 
+import org.eclipsetrader.core.instruments.ISecurity;
+
 public interface IBrokerConnector {
 
 	public String getId();
@@ -21,19 +23,15 @@ public interface IBrokerConnector {
 
 	public void disconnect();
 
-	public void submitOrder(IOrder order) throws BrokerException;
+	public IOrderMonitor prepareOrder(IOrder order) throws BrokerException;
 
-	public void cancelOrder(IOrder order) throws BrokerException;
-
-	public boolean allowModify();
-
-	public void modifyOrder(IOrder order) throws BrokerException;
-
-	public IOrder[] getOrders();
+	public IOrderMonitor[] getOrders();
 
 	public OrderType[] getAllowedTypes();
 
 	public OrderSide[] getAllowedSides();
 
 	public OrderValidity[] getAllowedValidity();
+
+	public boolean canTrade(ISecurity security);
 }

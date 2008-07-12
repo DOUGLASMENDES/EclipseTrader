@@ -11,24 +11,15 @@
 
 package org.eclipsetrader.core.trading;
 
-public class OrderDelta {
-	public static final int KIND_ADDED = 1;
-	public static final int KIND_REMOVED = 2;
-	public static final int KIND_UPDATED = 3;
+public class OrderMonitorEvent {
+	public IOrder order;
+	public IOrderMonitor monitor;
 
-	private int kind;
-	private IOrderMonitor order;
-
-	public OrderDelta(int kind, IOrderMonitor order) {
-		this.kind = kind;
-		this.order = order;
+	public OrderMonitorEvent() {
 	}
 
-	public int getKind() {
-    	return kind;
-    }
-
-	public IOrderMonitor getOrder() {
-    	return order;
+	public OrderMonitorEvent(IOrderMonitor monitor, IOrder order) {
+	    this.monitor = monitor;
+	    this.order = order;
     }
 }

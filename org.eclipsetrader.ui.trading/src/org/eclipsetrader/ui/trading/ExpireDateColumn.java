@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class ExpireDateColumn extends LabelProvider {
 	protected DateFormat formatter = DateFormat.getDateInstance(SimpleDateFormat.MEDIUM);
@@ -28,11 +29,15 @@ public class ExpireDateColumn extends LabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrder) {
-			IOrder order = (IOrder) element;
-			if (order.getExpire() != null)
-				return formatter.format(order.getDate());
-		}
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null && order.getExpire() != null)
+			return formatter.format(order.getDate());
+
 		return "";
 	}
 }
