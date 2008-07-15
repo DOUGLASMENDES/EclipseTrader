@@ -60,23 +60,23 @@ public class Util {
 	}
 
 	public static long getDataOra(byte[] arr, int i, int j) {
-		int k = 0;
+		long k = 0;
 		int l = 0;
 		for (int i1 = 0; i1 < 4; i1++) {
-			k += byteToInt(arr[i1 + i]) << l;
+			k += (long) byteToInt(arr[i1 + i]) << l;
 			l += 8;
 		}
 
-		int j1 = k >> 20;
-		int k1 = k - (j1 << 20);
+		long j1 = k >> 20;
+		long k1 = k - (j1 << 20);
 		k1 /= 12;
-		int l1 = k1 / 3600;
+		long l1 = k1 / 3600;
 		GregorianCalendar gregoriancalendar = new GregorianCalendar(2000 + j * 10, 0, 1, 0, 0, 0);
 		long l2 = ((Calendar) (gregoriancalendar)).getTime().getTime();
-		long l3 = (long) j1 * (long) 3600 * 24 * 1000 + (k1 * 1000);
+		long l3 = j1 * 3600 * 24 * 1000 + (k1 * 1000);
 		long l4 = l2 + l3;
 		((Calendar) (gregoriancalendar)).setTime(new Date(l4));
-		((Calendar) (gregoriancalendar)).set(11, l1);
+		((Calendar) (gregoriancalendar)).set(11, (int) l1);
 		return ((Calendar) (gregoriancalendar)).getTime().getTime();
 	}
 
