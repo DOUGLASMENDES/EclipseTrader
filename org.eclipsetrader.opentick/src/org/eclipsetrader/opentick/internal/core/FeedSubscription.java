@@ -48,10 +48,6 @@ import org.otfeed.event.TradeSideEnum;
 
 public class FeedSubscription implements IFeedSubscription {
 	private FeedConnector connector;
-	private ITrade trade;
-	private IQuote quote;
-	private ITodayOHL todayOHL;
-	private ILastClose lastClose;
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 	private IdentifierType identifierType;
 	private List<QuoteDelta> deltaList = new ArrayList<QuoteDelta>();
@@ -144,10 +140,6 @@ public class FeedSubscription implements IFeedSubscription {
 	public FeedSubscription(FeedConnector connector, IdentifierType identifierType) {
 		this.connector = connector;
 		this.identifierType = identifierType;
-	    this.trade = identifierType.getTrade();
-	    this.quote = identifierType.getQuote();
-	    this.todayOHL = identifierType.getTodayOHL();
-	    this.lastClose = identifierType.getLastClose();
 	}
 
 	public IdentifierType getIdentifierType() {
@@ -190,28 +182,28 @@ public class FeedSubscription implements IFeedSubscription {
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getQuote()
 	 */
 	public IQuote getQuote() {
-		return quote;
+		return identifierType.getQuote();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getTodayOHL()
 	 */
 	public ITodayOHL getTodayOHL() {
-		return todayOHL;
+		return identifierType.getTodayOHL();
 	}
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.feed.IFeedSubscription#getLastClose()
      */
     public ILastClose getLastClose() {
-	    return lastClose;
+	    return identifierType.getLastClose();
     }
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getTrade()
 	 */
 	public ITrade getTrade() {
-		return trade;
+		return identifierType.getTrade();
 	}
 
 	protected void addDelta(QuoteDelta delta) {
