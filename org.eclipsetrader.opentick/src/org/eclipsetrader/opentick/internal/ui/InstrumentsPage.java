@@ -36,8 +36,13 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -60,10 +65,12 @@ import org.otfeed.IConnection;
 import org.otfeed.IRequest;
 import org.otfeed.command.ListSymbolsCommand;
 import org.otfeed.event.IDataDelegate;
+import org.otfeed.event.InstrumentEnum;
 import org.otfeed.event.OTSymbol;
 
 public class InstrumentsPage extends WizardPage {
 	private CheckboxTableViewer instruments;
+	private ComboViewer typeCombo;
 	private Button refresh;
 
 	private Exchange exchange;
@@ -166,7 +173,9 @@ public class InstrumentsPage extends WizardPage {
 		instruments.addFilter(new ViewerFilter() {
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
-	            return !"".equals(((Instrument) element).getCompany());
+            	Integer type = (Integer) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
+            	Instrument instrument = (Instrument) element;
+	            return type.intValue() == 0 || instrument.getType() == type.intValue();
             }
 		});
 		instruments.setSorter(new ViewerSorter());
@@ -176,10 +185,56 @@ public class InstrumentsPage extends WizardPage {
             }
 		});
 
-		refresh = new Button(content, SWT.NONE);
+		Composite group = new Composite(content, SWT.NONE);
+		GridLayout gridLayout = new GridLayout(3, false);
+		gridLayout.marginWidth = gridLayout.marginHeight = 0;
+		group.setLayout(gridLayout);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		label = new Label(group, SWT.NONE);
+		label.setText("Types:");
+
+		typeCombo = new ComboViewer(group, SWT.READ_ONLY | SWT.DROP_DOWN);
+		typeCombo.getControl().setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
+		typeCombo.setContentProvider(new ArrayContentProvider());
+		typeCombo.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+            	switch(((Integer) element).intValue()) {
+            		case 0:
+            			return "All";
+            		case 1:
+            			return "Stock";
+            		case 2:
+            			return "Index";
+            		case 3:
+            			return "Option";
+            		case 4:
+            			return "Future";
+            		case 5:
+            			return "Single Stock Future";
+            	}
+	            return super.getText(element);
+            }
+		});
+		typeCombo.setInput(new Object[] {
+				new Integer(0),
+				new Integer(InstrumentEnum.STOCK.code),
+				new Integer(InstrumentEnum.INDEX.code),
+				new Integer(InstrumentEnum.OPTION.code),
+				new Integer(InstrumentEnum.FUTURE.code),
+				new Integer(InstrumentEnum.SSFUTURE.code),
+			});
+		typeCombo.setSelection(new StructuredSelection(new Integer(InstrumentEnum.STOCK.code)));
+		typeCombo.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+            	instruments.refresh();
+            }
+		});
+
+		refresh = new Button(group, SWT.NONE);
 		refresh.setText("Refresh List");
 		setButtonLayoutData(refresh);
-		((GridData) refresh.getLayoutData()).horizontalAlignment = SWT.END;
 		refresh.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {

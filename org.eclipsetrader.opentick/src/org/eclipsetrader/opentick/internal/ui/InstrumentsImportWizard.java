@@ -75,7 +75,7 @@ public class InstrumentsImportWizard extends Wizard implements IImportWizard {
         			properties.setProperty(IdentifiersList.EXCHANGE_PROPERTY, exchange.getCode());
         			properties.setProperty("org.eclipsetrader.yahoo.symbol", instruments[i].getCode());
         			FeedIdentifier identifier = new FeedIdentifier(instruments[i].getCode(), properties);
-        			security[i] = new Security(instruments[i].getCompany(), identifier);
+        			security[i] = new Security(!"".equals(instruments[i].getCompany()) ? instruments[i].getCompany(): instruments[i].getCode(), identifier);
         		}
         		repository.saveAdaptable(security);
 

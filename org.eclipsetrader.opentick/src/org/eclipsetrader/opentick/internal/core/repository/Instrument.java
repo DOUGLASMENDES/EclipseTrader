@@ -67,6 +67,8 @@ public class Instrument {
      */
     @Override
     public String toString() {
+    	if ("".equals(company))
+    		return code;
 	    return company + " (" + code +")";
     }
 }
