@@ -27,15 +27,19 @@ public class OHLCType {
 	private Date date;
 
 	@XmlAttribute(name = "open")
+	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
 	private Double open;
 
 	@XmlAttribute(name = "high")
+	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
 	private Double high;
 
 	@XmlAttribute(name = "low")
+	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
 	private Double low;
 
 	@XmlAttribute(name = "close")
+	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
 	private Double close;
 
 	@XmlAttribute(name = "volume")
