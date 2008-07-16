@@ -31,9 +31,9 @@ public class IdentifiersListTest extends TestCase {
 		type = list.getIdentifierFor("Q:MSFT");
 		assertEquals("MSFT", type.getSymbol());
 		assertEquals("Q", type.getExchange());
-		type = list.getIdentifierFor("N/AAPL");
-		assertEquals("AAPL", type.getSymbol());
-		assertEquals("N", type.getExchange());
+		type = list.getIdentifierFor("ec:/YMH8");
+		assertEquals("/YMH8", type.getSymbol());
+		assertEquals("ec", type.getExchange());
 		type = list.getIdentifierFor("is\\GOOG");
 		assertEquals("GOOG", type.getSymbol());
 		assertEquals("is", type.getExchange());

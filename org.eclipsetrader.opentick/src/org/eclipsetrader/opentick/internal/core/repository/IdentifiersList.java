@@ -76,7 +76,7 @@ public class IdentifiersList {
 	}
 
 	public IdentifierType getIdentifierFor(String compoundSymbol) {
-		String[] ar = compoundSymbol.split("[:/\\\\]");
+		String[] ar = compoundSymbol.split("[:\\\\]");
 		String symbol = ar.length != 0 ? (ar.length == 2 ? ar[1] : ar[0]) : compoundSymbol;
 		String exchange = ar.length == 2 ? ar[0] : "@";
 
