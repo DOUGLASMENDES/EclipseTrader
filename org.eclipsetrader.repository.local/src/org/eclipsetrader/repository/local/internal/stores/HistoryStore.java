@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.ISplit;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -82,7 +83,9 @@ public class HistoryStore implements IStore {
 		security = (ISecurity) properties.getProperty(IPropertyConstants.SECURITY);
 
 		IOHLC[] bars = (IOHLC[]) properties.getProperty(IPropertyConstants.BARS);
-		HistoryType historyType = new HistoryType(security, bars);
+		ISplit[] splits = (ISplit[]) properties.getProperty(IPropertyConstants.SPLITS);
+
+		HistoryType historyType = new HistoryType(security, bars, splits, null);
 		saveHistoryType(historyType);
 	}
 

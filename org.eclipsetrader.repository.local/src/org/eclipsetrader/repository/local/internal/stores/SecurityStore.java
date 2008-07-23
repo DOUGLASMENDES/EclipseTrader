@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipsetrader.core.feed.IDividend;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.IUserProperties;
@@ -43,6 +45,7 @@ import org.eclipsetrader.core.repositories.StoreProperties;
 import org.eclipsetrader.repository.local.LocalRepository;
 import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
+import org.eclipsetrader.repository.local.internal.types.DividendType;
 import org.eclipsetrader.repository.local.internal.types.FeedIdentifierAdapter;
 import org.eclipsetrader.repository.local.internal.types.PropertyType;
 import org.eclipsetrader.repository.local.internal.types.RepositoryFactoryAdapter;
@@ -64,6 +67,10 @@ public class SecurityStore implements IStore {
 	@XmlJavaTypeAdapter(FeedIdentifierAdapter.class)
 	private IFeedIdentifier identifier;
 
+	@XmlElementWrapper(name = "dividends")
+	@XmlElementRef
+	private TreeSet<DividendType> dividends;
+
 	private IUserProperties userProperties;
 
 	@XmlElementWrapper(name = "properties")
@@ -79,6 +86,7 @@ public class SecurityStore implements IStore {
 
 		knownProperties.add(IPropertyConstants.NAME);
 		knownProperties.add(IPropertyConstants.IDENTIFIER);
+		knownProperties.add(IPropertyConstants.DIVIDENDS);
 		knownProperties.add(IPropertyConstants.USER_PROPERTIES);
 	}
 
@@ -113,6 +121,14 @@ public class SecurityStore implements IStore {
 		properties.setProperty(IPropertyConstants.IDENTIFIER, identifier);
 		properties.setProperty(IPropertyConstants.USER_PROPERTIES, userProperties);
 
+		if (dividends != null) {
+			int i = 0;
+			IDividend[] dividends = new IDividend[this.dividends.size()];
+			for (DividendType type : this.dividends)
+				dividends[i++] = type.getDividend();
+			properties.setProperty(IPropertyConstants.DIVIDENDS, dividends);
+		}
+
 		if (unknownProperties != null) {
 			for (PropertyType property : unknownProperties)
 				properties.setProperty(property.getName(), PropertyType.convert(property));
@@ -130,6 +146,15 @@ public class SecurityStore implements IStore {
 		this.name = (String) properties.getProperty(IPropertyConstants.NAME);
 		this.identifier = (IFeedIdentifier) properties.getProperty(IPropertyConstants.IDENTIFIER);
 		this.userProperties = (IUserProperties) properties.getProperty(IPropertyConstants.USER_PROPERTIES);
+
+		IDividend[] dividends = (IDividend[]) properties.getProperty(IPropertyConstants.DIVIDENDS);
+		if (dividends != null) {
+			this.dividends = new TreeSet<DividendType>();
+			for (int i = 0; i < dividends.length; i++)
+				this.dividends.add(new DividendType(dividends[i]));
+		}
+		else
+			this.dividends = null;
 
 		this.unknownProperties = new ArrayList<PropertyType>();
 		for (String name : properties.getPropertyNames()) {

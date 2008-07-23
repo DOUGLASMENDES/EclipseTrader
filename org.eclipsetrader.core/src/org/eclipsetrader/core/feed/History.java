@@ -30,6 +30,7 @@ import org.eclipsetrader.core.repositories.StoreProperties;
 public class History implements IHistory, IStoreObject {
 	private ISecurity security;
 	private IOHLC[] bars = new IOHLC[0];
+	private ISplit[] splits = new ISplit[0];
 	private TimeSpan timeSpan;
 
 	private IOHLC highest;
@@ -44,12 +45,17 @@ public class History implements IHistory, IStoreObject {
 	}
 
 	public History(ISecurity security, IOHLC[] bars) {
-		this(security, bars, TimeSpan.days(1));
+		this(security, bars, null, TimeSpan.days(1));
 	}
 
 	public History(ISecurity security, IOHLC[] bars, TimeSpan timeSpan) {
+		this(security, bars, null, timeSpan);
+	}
+
+	public History(ISecurity security, IOHLC[] bars, ISplit[] splits, TimeSpan timeSpan) {
 		setSecurity(security);
 		setOHLC(bars);
+		setSplits(splits);
 	    this.timeSpan = timeSpan;
     }
 
@@ -229,6 +235,55 @@ public class History implements IHistory, IStoreObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IHistory#getSplits()
+     */
+    public ISplit[] getSplits() {
+	    return splits;
+    }
+
+	public void setSplits(ISplit[] splits) {
+		Object oldValue = this.splits;
+    	this.splits = splits;
+		propertyChangeSupport.firePropertyChange(IPropertyConstants.SPLITS, oldValue, this.splits);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IHistory#getAdjustedOHLC()
+     */
+    public IOHLC[] getAdjustedOHLC() {
+    	IDividend[] dividends = (IDividend[]) security.getAdapter(IDividend[].class);
+
+    	IOHLC[] l = new IOHLC[bars.length];
+    	for (int i = 0; i < l.length; i++) {
+    		double splitFactor = 1.0;
+    		if (splits != null) {
+        		for (int s = 0; s < splits.length; s++) {
+                    if (bars[i].getDate().before(splits[s].getDate()))
+                        splitFactor *= splits[s].getNewQuantity() / splits[s].getOldQuantity();
+        		}
+    		}
+
+    		double cumulatedDividends = 0.0;
+    		if (dividends != null) {
+        		for (int d = 0; d < dividends.length; d++) {
+        			if (bars[i].getDate().before(dividends[d].getExDate()))
+        				cumulatedDividends += dividends[d].getValue();
+        		}
+    		}
+
+    		l[i] = new OHLC(
+            		bars[i].getDate(),
+            		(bars[i].getOpen() / splitFactor) - cumulatedDividends,
+            		(bars[i].getHigh() / splitFactor) - cumulatedDividends,
+            		(bars[i].getLow() / splitFactor) - cumulatedDividends,
+            		(bars[i].getClose() / splitFactor) - cumulatedDividends,
+            		(long) (bars[i].getVolume() * splitFactor)
+            	);
+    	}
+	    return l;
+    }
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
     @SuppressWarnings("unchecked")
@@ -268,6 +323,7 @@ public class History implements IHistory, IStoreObject {
 		storeProperties.setProperty(IPropertyConstants.SECURITY, security);
 		storeProperties.setProperty(IPropertyConstants.BARS, bars);
 		storeProperties.setProperty(IPropertyConstants.TIME_SPAN, timeSpan);
+		storeProperties.setProperty(IPropertyConstants.SPLITS, splits);
 
 		if (bars != null && bars.length != 0)
 			storeProperties.setProperty(IPropertyConstants.BARS_DATE, bars[0].getDate());
@@ -284,15 +340,24 @@ public class History implements IHistory, IStoreObject {
 	    this.security = (ISecurity) storeProperties.getProperty(IPropertyConstants.SECURITY);
 
 	    IOHLC[] bars = (IOHLC[]) storeProperties.getProperty(IPropertyConstants.BARS);
-		List<IOHLC> l = bars != null ? Arrays.asList(bars) : new ArrayList<IOHLC>();
-		Collections.sort(l, new Comparator<IOHLC>() {
+		List<IOHLC> l1 = bars != null ? Arrays.asList(bars) : new ArrayList<IOHLC>();
+		Collections.sort(l1, new Comparator<IOHLC>() {
             public int compare(IOHLC o1, IOHLC o2) {
 	            return o1.getDate().compareTo(o2.getDate());
             }
 		});
-		this.bars = l.toArray(new IOHLC[l.size()]);
+		this.bars = l1.toArray(new IOHLC[l1.size()]);
 
 		this.timeSpan = (TimeSpan) storeProperties.getProperty(IPropertyConstants.TIME_SPAN);
+
+		ISplit[] splits = (ISplit[]) storeProperties.getProperty(IPropertyConstants.SPLITS);
+		List<ISplit> l2 = splits != null ? Arrays.asList(splits) : new ArrayList<ISplit>();
+		Collections.sort(l2, new Comparator<ISplit>() {
+            public int compare(ISplit o1, ISplit o2) {
+	            return o1.getDate().compareTo(o2.getDate());
+            }
+		});
+		this.splits = l2.toArray(new ISplit[l2.size()]);
 
 	    updateRange();
     }

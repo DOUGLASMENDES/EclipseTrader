@@ -23,7 +23,9 @@ import javax.xml.bind.Unmarshaller;
 import junit.framework.TestCase;
 
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.ISplit;
 import org.eclipsetrader.core.feed.OHLC;
+import org.eclipsetrader.core.feed.Split;
 
 public class HistoryTypeTest extends TestCase {
 	private String prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
@@ -109,6 +111,13 @@ public class HistoryTypeTest extends TestCase {
 	public void testUnmarshalVolume() throws Exception {
 		HistoryType object = unmarshal(prefix + "<history><bar volume=\"12500\"/></history>");
 		assertEquals(new Long(12500), object.getData().get(0).getVolume());
+	}
+
+	public void testMarshalSplits() throws Exception {
+		HistoryType object = new HistoryType(null, null, new ISplit[] {
+				new Split(getTime(2008, Calendar.JULY, 23, 0, 0), 1.0, 2.0),
+			}, null);
+		assertEquals(prefix + "<history><split new-quantity=\"2\" old-quantity=\"1\" date=\"2008-07-23\"/></history>", marshal(object));
 	}
 
 	private Date getTime(int year, int month, int day, int hour, int minute) {

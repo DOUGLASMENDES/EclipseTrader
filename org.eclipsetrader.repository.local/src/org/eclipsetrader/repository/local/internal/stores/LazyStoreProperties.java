@@ -38,13 +38,15 @@ public class LazyStoreProperties extends StoreProperties {
      */
     @Override
     public Object getProperty(String name) {
-    	if (IPropertyConstants.BARS.equals(name)) {
+    	if (IPropertyConstants.BARS.equals(name) || IPropertyConstants.SPLITS.equals(name)) {
     		if (getProperties().get(name) == null) {
     			IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
     			path.toFile().mkdirs();
     			HistoryType historyType = (HistoryType) unmarshal(HistoryType.class, path.append(String.valueOf(id) + ".xml").toFile());
-    			if (historyType != null)
-    				getProperties().put(name, historyType.toArray());
+    			if (historyType != null) {
+    				getProperties().put(IPropertyConstants.BARS, historyType.toArray());
+    				getProperties().put(IPropertyConstants.SPLITS, historyType.getSplits());
+    			}
     		}
     	}
 	    return super.getProperty(name);

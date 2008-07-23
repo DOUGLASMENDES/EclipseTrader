@@ -181,6 +181,68 @@ public class HistoryTest extends TestCase {
 	    assertEquals(new OHLC(getTime(2008, Calendar.MAY, 22, 9, 7), 26.47, 26.47, 26.37, 26.41, 202512L), subset.getOHLC()[2]);
     }
 
+	public void testGetSplitsAdjustedHistory() throws Exception {
+		IOHLC[] bars = new IOHLC[] {
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 14), 47.25, 48.50, 46.77, 48.30, 90446400L),
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 18), 24.62, 24.99, 24.40, 24.96, 57415500L),
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 19), 24.82, 24.88, 24.17, 24.53, 46902700L),
+			};
+		ISplit[] splits = new ISplit[] {
+				new Split(getTime(2003, Calendar.FEBRUARY, 18), 1.0, 2.0),
+			};
+		History history = new History(new Security("Test", null), bars, splits, null);
+		IOHLC[] adjustedBars = history.getAdjustedOHLC();
+		assertEquals(3, adjustedBars.length);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 14), 47.25 / 2, 48.50 / 2, 46.77 / 2, 48.30 / 2, 90446400L * 2), adjustedBars[0]);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 18), 24.62, 24.99, 24.40, 24.96, 57415500L), adjustedBars[1]);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 19), 24.82, 24.88, 24.17, 24.53, 46902700L), adjustedBars[2]);
+    }
+
+	public void testGetDividendsAdjustedHistory() throws Exception {
+		IOHLC[] bars = new IOHLC[] {
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 14), 47.25, 48.50, 46.77, 48.30, 90446400L),
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 18), 24.62, 24.99, 24.40, 24.96, 57415500L),
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 19), 24.82, 24.88, 24.17, 24.53, 46902700L),
+			};
+		IDividend[] dividends = new IDividend[] {
+				new Dividend(getTime(2003, Calendar.FEBRUARY, 19), 0.08),
+			};
+
+		Security security = new Security("Test", null);
+		security.setDividends(dividends);
+		History history = new History(security, bars, null, null);
+
+		IOHLC[] adjustedBars = history.getAdjustedOHLC();
+		assertEquals(3, adjustedBars.length);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 14), 47.25 - 0.08, 48.50 - 0.08, 46.77 - 0.08, 48.30 - 0.08, 90446400L), adjustedBars[0]);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 18), 24.62 - 0.08, 24.99 - 0.08, 24.40 - 0.08, 24.96 - 0.08, 57415500L), adjustedBars[1]);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 19), 24.82, 24.88, 24.17, 24.53, 46902700L), adjustedBars[2]);
+    }
+
+	public void testGetDividendsAndSplitsAdjustedHistory() throws Exception {
+		IOHLC[] bars = new IOHLC[] {
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 14), 47.25, 48.50, 46.77, 48.30, 90446400L),
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 18), 24.62, 24.99, 24.40, 24.96, 57415500L),
+				new OHLC(getTime(2003, Calendar.FEBRUARY, 19), 24.82, 24.88, 24.17, 24.53, 46902700L),
+			};
+		ISplit[] splits = new ISplit[] {
+				new Split(getTime(2003, Calendar.FEBRUARY, 18), 1.0, 2.0),
+			};
+		IDividend[] dividends = new IDividend[] {
+				new Dividend(getTime(2003, Calendar.FEBRUARY, 19), 0.08),
+			};
+
+		Security security = new Security("Test", null);
+		security.setDividends(dividends);
+		History history = new History(security, bars, splits, null);
+
+		IOHLC[] adjustedBars = history.getAdjustedOHLC();
+		assertEquals(3, adjustedBars.length);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 14), 47.25 / 2 - 0.08, 48.50 / 2 - 0.08, 46.77 / 2 - 0.08, 48.30 / 2 - 0.08, 90446400L * 2), adjustedBars[0]);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 18), 24.62 - 0.08, 24.99 - 0.08, 24.40 - 0.08, 24.96 - 0.08, 57415500L), adjustedBars[1]);
+	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 19), 24.82, 24.88, 24.17, 24.53, 46902700L), adjustedBars[2]);
+    }
+
 	private Date getTime(int year, int month, int day) {
 	    Calendar date = Calendar.getInstance();
 	    date.set(year, month, day, 0, 0, 0);
