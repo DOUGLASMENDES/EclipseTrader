@@ -9,6 +9,11 @@
             id="org.eclipsetrader.yahoo"
             name="Yahoo! Finance">
       </connector>
+      <backfill
+            class="org.eclipsetrader.yahoo.internal.core.connector.BackfillConnector"
+            id="org.eclipsetrader.yahoo"
+            name="Yahoo! Finance">
+      </backfill>
       <property
             id="org.eclipsetrader.yahoo.symbol"
             name="Symbol">

@@ -4,6 +4,11 @@
    <extension
          name="Borsa Italiana"
          point="org.eclipsetrader.core.connectors">
+      <backfill
+            class="org.eclipsetrader.borsaitalia.internal.core.BackfillConnector"
+            id="org.eclipsetrader.borsaitalia"
+            name="Borsa Italiana">
+      </backfill>
       <property
             id="org.eclipsetrader.borsaitalia.isin"
             name="ISIN">

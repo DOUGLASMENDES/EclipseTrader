@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.internal.CoreActivator;
@@ -26,9 +27,12 @@ import org.eclipsetrader.core.internal.CoreActivator;
 public class FeedService implements IFeedService {
 	private static final String EXTENSION_ID = "connectors"; //$NON-NLS-1$
 	private static final String CONNECTOR_ELEMENT = "connector"; //$NON-NLS-1$
+	private static final String BACKFILL_ELEMENT = "backfill"; //$NON-NLS-1$
 	private static final String ID_ATTRIBUTE = "id"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
+
 	private Map<String,IFeedConnector> connectors = new HashMap<String,IFeedConnector>();
+	private Map<String,IBackfillConnector> backfillConnectors = new HashMap<String,IBackfillConnector>();
 
 	public FeedService() {
 	}
@@ -37,12 +41,18 @@ public class FeedService implements IFeedService {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] elements = registry.getConfigurationElementsFor(CoreActivator.PLUGIN_ID, EXTENSION_ID);
 		for (IConfigurationElement element : elements) {
-			if (!element.getName().equals(CONNECTOR_ELEMENT))
-				continue;
 			try {
 				String id = element.getAttribute(ID_ATTRIBUTE);
-				IFeedConnector connector = (IFeedConnector) element.createExecutableExtension(CLASS_ATTRIBUTE);
-				connectors.put(id, connector);
+				if (element.getName().equals(CONNECTOR_ELEMENT)) {
+					IFeedConnector connector = (IFeedConnector) element.createExecutableExtension(CLASS_ATTRIBUTE);
+					connectors.put(id, connector);
+					if (connector instanceof IBackfillConnector)
+						backfillConnectors.put(id, (IBackfillConnector) connector);
+				}
+				if (element.getName().equals(BACKFILL_ELEMENT)) {
+					IBackfillConnector connector = (IBackfillConnector) element.createExecutableExtension(CLASS_ATTRIBUTE);
+					backfillConnectors.put(id, connector);
+				}
 			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error creating connector " + element.getAttribute(ID_ATTRIBUTE), e); //$NON-NLS-1$
 				CoreActivator.getDefault().getLog().log(status);
@@ -69,4 +79,19 @@ public class FeedService implements IFeedService {
 		Collection<IFeedConnector> values = connectors.values();
 		return values.toArray(new IFeedConnector[values.size()]);
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedService#getBackfillConnector(java.lang.String)
+     */
+    public IBackfillConnector getBackfillConnector(String id) {
+	    return backfillConnectors.get(id);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedService#getBackfillConnectors()
+     */
+    public IBackfillConnector[] getBackfillConnectors() {
+		Collection<IBackfillConnector> values = backfillConnectors.values();
+		return values.toArray(new IBackfillConnector[values.size()]);
+    }
 }

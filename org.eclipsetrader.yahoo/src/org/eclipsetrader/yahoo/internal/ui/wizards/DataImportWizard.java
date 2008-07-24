@@ -54,6 +54,8 @@ public class DataImportWizard extends Wizard implements IImportWizard {
 		job.setUser(true);
 		job.schedule();
 
+		dataPage.saveState();
+
 		return true;
 	}
 }

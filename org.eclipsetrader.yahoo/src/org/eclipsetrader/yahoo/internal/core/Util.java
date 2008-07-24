@@ -115,4 +115,36 @@ public class Util {
 
 		return method;
 	}
+
+	public static HttpMethod getDividendsHistoryMethod(IFeedIdentifier identifier, Date from, Date to) {
+		String symbol = identifier.getSymbol();
+
+		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+		if (properties != null) {
+			if (properties.getProperty("org.eclipsetrader.yahoo.symbol") != null)
+				symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
+		}
+
+		Calendar fromDate = Calendar.getInstance();
+		fromDate.setTime(from);
+
+		Calendar toDate = Calendar.getInstance();
+		toDate.setTime(to);
+
+		GetMethod method = new GetMethod("http://" + historyFeedHost + "/table.csv");
+        method.setQueryString(new NameValuePair[] {
+        		new NameValuePair("s", symbol),
+        		new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
+        		new NameValuePair("e", String.valueOf(toDate.get(Calendar.DAY_OF_MONTH))),
+        		new NameValuePair("f", String.valueOf(toDate.get(Calendar.YEAR))),
+        		new NameValuePair("g", "v"),
+        		new NameValuePair("a", String.valueOf(fromDate.get(Calendar.MONTH))),
+        		new NameValuePair("b", String.valueOf(fromDate.get(Calendar.DAY_OF_MONTH))),
+        		new NameValuePair("c", String.valueOf(fromDate.get(Calendar.YEAR))),
+        		new NameValuePair("ignore", ".csv"),
+        	});
+		method.setFollowRedirects(true);
+
+		return method;
+	}
 }

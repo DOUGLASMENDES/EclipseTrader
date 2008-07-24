@@ -9,6 +9,11 @@
             id="org.eclipsetrader.opentick"
             name="OpenTick">
       </connector>
+      <backfill
+            class="org.eclipsetrader.opentick.internal.core.BackfillConnector"
+            id="org.eclipsetrader.opentick"
+            name="OpenTick">
+      </backfill>
       <property
             id="org.eclipsetrader.opentick.symbol"
             name="Symbol">

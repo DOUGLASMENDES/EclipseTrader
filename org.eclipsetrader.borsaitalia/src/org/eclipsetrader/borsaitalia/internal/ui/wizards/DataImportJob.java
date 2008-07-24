@@ -11,10 +11,6 @@
 
 package org.eclipsetrader.borsaitalia.internal.ui.wizards;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,27 +18,21 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.borsaitalia.internal.Activator;
+import org.eclipsetrader.borsaitalia.internal.core.BackfillConnector;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
-import org.eclipsetrader.core.feed.OHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
-import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.osgi.framework.BundleContext;
@@ -59,9 +49,7 @@ public class DataImportJob extends Job {
 	private Date fromDate;
 	private Date toDate;
 
-	private String host = "grafici.borsaitalia.it"; //$NON-NLS-1$
-	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); //$NON-NLS-1$
+	private BackfillConnector connector = new BackfillConnector();
 
 	public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
 		super("Import Data");
@@ -122,7 +110,7 @@ public class DataImportJob extends Job {
 							if (currentTimeSpan.equals(TimeSpan.days(1))) {
 								monitor.subTask(security.getName().replace("&", "&&"));
 
-								IOHLC[] ohlc = backfill(identifier, beginDate, endDate, currentTimeSpan);
+								IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
 								if (ohlc != null && ohlc.length != 0) {
 									for (IOHLC d : ohlc)
 										map.put(d.getDate(), d);
@@ -139,7 +127,7 @@ public class DataImportJob extends Job {
 							else {
 								monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
 
-								IOHLC[] ohlc = backfill(identifier, beginDate, endDate, currentTimeSpan);
+								IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
 								if (ohlc != null && ohlc.length != 0) {
 									Calendar c = Calendar.getInstance();
 									int dayOfYear = -1;
@@ -207,85 +195,6 @@ public class DataImportJob extends Job {
 		});
 
 		return l.toArray(new ISecurity[l.size()]);
-	}
-
-	protected IOHLC[] backfill(IFeedIdentifier identifier, Date begin, Date end, TimeSpan timeSpan) {
-		String code = identifier.getSymbol();
-		String isin = null;
-
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			if (properties.getProperty(Activator.PROP_ISIN) != null)
-				isin = properties.getProperty(Activator.PROP_ISIN);
-			if (properties.getProperty(Activator.PROP_CODE) != null)
-				code = properties.getProperty(Activator.PROP_CODE);
-		}
-
-		if (code == null || isin == null)
-			return new IOHLC[0];
-
-		String period = String.valueOf(timeSpan.getLength()) + (timeSpan.getUnits() == Units.Minutes ? "MIN" : "DAY");
-
-		List<OHLC> list = new ArrayList<OHLC>();
-
-		try {
-			HttpMethod method = new GetMethod("http://" + host + "/scripts/cligipsw.dll");
-			method.setQueryString(new NameValuePair[] {
-					new NameValuePair("app", "tic_d"),
-					new NameValuePair("action", "dwnld4push"),
-					new NameValuePair("cod", code),
-					new NameValuePair("codneb", isin),
-					new NameValuePair("req_type", "GRAF_DS"),
-					new NameValuePair("ascii", "1"),
-					new NameValuePair("form_id", ""),
-					new NameValuePair("period", period),
-					new NameValuePair("From", new SimpleDateFormat("yyyyMMdd000000").format(begin.getTime())),
-					new NameValuePair("To", new SimpleDateFormat("yyyyMMdd000000").format(end.getTime())),
-				});
-			method.setFollowRedirects(true);
-
-			HttpClient client = new HttpClient();
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-			client.executeMethod(method);
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-
-			String inputLine = in.readLine();
-			if (inputLine.startsWith("@")) {
-				while ((inputLine = in.readLine()) != null) {
-					if (inputLine.startsWith("@") || inputLine.length() == 0) //$NON-NLS-1$
-						continue;
-
-					try {
-						String[] item = inputLine.split("\\|"); //$NON-NLS-1$
-						OHLC bar = new OHLC(
-								df.parse(item[0]),
-								nf.parse(item[1]).doubleValue(),
-								nf.parse(item[2]).doubleValue(),
-								nf.parse(item[3]).doubleValue(),
-								nf.parse(item[4]).doubleValue(),
-								nf.parse(item[5]).longValue()
-							);
-						list.add(bar);
-					} catch (Exception e) {
-						Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing data: " + inputLine, e); //$NON-NLS-1$
-						Activator.getDefault().getLog().log(status);
-					}
-				}
-			}
-			else {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, NLS.bind("Unexpected response from {0}: {1}", new Object[] { method.getURI().toString(), inputLine}), null);
-				Activator.getDefault().getLog().log(status);
-			}
-
-			in.close();
-
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(status);
-		}
-
-		return list.toArray(new IOHLC[list.size()]);
 	}
 
 	protected IRepositoryService getRepositoryService() {

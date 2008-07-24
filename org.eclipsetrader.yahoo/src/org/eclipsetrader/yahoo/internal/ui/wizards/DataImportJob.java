@@ -11,35 +11,26 @@
 
 package org.eclipsetrader.yahoo.internal.ui.wizards;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.feed.History;
+import org.eclipsetrader.core.feed.IDividend;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
-import org.eclipsetrader.core.feed.OHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
-import org.eclipsetrader.yahoo.internal.core.Util;
+import org.eclipsetrader.yahoo.internal.core.connector.BackfillConnector;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -54,10 +45,7 @@ public class DataImportJob extends Job {
 	private Date fromDate;
 	private Date toDate;
 
-	private SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yy", Locale.US); //$NON-NLS-1$
-	private SimpleDateFormat dfAlt = new SimpleDateFormat("yy-MM-dd"); //$NON-NLS-1$
-	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	private NumberFormat pf = NumberFormat.getInstance(Locale.US);
+	private BackfillConnector connector = new BackfillConnector();
 
 	public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
 		super("Import Data");
@@ -103,20 +91,37 @@ public class DataImportJob extends Job {
 							if (monitor.isCanceled())
 								return Status.CANCEL_STATUS;
 
-							if (currentTimeSpan.equals(TimeSpan.days(1))) {
-								IOHLC[] ohlc = backfill(identifier, beginDate, endDate);
-								if (ohlc != null && ohlc.length != 0) {
-									for (IOHLC d : ohlc)
-										map.put(d.getDate(), d);
-									ohlc = map.values().toArray(new IOHLC[map.values().size()]);
+							IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
+							if (ohlc != null && ohlc.length != 0) {
+								for (IOHLC d : ohlc)
+									map.put(d.getDate(), d);
+								ohlc = map.values().toArray(new IOHLC[map.values().size()]);
 
-									if (history == null)
-										history = new History(security, ohlc);
-									else if (history instanceof History)
-										((History) history).setOHLC(ohlc);
+								if (history == null)
+									history = new History(security, ohlc);
+								else if (history instanceof History)
+									((History) history).setOHLC(ohlc);
 
-									repository.saveAdaptable(new IHistory[] { history });
-								}
+								repository.saveAdaptable(new IHistory[] { history });
+							}
+						}
+
+						IDividend[] dividends = connector.backfillDividends(identifier, beginDate, endDate);
+						if (dividends != null && dividends.length != 0 && security instanceof Security) {
+							Map<Date, IDividend> dividendsMap = new HashMap<Date, IDividend>();
+
+							IDividend[] currentDividends = ((Security) security).getDividends();
+							if (currentDividends != null && mode != FULL) {
+								for (IDividend d : currentDividends)
+									dividendsMap.put(d.getExDate(), d);
+							}
+
+							for (int i = 0; i < dividends.length; i++)
+								dividendsMap.put(dividends[i].getExDate(), dividends[i]);
+
+							if (dividendsMap.size() != 0) {
+								((Security) security).setDividends(dividendsMap.values().toArray(new IDividend[dividendsMap.values().size()]));
+								repository.saveAdaptable(new ISecurity[] { security });
 							}
 						}
 					}
@@ -132,75 +137,6 @@ public class DataImportJob extends Job {
 		}
 		return Status.OK_STATUS;
 	}
-
-    protected IOHLC[] backfill(IFeedIdentifier identifier, Date begin, Date end) {
-    	List<OHLC> list = new ArrayList<OHLC>();
-
-    	try {
-			HttpMethod method = Util.getHistoryFeedMethod(identifier, begin, end);
-			method.setFollowRedirects(true);
-
-			HttpClient client = new HttpClient();
-			client.executeMethod(method);
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-
-			// The first line is the header, ignoring
-			String inputLine = in.readLine();
-			while ((inputLine = in.readLine()) != null) {
-				if (inputLine.startsWith("<")) //$NON-NLS-1$
-					continue;
-
-		    	try {
-					OHLC bar = parseResponseLine(inputLine);
-					if (bar != null)
-						list.add(bar);
-		    	} catch(ParseException e) {
-					Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error parsing data: " + inputLine, e);
-					YahooActivator.getDefault().getLog().log(status);
-		    	}
-			}
-
-			in.close();
-
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
-			YahooActivator.getDefault().getLog().log(status);
-		}
-
-		return list.toArray(new IOHLC[list.size()]);
-    }
-
-    protected OHLC parseResponseLine(String inputLine) throws ParseException {
-		String[] item = inputLine.split(","); //$NON-NLS-1$
-		if (item.length < 6)
-			return null;
-
-		Calendar day = Calendar.getInstance();
-		try {
-			day.setTime(df.parse(item[0]));
-		} catch (ParseException e) {
-			try {
-				day.setTime(dfAlt.parse(item[0]));
-			} catch (ParseException e1) {
-				throw e1;
-			}
-		}
-		day.set(Calendar.HOUR, 0);
-		day.set(Calendar.MINUTE, 0);
-		day.set(Calendar.SECOND, 0);
-		day.set(Calendar.MILLISECOND, 0);
-
-		OHLC bar = new OHLC(day.getTime(),
-				pf.parse(item[1].replace(',', '.')).doubleValue(),
-				pf.parse(item[2].replace(',', '.')).doubleValue(),
-				pf.parse(item[3].replace(',', '.')).doubleValue(),
-				pf.parse(item[4].replace(',', '.')).doubleValue(),
-				nf.parse(item[5]).longValue()
-			);
-
-		return bar;
-    }
 
 	protected IRepositoryService getRepositoryService() {
 		IRepositoryService service = null;

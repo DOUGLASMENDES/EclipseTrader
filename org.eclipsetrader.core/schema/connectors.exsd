@@ -1,20 +1,26 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipsetrader.core">
+<schema targetNamespace="org.eclipsetrader.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
+      <appinfo>
          <meta.schema plugin="org.eclipsetrader.core" id="connectors" name="Feed Connectors"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          This extension point defines connectors to market feed providers.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
       <complexType>
          <sequence>
-            <element ref="connector" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="connector" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="backfill" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -35,9 +41,9 @@
                <documentation>
                   an optional name of the extension instance
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -62,9 +68,9 @@
                <documentation>
                   the human-readable name of the connector
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="class" type="string" use="required">
@@ -72,9 +78,9 @@
                <documentation>
                   the fully qualified name of a class that subclasses &lt;samp&gt;org.eclipsetrader.core.feed.IFeedConnector&lt;/samp&gt;
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipsetrader.core.feed.IFeedConnector"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -99,54 +105,67 @@
                <documentation>
                   the human-readable name of the property
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="backfill">
+      <annotation>
+         <documentation>
+            Defines a connector to backfill historycal data.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the unique id of this connector
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the human-readable name of the connector
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the fully qualified name of a class that subclasses &lt;samp&gt;org.eclipsetrader.core.feed.IBackfillConnector&lt;/samp&gt;
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.eclipsetrader.core.feed.IBackfillConnector"/>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
    </element>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="since"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          1.0
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="examples"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
+
+
 
    <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Copyright (c) 2004, 2008 EclipseTrader Contributors and Others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made

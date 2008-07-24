@@ -21,4 +21,8 @@ public interface IFeedService {
 	public IFeedConnector[] getConnectors();
 
 	public IFeedConnector getConnector(String id);
+
+	public IBackfillConnector[] getBackfillConnectors();
+
+	public IBackfillConnector getBackfillConnector(String id);
 }
