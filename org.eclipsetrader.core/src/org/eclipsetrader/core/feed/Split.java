@@ -15,10 +15,10 @@ import java.util.Date;
 
 public class Split implements ISplit {
 	private Date date;
-	private Double oldQuantity;
-	private Double newQuantity;
+	private double oldQuantity;
+	private double newQuantity;
 
-	public Split(Date date, Double oldQuantity, Double newQuantity) {
+	public Split(Date date, double oldQuantity, double newQuantity) {
 	    this.date = date;
 	    this.oldQuantity = oldQuantity;
 	    this.newQuantity = newQuantity;
