@@ -18,7 +18,7 @@
    </license>
 
    <url>
-      <update label="EclipseTrader.org" url="http://www.eclipsetrader.org/updates"/>
+      <update label="EclipseTrader Update Site" url="http://www.eclipsetrader.org/updates"/>
       <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
 
@@ -36,13 +36,6 @@
       <import feature="org.eclipse.rcp" version="3.3.0" match="compatible"/>
       <import feature="org.jdom" version="1.0.0" match="compatible"/>
    </requires>
-
-   <plugin
-         id="org.eclipse.nebula.widgets.cdatetime"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="javax.xml.bind"
