@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.IBrokerConnector;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
@@ -96,6 +97,17 @@ public class TradingService implements ITradingService {
 	public IBrokerConnector getBrokerConnector(String id) {
 		return brokers.get(id);
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITradingService#getBrokerForSecurity(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    public IBrokerConnector getBrokerForSecurity(ISecurity security) {
+    	for (IBrokerConnector connector : brokers.values()) {
+    		if (connector.canTrade(security))
+    			return connector;
+    	}
+	    return null;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.ITradingService#getOrders()

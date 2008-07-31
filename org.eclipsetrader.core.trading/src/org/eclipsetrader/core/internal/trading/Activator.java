@@ -4,10 +4,15 @@ import java.util.Hashtable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipsetrader.core.ats.ITradeSystem;
+import org.eclipsetrader.core.ats.ITradeSystemService;
+import org.eclipsetrader.core.internal.ats.TradeSystemService;
 import org.eclipsetrader.core.trading.ITradingService;
+import org.eclipsetrader.core.trading.TradingServiceSchedulingRule;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -15,13 +20,11 @@ import org.osgi.framework.ServiceReference;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends Plugin {
-
-	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipsetrader.core.trading";
 
 	public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.brokers";
+	public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.trading.systems";
 
-	// The shared instance
 	private static Activator plugin;
 
 	/**
@@ -49,13 +52,27 @@ public class Activator extends Plugin {
 				new Hashtable<Object,Object>()
 			);
 
+		final TradeSystemService tradeSystemService = new TradeSystemService();
+		context.registerService(
+				new String[] {
+						ITradeSystemService.class.getName(),
+						TradeSystemService.class.getName()
+					},
+					tradeSystemService,
+				new Hashtable<Object,Object>()
+			);
+
+		Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
+
 		Job job = new Job("Trading Service Startup") {
             @Override
             public IStatus run(IProgressMonitor monitor) {
         		tradingService.startUp();
+        		tradeSystemService.startUp();
 	            return Status.OK_STATUS;
             }
 		};
+		job.setRule(new TradingServiceSchedulingRule());
 		job.schedule(1000);
 	}
 
@@ -65,7 +82,15 @@ public class Activator extends Plugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
-		ServiceReference serviceReference = context.getServiceReference(TradingService.class.getName());
+		ServiceReference serviceReference = context.getServiceReference(TradeSystemService.class.getName());
+		if (serviceReference != null) {
+			TradeSystemService service = (TradeSystemService) context.getService(serviceReference);
+			if (service != null)
+				service.shutDown();
+			context.ungetService(serviceReference);
+		}
+
+		serviceReference = context.getServiceReference(TradingService.class.getName());
 		if (serviceReference != null) {
 			TradingService service = (TradingService) context.getService(serviceReference);
 			if (service != null)
