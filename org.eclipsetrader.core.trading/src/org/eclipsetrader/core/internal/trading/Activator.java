@@ -12,7 +12,6 @@ import org.eclipsetrader.core.ats.ITradeSystem;
 import org.eclipsetrader.core.ats.ITradeSystemService;
 import org.eclipsetrader.core.internal.ats.TradeSystemService;
 import org.eclipsetrader.core.trading.ITradingService;
-import org.eclipsetrader.core.trading.TradingServiceSchedulingRule;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -72,7 +71,6 @@ public class Activator extends Plugin {
 	            return Status.OK_STATUS;
             }
 		};
-		job.setRule(new TradingServiceSchedulingRule());
 		job.schedule(1000);
 	}
 
