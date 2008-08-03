@@ -29,25 +29,27 @@ import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.BrokerException;
-import org.eclipsetrader.core.trading.IBrokerConnector;
+import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
+import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderType;
+import org.eclipsetrader.core.trading.IOrderValidity;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.ITradingServiceRunnable;
-import org.eclipsetrader.core.trading.OrderSide;
-import org.eclipsetrader.core.trading.OrderType;
-import org.eclipsetrader.core.trading.OrderValidity;
 import org.eclipsetrader.directa.internal.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class BrokerConnector implements IBrokerConnector, IExecutableExtension, IExecutableExtensionFactory {
+public class BrokerConnector implements IBroker, IExecutableExtension, IExecutableExtensionFactory {
 	public static final IOrderRoute Immediate = new OrderRoute("1", "immed");
 	public static final IOrderRoute MTA = new OrderRoute("2", "MTA");
 	public static final IOrderRoute CloseMTA = new OrderRoute("4", "clos-MTA");
 	public static final IOrderRoute AfterHours = new OrderRoute("5", "AfterHours");
 	public static final IOrderRoute Open = new OrderRoute("7", "open//");
+
+	public static final IOrderValidity Valid30Days = new OrderValidity("30days", "30 Days");
 
 	private static BrokerConnector instance;
 
@@ -99,21 +101,21 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
     }
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getId()
+	 * @see org.eclipsetrader.core.trading.IBroker#getId()
 	 */
 	public String getId() {
 		return id;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getName()
+	 * @see org.eclipsetrader.core.trading.IBroker#getName()
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBrokerConnector#connect()
+     * @see org.eclipsetrader.core.trading.IBroker#connect()
      */
     public void connect() {
     	if ("".equals(WebConnector.getInstance().getUser()))
@@ -126,7 +128,7 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBrokerConnector#disconnect()
+     * @see org.eclipsetrader.core.trading.IBroker#disconnect()
      */
     public void disconnect() {
     	if (thread != null) {
@@ -141,7 +143,7 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBrokerConnector#canTrade(org.eclipsetrader.core.instruments.ISecurity)
+     * @see org.eclipsetrader.core.trading.IBroker#canTrade(org.eclipsetrader.core.instruments.ISecurity)
      */
     public boolean canTrade(ISecurity security) {
 		IFeedIdentifier identifier = security.getIdentifier();
@@ -160,14 +162,14 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBrokerConnector#prepareOrder(org.eclipsetrader.core.trading.IOrder)
+     * @see org.eclipsetrader.core.trading.IBroker#prepareOrder(org.eclipsetrader.core.trading.IOrder)
      */
     public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
-		if (order.getType() != OrderType.Limit && order.getType() != OrderType.Market)
+		if (order.getType() != IOrderType.Limit && order.getType() != IOrderType.Market)
 			throw new BrokerException("Invalid order type, must be Limit or Market");
-		if (order.getSide() != OrderSide.Buy && order.getSide() != OrderSide.Sell)
+		if (order.getSide() != IOrderSide.Buy && order.getSide() != IOrderSide.Sell)
 			throw new BrokerException("Invalid order side, must be Buy or Sell");
-		if (order.getValidity() != null && order.getValidity() != OrderValidity.GoodTillCancel)
+		if (order.getValidity() != null && order.getValidity() != Valid30Days)
 			throw new BrokerException("Invalid order validity, must be null or GoodTillCancel");
 
 		OrderMonitor tracker = new OrderMonitor(WebConnector.getInstance(), this, order);
@@ -196,36 +198,36 @@ public class BrokerConnector implements IBrokerConnector, IExecutableExtension, 
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedSides()
+	 * @see org.eclipsetrader.core.trading.IBroker#getAllowedSides()
 	 */
-	public OrderSide[] getAllowedSides() {
-		return new OrderSide[] {
-				OrderSide.Buy,
-				OrderSide.Sell,
+	public IOrderSide[] getAllowedSides() {
+		return new IOrderSide[] {
+				IOrderSide.Buy,
+				IOrderSide.Sell,
 			};
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedTypes()
+	 * @see org.eclipsetrader.core.trading.IBroker#getAllowedTypes()
 	 */
-	public OrderType[] getAllowedTypes() {
-		return new OrderType[] {
-				OrderType.Limit,
-				OrderType.Market,
+	public IOrderType[] getAllowedTypes() {
+		return new IOrderType[] {
+				IOrderType.Limit,
+				IOrderType.Market,
 			};
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedValidity()
+	 * @see org.eclipsetrader.core.trading.IBroker#getAllowedValidity()
 	 */
-	public OrderValidity[] getAllowedValidity() {
-		return new OrderValidity[] {
-				OrderValidity.GoodTillCancel,
+	public IOrderValidity[] getAllowedValidity() {
+		return new IOrderValidity[] {
+				Valid30Days,
 			};
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getOrders()
+	 * @see org.eclipsetrader.core.trading.IBroker#getOrders()
 	 */
 	public IOrderMonitor[] getOrders() {
 		if (orders == null)

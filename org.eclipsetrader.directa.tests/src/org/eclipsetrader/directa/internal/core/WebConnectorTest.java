@@ -25,9 +25,9 @@ import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.trading.IOrderMonitorListener;
 import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.core.trading.OrderMonitorEvent;
-import org.eclipsetrader.core.trading.OrderSide;
-import org.eclipsetrader.core.trading.OrderStatus;
-import org.eclipsetrader.core.trading.OrderType;
+import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderStatus;
+import org.eclipsetrader.core.trading.IOrderType;
 
 public class WebConnectorTest extends TestCase {
 
@@ -37,10 +37,10 @@ public class WebConnectorTest extends TestCase {
 	    assertEquals(getTime(2008, Calendar.JULY, 4, 9, 56, 38), monitor.getOrder().getDate());
 	    assertEquals("R8609563873834", monitor.getId());
 	    assertEquals("ENI", monitor.getOrder().getSecurity().getName());
-	    assertEquals(OrderSide.Buy, monitor.getOrder().getSide());
+	    assertEquals(IOrderSide.Buy, monitor.getOrder().getSide());
 	    assertEquals(new Long(5), monitor.getOrder().getQuantity());
 	    assertEquals(21.5, monitor.getOrder().getPrice());
-	    assertEquals(OrderStatus.PendingNew, monitor.getStatus());
+	    assertEquals(IOrderStatus.PendingNew, monitor.getStatus());
 	    assertNull(monitor.getFilledQuantity());
 	    assertNull(monitor.getAveragePrice());
 	    assertNotNull(monitor.getBrokerConnector());
@@ -52,10 +52,10 @@ public class WebConnectorTest extends TestCase {
 	    assertEquals(getTime(2008, Calendar.JULY, 4, 9, 56, 38), monitor.getOrder().getDate());
 	    assertEquals("R8609563873834", monitor.getId());
 	    assertEquals("ENI", monitor.getOrder().getSecurity().getName());
-	    assertEquals(OrderSide.Sell, monitor.getOrder().getSide());
+	    assertEquals(IOrderSide.Sell, monitor.getOrder().getSide());
 	    assertEquals(new Long(5), monitor.getOrder().getQuantity());
 	    assertEquals(21.5, monitor.getOrder().getPrice());
-	    assertEquals(OrderStatus.PendingNew, monitor.getStatus());
+	    assertEquals(IOrderStatus.PendingNew, monitor.getStatus());
 	    assertNull(monitor.getFilledQuantity());
 	    assertNull(monitor.getAveragePrice());
 	    assertNotNull(monitor.getBrokerConnector());
@@ -64,13 +64,13 @@ public class WebConnectorTest extends TestCase {
 	public void testParseCanceledOrderLine() throws Exception {
 	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;zA;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;;;;M;\";");
 	    assertNotNull(monitor);
-	    assertEquals(OrderStatus.Canceled, monitor.getStatus());
+	    assertEquals(IOrderStatus.Canceled, monitor.getStatus());
     }
 
 	public void testParseFilledOrderLine() throws Exception {
 	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;5;21,500;;M;\";");
 	    assertNotNull(monitor);
-	    assertEquals(OrderStatus.Filled, monitor.getStatus());
+	    assertEquals(IOrderStatus.Filled, monitor.getStatus());
 	    assertEquals(new Long(5), monitor.getFilledQuantity());
 	    assertEquals(21.5, monitor.getAveragePrice());
     }
@@ -78,7 +78,7 @@ public class WebConnectorTest extends TestCase {
 	public void testParsePartialOrderLine() throws Exception {
 	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;2;21,500;;M;\";");
 	    assertNotNull(monitor);
-	    assertEquals(OrderStatus.Partial, monitor.getStatus());
+	    assertEquals(IOrderStatus.Partial, monitor.getStatus());
 	    assertEquals(new Long(2), monitor.getFilledQuantity());
 	    assertEquals(21.5, monitor.getAveragePrice());
     }
@@ -86,17 +86,17 @@ public class WebConnectorTest extends TestCase {
 	public void testParseUnknownOrderStatusLine() throws Exception {
 	    OrderMonitor monitor = new WebConnector().parseOrderLine("tr01[0] =\"ENI;R8609563873834;??;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;;;;M;\";");
 	    assertNotNull(monitor);
-	    assertEquals(OrderStatus.PendingNew, monitor.getStatus());
+	    assertEquals(IOrderStatus.PendingNew, monitor.getStatus());
     }
 
 	public void testUpdateSameOrderInstance() throws Exception {
 		ISecurity security = new Security("ENI", new FeedIdentifier("ENI", null));
-		OrderMonitor order = new OrderMonitor(null, null, new Order(null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5));
+		OrderMonitor order = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 5L, 21.5));
 		order.setId("R8609563873834");
 		WebConnector connector = new WebConnector();
 		connector.orders.put(order.getId(), order);
 	    connector.parseOrderLine("tr01[0] =\"ENI;R8609563873834;e;4/07/2008;09:56:38;C;5;21,0000;4/07/2008;10:03:02;5;21,500;;M;\";");
-	    assertEquals(OrderStatus.Filled, order.getStatus());
+	    assertEquals(IOrderStatus.Filled, order.getStatus());
 	    assertEquals(new Long(5), order.getFilledQuantity());
 	    assertEquals(21.5, order.getAveragePrice());
     }
@@ -118,7 +118,7 @@ public class WebConnectorTest extends TestCase {
 
 	public void testFireOrderCompleteEvent() throws Exception {
 		ISecurity security = new Security("ENI", new FeedIdentifier("ENI", null));
-		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5));
+		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 5L, 21.5));
 		monitor.setId("R8609563873834");
 		WebConnector connector = new WebConnector();
 		connector.orders.put(monitor.getId(), monitor);

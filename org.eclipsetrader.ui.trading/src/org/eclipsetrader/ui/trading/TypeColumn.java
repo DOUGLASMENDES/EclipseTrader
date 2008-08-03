@@ -11,22 +11,11 @@
 
 package org.eclipsetrader.ui.trading;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
-import org.eclipsetrader.core.trading.OrderType;
 
 public class TypeColumn extends ColumnLabelProvider {
-	static Map<OrderType, String> labels = new HashMap<OrderType, String>();
-	static {
-		labels.put(OrderType.Limit, Messages.TypeColumn_Limit);
-		labels.put(OrderType.Market, Messages.TypeColumn_Market);
-		labels.put(OrderType.Stop, Messages.TypeColumn_Stop);
-		labels.put(OrderType.StopLimit, Messages.TypeColumn_StopLimit);
-	}
 
 	public TypeColumn() {
 	}
@@ -42,10 +31,8 @@ public class TypeColumn extends ColumnLabelProvider {
 		else if (element instanceof IOrderMonitor)
 			order = ((IOrderMonitor) element).getOrder();
 
-		if (order != null) {
-			String text = labels.get(order.getType());
-			return text != null ? text : order.getType().toString();
-		}
+		if (order != null && order.getType() != null)
+			return order.getType().getName();
 
 		return ""; //$NON-NLS-1$
 	}

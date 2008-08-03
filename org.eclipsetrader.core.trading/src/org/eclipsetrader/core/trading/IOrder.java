@@ -30,9 +30,9 @@ public interface IOrder {
 
 	public ISecurity getSecurity();
 
-	public OrderType getType();
+	public IOrderType getType();
 
-	public OrderSide getSide();
+	public IOrderSide getSide();
 
 	public Long getQuantity();
 
@@ -40,7 +40,7 @@ public interface IOrder {
 
 	public Double getStopPrice();
 
-	public OrderValidity getValidity();
+	public IOrderValidity getValidity();
 
 	public Date getExpire();
 }

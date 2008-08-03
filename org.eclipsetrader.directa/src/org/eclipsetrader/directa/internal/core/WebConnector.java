@@ -52,10 +52,10 @@ import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.Order;
-import org.eclipsetrader.core.trading.OrderSide;
-import org.eclipsetrader.core.trading.OrderStatus;
-import org.eclipsetrader.core.trading.OrderType;
-import org.eclipsetrader.core.trading.OrderValidity;
+import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderStatus;
+import org.eclipsetrader.core.trading.IOrderType;
+import org.eclipsetrader.core.trading.IOrderValidity;
 import org.eclipsetrader.directa.internal.Activator;
 import org.eclipsetrader.directa.internal.core.connector.LoginDialog;
 import org.htmlparser.Parser;
@@ -286,8 +286,8 @@ public class WebConnector {
 		if (tracker == null) {
 			Order order = new Order(
 					null,
-					!item[IDX_PRICE].equals("") ? OrderType.Limit : OrderType.Market,
-					item[IDX_SIDE].equalsIgnoreCase("V") ? OrderSide.Sell : OrderSide.Buy,
+					!item[IDX_PRICE].equals("") ? IOrderType.Limit : IOrderType.Market,
+					item[IDX_SIDE].equalsIgnoreCase("V") ? IOrderSide.Sell : IOrderSide.Buy,
 					getSecurityFromSymbol(item[IDX_SYMBOL]),
 					Long.parseLong(item[IDX_QUANTITY]),
 					!item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null
@@ -319,22 +319,22 @@ public class WebConnector {
 			}
 		}
 
-		OrderStatus status = tracker.getStatus();
+		IOrderStatus status = tracker.getStatus();
 		if (item[IDX_STATUS].equals("e"))
-			status = OrderStatus.Filled;
+			status = IOrderStatus.Filled;
 		else if (item[IDX_STATUS].equals("n"))
-			status = OrderStatus.PendingNew;
+			status = IOrderStatus.PendingNew;
 		else if (item[IDX_STATUS].equals("zA"))
-			status = OrderStatus.Canceled;
+			status = IOrderStatus.Canceled;
 		else
-			status = OrderStatus.PendingNew;
+			status = IOrderStatus.PendingNew;
 
-		if (status != OrderStatus.Canceled) {
+		if (status != IOrderStatus.Canceled) {
 			if (tracker.getFilledQuantity() != null && !tracker.getFilledQuantity().equals(order.getQuantity()))
-				status = OrderStatus.Partial;
+				status = IOrderStatus.Partial;
 		}
 
-		if ((status == OrderStatus.Filled || status == OrderStatus.Canceled || status == OrderStatus.Rejected) && tracker.getStatus() != status) {
+		if ((status == IOrderStatus.Filled || status == IOrderStatus.Canceled || status == IOrderStatus.Rejected) && tracker.getStatus() != status) {
 			tracker.setStatus(status);
 			tracker.fireOrderCompletedEvent();
 		}
@@ -399,17 +399,17 @@ public class WebConnector {
 		IOrder order = tracker.getOrder();
 
 		List<NameValuePair> query = new ArrayList<NameValuePair>();
-		query.add(new NameValuePair("ACQAZ", order.getSide() == OrderSide.Buy ? String.valueOf(order.getQuantity()) : ""));
-		query.add(new NameValuePair("VENAZ", order.getSide() == OrderSide.Sell ? String.valueOf(order.getQuantity()) : ""));
-		query.add(new NameValuePair("PRZACQ", order.getType() != OrderType.Market ? numberFormatter.format(order.getPrice()) : ""));
+		query.add(new NameValuePair("ACQAZ", order.getSide() == IOrderSide.Buy ? String.valueOf(order.getQuantity()) : ""));
+		query.add(new NameValuePair("VENAZ", order.getSide() == IOrderSide.Sell ? String.valueOf(order.getQuantity()) : ""));
+		query.add(new NameValuePair("PRZACQ", order.getType() != IOrderType.Market ? numberFormatter.format(order.getPrice()) : ""));
 		query.add(new NameValuePair("SCTLX", "immetti Borsa Ita"));
 		query.add(new NameValuePair("USER", user));
 		query.add(new NameValuePair("GEST", "AZIONARIO"));
 		query.add(new NameValuePair("TITO", getSecurityFeedSymbol(order.getSecurity())));
 		query.add(new NameValuePair("QPAR", ""));
-		if (order.getValidity() == OrderValidity.GoodTillCancel)
+		if (order.getValidity() == IOrderValidity.GoodTillCancel || order.getValidity() == BrokerConnector.Valid30Days)
 			query.add(new NameValuePair("VALID", "M"));
-		query.add(new NameValuePair("FAS5", order.getRoute() != null ? order.getRoute().getName() : BrokerConnector.Immediate.getName()));
+		query.add(new NameValuePair("FAS5", order.getRoute() != null ? order.getRoute().getId() : BrokerConnector.Immediate.getId()));
 
 		// Inserisce l'ordine di acquisto
 		try {
@@ -489,7 +489,7 @@ public class WebConnector {
 		if (tracker.getId() != null)
 			orders.put(tracker.getId(), tracker);
 
-		tracker.setStatus(OrderStatus.PendingNew);
+		tracker.setStatus(IOrderStatus.PendingNew);
 
 		return ok;
 	}
@@ -522,7 +522,7 @@ public class WebConnector {
 		}
 
 		if (ok)
-			tracker.setStatus(OrderStatus.PendingCancel);
+			tracker.setStatus(IOrderStatus.PendingCancel);
 
 		return ok;
 	}

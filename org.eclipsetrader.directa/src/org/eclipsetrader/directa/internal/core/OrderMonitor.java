@@ -16,12 +16,12 @@ import java.beans.PropertyChangeSupport;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipsetrader.core.trading.BrokerException;
-import org.eclipsetrader.core.trading.IBrokerConnector;
+import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderMonitorListener;
 import org.eclipsetrader.core.trading.OrderMonitorEvent;
-import org.eclipsetrader.core.trading.OrderStatus;
+import org.eclipsetrader.core.trading.IOrderStatus;
 
 public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	private IOrder order;
@@ -31,7 +31,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 
 	private Long filledQuantity;
 	private Double averagePrice;
-	private OrderStatus status = OrderStatus.New;
+	private IOrderStatus status = IOrderStatus.New;
 
 	private WebConnector connector;
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -46,7 +46,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.trading.IOrderMonitor#getBrokerConnector()
      */
-    public IBrokerConnector getBrokerConnector() {
+    public IBroker getBrokerConnector() {
 	    return brokerConnector;
     }
 
@@ -130,12 +130,12 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getStatus()
 	 */
-	public OrderStatus getStatus() {
+	public IOrderStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(OrderStatus status) {
-    	OrderStatus oldValue = this.status;
+	public void setStatus(IOrderStatus status) {
+    	IOrderStatus oldValue = this.status;
     	if (this.status != status) {
     		this.status = status;
     		propertyChangeSupport.firePropertyChange(PROP_STATUS, oldValue, this.status);

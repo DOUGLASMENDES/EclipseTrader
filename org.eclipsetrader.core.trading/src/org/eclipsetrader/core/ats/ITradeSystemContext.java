@@ -14,9 +14,9 @@ package org.eclipsetrader.core.ats;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.BrokerException;
-import org.eclipsetrader.core.trading.IBrokerConnector;
+import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderMonitor;
-import org.eclipsetrader.core.trading.OrderSide;
+import org.eclipsetrader.core.trading.IOrderSide;
 
 /**
  * Defines the contex associated with running trade strategies.
@@ -51,7 +51,7 @@ public interface ITradeSystemContext {
 	 *
 	 * @return the broker.
 	 */
-	public IBrokerConnector getBroker();
+	public IBroker getBroker();
 
 	/**
 	 * Gets the trade strategy parameters.
@@ -69,7 +69,7 @@ public interface ITradeSystemContext {
 	 *
 	 * @throws BrokerException
 	 */
-	public IOrderMonitor prepareOrder(OrderSide side, Long quantity) throws BrokerException;
+	public IOrderMonitor prepareOrder(IOrderSide side, Long quantity) throws BrokerException;
 
 	/**
 	 * Prepare a limit-type order.
@@ -81,5 +81,5 @@ public interface ITradeSystemContext {
 	 *
 	 * @throws BrokerException
 	 */
-	public IOrderMonitor prepareOrder(OrderSide side, Long quantity, Double price) throws BrokerException;
+	public IOrderMonitor prepareOrder(IOrderSide side, Long quantity, Double price) throws BrokerException;
 }

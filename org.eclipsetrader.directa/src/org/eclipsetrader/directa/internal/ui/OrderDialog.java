@@ -49,8 +49,8 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.Order;
-import org.eclipsetrader.core.trading.OrderSide;
-import org.eclipsetrader.core.trading.OrderType;
+import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.directa.internal.Activator;
 import org.eclipsetrader.directa.internal.core.BrokerConnector;
 import org.osgi.framework.BundleContext;
@@ -127,10 +127,10 @@ public class OrderDialog extends TitleAreaDialog {
     	sideCombo.setContentProvider(new ArrayContentProvider());
     	sideCombo.setLabelProvider(new LabelProvider());
     	sideCombo.setInput(new Object[] {
-    			OrderSide.Buy,
-    			OrderSide.Sell,
+    			IOrderSide.Buy,
+    			IOrderSide.Sell,
     		});
-    	sideCombo.setSelection(new StructuredSelection(OrderSide.Buy));
+    	sideCombo.setSelection(new StructuredSelection(IOrderSide.Buy));
 
     	label = new Label(content, SWT.NONE);
     	label.setText("Instrument");
@@ -257,8 +257,8 @@ public class OrderDialog extends TitleAreaDialog {
 		try {
 	    	Order order = new Order(
 	    			null,
-	    			OrderType.Limit,
-	    			(OrderSide) ((IStructuredSelection) sideCombo.getSelection()).getFirstElement(),
+	    			IOrderType.Limit,
+	    			(IOrderSide) ((IStructuredSelection) sideCombo.getSelection()).getFirstElement(),
 	    			(ISecurity) ((IStructuredSelection) securityCombo.getSelection()).getFirstElement(),
 	    			numberFormat.parse(quantity.getText()).longValue(),
 	    			priceFormat.parse(price.getText()).doubleValue(),

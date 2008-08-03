@@ -33,7 +33,7 @@ import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.trading.IBrokerConnector;
+import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.ITradingService;
@@ -42,7 +42,7 @@ import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
 
 public class TradingService implements ITradingService {
-	private Map<String, IBrokerConnector> brokers = new HashMap<String, IBrokerConnector>();
+	private Map<String, IBroker> brokers = new HashMap<String, IBroker>();
 	private List<IOrderMonitor> orders = new ArrayList<IOrderMonitor>();
 
 	private List<OrderDelta> deltas = new ArrayList<OrderDelta>();
@@ -62,7 +62,7 @@ public class TradingService implements ITradingService {
 			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 			for (int j = 0; j < configElements.length; j++) {
 				try {
-	                IBrokerConnector connector = (IBrokerConnector) configElements[j].createExecutableExtension("class");
+	                IBroker connector = (IBroker) configElements[j].createExecutableExtension("class");
 	                brokers.put(connector.getId(), connector);
                 } catch (CoreException e) {
     				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
@@ -71,7 +71,7 @@ public class TradingService implements ITradingService {
 			}
 		}
 
-		for (IBrokerConnector connector : brokers.values()) {
+		for (IBroker connector : brokers.values()) {
 			IOrderMonitor[] o = connector.getOrders();
             if (o != null)
             	orders.addAll(Arrays.asList(o));
@@ -79,30 +79,30 @@ public class TradingService implements ITradingService {
 	}
 
 	public void shutDown() {
-		for (IBrokerConnector connector : brokers.values())
+		for (IBroker connector : brokers.values())
 			connector.disconnect();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.ITradingService#getBrokerConnectors()
 	 */
-	public IBrokerConnector[] getBrokerConnectors() {
-		Collection<IBrokerConnector> c = brokers.values();
-		return c.toArray(new IBrokerConnector[c.size()]);
+	public IBroker[] getBrokerConnectors() {
+		Collection<IBroker> c = brokers.values();
+		return c.toArray(new IBroker[c.size()]);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.ITradingService#getBrokerConnector(java.lang.String)
 	 */
-	public IBrokerConnector getBrokerConnector(String id) {
+	public IBroker getBrokerConnector(String id) {
 		return brokers.get(id);
 	}
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.trading.ITradingService#getBrokerForSecurity(org.eclipsetrader.core.instruments.ISecurity)
      */
-    public IBrokerConnector getBrokerForSecurity(ISecurity security) {
-    	for (IBrokerConnector connector : brokers.values()) {
+    public IBroker getBrokerForSecurity(ISecurity security) {
+    	for (IBroker connector : brokers.values()) {
     		if (connector.canTrade(security))
     			return connector;
     	}

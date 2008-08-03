@@ -17,9 +17,9 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 public interface ITradingService {
 
-	public IBrokerConnector[] getBrokerConnectors();
+	public IBroker[] getBrokerConnectors();
 
-	public IBrokerConnector getBrokerConnector(String id);
+	public IBroker getBrokerConnector(String id);
 
 	public void addOrders(IOrderMonitor[] order);
 

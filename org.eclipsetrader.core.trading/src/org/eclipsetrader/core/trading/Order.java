@@ -33,15 +33,15 @@ public class Order implements IOrder {
 	private Double price;
 	private Double stopPrice;
 
-	private OrderType type;
-	private OrderSide side;
-	private OrderValidity validity;
+	private IOrderType type;
+	private IOrderSide side;
+	private IOrderValidity validity;
 	private Date expireDate;
 
 	protected Order() {
 	}
 
-	public Order(IAccount account, OrderType type, OrderSide side, ISecurity security, Long quantity, Double price) {
+	public Order(IAccount account, IOrderType type, IOrderSide side, ISecurity security, Long quantity, Double price) {
 	    this.account = account;
 	    this.type = type;
 	    this.side = side;
@@ -51,7 +51,7 @@ public class Order implements IOrder {
 	    this.date = new Date();
     }
 
-	public Order(IAccount account, OrderType type, OrderSide side, ISecurity security, Long quantity, Double price, IOrderRoute route) {
+	public Order(IAccount account, IOrderType type, IOrderSide side, ISecurity security, Long quantity, Double price, IOrderRoute route) {
 	    this.account = account;
 	    this.type = type;
 	    this.side = side;
@@ -62,9 +62,9 @@ public class Order implements IOrder {
 	    this.date = new Date();
     }
 
-	public Order(IAccount account, OrderSide side, ISecurity security, Long quantity) {
+	public Order(IAccount account, IOrderSide side, ISecurity security, Long quantity) {
 	    this.account = account;
-	    this.type = OrderType.Market;
+	    this.type = IOrderType.Market;
 	    this.side = side;
 	    this.security = security;
 	    this.quantity = quantity;
@@ -120,14 +120,14 @@ public class Order implements IOrder {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrder#getSide()
 	 */
-	public OrderSide getSide() {
+	public IOrderSide getSide() {
 		return side;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrder#getType()
 	 */
-	public OrderType getType() {
+	public IOrderType getType() {
 		return type;
 	}
 
@@ -141,7 +141,7 @@ public class Order implements IOrder {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrder#getValidity()
 	 */
-	public OrderValidity getValidity() {
+	public IOrderValidity getValidity() {
 		return validity;
 	}
 

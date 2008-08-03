@@ -21,7 +21,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
-import org.eclipsetrader.core.trading.IBrokerConnector;
+import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -56,7 +56,7 @@ public class StopFeedAction implements IWorkbenchWindowActionDelegate {
     				for (int i = 0; i < connector.length; i++)
     					connector[i].disconnect();
 
-    				IBrokerConnector[] brokerConnector = getTradingService().getBrokerConnectors();
+    				IBroker[] brokerConnector = getTradingService().getBrokerConnectors();
     				for (int i = 0; i < brokerConnector.length; i++)
     					brokerConnector[i].disconnect();
             	} finally {

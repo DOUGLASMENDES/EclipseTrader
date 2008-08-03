@@ -11,21 +11,7 @@
 
 package org.eclipsetrader.core.trading;
 
-public enum OrderValidity {
-	Day("day"),
-	ImmediateOrCancel("immaediate-or-cancel"),
-	AtOpening("at-opening"),
-	AtClosing("at-closing"),
-	GoodTillCancel("goot-till-cancel"),
-	GoodTillDate("good-till-date");
+public interface IBrokerListener {
 
-	private String name;
-
-	private OrderValidity(String name) {
-	    this.name = name;
-    }
-
-	public String getName() {
-    	return name;
-    }
+	public void orderAdded(BrokerEvent event);
 }

@@ -18,7 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.trading.IOrderMonitor;
-import org.eclipsetrader.core.trading.OrderStatus;
+import org.eclipsetrader.core.trading.IOrderStatus;
 
 public class OrdersLabelProviderWrapper extends CellLabelProvider {
     private Color canceledColor;
@@ -55,13 +55,13 @@ public class OrdersLabelProviderWrapper extends CellLabelProvider {
 
     public Color getForeground(Object element) {
 		IOrderMonitor order = (IOrderMonitor) element;
-		if (order.getStatus() == OrderStatus.Canceled || order.getStatus() == OrderStatus.Expired)
+		if (order.getStatus() == IOrderStatus.Canceled || order.getStatus() == IOrderStatus.Expired)
 			return canceledColor;
-		if (order.getStatus() == OrderStatus.Rejected)
+		if (order.getStatus() == IOrderStatus.Rejected)
 			return rejectedColor;
-		if (order.getStatus() == OrderStatus.Filled)
+		if (order.getStatus() == IOrderStatus.Filled)
 			return filledColor;
-		if (order.getStatus() == OrderStatus.Partial)
+		if (order.getStatus() == IOrderStatus.Partial)
 			return partialColor;
 		return null;
 	}

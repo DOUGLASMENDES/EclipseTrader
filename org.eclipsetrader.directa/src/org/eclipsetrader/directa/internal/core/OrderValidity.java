@@ -11,26 +11,26 @@
 
 package org.eclipsetrader.directa.internal.core;
 
-import org.eclipsetrader.core.trading.IOrderRoute;
+import org.eclipsetrader.core.trading.IOrderValidity;
 
-public class OrderRoute implements IOrderRoute {
+public class OrderValidity implements IOrderValidity {
 	private String id;
 	private String name;
 
-	public OrderRoute(String id, String name) {
-	    this.id = id;
-	    this.name = name;
-    }
+	public OrderValidity(String id, String name) {
+		this.id = id;
+		this.name = name;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IOrderRoute#getId()
-     */
-    public String getId() {
-	    return id;
-    }
+	 * @see org.eclipsetrader.core.trading.IOrderValidity#getId()
+	 */
+	public String getId() {
+		return id;
+	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IOrderRoute#getName()
+	 * @see org.eclipsetrader.core.trading.IOrderValidity#getName()
 	 */
 	public String getName() {
 		return name;
@@ -41,9 +41,9 @@ public class OrderRoute implements IOrderRoute {
      */
     @Override
     public boolean equals(Object obj) {
-    	if (!(obj instanceof IOrderRoute))
+    	if (!(obj instanceof IOrderValidity))
     		return false;
-	    return id.equals(((IOrderRoute) obj).getId());
+	    return id.equals(((IOrderValidity) obj).getId());
     }
 
 	/* (non-Javadoc)

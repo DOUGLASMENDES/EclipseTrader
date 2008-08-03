@@ -9,28 +9,28 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.directa.internal.core;
+package org.eclipsetrader.core.internal.trading;
 
-import org.eclipsetrader.core.trading.IOrderRoute;
+import org.eclipsetrader.core.trading.IOrderType;
 
-public class OrderRoute implements IOrderRoute {
+public class OrderType implements IOrderType {
 	private String id;
 	private String name;
 
-	public OrderRoute(String id, String name) {
-	    this.id = id;
-	    this.name = name;
-    }
+	public OrderType(String id, String name) {
+		this.id = id;
+		this.name = name;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IOrderRoute#getId()
-     */
-    public String getId() {
-	    return id;
-    }
+	 * @see org.eclipsetrader.core.trading.IOrderType#getId()
+	 */
+	public String getId() {
+		return id;
+	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IOrderRoute#getName()
+	 * @see org.eclipsetrader.core.trading.IOrderType#getName()
 	 */
 	public String getName() {
 		return name;
@@ -41,9 +41,9 @@ public class OrderRoute implements IOrderRoute {
      */
     @Override
     public boolean equals(Object obj) {
-    	if (!(obj instanceof IOrderRoute))
+    	if (!(obj instanceof IOrderType))
     		return false;
-	    return id.equals(((IOrderRoute) obj).getId());
+	    return id.equals(((IOrderType) obj).getId());
     }
 
 	/* (non-Javadoc)

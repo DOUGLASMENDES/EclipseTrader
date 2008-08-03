@@ -13,5 +13,7 @@ package org.eclipsetrader.core.trading;
 
 public interface IOrderRoute {
 
+	public String getId();
+
 	public String getName();
 }

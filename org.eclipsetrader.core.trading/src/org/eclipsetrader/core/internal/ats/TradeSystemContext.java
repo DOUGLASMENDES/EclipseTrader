@@ -26,11 +26,11 @@ import org.eclipsetrader.core.internal.trading.Activator;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.trading.BrokerException;
-import org.eclipsetrader.core.trading.IBrokerConnector;
+import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.Order;
-import org.eclipsetrader.core.trading.OrderSide;
-import org.eclipsetrader.core.trading.OrderType;
+import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -45,7 +45,7 @@ public class TradeSystemContext implements ITradeSystemContext {
 
 	private TradeStrategyParameters strategyParameters;
 
-	private IBrokerConnector broker;
+	private IBroker broker;
 	private IMarketService marketService;
 	private MarketPricingEnvironment pricingEnvironment;
 	private IBarFactory barFactory;
@@ -134,7 +134,7 @@ public class TradeSystemContext implements ITradeSystemContext {
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#getBroker()
      */
-    public IBrokerConnector getBroker() {
+    public IBroker getBroker() {
 	    return broker;
     }
 
@@ -146,17 +146,17 @@ public class TradeSystemContext implements ITradeSystemContext {
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.ats.ITradeSystemContext#prepareOrder(org.eclipsetrader.core.trading.OrderSide, java.lang.Long, java.lang.Double)
+     * @see org.eclipsetrader.core.ats.ITradeSystemContext#prepareOrder(org.eclipsetrader.core.trading.IOrderSide, java.lang.Long, java.lang.Double)
      */
-    public IOrderMonitor prepareOrder(OrderSide side, Long quantity, Double price) throws BrokerException {
-    	Order order = new Order(null, OrderType.Limit, side, instrument, quantity, price);
+    public IOrderMonitor prepareOrder(IOrderSide side, Long quantity, Double price) throws BrokerException {
+    	Order order = new Order(null, IOrderType.Limit, side, instrument, quantity, price);
 	    return broker.prepareOrder(order);
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.ats.ITradeSystemContext#prepareOrder(org.eclipsetrader.core.trading.OrderSide, java.lang.Long)
+     * @see org.eclipsetrader.core.ats.ITradeSystemContext#prepareOrder(org.eclipsetrader.core.trading.IOrderSide, java.lang.Long)
      */
-    public IOrderMonitor prepareOrder(OrderSide side, Long quantity) throws BrokerException {
+    public IOrderMonitor prepareOrder(IOrderSide side, Long quantity) throws BrokerException {
     	Order order = new Order(null, side, instrument, quantity);
 	    return broker.prepareOrder(order);
     }

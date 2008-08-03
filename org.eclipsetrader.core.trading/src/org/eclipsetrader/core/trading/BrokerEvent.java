@@ -12,13 +12,13 @@
 package org.eclipsetrader.core.trading;
 
 public class BrokerEvent {
-	public IBrokerConnector broker;
+	public IBroker broker;
 	public IOrder[] orders;
 
 	public BrokerEvent() {
 	}
 
-	public BrokerEvent(IBrokerConnector broker) {
+	public BrokerEvent(IBroker broker) {
 	    this.broker = broker;
     }
 }

@@ -20,7 +20,7 @@ public interface IOrderMonitor {
 
 	public IOrder getOrder();
 
-	public IBrokerConnector getBrokerConnector();
+	public IBroker getBrokerConnector();
 
 	/**
 	 * Gets the broker assigned order id.
@@ -41,7 +41,7 @@ public interface IOrderMonitor {
 
 	public void modify(IOrder order) throws BrokerException;
 
-	public OrderStatus getStatus();
+	public IOrderStatus getStatus();
 
 	public Long getFilledQuantity();
 

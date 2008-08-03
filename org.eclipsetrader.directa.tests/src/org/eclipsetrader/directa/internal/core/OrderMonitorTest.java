@@ -21,9 +21,9 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.Order;
-import org.eclipsetrader.core.trading.OrderSide;
-import org.eclipsetrader.core.trading.OrderStatus;
-import org.eclipsetrader.core.trading.OrderType;
+import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderStatus;
+import org.eclipsetrader.core.trading.IOrderType;
 
 import junit.framework.TestCase;
 
@@ -45,7 +45,7 @@ public class OrderMonitorTest extends TestCase {
 
 	public void testFireAveragePricePropertyChanges() throws Exception {
 		ISecurity security = new Security("ENI", new FeedIdentifier("ENI", null));
-		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5));
+		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 5L, 21.5));
 		monitor.getPropertyChangeSupport().addPropertyChangeListener(listener);
 		monitor.setAveragePrice(21.5);
 		assertEquals(1, propertyChangeEvents.size());
@@ -56,7 +56,7 @@ public class OrderMonitorTest extends TestCase {
 
 	public void testFireFilledQuantityPropertyChanges() throws Exception {
 		ISecurity security = new Security("ENI", new FeedIdentifier("ENI", null));
-		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5));
+		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 5L, 21.5));
 		monitor.getPropertyChangeSupport().addPropertyChangeListener(listener);
 		monitor.setFilledQuantity(5L);
 		assertEquals(1, propertyChangeEvents.size());
@@ -67,12 +67,12 @@ public class OrderMonitorTest extends TestCase {
 
 	public void testFireStatusPropertyChanges() throws Exception {
 		ISecurity security = new Security("ENI", new FeedIdentifier("ENI", null));
-		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, OrderType.Limit, OrderSide.Buy, security, 5L, 21.5));
+		OrderMonitor monitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 5L, 21.5));
 		monitor.getPropertyChangeSupport().addPropertyChangeListener(listener);
-		monitor.setStatus(OrderStatus.Filled);
+		monitor.setStatus(IOrderStatus.Filled);
 		assertEquals(1, propertyChangeEvents.size());
 		assertEquals(IOrderMonitor.PROP_STATUS, propertyChangeEvents.get(0).getPropertyName());
-		assertEquals(OrderStatus.New, propertyChangeEvents.get(0).getOldValue());
-		assertEquals(OrderStatus.Filled, propertyChangeEvents.get(0).getNewValue());
+		assertEquals(IOrderStatus.New, propertyChangeEvents.get(0).getOldValue());
+		assertEquals(IOrderStatus.Filled, propertyChangeEvents.get(0).getNewValue());
     }
 }

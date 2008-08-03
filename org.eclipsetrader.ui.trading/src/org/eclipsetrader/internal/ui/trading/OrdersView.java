@@ -56,7 +56,7 @@ import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
-import org.eclipsetrader.core.trading.OrderStatus;
+import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.ui.trading.AveragePriceColumn;
 import org.eclipsetrader.ui.trading.DateTimeColumn;
 import org.eclipsetrader.ui.trading.FilledQuantityColumn;
@@ -288,8 +288,8 @@ public class OrdersView extends ViewPart {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
                     	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == OrderStatus.PendingCancel ||
-	                           order.getStatus() == OrderStatus.PendingNew;
+	                    return order.getStatus() == IOrderStatus.PendingCancel ||
+	                           order.getStatus() == IOrderStatus.PendingNew;
                     }
 				}
 			});
@@ -303,7 +303,7 @@ public class OrdersView extends ViewPart {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
                     	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == OrderStatus.Filled;
+	                    return order.getStatus() == IOrderStatus.Filled;
                     }
 				}
 			});
@@ -317,8 +317,8 @@ public class OrdersView extends ViewPart {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
                     	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == OrderStatus.Canceled ||
-	                           order.getStatus() == OrderStatus.Expired;
+	                    return order.getStatus() == IOrderStatus.Canceled ||
+	                           order.getStatus() == IOrderStatus.Expired;
                     }
 				}
 			});
@@ -332,7 +332,7 @@ public class OrdersView extends ViewPart {
                     @Override
                     public boolean select(Viewer viewer, Object parentElement, Object element) {
                     	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == OrderStatus.Rejected;
+	                    return order.getStatus() == IOrderStatus.Rejected;
                     }
 				}
 			});
