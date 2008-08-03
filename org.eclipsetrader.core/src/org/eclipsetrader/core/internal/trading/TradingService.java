@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
@@ -57,7 +58,7 @@ public class TradingService implements ITradingService {
 	}
 
 	public void startUp() {
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.BROKERS_EXTENSION_ID);
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(CoreActivator.BROKERS_EXTENSION_ID);
 		if (extensionPoint != null) {
 			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 			for (int j = 0; j < configElements.length; j++) {
@@ -65,8 +66,8 @@ public class TradingService implements ITradingService {
 	                IBroker connector = (IBroker) configElements[j].createExecutableExtension("class");
 	                brokers.put(connector.getId(), connector);
                 } catch (CoreException e) {
-    				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
-	                Activator.log(status);
+    				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
+    				CoreActivator.log(status);
                 }
 			}
 		}
@@ -186,18 +187,15 @@ public class TradingService implements ITradingService {
 
 			try {
     			status = runnable.run(this, monitor);
-    		} catch(Exception e) {
-    			status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
-    			Activator.log(status);
-    		} catch(LinkageError e) {
-    			status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
-    			Activator.log(status);
+    		} catch(Throwable e) {
+    			status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
+    			CoreActivator.log(status);
     		}
 
     		fireUpdateNotifications();
 		} catch (Exception e) {
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
-			Activator.log(status);
+			status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
+			CoreActivator.log(status);
 		} finally {
 			lock.release();
 	    	if (rule != null)
@@ -223,8 +221,8 @@ public class TradingService implements ITradingService {
                     }
 
                     public void handleException(Throwable exception) {
-            			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running repository listener", exception); //$NON-NLS-1$
-            			Activator.log(status);
+            			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running repository listener", exception); //$NON-NLS-1$
+            			CoreActivator.log(status);
                     }
     			});
     		}

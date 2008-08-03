@@ -27,9 +27,11 @@ import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.internal.feed.FeedService;
 import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.internal.repositories.RepositoryService;
+import org.eclipsetrader.core.internal.trading.TradingService;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -46,6 +48,7 @@ public class CoreActivator extends Plugin {
 	public static final String ELEMENT_FACTORY_ID = "org.eclipsetrader.core.elementFactories";
 	public static final String REPOSITORY_ID = "org.eclipsetrader.core.repositories";
 	public static final String PROVIDERS_FACTORY_ID = "org.eclipsetrader.core.providers";
+	public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.brokers";
 
 	// Preferences IDs
 	public static final String DEFAULT_CONNECTOR_ID = "DEFAULT_CONNECTOR";
@@ -83,6 +86,17 @@ public class CoreActivator extends Plugin {
 		context.registerService(new String[] { IMarketService.class.getName(), MarketService.class.getName() }, marketService, new Hashtable<Object,Object>());
 		marketService.startUp(null);
 
+		TradingService tradingService = new TradingService();
+		context.registerService(
+				new String[] {
+						ITradingService.class.getName(),
+						TradingService.class.getName()
+					},
+				tradingService,
+				new Hashtable<Object,Object>()
+			);
+		tradingService.startUp();
+
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
 		if (extensionPoint != null) {
 			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
@@ -105,7 +119,15 @@ public class CoreActivator extends Plugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
-		ServiceReference serviceReference = context.getServiceReference(MarketService.class.getName());
+		ServiceReference serviceReference = context.getServiceReference(TradingService.class.getName());
+		if (serviceReference != null) {
+			TradingService service = (TradingService) context.getService(serviceReference);
+			if (service != null)
+				service.shutDown();
+			context.ungetService(serviceReference);
+		}
+
+		serviceReference = context.getServiceReference(MarketService.class.getName());
 		if (serviceReference != null) {
 			MarketService service = (MarketService) context.getService(serviceReference);
 			if (service != null)

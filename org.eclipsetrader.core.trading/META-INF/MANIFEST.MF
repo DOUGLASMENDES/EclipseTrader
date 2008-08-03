@@ -21,5 +21,4 @@ Import-Package: javax.xml.bind;version="[2.0.0,3.0.0)",
 Export-Package: org.eclipsetrader.core.ats,
  org.eclipsetrader.core.internal.ats;x-friends:="org.eclipsetrader.ui.trading",
  org.eclipsetrader.core.internal.ats.repository;x-friends:="org.eclipsetrader.ui.trading",
- org.eclipsetrader.core.internal.trading;x-friends:="org.eclipsetrader.ui.trading",
- org.eclipsetrader.core.trading
+ org.eclipsetrader.core.internal.trading;x-friends:="org.eclipsetrader.ui.trading"

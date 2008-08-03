@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.ats.ITradeSystem;
 import org.eclipsetrader.core.ats.ITradeSystemService;
 import org.eclipsetrader.core.internal.ats.TradeSystemService;
-import org.eclipsetrader.core.trading.ITradingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -21,7 +20,6 @@ import org.osgi.framework.ServiceReference;
 public class Activator extends Plugin {
 	public static final String PLUGIN_ID = "org.eclipsetrader.core.trading";
 
-	public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.brokers";
 	public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.trading.systems";
 
 	private static Activator plugin;
@@ -41,16 +39,6 @@ public class Activator extends Plugin {
 		super.start(context);
 		plugin = this;
 
-		final TradingService tradingService = new TradingService();
-		context.registerService(
-				new String[] {
-						ITradingService.class.getName(),
-						TradingService.class.getName()
-					},
-				tradingService,
-				new Hashtable<Object,Object>()
-			);
-
 		final TradeSystemService tradeSystemService = new TradeSystemService();
 		context.registerService(
 				new String[] {
@@ -63,10 +51,9 @@ public class Activator extends Plugin {
 
 		Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
 
-		Job job = new Job("Trading Service Startup") {
+		Job job = new Job("Trade System Service Startup") {
             @Override
             public IStatus run(IProgressMonitor monitor) {
-        		tradingService.startUp();
         		tradeSystemService.startUp();
 	            return Status.OK_STATUS;
             }
@@ -83,14 +70,6 @@ public class Activator extends Plugin {
 		ServiceReference serviceReference = context.getServiceReference(TradeSystemService.class.getName());
 		if (serviceReference != null) {
 			TradeSystemService service = (TradeSystemService) context.getService(serviceReference);
-			if (service != null)
-				service.shutDown();
-			context.ungetService(serviceReference);
-		}
-
-		serviceReference = context.getServiceReference(TradingService.class.getName());
-		if (serviceReference != null) {
-			TradingService service = (TradingService) context.getService(serviceReference);
 			if (service != null)
 				service.shutDown();
 			context.ungetService(serviceReference);

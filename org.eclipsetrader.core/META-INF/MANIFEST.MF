@@ -13,9 +13,11 @@ Export-Package: org.eclipsetrader.core.feed,
  org.eclipsetrader.core.internal.feed;x-internal:=true,
  org.eclipsetrader.core.internal.markets;x-friends:="org.eclipsetrader.ui",
  org.eclipsetrader.core.internal.repositories;x-internal:=true,
+ org.eclipsetrader.core.internal.trading;x-friends:="org.eclipsetrader.ui.trading",
  org.eclipsetrader.core.internal.views;x-friends:="org.eclipsetrader.ui",
  org.eclipsetrader.core.markets,
  org.eclipsetrader.core.repositories,
+ org.eclipsetrader.core.trading,
  org.eclipsetrader.core.views
 Import-Package: javax.xml.bind;version="[2.1.0,3.0.0)",
  javax.xml.bind.annotation;version="[2.1.0,3.0.0)",
@@ -26,3 +28,4 @@ Import-Package: javax.xml.bind;version="[2.1.0,3.0.0)",
  javax.xml.stream;version="[2.1.0,3.0.0)",
  javax.xml.stream.events;version="[2.1.0,3.0.0)",
  javax.xml.stream.util;version="[2.1.0,3.0.0)"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
