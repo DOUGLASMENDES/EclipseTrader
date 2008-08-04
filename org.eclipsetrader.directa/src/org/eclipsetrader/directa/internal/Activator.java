@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipsetrader.directa.internal.core.BrokerConnector;
 import org.eclipsetrader.directa.internal.core.OrderMonitor;
 import org.eclipsetrader.directa.internal.core.WebConnector;
 import org.eclipsetrader.directa.internal.core.repository.IdentifiersList;
@@ -90,7 +89,6 @@ public class Activator extends AbstractUIPlugin {
 		}, OrderMonitor.class);
 
 		WebConnector.getInstance();
-		BrokerConnector.getInstance();
 	}
 
 	/*

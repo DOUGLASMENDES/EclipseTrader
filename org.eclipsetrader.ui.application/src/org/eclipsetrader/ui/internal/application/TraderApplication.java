@@ -49,8 +49,6 @@ public class TraderApplication implements IApplication {
 					shell.dispose();
 			}
 
-			Runtime.getRuntime().addShutdownHook(new ShutdownHook());
-
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new TraderWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART)
 				return IApplication.EXIT_RESTART;

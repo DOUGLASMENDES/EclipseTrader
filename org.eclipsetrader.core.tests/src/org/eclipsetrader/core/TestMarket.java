@@ -16,15 +16,18 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketDay;
+import org.eclipsetrader.core.trading.IBroker;
 
 public class TestMarket implements IMarket {
 	private String name;
 	private Set<ISecurity> members = new HashSet<ISecurity>();
 	private IFeedConnector liveFeedConnector;
+	private IBackfillConnector backfillConnector;
 
 	public TestMarket(String name) {
 		this.name = name;
@@ -46,6 +49,20 @@ public class TestMarket implements IMarket {
 
 	public void setLiveFeedConnector(IFeedConnector liveFeedConnector) {
     	this.liveFeedConnector = liveFeedConnector;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
+     */
+    public IBackfillConnector getBackfillConnector() {
+	    return backfillConnector;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
+     */
+    public IBackfillConnector getIntradayBackfillConnector() {
+	    return null;
     }
 
 	/* (non-Javadoc)
@@ -108,6 +125,13 @@ public class TestMarket implements IMarket {
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     public Object getAdapter(Class adapter) {
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getBroker()
+     */
+    public IBroker getBroker() {
 	    return null;
     }
 }

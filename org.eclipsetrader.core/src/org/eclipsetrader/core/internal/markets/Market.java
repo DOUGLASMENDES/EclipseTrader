@@ -34,10 +34,12 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketDay;
+import org.eclipsetrader.core.trading.IBroker;
 
 @XmlRootElement(name = "market")
 @XmlType(name = "org.eclipsetrader.core.markets.Market")
@@ -55,6 +57,15 @@ public class Market implements IMarket, IAdaptable {
 
 	@XmlElement(name = "liveFeed")
 	private MarketConnector liveFeedConnector;
+
+	@XmlElement(name = "backfill")
+	private MarketBackfillConnector backfillConnector;
+
+	@XmlElement(name = "intraday-backfill")
+	private MarketBackfillConnector intradayBackfillConnector;
+
+	@XmlElement(name = "broker")
+	private MarketBroker broker;
 
 	@XmlElementWrapper(name = "schedule")
     @XmlElementRef
@@ -331,6 +342,42 @@ public class Market implements IMarket, IAdaptable {
     	this.liveFeedConnector = liveFeedConnector != null ? new MarketConnector(liveFeedConnector) : null;
 		propertyChangeSupport.firePropertyChange(PROP_LIVE_FEED_CONNECTOR, oldValue, this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null);
     }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
+     */
+	@XmlTransient
+    public IBackfillConnector getBackfillConnector() {
+	    return backfillConnector != null ? backfillConnector.getConnector() : null;
+    }
+
+	public void setBackfillConnector(IBackfillConnector backfillConnector) {
+    	this.backfillConnector = backfillConnector != null ? new MarketBackfillConnector(backfillConnector) : null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
+     */
+	@XmlTransient
+    public IBackfillConnector getIntradayBackfillConnector() {
+	    return intradayBackfillConnector != null ? intradayBackfillConnector.getConnector() : null;
+    }
+
+	public void setIntradayBackfillConnector(IBackfillConnector intradayBackfillConnector) {
+    	this.intradayBackfillConnector = intradayBackfillConnector != null ? new MarketBackfillConnector(intradayBackfillConnector) : null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getBroker()
+     */
+	@XmlTransient
+    public IBroker getBroker() {
+	    return broker != null ? broker.getConnector() : null;
+    }
+
+	public void setBroker(IBroker broker) {
+		this.broker = broker != null ? new MarketBroker(broker) : null;
+	}
 
 	/* (non-Javadoc)
      * @see java.lang.Object#hashCode()

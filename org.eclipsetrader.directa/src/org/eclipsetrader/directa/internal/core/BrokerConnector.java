@@ -97,6 +97,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
      * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
      */
     public Object create() throws CoreException {
+		if (instance == null)
+			instance = this;
 	    return instance;
     }
 

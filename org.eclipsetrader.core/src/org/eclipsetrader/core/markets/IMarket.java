@@ -14,8 +14,10 @@ package org.eclipsetrader.core.markets;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.trading.IBroker;
 
 /**
  * @since 1.0
@@ -128,4 +130,10 @@ public interface IMarket extends IAdaptable {
 	 * @return the feed connector.
 	 */
 	public IFeedConnector getLiveFeedConnector();
+
+	public IBackfillConnector getBackfillConnector();
+
+	public IBackfillConnector getIntradayBackfillConnector();
+
+	public IBroker getBroker();
 }

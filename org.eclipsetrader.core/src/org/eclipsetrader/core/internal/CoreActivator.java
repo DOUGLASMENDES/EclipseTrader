@@ -82,10 +82,6 @@ public class CoreActivator extends Plugin {
 		context.registerService(new String[] { IFeedService.class.getName(), FeedService.class.getName() }, feedService, new Hashtable<Object,Object>());
 		feedService.startUp();
 
-		MarketService marketService = new MarketService();
-		context.registerService(new String[] { IMarketService.class.getName(), MarketService.class.getName() }, marketService, new Hashtable<Object,Object>());
-		marketService.startUp(null);
-
 		TradingService tradingService = new TradingService();
 		context.registerService(
 				new String[] {
@@ -96,6 +92,10 @@ public class CoreActivator extends Plugin {
 				new Hashtable<Object,Object>()
 			);
 		tradingService.startUp();
+
+		MarketService marketService = new MarketService();
+		context.registerService(new String[] { IMarketService.class.getName(), MarketService.class.getName() }, marketService, new Hashtable<Object,Object>());
+		marketService.startUp(null);
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
 		if (extensionPoint != null) {
