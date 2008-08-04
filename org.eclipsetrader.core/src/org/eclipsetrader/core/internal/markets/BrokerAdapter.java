@@ -139,7 +139,7 @@ public class BrokerAdapter extends XmlAdapter<String, IBroker> {
 
 		IBroker connector = null;
 		if (tradingService != null)
-			connector = tradingService.getBrokerConnector(v);
+			connector = tradingService.getBroker(v);
 		if (connector == null) {
     		Status status = new Status(Status.WARNING, CoreActivator.PLUGIN_ID, 0, "Failed to load broker " + v, null);
     		CoreActivator.log(status);

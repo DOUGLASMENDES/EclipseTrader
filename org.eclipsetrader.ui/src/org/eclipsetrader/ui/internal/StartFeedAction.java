@@ -56,7 +56,7 @@ public class StartFeedAction implements IWorkbenchWindowActionDelegate {
     				for (int i = 0; i < connector.length; i++)
     					connector[i].connect();
 
-    				IBroker[] brokerConnector = getTradingService().getBrokerConnectors();
+    				IBroker[] brokerConnector = getTradingService().getBrokers();
     				for (int i = 0; i < brokerConnector.length; i++)
     					brokerConnector[i].connect();
             	} finally {

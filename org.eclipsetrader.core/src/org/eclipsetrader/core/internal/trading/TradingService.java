@@ -34,6 +34,8 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
+import org.eclipsetrader.core.markets.IMarket;
+import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
@@ -41,6 +43,8 @@ import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.ITradingServiceRunnable;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class TradingService implements ITradingService {
 	private Map<String, IBroker> brokers = new HashMap<String, IBroker>();
@@ -85,17 +89,17 @@ public class TradingService implements ITradingService {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITradingService#getBrokerConnectors()
+	 * @see org.eclipsetrader.core.trading.ITradingService#getBrokers()
 	 */
-	public IBroker[] getBrokerConnectors() {
+	public IBroker[] getBrokers() {
 		Collection<IBroker> c = brokers.values();
 		return c.toArray(new IBroker[c.size()]);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITradingService#getBrokerConnector(java.lang.String)
+	 * @see org.eclipsetrader.core.trading.ITradingService#getBroker(java.lang.String)
 	 */
-	public IBroker getBrokerConnector(String id) {
+	public IBroker getBroker(String id) {
 		return brokers.get(id);
 	}
 
@@ -103,11 +107,33 @@ public class TradingService implements ITradingService {
      * @see org.eclipsetrader.core.trading.ITradingService#getBrokerForSecurity(org.eclipsetrader.core.instruments.ISecurity)
      */
     public IBroker getBrokerForSecurity(ISecurity security) {
-    	for (IBroker connector : brokers.values()) {
-    		if (connector.canTrade(security))
-    			return connector;
+    	IBroker broker = null;
+
+    	try {
+    		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
+    		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+    		if (serviceReference != null) {
+        		IMarketService service = (IMarketService) context.getService(serviceReference);
+
+        		IMarket market = service.getMarketForSecurity(security);
+        		if (market != null)
+        			broker = market.getBroker();
+
+        		context.ungetService(serviceReference);
+    		}
+    	} catch(Exception e) {
+    		Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading market service", e);
+    		CoreActivator.getDefault().getLog().log(status);
     	}
-	    return null;
+
+    	if (broker == null) {
+        	for (IBroker connector : brokers.values()) {
+        		if (connector.canTrade(security))
+        			return connector;
+        	}
+    	}
+
+    	return broker;
     }
 
 	/* (non-Javadoc)

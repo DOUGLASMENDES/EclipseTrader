@@ -196,7 +196,7 @@ public class ConnectorsPage extends PropertyPage {
 	    List<Object> brokers = new ArrayList<Object>();
 	    brokers.add(new Object());
 	    if (getTradingService() != null)
-	    	brokers.addAll(Arrays.asList(getTradingService().getBrokerConnectors()));
+	    	brokers.addAll(Arrays.asList(getTradingService().getBrokers()));
 	    brokerCombo.setInput(brokers.toArray());
 	    brokerCombo.setSelection(new StructuredSelection(brokers.get(0)));
 

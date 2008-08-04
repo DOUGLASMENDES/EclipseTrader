@@ -14,12 +14,15 @@ package org.eclipsetrader.core.trading;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipsetrader.core.instruments.ISecurity;
 
 public interface ITradingService {
 
-	public IBroker[] getBrokerConnectors();
+	public IBroker[] getBrokers();
 
-	public IBroker getBrokerConnector(String id);
+	public IBroker getBroker(String id);
+
+	public IBroker getBrokerForSecurity(ISecurity security);
 
 	public void addOrders(IOrderMonitor[] order);
 
