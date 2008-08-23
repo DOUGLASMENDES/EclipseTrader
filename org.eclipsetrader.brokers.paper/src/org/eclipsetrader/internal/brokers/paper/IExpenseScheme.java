@@ -9,15 +9,11 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.trading;
+package org.eclipsetrader.internal.brokers.paper;
 
-public interface IAccount {
+public interface IExpenseScheme {
 
-	public String getId();
+	public Double getBuyExpenses(Long quantity, Double averagePrice);
 
-	public String getDescription();
-
-	public ITransaction[] getTransactions();
-
-	public IPosition[] getPositions();
+	public Double getSellExpenses(Long quantity, Double averagePrice);
 }

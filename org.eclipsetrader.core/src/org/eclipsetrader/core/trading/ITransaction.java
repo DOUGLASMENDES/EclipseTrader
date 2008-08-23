@@ -50,4 +50,11 @@ public interface ITransaction {
 	 * originated from an order.
 	 */
 	public IOrder getOrder();
+
+	/**
+	 * Gets the detailed transactions that composes the receiver, if any.
+	 *
+	 * @return the transactions.
+	 */
+	public ITransaction[] getTransactions();
 }

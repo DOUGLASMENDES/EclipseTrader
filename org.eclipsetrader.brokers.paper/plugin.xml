@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipsetrader.core.brokers">
+      <broker
+            class="org.eclipsetrader.internal.brokers.paper.PaperBroker"
+            id="org.eclipsetrader.brokers.paper"
+            name="Paper (Simulated)">
+      </broker>
+   </extension>
+
+</plugin>
