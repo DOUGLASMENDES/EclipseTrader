@@ -230,42 +230,12 @@
       </broker>
    </extension>
    <extension
-         point="org.eclipse.ui.commands">
-      <command
-            categoryId="org.eclipse.ui.category.navigate"
-            description="Trade the selected security"
-            id="org.eclipsetrader.ui.file.trade.directa"
-            name="Trade">
-      </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            commandId="org.eclipsetrader.ui.file.trade.directa">
-         <class
-               class="org.eclipsetrader.directa.internal.ui.TradeHandler">
-         </class>
-         <activeWhen>
-            <and>
-               <count
-                     value="1">
-               </count>
-               <iterate
-                     operator="and">
-                  <test
-                        property="org.eclipsetrader.connectors.directa.canTrade">
-                  </test>
-               </iterate>
-            </and>
-         </activeWhen>
-      </handler>
-   </extension>
-   <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.eclipse.ui.popup.any?after=group.open">
+            locationURI="popup:org.eclipsetrader.ui.file.trade?after=additions">
          <command
-               commandId="org.eclipsetrader.ui.file.trade.directa">
+               commandId="org.eclipsetrader.ui.file.trade"
+               label="Directa">
             <visibleWhen>
                <and>
                   <count
@@ -279,6 +249,10 @@
                   </iterate>
                </and>
             </visibleWhen>
+            <parameter
+                  name="broker"
+                  value="org.eclipsetrader.brokers.directa">
+            </parameter>
          </command>
       </menuContribution>
    </extension>

@@ -83,6 +83,8 @@ public interface IBroker {
 	 */
 	public IOrderValidity[] getAllowedValidity();
 
+	public IOrderRoute[] getAllowedRoutes();
+
 	/**
 	 * Check if the receiver can trade the given security.
 	 *
@@ -90,4 +92,6 @@ public interface IBroker {
 	 * @return <code>true</code> if the receive can trade the security.
 	 */
 	public boolean canTrade(ISecurity security);
+
+	public ISecurity getSecurityFromSymbol(String symbol);
 }

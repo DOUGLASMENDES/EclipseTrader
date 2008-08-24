@@ -43,4 +43,6 @@ public interface IOrder {
 	public IOrderValidity getValidity();
 
 	public Date getExpire();
+
+	public String getReference();
 }

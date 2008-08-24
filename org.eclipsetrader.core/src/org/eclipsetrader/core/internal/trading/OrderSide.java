@@ -59,6 +59,6 @@ public class OrderSide implements IOrderSide {
      */
     @Override
     public String toString() {
-	    return id;
+	    return name;
     }
 }

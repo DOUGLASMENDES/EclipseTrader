@@ -9,5 +9,26 @@
             name="Paper (Simulated)">
       </broker>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipsetrader.ui.file.trade?after=additions">
+         <command
+               commandId="org.eclipsetrader.ui.file.trade"
+               label="Paper (Simulated)">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="1">
+                  </count>
+               </and>
+            </visibleWhen>
+            <parameter
+                  name="broker"
+                  value="org.eclipsetrader.brokers.paper">
+            </parameter>
+         </command>
+      </menuContribution>
+   </extension>
 
 </plugin>

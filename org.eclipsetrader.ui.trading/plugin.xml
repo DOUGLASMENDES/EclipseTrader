@@ -11,5 +11,51 @@
             name="Orders">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="org.eclipsetrader.ui.trade.category"
+            name="Trade">
+      </category>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            defaultHandler="org.eclipsetrader.internal.ui.trading.TradeHandler"
+            description="Trade the selected security"
+            id="org.eclipsetrader.ui.file.trade"
+            name="Trade">
+         <commandParameter
+               id="broker"
+               name="Broker"
+               optional="true">
+         </commandParameter>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.trade">
+         <command
+               commandId="org.eclipsetrader.ui.file.trade"
+               label="Trade">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="1">
+                  </count>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.tradeWith">
+         <menu
+               id="org.eclipsetrader.ui.file.trade"
+               label="Trade With">
+            <separator
+                  name="additions">
+            </separator>
+         </menu>
+      </menuContribution>
+   </extension>
 
 </plugin>

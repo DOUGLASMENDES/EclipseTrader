@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -305,8 +306,23 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager menuManager) {
-				menuManager.add(deleteAction);
+				menuManager.add(new Separator("group.new"));
+				menuManager.add(new GroupMarker("group.goto"));
+				menuManager.add(new Separator("group.open"));
+				menuManager.add(new GroupMarker("group.openWith"));
+				menuManager.add(new Separator("group.trade"));
+				menuManager.add(new GroupMarker("group.tradeWith"));
+				menuManager.add(new Separator("group.show"));
+				menuManager.add(new Separator("group.edit"));
+				menuManager.add(new GroupMarker("group.reorganize"));
+				menuManager.add(new GroupMarker("group.port"));
+				menuManager.add(new Separator("group.generate"));
+				menuManager.add(new Separator("group.search"));
+				menuManager.add(new Separator("group.build"));
 				menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				menuManager.add(new Separator("group.properties"));
+
+				menuManager.appendToGroup("group.edit", deleteAction);
 			}
 		});
 		viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));

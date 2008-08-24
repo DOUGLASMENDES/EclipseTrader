@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.directa.internal.ui;
+package org.eclipsetrader.internal.ui.trading;
 
 import java.util.Iterator;
 
@@ -21,6 +21,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.trading.ITradingService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class TradeHandler extends AbstractHandler {
 
@@ -43,6 +46,20 @@ public class TradeHandler extends AbstractHandler {
 				if (target instanceof ISecurity) {
 					OrderDialog dlg = new OrderDialog(site.getShell());
 					dlg.setSecurity((ISecurity) target);
+
+					BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+					ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
+					if (serviceReference != null) {
+						ITradingService service = (ITradingService) context.getService(serviceReference);
+						dlg.setBroker(service.getBrokerForSecurity((ISecurity) target));
+
+						String brokerId = event.getParameter("broker");
+						if (brokerId != null)
+							dlg.setBroker(service.getBroker(brokerId));
+
+						context.ungetService(serviceReference);
+					}
+
 					dlg.open();
 				}
 			}

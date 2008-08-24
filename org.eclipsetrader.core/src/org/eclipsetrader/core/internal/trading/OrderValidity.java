@@ -59,6 +59,6 @@ public class OrderValidity implements IOrderValidity {
      */
     @Override
     public String toString() {
-	    return id;
+	    return name;
     }
 }

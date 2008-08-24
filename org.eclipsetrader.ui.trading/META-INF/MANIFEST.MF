@@ -8,6 +8,7 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipsetrader.core,
- org.eclipsetrader.core.trading
+ org.eclipsetrader.core.trading,
+ org.eclipse.nebula.widgets.cdatetime;bundle-version="0.10.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Eclipse-LazyStart: true

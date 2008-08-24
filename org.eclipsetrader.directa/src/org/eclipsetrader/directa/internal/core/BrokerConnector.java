@@ -25,9 +25,12 @@ import org.eclipse.core.runtime.IExecutableExtensionFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
@@ -163,6 +166,53 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	    return false;
     }
 
+	protected String getSecurityFeedSymbol(ISecurity security) {
+		IFeedIdentifier identifier = security.getIdentifier();
+		if (identifier == null)
+			return null;
+
+		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+		if (properties != null) {
+			for (int p = 0; p < WebConnector.PROPERTIES.length; p++) {
+				if (properties.getProperty(WebConnector.PROPERTIES[p]) != null)
+					return properties.getProperty(WebConnector.PROPERTIES[p]);
+			}
+		}
+
+		return null;
+	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#getSecurityFromSymbol(java.lang.String)
+     */
+    public ISecurity getSecurityFromSymbol(String symbol) {
+		ISecurity security = null;
+
+		if (Activator.getDefault() != null) {
+			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+			if (serviceReference != null) {
+				IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
+
+				ISecurity[] securities = service.getSecurities();
+				for (int i = 0; i < securities.length; i++) {
+					String feedSymbol = getSecurityFeedSymbol(securities[i]);
+					if (feedSymbol != null && feedSymbol.equals(symbol)) {
+						security = securities[i];
+						break;
+					}
+				}
+
+				context.ungetService(serviceReference);
+			}
+		}
+
+		if (security == null)
+			security = new Security("Unknown", new FeedIdentifier(symbol, null));
+
+		return security;
+    }
+
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.trading.IBroker#prepareOrder(org.eclipsetrader.core.trading.IOrder)
      */
@@ -224,9 +274,23 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	 */
 	public IOrderValidity[] getAllowedValidity() {
 		return new IOrderValidity[] {
+				IOrderValidity.Day,
 				Valid30Days,
 			};
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#getAllowedRoutes()
+     */
+    public IOrderRoute[] getAllowedRoutes() {
+	    return new IOrderRoute[] {
+    			BrokerConnector.Immediate,
+    			BrokerConnector.MTA,
+    			BrokerConnector.CloseMTA,
+    			BrokerConnector.Open,
+    			BrokerConnector.AfterHours,
+    		};
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBroker#getOrders()

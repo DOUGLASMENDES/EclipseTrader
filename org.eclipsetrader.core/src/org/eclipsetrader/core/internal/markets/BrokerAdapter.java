@@ -20,6 +20,7 @@ import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
+import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IOrderValidity;
@@ -92,6 +93,13 @@ public class BrokerAdapter extends XmlAdapter<String, IBroker> {
         }
 
 		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IBroker#getAllowedRoutes()
+         */
+        public IOrderRoute[] getAllowedRoutes() {
+	        return null;
+        }
+
+		/* (non-Javadoc)
          * @see org.eclipsetrader.core.trading.IBroker#getOrders()
          */
         public IOrderMonitor[] getOrders() {
@@ -102,6 +110,13 @@ public class BrokerAdapter extends XmlAdapter<String, IBroker> {
          * @see org.eclipsetrader.core.trading.IBroker#prepareOrder(org.eclipsetrader.core.trading.IOrder)
          */
         public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
+	        return null;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IBroker#getSecurityFromSymbol(java.lang.String)
+         */
+        public ISecurity getSecurityFromSymbol(String symbol) {
 	        return null;
         }
 	}

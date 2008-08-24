@@ -59,6 +59,6 @@ public class OrderRoute implements IOrderRoute {
      */
     @Override
     public String toString() {
-	    return id;
+	    return name;
     }
 }

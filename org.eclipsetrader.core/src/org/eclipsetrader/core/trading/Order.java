@@ -38,6 +38,8 @@ public class Order implements IOrder {
 	private IOrderValidity validity;
 	private Date expireDate;
 
+	private String reference;
+
 	protected Order() {
 	}
 
@@ -87,6 +89,10 @@ public class Order implements IOrder {
      */
     public IOrderRoute getRoute() {
 	    return route;
+    }
+
+	public void setRoute(IOrderRoute route) {
+    	this.route = route;
     }
 
 	/* (non-Javadoc)
@@ -145,12 +151,31 @@ public class Order implements IOrder {
 		return validity;
 	}
 
+	public void setValidity(IOrderValidity validity) {
+    	this.validity = validity;
+    }
+
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrder#getExpire()
 	 */
 	public Date getExpire() {
 		return expireDate;
 	}
+
+	public void setExpire(Date expireDate) {
+    	this.expireDate = expireDate;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IOrder#getReference()
+     */
+    public String getReference() {
+	    return reference;
+    }
+
+	public void setReference(String reference) {
+    	this.reference = reference;
+    }
 
 	/* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -165,6 +190,7 @@ public class Order implements IOrder {
 			+ ", price=" + getPrice()
 			+ ", stopPrice=" + getStopPrice()
 			+ ", timeInForce=" + getValidity()
-			+ ", expiration=" + getExpire();
+			+ ", expiration=" + getExpire()
+			+ ", reference=" + getReference();
     }
 }

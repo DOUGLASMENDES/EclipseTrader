@@ -59,6 +59,6 @@ public class OrderStatus implements IOrderStatus {
      */
     @Override
     public String toString() {
-	    return id;
+	    return name;
     }
 }

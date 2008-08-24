@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.internal.ui.trading;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -60,4 +61,12 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
+	public static void log(IStatus status) {
+		if (plugin == null) {
+			if (status.getException() != null)
+				status.getException().printStackTrace();
+			return;
+		}
+		plugin.getLog().log(status);
+	}
 }

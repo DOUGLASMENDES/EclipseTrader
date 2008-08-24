@@ -149,6 +149,8 @@ public class Navigator extends ViewPart {
 				menuManager.add(new GroupMarker("group.goto"));
 				menuManager.add(new Separator("group.open"));
 				menuManager.add(new GroupMarker("group.openWith"));
+				menuManager.add(new Separator("group.trade"));
+				menuManager.add(new GroupMarker("group.tradeWith"));
 				menuManager.add(new Separator("group.show"));
 				menuManager.add(new Separator("group.edit"));
 				menuManager.add(new GroupMarker("group.reorganize"));
