@@ -1,10 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
+Bundle-Name: Apache Log4j
 Bundle-SymbolicName: org.apache.log4j
 Bundle-Version: 1.2.14.v200701080905
-Bundle-Vendor: %providerName
-Bundle-Localization: plugin
+Bundle-Vendor: Apache Software Foundation
 Export-Package: org.apache.log4j;version="1.2.14",
  org.apache.log4j.chainsaw;version="1.2.14",
  org.apache.log4j.config;version="1.2.14",
@@ -24,5 +23,4 @@ Export-Package: org.apache.log4j;version="1.2.14",
  org.apache.log4j.spi;version="1.2.14",
  org.apache.log4j.varia;version="1.2.14",
  org.apache.log4j.xml;version="1.2.14"
-Bundle-ClassPath: log4j-1.2.14.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

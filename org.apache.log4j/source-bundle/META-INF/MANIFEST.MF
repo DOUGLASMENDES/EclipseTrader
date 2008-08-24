@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Log4j Source
+Bundle-SymbolicName: org.apache.log4j.source
+Bundle-Version: 1.2.14.v200701080905
+Bundle-Vendor: Apache Software Foundation
+Eclipse-SourceBundle: org.apache.log4j;version="1.2.14.v200701080905"
