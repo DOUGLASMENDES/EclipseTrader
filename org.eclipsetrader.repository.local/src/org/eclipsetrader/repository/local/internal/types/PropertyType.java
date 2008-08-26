@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Currency;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -43,6 +44,8 @@ public class PropertyType {
 			return new PropertyType(name, value.getClass().getName(), numberFormat.format(value));
 		if (value instanceof Boolean)
 			return new PropertyType(name, Boolean.class.getName(), Boolean.TRUE.equals(value) ? "true" : "false");
+		if (value instanceof Currency)
+			return new PropertyType(name, Currency.class.getName(), ((Currency) value).getCurrencyCode());
 		return new PropertyType(name, value.toString());
 	}
 
@@ -64,6 +67,8 @@ public class PropertyType {
                 return numberFormat.parse(property.getValue()).shortValue();
     		if (Boolean.class.getName().equals(property.getType()))
     			return "true".equals(property.getValue());
+    		if (Currency.class.getName().equals(property.getType()))
+    			return Currency.getInstance(property.getValue());
         } catch (ParseException e) {
             e.printStackTrace();
         }

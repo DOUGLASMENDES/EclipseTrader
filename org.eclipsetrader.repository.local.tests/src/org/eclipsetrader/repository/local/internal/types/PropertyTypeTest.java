@@ -12,6 +12,7 @@
 package org.eclipsetrader.repository.local.internal.types;
 
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 
 import junit.framework.TestCase;
@@ -64,6 +65,18 @@ public class PropertyTypeTest extends TestCase {
 	public void testConvertToBoolean() throws Exception {
 	    PropertyType property = new PropertyType("mandatory", Boolean.class.getName(), "true");
 	    assertEquals(Boolean.TRUE, PropertyType.convert(property));
+    }
+
+	public void testCreateFromCurrency() throws Exception {
+	    PropertyType property = PropertyType.create("currency", Currency.getInstance("USD"));
+	    assertEquals("currency", property.getName());
+	    assertEquals(Currency.class.getName(), property.getType());
+	    assertEquals("USD", property.getValue());
+    }
+
+	public void testConvertToCurrency() throws Exception {
+	    PropertyType property = new PropertyType("currency", Currency.class.getName(), "USD");
+	    assertEquals(Currency.getInstance("USD"), PropertyType.convert(property));
     }
 
 	private Date getTime(int year, int month, int day, int hour, int minute) {

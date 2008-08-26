@@ -27,10 +27,13 @@ import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.internal.feed.FeedService;
 import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.internal.repositories.RepositoryService;
+import org.eclipsetrader.core.internal.trading.CurrencyService;
 import org.eclipsetrader.core.internal.trading.TradingService;
 import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.trading.ICurrencyService;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.osgi.framework.BundleContext;
@@ -96,6 +99,16 @@ public class CoreActivator extends Plugin {
 		MarketService marketService = new MarketService();
 		context.registerService(new String[] { IMarketService.class.getName(), MarketService.class.getName() }, marketService, new Hashtable<Object,Object>());
 		marketService.startUp(null);
+
+		CurrencyService currencyService = new CurrencyService(repositoryService, (MarketPricingEnvironment) marketService.getPricingEnvironment());
+		context.registerService(
+				new String[] {
+						ICurrencyService.class.getName(),
+						CurrencyService.class.getName()
+					},
+				currencyService,
+				new Hashtable<Object,Object>()
+			);
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
 		if (extensionPoint != null) {

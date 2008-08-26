@@ -13,6 +13,8 @@ package org.eclipsetrader.core.internal.repositories;
 
 import junit.framework.TestCase;
 
+import org.eclipsetrader.core.instruments.CurrencyExchange;
+import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -35,5 +37,14 @@ public class DefaultElementFactoryTest extends TestCase {
 		Object object = factory.createElement(null, properties);
 		assertNotNull(object);
 		assertTrue(object instanceof Security);
+    }
+
+	public void testCreateCurrencyExchange() throws Exception {
+		DefaultElementFactory factory = new DefaultElementFactory();
+		StoreProperties properties = new StoreProperties();
+		properties.setProperty(IPropertyConstants.OBJECT_TYPE, ICurrencyExchange.class.getName());
+		Object object = factory.createElement(null, properties);
+		assertNotNull(object);
+		assertTrue(object instanceof CurrencyExchange);
     }
 }
