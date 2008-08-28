@@ -12,9 +12,11 @@
 package org.eclipsetrader.core.trading;
 
 public class OrderChangeEvent {
+	public IBroker broker;
 	public OrderDelta[] deltas;
 
-	public OrderChangeEvent(OrderDelta[] deltas) {
+	public OrderChangeEvent(IBroker broker, OrderDelta[] deltas) {
+		this.broker = broker;
 	    this.deltas = deltas;
     }
 }

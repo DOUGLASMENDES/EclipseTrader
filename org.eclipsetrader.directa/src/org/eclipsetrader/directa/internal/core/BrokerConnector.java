@@ -22,8 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
@@ -34,13 +33,14 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IOrderValidity;
-import org.eclipsetrader.core.trading.ITradingService;
-import org.eclipsetrader.core.trading.ITradingServiceRunnable;
+import org.eclipsetrader.core.trading.OrderChangeEvent;
+import org.eclipsetrader.core.trading.OrderDelta;
 import org.eclipsetrader.directa.internal.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -60,6 +60,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	private String name;
 
 	private Set<OrderMonitor> orders;
+	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private Thread thread;
 	private Runnable updateRunnable = new Runnable() {
@@ -221,26 +222,14 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			throw new BrokerException("Invalid order type, must be Limit or Market");
 		if (order.getSide() != IOrderSide.Buy && order.getSide() != IOrderSide.Sell)
 			throw new BrokerException("Invalid order side, must be Buy or Sell");
-		if (order.getValidity() != null && order.getValidity() != Valid30Days)
-			throw new BrokerException("Invalid order validity, must be null or GoodTillCancel");
+		if (order.getValidity() != IOrderValidity.Day && order.getValidity() != Valid30Days)
+			throw new BrokerException("Invalid order validity, must be Day or 30 Days");
 
 		OrderMonitor tracker = new OrderMonitor(WebConnector.getInstance(), this, order);
-
-		if (Activator.getDefault() != null) {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-			if (serviceReference != null) {
-				ITradingService service = (ITradingService) context.getService(serviceReference);
-				final IOrderMonitor[] addedOrders = new IOrderMonitor[] { tracker };
-				service.runInService(new ITradingServiceRunnable() {
-                    public IStatus run(ITradingService service, IProgressMonitor monitor) throws Exception {
-            		    service.addOrders(addedOrders);
-                        return Status.OK_STATUS;
-                    }
-				}, null);
-				context.ungetService(serviceReference);
-			}
-		}
+		orders.add(tracker);
+		fireUpdateNotifications(new OrderDelta[] {
+				new OrderDelta(OrderDelta.KIND_ADDED, tracker),
+			});
 
 		synchronized(thread) {
 			thread.notifyAll();
@@ -302,8 +291,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	}
 
 	public void updateOrders() {
-		final List<IOrderMonitor> toAdd = new ArrayList<IOrderMonitor>();
-		final List<IOrderMonitor> toRemove = new ArrayList<IOrderMonitor>();
+		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
 
 		synchronized(orders) {
 			WebConnector.getInstance().updateOrders();
@@ -312,33 +300,22 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	        for (OrderMonitor order : repositoryOrder) {
 	        	if (!orders.contains(order)) {
 	        		orders.add(order);
-	        		toAdd.add(order);
+	        		deltas.add(new OrderDelta(OrderDelta.KIND_ADDED, order));
 	        	}
+	        	else
+	        		deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, order));
 	        }
 			for (Iterator<OrderMonitor> iter = orders.iterator(); iter.hasNext(); ) {
 				OrderMonitor order = iter.next();
 	        	if (!repositoryOrder.contains(order)) {
 	        		iter.remove();
-	        		toRemove.add(order);
+	        		deltas.add(new OrderDelta(OrderDelta.KIND_REMOVED, order));
 	        	}
 	        }
 		}
 
-		if (Activator.getDefault() != null && toAdd.size() != 0) {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-			if (serviceReference != null) {
-				ITradingService service = (ITradingService) context.getService(serviceReference);
-				service.runInService(new ITradingServiceRunnable() {
-                    public IStatus run(ITradingService service, IProgressMonitor monitor) throws Exception {
-            		    service.removeOrders(toRemove.toArray(new IOrderMonitor[toRemove.size()]));
-            		    service.addOrders(toAdd.toArray(new IOrderMonitor[toAdd.size()]));
-                        return Status.OK_STATUS;
-                    }
-				}, null);
-				context.ungetService(serviceReference);
-			}
-		}
+		if (deltas.size() != 0)
+			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
 	}
 
 	public void wakeupOrdersUpdateThread() {
@@ -346,4 +323,33 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			thread.notifyAll();
 		}
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    public void addOrderChangeListener(IOrderChangeListener listener) {
+		listeners.add(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    public void removeOrderChangeListener(IOrderChangeListener listener) {
+		listeners.remove(listener);
+    }
+
+    protected void fireUpdateNotifications(OrderDelta[] deltas) {
+    	if (deltas.length != 0) {
+    		OrderChangeEvent event = new OrderChangeEvent(this, deltas);
+        	Object[] l = listeners.getListeners();
+    		for (int i = 0; i < l.length; i++) {
+    			try {
+    				((IOrderChangeListener) l[i]).orderChanged(event);
+    			} catch(Throwable e) {
+        			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+        			Activator.log(status);
+    			}
+    		}
+    	}
+    }
 }

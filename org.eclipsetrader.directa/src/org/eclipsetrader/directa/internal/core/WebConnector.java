@@ -34,7 +34,6 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.net.proxy.IProxyData;
@@ -51,11 +50,11 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.IOrder;
-import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IOrderValidity;
+import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.directa.internal.Activator;
 import org.eclipsetrader.directa.internal.core.connector.LoginDialog;
 import org.htmlparser.Parser;
@@ -499,21 +498,24 @@ public class WebConnector {
 		String inputLine;
 
 		try {
-			PostMethod method = new PostMethod("http://" + HOST + "/trading/ordmod5c");
-			method.addParameter("USER", user);
-			method.addParameter("RIF", tracker.getId());
-			method.addParameter("TIPO", "I");
-			method.addParameter("PRZO", "");
-			method.addParameter("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity()));
-			method.addParameter("FILL", "REVOCA");
+			GetMethod method = new GetMethod("http://" + HOST + "/trading/ordmod5c");
+			method.setQueryString(new NameValuePair[] {
+					new NameValuePair("TAST", "REVOCA"),
+					new NameValuePair("USER", user),
+					new NameValuePair("RIF", tracker.getId()),
+					new NameValuePair("TIPO", "I"),
+					new NameValuePair("PRZO", ""),
+					new NameValuePair("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity())),
+					new NameValuePair("FILL", "REVOCA"),
+				});
 
 			logger.info(method.getURI().toString());
 			client.executeMethod(method);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
 			while ((inputLine = in.readLine()) != null) {
-				logger.trace(inputLine);
-				if (inputLine.indexOf("INOLTRATA LA RICHIESTA DI REVOCA") != -1)
+				System.out.println(inputLine);
+				if (inputLine.indexOf("INOLTRATA LA RICHIESTA DI REVOCA") != -1 || inputLine.indexOf("RICH.ANN.") != -1)
 					ok = true;
 			}
 			in.close();

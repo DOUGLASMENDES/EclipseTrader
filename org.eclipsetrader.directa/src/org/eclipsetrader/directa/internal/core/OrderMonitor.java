@@ -202,6 +202,24 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
     }
 
 	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	    return order.hashCode();
+    }
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+    	if (!(obj instanceof OrderMonitor))
+    		return false;
+	    return order.equals(((OrderMonitor) obj).order);
+    }
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

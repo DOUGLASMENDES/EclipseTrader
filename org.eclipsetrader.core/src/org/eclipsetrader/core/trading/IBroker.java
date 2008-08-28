@@ -94,4 +94,8 @@ public interface IBroker {
 	public boolean canTrade(ISecurity security);
 
 	public ISecurity getSecurityFromSymbol(String symbol);
+
+	public void addOrderChangeListener(IOrderChangeListener listener);
+
+	public void removeOrderChangeListener(IOrderChangeListener listener);
 }

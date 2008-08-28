@@ -19,6 +19,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
@@ -33,12 +35,15 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IOrderValidity;
+import org.eclipsetrader.core.trading.OrderChangeEvent;
+import org.eclipsetrader.core.trading.OrderDelta;
 import org.eclipsetrader.internal.brokers.paper.transactions.StockTransaction;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -51,6 +56,7 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	private IPricingEnvironment pricingEnvironment;
 
 	private List<OrderMonitor> pendingOrders = new ArrayList<OrderMonitor>();
+	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private IPricingListener pricingListener = new IPricingListener() {
         public void pricingUpdate(PricingEvent event) {
@@ -227,6 +233,9 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 					pendingOrders.remove(this);
 				}
             	setStatus(IOrderStatus.Canceled);
+				fireUpdateNotifications(new OrderDelta[] {
+						new OrderDelta(OrderDelta.KIND_UPDATED, this),
+					});
             }
 
             @Override
@@ -236,12 +245,22 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
         		}
 				setId(Long.toHexString(UUID.randomUUID().getLeastSignificantBits()));
             	setStatus(IOrderStatus.PendingNew);
+				fireUpdateNotifications(new OrderDelta[] {
+						new OrderDelta(OrderDelta.KIND_UPDATED, this),
+					});
             }
 		};
+
+		fireUpdateNotifications(new OrderDelta[] {
+				new OrderDelta(OrderDelta.KIND_ADDED, monitor),
+			});
+
 		return monitor;
 	}
 
 	protected void processTrade(ISecurity security, ITrade trade) {
+		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
+
 		OrderMonitor[] monitors;
 		synchronized(pendingOrders) {
 			monitors = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
@@ -281,8 +300,42 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 					}
 					else
 						monitors[i].setStatus(IOrderStatus.Partial);
+
+					deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
 				}
 			}
 		}
+
+		if (deltas.size() != 0)
+			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    public void addOrderChangeListener(IOrderChangeListener listener) {
+		listeners.add(listener);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    public void removeOrderChangeListener(IOrderChangeListener listener) {
+		listeners.remove(listener);
+    }
+
+    protected void fireUpdateNotifications(OrderDelta[] deltas) {
+    	if (deltas.length != 0) {
+    		OrderChangeEvent event = new OrderChangeEvent(this, deltas);
+        	Object[] l = listeners.getListeners();
+    		for (int i = 0; i < l.length; i++) {
+    			try {
+    				((IOrderChangeListener) l[i]).orderChanged(event);
+    			} catch(Throwable e) {
+        			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+        			Activator.log(status);
+    			}
+    		}
+    	}
     }
 }

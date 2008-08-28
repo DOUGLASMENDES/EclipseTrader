@@ -11,9 +11,6 @@
 
 package org.eclipsetrader.core.trading;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipsetrader.core.instruments.ISecurity;
 
 public interface ITradingService {
@@ -24,19 +21,9 @@ public interface ITradingService {
 
 	public IBroker getBrokerForSecurity(ISecurity security);
 
-	public void addOrders(IOrderMonitor[] order);
-
-	public void removeOrders(IOrderMonitor[] order);
-
-	public void updateOrders(IOrderMonitor[] order);
-
 	public IOrderMonitor[] getOrders();
 
 	public void addOrderChangeListener(IOrderChangeListener listener);
 
 	public void removeOrderChangeListener(IOrderChangeListener listener);
-
-	public IStatus runInService(ITradingServiceRunnable runnable, IProgressMonitor monitor);
-
-	public IStatus runInService(ITradingServiceRunnable runnable, ISchedulingRule rule, IProgressMonitor monitor);
 }

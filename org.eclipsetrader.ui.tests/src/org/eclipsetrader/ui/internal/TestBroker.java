@@ -15,6 +15,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
+import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.IOrderSide;
@@ -110,5 +111,17 @@ public class TestBroker implements IBroker {
      */
     public ISecurity getSecurityFromSymbol(String symbol) {
 	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    public void addOrderChangeListener(IOrderChangeListener listener) {
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    public void removeOrderChangeListener(IOrderChangeListener listener) {
     }
 }
