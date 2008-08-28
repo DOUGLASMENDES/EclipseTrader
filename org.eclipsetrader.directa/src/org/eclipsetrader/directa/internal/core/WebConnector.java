@@ -514,7 +514,7 @@ public class WebConnector {
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
 			while ((inputLine = in.readLine()) != null) {
-				System.out.println(inputLine);
+				logger.trace(inputLine);
 				if (inputLine.indexOf("INOLTRATA LA RICHIESTA DI REVOCA") != -1 || inputLine.indexOf("RICH.ANN.") != -1)
 					ok = true;
 			}
