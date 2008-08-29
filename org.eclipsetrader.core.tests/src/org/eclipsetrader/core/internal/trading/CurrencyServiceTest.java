@@ -189,6 +189,7 @@ public class CurrencyServiceTest extends TestCase {
 
 	public void testGetAvailableCurrencies() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Set<Currency> set = new HashSet<Currency>(Arrays.asList(service.getAvailableCurrencies()));
 		assertTrue(set.contains(Currency.getInstance("EUR")));
 		assertTrue(set.contains(Currency.getInstance("USD")));
@@ -197,6 +198,7 @@ public class CurrencyServiceTest extends TestCase {
 
 	public void testDirectConvert() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.0, Currency.getInstance("EUR")), Currency.getInstance("USD"));
 		assertEquals(1.4677, cash.getAmount());
 		assertEquals(Currency.getInstance("USD"), cash.getCurrency());
@@ -204,6 +206,7 @@ public class CurrencyServiceTest extends TestCase {
 
 	public void testInverseConvert() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.4677, Currency.getInstance("USD")), Currency.getInstance("EUR"));
 		assertEquals(1.0, cash.getAmount());
 		assertEquals(Currency.getInstance("EUR"), cash.getCurrency());
@@ -211,18 +214,21 @@ public class CurrencyServiceTest extends TestCase {
 
 	public void testConvertToUnknownCurrency() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.0, Currency.getInstance("EUR")), Currency.getInstance("GBP"));
 		assertNull(cash);
     }
 
 	public void testConvertFromUnknownCurrency() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.0, Currency.getInstance("GBP")), Currency.getInstance("USD"));
 		assertNull(cash);
     }
 
 	public void testConvertToSameCurrency() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.0, Currency.getInstance("EUR")), Currency.getInstance("EUR"));
 		assertEquals(1.0, cash.getAmount());
 		assertEquals(Currency.getInstance("EUR"), cash.getCurrency());
@@ -231,6 +237,7 @@ public class CurrencyServiceTest extends TestCase {
 	public void testDirectConvertWithMultiplier() throws Exception {
 		eurusd = new CurrencyExchange(Currency.getInstance("EUR"), Currency.getInstance("USD"), 100.0);
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.0, Currency.getInstance("EUR")), Currency.getInstance("USD"));
 		assertEquals(146.77, cash.getAmount());
 		assertEquals(Currency.getInstance("USD"), cash.getCurrency());
@@ -239,6 +246,7 @@ public class CurrencyServiceTest extends TestCase {
 	public void testInverseConvertWithMultiplier() throws Exception {
 		eurusd = new CurrencyExchange(Currency.getInstance("EUR"), Currency.getInstance("USD"), 100.0);
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(146.77, Currency.getInstance("USD")), Currency.getInstance("EUR"));
 		assertEquals(1.0, cash.getAmount());
 		assertEquals(Currency.getInstance("EUR"), cash.getCurrency());
@@ -246,6 +254,7 @@ public class CurrencyServiceTest extends TestCase {
 
 	public void testDirectConvertToDate() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.0, Currency.getInstance("EUR")), Currency.getInstance("USD"), new Date(2000000));
 		assertEquals(1.4593, cash.getAmount());
 		assertEquals(Currency.getInstance("USD"), cash.getCurrency());
@@ -253,6 +262,7 @@ public class CurrencyServiceTest extends TestCase {
 
 	public void testInverseConvertToDate() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.4593, Currency.getInstance("USD")), Currency.getInstance("EUR"), new Date(2000000));
 		assertEquals(1.0, cash.getAmount());
 		assertEquals(Currency.getInstance("EUR"), cash.getCurrency());
@@ -260,6 +270,7 @@ public class CurrencyServiceTest extends TestCase {
 
 	public void testConvertToUnknownDate() throws Exception {
 		CurrencyService service = new CurrencyService(new TestRepositoryService(), pricingEnvironment);
+		service.startUp(null);
 		Cash cash = service.convert(new Cash(1.0, Currency.getInstance("EUR")), Currency.getInstance("USD"), new Date(3000000));
 		assertNull(cash);
     }

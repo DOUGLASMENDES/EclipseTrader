@@ -18,12 +18,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.Cash;
@@ -34,10 +36,17 @@ public class CurrencyService implements ICurrencyService {
 	private MarketPricingEnvironment pricingEnvironment;
 	private List<ICurrencyExchange> exchanges = new ArrayList<ICurrencyExchange>();
 
-	public CurrencyService(IRepositoryService repositoryService, MarketPricingEnvironment pricingEnvironment) {
-		this.pricingEnvironment = pricingEnvironment;
+	public CurrencyService(IRepositoryService repositoryService, IMarketService marketService) {
 		this.repositoryService = repositoryService;
+		this.pricingEnvironment = new MarketPricingEnvironment(marketService);
+	}
 
+	protected CurrencyService(IRepositoryService repositoryService, MarketPricingEnvironment pricingEnvironment) {
+	    this.repositoryService = repositoryService;
+	    this.pricingEnvironment = pricingEnvironment;
+    }
+
+	public void startUp(IProgressMonitor monitor) throws Exception {
 		for (ISecurity security : repositoryService.getSecurities()) {
 			ICurrencyExchange exchange = (ICurrencyExchange) security.getAdapter(ICurrencyExchange.class);
 			if (exchange != null) {
@@ -45,6 +54,10 @@ public class CurrencyService implements ICurrencyService {
 				pricingEnvironment.addSecurity(security);
 			}
 		}
+	}
+
+	public void shutDown(IProgressMonitor monitor) throws Exception {
+		pricingEnvironment.dispose();
 	}
 
 	/* (non-Javadoc)

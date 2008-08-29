@@ -30,7 +30,6 @@ import org.eclipsetrader.core.internal.repositories.RepositoryService;
 import org.eclipsetrader.core.internal.trading.CurrencyService;
 import org.eclipsetrader.core.internal.trading.TradingService;
 import org.eclipsetrader.core.markets.IMarketService;
-import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.ICurrencyService;
@@ -100,7 +99,7 @@ public class CoreActivator extends Plugin {
 		context.registerService(new String[] { IMarketService.class.getName(), MarketService.class.getName() }, marketService, new Hashtable<Object,Object>());
 		marketService.startUp(null);
 
-		CurrencyService currencyService = new CurrencyService(repositoryService, (MarketPricingEnvironment) marketService.getPricingEnvironment());
+		CurrencyService currencyService = new CurrencyService(repositoryService, marketService);
 		context.registerService(
 				new String[] {
 						ICurrencyService.class.getName(),
@@ -109,6 +108,7 @@ public class CoreActivator extends Plugin {
 				currencyService,
 				new Hashtable<Object,Object>()
 			);
+		currencyService.startUp(null);
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
 		if (extensionPoint != null) {
@@ -137,6 +137,14 @@ public class CoreActivator extends Plugin {
 			TradingService service = (TradingService) context.getService(serviceReference);
 			if (service != null)
 				service.shutDown();
+			context.ungetService(serviceReference);
+		}
+
+		serviceReference = context.getServiceReference(CurrencyService.class.getName());
+		if (serviceReference != null) {
+			CurrencyService service = (CurrencyService) context.getService(serviceReference);
+			if (service != null)
+				service.shutDown(null);
 			context.ungetService(serviceReference);
 		}
 

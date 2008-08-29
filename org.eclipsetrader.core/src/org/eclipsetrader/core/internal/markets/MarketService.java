@@ -30,13 +30,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipsetrader.core.feed.IPricingEnvironment;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.IMarketStatusListener;
-import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.markets.MarketStatusEvent;
 
 public class MarketService implements IMarketService, Runnable {
@@ -48,11 +46,8 @@ public class MarketService implements IMarketService, Runnable {
 	private Thread thread;
 	private boolean stopping = false;
 
-	private MarketPricingEnvironment pricingEnvironment;
-
 	public MarketService() {
 		instance = this;
-		pricingEnvironment = new MarketPricingEnvironment(this);
 	}
 
 	public static IMarketService getInstance() {
@@ -249,13 +244,6 @@ public class MarketService implements IMarketService, Runnable {
 				CoreActivator.log(status);
     		}
     	}
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarketService#getPricingEnvironment()
-     */
-    public IPricingEnvironment getPricingEnvironment() {
-	    return pricingEnvironment;
     }
 
 	/* (non-Javadoc)

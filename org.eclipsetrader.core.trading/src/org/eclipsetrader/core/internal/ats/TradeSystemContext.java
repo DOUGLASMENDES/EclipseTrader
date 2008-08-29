@@ -99,13 +99,20 @@ public class TradeSystemContext implements ITradeSystemContext {
     }
 
     public void stop() {
-    	if (strategyMonitor != null)
+    	if (strategyMonitor != null) {
     		strategyMonitor.stop();
+    		strategyMonitor = null;
+    	}
 
-    	if (pricingEnvironment != null)
+    	if (pricingEnvironment != null) {
     		pricingEnvironment.dispose();
-    	if (barFactory != null)
+    		pricingEnvironment = null;
+    	}
+
+    	if (barFactory != null) {
     		barFactory.dispose();
+    		barFactory = null;
+    	}
 
     	if (service != null) {
         	TradeSystemEvent event = new TradeSystemEvent();

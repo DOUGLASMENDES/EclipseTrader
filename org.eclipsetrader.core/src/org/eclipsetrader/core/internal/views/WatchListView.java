@@ -73,7 +73,7 @@ public class WatchListView implements IView, IPricingListener {
 		this.name = parent.getName();
 
 		if (marketService != null) {
-			pricingEnvironment = (MarketPricingEnvironment) marketService.getPricingEnvironment();
+			pricingEnvironment = new MarketPricingEnvironment(marketService);
 			pricingEnvironment.addPricingListener(this);
 		}
 

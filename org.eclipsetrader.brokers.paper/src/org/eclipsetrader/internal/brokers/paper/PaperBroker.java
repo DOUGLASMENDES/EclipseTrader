@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
-import org.eclipsetrader.core.feed.IPricingEnvironment;
 import org.eclipsetrader.core.feed.IPricingListener;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
@@ -31,6 +30,7 @@ import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
@@ -53,7 +53,7 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 
 	private String id;
 	private String name;
-	private IPricingEnvironment pricingEnvironment;
+	private MarketPricingEnvironment pricingEnvironment;
 
 	private List<OrderMonitor> pendingOrders = new ArrayList<OrderMonitor>();
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
@@ -70,7 +70,7 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	public PaperBroker() {
 	}
 
-	public PaperBroker(IPricingEnvironment pricingEnvironment) {
+	public PaperBroker(MarketPricingEnvironment pricingEnvironment) {
 	    this.pricingEnvironment = pricingEnvironment;
     }
 
@@ -120,7 +120,7 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 			ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
 			if (serviceReference != null) {
 				IMarketService marketService = (IMarketService) context.getService(serviceReference);
-				pricingEnvironment = marketService.getPricingEnvironment();
+				pricingEnvironment = new MarketPricingEnvironment(marketService);
 				context.ungetService(serviceReference);
 			}
 		}
@@ -250,6 +250,9 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 					});
             }
 		};
+
+		if (pricingEnvironment != null)
+			pricingEnvironment.addSecurity(order.getSecurity());
 
 		fireUpdateNotifications(new OrderDelta[] {
 				new OrderDelta(OrderDelta.KIND_ADDED, monitor),

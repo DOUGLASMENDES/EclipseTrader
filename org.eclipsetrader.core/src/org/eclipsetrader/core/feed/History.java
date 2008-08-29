@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -40,6 +42,38 @@ public class History implements IHistory, IStoreObject {
 	private IStoreProperties storeProperties;
 
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+	private class Key {
+		private Date first;
+		private Date last;
+		private TimeSpan timeSpan;
+
+		public Key(Date first, Date last, TimeSpan timeSpan) {
+	        this.first = first;
+	        this.last = last;
+	        this.timeSpan = timeSpan;
+        }
+
+		/* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+	        return 7 * first.hashCode() + 11 * last.hashCode() + 13 * timeSpan.hashCode();
+        }
+
+		/* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj) {
+        	if (!(obj instanceof Key))
+        		return false;
+	        return hashCode() == obj.hashCode();
+        }
+	}
+
+	private Map<Key, History> historyMap = new WeakHashMap<Key, History>();
 
 	protected History() {
 	}
@@ -145,6 +179,12 @@ public class History implements IHistory, IStoreObject {
     	if (this.timeSpan != null && this.timeSpan.equals(timeSpan))
     		return getSubset(first, last);
 
+    	Key key = new Key(first, last, timeSpan);
+
+    	History history = historyMap.get(key);
+    	if (history != null)
+    		return history;
+
     	Calendar c = Calendar.getInstance();
     	if (first != null) {
     		c.setTime(first);
@@ -224,7 +264,10 @@ public class History implements IHistory, IStoreObject {
 				l.add(new OHLC(startDate, open, high, low, close, volume));
 		}
 
-		return new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
+		history = new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
+		historyMap.put(key, history);
+
+		return history;
     }
 
 	/* (non-Javadoc)
