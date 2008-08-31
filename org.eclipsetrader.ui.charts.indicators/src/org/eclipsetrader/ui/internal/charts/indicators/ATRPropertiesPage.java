@@ -19,13 +19,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.ui.charts.indicators.ADOSC;
+import org.eclipsetrader.ui.charts.indicators.ATR;
 
-public class ADOSCPropertiesPage extends PropertyPage {
-	private Spinner fastPeriod;
-	private Spinner slowPeriod;
+public class ATRPropertiesPage extends PropertyPage {
+	private Spinner period;
 
-	public ADOSCPropertiesPage() {
+	public ATRPropertiesPage() {
         noDefaultAndApplyButton();
 	}
 
@@ -39,18 +38,13 @@ public class ADOSCPropertiesPage extends PropertyPage {
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setTitle("Chaikin A/D Oscillator");
+        setTitle("Average True Range");
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Fast Period");
+        label.setText("Period");
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
-        fastPeriod = new Spinner(content, SWT.BORDER);
-        fastPeriod.setValues(3, 1, 9999, 0, 1, 5);
-
-        label = new Label(content, SWT.NONE);
-        label.setText("Slow Period");
-        slowPeriod = new Spinner(content, SWT.BORDER);
-        slowPeriod.setValues(10, 1, 9999, 0, 1, 5);
+        period = new Spinner(content, SWT.BORDER);
+        period.setValues(7, 1, 9999, 0, 1, 5);
 
         performDefaults();
 
@@ -62,9 +56,8 @@ public class ADOSCPropertiesPage extends PropertyPage {
      */
     @Override
     protected void performDefaults() {
-    	ADOSC object = (ADOSC) getElement().getAdapter(ADOSC.class);
-        fastPeriod.setSelection(object.getFastPeriod());
-        slowPeriod.setSelection(object.getSlowPeriod());
+    	ATR object = (ATR) getElement().getAdapter(ATR.class);
+        period.setSelection(object.getPeriod());
 	    super.performDefaults();
     }
 
@@ -73,9 +66,8 @@ public class ADOSCPropertiesPage extends PropertyPage {
      */
     @Override
     public boolean performOk() {
-    	ADOSC object = (ADOSC) getElement().getAdapter(ADOSC.class);
-    	object.setFastPeriod(fastPeriod.getSelection());
-    	object.setSlowPeriod(slowPeriod.getSelection());
+    	ATR object = (ATR) getElement().getAdapter(ATR.class);
+    	object.setPeriod(period.getSelection());
 	    return super.performOk();
     }
 }

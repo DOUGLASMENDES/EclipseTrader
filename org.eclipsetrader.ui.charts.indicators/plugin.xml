@@ -12,10 +12,60 @@
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.ADX"
+            description="A/D Movement Index"
+            id="org.eclipsetrader.indicators.adx"
+            name="ADX">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.ADXR"
+            description="A/D Movement Index Rating"
+            id="org.eclipsetrader.indicators.adxr"
+            name="ADXR">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.ADOSC"
             description="Chaikin A/D Oscillator"
             id="org.eclipsetrader.indicators.adosc"
             name="ADOSC">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.APO"
+            description="Absolute Price Oscillator"
+            id="org.eclipsetrader.indicators.apo"
+            name="APO">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.AROON"
+            description="Aroon"
+            id="org.eclipsetrader.indicators.aroon"
+            name="AROON">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.AROONOSC"
+            description="Aroon Oscillator"
+            id="org.eclipsetrader.indicators.aroonosc"
+            name="AROONOSC">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.AVGPRICE"
+            description="Average Price"
+            exclusive="false"
+            id="org.eclipsetrader.indicators.avgprice"
+            name="AVGPRICE">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.ATR"
+            description="Average True Range"
+            id="org.eclipsetrader.indicators.atr"
+            name="ATR">
       </indicator>
       <indicator
             class="org.eclipsetrader.ui.charts.indicators.BARS"
@@ -31,6 +81,34 @@
             exclusive="false"
             id="org.eclipsetrader.indicators.bbands"
             name="BBANDS">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.BOP"
+            description="Balance Of Power"
+            id="org.eclipsetrader.indicators.bop"
+            name="BOP">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.CCI"
+            description="Commodity Channel Index"
+            id="org.eclipsetrader.indicators.cci"
+            name="CCI">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.CMO"
+            description="Chande Momentum Oscillator"
+            id="org.eclipsetrader.indicators.cmo"
+            name="CMO">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.DX"
+            description="Directional Movement Index"
+            id="org.eclipsetrader.indicators.dx"
+            name="DX">
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.indicators"
@@ -125,6 +203,116 @@
             <test
                   property="org.eclipsetrader.ui.chartObjectFactory"
                   value="org.eclipsetrader.indicators.adosc">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.ADXPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.adx"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.adx">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.ADXRPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.adxr"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.adxr">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.APOPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.apo"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.apo">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.AROONGeneralPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.aroon.general"
+            name="General">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.aroon">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.AROONPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.aroon.indicator"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.aroon">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.AROONOSCPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.aroonosc"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.aroonosc">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.ATRPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.atr"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.atr">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.CMOPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.cmo"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.cmo">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.CCIPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.cci"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.cci">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.DXPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.dx"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.dx">
             </test>
          </enabledWhen>
       </page>

@@ -19,13 +19,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.ui.charts.indicators.ADOSC;
+import org.eclipsetrader.ui.charts.indicators.AROON;
+import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
-public class ADOSCPropertiesPage extends PropertyPage {
-	private Spinner fastPeriod;
-	private Spinner slowPeriod;
+public class AROONPropertiesPage extends PropertyPage {
+	private Spinner period;
+	private RenderStyleInput upperLineStyle;
+	private RenderStyleInput lowerLineStyle;
 
-	public ADOSCPropertiesPage() {
+	public AROONPropertiesPage() {
         noDefaultAndApplyButton();
 	}
 
@@ -38,19 +40,26 @@ public class ADOSCPropertiesPage extends PropertyPage {
 	    GridLayout gridLayout = new GridLayout(2, false);
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
-        content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setTitle("Chaikin A/D Oscillator");
+        content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        setTitle("Moving Average");
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Fast Period");
+        label.setText("Period");
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
-        fastPeriod = new Spinner(content, SWT.BORDER);
-        fastPeriod.setValues(3, 1, 9999, 0, 1, 5);
+        period = new Spinner(content, SWT.BORDER);
+        period.setValues(7, 1, 9999, 0, 1, 5);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Slow Period");
-        slowPeriod = new Spinner(content, SWT.BORDER);
-        slowPeriod.setValues(10, 1, 9999, 0, 1, 5);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        ((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
+
+        label = new Label(content, SWT.NONE);
+        label.setText("Upper Line Style");
+        upperLineStyle = new RenderStyleInput(content);
+
+        label = new Label(content, SWT.NONE);
+        label.setText("Lower Line Style");
+        lowerLineStyle = new RenderStyleInput(content);
 
         performDefaults();
 
@@ -62,10 +71,13 @@ public class ADOSCPropertiesPage extends PropertyPage {
      */
     @Override
     protected void performDefaults() {
-    	ADOSC object = (ADOSC) getElement().getAdapter(ADOSC.class);
-        fastPeriod.setSelection(object.getFastPeriod());
-        slowPeriod.setSelection(object.getSlowPeriod());
-	    super.performDefaults();
+    	AROON object = (AROON) getElement().getAdapter(AROON.class);
+        period.setSelection(object.getPeriod());
+
+        upperLineStyle.setSelection(object.getUpperLineStyle());
+        lowerLineStyle.setSelection(object.getMiddleLineStyle());
+
+        super.performDefaults();
     }
 
 	/* (non-Javadoc)
@@ -73,9 +85,12 @@ public class ADOSCPropertiesPage extends PropertyPage {
      */
     @Override
     public boolean performOk() {
-    	ADOSC object = (ADOSC) getElement().getAdapter(ADOSC.class);
-    	object.setFastPeriod(fastPeriod.getSelection());
-    	object.setSlowPeriod(slowPeriod.getSelection());
+    	AROON object = (AROON) getElement().getAdapter(AROON.class);
+    	object.setPeriod(period.getSelection());
+
+    	object.setUpperLineStyle(upperLineStyle.getSelection());
+    	object.setMiddleLineStyle(lowerLineStyle.getSelection());
+
 	    return super.performOk();
     }
 }
