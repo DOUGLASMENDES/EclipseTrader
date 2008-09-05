@@ -42,6 +42,11 @@
                   <count
                         value="1">
                   </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.ISecurity">
+                     </adapt>
+                  </iterate>
                </and>
             </visibleWhen>
          </command>
@@ -54,6 +59,18 @@
             <separator
                   name="additions">
             </separator>
+            <visibleWhen>
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.ISecurity">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
          </menu>
       </menuContribution>
    </extension>

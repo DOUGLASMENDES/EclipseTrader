@@ -20,6 +20,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.views.WatchListViewItem;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
@@ -33,6 +34,7 @@ import org.eclipsetrader.ui.internal.navigator.NavigatorViewItem;
 import org.eclipsetrader.ui.internal.navigator.NavigatorViewItemAdapterFactory;
 import org.eclipsetrader.ui.internal.repositories.RepositoryViewItem;
 import org.eclipsetrader.ui.internal.repositories.RepositoryViewItemAdapterFactory;
+import org.eclipsetrader.ui.internal.views.WatchListViewItemAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -72,6 +74,7 @@ public class UIActivator extends AbstractUIPlugin {
 
 		AdapterManager.getDefault().registerAdapters(new NavigatorViewItemAdapterFactory(), NavigatorViewItem.class);
 		AdapterManager.getDefault().registerAdapters(new RepositoryViewItemAdapterFactory(), RepositoryViewItem.class);
+		AdapterManager.getDefault().registerAdapters(new WatchListViewItemAdapterFactory(), WatchListViewItem.class);
 	}
 
 	/*

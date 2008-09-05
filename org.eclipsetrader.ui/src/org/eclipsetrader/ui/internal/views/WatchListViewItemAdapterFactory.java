@@ -9,18 +9,16 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.ui.internal.navigator;
+package org.eclipsetrader.ui.internal.views;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
-import org.eclipsetrader.core.internal.markets.Market;
-import org.eclipsetrader.core.internal.views.WatchList;
-import org.eclipsetrader.core.views.IWatchList;
+import org.eclipsetrader.core.internal.views.WatchListViewItem;
 
-public class NavigatorViewItemAdapterFactory implements IAdapterFactory {
+public class WatchListViewItemAdapterFactory implements IAdapterFactory {
 
-	public NavigatorViewItemAdapterFactory() {
+	public WatchListViewItemAdapterFactory() {
 	}
 
 	/* (non-Javadoc)
@@ -28,8 +26,8 @@ public class NavigatorViewItemAdapterFactory implements IAdapterFactory {
      */
     @SuppressWarnings("unchecked")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
-    	if (adaptableObject instanceof NavigatorViewItem)
-    		return ((NavigatorViewItem) adaptableObject).getAdapter(adapterType);
+    	if (adaptableObject instanceof WatchListViewItem)
+    		return ((WatchListViewItem) adaptableObject).getAdapter(adapterType);
 	    return null;
     }
 
@@ -39,11 +37,8 @@ public class NavigatorViewItemAdapterFactory implements IAdapterFactory {
     @SuppressWarnings("unchecked")
     public Class[] getAdapterList() {
 	    return new Class[] {
-	    		IWatchList.class,
-	    		WatchList.class,
 	    		Security.class,
 	    		ISecurity.class,
-	    		Market.class,
 	    	};
     }
 }
