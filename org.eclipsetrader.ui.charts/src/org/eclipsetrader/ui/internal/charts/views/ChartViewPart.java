@@ -21,6 +21,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -43,6 +44,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -73,6 +75,9 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.dialogs.PropertyDialogAction;
+import org.eclipse.ui.internal.dialogs.PropertyDialog;
+import org.eclipse.ui.internal.dialogs.PropertyPageContributorManager;
+import org.eclipse.ui.internal.dialogs.PropertyPageManager;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
@@ -136,7 +141,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
 	private IViewChangeListener viewChangeListener = new IViewChangeListener() {
         public void viewChanged(ViewEvent event) {
-        	refreshChart();
+    		job.schedule();
     		setDirty();
         }
 	};
@@ -440,7 +445,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		DropTarget dropTarget = new DropTarget(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE);
 		dropTarget.setTransfer(transferTypes);
 		dropTarget.addDropListener(new DropTargetAdapter() {
-			@Override
+            @Override
             public void drop(DropTargetEvent event) {
             	ChartRowViewItem rowItem = null;
 
@@ -480,35 +485,36 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		    				viewer.activateEditor((IEditableChartObject) chartObject);
 		            	}
 		            	else {
-		    				boolean addToNewRow = false;
+		            		boolean addToNewRow = false;
 			            	IConfigurationElement configurationElement = ChartsUIActivator.getDefault().getChartObjectConfiguration(factories[i]);
 			            	if (!"false".equals(configurationElement.getAttribute("exclusive")))
 			            		addToNewRow = true;
 
+			            	PropertyPageManager pageManager = new PropertyPageManager();
 		    				if (addToNewRow) {
 			    				ChartRowViewItem newRowItem = new ChartRowViewItem(view, factory.getName());
 			    				ChartViewItem viewItem = new ChartViewItem(newRowItem, factory);
 			    				newRowItem.addChildItem(viewItem);
-			    				view.addRowAfter(rowItem, newRowItem);
+
+			    				PropertyPageContributorManager.getManager().contribute(pageManager, viewItem);
+			    				Iterator<?> pages = pageManager.getElements(PreferenceManager.PRE_ORDER).iterator();
+			    				if (pages.hasNext()) {
+				    				PropertyDialog dlg = PropertyDialog.createDialogOn(getViewSite().getShell(), null, viewItem);
+			    					if (dlg.open() == PropertyDialog.OK)
+					    				view.addRowAfter(rowItem, newRowItem);
+			    				}
 		    				}
 		    				else {
 			    				ChartViewItem viewItem = new ChartViewItem(rowItem, factory);
-			    				rowItem.addChildItem(viewItem);
+			    				PropertyPageContributorManager.getManager().contribute(pageManager, viewItem);
+			    				Iterator<?> pages = pageManager.getElements(PreferenceManager.PRE_ORDER).iterator();
+			    				if (pages.hasNext()) {
+				    				PropertyDialog dlg = PropertyDialog.createDialogOn(getViewSite().getShell(), null, viewItem);
+			    					if (dlg.open() == PropertyDialog.OK)
+					    				rowItem.addChildItem(viewItem);
+			    				}
 		    				}
 		            	}
-
-	    				/*PropertyPageManager pageManager = new PropertyPageManager();
-	    				PropertyPageContributorManager.getManager().contribute(pageManager, viewItem);
-	    				Iterator<?> pages = pageManager.getElements(PreferenceManager.PRE_ORDER).iterator();
-	    				if (pages.hasNext()) {
-		    				PropertyDialog dlg = PropertyDialog.createDialogOn(getViewSite().getShell(), null, viewItem);
-	    					if (dlg.open() == PropertyDialog.OK) {
-		    					view.addRowAfter(rowItem, newRowItem);
-		    					setDirty();
-	    					}
-	    				}
-	    				else {*/
-	    				//}
 	    			}
 	            }
             }
