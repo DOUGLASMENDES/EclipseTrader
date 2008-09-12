@@ -1,0 +1,21 @@
+Index: src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.cdatetime/src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java,v
+retrieving revision 1.5
+diff -u -r1.5 CDateTime.java
+--- src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java	16 Nov 2007 21:44:29 -0000	1.5
++++ src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java	26 Apr 2008 08:29:37 -0000
+@@ -273,7 +273,12 @@
+ 			} else {
+ 				setButtonVisibility(CDT.BUTTON_NEVER);
+ 				if((style & CDT.SPINNER) != 0) {
+-					spinner = new Spinner(this, SWT.VERTICAL);
++					int spinnerStyle = SWT.VERTICAL;
++					if (gtk) {
++						if ((style & CDT.BORDER) != 0)
++							spinnerStyle |= SWT.BORDER;
++					}
++					spinner = new Spinner(this, spinnerStyle);
+ 					spinner.setMinimum(0);
+ 					spinner.setMaximum(50);
+ 					spinner.setDigits(1);

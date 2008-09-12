@@ -22,6 +22,10 @@
       <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
 
+   <requires>
+      <import feature="org.eclipsetrader.platform" version="1.0.0" match="compatible"/>
+   </requires>
+
    <plugin
          id="org.eclipsetrader.brokers.paper"
          download-size="0"

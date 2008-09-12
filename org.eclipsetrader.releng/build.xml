@@ -1,0 +1,121 @@
+<project name="Product Build">
+	<property name="eclipse.home" value="${user.home}/eclipse"/>
+	<property name="eclipse.launcher" value="${eclipse.home}/plugins/org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"/>
+	<property name="eclipse.pde.build" value="${eclipse.home}/plugins/org.eclipse.pde.build_3.4.0.v20080604"/>
+
+	<property name="buildDirectory" value="${user.home}/eclipse.build"/>
+	<property name="baseLocation" value="${user.home}/eclipse-platform-3.3"/>
+
+	<available file="${buildDirectory}/label.properties" property="label.properties.exists" />
+	<property file="${buildDirectory}/label.properties" />
+
+	<path id="project.classpath">
+		<pathelement location="${basedir}/libs/svnjavahl.jar"/>
+		<pathelement location="${basedir}/libs/svnant.jar"/>
+		<pathelement location="${basedir}/libs/svnClientAdapter.jar"/>
+	</path>
+	<taskdef resource="svntask.properties" classpathref="project.classpath"/>
+
+	<target name="create.label.properties" unless="label.properties.exists">
+		<mkdir dir="${buildDirectory}" />
+		
+		<tstamp>
+		   <format property="timestamp" pattern="yyyyMMddHHmm"/>
+		</tstamp>
+		<property name="buildType" value="N"/>
+		<property name="buildId" value="${buildType}${timestamp}"/>
+		<property name="buildLabel" value="${buildType}${timestamp}"/>
+
+		<echo file="${buildDirectory}/label.properties">
+			timestamp=${timestamp}
+			buildType=${buildType}
+			buildId=${buildId}
+			buildLabel=${buildLabel}
+		</echo>
+	</target>
+	
+	<target name="fetch" description="Checking out source from repository...">
+		<property name="tag" value="http://svn.eclipsetrader.org/svnroot/eclipsetrader/trunk"/>
+		<svn>
+			<export srcurl="${tag}/com.tictactec.ta.lib" destpath="${buildDirectory}/plugins/com.tictactec.ta.lib" revision="HEAD"/>
+			<export srcurl="${tag}/com.tictactec.ta.lib-feature" destpath="${buildDirectory}/features/com.tictactec.ta.lib" revision="HEAD"/>
+
+			<export srcurl="${tag}/net.java.rome" destpath="${buildDirectory}/plugins/net.java.rome" revision="HEAD"/>
+			<export srcurl="${tag}/net.java.rome.fetcher" destpath="${buildDirectory}/plugins/net.java.rome.fetcher" revision="HEAD"/>
+			<export srcurl="${tag}/net.java.rome-feature" destpath="${buildDirectory}/features/net.java.rome" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.apache.commons" destpath="${buildDirectory}/plugins/org.apache.commons" revision="HEAD"/>
+			<export srcurl="${tag}/org.apache.commons.codec" destpath="${buildDirectory}/plugins/org.apache.commons.codec" revision="HEAD"/>
+			<export srcurl="${tag}/org.apache.commons.collections" destpath="${buildDirectory}/plugins/org.apache.commons.collections" revision="HEAD"/>
+			<export srcurl="${tag}/org.apache.commons.httpclient" destpath="${buildDirectory}/plugins/org.apache.commons.httpclient" revision="HEAD"/>
+			<export srcurl="${tag}/org.apache.commons.logging" destpath="${buildDirectory}/plugins/org.apache.commons.logging" revision="HEAD"/>
+			<export srcurl="${tag}/org.apache.commons-feature" destpath="${buildDirectory}/features/org.apache.commons" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.apache.log4j" destpath="${buildDirectory}/plugins/org.apache.log4j" revision="HEAD"/>
+			<export srcurl="${tag}/org.apache.log4j-feature" destpath="${buildDirectory}/features/org.apache.log4j" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.otfeed" destpath="${buildDirectory}/plugins/org.otfeed" revision="HEAD"/>
+			<export srcurl="${tag}/org.otfeed-feature" destpath="${buildDirectory}/features/org.otfeed" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.jdom" destpath="${buildDirectory}/plugins/org.jdom" revision="HEAD"/>
+			<export srcurl="${tag}/org.jdom-feature" destpath="${buildDirectory}/features/org.jdom" revision="HEAD"/>
+
+			<export srcurl="${tag}/javax.xml.bind" destpath="${buildDirectory}/plugins/javax.xml.bind" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.eclipse.rcp.extras" destpath="${buildDirectory}/plugins/org.eclipse.rcp.extras" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipse.rcp.extras-feature" destpath="${buildDirectory}/features/org.eclipse.rcp.extras" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.eclipsetrader.core" destpath="${buildDirectory}/plugins/org.eclipsetrader.core" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.core.charts" destpath="${buildDirectory}/plugins/org.eclipsetrader.core.charts" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.core.trading" destpath="${buildDirectory}/plugins/org.eclipsetrader.core.trading" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.news" destpath="${buildDirectory}/plugins/org.eclipsetrader.news" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.platform" destpath="${buildDirectory}/plugins/org.eclipsetrader.platform" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.platform.doc.isv" destpath="${buildDirectory}/plugins/org.eclipsetrader.platform.doc.isv" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.platform.doc.user" destpath="${buildDirectory}/plugins/org.eclipsetrader.platform.doc.user" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.repository.local" destpath="${buildDirectory}/plugins/org.eclipsetrader.repository.local" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.ui" destpath="${buildDirectory}/plugins/org.eclipsetrader.ui" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.ui.application" destpath="${buildDirectory}/plugins/org.eclipsetrader.ui.application" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.ui.charts" destpath="${buildDirectory}/plugins/org.eclipsetrader.ui.charts" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.ui.charts.indicators" destpath="${buildDirectory}/plugins/org.eclipsetrader.ui.charts.indicators" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.ui.trading" destpath="${buildDirectory}/plugins/org.eclipsetrader.ui.trading" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.platform-feature" destpath="${buildDirectory}/features/org.eclipsetrader.platform" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.eclipsetrader.archipelago" destpath="${buildDirectory}/plugins/org.eclipsetrader.archipelago" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.borsaitalia" destpath="${buildDirectory}/plugins/org.eclipsetrader.borsaitalia" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.directa" destpath="${buildDirectory}/plugins/org.eclipsetrader.directa" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.directaworld" destpath="${buildDirectory}/plugins/org.eclipsetrader.directaworld" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.opentick" destpath="${buildDirectory}/plugins/org.eclipsetrader.opentick" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.yahoo" destpath="${buildDirectory}/plugins/org.eclipsetrader.yahoo" revision="HEAD"/>
+
+			<export srcurl="${tag}/org.eclipsetrader.brokers.paper" destpath="${buildDirectory}/plugins/org.eclipsetrader.brokers.paper" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.brokers.paper-feature" destpath="${buildDirectory}/features/org.eclipsetrader.brokers.paper" revision="HEAD"/>
+		</svn>
+
+		<cvs command="export -d org.eclipse.nebula.widgets.cdatetime" cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/technology" dest="${buildDirectory}/plugins" package="org.eclipse.swt.nebula/org.eclipse.nebula.widgets.cdatetime" tag="HEAD" taskname="CVS"/>
+		<patch patchfile="nebula-widgets-cdatetime.patch" dir="${buildDirectory}/plugins/org.eclipse.nebula.widgets.cdatetime" strip="0"/>
+
+		<cvs command="export -d org.eclipse.nebula.widgets.pshelf" cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/technology" dest="${buildDirectory}/plugins" package="org.eclipse.swt.nebula/org.eclipse.nebula.widgets.pshelf" tag="HEAD" taskname="CVS"/>
+		<patch patchfile="nebula-widgets-pshelf.patch" dir="${buildDirectory}/plugins/org.eclipse.nebula.widgets.pshelf" strip="0"/>
+	</target>
+
+	<target name="build" depends="create.label.properties">
+		<replace dir="${buildDirectory}/plugins" value="${buildId}" token="@build@">
+			<include name="**/about.mappings" />
+		</replace>
+
+		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
+			<arg value="-application"/>
+			<arg value="org.eclipse.ant.core.antRunner"/>
+			<arg value="-buildfile"/>
+			<arg value="${eclipse.pde.build}/scripts/productBuild/productBuild.xml"/>
+			<arg value="-DbaseLocation=${baseLocation}"/>
+			<arg value="-Dproduct=${basedir}/eclipsetrader.product"/>
+			<arg value="-DbuildType=${buildType}"/>
+			<arg value="-DbuildId=${buildId}"/>
+			<arg value="-DbuildLabel=${buildLabel}"/>
+			<arg value="-Dtimestamp=${timestamp}"/>
+			<arg value="-DbuildDirectory=${buildDirectory}"/>
+		</java>
+	</target>
+
+</project>
