@@ -19,17 +19,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.ui.charts.indicators.APO;
-import org.eclipsetrader.ui.internal.charts.MATypeInput;
-import org.eclipsetrader.ui.internal.charts.OHLCFieldInput;
+import org.eclipsetrader.ui.charts.indicators.ULTOSC;
 
-public class APOPropertiesPage extends PropertyPage {
-	private OHLCFieldInput input;
-	private Spinner fastPeriod;
-	private Spinner slowPeriod;
-	private MATypeInput type;
+public class ULTOSCPropertiesPage extends PropertyPage {
+	private Spinner shortPeriod;
+	private Spinner mediumPeriod;
+	private Spinner longPeriod;
 
-	public APOPropertiesPage() {
+	public ULTOSCPropertiesPage() {
         noDefaultAndApplyButton();
 	}
 
@@ -43,30 +40,23 @@ public class APOPropertiesPage extends PropertyPage {
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setTitle("Absolute Price Oscillator");
+        setTitle("Ultimate Oscillator");
 
         Label label = new Label(content, SWT.NONE);
+        label.setText("Short Period");
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
-        label.setText("Input Field");
-        input = new OHLCFieldInput(content);
+        shortPeriod = new Spinner(content, SWT.BORDER);
+        shortPeriod.setValues(7, 1, 9999, 0, 1, 5);
 
         label = new Label(content, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        ((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
+        label.setText("Medium Period");
+        mediumPeriod = new Spinner(content, SWT.BORDER);
+        mediumPeriod.setValues(14, 1, 9999, 0, 1, 5);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Fast Period");
-        fastPeriod = new Spinner(content, SWT.BORDER);
-        fastPeriod.setValues(3, 1, 9999, 0, 1, 5);
-
-        label = new Label(content, SWT.NONE);
-        label.setText("Slow Period");
-        slowPeriod = new Spinner(content, SWT.BORDER);
-        slowPeriod.setValues(10, 1, 9999, 0, 1, 5);
-
-        label = new Label(content, SWT.NONE);
-        label.setText("MA Type");
-        type = new MATypeInput(content);
+        label.setText("Long Period");
+        longPeriod = new Spinner(content, SWT.BORDER);
+        longPeriod.setValues(21, 1, 9999, 0, 1, 5);
 
         performDefaults();
 
@@ -78,11 +68,10 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     protected void performDefaults() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
-        input.setSelection(object.getField());
-        fastPeriod.setSelection(object.getFastPeriod());
-        slowPeriod.setSelection(object.getSlowPeriod());
-        type.setSelection(object.getMaType());
+    	ULTOSC object = (ULTOSC) getElement().getAdapter(ULTOSC.class);
+        shortPeriod.setSelection(object.getShortPeriod());
+        mediumPeriod.setSelection(object.getMediumPeriod());
+        longPeriod.setSelection(object.getLongPeriod());
 	    super.performDefaults();
     }
 
@@ -91,11 +80,10 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     public boolean performOk() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
-    	object.setField(input.getSelection());
-    	object.setFastPeriod(fastPeriod.getSelection());
-    	object.setSlowPeriod(slowPeriod.getSelection());
-    	object.setMaType(type.getSelection());
+    	ULTOSC object = (ULTOSC) getElement().getAdapter(ULTOSC.class);
+    	object.setShortPeriod(shortPeriod.getSelection());
+    	object.setMediumPeriod(mediumPeriod.getSelection());
+    	object.setLongPeriod(longPeriod.getSelection());
 	    return super.performOk();
     }
 }

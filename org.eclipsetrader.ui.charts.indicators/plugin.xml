@@ -112,6 +112,13 @@
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.LINEARREG"
+            description="Linear Regression"
+            id="org.eclipsetrader.indicators.linearreg"
+            name="LINEARREG">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.MA"
             description="Moving Average"
             exclusive="false"
@@ -120,10 +127,122 @@
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.MACD"
+            description="M/A Convergence/Divergence"
+            id="org.eclipsetrader.indicators.macd"
+            name="MACD">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.MFI"
+            description="Money Flow Index"
+            id="org.eclipsetrader.indicators.mfi"
+            name="MFI">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.MOM"
+            description="Momentum"
+            id="org.eclipsetrader.indicators.mom"
+            name="MOM">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.NATR"
+            description="Normalized Average True Range"
+            id="org.eclipsetrader.indicators.natr"
+            name="NATR">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.OBV"
+            description="On Balance Volume"
+            id="org.eclipsetrader.indicators.obv"
+            name="OBV">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.PPO"
+            description="Percentage Price Oscillator"
+            id="org.eclipsetrader.indicators.ppo"
+            name="PPO">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.ROC"
+            description="Rate of Change"
+            id="org.eclipsetrader.indicators.roc"
+            name="ROC">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
             class="org.eclipsetrader.ui.charts.indicators.RSI"
             description="Relative Strength Index"
             id="org.eclipsetrader.indicators.rsi"
             name="RSI">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.SAR"
+            description="Parabolic SAR"
+            id="org.eclipsetrader.indicators.sar"
+            name="SAR">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.STOCH"
+            description="Stochastic"
+            id="org.eclipsetrader.indicators.stoch"
+            name="STOCH">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.STOCHRSI"
+            description="Stochastic RSI"
+            id="org.eclipsetrader.indicators.stochrsi"
+            name="STOCHRSI">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.SUM"
+            description="Summation"
+            id="org.eclipsetrader.indicators.sum"
+            name="SUM">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.TRANGE"
+            description="True Range"
+            id="org.eclipsetrader.indicators.trange"
+            name="TRANGE">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.TRIX"
+            description="1-day ROC of a Triple Smooth EMA"
+            id="org.eclipsetrader.indicators.trix"
+            name="TRIX">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.TSF"
+            description="Time Series Forecast"
+            id="org.eclipsetrader.indicators.tsf"
+            name="TSF">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.TYPPRICE"
+            description="Typical Price"
+            id="org.eclipsetrader.indicators.typprice"
+            name="TYPPRICE">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators"
+            class="org.eclipsetrader.ui.charts.indicators.ULTOSC"
+            description="Ultimate Oscillator"
+            id="org.eclipsetrader.indicators.ultosc"
+            name="ULTOSC">
       </indicator>
       <indicator
             class="org.eclipsetrader.ui.charts.indicators.VOLUME"
@@ -313,6 +432,204 @@
             <test
                   property="org.eclipsetrader.ui.chartObjectFactory"
                   value="org.eclipsetrader.indicators.dx">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.MACDGeneralPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.macd.general"
+            name="General">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.macd">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.MACDPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.macd.indicator"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.macd">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.MFIPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.mfi"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.mfi">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.MOMPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.mom"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.mom">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.NATRPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.natr"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.natr">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.PPOPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.ppo"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.ppo">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.OBVPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.obv"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.obv">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.ROCPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.roc"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.roc">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.SARPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.sar"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.sar">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.STOCHGeneralPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.stoch.general"
+            name="General">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.stoch">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.STOCHPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.stoch.indicator"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.stoch">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.STOCHRSIGeneralPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.stochrsi.general"
+            name="General">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.stochrsi">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.STOCHRSIPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.stochrsi.indicator"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.stochrsi">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.SUMPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.sum"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.sum">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.TRIXPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.trix"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.trix">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.TSFPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.tsf"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.tsf">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.ULTOSCPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.ultosc"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.ultosc">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.LINEARREGPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.linearreg"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.linearreg">
             </test>
          </enabledWhen>
       </page>

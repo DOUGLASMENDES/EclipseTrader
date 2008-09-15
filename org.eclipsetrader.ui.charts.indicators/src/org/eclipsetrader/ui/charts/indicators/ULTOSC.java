@@ -32,24 +32,20 @@ import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
+public class ULTOSC implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
     private String factoryName;
     private String name;
 
-    private OHLCField field = OHLCField.Close;
-    private int period = 7;
+    private int shortPeriod = 7;
+    private int mediumPeriod = 14;
+    private int longPeriod = 21;
 
     private RenderStyle renderStyle = RenderStyle.Line;
     private RGB color;
 
-	public CMO() {
+	public ULTOSC() {
 	}
-
-	public CMO(int period, OHLCField field) {
-	    this.period = period;
-	    this.field = field;
-    }
 
 	/* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
@@ -81,20 +77,28 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
     	this.name = name;
     }
 
-	public OHLCField getField() {
-    	return field;
+	public int getShortPeriod() {
+    	return shortPeriod;
     }
 
-	public void setField(OHLCField field) {
-    	this.field = field;
+	public void setShortPeriod(int shortPeriod) {
+    	this.shortPeriod = shortPeriod;
     }
 
-	public int getPeriod() {
-    	return period;
+	public int getMediumPeriod() {
+    	return mediumPeriod;
     }
 
-	public void setPeriod(int period) {
-    	this.period = period;
+	public void setMediumPeriod(int mediumPeriod) {
+    	this.mediumPeriod = mediumPeriod;
+    }
+
+	public int getLongPeriod() {
+    	return longPeriod;
+    }
+
+	public void setLongPeriod(int longPeriod) {
+    	this.longPeriod = longPeriod;
     }
 
 	/* (non-Javadoc)
@@ -135,19 +139,21 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
 		IAdaptable[] values = source.getValues();
 		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-		int lookback = core.cmoLookback(period);
+		int lookback = core.ultOscLookback(shortPeriod, mediumPeriod, longPeriod);
 		if (values.length < lookback)
 			return null;
 
         int startIdx = 0;
         int endIdx = values.length - 1;
-		double[] inReal = Util.getValuesForField(values, field);
+		double[] inHigh = Util.getValuesForField(values, OHLCField.High);
+		double[] inLow = Util.getValuesForField(values, OHLCField.Low);
+		double[] inClose = Util.getValuesForField(values, OHLCField.Close);
 
 		MInteger outBegIdx = new MInteger();
         MInteger outNbElement = new MInteger();
         double[] outReal = new double[values.length - lookback];
 
-        core.cmo(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+        core.ultOsc(startIdx, endIdx, inHigh, inLow, inClose, shortPeriod, mediumPeriod, longPeriod, outBegIdx, outNbElement, outReal);
 
         NumericDataSeries result = new NumericDataSeries(getName(), outReal, source);
 		return Util.createLineChartObject(result, renderStyle, color);
@@ -162,8 +168,9 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
     	if (!factoryName.equals(name))
     		parameters.setParameter("name", name);
 
-    	parameters.setParameter("field", field.getName());
-    	parameters.setParameter("period", period);
+    	parameters.setParameter("short-period", shortPeriod);
+    	parameters.setParameter("medium-period", mediumPeriod);
+    	parameters.setParameter("long-period", longPeriod);
 
     	parameters.setParameter("style", renderStyle.getName());
     	if (color != null)
@@ -178,8 +185,9 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
     public void setParameters(IChartParameters parameters) {
 	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
 
-	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
-	    period = parameters.getInteger("period");
+	    shortPeriod = parameters.getInteger("short-period");
+	    mediumPeriod = parameters.getInteger("medium-period");
+	    longPeriod = parameters.getInteger("long-period");
 
 	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
 	    color = parameters.getColor("color");

@@ -48,7 +48,7 @@ public class BBANDSPropertiesPage extends PropertyPage {
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        setTitle("Moving Average");
+        setTitle("Bollinger Bands");
 
         Label label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));

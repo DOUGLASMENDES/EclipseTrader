@@ -32,24 +32,18 @@ import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
+public class OBV implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
     private String factoryName;
     private String name;
 
     private OHLCField field = OHLCField.Close;
-    private int period = 7;
 
     private RenderStyle renderStyle = RenderStyle.Line;
     private RGB color;
 
-	public CMO() {
+	public OBV() {
 	}
-
-	public CMO(int period, OHLCField field) {
-	    this.period = period;
-	    this.field = field;
-    }
 
 	/* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
@@ -87,14 +81,6 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
 
 	public void setField(OHLCField field) {
     	this.field = field;
-    }
-
-	public int getPeriod() {
-    	return period;
-    }
-
-	public void setPeriod(int period) {
-    	this.period = period;
     }
 
 	/* (non-Javadoc)
@@ -135,19 +121,20 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
 		IAdaptable[] values = source.getValues();
 		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-		int lookback = core.cmoLookback(period);
+		int lookback = core.obvLookback();
 		if (values.length < lookback)
 			return null;
 
         int startIdx = 0;
         int endIdx = values.length - 1;
 		double[] inReal = Util.getValuesForField(values, field);
+		double[] inVolume = Util.getValuesForField(values, OHLCField.Volume);
 
 		MInteger outBegIdx = new MInteger();
         MInteger outNbElement = new MInteger();
         double[] outReal = new double[values.length - lookback];
 
-        core.cmo(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+        core.obv(startIdx, endIdx, inReal, inVolume, outBegIdx, outNbElement, outReal);
 
         NumericDataSeries result = new NumericDataSeries(getName(), outReal, source);
 		return Util.createLineChartObject(result, renderStyle, color);
@@ -163,7 +150,6 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
     		parameters.setParameter("name", name);
 
     	parameters.setParameter("field", field.getName());
-    	parameters.setParameter("period", period);
 
     	parameters.setParameter("style", renderStyle.getName());
     	if (color != null)
@@ -179,7 +165,6 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
 	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
 
 	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
-	    period = parameters.getInteger("period");
 
 	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
 	    color = parameters.getColor("color");

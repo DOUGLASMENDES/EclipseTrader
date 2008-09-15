@@ -32,7 +32,7 @@ import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
+public class ROC implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
     private String factoryName;
     private String name;
@@ -43,10 +43,10 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
     private RenderStyle renderStyle = RenderStyle.Line;
     private RGB color;
 
-	public CMO() {
+	public ROC() {
 	}
 
-	public CMO(int period, OHLCField field) {
+	public ROC(int period, OHLCField field) {
 	    this.period = period;
 	    this.field = field;
     }
@@ -135,7 +135,7 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
 		IAdaptable[] values = source.getValues();
 		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-		int lookback = core.cmoLookback(period);
+		int lookback = core.rocLookback(period);
 		if (values.length < lookback)
 			return null;
 
@@ -147,7 +147,7 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
         MInteger outNbElement = new MInteger();
         double[] outReal = new double[values.length - lookback];
 
-        core.cmo(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+        core.roc(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
 
         NumericDataSeries result = new NumericDataSeries(getName(), outReal, source);
 		return Util.createLineChartObject(result, renderStyle, color);

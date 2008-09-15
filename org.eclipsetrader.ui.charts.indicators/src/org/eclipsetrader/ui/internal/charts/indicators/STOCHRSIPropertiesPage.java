@@ -19,17 +19,21 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.ui.charts.indicators.APO;
+import org.eclipsetrader.ui.charts.indicators.STOCHRSI;
 import org.eclipsetrader.ui.internal.charts.MATypeInput;
 import org.eclipsetrader.ui.internal.charts.OHLCFieldInput;
+import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
-public class APOPropertiesPage extends PropertyPage {
+public class STOCHRSIPropertiesPage extends PropertyPage {
 	private OHLCFieldInput input;
-	private Spinner fastPeriod;
-	private Spinner slowPeriod;
-	private MATypeInput type;
+	private Spinner kFastPeriod;
+	private Spinner kSlowPeriod;
+	private Spinner dPeriod;
+	private MATypeInput dMaType;
+	private RenderStyleInput kLineStyle;
+	private RenderStyleInput dLineStyle;
 
-	public APOPropertiesPage() {
+	public STOCHRSIPropertiesPage() {
         noDefaultAndApplyButton();
 	}
 
@@ -43,7 +47,7 @@ public class APOPropertiesPage extends PropertyPage {
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setTitle("Absolute Price Oscillator");
+        setTitle("Stochastic RSI");
 
         Label label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
@@ -55,18 +59,35 @@ public class APOPropertiesPage extends PropertyPage {
         ((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Fast Period");
-        fastPeriod = new Spinner(content, SWT.BORDER);
-        fastPeriod.setValues(3, 1, 9999, 0, 1, 5);
+        label.setText("K Fast Period");
+        kFastPeriod = new Spinner(content, SWT.BORDER);
+        kFastPeriod.setValues(7, 1, 9999, 0, 1, 5);
 
         label = new Label(content, SWT.NONE);
-        label.setText("Slow Period");
-        slowPeriod = new Spinner(content, SWT.BORDER);
-        slowPeriod.setValues(10, 1, 9999, 0, 1, 5);
+        label.setText("K Slow Period");
+        kSlowPeriod = new Spinner(content, SWT.BORDER);
+        kSlowPeriod.setValues(21, 1, 9999, 0, 1, 5);
 
         label = new Label(content, SWT.NONE);
-        label.setText("MA Type");
-        type = new MATypeInput(content);
+        label.setText("D Period");
+        dPeriod = new Spinner(content, SWT.BORDER);
+        dPeriod.setValues(14, 1, 9999, 0, 1, 5);
+
+        label = new Label(content, SWT.NONE);
+        label.setText("D MA Type");
+        dMaType = new MATypeInput(content);
+
+        label = new Label(content, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        ((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
+
+        label = new Label(content, SWT.NONE);
+        label.setText("K Line Style");
+        kLineStyle = new RenderStyleInput(content);
+
+        label = new Label(content, SWT.NONE);
+        label.setText("D Line Style");
+        dLineStyle = new RenderStyleInput(content);
 
         performDefaults();
 
@@ -78,11 +99,16 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     protected void performDefaults() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
+    	STOCHRSI object = (STOCHRSI) getElement().getAdapter(STOCHRSI.class);
         input.setSelection(object.getField());
-        fastPeriod.setSelection(object.getFastPeriod());
-        slowPeriod.setSelection(object.getSlowPeriod());
-        type.setSelection(object.getMaType());
+        kFastPeriod.setSelection(object.getKFastPeriod());
+        kSlowPeriod.setSelection(object.getKSlowPeriod());
+        dPeriod.setSelection(object.getDPeriod());
+        dMaType.setSelection(object.getDMaType());
+
+        kLineStyle.setSelection(object.getKLineStyle());
+        dLineStyle.setSelection(object.getDLineStyle());
+
 	    super.performDefaults();
     }
 
@@ -91,11 +117,16 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     public boolean performOk() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
+    	STOCHRSI object = (STOCHRSI) getElement().getAdapter(STOCHRSI.class);
     	object.setField(input.getSelection());
-    	object.setFastPeriod(fastPeriod.getSelection());
-    	object.setSlowPeriod(slowPeriod.getSelection());
-    	object.setMaType(type.getSelection());
+    	object.setKFastPeriod(kFastPeriod.getSelection());
+    	object.setKSlowPeriod(kSlowPeriod.getSelection());
+    	object.setDPeriod(dPeriod.getSelection());
+    	object.setDMaType(dMaType.getSelection());
+
+    	object.setKLineStyle(kLineStyle.getSelection());
+    	object.setDLineStyle(dLineStyle.getSelection());
+
 	    return super.performOk();
     }
 }

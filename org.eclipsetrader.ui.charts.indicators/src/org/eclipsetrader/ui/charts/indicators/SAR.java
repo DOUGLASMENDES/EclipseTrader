@@ -32,24 +32,19 @@ import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
+public class SAR implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
     private String id;
     private String factoryName;
     private String name;
 
-    private OHLCField field = OHLCField.Close;
-    private int period = 7;
+    private Double acceleration = 0.02;
+    private Double maximum = 0.20;
 
     private RenderStyle renderStyle = RenderStyle.Line;
     private RGB color;
 
-	public CMO() {
+	public SAR() {
 	}
-
-	public CMO(int period, OHLCField field) {
-	    this.period = period;
-	    this.field = field;
-    }
 
 	/* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
@@ -77,52 +72,52 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setName(java.lang.String)
      */
-	public void setName(String name) {
+    public void setName(String name) {
     	this.name = name;
-    }
-
-	public OHLCField getField() {
-    	return field;
-    }
-
-	public void setField(OHLCField field) {
-    	this.field = field;
-    }
-
-	public int getPeriod() {
-    	return period;
-    }
-
-	public void setPeriod(int period) {
-    	this.period = period;
     }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#getRenderStyle()
      */
-	public RenderStyle getRenderStyle() {
+    public RenderStyle getRenderStyle() {
     	return renderStyle;
     }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setRenderStyle(org.eclipsetrader.ui.charts.RenderStyle)
      */
-	public void setRenderStyle(RenderStyle renderStyle) {
+    public void setRenderStyle(RenderStyle renderStyle) {
     	this.renderStyle = renderStyle;
     }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ILineDecorator#getColor()
      */
-	public RGB getColor() {
-    	return color;
+    public RGB getColor() {
+	    return color;
     }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ILineDecorator#setColor(org.eclipse.swt.graphics.RGB)
      */
-	public void setColor(RGB color) {
+    public void setColor(RGB color) {
     	this.color = color;
+    }
+
+	public Double getAcceleration() {
+    	return acceleration;
+    }
+
+	public void setAcceleration(Double acceleration) {
+    	this.acceleration = acceleration;
+    }
+
+	public Double getMaximum() {
+    	return maximum;
+    }
+
+	public void setMaximum(Double maximum) {
+    	this.maximum = maximum;
     }
 
 	/* (non-Javadoc)
@@ -135,21 +130,22 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
 		IAdaptable[] values = source.getValues();
 		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-		int lookback = core.cmoLookback(period);
+		int lookback = core.sarLookback(acceleration, maximum);
 		if (values.length < lookback)
 			return null;
 
         int startIdx = 0;
         int endIdx = values.length - 1;
-		double[] inReal = Util.getValuesForField(values, field);
+		double[] inHigh = Util.getValuesForField(values, OHLCField.High);
+		double[] inLow = Util.getValuesForField(values, OHLCField.Low);
 
 		MInteger outBegIdx = new MInteger();
         MInteger outNbElement = new MInteger();
         double[] outReal = new double[values.length - lookback];
 
-        core.cmo(startIdx, endIdx, inReal, period, outBegIdx, outNbElement, outReal);
+        core.sar(startIdx, endIdx, inHigh, inLow, acceleration, maximum, outBegIdx, outNbElement, outReal);
 
-        NumericDataSeries result = new NumericDataSeries(getName(), outReal, source);
+		IDataSeries result = new NumericDataSeries(getName(), outReal, source);
 		return Util.createLineChartObject(result, renderStyle, color);
     }
 
@@ -162,24 +158,24 @@ public class CMO implements IChartObjectFactory, IGeneralPropertiesAdapter, ILin
     	if (!factoryName.equals(name))
     		parameters.setParameter("name", name);
 
-    	parameters.setParameter("field", field.getName());
-    	parameters.setParameter("period", period);
+		parameters.setParameter("acceleration", acceleration);
+		parameters.setParameter("maximum", maximum);
 
     	parameters.setParameter("style", renderStyle.getName());
     	if (color != null)
         	parameters.setParameter("color", color);
 
-	    return parameters;
+    	return parameters;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
     public void setParameters(IChartParameters parameters) {
 	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
 
-	    field = parameters.hasParameter("field") ? OHLCField.getFromName(parameters.getString("field")) : OHLCField.Close;
-	    period = parameters.getInteger("period");
+	    acceleration = parameters.getDouble("acceleration");
+	    maximum = parameters.getDouble("maximum");
 
 	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
 	    color = parameters.getColor("color");

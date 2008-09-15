@@ -19,17 +19,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.ui.charts.indicators.APO;
-import org.eclipsetrader.ui.internal.charts.MATypeInput;
-import org.eclipsetrader.ui.internal.charts.OHLCFieldInput;
+import org.eclipsetrader.ui.charts.indicators.SAR;
 
-public class APOPropertiesPage extends PropertyPage {
-	private OHLCFieldInput input;
-	private Spinner fastPeriod;
-	private Spinner slowPeriod;
-	private MATypeInput type;
+public class SARPropertiesPage extends PropertyPage {
+	private Spinner acceleration;
+	private Spinner maximum;
 
-	public APOPropertiesPage() {
+	public SARPropertiesPage() {
         noDefaultAndApplyButton();
 	}
 
@@ -43,30 +39,18 @@ public class APOPropertiesPage extends PropertyPage {
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setTitle("Absolute Price Oscillator");
+        setTitle("Parabolic SAR");
 
         Label label = new Label(content, SWT.NONE);
+        label.setText("Acceleration");
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
-        label.setText("Input Field");
-        input = new OHLCFieldInput(content);
+        acceleration = new Spinner(content, SWT.BORDER);
+        acceleration.setValues(2, 1, 99999, 2, 1, 10);
 
         label = new Label(content, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        ((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
-
-        label = new Label(content, SWT.NONE);
-        label.setText("Fast Period");
-        fastPeriod = new Spinner(content, SWT.BORDER);
-        fastPeriod.setValues(3, 1, 9999, 0, 1, 5);
-
-        label = new Label(content, SWT.NONE);
-        label.setText("Slow Period");
-        slowPeriod = new Spinner(content, SWT.BORDER);
-        slowPeriod.setValues(10, 1, 9999, 0, 1, 5);
-
-        label = new Label(content, SWT.NONE);
-        label.setText("MA Type");
-        type = new MATypeInput(content);
+        label.setText("Maximum");
+        maximum = new Spinner(content, SWT.BORDER);
+        maximum.setValues(20, 1, 99999, 2, 1, 10);
 
         performDefaults();
 
@@ -78,11 +62,9 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     protected void performDefaults() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
-        input.setSelection(object.getField());
-        fastPeriod.setSelection(object.getFastPeriod());
-        slowPeriod.setSelection(object.getSlowPeriod());
-        type.setSelection(object.getMaType());
+    	SAR object = (SAR) getElement().getAdapter(SAR.class);
+        acceleration.setSelection((int) (object.getAcceleration() * Math.pow(10, acceleration.getDigits())));
+        maximum.setSelection((int) (object.getMaximum() * Math.pow(10, maximum.getDigits())));
 	    super.performDefaults();
     }
 
@@ -91,11 +73,9 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     public boolean performOk() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
-    	object.setField(input.getSelection());
-    	object.setFastPeriod(fastPeriod.getSelection());
-    	object.setSlowPeriod(slowPeriod.getSelection());
-    	object.setMaType(type.getSelection());
+    	SAR object = (SAR) getElement().getAdapter(SAR.class);
+    	object.setAcceleration(acceleration.getSelection() / Math.pow(10, acceleration.getDigits()));
+    	object.setMaximum(maximum.getSelection() / Math.pow(10, maximum.getDigits()));
 	    return super.performOk();
     }
 }

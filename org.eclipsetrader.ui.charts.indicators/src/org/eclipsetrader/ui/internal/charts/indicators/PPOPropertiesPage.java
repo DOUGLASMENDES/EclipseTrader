@@ -19,17 +19,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.ui.charts.indicators.APO;
+import org.eclipsetrader.ui.charts.indicators.PPO;
 import org.eclipsetrader.ui.internal.charts.MATypeInput;
 import org.eclipsetrader.ui.internal.charts.OHLCFieldInput;
 
-public class APOPropertiesPage extends PropertyPage {
+public class PPOPropertiesPage extends PropertyPage {
 	private OHLCFieldInput input;
 	private Spinner fastPeriod;
 	private Spinner slowPeriod;
 	private MATypeInput type;
 
-	public APOPropertiesPage() {
+	public PPOPropertiesPage() {
         noDefaultAndApplyButton();
 	}
 
@@ -43,7 +43,7 @@ public class APOPropertiesPage extends PropertyPage {
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        setTitle("Absolute Price Oscillator");
+        setTitle("Percentage Price Oscillator");
 
         Label label = new Label(content, SWT.NONE);
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
@@ -78,7 +78,7 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     protected void performDefaults() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
+    	PPO object = (PPO) getElement().getAdapter(PPO.class);
         input.setSelection(object.getField());
         fastPeriod.setSelection(object.getFastPeriod());
         slowPeriod.setSelection(object.getSlowPeriod());
@@ -91,7 +91,7 @@ public class APOPropertiesPage extends PropertyPage {
      */
     @Override
     public boolean performOk() {
-    	APO object = (APO) getElement().getAdapter(APO.class);
+    	PPO object = (PPO) getElement().getAdapter(PPO.class);
     	object.setField(input.getSelection());
     	object.setFastPeriod(fastPeriod.getSelection());
     	object.setSlowPeriod(slowPeriod.getSelection());
