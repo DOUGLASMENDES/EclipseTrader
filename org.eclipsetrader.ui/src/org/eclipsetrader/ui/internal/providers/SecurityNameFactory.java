@@ -34,13 +34,14 @@ public class SecurityNameFactory extends AbstractProviderFactory {
          * @see org.eclipsetrader.core.views.IDataProvider#getValue(org.eclipse.core.runtime.IAdaptable)
          */
         public IAdaptable getValue(IAdaptable adaptable) {
-        	final ISecurity security = (ISecurity) adaptable.getAdapter(ISecurity.class);
+        	ISecurity security = (ISecurity) adaptable.getAdapter(ISecurity.class);
         	if (security != null) {
+        		final String value = security.getName();
         		return new IAdaptable() {
                     @SuppressWarnings("unchecked")
                     public Object getAdapter(Class adapter) {
                     	if (adapter.isAssignableFrom(String.class))
-                    		return security.getName();
+                    		return value;
 	                    return null;
                     }
 
@@ -49,7 +50,7 @@ public class SecurityNameFactory extends AbstractProviderFactory {
                     	if (!(obj instanceof IAdaptable))
                     		return false;
                     	String s = (String) ((IAdaptable) obj).getAdapter(String.class);
-                    	return security.getName().equals(s);
+                    	return value.equals(s);
                     }
         		};
         	}

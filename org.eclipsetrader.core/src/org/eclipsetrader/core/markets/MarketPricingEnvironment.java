@@ -17,9 +17,11 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
@@ -77,7 +79,18 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
-        	handleMarketChanges((IMarket) evt.getSource(), evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+        	if (evt.getSource() instanceof IMarket)
+        		handleMarketChanges((IMarket) evt.getSource(), evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+        	if (evt.getSource() instanceof IFeedIdentifier) {
+            	for (Iterator<Entry<IFeedIdentifier, SubscriptionStatus>> iter = identifiersMap.entrySet().iterator(); iter.hasNext(); ) {
+            		Entry<IFeedIdentifier, SubscriptionStatus> entry = iter.next();
+            		if (entry.getKey() == evt.getSource()) {
+            			iter.remove();
+            			identifiersMap.put((IFeedIdentifier) evt.getSource(), entry.getValue());
+            			break;
+            		}
+            	}
+        	}
         }
 	};
 
@@ -149,6 +162,10 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 			if (subscriptionStatus == null) {
 				subscriptionStatus = new SubscriptionStatus();
 				identifiersMap.put(identifier, subscriptionStatus);
+
+				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
+	    		if (propertyChangeSupport != null)
+	    			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
 			}
 
 			subscriptionStatus.securities.add(security);
@@ -187,6 +204,10 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 						subscription.dispose();
 					}
 					identifiersMap.remove(identifier);
+
+					PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
+		    		if (propertyChangeSupport != null)
+		    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
 				}
 			}
 		}
@@ -268,11 +289,17 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
 	    listeners.clear();
 
-    	for (SubscriptionStatus pricingStatus : identifiersMap.values()) {
-    		for (IFeedSubscription subscription : pricingStatus.subscriptions.values()) {
+    	for (Iterator<Entry<IFeedIdentifier, SubscriptionStatus>> iter = identifiersMap.entrySet().iterator(); iter.hasNext(); ) {
+    		Entry<IFeedIdentifier, SubscriptionStatus> entry = iter.next();
+
+    		for (IFeedSubscription subscription : entry.getValue().subscriptions.values()) {
 				subscription.removeSubscriptionListener(listener);
 				subscription.dispose();
     		}
+
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) entry.getKey().getAdapter(PropertyChangeSupport.class);
+    		if (propertyChangeSupport != null)
+    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
     	}
 
     	identifiersMap.clear();

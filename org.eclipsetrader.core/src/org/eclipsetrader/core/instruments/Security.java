@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.core.instruments;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import org.eclipsetrader.core.feed.IDividend;
@@ -36,6 +38,12 @@ public class Security implements ISecurity, IStoreObject {
 	private IStoreProperties storeProperties;
 
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+        	propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, null, identifier);
+        }
+	};
 
 	protected Security() {
 	}
@@ -72,8 +80,22 @@ public class Security implements ISecurity, IStoreObject {
 
 	public void setIdentifier(IFeedIdentifier identifier) {
 		Object oldValue = this.identifier;
-    	this.identifier = identifier;
-    	propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, oldValue, this.identifier);
+
+		if (this.identifier != null) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+		}
+
+		this.identifier = identifier;
+
+		if (this.identifier != null) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+		}
+
+		propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, oldValue, this.identifier);
     }
 
 	public IDividend[] getDividends() {
@@ -157,9 +179,21 @@ public class Security implements ISecurity, IStoreObject {
     public void setStoreProperties(IStoreProperties storeProperties) {
 	    this.storeProperties = storeProperties;
 
+		if (this.identifier != null) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+		}
+
 		this.name = (String) storeProperties.getProperty(IPropertyConstants.NAME);
 		this.identifier = (IFeedIdentifier) storeProperties.getProperty(IPropertyConstants.IDENTIFIER);
 		this.userProperties = (IUserProperties) storeProperties.getProperty(IPropertyConstants.USER_PROPERTIES);
 		this.dividends = (IDividend[]) storeProperties.getProperty(IPropertyConstants.DIVIDENDS);
+
+		if (this.identifier != null) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+		}
     }
 }
