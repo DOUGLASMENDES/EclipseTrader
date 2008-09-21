@@ -13,6 +13,7 @@ package org.eclipsetrader.core.internal.repositories;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +56,7 @@ import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.core.views.IWatchListElement;
+import org.eclipsetrader.core.views.WatchList;
 
 public class RepositoryService implements IRepositoryService {
 	private Map<String, IRepository> repositoryMap = new HashMap<String, IRepository>();
@@ -301,9 +303,14 @@ public class RepositoryService implements IRepositoryService {
     	Set<IAdaptable> saveCascade = new HashSet<IAdaptable>();
 
     	for (IWatchList list : watchlistUriMap.values()) {
+    		if (!(list instanceof WatchList))
+    			continue;
     		IWatchListElement[] elements = list.getItem(security);
     		if (elements != null && elements.length != 0) {
-    			list.removeItems(elements);
+        		List<IWatchListElement> allElements = new ArrayList<IWatchListElement>();
+        		allElements.addAll(Arrays.asList(list.getItems()));
+        		allElements.removeAll(Arrays.asList(elements));
+        		((WatchList) list).setItems(allElements.toArray(new IWatchListElement[allElements.size()]));
    				saveCascade.add(list);
     		}
     	}

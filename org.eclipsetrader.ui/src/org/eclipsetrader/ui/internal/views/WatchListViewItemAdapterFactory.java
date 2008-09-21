@@ -14,7 +14,6 @@ package org.eclipsetrader.ui.internal.views;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
-import org.eclipsetrader.core.internal.views.WatchListViewItem;
 
 public class WatchListViewItemAdapterFactory implements IAdapterFactory {
 

@@ -22,10 +22,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.core.internal.CoreActivator;
-import org.eclipsetrader.core.internal.views.WatchListColumn;
-import org.eclipsetrader.core.internal.views.WatchListView;
+import org.eclipsetrader.core.views.Column;
 import org.eclipsetrader.core.views.IColumn;
-import org.eclipsetrader.core.views.IWatchListColumn;
 
 public class ColumnsProperties extends PropertyPage implements IWorkbenchPropertyPage {
 	private ColumnsViewer providers;
@@ -60,7 +58,13 @@ public class ColumnsProperties extends PropertyPage implements IWorkbenchPropert
     @Override
     protected void performDefaults() {
     	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
-		providers.setSelectedColumns(resource.getColumns());
+
+    	WatchListViewColumn[] columns = resource.getColumns();
+    	Column[] selectedColumns = new Column[columns.length];
+    	for (int i = 0; i < selectedColumns.length; i++)
+    		selectedColumns[i] = new Column(columns[i].getName(), columns[i].getDataProviderFactory());
+
+    	providers.setSelectedColumns(selectedColumns);
 
 		super.performDefaults();
     }
@@ -68,14 +72,11 @@ public class ColumnsProperties extends PropertyPage implements IWorkbenchPropert
     protected void applyChanges() {
     	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
 		if (resource != null) {
-			List<IWatchListColumn> c = new ArrayList<IWatchListColumn>();
+			List<WatchListViewColumn> c = new ArrayList<WatchListViewColumn>();
 			for (IColumn column : providers.getSelection()) {
-				if (column instanceof IWatchListColumn)
-					c.add((IWatchListColumn) column);
-				else
-					c.add(new WatchListColumn(column));
+				c.add(new WatchListViewColumn(column));
 			}
-			resource.setColumns(c.toArray(new IWatchListColumn[c.size()]));
+			resource.setColumns(c.toArray(new WatchListViewColumn[c.size()]));
 		}
     }
 

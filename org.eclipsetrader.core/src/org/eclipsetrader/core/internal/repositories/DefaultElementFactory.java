@@ -20,13 +20,13 @@ import org.eclipsetrader.core.instruments.CurrencyExchange;
 import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
-import org.eclipsetrader.core.internal.views.WatchList;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 import org.eclipsetrader.core.views.IWatchList;
+import org.eclipsetrader.core.views.WatchList;
 
 public class DefaultElementFactory implements IRepositoryElementFactory, IExecutableExtension {
 	private static DefaultElementFactory instance;

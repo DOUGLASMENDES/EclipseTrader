@@ -14,8 +14,8 @@ package org.eclipsetrader.ui.internal.repositories;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.internal.markets.Market;
-import org.eclipsetrader.core.internal.views.WatchList;
 import org.eclipsetrader.core.views.IWatchList;
+import org.eclipsetrader.core.views.WatchList;
 
 public class RepositoryViewItemAdapterFactory implements IAdapterFactory {
 

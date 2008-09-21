@@ -14,9 +14,9 @@ package org.eclipsetrader.repository.local;
 import junit.framework.TestCase;
 
 import org.eclipsetrader.core.instruments.Security;
-import org.eclipsetrader.core.internal.views.WatchList;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.views.IWatchListColumn;
+import org.eclipsetrader.core.views.WatchList;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
 import org.eclipsetrader.repository.local.internal.WatchListCollection;
 

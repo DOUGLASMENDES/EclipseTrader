@@ -9,31 +9,20 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.views;
+package org.eclipsetrader.core.views;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.CoreActivator;
-import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 import org.eclipsetrader.core.repositories.StoreProperties;
-import org.eclipsetrader.core.views.IColumn;
-import org.eclipsetrader.core.views.IHolding;
-import org.eclipsetrader.core.views.IView;
-import org.eclipsetrader.core.views.IWatchList;
-import org.eclipsetrader.core.views.IWatchListColumn;
-import org.eclipsetrader.core.views.IWatchListElement;
-import org.eclipsetrader.core.views.IWatchListVisitor;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 /**
  * Default implementation of the <code>IWatchList</code> interface.
@@ -48,7 +37,6 @@ public class WatchList implements IWatchList, IStoreObject {
 	private IStore store;
 	private IStoreProperties storeProperties;
 
-	private List<WatchListView> views = new ArrayList<WatchListView>();
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	protected WatchList() {
@@ -71,32 +59,11 @@ public class WatchList implements IWatchList, IStoreObject {
 		return name;
 	}
 
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IWatchList#setName(java.lang.String)
-     */
     public void setName(String name) {
+    	String oldValue = this.name;
     	this.name = name;
+		propertyChangeSupport.firePropertyChange(IWatchList.NAME, oldValue, this.name);
     }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IWatchList#setColumns(org.eclipsetrader.core.views.IWatchListColumn[])
-     */
-    public void setColumns(IWatchListColumn[] columns) {
-		IWatchListColumn[] oldValue = this.columns.toArray(new IWatchListColumn[this.columns.size()]);
-
-		this.columns = new ArrayList<IWatchListColumn>(Arrays.asList(columns));
-		for (WatchListView view : this.views)
-			view.doSetColumns(columns);
-
-		propertyChangeSupport.firePropertyChange(IWatchList.COLUMNS, oldValue, this.columns.toArray(new IWatchListColumn[this.columns.size()]));
-    }
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getColumns()
-	 */
-	public IWatchListColumn[] getColumns() {
-		return columns.toArray(new IWatchListColumn[columns.size()]);
-	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.views.IWatchList#getColumnCount()
@@ -106,37 +73,31 @@ public class WatchList implements IWatchList, IStoreObject {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IWatchList#addItem(org.eclipsetrader.core.views.IWatchListElement)
-     */
-    public void addItem(IWatchListElement item) {
-		this.items.add(item);
+	 * @see org.eclipsetrader.core.views.IWatchList#getColumns()
+	 */
+	public IWatchListColumn[] getColumns() {
+		return columns.toArray(new IWatchListColumn[columns.size()]);
+	}
+
+    public void setColumns(IWatchListColumn[] columns) {
+		IWatchListColumn[] oldValue = this.columns.toArray(new IWatchListColumn[this.columns.size()]);
+		this.columns = new ArrayList<IWatchListColumn>(Arrays.asList(columns));
+		propertyChangeSupport.firePropertyChange(IWatchList.COLUMNS, oldValue, this.columns.toArray(new IWatchListColumn[this.columns.size()]));
     }
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IWatchList#addItems(org.eclipsetrader.core.views.IWatchListElement[])
-     */
-    public void addItems(IWatchListElement[] items) {
-		this.items.addAll(Arrays.asList(items));
-    }
+	 * @see org.eclipsetrader.core.views.IWatchList#getItemCount()
+	 */
+	public int getItemCount() {
+		return items.size();
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IWatchList#addSecurity(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public IWatchListElement addSecurity(ISecurity security) {
-    	IWatchListElement element = new WatchListElement(security);
-    	this.items.add(element);
-	    return element;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IWatchList#addSecurities(org.eclipsetrader.core.instruments.ISecurity[])
-     */
-    public IWatchListElement[] addSecurities(ISecurity[] securities) {
-    	IWatchListElement[] elements = new WatchListElement[securities.length];
-    	for (int i = 0; i < elements.length; i++)
-    		elements[i] = new WatchListElement(securities[i]);
-	    return elements;
-    }
+	 * @see org.eclipsetrader.core.views.IWatchList#getItems()
+	 */
+	public IWatchListElement[] getItems() {
+		return items.toArray(new IWatchListElement[items.size()]);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.views.IWatchList#getItem(int)
@@ -159,52 +120,10 @@ public class WatchList implements IWatchList, IStoreObject {
 		return list.toArray(new IWatchListElement[list.size()]);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getItemCount()
-	 */
-	public int getItemCount() {
-		return items.size();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getItems()
-	 */
-	public IWatchListElement[] getItems() {
-		return items.toArray(new IWatchListElement[items.size()]);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#removeItem(org.eclipsetrader.core.views.IWatchListElement)
-	 */
-	public void removeItem(IWatchListElement item) {
-		removeItems(new IWatchListElement[] { item });
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#removeItems(org.eclipsetrader.core.views.IWatchListElement[])
-	 */
-	public void removeItems(IWatchListElement[] items) {
-		IWatchListElement[] oldItems = this.items.toArray(new IWatchListElement[this.items.size()]);
-
-		this.items.removeAll(Arrays.asList(items));
-		for (WatchListView view : views)
-			view.doRemoveElements(items);
-
-		if (oldItems.length != this.items.size())
-			propertyChangeSupport.firePropertyChange(IWatchList.HOLDINGS, oldItems, this.items.toArray(new IWatchListElement[this.items.size()]));
-	}
-
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IWatchList#getView()
-     */
-    public IView getView() {
-    	WatchListView view = new WatchListView(this, getColumns(), getItems(), getMarketService());
-    	views.add(view);
-    	return view;
-    }
-
-    protected void disposeView(WatchListView view) {
-    	views.remove(view);
+    public void setItems(IWatchListElement[] items) {
+		IWatchListElement[] oldValue = this.items.toArray(new IWatchListElement[this.items.size()]);
+		this.items = new ArrayList<IWatchListElement>(Arrays.asList(items));
+		propertyChangeSupport.firePropertyChange(IWatchList.HOLDINGS, oldValue, this.items.toArray(new IWatchListElement[this.items.size()]));
     }
 
 	/* (non-Javadoc)
@@ -224,6 +143,10 @@ public class WatchList implements IWatchList, IStoreObject {
 	 */
 	@SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
+		if (adapter.isAssignableFrom(propertyChangeSupport.getClass()))
+			return propertyChangeSupport;
+		if (adapter.isAssignableFrom(IStoreProperties.class))
+			return getStoreProperties();
 		if (adapter.isAssignableFrom(getClass()))
 			return this;
 		return null;
@@ -280,17 +203,19 @@ public class WatchList implements IWatchList, IStoreObject {
 		}
     }
 
-    protected IMarketService getMarketService() {
-    	try {
-    		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-    		IMarketService service = (IMarketService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading market service", e);
-    		CoreActivator.log(status);
-    	}
-    	return null;
-    }
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(listener);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(listener);
+	}
+
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+	}
 }

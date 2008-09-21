@@ -147,7 +147,6 @@ public class ColumnsViewer {
 		right.setImage(rightImage);
 		right.addSelectionListener(new SelectionAdapter() {
             @Override
-            @SuppressWarnings("unchecked")
             public void widgetSelected(SelectionEvent e) {
             	if (available.getSelection() instanceof IStructuredSelection && !available.getSelection().isEmpty()) {
             		Object[] s = ((IStructuredSelection) available.getSelection()).toArray();
@@ -163,7 +162,6 @@ public class ColumnsViewer {
 		allRight.setImage(allRightImage);
 		allRight.addSelectionListener(new SelectionAdapter() {
             @Override
-            @SuppressWarnings("unchecked")
             public void widgetSelected(SelectionEvent e) {
             	selection.clear();
             	for (IDataProviderFactory factory : input)

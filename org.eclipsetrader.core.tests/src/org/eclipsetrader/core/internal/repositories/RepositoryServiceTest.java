@@ -29,13 +29,15 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
-import org.eclipsetrader.core.internal.views.WatchList;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
 import org.eclipsetrader.core.views.IWatchListColumn;
+import org.eclipsetrader.core.views.IWatchListElement;
+import org.eclipsetrader.core.views.WatchList;
+import org.eclipsetrader.core.views.WatchListElement;
 
 public class RepositoryServiceTest extends TestCase {
 	private Map<String, TestRepository> repositories;
@@ -157,20 +159,10 @@ public class RepositoryServiceTest extends TestCase {
 	    assertNull(deltas[0].getMovedTo());
 	}
 
-	public void testRemoveSecurityFromWatchList() throws Exception {
-	    Security security = new Security("Security", new FeedIdentifier("ID", null));
-	    WatchList list = new WatchList("List", new IWatchListColumn[0]);
-	    list.addSecurity(security);
-	    RepositoryService service = new TestRepositoryService();
-	    service.saveAdaptable(new IAdaptable[] { security, list });
-	    service.removeSecurityFromContainers(security);
-	    assertEquals(0, list.getItemCount());
-	}
-
 	public void testDeleteSecurityRemovesFromWatchList() throws Exception {
 	    Security security = new Security("Security", new FeedIdentifier("ID", null));
 	    WatchList list = new WatchList("List", new IWatchListColumn[0]);
-	    list.addSecurity(security);
+	    list.setItems(new IWatchListElement[] { new WatchListElement(security) });
 	    RepositoryService service = new TestRepositoryService();
 	    service.saveAdaptable(new IAdaptable[] { security, list });
 	    assertEquals(2, repositories.get("local").stores.size());

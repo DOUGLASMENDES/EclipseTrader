@@ -11,20 +11,41 @@
 
 package org.eclipsetrader.core.internal.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import junit.framework.TestCase;
 
-import org.eclipsetrader.core.feed.FeedIdentifier;
-import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.core.views.IWatchListColumn;
+import org.eclipsetrader.core.views.WatchList;
 
 public class WatchListTest extends TestCase {
+	private PropertyChangeEvent event;
 
-	public void testRemoveItemsFromDerivedViews() throws Exception {
+	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+        	event = evt;
+        }
+	};
+
+	/* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+	    event = null;
+    }
+
+	public void testFireNamePropertyChange() throws Exception {
 		WatchList list = new WatchList("List", new IWatchListColumn[0]);
-	    list.addSecurity(new Security("Security", new FeedIdentifier("ID", null)));
-	    WatchListView view = (WatchListView) list.getView();
-	    assertEquals(1, view.getElements().length);
-	    list.removeItems(list.getItems());
-	    assertEquals(0, view.getElements().length);
+		((PropertyChangeSupport) list.getAdapter(PropertyChangeSupport.class)).addPropertyChangeListener(propertyChangeListener);
+		list.setName("List 1");
+		assertNotNull(event);
+		assertEquals(IWatchList.NAME, event.getPropertyName());
+		assertEquals("List", event.getOldValue());
+		assertEquals("List 1", event.getNewValue());
+		assertSame(list, event.getSource());
     }
 }

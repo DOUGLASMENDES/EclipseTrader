@@ -20,8 +20,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.views.WatchListViewItem;
 import org.eclipsetrader.core.markets.IMarket;
+import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IWatchList;
@@ -34,6 +34,7 @@ import org.eclipsetrader.ui.internal.navigator.NavigatorViewItem;
 import org.eclipsetrader.ui.internal.navigator.NavigatorViewItemAdapterFactory;
 import org.eclipsetrader.ui.internal.repositories.RepositoryViewItem;
 import org.eclipsetrader.ui.internal.repositories.RepositoryViewItemAdapterFactory;
+import org.eclipsetrader.ui.internal.views.WatchListViewItem;
 import org.eclipsetrader.ui.internal.views.WatchListViewItemAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -50,7 +51,8 @@ public class UIActivator extends AbstractUIPlugin {
 	// The shared instance
 	private static UIActivator plugin;
 
-	private IRepositoryService service;
+	private IRepositoryService repositoryService;
+	private IMarketService marketService;
 
 	/**
 	 * The constructor
@@ -149,13 +151,23 @@ public class UIActivator extends AbstractUIPlugin {
     }
 
 	public IRepositoryService getRepositoryService() {
-		if (service == null) {
-			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+		if (repositoryService == null) {
+			BundleContext context = getBundle().getBundleContext();
 			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
 			if (serviceReference != null)
-				service = (IRepositoryService) context.getService(serviceReference);
+				repositoryService = (IRepositoryService) context.getService(serviceReference);
 		}
-		return service;
+		return repositoryService;
+	}
+
+	public IMarketService getMarketService() {
+		if (marketService == null) {
+			BundleContext context = getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+			if (serviceReference != null)
+				marketService = (IMarketService) context.getService(serviceReference);
+		}
+		return marketService;
 	}
 
 	public IDialogSettings getDialogSettingsForView(URI uri) {

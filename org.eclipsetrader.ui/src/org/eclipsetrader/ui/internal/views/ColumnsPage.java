@@ -20,9 +20,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipsetrader.core.internal.CoreActivator;
-import org.eclipsetrader.core.internal.views.WatchListColumn;
 import org.eclipsetrader.core.views.IColumn;
 import org.eclipsetrader.core.views.IWatchListColumn;
+import org.eclipsetrader.core.views.WatchListColumn;
 
 public class ColumnsPage extends WizardPage {
 	private ColumnsViewer providers;

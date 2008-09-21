@@ -9,38 +9,26 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.views;
+package org.eclipsetrader.core.views;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.eclipsetrader.core.feed.ILastClose;
-import org.eclipsetrader.core.feed.IQuote;
-import org.eclipsetrader.core.feed.ITodayOHL;
-import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.views.IHolding;
-import org.eclipsetrader.core.views.ISessionData;
-import org.eclipsetrader.core.views.IWatchListElement;
 
 /**
  * Default implementation of the <code>IWatchListElement</code> interface.
  *
  * @since 1.0
  */
-public class WatchListElement implements IWatchListElement, ISessionData, Cloneable {
+public class WatchListElement implements IWatchListElement {
 	private ISecurity security;
 	private Long position;
 	private Double purchasePrice;
 	private Date date;
 
-	private ITrade trade;
-	private IQuote quote;
-	private ITodayOHL todayOHL;
-	private ILastClose lastClose;
-
-	private Map<Object, Object> sessionData = new HashMap<Object, Object>();
+	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	protected WatchListElement() {
 	}
@@ -82,7 +70,9 @@ public class WatchListElement implements IWatchListElement, ISessionData, Clonea
 	 * @see org.eclipsetrader.core.views.IWatchListElement#setDate(java.util.Date)
 	 */
 	public void setDate(Date date) {
+    	Object oldValue = this.date;
 		this.date = date;
+		propertyChangeSupport.firePropertyChange(IWatchListElement.DATE, oldValue, this.date);
 	}
 
 	/* (non-Javadoc)
@@ -96,7 +86,9 @@ public class WatchListElement implements IWatchListElement, ISessionData, Clonea
 	 * @see org.eclipsetrader.core.views.IWatchListElement#setPosition(java.lang.Long)
 	 */
 	public void setPosition(Long position) {
+    	Object oldValue = this.position;
 		this.position = position;
+		propertyChangeSupport.firePropertyChange(IWatchListElement.POSITION, oldValue, this.position);
 	}
 
 	/* (non-Javadoc)
@@ -110,7 +102,9 @@ public class WatchListElement implements IWatchListElement, ISessionData, Clonea
 	 * @see org.eclipsetrader.core.views.IWatchListElement#setPurchasePrice(java.lang.Double)
 	 */
 	public void setPurchasePrice(Double purchasePrice) {
+    	Object oldValue = this.purchasePrice;
 		this.purchasePrice = purchasePrice;
+		propertyChangeSupport.firePropertyChange(IWatchListElement.PURCHASE_PRICE, oldValue, this.purchasePrice);
 	}
 
 	/* (non-Javadoc)
@@ -118,60 +112,34 @@ public class WatchListElement implements IWatchListElement, ISessionData, Clonea
 	 */
 	@SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
+    	if (adapter.isAssignableFrom(PropertyChangeSupport.class))
+    		return propertyChangeSupport;
+
 		if (security != null) {
-			if (security.getIdentifier() != null && adapter.isAssignableFrom(security.getIdentifier().getClass()))
-				return security.getIdentifier();
-			if (adapter.isAssignableFrom(security.getClass()))
-				return security;
+			Object obj = security.getAdapter(adapter);
+			if (obj != null)
+				return obj;
 		}
-		if (adapter.isAssignableFrom(ITrade.class))
-			return trade;
-		if (adapter.isAssignableFrom(IQuote.class))
-			return quote;
-		if (adapter.isAssignableFrom(ITodayOHL.class))
-			return todayOHL;
-		if (adapter.isAssignableFrom(ILastClose.class))
-			return lastClose;
+
 		if (adapter.isAssignableFrom(getClass()))
 			return this;
+
 		return null;
 	}
 
-	public void setTrade(ITrade trade) {
-    	this.trade = trade;
-    }
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(listener);
+	}
 
-	public void setQuote(IQuote quote) {
-    	this.quote = quote;
-    }
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(listener);
+	}
 
-	public void setTodayOHL(ITodayOHL todayOHL) {
-    	this.todayOHL = todayOHL;
-    }
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
 
-	public void setLastClose(ILastClose lastClose) {
-    	this.lastClose = lastClose;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.ISessionData#getData(java.lang.Object)
-     */
-    public Object getData(Object key) {
-	    return sessionData.get(key);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.ISessionData#setData(java.lang.Object, java.lang.Object)
-     */
-    public void setData(Object key, Object value) {
-    	sessionData.put(key, value);
-    }
-
-	/* (non-Javadoc)
-     * @see java.lang.Object#clone()
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-	    return super.clone();
-    }
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+	}
 }

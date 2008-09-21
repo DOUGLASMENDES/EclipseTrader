@@ -21,7 +21,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.internal.dialogs.FilteredPreferenceDialog;
-import org.eclipsetrader.core.internal.views.WatchListView;
 
 public class SettingsAction extends Action implements ISelectionChangedListener {
 	private Shell shell;

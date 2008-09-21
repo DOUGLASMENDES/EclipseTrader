@@ -21,11 +21,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipsetrader.core.internal.views.WatchList;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IWatchList;
+import org.eclipsetrader.core.views.WatchList;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class WatchListWizard extends Wizard implements INewWizard {

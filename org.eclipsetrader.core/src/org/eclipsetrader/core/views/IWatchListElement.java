@@ -19,6 +19,9 @@ import java.util.Date;
  * @since 1.0
  */
 public interface IWatchListElement extends IHolding {
+	public static final String DATE = "date";
+	public static final String POSITION = "position";
+	public static final String PURCHASE_PRICE = "purchasePrice";
 
 	public void setPosition(Long position);
 

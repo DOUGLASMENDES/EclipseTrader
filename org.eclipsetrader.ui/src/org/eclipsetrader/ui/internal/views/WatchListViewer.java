@@ -16,13 +16,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
@@ -40,6 +37,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -53,8 +51,11 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -67,18 +68,14 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
-import org.eclipsetrader.core.internal.views.WatchList;
-import org.eclipsetrader.core.internal.views.WatchListView;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
-import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
 import org.eclipsetrader.core.views.IColumn;
-import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IWatchList;
-import org.eclipsetrader.core.views.IWatchListElement;
+import org.eclipsetrader.core.views.WatchList;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.repositories.RepositoryObjectTransfer;
@@ -92,7 +89,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	public static final String K_URI = "uri";
 
 	private URI uri;
-	private IWatchList view;
+	private WatchList view;
 	private WatchListView activeView;
 
 	private Action deleteAction;
@@ -100,6 +97,12 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 
 	private TableViewer viewer;
 	private boolean dirty = false;
+
+	private Color evenRowsColor = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+	private Color oddRowsColor = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+	private Color tickBackgroundColor = Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
+	private Color[] tickOddRowsFade = new Color[3];
+	private Color[] tickEvenRowsFade = new Color[3];
 
 	private IDialogSettings dialogSettings;
 	private int sortColumn = 0;
@@ -133,7 +136,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
             }
         	table.setSortDirection(sortDirection);
 
-        	IColumn column = (IColumn) tableColumn.getData();
+        	WatchListViewColumn column = activeView.getColumn(sortColumn);
             dialogSettings.put("sortColumn", column.getDataProviderFactory().getId());
             dialogSettings.put("sortDirection", sortDirection == SWT.UP ? 1 : -1);
             viewer.refresh();
@@ -154,7 +157,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         public void propertyChange(final PropertyChangeEvent evt) {
-        	try {
+        	/*try {
             	if (!viewer.getControl().isDisposed()) {
             		viewer.getControl().getDisplay().asyncExec(new Runnable() {
             			public void run() {
@@ -181,7 +184,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
             	}
         	} catch(SWTException e) {
         		// Do nothing, viewer may be disposed
-        	}
+        	}*/
         }
 	};
 
@@ -199,7 +202,9 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
         try {
     		dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
         	uri = new URI(dialogSettings.get(K_URI));
-	        view = UIActivator.getDefault().getRepositoryService().getWatchListFromURI(uri);
+	        IWatchList watchList = UIActivator.getDefault().getRepositoryService().getWatchListFromURI(uri);
+	        if (watchList instanceof WatchList)
+	        	view = (WatchList) watchList;
         } catch (URISyntaxException e) {
         	Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
 	        UIActivator.getDefault().getLog().log(status);
@@ -210,10 +215,8 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 			public void run() {
 				Object[] s = ((IStructuredSelection) viewer.getSelection()).toArray();
 				if (s.length != 0) {
-					IWatchListElement[] selection = new IWatchListElement[s.length];
-					for (int i = 0; i < selection.length; i++)
-						selection[i] = (IWatchListElement) ((IViewItem) s[i]).getAdapter(IWatchListElement.class);
-					activeView.removeElements(selection);
+					for (int i = 0; i < s.length; i++)
+						activeView.removeItem((WatchListViewItem) s[i]);
 					setDirty();
 				}
 			}
@@ -243,10 +246,14 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
     		return;
     	}
 
-    	setPartName(view.getName());
+		setTickBackground(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND).getRGB());
 
-		activeView = (WatchListView) ((WatchList) view).getView();
 		createContents(parent);
+
+		activeView = new WatchListView(view, this);
+    	setPartName(activeView.getName());
+		updateColumns(activeView.getColumns());
+		viewer.setInput(activeView);
 
 		settingsAction = new SettingsAction(getViewSite().getShell(), activeView);
 		getViewSite().getActionBars().setGlobalActionHandler(settingsAction.getId(), settingsAction);
@@ -254,11 +261,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 
 		getRepositoryService().addRepositoryResourceListener(repositoryListener);
 
-		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeView.getAdapter(PropertyChangeSupport.class);
-		if (propertyChangeSupport != null)
-			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-
-		propertyChangeSupport = (PropertyChangeSupport) view.getAdapter(PropertyChangeSupport.class);
+		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) view.getAdapter(PropertyChangeSupport.class);
 		if (propertyChangeSupport != null)
 			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
 	}
@@ -286,21 +289,16 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
                     @Override
                     public boolean performDrop(Object data) {
 						final IAdaptable[] contents = (IAdaptable[]) data;
-						List<ISecurity> list = new ArrayList<ISecurity>();
 						for (int i = 0; i < contents.length; i++) {
 							ISecurity security = (ISecurity) contents[i].getAdapter(ISecurity.class);
-							if (security != null)
-								list.add(security);
-						}
-						if (list.size() != 0) {
-							activeView.addSecurities(list.toArray(new ISecurity[list.size()]));
-							setDirty();
+							if (security != null) {
+								activeView.addItem(security);
+								setDirty();
+							}
 						}
 						return true;
                     }
 				});
-
-		updateColumns(activeView.getColumns());
 
 		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
 		menuMgr.setRemoveAllWhenShown(true);
@@ -329,8 +327,6 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
 		getViewSite().setSelectionProvider(viewer);
-
-		viewer.setInput(activeView);
     }
 
 	/* (non-Javadoc)
@@ -347,12 +343,6 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
      */
     @Override
     public void dispose() {
-    	if (activeView != null) {
-    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeView.getAdapter(PropertyChangeSupport.class);
-    		if (propertyChangeSupport != null)
-    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-    	}
-
     	if (view != null) {
     		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) view.getAdapter(PropertyChangeSupport.class);
     		if (propertyChangeSupport != null)
@@ -367,7 +357,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		super.dispose();
     }
 
-	protected StructuredViewer getViewer() {
+	protected TableViewer getViewer() {
     	return viewer;
     }
 
@@ -375,16 +365,9 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
      * @see org.eclipse.ui.ISaveablePart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
     public void doSave(IProgressMonitor monitor) {
-    	final IRepositoryService service = getRepositoryService();
-		service.runInService(new IRepositoryRunnable() {
-            public IStatus run(IProgressMonitor monitor) throws Exception {
-            	activeView.synchronize();
-            	service.saveAdaptable(new IWatchList[] { view });
-            	dirty = false;
-            	firePropertyChange(PROP_DIRTY);
-	            return Status.OK_STATUS;
-            }
-		}, monitor);
+    	activeView.doSave(monitor);
+    	dirty = false;
+    	firePropertyChange(PROP_DIRTY);
     }
 
 	/* (non-Javadoc)
@@ -442,18 +425,20 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		viewer.getTable().setLinesVisible(false);
 		viewer.setUseHashlookup(true);
 
-		viewer.setLabelProvider(new ViewItemLabelProvider());
-		viewer.setContentProvider(new ViewContentProvider());
+		viewer.setContentProvider(new WatchListViewContentProvider());
 		viewer.setSorter(new ViewerSorter() {
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
-            	IAdaptable[] v1 = ((IViewItem) e1).getValues();
-            	IAdaptable[] v2 = ((IViewItem) e2).getValues();
+            	if (sortColumn < 0 || sortColumn >= activeView.getColumns().length)
+            		return 0;
+            	String propertyName = activeView.getColumns()[sortColumn].getDataProviderFactory().getId();
+            	IAdaptable v1 = ((WatchListViewItem) e1).getValue(propertyName);
+            	IAdaptable v2 = ((WatchListViewItem) e2).getValue(propertyName);
             	if (sortDirection == SWT.DOWN) {
-                	v1 = ((IViewItem) e2).getValues();
-                	v2 = ((IViewItem) e1).getValues();
+                	v1 = ((WatchListViewItem) e2).getValue(propertyName);
+                	v2 = ((WatchListViewItem) e1).getValue(propertyName);
             	}
-            	return compareValues(v1, v2, sortColumn);
+            	return compareValues(v1, v2);
             }
 		});
 
@@ -461,19 +446,17 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	}
 
     @SuppressWarnings("unchecked")
-    protected int compareValues(IAdaptable[] v1, IAdaptable[] v2, int sortColumn) {
-    	if (sortColumn < 0 || sortColumn >= v1.length || sortColumn >= v2.length)
-    		return 0;
-    	if (v1[sortColumn] == null || v2[sortColumn] == null)
+    protected int compareValues(IAdaptable v1, IAdaptable v2) {
+    	if (v1 == null || v2 == null)
     		return 0;
 
-    	Object o1 = v1[sortColumn].getAdapter(Comparable.class);
-    	Object o2 = v2[sortColumn].getAdapter(Comparable.class);
+    	Object o1 = v1.getAdapter(Comparable.class);
+    	Object o2 = v2.getAdapter(Comparable.class);
     	if (o1 != null && o2 != null)
     		return ((Comparable) o1).compareTo(o2);
 
-    	o1 = v1[sortColumn].getAdapter(Number.class);
-    	o2 = v2[sortColumn].getAdapter(Number.class);
+    	o1 = v1.getAdapter(Number.class);
+    	o2 = v2.getAdapter(Number.class);
     	if (o1 != null && o2 != null) {
     		if (((Number) o1).doubleValue() < ((Number) o2).doubleValue())
     			return -1;
@@ -485,53 +468,65 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
     	return 0;
     }
 
-	public void updateColumns(IColumn[] columns) {
-		String[] properties = createColumns(viewer.getTable(), columns);
+	protected void updateColumns(WatchListViewColumn[] columns) {
+		String[] properties = createColumns(viewer, columns);
 		viewer.setColumnProperties(properties);
 	}
 
     @SuppressWarnings("unchecked")
-	protected String[] createColumns(Table table, IColumn[] columns) {
+	protected String[] createColumns(TableViewer viewer, WatchListViewColumn[] columns) {
+    	Table table = viewer.getTable();
 		TableColumnLayout tableLayout = (TableColumnLayout) table.getParent().getLayout();
 		IDialogSettings columnsSection = dialogSettings != null ? dialogSettings.getSection("columns") : null;
 
 		String[] properties = new String[columns.length];
 
-		int index = 0;
-		for (IColumn column : columns) {
-			int alignment = SWT.LEFT;
-			if (column.getDataProviderFactory().getType() != null && column.getDataProviderFactory().getType().length != 0) {
-				Class type = column.getDataProviderFactory().getType()[0];
-				if (type == Long.class || type == Double.class || type == Date.class)
-					alignment = SWT.RIGHT;
+		table.setRedraw(false);
+		try {
+			TableColumn[] tableColumn = table.getColumns();
+			for (int i = 0; i < tableColumn.length; i++)
+				tableColumn[i].dispose();
+
+			int index = 0;
+			for (WatchListViewColumn column : columns) {
+				int alignment = SWT.LEFT;
+				if (column.getDataProviderFactory().getType() != null && column.getDataProviderFactory().getType().length != 0) {
+					Class type = column.getDataProviderFactory().getType()[0];
+					if (type == Long.class || type == Double.class || type == Date.class)
+						alignment = SWT.RIGHT;
+				}
+
+				TableViewerColumn viewerColumn = new TableViewerColumn(viewer, alignment);
+				viewerColumn.getColumn().setText(column.getName() != null ? column.getName() : column.getDataProviderFactory().getName());
+
+				WatchListColumnLabelProvider labelProvider = new WatchListColumnLabelProvider(column);
+				labelProvider.setColors(evenRowsColor, oddRowsColor, tickBackgroundColor, tickEvenRowsFade, tickOddRowsFade);
+				viewerColumn.setLabelProvider(labelProvider);
+
+				properties[index] = column.getDataProviderFactory().getId();
+
+				if ("org.eclipsetrader.ui.providers.SecurityName".equals(column.getDataProviderFactory().getId()))
+					tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(100));
+				else {
+					int width = columnsSection != null && columnsSection.get(viewerColumn.getColumn().getText()) != null ? columnsSection.getInt(viewerColumn.getColumn().getText()) : 100;
+					tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(width));
+				}
+
+				viewerColumn.getColumn().addControlListener(columnControlListener);
+				viewerColumn.getColumn().addSelectionListener(columnSelectionAdapter);
+
+				if (dialogSettings != null) {
+					if (column.getDataProviderFactory().getId().equals(dialogSettings.get("sortColumn")))
+						sortColumn = index;
+				}
+
+				index++;
 			}
-			TableColumn tableColumn = index < table.getColumnCount() ? table.getColumn(index) : new TableColumn(table, SWT.NONE);
-			tableColumn.setAlignment(alignment);
-			tableColumn.setText(column.getName() != null ? column.getName() : column.getDataProviderFactory().getName());
-			tableColumn.setData(column);
-
-			properties[index] = String.valueOf(index);
-
-			if ("org.eclipsetrader.ui.providers.SecurityName".equals(column.getDataProviderFactory().getId()))
-				tableLayout.setColumnData(tableColumn, new ColumnWeightData(100));
-			else {
-				int width = columnsSection != null && columnsSection.get(tableColumn.getText()) != null ? columnsSection.getInt(tableColumn.getText()) : 100;
-				tableLayout.setColumnData(tableColumn, new ColumnPixelData(width));
-			}
-
-			tableColumn.addControlListener(columnControlListener);
-			tableColumn.addSelectionListener(columnSelectionAdapter);
-
-			if (dialogSettings != null) {
-				if (column.getDataProviderFactory().getId().equals(dialogSettings.get("sortColumn")))
-					sortColumn = index;
-			}
-
-			index++;
+		} finally {
+			table.setRedraw(true);
+			table.getParent().layout();
+			viewer.refresh();
 		}
-
-		while(table.getColumnCount() > index)
-			table.getColumn(table.getColumnCount() - 1).dispose();
 
 		return properties;
 	}
@@ -547,4 +542,29 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
     Table getTable() {
     	return viewer.getTable();
     }
+
+	public void setTickBackground(RGB color) {
+		int steps = 100 / (tickEvenRowsFade.length + 1);
+		for (int i = 0, ratio = 100 - steps; i < tickEvenRowsFade.length; i++, ratio -= steps) {
+			RGB rgb = blend(tickBackgroundColor.getRGB(), evenRowsColor.getRGB(), ratio);
+			tickEvenRowsFade[i] = new Color(Display.getDefault(), rgb);
+		}
+
+		steps = 100 / (tickOddRowsFade.length + 1);
+		for (int i = 0, ratio = 100 - steps; i < tickOddRowsFade.length; i++, ratio -= steps) {
+			RGB rgb = blend(tickBackgroundColor.getRGB(), oddRowsColor.getRGB(), ratio);
+			tickOddRowsFade[i] = new Color(Display.getDefault(), rgb);
+		}
+	}
+
+	private RGB blend(RGB c1, RGB c2, int ratio) {
+		int r = blend(c1.red, c2.red, ratio);
+		int g = blend(c1.green, c2.green, ratio);
+		int b = blend(c1.blue, c2.blue, ratio);
+		return new RGB(r, g, b);
+	}
+
+    private int blend(int v1, int v2, int ratio) {
+		return (ratio * v1 + (100 - ratio) * v2) / 100;
+	}
 }

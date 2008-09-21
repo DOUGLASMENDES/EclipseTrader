@@ -32,20 +32,6 @@ public interface IWatchList extends IAdaptable {
 	public String getName();
 
 	/**
-	 * Sets the name of the watchlist.
-	 *
-	 * @param name the new name to set.
-	 */
-	public void setName(String name);
-
-	/**
-	 * Adds the columns to the watchlist.
-	 *
-	 * @param columns the columns to add.
-	 */
-	public void setColumns(IWatchListColumn[] columns);
-
-	/**
 	 * Returns the number of columns contained in the watchlist.
 	 *
 	 * @return the number of columns.
@@ -60,34 +46,6 @@ public interface IWatchList extends IAdaptable {
 	 * @return the columns in the watchlist.
 	 */
 	public IWatchListColumn[] getColumns();
-
-	/**
-	 * Adds the item to the watchlist.
-	 *
-	 * @param item the item to add.
-	 */
-	public void addItem(IWatchListElement item);
-
-	/**
-	 * Adds the items to the watchlist.
-	 *
-	 * @param items the items to add.
-	 */
-	public void addItems(IWatchListElement[] items);
-
-	/**
-	 * Adds the security to the watchlist.
-	 *
-	 * @param security the security to add.
-	 */
-	public IWatchListElement addSecurity(ISecurity security);
-
-	/**
-	 * Adds the securities to the watchlist.
-	 *
-	 * @param securities the securities to add.
-	 */
-	public IWatchListElement[] addSecurities(ISecurity[] securities);
 
 	/**
 	 * Returns the number of items contained in the watchlist.
@@ -125,27 +83,6 @@ public interface IWatchList extends IAdaptable {
 	 * @return the items in the watchlist associated with the security.
 	 */
 	public IWatchListElement[] getItem(ISecurity security);
-
-	/**
-	 * Removes the item from the watchlist.
-	 *
-	 * @param item the item to remove.
-	 */
-	public void removeItem(IWatchListElement item);
-
-	/**
-	 * Removes the items from the watchlist.
-	 *
-	 * @param items the items to remove.
-	 */
-	public void removeItems(IWatchListElement[] items);
-
-	/**
-	 * Returns an editable representation of this watchlist.
-	 *
-	 * @return the editable view.
-	 */
-	public IView getView();
 
 	/**
 	 * Accepts the given visitor.

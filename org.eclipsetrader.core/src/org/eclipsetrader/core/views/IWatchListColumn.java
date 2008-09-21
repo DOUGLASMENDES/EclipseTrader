@@ -17,6 +17,7 @@ package org.eclipsetrader.core.views;
  * @since 1.0
  */
 public interface IWatchListColumn extends IColumn {
+	public static final String NAME = "name";
 
 	/**
 	 * Sets the column's name.

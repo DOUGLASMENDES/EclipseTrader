@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipsetrader.core.internal.views.WatchListView;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.views.IWatchList;
@@ -92,7 +91,7 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
     	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
 		name.setText(resource.getName());
 
-		IStoreObject storeObject = (IStoreObject) resource.getAdapter(IStoreObject.class);
+		IStoreObject storeObject = (IStoreObject) resource.getParent().getAdapter(IStoreObject.class);
 		repository.setSelection(new StructuredSelection(storeObject.getStore().getRepository()));
 
 		super.performDefaults();
