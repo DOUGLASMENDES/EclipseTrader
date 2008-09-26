@@ -31,5 +31,18 @@
          </description>
       </wizard>
    </extension>
+   <extension
+         point="org.eclipsetrader.core.providers">
+      <provider
+            class="org.eclipsetrader.borsaitalia.internal.ui.FeedIdentifierFactory"
+            id="org.eclipsetrader.borsaitalia.providers.symbol"
+            name="BorsaItaliana Symbol">
+      </provider>
+      <provider
+            class="org.eclipsetrader.borsaitalia.internal.ui.ISINFactory"
+            id="org.eclipsetrader.borsaitalia.providers.isin"
+            name="ISIN">
+      </provider>
+   </extension>
 
 </plugin>

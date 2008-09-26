@@ -55,5 +55,13 @@
             name="Yahoo! Finance">
       </provider>
    </extension>
+   <extension
+         point="org.eclipsetrader.core.providers">
+      <provider
+            class="org.eclipsetrader.yahoo.internal.ui.FeedIdentifierFactory"
+            id="org.eclipsetrader.yahoo.providers.symbol"
+            name="Yahoo! Symbol">
+      </provider>
+   </extension>
 
 </plugin>

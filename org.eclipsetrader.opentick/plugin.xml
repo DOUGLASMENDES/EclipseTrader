@@ -55,5 +55,13 @@
          </description>
       </wizard>
    </extension>
+   <extension
+         point="org.eclipsetrader.core.providers">
+      <provider
+            class="org.eclipsetrader.opentick.internal.ui.FeedIdentifierFactory"
+            id="org.eclipsetrader.opentick.providers.symbol"
+            name="OpenTick Symbol">
+      </provider>
+   </extension>
 
 </plugin>
