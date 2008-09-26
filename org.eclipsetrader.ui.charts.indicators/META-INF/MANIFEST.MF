@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Chart Indicators Plug-in
 Bundle-SymbolicName: org.eclipsetrader.ui.charts.indicators;singleton:=true
-Bundle-Version: 1.0.0.qualifer
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.ui.internal.charts.indicators.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
