@@ -16,10 +16,20 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
@@ -35,7 +45,6 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -59,6 +68,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.IViewSite;
@@ -66,22 +76,27 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipsetrader.core.feed.IPricingListener;
+import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.CoreActivator;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
+import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
-import org.eclipsetrader.core.views.IColumn;
+import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IWatchList;
+import org.eclipsetrader.core.views.IWatchListColumn;
+import org.eclipsetrader.core.views.IWatchListElement;
 import org.eclipsetrader.core.views.WatchList;
+import org.eclipsetrader.core.views.WatchListColumn;
+import org.eclipsetrader.core.views.WatchListElement;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.repositories.RepositoryObjectTransfer;
 import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class WatchListViewer extends ViewPart implements ISaveablePart {
 	public static final String VIEW_ID = "org.eclipsetrader.ui.views.watchlist";
@@ -89,8 +104,11 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	public static final String K_URI = "uri";
 
 	private URI uri;
-	private WatchList view;
-	private WatchListView activeView;
+	private WatchList watchList;
+
+	private String name;
+	private List<WatchListViewColumn> columns = new ArrayList<WatchListViewColumn>();
+	private Map<ISecurity, Set<WatchListViewItem>> items = new HashMap<ISecurity, Set<WatchListViewItem>>();
 
 	private Action deleteAction;
 	private Action settingsAction;
@@ -107,6 +125,9 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	private IDialogSettings dialogSettings;
 	private int sortColumn = 0;
 	private int sortDirection = SWT.UP;
+
+	private MarketPricingEnvironment pricingEnvironment;
+	private Map<WatchListViewItem, Set<String>> updatedItems = new HashMap<WatchListViewItem, Set<String>>();
 
 	private ControlAdapter columnControlListener = new ControlAdapter() {
         @Override
@@ -136,7 +157,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
             }
         	table.setSortDirection(sortDirection);
 
-        	WatchListViewColumn column = activeView.getColumn(sortColumn);
+        	WatchListViewColumn column = columns.get(sortColumn);
             dialogSettings.put("sortColumn", column.getDataProviderFactory().getId());
             dialogSettings.put("sortDirection", sortDirection == SWT.UP ? 1 : -1);
             viewer.refresh();
@@ -146,7 +167,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	private IRepositoryChangeListener repositoryListener = new IRepositoryChangeListener() {
         public void repositoryResourceChanged(RepositoryChangeEvent event) {
         	for (RepositoryResourceDelta delta : event.getDeltas()) {
-        		if (delta.getResource() == view) {
+        		if (delta.getResource() == watchList) {
         		    IStoreObject objectStore = (IStoreObject) ((IAdaptable) delta.getResource()).getAdapter(IStoreObject.class);
         		    dialogSettings.put(K_URI, objectStore.getStore().toURI().toString());
         			break;
@@ -157,34 +178,41 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         public void propertyChange(final PropertyChangeEvent evt) {
-        	/*try {
-            	if (!viewer.getControl().isDisposed()) {
-            		viewer.getControl().getDisplay().asyncExec(new Runnable() {
-            			public void run() {
-                        	if (!viewer.getControl().isDisposed()) {
-                	        	if (IWatchList.NAME.equals(evt.getPropertyName())) {
-                	        		setPartName(activeView.getName());
-                	        		if (evt.getSource() == activeView)
-                	        			setDirty();
-                	        	}
-                	        	else if (IWatchList.HOLDINGS.equals(evt.getPropertyName())) {
-                	        		viewer.refresh();
-                	        		if (evt.getSource() == activeView)
-                	        			setDirty();
-                	        	}
-                	        	else if (IWatchList.COLUMNS.equals(evt.getPropertyName())) {
-                	        		updateColumns(activeView.getColumns());
-                	        		viewer.refresh();
-                	        		if (evt.getSource() == activeView)
-                	        			setDirty();
-                	        	}
-                        	}
-            			}
-            		});
-            	}
-        	} catch(SWTException e) {
-        		// Do nothing, viewer may be disposed
-        	}*/
+        	if (evt.getSource() instanceof ISecurity)
+        		doPricingUpdate((ISecurity) evt.getSource());
+        	else if (evt.getSource() instanceof IWatchList) {
+	        	if (IWatchList.NAME.equals(evt.getPropertyName())) {
+	        		if (name.equals(evt.getOldValue())) {
+		        		name = (String) evt.getNewValue();
+		        		setPartName(name);
+	        		}
+	        	}
+	        	else if (IWatchList.HOLDINGS.equals(evt.getPropertyName()))
+        			doUpdateItems((IWatchListElement[]) evt.getNewValue());
+	        	else if (IWatchList.COLUMNS.equals(evt.getPropertyName())) {
+	        		// TODO
+	        	}
+        	}
+        }
+	};
+
+	private IPricingListener pricingListener = new IPricingListener() {
+        public void pricingUpdate(PricingEvent event) {
+        	doPricingUpdate(event.getSecurity());
+        }
+	};
+
+	private Runnable updateRunnable = new Runnable() {
+        public void run() {
+    		if (!viewer.getControl().isDisposed()) {
+        		synchronized(updatedItems) {
+        			for (WatchListViewItem viewItem : updatedItems.keySet()) {
+        				Set<String> propertyNames = updatedItems.get(viewItem);
+        				viewer.update(viewItem, propertyNames.toArray(new String[propertyNames.size()]));
+        			}
+        			updatedItems.clear();
+        		}
+    		}
         }
 	};
 
@@ -204,7 +232,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
         	uri = new URI(dialogSettings.get(K_URI));
 	        IWatchList watchList = UIActivator.getDefault().getRepositoryService().getWatchListFromURI(uri);
 	        if (watchList instanceof WatchList)
-	        	view = (WatchList) watchList;
+	        	this.watchList = (WatchList) watchList;
         } catch (URISyntaxException e) {
         	Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
 	        UIActivator.getDefault().getLog().log(status);
@@ -216,7 +244,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 				Object[] s = ((IStructuredSelection) viewer.getSelection()).toArray();
 				if (s.length != 0) {
 					for (int i = 0; i < s.length; i++)
-						activeView.removeItem((WatchListViewItem) s[i]);
+						removeItem((WatchListViewItem) s[i]);
 					setDirty();
 				}
 			}
@@ -227,10 +255,12 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
 		deleteAction.setEnabled(false);
 
-		//IMenuManager menuManager = site.getActionBars().getMenuManager();
+		settingsAction = new SettingsAction(site.getShell(), this);
 
-		site.getActionBars().setGlobalActionHandler(deleteAction.getId(), deleteAction);
-		site.getActionBars().updateActionBars();
+		IActionBars actionBars = site.getActionBars();
+		actionBars.setGlobalActionHandler(settingsAction.getId(), settingsAction);
+		actionBars.setGlobalActionHandler(deleteAction.getId(), deleteAction);
+		actionBars.updateActionBars();
     }
 
 	/* (non-Javadoc)
@@ -238,35 +268,16 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	 */
     @Override
 	public void createPartControl(Composite parent) {
-    	if (view == null) {
+    	if (watchList == null) {
     		Composite composite = new Composite(parent, SWT.NONE);
     		composite.setLayout(new GridLayout(1, false));
     		Label label = new Label(composite, SWT.NONE);
-    		label.setText(NLS.bind("Unable to load view {0}", new Object[] { uri != null ? uri.toString() : getViewSite().getSecondaryId() }));
+    		label.setText(NLS.bind("Unable to load view {0}", new Object[] { uri != null ? uri.toString() : "" }));
     		return;
     	}
 
 		setTickBackground(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND).getRGB());
 
-		createContents(parent);
-
-		activeView = new WatchListView(view, this);
-    	setPartName(activeView.getName());
-		updateColumns(activeView.getColumns());
-		viewer.setInput(activeView);
-
-		settingsAction = new SettingsAction(getViewSite().getShell(), activeView);
-		getViewSite().getActionBars().setGlobalActionHandler(settingsAction.getId(), settingsAction);
-		getViewSite().getActionBars().updateActionBars();
-
-		getRepositoryService().addRepositoryResourceListener(repositoryListener);
-
-		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) view.getAdapter(PropertyChangeSupport.class);
-		if (propertyChangeSupport != null)
-			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-	}
-
-    protected void createContents(Composite parent) {
 		viewer = createViewer(parent);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
@@ -292,7 +303,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 						for (int i = 0; i < contents.length; i++) {
 							ISecurity security = (ISecurity) contents[i].getAdapter(ISecurity.class);
 							if (security != null) {
-								activeView.addItem(security);
+								addItem(security);
 								setDirty();
 							}
 						}
@@ -300,6 +311,23 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
                     }
 				});
 
+		initializeContextMenu();
+		getViewSite().setSelectionProvider(viewer);
+
+		pricingEnvironment = new MarketPricingEnvironment(UIActivator.getDefault().getMarketService());
+
+		buildWatchListView();
+
+		UIActivator.getDefault().getRepositoryService().addRepositoryResourceListener(repositoryListener);
+
+		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) watchList.getAdapter(PropertyChangeSupport.class);
+		if (propertyChangeSupport != null)
+			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+
+		pricingEnvironment.addPricingListener(pricingListener);
+	}
+
+    private void initializeContextMenu() {
 		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
@@ -325,8 +353,6 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		});
 		viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
 		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
-
-		getViewSite().setSelectionProvider(viewer);
     }
 
 	/* (non-Javadoc)
@@ -343,31 +369,87 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
      */
     @Override
     public void dispose() {
-    	if (view != null) {
-    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) view.getAdapter(PropertyChangeSupport.class);
+		pricingEnvironment.removePricingListener(pricingListener);
+		pricingEnvironment.dispose();
+
+    	if (watchList != null) {
+    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) watchList.getAdapter(PropertyChangeSupport.class);
     		if (propertyChangeSupport != null)
     			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
     	}
 
-		getRepositoryService().removeRepositoryResourceListener(repositoryListener);
+		for (ISecurity security : items.keySet()) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) security.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+		}
 
-		if (activeView != null)
-    		activeView.dispose();
+		UIActivator.getDefault().getRepositoryService().removeRepositoryResourceListener(repositoryListener);
+
+		for (int i = 0; i < tickEvenRowsFade.length; i++) {
+			if (tickEvenRowsFade[i] != null)
+				tickEvenRowsFade[i].dispose();
+		}
+		for (int i = 0; i < tickOddRowsFade.length; i++) {
+			if (tickOddRowsFade[i] != null)
+				tickOddRowsFade[i].dispose();
+		}
 
 		super.dispose();
-    }
-
-	protected TableViewer getViewer() {
-    	return viewer;
     }
 
 	/* (non-Javadoc)
      * @see org.eclipse.ui.ISaveablePart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
     public void doSave(IProgressMonitor monitor) {
-    	activeView.doSave(monitor);
-    	dirty = false;
-    	firePropertyChange(PROP_DIRTY);
+		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) watchList.getAdapter(PropertyChangeSupport.class);
+		if (propertyChangeSupport != null)
+			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+
+		watchList.setName(name);
+
+		IWatchListColumn[] c = new IWatchListColumn[columns.size()];
+		for (int i = 0; i < c.length; i++) {
+			WatchListViewColumn viewColumn = columns.get(i);
+			c[i] = viewColumn.getReference();
+			if (c[i] != null)
+				c[i].setName(viewColumn.getName());
+			else
+				c[i] = new WatchListColumn(viewColumn.getName(), viewColumn.getDataProviderFactory());
+		}
+		watchList.setColumns(c);
+
+		List<IWatchListElement> e = new ArrayList<IWatchListElement>();
+		for (Set<WatchListViewItem> set : items.values()) {
+			for (WatchListViewItem viewItem : set) {
+				IWatchListElement element = viewItem.getReference();
+				if (element != null) {
+					element.setPosition(viewItem.getPosition());
+					element.setPurchasePrice(viewItem.getPurchasePrice());
+					element.setDate(viewItem.getDate());
+				}
+				else
+					element = new WatchListElement(viewItem.getSecurity(), viewItem.getPosition(), viewItem.getPurchasePrice(), viewItem.getDate());
+				e.add(element);
+			}
+		}
+		watchList.setItems(e.toArray(new IWatchListElement[e.size()]));
+
+		final IRepositoryService repositoryService = UIActivator.getDefault().getRepositoryService();
+		IStatus status = repositoryService.runInService(new IRepositoryRunnable() {
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+            	repositoryService.saveAdaptable(new IAdaptable[] { watchList });
+	            return Status.OK_STATUS;
+            }
+		}, monitor);
+
+		if (status == Status.OK_STATUS) {
+			dirty = false;
+	    	firePropertyChange(PROP_DIRTY);
+		}
+
+		if (propertyChangeSupport != null)
+			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
     }
 
 	/* (non-Javadoc)
@@ -417,8 +499,10 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 	    			sortColumn = 0;
 	    			sortDirection = SWT.UP;
 	    		}
-	    		getTable().setSortDirection(sortDirection);
-	    		getTable().setSortColumn(getTable().getColumn(sortColumn));
+	    		if (sortColumn < getTable().getColumnCount()) {
+		    		getTable().setSortDirection(sortDirection);
+		    		getTable().setSortColumn(getTable().getColumn(sortColumn));
+	    		}
             }
 		};
 		viewer.getTable().setHeaderVisible(true);
@@ -429,9 +513,9 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		viewer.setSorter(new ViewerSorter() {
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
-            	if (sortColumn < 0 || sortColumn >= activeView.getColumns().length)
+            	if (sortColumn < 0 || sortColumn >= columns.size())
             		return 0;
-            	String propertyName = activeView.getColumns()[sortColumn].getDataProviderFactory().getId();
+            	String propertyName = columns.get(sortColumn).getDataProviderFactory().getId();
             	IAdaptable v1 = ((WatchListViewItem) e1).getValue(propertyName);
             	IAdaptable v2 = ((WatchListViewItem) e2).getValue(propertyName);
             	if (sortDirection == SWT.DOWN) {
@@ -468,8 +552,8 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
     	return 0;
     }
 
-	protected void updateColumns(WatchListViewColumn[] columns) {
-		String[] properties = createColumns(viewer, columns);
+	protected void updateColumns() {
+		String[] properties = createColumns(viewer, columns.toArray(new WatchListViewColumn[columns.size()]));
 		viewer.setColumnProperties(properties);
 	}
 
@@ -531,19 +615,294 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 		return properties;
 	}
 
-	protected IRepositoryService getRepositoryService() {
-		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-		IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-		context.ungetService(serviceReference);
-		return service;
-	}
-
     Table getTable() {
     	return viewer.getTable();
     }
 
-	public void setTickBackground(RGB color) {
+    TableViewer getViewer() {
+    	return viewer;
+    }
+
+	protected void buildWatchListView() {
+		this.name = watchList.getName();
+		setPartName(name);
+
+		for (IWatchListColumn column : watchList.getColumns())
+			columns.add(new WatchListViewColumn(column));
+		updateColumns();
+
+		for (IWatchListElement element : watchList.getItems()) {
+			Set<WatchListViewItem> set = items.get(element.getSecurity());
+			if (set == null) {
+				set = new HashSet<WatchListViewItem>();
+				items.put(element.getSecurity(), set);
+
+				if (pricingEnvironment != null)
+					pricingEnvironment.addSecurity(element.getSecurity());
+
+				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) element.getSecurity().getAdapter(PropertyChangeSupport.class);
+				if (propertyChangeSupport != null)
+					propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+			}
+
+			WatchListViewItem viewItem = new WatchListViewItem(element);
+			setInitialValues(viewItem);
+			set.add(viewItem);
+		}
+		viewer.setInput(items);
+    }
+
+    protected void setInitialValues(WatchListViewItem viewItem) {
+    	ISecurity security = viewItem.getSecurity();
+
+    	if (pricingEnvironment != null) {
+			viewItem.setLastClose(pricingEnvironment.getLastClose(security));
+			viewItem.setQuote(pricingEnvironment.getQuote(security));
+			viewItem.setTrade(pricingEnvironment.getTrade(security));
+			viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(security));
+		}
+
+    	for (String propertyName : viewItem.getValueProperties())
+			viewItem.clearValue(propertyName);
+
+		for (WatchListViewColumn viewColumn : columns) {
+			String propertyName = viewColumn.getDataProviderFactory().getId();
+			IDataProvider dataProvider = viewColumn.getDataProviderFactory().createProvider();
+			viewItem.setDataProvider(propertyName, dataProvider);
+
+			IAdaptable value = dataProvider.getValue(viewItem);
+			viewItem.setValue(propertyName, value);
+		}
+    }
+
+	protected void doPricingUpdate(ISecurity security) {
+		synchronized(updatedItems) {
+			Set<WatchListViewItem> set = items.get(security);
+			if (set != null) {
+				for (WatchListViewItem viewItem : set) {
+					viewItem.setLastClose(pricingEnvironment.getLastClose(security));
+					viewItem.setQuote(pricingEnvironment.getQuote(security));
+					viewItem.setTrade(pricingEnvironment.getTrade(security));
+					viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(security));
+
+					for (WatchListViewColumn viewColumn : columns) {
+						String propertyName = viewColumn.getDataProviderFactory().getId();
+						IDataProvider dataProvider = viewItem.getDataProvider(propertyName);
+						if (dataProvider != null) {
+							IAdaptable oldValue = viewItem.getValue(propertyName);
+							IAdaptable newValue = dataProvider.getValue(viewItem);
+
+							if (oldValue == newValue)
+								continue;
+							if (oldValue != null && newValue != null && oldValue.equals(newValue))
+								continue;
+
+							viewItem.setValue(propertyName, newValue);
+
+	        				Set<String> propertyNames = updatedItems.get(viewItem);
+	        				if (propertyNames == null) {
+	        					propertyNames = new HashSet<String>();
+	        					updatedItems.put(viewItem, propertyNames);
+	        				}
+							propertyNames.add(propertyName);
+
+							if (viewer != null && updatedItems.size() == 1) {
+								try {
+									if (!viewer.getControl().isDisposed())
+										viewer.getControl().getDisplay().asyncExec(updateRunnable);
+								} catch(SWTException e) {
+									if (e.code != SWT.ERROR_WIDGET_DISPOSED)
+										throw e;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	protected void doUpdateItems(IWatchListElement[] newItems) {
+		Set<IWatchListElement> newItemsSet = new HashSet<IWatchListElement>(Arrays.asList(newItems));
+
+		Set<IWatchListElement> existingItemsSet = new HashSet<IWatchListElement>();
+		for (Set<WatchListViewItem> set : items.values()) {
+			for (Iterator<WatchListViewItem> viewItemIterator = set.iterator(); viewItemIterator.hasNext(); ) {
+				WatchListViewItem viewItem = viewItemIterator.next();
+				if (viewItem.getReference() != null) {
+					if (!newItemsSet.contains(viewItem.getReference()))
+						viewItemIterator.remove();
+					else
+						existingItemsSet.add(viewItem.getReference());
+				}
+			}
+		}
+
+		for (IWatchListElement newItem : newItemsSet) {
+			if (!existingItemsSet.contains(newItem)) {
+				Set<WatchListViewItem> set = items.get(newItem.getSecurity());
+				if (set == null) {
+					set = new HashSet<WatchListViewItem>();
+					items.put(newItem.getSecurity(), set);
+
+					if (pricingEnvironment != null)
+						pricingEnvironment.addSecurity(newItem.getSecurity());
+
+					PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) newItem.getSecurity().getAdapter(PropertyChangeSupport.class);
+					if (propertyChangeSupport != null)
+						propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+				}
+
+				WatchListViewItem viewItem = new WatchListViewItem(newItem);
+
+				if (pricingEnvironment != null) {
+					viewItem.setLastClose(pricingEnvironment.getLastClose(newItem.getSecurity()));
+					viewItem.setQuote(pricingEnvironment.getQuote(newItem.getSecurity()));
+					viewItem.setTrade(pricingEnvironment.getTrade(newItem.getSecurity()));
+					viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(newItem.getSecurity()));
+				}
+
+				for (WatchListViewColumn viewColumn : columns) {
+					String propertyName = viewColumn.getDataProviderFactory().getId();
+					IDataProvider dataProvider = viewColumn.getDataProviderFactory().createProvider();
+					viewItem.setDataProvider(propertyName, dataProvider);
+
+					IAdaptable value = dataProvider.getValue(viewItem);
+					viewItem.setValue(propertyName, value);
+				}
+
+				set.add(viewItem);
+			}
+		}
+
+		for (Iterator<Entry<ISecurity, Set<WatchListViewItem>>> iter = items.entrySet().iterator(); iter.hasNext(); ) {
+			Entry<ISecurity, Set<WatchListViewItem>> entry = iter.next();
+			if (entry.getValue().size() == 0) {
+				if (pricingEnvironment != null)
+					pricingEnvironment.removeSecurity(entry.getKey());
+				iter.remove();
+			}
+		}
+
+		if (viewer != null)
+			viewer.refresh();
+	}
+
+	protected void addItem(ISecurity security) {
+		Set<WatchListViewItem> set = items.get(security);
+		if (set == null) {
+			set = new HashSet<WatchListViewItem>();
+			items.put(security, set);
+			pricingEnvironment.addSecurity(security);
+
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) security.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+		}
+
+		WatchListViewItem viewItem = new WatchListViewItem(security);
+
+		viewItem.setLastClose(pricingEnvironment.getLastClose(security));
+		viewItem.setQuote(pricingEnvironment.getQuote(security));
+		viewItem.setTrade(pricingEnvironment.getTrade(security));
+		viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(security));
+
+		for (WatchListViewColumn viewColumn : columns) {
+			String propertyName = viewColumn.getDataProviderFactory().getId();
+			IDataProvider dataProvider = viewColumn.getDataProviderFactory().createProvider();
+			viewItem.setDataProvider(propertyName, dataProvider);
+
+			IAdaptable value = dataProvider.getValue(viewItem);
+			viewItem.setValue(propertyName, value);
+		}
+
+		set.add(viewItem);
+
+		if (viewer != null)
+			viewer.refresh();
+	}
+
+	protected void removeItem(WatchListViewItem viewItem) {
+		Set<WatchListViewItem> set = items.get(viewItem.getSecurity());
+		if (set != null) {
+			set.remove(viewItem);
+			if (set.isEmpty()) {
+				pricingEnvironment.removeSecurity(viewItem.getSecurity());
+				items.remove(set);
+
+				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) viewItem.getSecurity().getAdapter(PropertyChangeSupport.class);
+				if (propertyChangeSupport != null)
+					propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+			}
+		}
+
+		if (viewer != null)
+			viewer.refresh();
+	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+    	if (adapter.isAssignableFrom(IWatchList.class))
+    		return watchList;
+
+    	if (watchList != null) {
+        	Object obj = watchList.getAdapter(adapter);
+        	if (obj != null)
+        		return obj;
+    	}
+
+    	return super.getAdapter(adapter);
+    }
+
+	public String getName() {
+    	return name;
+    }
+
+	public void setName(String name) {
+		if (!this.name.equals(name)) {
+			this.name = name;
+			setPartName(name);
+			setDirty();
+		}
+    }
+
+
+	public WatchListViewColumn[] getColumns() {
+    	return columns.toArray(new WatchListViewColumn[columns.size()]);
+    }
+
+	public void setColumns(WatchListViewColumn[] columns) {
+		boolean doUpdate = columns.length != this.columns.size();
+		if (!doUpdate) {
+			for (int i = 0; i < columns.length; i++) {
+				if (!columns[i].equals(this.columns.get(i))) {
+					doUpdate = true;
+					break;
+				}
+			}
+		}
+
+		if (doUpdate) {
+			this.columns = new ArrayList<WatchListViewColumn>(Arrays.asList(columns));
+
+			for (Set<WatchListViewItem> set : items.values()) {
+				for (WatchListViewItem viewItem : set)
+					setInitialValues(viewItem);
+			}
+
+			updateColumns();
+			setDirty();
+
+			if (viewer != null)
+				viewer.refresh();
+		}
+	}
+
+	protected void setTickBackground(RGB color) {
 		int steps = 100 / (tickEvenRowsFade.length + 1);
 		for (int i = 0, ratio = 100 - steps; i < tickEvenRowsFade.length; i++, ratio -= steps) {
 			RGB rgb = blend(tickBackgroundColor.getRGB(), evenRowsColor.getRGB(), ratio);
@@ -566,5 +925,13 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
 
     private int blend(int v1, int v2, int ratio) {
 		return (ratio * v1 + (100 - ratio) * v2) / 100;
+	}
+
+	Map<WatchListViewItem, Set<String>> getUpdatedItems() {
+    	return updatedItems;
+    }
+
+	Map<ISecurity, Set<WatchListViewItem>> getItemsMap() {
+		return items;
 	}
 }

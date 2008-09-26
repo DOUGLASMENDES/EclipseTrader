@@ -11,9 +11,6 @@
 
 package org.eclipsetrader.ui.internal.views;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 import org.eclipsetrader.core.views.IColumn;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.eclipsetrader.core.views.IWatchListColumn;
@@ -23,8 +20,6 @@ public class WatchListViewColumn {
 
 	private String name;
 	private IDataProviderFactory dataProviderFactory;
-
-	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	public WatchListViewColumn(IWatchListColumn reference) {
 		this.reference = reference;
@@ -47,9 +42,7 @@ public class WatchListViewColumn {
 	}
 
 	public void setName(String name) {
-    	Object oldValue = this.name;
 		this.name = name;
-		propertyChangeSupport.firePropertyChange(IWatchListColumn.NAME, oldValue, this.name);
 	}
 
 	public IDataProviderFactory getDataProviderFactory() {
@@ -60,19 +53,19 @@ public class WatchListViewColumn {
     	return reference;
     }
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(listener);
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(listener);
-	}
-
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
+	/* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+    	if (!(obj instanceof WatchListViewColumn))
+    		return false;
+    	if (!dataProviderFactory.getId().equals(((WatchListViewColumn) obj).dataProviderFactory.getId()))
+    		return false;
+    	if (name != null && !name.equals(((WatchListViewColumn) obj).name))
+    		return false;
+    	if (name != ((WatchListViewColumn) obj).name)
+    		return false;
+	    return true;
+    }
 }

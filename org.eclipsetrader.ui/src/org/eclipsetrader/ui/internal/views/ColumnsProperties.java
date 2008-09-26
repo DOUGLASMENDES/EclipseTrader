@@ -57,7 +57,7 @@ public class ColumnsProperties extends PropertyPage implements IWorkbenchPropert
      */
     @Override
     protected void performDefaults() {
-    	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
+    	WatchListViewer resource = (WatchListViewer) getElement().getAdapter(WatchListViewer.class);
 
     	WatchListViewColumn[] columns = resource.getColumns();
     	Column[] selectedColumns = new Column[columns.length];
@@ -70,7 +70,7 @@ public class ColumnsProperties extends PropertyPage implements IWorkbenchPropert
     }
 
     protected void applyChanges() {
-    	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
+    	WatchListViewer resource = (WatchListViewer) getElement().getAdapter(WatchListViewer.class);
 		if (resource != null) {
 			List<WatchListViewColumn> c = new ArrayList<WatchListViewColumn>();
 			for (IColumn column : providers.getSelection()) {

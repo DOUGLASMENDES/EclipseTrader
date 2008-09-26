@@ -88,19 +88,19 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
      */
     @Override
     protected void performDefaults() {
-    	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
+    	WatchListViewer resource = (WatchListViewer) getElement().getAdapter(WatchListViewer.class);
 		name.setText(resource.getName());
 
-		IStoreObject storeObject = (IStoreObject) resource.getParent().getAdapter(IStoreObject.class);
+		IStoreObject storeObject = (IStoreObject) resource.getAdapter(IStoreObject.class);
 		repository.setSelection(new StructuredSelection(storeObject.getStore().getRepository()));
 
 		super.performDefaults();
     }
 
     protected void applyChanges() {
-    	WatchListView security = (WatchListView) getElement().getAdapter(WatchListView.class);
-		if (security != null)
-			security.setName(name.getText());
+    	WatchListViewer resource = (WatchListViewer) getElement().getAdapter(WatchListViewer.class);
+		if (resource != null)
+			resource.setName(name.getText());
     }
 
 	/* (non-Javadoc)
@@ -113,7 +113,7 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
     		return false;
     	}
 		IWatchList resource = getRepositoryService().getWatchListFromName(name.getText());
-    	if (resource != null && resource != ((WatchListView) getElement().getAdapter(WatchListView.class)).getParent()) {
+    	if (resource != null && resource != getElement().getAdapter(IWatchList.class)) {
     		setErrorMessage("A watch list with the same name already exists. Choose a different name.");
     		return false;
     	}

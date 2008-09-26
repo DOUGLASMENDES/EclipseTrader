@@ -11,25 +11,23 @@
 
 package org.eclipsetrader.ui.internal.views;
 
-import java.util.UUID;
+import java.lang.reflect.Field;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IKeyBindingService;
-import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.part.WorkbenchPart;
+import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
+import org.eclipsetrader.core.views.WatchList;
+import org.eclipsetrader.core.views.WatchListColumn;
+import org.eclipsetrader.core.views.WatchListElement;
+import org.eclipsetrader.ui.internal.TestUIActivator;
+import org.eclipsetrader.ui.internal.TestWorkbenchPartSite;
 
 public class WatchListViewerTest extends TestCase {
 	private Shell shell;
@@ -41,6 +39,8 @@ public class WatchListViewerTest extends TestCase {
 	protected void setUp() throws Exception {
 		Display display = Display.getCurrent();
 		shell = new Shell(display);
+
+		new TestUIActivator();
 	}
 
 	/* (non-Javadoc)
@@ -49,182 +49,69 @@ public class WatchListViewerTest extends TestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		shell.dispose();
+		while (Display.getCurrent().readAndDispatch());
 	}
 
 	public void testOpenWithoutView() throws Exception {
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 		part.createPartControl(shell);
 		assertNull(part.getViewer());
     }
 
-	public void testCreateViewer() throws Exception {
-		TestWatchListViewer part = new TestWatchListViewer();
-	    TableViewer viewer = part.createViewer(shell);
-		assertEquals(0, viewer.getTable().getColumnCount());
-		assertEquals(0, viewer.getTable().getItemCount());
+	public void testCreateEmptyView() throws Exception {
+		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
+
+		WatchListViewer part = new WatchListViewer();
+        getField(WatchListViewer.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		assertEquals(0, part.getTable().getColumnCount());
+		assertEquals(0, part.getTable().getItemCount());
     }
 
 	public void testCreateColumns() throws Exception {
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    TableViewer viewer = part.createViewer(shell);
 	    WatchListViewColumn[] columns = new WatchListViewColumn[] {
-				new WatchListViewColumn("Column1", new IDataProviderFactory() {
-	                public IDataProvider createProvider() {
-		                return null;
-	                }
-
-	                public String getId() {
-		                return "test.id1";
-	                }
-
-	                public String getName() {
-		                return "Test1";
-	                }
-
-	                @SuppressWarnings("unchecked")
-	                public Class[] getType() {
-		                return new Class[] { String.class };
-	                }
-				}),
+				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
 			};
-		part.updateColumns(columns);
+		part.createColumns(viewer, columns);
 		assertEquals(1, viewer.getTable().getColumnCount());
 		assertEquals("Column1", viewer.getTable().getColumn(0).getText());
     }
 
 	public void testAddColumns() throws Exception {
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    TableViewer viewer = part.createViewer(shell);
 	    WatchListViewColumn[] columns = new WatchListViewColumn[] {
-				new WatchListViewColumn("Column1", new IDataProviderFactory() {
-	                public IDataProvider createProvider() {
-		                return null;
-	                }
-
-	                public String getId() {
-		                return "test.id1";
-	                }
-
-	                public String getName() {
-		                return "Test1";
-	                }
-
-	                @SuppressWarnings("unchecked")
-	                public Class[] getType() {
-		                return new Class[] { String.class };
-	                }
-				}),
+				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
 			};
-		part.updateColumns(columns);
+		part.createColumns(viewer, columns);
 		assertEquals(1, viewer.getTable().getColumnCount());
 		columns = new WatchListViewColumn[] {
-				new WatchListViewColumn("Column1", new IDataProviderFactory() {
-	                public IDataProvider createProvider() {
-		                return null;
-	                }
-
-	                public String getId() {
-		                return "test.id1";
-	                }
-
-	                public String getName() {
-		                return "Test1";
-	                }
-
-	                @SuppressWarnings("unchecked")
-	                public Class[] getType() {
-		                return new Class[] { String.class };
-	                }
-				}),
-				new WatchListViewColumn("Column2", new IDataProviderFactory() {
-	                public IDataProvider createProvider() {
-		                return null;
-	                }
-
-	                public String getId() {
-		                return "test.id2";
-	                }
-
-	                public String getName() {
-		                return "Test2";
-	                }
-
-	                @SuppressWarnings("unchecked")
-	                public Class[] getType() {
-		                return new Class[] { String.class };
-	                }
-				}),
+				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
+				new WatchListViewColumn("Column2", new DataProviderFactory("test.id2", "Test2")),
 			};
-		part.updateColumns(columns);
+		part.createColumns(viewer, columns);
 		assertEquals(2, viewer.getTable().getColumnCount());
 		assertEquals("Column1", viewer.getTable().getColumn(0).getText());
 		assertEquals("Column2", viewer.getTable().getColumn(1).getText());
     }
 
 	public void testRemoveColumns() throws Exception {
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    TableViewer viewer = part.createViewer(shell);
 	    WatchListViewColumn[] columns = new WatchListViewColumn[] {
-				new WatchListViewColumn("Column1", new IDataProviderFactory() {
-	                public IDataProvider createProvider() {
-		                return null;
-	                }
-
-	                public String getId() {
-		                return "test.id1";
-	                }
-
-	                public String getName() {
-		                return "Test1";
-	                }
-
-	                @SuppressWarnings("unchecked")
-	                public Class[] getType() {
-		                return new Class[] { String.class };
-	                }
-				}),
-				new WatchListViewColumn("Column2", new IDataProviderFactory() {
-	                public IDataProvider createProvider() {
-		                return null;
-	                }
-
-	                public String getId() {
-		                return "test.id2";
-	                }
-
-	                public String getName() {
-		                return "Test2";
-	                }
-
-	                @SuppressWarnings("unchecked")
-	                public Class[] getType() {
-		                return new Class[] { String.class };
-	                }
-				}),
+				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
+				new WatchListViewColumn("Column2", new DataProviderFactory("test.id2", "Test2")),
 			};
-		part.updateColumns(columns);
+		part.createColumns(viewer, columns);
 		assertEquals(2, viewer.getTable().getColumnCount());
 		columns = new WatchListViewColumn[] {
-				new WatchListViewColumn("Column1", new IDataProviderFactory() {
-	                public IDataProvider createProvider() {
-		                return null;
-	                }
-
-	                public String getId() {
-		                return "test.id1";
-	                }
-
-	                public String getName() {
-		                return "Test1";
-	                }
-
-	                @SuppressWarnings("unchecked")
-	                public Class[] getType() {
-		                return new Class[] { String.class };
-	                }
-				}),
+				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
 			};
-		part.updateColumns(columns);
+		part.createColumns(viewer, columns);
 		assertEquals(1, viewer.getTable().getColumnCount());
 		assertEquals("Column1", viewer.getTable().getColumn(0).getText());
     }
@@ -246,7 +133,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    assertEquals(-1, part.compareValues(v1, v2));
     }
 
@@ -267,7 +154,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    assertEquals(-1, part.compareValues(v1, v2));
     }
 
@@ -288,7 +175,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    assertEquals(-1, part.compareValues(v1, v2));
     }
 
@@ -301,7 +188,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    assertEquals(0, part.compareValues(v1, null));
     }
 
@@ -314,154 +201,152 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    assertEquals(0, part.compareValues(null, v2));
     }
 
 	public void testCompareNullValues() throws Exception {
-		TestWatchListViewer part = new TestWatchListViewer();
+		WatchListViewer part = new WatchListViewer();
 	    assertEquals(0, part.compareValues(null, null));
     }
 
-	private class TestWatchListViewer extends WatchListViewer implements IViewSite {
-		private String secondaryId;
-		private Composite parent;
+	public void testBuildColumns() throws Exception {
+	    WatchList watchList = new WatchList("Test", new WatchListColumn[] {
+	    		new WatchListColumn("Col1", new DataProviderFactory("test.id1", "Test1")),
+	    		new WatchListColumn("Col2", new DataProviderFactory("test.id2", "Test2"))
+	    	});
 
-		public TestWatchListViewer() {
-	        this.secondaryId = UUID.randomUUID().toString();
+		WatchListViewer part = new WatchListViewer();
+        getField(WatchListViewer.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+	    WatchListViewColumn[] columns = part.getColumns();
+	    assertEquals(2, columns.length);
+	    assertEquals("Col1", columns[0].getName());
+	    assertEquals("Col2", columns[1].getName());
+    }
+
+	public void testBuildItems() throws Exception {
+	    WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
+	    watchList.setItems(new WatchListElement[] {
+	    		new WatchListElement(new Security("Test1", null)),
+	    		new WatchListElement(new Security("Test2", null)),
+	    	});
+
+		WatchListViewer part = new WatchListViewer();
+        getField(WatchListViewer.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		assertEquals(2, part.getItemsMap().size());
+    }
+
+	public void testAggregateItemsWithSameSecurity() throws Exception {
+		Security security = new Security("Test1", null);
+
+		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
+	    watchList.setItems(new WatchListElement[] {
+	    		new WatchListElement(security),
+	    		new WatchListElement(security),
+	    	});
+
+		WatchListViewer part = new WatchListViewer();
+        getField(WatchListViewer.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		assertEquals(1, part.getItemsMap().size());
+	    assertEquals(2, part.getItemsMap().get(security).size());
+    }
+
+	public void testNotifyAddedElement() throws Exception {
+		WatchListElement element1 = new WatchListElement(new Security("Test1", null));
+		WatchListElement element2 = new WatchListElement(new Security("Test2", null));
+
+		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
+	    watchList.setItems(new WatchListElement[] { element1, element2 });
+
+		WatchListViewer part = new WatchListViewer();
+        getField(WatchListViewer.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		assertEquals(2, part.getItemsMap().size());
+
+	    WatchListElement element3 = new WatchListElement(new Security("Test3", null));
+	    watchList.setItems(new WatchListElement[] { element1, element2, element3 });
+
+	    assertEquals(3, part.getItemsMap().size());
+    }
+
+	public void testNotifyRemovedElement() throws Exception {
+		WatchListElement element1 = new WatchListElement(new Security("Test1", null));
+		WatchListElement element2 = new WatchListElement(new Security("Test2", null));
+
+		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
+	    watchList.setItems(new WatchListElement[] { element1, element2 });
+
+		WatchListViewer part = new WatchListViewer();
+        getField(WatchListViewer.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		assertEquals(2, part.getItemsMap().size());
+
+	    watchList.setItems(new WatchListElement[] { element1 });
+
+	    assertEquals(1, part.getItemsMap().size());
+    }
+
+	@SuppressWarnings("unchecked")
+    private Field getField(Class clazz, String name) {
+		Field[] fields = clazz.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i].getName().equals(name)) {
+				fields[i].setAccessible(true);
+				return fields[i];
+			}
+		}
+		return null;
+	}
+
+	private class DataProviderFactory implements IDataProviderFactory {
+		private String id;
+		private String name;
+
+		public DataProviderFactory(String id, String name) {
+	        this.id = id;
+	        this.name = name;
         }
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.ui.internal.views.WatchListViewer#createPartControl(org.eclipse.swt.widgets.Composite)
+         * @see org.eclipsetrader.core.views.IDataProviderFactory#createProvider()
          */
-        @Override
-        public void createPartControl(Composite parent) {
-	        super.createPartControl(parent);
-	        this.parent = parent;
-        }
-
-		public Composite getParent() {
-        	return parent;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.part.ViewPart#getViewSite()
-         */
-        @Override
-        public IViewSite getViewSite() {
-	        return this;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IViewSite#getActionBars()
-         */
-        public IActionBars getActionBars() {
+        public IDataProvider createProvider() {
 	        return null;
         }
 
 		/* (non-Javadoc)
-         * @see org.eclipse.ui.IViewSite#getSecondaryId()
-         */
-        public String getSecondaryId() {
-	        return this.secondaryId;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchPartSite#getId()
+         * @see org.eclipsetrader.core.views.IDataProviderFactory#getId()
          */
         public String getId() {
-	        return null;
+	        return id;
         }
 
 		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchPartSite#getKeyBindingService()
+         * @see org.eclipsetrader.core.views.IDataProviderFactory#getName()
          */
-        @SuppressWarnings("deprecation")
-        public IKeyBindingService getKeyBindingService() {
-	        return null;
+        public String getName() {
+	        return name;
         }
 
 		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchPartSite#getPart()
-         */
-        public IWorkbenchPart getPart() {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchPartSite#getPluginId()
-         */
-        public String getPluginId() {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchPartSite#getRegisteredName()
-         */
-        public String getRegisteredName() {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(org.eclipse.jface.action.MenuManager, org.eclipse.jface.viewers.ISelectionProvider)
-         */
-        public void registerContextMenu(MenuManager menuManager, ISelectionProvider selectionProvider) {
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(java.lang.String, org.eclipse.jface.action.MenuManager, org.eclipse.jface.viewers.ISelectionProvider)
-         */
-        public void registerContextMenu(String menuId, MenuManager menuManager, ISelectionProvider selectionProvider) {
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchSite#getPage()
-         */
-        public IWorkbenchPage getPage() {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchSite#getSelectionProvider()
-         */
-        public ISelectionProvider getSelectionProvider() {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchSite#getShell()
-         */
-        public Shell getShell() {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchSite#getWorkbenchWindow()
-         */
-        public IWorkbenchWindow getWorkbenchWindow() {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.IWorkbenchSite#setSelectionProvider(org.eclipse.jface.viewers.ISelectionProvider)
-         */
-        public void setSelectionProvider(ISelectionProvider provider) {
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.services.IServiceLocator#getService(java.lang.Class)
+         * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
          */
         @SuppressWarnings("unchecked")
-        public Object getService(Class api) {
-	        return null;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.ui.services.IServiceLocator#hasService(java.lang.Class)
-         */
-        @SuppressWarnings("unchecked")
-        public boolean hasService(Class api) {
-	        return false;
+        public Class[] getType() {
+            return new Class[] { String.class };
         }
 	}
 }

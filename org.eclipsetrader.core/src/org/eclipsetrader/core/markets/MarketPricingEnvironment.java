@@ -143,6 +143,8 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
     }
 
 	protected IFeedConnector getDefaultConnector() {
+		if (CoreActivator.getDefault() == null)
+			return null;
 		return CoreActivator.getDefault().getDefaultConnector();
 	}
 
