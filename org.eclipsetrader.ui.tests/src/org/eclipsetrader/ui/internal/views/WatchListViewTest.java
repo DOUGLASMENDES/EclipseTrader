@@ -29,7 +29,7 @@ import org.eclipsetrader.core.views.WatchListElement;
 import org.eclipsetrader.ui.internal.TestUIActivator;
 import org.eclipsetrader.ui.internal.TestWorkbenchPartSite;
 
-public class WatchListViewerTest extends TestCase {
+public class WatchListViewTest extends TestCase {
 	private Shell shell;
 
 	/* (non-Javadoc)
@@ -53,7 +53,7 @@ public class WatchListViewerTest extends TestCase {
 	}
 
 	public void testOpenWithoutView() throws Exception {
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 		part.createPartControl(shell);
 		assertNull(part.getViewer());
     }
@@ -61,8 +61,8 @@ public class WatchListViewerTest extends TestCase {
 	public void testCreateEmptyView() throws Exception {
 		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
 
-		WatchListViewer part = new WatchListViewer();
-        getField(WatchListViewer.class, "watchList").set(part, watchList);
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
         getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
 		part.createPartControl(shell);
 
@@ -71,7 +71,7 @@ public class WatchListViewerTest extends TestCase {
     }
 
 	public void testCreateColumns() throws Exception {
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    TableViewer viewer = part.createViewer(shell);
 	    WatchListViewColumn[] columns = new WatchListViewColumn[] {
 				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
@@ -82,7 +82,7 @@ public class WatchListViewerTest extends TestCase {
     }
 
 	public void testAddColumns() throws Exception {
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    TableViewer viewer = part.createViewer(shell);
 	    WatchListViewColumn[] columns = new WatchListViewColumn[] {
 				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
@@ -100,7 +100,7 @@ public class WatchListViewerTest extends TestCase {
     }
 
 	public void testRemoveColumns() throws Exception {
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    TableViewer viewer = part.createViewer(shell);
 	    WatchListViewColumn[] columns = new WatchListViewColumn[] {
 				new WatchListViewColumn("Column1", new DataProviderFactory("test.id1", "Test1")),
@@ -133,7 +133,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    assertEquals(-1, part.compareValues(v1, v2));
     }
 
@@ -154,7 +154,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    assertEquals(-1, part.compareValues(v1, v2));
     }
 
@@ -175,7 +175,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    assertEquals(-1, part.compareValues(v1, v2));
     }
 
@@ -188,7 +188,7 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    assertEquals(0, part.compareValues(v1, null));
     }
 
@@ -201,12 +201,12 @@ public class WatchListViewerTest extends TestCase {
                 return null;
             }
 		};
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    assertEquals(0, part.compareValues(null, v2));
     }
 
 	public void testCompareNullValues() throws Exception {
-		WatchListViewer part = new WatchListViewer();
+		WatchListView part = new WatchListView();
 	    assertEquals(0, part.compareValues(null, null));
     }
 
@@ -216,8 +216,8 @@ public class WatchListViewerTest extends TestCase {
 	    		new WatchListColumn("Col2", new DataProviderFactory("test.id2", "Test2"))
 	    	});
 
-		WatchListViewer part = new WatchListViewer();
-        getField(WatchListViewer.class, "watchList").set(part, watchList);
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
         getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
 		part.createPartControl(shell);
 
@@ -234,8 +234,8 @@ public class WatchListViewerTest extends TestCase {
 	    		new WatchListElement(new Security("Test2", null)),
 	    	});
 
-		WatchListViewer part = new WatchListViewer();
-        getField(WatchListViewer.class, "watchList").set(part, watchList);
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
         getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
 		part.createPartControl(shell);
 
@@ -251,8 +251,8 @@ public class WatchListViewerTest extends TestCase {
 	    		new WatchListElement(security),
 	    	});
 
-		WatchListViewer part = new WatchListViewer();
-        getField(WatchListViewer.class, "watchList").set(part, watchList);
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
         getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
 		part.createPartControl(shell);
 
@@ -267,8 +267,8 @@ public class WatchListViewerTest extends TestCase {
 		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
 	    watchList.setItems(new WatchListElement[] { element1, element2 });
 
-		WatchListViewer part = new WatchListViewer();
-        getField(WatchListViewer.class, "watchList").set(part, watchList);
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
         getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
 		part.createPartControl(shell);
 
@@ -287,8 +287,8 @@ public class WatchListViewerTest extends TestCase {
 		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
 	    watchList.setItems(new WatchListElement[] { element1, element2 });
 
-		WatchListViewer part = new WatchListViewer();
-        getField(WatchListViewer.class, "watchList").set(part, watchList);
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
         getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
 		part.createPartControl(shell);
 

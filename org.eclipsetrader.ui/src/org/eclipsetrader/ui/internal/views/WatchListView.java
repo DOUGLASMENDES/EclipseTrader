@@ -98,7 +98,7 @@ import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.repositories.RepositoryObjectTransfer;
 import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
 
-public class WatchListViewer extends ViewPart implements ISaveablePart {
+public class WatchListView extends ViewPart implements ISaveablePart {
 	public static final String VIEW_ID = "org.eclipsetrader.ui.views.watchlist";
 	public static final String K_VIEWS = "Views";
 	public static final String K_URI = "uri";
@@ -216,7 +216,7 @@ public class WatchListViewer extends ViewPart implements ISaveablePart {
         }
 	};
 
-	public WatchListViewer() {
+	public WatchListView() {
 	}
 
 	/* (non-Javadoc)

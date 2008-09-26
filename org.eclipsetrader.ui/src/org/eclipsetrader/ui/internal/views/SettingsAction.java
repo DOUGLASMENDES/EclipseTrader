@@ -24,9 +24,9 @@ import org.eclipse.ui.internal.dialogs.FilteredPreferenceDialog;
 
 public class SettingsAction extends Action implements ISelectionChangedListener {
 	private Shell shell;
-	private WatchListViewer view;
+	private WatchListView view;
 
-	public SettingsAction(Shell shell, WatchListViewer view) {
+	public SettingsAction(Shell shell, WatchListView view) {
 		super("Settings");
 		this.shell = shell;
 		this.view = view;

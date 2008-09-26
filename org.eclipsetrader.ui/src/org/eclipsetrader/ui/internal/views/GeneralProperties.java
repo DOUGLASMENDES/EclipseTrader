@@ -88,7 +88,7 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
      */
     @Override
     protected void performDefaults() {
-    	WatchListViewer resource = (WatchListViewer) getElement().getAdapter(WatchListViewer.class);
+    	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
 		name.setText(resource.getName());
 
 		IStoreObject storeObject = (IStoreObject) resource.getAdapter(IStoreObject.class);
@@ -98,7 +98,7 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
     }
 
     protected void applyChanges() {
-    	WatchListViewer resource = (WatchListViewer) getElement().getAdapter(WatchListViewer.class);
+    	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
 		if (resource != null)
 			resource.setName(name.getText());
     }

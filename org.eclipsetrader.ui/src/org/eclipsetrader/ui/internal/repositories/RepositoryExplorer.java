@@ -75,7 +75,7 @@ import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.SelectionProvider;
 import org.eclipsetrader.ui.internal.UIActivator;
-import org.eclipsetrader.ui.internal.views.WatchListViewer;
+import org.eclipsetrader.ui.internal.views.WatchListView;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -316,7 +316,7 @@ public class RepositoryExplorer extends ViewPart {
 						try {
 							IStoreObject storeObject = (IStoreObject) ((IWatchList) element.getObject()).getAdapter(IStoreObject.class);
 							IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
-	                        getViewSite().getPage().showView(WatchListViewer.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
+	                        getViewSite().getPage().showView(WatchListView.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
                         } catch (PartInitException e) {
                 			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening watchlist view", e); //$NON-NLS-1$
                 			UIActivator.getDefault().getLog().log(status);

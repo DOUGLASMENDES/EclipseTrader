@@ -53,7 +53,7 @@
       <view
             allowMultiple="true"
             category="org.eclipsetrader.ui"
-            class="org.eclipsetrader.ui.internal.views.WatchListViewer"
+            class="org.eclipsetrader.ui.internal.views.WatchListView"
             icon="icons/eview16/watchlist.gif"
             id="org.eclipsetrader.ui.views.watchlist"
             name="WatchList">
