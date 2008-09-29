@@ -102,6 +102,9 @@
 		<replace dir="${buildDirectory}/plugins" value="${buildId}" token="@build@">
 			<include name="**/about.mappings" />
 		</replace>
+		<replace dir="${buildDirectory}/features" value="${buildId}" token="@build@">
+			<include name="**/config.ini" />
+		</replace>
 
 		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
 			<arg value="-application"/>

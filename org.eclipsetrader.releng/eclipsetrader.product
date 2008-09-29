@@ -11,6 +11,10 @@
    </aboutInfo>
 
    <configIni use="default">
+      <linux>/org.eclipsetrader.platform/rootfiles/configuration/config.ini</linux>
+      <macosx>/org.eclipsetrader.platform/rootfiles/configuration/config.ini</macosx>
+      <solaris>/org.eclipsetrader.platform/rootfiles/configuration/config.ini</solaris>
+      <win32>/org.eclipsetrader.platform/rootfiles/configuration/config.ini</win32>
    </configIni>
 
    <launcherArgs>

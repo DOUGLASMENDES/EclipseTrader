@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.pde.ui.RuntimeWorkbench">
+<booleanAttribute key="append.args" value="true"/>
+<booleanAttribute key="askclear" value="true"/>
+<booleanAttribute key="automaticAdd" value="false"/>
+<booleanAttribute key="automaticValidate" value="false"/>
+<stringAttribute key="bad_container_name" value="/org.eclipsetrader.releng/r"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="false"/>
+<booleanAttribute key="clearws" value="false"/>
+<booleanAttribute key="clearwslog" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/EclipseTrader"/>
+<booleanAttribute key="default" value="false"/>
+<booleanAttribute key="includeOptional" value="true"/>
+<stringAttribute key="location" value="${workspace_loc}/../runtime_workspace"/>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -debug"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc}"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<stringAttribute key="product" value="org.eclipsetrader.platform.workbench"/>
+<stringAttribute key="selected_target_plugins" value="org.eclipse.swt.gtk.solaris.sparc,org.eclipse.core.net,org.eclipse.core.contenttype,org.eclipse.equinox.http.jetty,org.eclipse.update.scheduler,org.eclipse.help.appserver,org.eclipse.swt.gtk.linux.x86_64,javax.servlet.jsp,org.eclipse.core.databinding,org.eclipse.update.ui,org.eclipse.core.filesystem.linux.ppc,org.eclipse.core.runtime.compatibility.registry,org.eclipse.jface,org.eclipse.equinox.registry,org.eclipse.osgi,org.eclipse.help,org.eclipse.core.filesystem.linux.x86,org.eclipse.swt.motif.aix.ppc,org.eclipse.swt.gtk.linux.x86,com.ibm.icu,org.eclipse.update.core.linux,org.eclipse.update.configurator,org.eclipse.swt,org.eclipse.core.runtime,org.eclipse.swt.carbon.macosx,org.eclipse.update.core,org.eclipse.equinox.http.registry,org.eclipse.equinox.jsp.jasper.registry,org.eclipse.equinox.http.servlet,org.eclipse.core.runtime.compatibility.auth,org.eclipse.core.runtime.compatibility,org.eclipse.ui.forms,org.eclipse.core.expressions,org.eclipse.help.ui,org.eclipse.ui.win32,org.eclipse.update.core.win32,org.eclipse.help.base,org.eclipse.equinox.common,org.eclipse.swt.win32.win32.x86,org.eclipse.core.filesystem.win32.x86,org.eclipse.core.filesystem.macosx,org.eclipse.osgi.services,org.apache.lucene.analysis,org.eclipse.ui,org.eclipse.swt.wpf.win32.x86,org.eclipse.help.webapp,org.eclipse.core.commands,org.eclipse.ui.workbench,org.apache.jasper,org.eclipse.core.variables,org.eclipse.core.filesystem,org.eclipse.ui.net,org.mortbay.jetty,org.apache.commons.el,org.eclipse.core.filesystem.solaris.sparc,org.eclipse.core.jobs,org.eclipse.swt.gtk.linux.ppc,javax.servlet,org.apache.lucene,org.eclipse.equinox.jsp.jasper,org.eclipse.core.filesystem.linux.x86_64,org.eclipse.equinox.preferences,org.eclipse.jface.databinding,org.eclipse.equinox.app,org.eclipse.ui.navigator"/>
+<stringAttribute key="selected_workspace_plugins" value="org.eclipsetrader.yahoo,org.jdom,org.eclipse.nebula.widgets.pshelf,org.apache.commons.collections,org.eclipsetrader.ui,org.eclipse.rcp.extras,net.java.rome,org.eclipsetrader.core.trading,org.eclipsetrader.opentick,org.eclipsetrader.repository.local,org.eclipsetrader.ui.charts,org.eclipsetrader.core.charts,org.eclipse.nebula.widgets.cdatetime,org.eclipsetrader.ui.charts.indicators,org.eclipsetrader.news,org.eclipsetrader.platform.doc.user,org.otfeed,org.eclipsetrader.directaworld,org.eclipsetrader.brokers.paper,javax.xml.bind,org.eclipsetrader.archipelago,org.apache.log4j,org.apache.commons,com.tictactec.ta.lib,org.apache.commons.codec,net.java.rome.fetcher,org.eclipsetrader.borsaitalia,org.apache.commons.logging,org.eclipsetrader.directa,org.eclipsetrader.ui.trading,org.eclipsetrader.platform,org.eclipsetrader.core,org.apache.commons.httpclient,org.eclipsetrader.ui.application"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<stringAttribute key="templateConfig" value="${workspace_loc:org.eclipsetrader.platform-feature/rootfiles/configuration/config.ini}"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useDefaultConfig" value="false"/>
+<booleanAttribute key="useDefaultConfigArea" value="true"/>
+<booleanAttribute key="useProduct" value="true"/>
+<booleanAttribute key="usefeatures" value="false"/>
+</launchConfiguration>
