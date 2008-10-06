@@ -244,5 +244,18 @@
          </enabledWhen>
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            category="org.eclipse.ui.Basic"
+            class="org.eclipsetrader.ui.internal.charts.DataUpdateWizard"
+            icon="icons/view16/linecharticon.gif"
+            id="org.eclipsetrader.ui.charts.update"
+            name="Historical Data">
+         <description>
+            Import / Update historical prices data.
+         </description>
+      </wizard>
+   </extension>
 
 </plugin>

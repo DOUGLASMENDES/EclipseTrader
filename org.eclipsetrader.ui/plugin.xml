@@ -371,6 +371,10 @@
             id="org.eclipsetrader.ui.import.instruments"
             name="Instruments">
       </category>
+      <category
+            id="org.eclipse.ui.Basic"
+            name="General">
+      </category>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">

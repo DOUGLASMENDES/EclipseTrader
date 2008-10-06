@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.osgi.framework.BundleContext;
@@ -46,6 +47,12 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	// The shared instance
 	private static ChartsUIActivator plugin;
 
+	private IRepositoryService repositoryService;
+	private ServiceReference repositoryServiceReference;
+
+	private IMarketService marketService;
+	private ServiceReference marketServiceReference;
+
 	/**
 	 * The constructor
 	 */
@@ -60,6 +67,14 @@ public class ChartsUIActivator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+
+		repositoryServiceReference = context.getServiceReference(IRepositoryService.class.getName());
+		if (repositoryServiceReference != null)
+			repositoryService = (IRepositoryService) context.getService(repositoryServiceReference);
+
+		marketServiceReference = context.getServiceReference(IMarketService.class.getName());
+		if (marketServiceReference != null)
+			marketService = (IMarketService) context.getService(marketServiceReference);
 	}
 
 	/*
@@ -68,6 +83,16 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
+		if (marketServiceReference != null) {
+			context.ungetService(marketServiceReference);
+			marketService = null;
+		}
+
+		if (repositoryServiceReference != null) {
+			context.ungetService(repositoryServiceReference);
+			repositoryService = null;
+		}
+
 		plugin = null;
 		super.stop(context);
 	}
@@ -150,14 +175,14 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	}
 
 	public IRepositoryService getRepositoryService() {
-		BundleContext context = getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-		IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-		context.ungetService(serviceReference);
-		return service;
+		return repositoryService;
 	}
 
 	public static ImageDescriptor imageDescriptorFromPlugin(String imageFilePath) {
 		return imageDescriptorFromPlugin(ChartsUIActivator.PLUGIN_ID, imageFilePath);
 	}
+
+	public IMarketService getMarketService() {
+    	return marketService;
+    }
 }
