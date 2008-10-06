@@ -33,6 +33,7 @@ import org.eclipsetrader.core.feed.OHLC;
 import org.eclipsetrader.core.feed.Split;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.TimeSpan.Units;
+import org.eclipsetrader.opentick.internal.Connector;
 import org.eclipsetrader.opentick.internal.OTActivator;
 import org.eclipsetrader.opentick.internal.core.repository.IdentifiersList;
 import org.otfeed.IConnection;
@@ -121,6 +122,11 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		}
 
 		if (symbol == null || exchange == null)
+			return new IOHLC[0];
+
+		Connector.getInstance().connect();
+		connection = Connector.getInstance().getConnection();
+		if (connection == null)
 			return new IOHLC[0];
 
 		AggregationSpan period = timeSpan.getUnits() == Units.Minutes ? AggregationSpan.minutes(timeSpan.getLength()) : AggregationSpan.days(timeSpan.getLength());
@@ -218,6 +224,11 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		if (symbol == null || exchange == null)
 			return null;
 
+		Connector.getInstance().connect();
+		connection = Connector.getInstance().getConnection();
+		if (connection == null)
+			return null;
+
 		final List<IDividend> list = new ArrayList<IDividend>();
 
 		try {
@@ -254,6 +265,11 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		}
 
 		if (symbol == null || exchange == null)
+			return null;
+
+		Connector.getInstance().connect();
+		connection = Connector.getInstance().getConnection();
+		if (connection == null)
 			return null;
 
 		final List<ISplit> list = new ArrayList<ISplit>();
