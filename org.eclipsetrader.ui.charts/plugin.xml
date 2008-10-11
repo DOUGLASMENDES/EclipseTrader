@@ -44,6 +44,18 @@
             id="org.eclipsetrader.ui.file.open.chart"
             name="Open Chart">
       </command>
+      <command
+            id="org.eclipsetrader.ui.charts.zoomIn"
+            name="Zoom-In">
+      </command>
+      <command
+            id="org.eclipsetrader.ui.charts.zoomOut"
+            name="Zoom-Out">
+      </command>
+      <command
+            id="org.eclipsetrader.ui.charts.zoomReset"
+            name="Normal Size">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -158,6 +170,35 @@
                toolbarPath="additions">
          </action>
       </actionSet>
+      <actionSet
+            description="Chart zoom tools"
+            id="org.eclipsetrader.ui.charts.zoom"
+            label="Chart Zoom">
+         <action
+               icon="icons/etool16/zoom_out.gif"
+               id="org.eclipsetrader.ui.charts.zoomOut"
+               label="Zoom-Out"
+               retarget="true"
+               style="push"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/zoom_reset.gif"
+               id="org.eclipsetrader.ui.charts.zoomReset"
+               label="Normal Size"
+               retarget="true"
+               style="push"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/zoom_in.gif"
+               id="org.eclipsetrader.ui.charts.zoomIn"
+               label="Zoom-In"
+               retarget="true"
+               style="push"
+               toolbarPath="additions">
+         </action>
+      </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -256,6 +297,27 @@
             Import / Update historical prices data.
          </description>
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipsetrader.ui.charts.zoomIn"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="NUMPAD_ADD">
+      </key>
+      <key
+            commandId="org.eclipsetrader.ui.charts.zoomOut"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="NUMPAD_SUBTRACT">
+      </key>
+      <key
+            commandId="org.eclipsetrader.ui.charts.zoomReset"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="NUMPAD_EQUAL">
+      </key>
    </extension>
 
 </plugin>

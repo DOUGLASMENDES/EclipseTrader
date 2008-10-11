@@ -645,4 +645,13 @@ public class BaseChartViewer implements ISelectionProvider {
 	public void setDecoratorSummaryTooltips(boolean show) {
 		decorator.setShowSummaryTooltip(show);
 	}
+
+	public int getZoomFactor() {
+    	return datesAxis.getZoomFactor();
+    }
+
+	public void setZoomFactor(int zoomFactor) {
+    	datesAxis.setZoomFactor(zoomFactor);
+		redraw();
+    }
 }

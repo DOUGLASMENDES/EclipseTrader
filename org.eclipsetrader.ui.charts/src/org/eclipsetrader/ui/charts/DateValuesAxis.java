@@ -27,6 +27,7 @@ public class DateValuesAxis implements IAxis {
 	public double gridSize = 5.0;
 	public int additionalSpace = 0;
 	public boolean fillAvailableSpace;
+	public int zoomFactor = 0;
 
 	private List<Date> sortedList = new ArrayList<Date>();
 
@@ -117,5 +118,14 @@ public class DateValuesAxis implements IAxis {
      */
     public Object[] getValues() {
 	    return sortedList.toArray(new Date[sortedList.size()]);
+    }
+
+	public int getZoomFactor() {
+    	return zoomFactor;
+    }
+
+	public void setZoomFactor(int zoomFactor) {
+    	this.zoomFactor = zoomFactor;
+    	this.gridSize = zoomFactor != 0 ? 5.0 + 2.0 * zoomFactor : 5.0;
     }
 }

@@ -43,6 +43,7 @@ public class ChartsPerspective implements IPerspectiveFactory {
         // Add "actionsets".
         layout.addActionSet("org.eclipsetrader.ui.charts.trigger");
         layout.addActionSet("org.eclipsetrader.ui.charts.tools");
+        layout.addActionSet("org.eclipsetrader.ui.charts.zoom");
 
         // Add "show views".
         layout.addShowViewShortcut("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$

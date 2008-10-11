@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -115,6 +116,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	public static final String K_FIRST_DATE = "first-date";
 	public static final String K_LAST_DATE = "last-date";
 	public static final String K_SHOW_TOOLTIPS = "show-tooltips";
+	public static final String K_ZOOM_FACTOR = "zoom-factor";
 
 	private URI uri;
 	private ISecurity security;
@@ -131,6 +133,11 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	private Action pasteAction;
 	private Action deleteAction;
 	private Action propertiesAction;
+	private Action zoomOutAction;
+	private Action zoomInAction;
+	private Action zoomResetAction;
+
+	private IMemento memento;
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
@@ -270,6 +277,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     @Override
     public void init(IViewSite site, IMemento memento) throws PartInitException {
 	    super.init(site, memento);
+	    this.memento = memento;
 
         try {
     		dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
@@ -312,6 +320,48 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		toolAction = new ToolAction("FiboArc", this, "org.eclipsetrader.ui.charts.tools.fiboarc");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
 
+        zoomInAction = new Action("Zoom-In") {
+            @Override
+            public void run() {
+            	int factor = viewer.getZoomFactor();
+            	viewer.setZoomFactor(factor + 1);
+            	zoomOutAction.setEnabled(true);
+            	zoomResetAction.setEnabled(true);
+            }
+        };
+        zoomInAction.setId("zoomIn");
+        zoomInAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomIn");
+		actionBars.setGlobalActionHandler(zoomInAction.getActionDefinitionId(), zoomInAction);
+
+        zoomOutAction = new Action("Zoom-Out") {
+            @Override
+            public void run() {
+            	int factor = viewer.getZoomFactor();
+            	if (factor > 0)
+            		viewer.setZoomFactor(factor - 1);
+            	zoomOutAction.setEnabled(factor != 1);
+            	zoomResetAction.setEnabled(factor != 1);
+            }
+        };
+        zoomOutAction.setId("zoomOut");
+        zoomOutAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomOut");
+		actionBars.setGlobalActionHandler(zoomOutAction.getActionDefinitionId(), zoomOutAction);
+
+        zoomResetAction = new Action("Normal Size") {
+            @Override
+            public void run() {
+        		viewer.setZoomFactor(0);
+            	zoomOutAction.setEnabled(false);
+            	zoomResetAction.setEnabled(false);
+            }
+        };
+        zoomResetAction.setId("zoomReset");
+        zoomResetAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomReset");
+		actionBars.setGlobalActionHandler(zoomResetAction.getActionDefinitionId(), zoomResetAction);
+
+		zoomOutAction.setEnabled(false);
+    	zoomResetAction.setEnabled(false);
+
         IMenuManager menuManager = actionBars.getMenuManager();
 
         TimeSpan[] availablePeriods = new TimeSpan[] {
@@ -351,11 +401,22 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
     	menuManager.add(periodMenu);
 
-        actionBars.getToolBarManager().add(new Separator("additions"));
-        actionBars.updateActionBars();
+    	IToolBarManager toolBarManager = actionBars.getToolBarManager();
+    	toolBarManager.add(new Separator("additions"));
+
+    	actionBars.updateActionBars();
     }
 
-    protected void createActions() {
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void saveState(IMemento memento) {
+    	memento.putInteger(K_ZOOM_FACTOR, viewer.getZoomFactor());
+	    super.saveState(memento);
+    }
+
+	protected void createActions() {
     	ISharedImages sharedImages = getViewSite().getWorkbenchWindow().getWorkbench().getSharedImages();
 
     	cutAction = new Action("Cut") {
@@ -527,6 +588,15 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     		viewer.setCrosshairMode(preferences.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION));
     		viewer.setDecoratorSummaryTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
 			preferences.addPropertyChangeListener(preferenceChangeListener);
+		}
+
+		if (memento != null) {
+			if (memento.getString(K_ZOOM_FACTOR) != null) {
+				int factor = memento.getInteger(K_ZOOM_FACTOR);
+				viewer.setZoomFactor(factor);
+				zoomOutAction.setEnabled(factor != 0);
+		    	zoomResetAction.setEnabled(factor != 0);
+			}
 		}
 
 		getSite().setSelectionProvider(new SelectionProvider());
