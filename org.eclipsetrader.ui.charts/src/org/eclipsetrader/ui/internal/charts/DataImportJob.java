@@ -28,13 +28,17 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
+import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class DataImportJob extends Job {
 	public static final int FULL = 0;
@@ -64,6 +68,9 @@ public class DataImportJob extends Job {
 		ISecurity[] filteredList = getFilteredSecurities(securities);
 		monitor.beginTask(getName(), filteredList.length * timeSpan.length);
 
+		IBackfillConnector defaultBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
+		IBackfillConnector defaultIntradayBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
+
 		try {
 			IRepositoryService repositoryService = ChartsUIActivator.getDefault().getRepositoryService();
 			IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
@@ -74,15 +81,17 @@ public class DataImportJob extends Job {
 
 				monitor.subTask(security.getName().replace("&", "&&"));
 
-				IMarket market = marketService.getMarketForSecurity(security);
-				if (market == null || market.getBackfillConnector() == null)
-					continue;
-
 				try {
 					IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
-					IBackfillConnector backfillConnector = market.getBackfillConnector();
-					IBackfillConnector intradayBackfillConnector = market.getIntradayBackfillConnector() != null ? market.getIntradayBackfillConnector() : market.getBackfillConnector();
+					IBackfillConnector backfillConnector = defaultBackfillConnector;
+					IBackfillConnector intradayBackfillConnector = defaultIntradayBackfillConnector;
+
+					IMarket market = marketService.getMarketForSecurity(security);
+					if (market != null && market.getBackfillConnector() != null) {
+						backfillConnector = market.getBackfillConnector();
+						intradayBackfillConnector = market.getIntradayBackfillConnector() != null ? market.getIntradayBackfillConnector() : market.getBackfillConnector();
+					}
 
 					Date beginDate = fromDate;
 					Date endDate = toDate;

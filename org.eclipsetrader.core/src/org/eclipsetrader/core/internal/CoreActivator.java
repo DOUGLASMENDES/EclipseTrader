@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.internal.feed.FeedService;
@@ -54,6 +55,7 @@ public class CoreActivator extends Plugin {
 
 	// Preferences IDs
 	public static final String DEFAULT_CONNECTOR_ID = "DEFAULT_CONNECTOR";
+	public static final String DEFAULT_BACKFILL_CONNECTOR_ID = "DEFAULT_BACKFILL_CONNECTOR";
 
 	// The shared instance
 	private static CoreActivator plugin;
@@ -266,14 +268,32 @@ public class CoreActivator extends Plugin {
 	}
 
 	public IFeedConnector getDefaultConnector() {
+		IFeedConnector connector = null;
+
 		BundleContext context = getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(FeedService.class.getName());
+		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
 		if (serviceReference != null) {
-			FeedService service = (FeedService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
+			IFeedService service = (IFeedService) context.getService(serviceReference);
 			if (service != null)
-				return service.getConnector(getPluginPreferences().getString(DEFAULT_CONNECTOR_ID));
+				connector = service.getConnector(getPluginPreferences().getString(DEFAULT_CONNECTOR_ID));
+			context.ungetService(serviceReference);
 		}
-		return null;
+
+		return connector;
+	}
+
+	public IBackfillConnector getDefaultBackfillConnector() {
+		IBackfillConnector connector = null;
+
+		BundleContext context = getBundle().getBundleContext();
+		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+		if (serviceReference != null) {
+			IFeedService service = (IFeedService) context.getService(serviceReference);
+			if (service != null)
+				connector = service.getBackfillConnector(getPluginPreferences().getString(DEFAULT_BACKFILL_CONNECTOR_ID));
+			context.ungetService(serviceReference);
+		}
+
+		return connector;
 	}
 }
