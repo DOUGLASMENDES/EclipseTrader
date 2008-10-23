@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
@@ -25,6 +26,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
+import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.feed.ConnectorOverrideAdapter;
 import org.eclipsetrader.core.internal.feed.FeedService;
 import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.internal.repositories.RepositoryService;
@@ -42,6 +45,7 @@ import org.osgi.framework.ServiceReference;
 /**
  * The activator class controls the plug-in life cycle
  */
+@SuppressWarnings("restriction")
 public class CoreActivator extends Plugin {
 
 	// The plug-in ID
@@ -63,6 +67,8 @@ public class CoreActivator extends Plugin {
 	private Map<String, IRepositoryElementFactory> elementFactoryMap = new HashMap<String, IRepositoryElementFactory>();
 	private Map<String, IDataProviderFactory> providersFactoryMap = new HashMap<String, IDataProviderFactory>();
 
+	private ConnectorOverrideAdapter overrideAdapter;
+
 	/**
 	 * The constructor
 	 */
@@ -73,7 +79,7 @@ public class CoreActivator extends Plugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	@Override
+    @Override
     public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
@@ -126,6 +132,14 @@ public class CoreActivator extends Plugin {
 				}
 			}
 		}
+
+		try {
+			overrideAdapter = new ConnectorOverrideAdapter(getStateLocation().append("overrides.xml").toFile());
+			AdapterManager.getDefault().registerAdapters(overrideAdapter, ISecurity.class);
+		} catch(Exception e) {
+    		Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error reading override settings", e); //$NON-NLS-1$
+   			getLog().log(status);
+		}
 	}
 
 	/*
@@ -134,6 +148,14 @@ public class CoreActivator extends Plugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
+		try {
+			if (overrideAdapter != null)
+				overrideAdapter.save(getStateLocation().append("overrides.xml").toFile());
+		} catch(Exception e) {
+    		Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error saving override settings", e); //$NON-NLS-1$
+    		getLog().log(status);
+		}
+
 		ServiceReference serviceReference = context.getServiceReference(TradingService.class.getName());
 		if (serviceReference != null) {
 			TradingService service = (TradingService) context.getService(serviceReference);
@@ -190,6 +212,8 @@ public class CoreActivator extends Plugin {
 	public static void log(IStatus status) {
 		if (plugin != null)
 			plugin.getLog().log(status);
+		else
+			System.err.println(status);
 	}
 
 	public IRepositoryElementFactory getElementFactory(String targetID) {

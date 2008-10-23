@@ -32,6 +32,7 @@ import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.internal.UIActivator;
+import org.eclipsetrader.ui.internal.securities.properties.ConnectorOverrideProperties;
 import org.eclipsetrader.ui.internal.securities.properties.GeneralProperties;
 import org.eclipsetrader.ui.internal.securities.properties.IdentifierProperties;
 import org.eclipsetrader.ui.internal.securities.properties.MarketsProperties;
@@ -69,6 +70,7 @@ public class SecurityPropertiesHandler extends AbstractHandler {
     		pageManager.addToRoot(new PreferenceNode("general", new GeneralProperties()));
     		pageManager.addToRoot(new PreferenceNode("identifier", new IdentifierProperties()));
     		pageManager.addToRoot(new PreferenceNode("markets", new MarketsProperties()));
+    		pageManager.addToRoot(new PreferenceNode("override", new ConnectorOverrideProperties()));
 		}
 
 		for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
