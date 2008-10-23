@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IBackfillConnector;
+import org.eclipsetrader.core.feed.IConnectorOverride;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.feed.IHistory;
@@ -91,6 +93,16 @@ public class DataImportJob extends Job {
 					if (market != null && market.getBackfillConnector() != null) {
 						backfillConnector = market.getBackfillConnector();
 						intradayBackfillConnector = market.getIntradayBackfillConnector() != null ? market.getIntradayBackfillConnector() : market.getBackfillConnector();
+					}
+
+					IConnectorOverride override = (IConnectorOverride) AdapterManager.getDefault().getAdapter(security, IConnectorOverride.class);
+					if (override != null) {
+						if (override.getBackfillConnector() != null) {
+							backfillConnector = override.getBackfillConnector();
+							intradayBackfillConnector = override.getBackfillConnector();
+						}
+						if (override.getIntradayBackfillConnector() != null)
+							intradayBackfillConnector = override.getIntradayBackfillConnector();
 					}
 
 					Date beginDate = fromDate;

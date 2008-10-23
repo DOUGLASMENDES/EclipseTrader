@@ -16,15 +16,16 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IConnectorOverride;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
@@ -114,27 +115,31 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 	    	addSecurities(securities);
     }
 
-	protected IMarket[] getMarketsForSecurity(ISecurity security) {
-		List<IMarket> list = new ArrayList<IMarket>();
+	protected IMarket getMarketsForSecurity(ISecurity security) {
 		if (marketService != null) {
 			for (IMarket market : marketService.getMarkets()) {
 				if (market.hasMember(security))
-					list.add(market);
+					return market;
 			}
 		}
-		return list.toArray(new IMarket[list.size()]);
+		return null;
 	}
 
     public void addSecurity(ISecurity security) {
-		Set<IFeedConnector> connectors = new HashSet<IFeedConnector>();
-		for (IMarket market : getMarketsForSecurity(security)) {
-			if (market.getLiveFeedConnector() != null)
-				connectors.add(market.getLiveFeedConnector());
-		}
-		if (connectors.size() == 0)
-			connectors.add(getDefaultConnector());
+		IFeedConnector connector = getDefaultConnector();
 
-		subscribeSecurity(security, connectors.toArray(new IFeedConnector[connectors.size()]));
+		IMarket market = getMarketsForSecurity(security);
+		if (market != null && market.getLiveFeedConnector() != null)
+			connector = market.getLiveFeedConnector();
+
+		IConnectorOverride override = (IConnectorOverride) AdapterManager.getDefault().getAdapter(security, IConnectorOverride.class);
+		if (override != null) {
+			if (override.getLiveFeedConnector() != null)
+				connector = override.getLiveFeedConnector();
+		}
+
+		if (connector != null)
+			subscribeSecurity(security, connector);
     }
 
     public void addSecurities(ISecurity[] securities) {
@@ -148,7 +153,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		return CoreActivator.getDefault().getDefaultConnector();
 	}
 
-	protected void subscribeSecurity(ISecurity security, IFeedConnector[] connectors) {
+	protected void subscribeSecurity(ISecurity security, IFeedConnector connector) {
 		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
 		PricingStatus pricingStatus = securitiesMap.get(security);
@@ -172,19 +177,17 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
 			subscriptionStatus.securities.add(security);
 
-			for (IFeedConnector connector : connectors) {
-				IFeedSubscription subscription = subscriptionStatus.subscriptions.get(connector);
-				if (subscription == null) {
-					subscription = connector.subscribe(identifier);
-					subscriptionStatus.subscriptions.put(connector, subscription);
-					subscription.addSubscriptionListener(listener);
-				}
-
-				pricingStatus.trade = subscription.getTrade();
-				pricingStatus.quote = subscription.getQuote();
-				pricingStatus.todayOHL = subscription.getTodayOHL();
-				pricingStatus.lastClose = subscription.getLastClose();
+			IFeedSubscription subscription = subscriptionStatus.subscriptions.get(connector);
+			if (subscription == null) {
+				subscription = connector.subscribe(identifier);
+				subscriptionStatus.subscriptions.put(connector, subscription);
+				subscription.addSubscriptionListener(listener);
 			}
+
+			pricingStatus.trade = subscription.getTrade();
+			pricingStatus.quote = subscription.getQuote();
+			pricingStatus.todayOHL = subscription.getTodayOHL();
+			pricingStatus.lastClose = subscription.getLastClose();
 		}
 	}
 
