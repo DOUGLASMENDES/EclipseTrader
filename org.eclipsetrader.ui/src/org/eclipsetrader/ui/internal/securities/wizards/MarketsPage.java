@@ -12,7 +12,9 @@
 package org.eclipsetrader.ui.internal.securities.wizards;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.wizard.WizardPage;
@@ -54,6 +56,18 @@ public class MarketsPage extends WizardPage {
 		markets.setContentProvider(new ArrayContentProvider());
 		markets.setSorter(new ViewerSorter());
 		markets.setInput(getMarkets());
+
+		markets.addCheckStateListener(new ICheckStateListener() {
+            public void checkStateChanged(CheckStateChangedEvent event) {
+            	if (event.getChecked()) {
+                	Object[] elements = markets.getCheckedElements();
+                	for (int i = 0; i < elements.length; i++) {
+                		if (elements[i] != event.getElement())
+                			markets.setChecked(elements[i], false);
+                	}
+            	}
+            }
+		});
 	}
 
 	protected IMarket[] getMarkets() {

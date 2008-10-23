@@ -35,7 +35,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class MembersPage extends PropertyPage {
-	private Button showAll;
 	private Button showMembers;
 	private Button showUnlisted;
 	private CheckboxTableViewer members;
@@ -78,16 +77,6 @@ public class MembersPage extends PropertyPage {
             }
 		});
 
-		showAll = new Button(content, SWT.RADIO);
-		showAll.setText("Show all");
-		showAll.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-		showAll.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-            	refreshSelection();
-            }
-		});
-
 		members = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		members.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		((GridData) members.getControl().getLayoutData()).heightHint = members.getTable().getItemHeight() * 15 + members.getTable().getBorderWidth() * 2;
@@ -103,20 +92,18 @@ public class MembersPage extends PropertyPage {
 		members.addFilter(new ViewerFilter() {
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
-            	if (!showAll.getSelection()) {
-            		if (showMembers.getSelection()) {
-            			Market market = (Market) getElement().getAdapter(Market.class);
-            			return market.hasMember((ISecurity) element);
-            		}
-            		else {
-                    	for (IMarket market : getMarkets()) {
-                    		if (market != getElement()) {
-                    			if (market.hasMember((ISecurity) element))
-                    				return false;
-                    		}
-                    	}
-            		}
-            	}
+        		if (showMembers.getSelection()) {
+        			Market market = (Market) getElement().getAdapter(Market.class);
+        			return market.hasMember((ISecurity) element);
+        		}
+        		else {
+                	for (IMarket market : getMarkets()) {
+                		if (market != getElement()) {
+                			if (market.hasMember((ISecurity) element))
+                				return false;
+                		}
+                	}
+        		}
 	            return true;
             }
 		});
