@@ -21,7 +21,7 @@ import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 
 public class Util {
-	public static final String snapshotFeedHost = "quote.yahoo.com"; //$NON-NLS-1$
+	public static final String snapshotFeedHost = "download.finance.yahoo.com"; //$NON-NLS-1$
 	public static final String streamingFeedHost = "streamerapi.finance.yahoo.com"; //$NON-NLS-1$
 	public static final String historyFeedHost = "ichart.finance.yahoo.com"; //$NON-NLS-1$
 
@@ -38,14 +38,13 @@ public class Util {
 		StringBuffer s = new StringBuffer();
 		for (int i = 0; i < symbols.length; i++) {
 			if (i != 0)
-				s.append("+"); //$NON-NLS-1$
+				s.append(" "); //$NON-NLS-1$
 			s.append(symbols[i]);
 		}
 		method.setQueryString(new NameValuePair[] {
 				new NameValuePair("symbols", s.toString()),
 				new NameValuePair("format", "sl1d1t1c1ohgvbapb6a5"),
 			});
-		method.setFollowRedirects(true);
 		return method;
 	}
 
