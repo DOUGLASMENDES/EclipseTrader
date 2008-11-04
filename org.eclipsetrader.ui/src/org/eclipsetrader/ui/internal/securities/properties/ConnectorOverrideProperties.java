@@ -192,11 +192,7 @@ public class ConnectorOverrideProperties extends PropertyPage implements IWorkbe
 		super.performDefaults();
     }
 
-	/* (non-Javadoc)
-     * @see org.eclipse.jface.preference.PreferencePage#performOk()
-     */
-    @Override
-    public boolean performOk() {
+    protected void applyChanges() {
 		ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
 		ConnectorOverrideAdapter adapter = (ConnectorOverrideAdapter) AdapterManager.getDefault().getAdapter(security, ConnectorOverrideAdapter.class);
 
@@ -216,7 +212,15 @@ public class ConnectorOverrideProperties extends PropertyPage implements IWorkbe
 
 			adapter.addOverride(override);
 		}
+    }
 
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+    	if (getControl() != null)
+    		applyChanges();
 	    return super.performOk();
     }
 
