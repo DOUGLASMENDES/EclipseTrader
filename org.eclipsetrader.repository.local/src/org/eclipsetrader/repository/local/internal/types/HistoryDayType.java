@@ -11,10 +11,10 @@
 
 package org.eclipsetrader.repository.local.internal.types;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -37,7 +37,7 @@ public class HistoryDayType {
 	private Date date;
 
 	@XmlElementRef
-	private List<HistoryType> periods = new ArrayList<HistoryType>();
+	private Set<HistoryType> periods = new TreeSet<HistoryType>();
 
 	HistoryDayType() {
 	}
@@ -48,6 +48,10 @@ public class HistoryDayType {
     }
 
 	public void addHistory(HistoryType historyType) {
+		for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext(); ) {
+			if (iter.next().getPeriod().equals(historyType.getPeriod()))
+				iter.remove();
+		}
 		periods.add(historyType);
 	}
 
@@ -56,6 +60,17 @@ public class HistoryDayType {
 			if (iter.next().getPeriod().equals(historyType.getPeriod()))
 				iter.remove();
 		}
+	}
+
+	public void removeHistory(TimeSpan timeSpan) {
+		for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext(); ) {
+			if (iter.next().getPeriod().equals(timeSpan))
+				iter.remove();
+		}
+	}
+
+	public void removeAll() {
+		periods.clear();
 	}
 
 	@XmlTransient

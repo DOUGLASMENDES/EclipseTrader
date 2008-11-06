@@ -328,29 +328,35 @@ public class RepositoryService implements IRepositoryService {
 
     	// Computes the rules needed to access all repositories
     	for (IAdaptable adaptable : adaptables) {
-    		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-    		if (object == null)
-    			continue;
+    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+    		if (storeObjects == null) {
+        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+        		if (object == null)
+        			continue;
+        		storeObjects = new IStoreObject[] { object };
+    		}
 
-    		IRepository repository = defaultDestination;
-    		IStore store = object.getStore();
-    		if (store != null && store.getRepository() != null)
-    			repository = store.getRepository();
+    		for (IStoreObject object : storeObjects) {
+        		IRepository repository = defaultDestination;
+        		IStore store = object.getStore();
+        		if (store != null && store.getRepository() != null)
+        			repository = store.getRepository();
 
-			Set<IAdaptable> objectSet = repositories.get(repository);
-			if (objectSet == null) {
-				objectSet = new HashSet<IAdaptable>();
-				repositories.put(repository, objectSet);
-			}
-			objectSet.add(adaptable);
+    			Set<IAdaptable> objectSet = repositories.get(repository);
+    			if (objectSet == null) {
+    				objectSet = new HashSet<IAdaptable>();
+    				repositories.put(repository, objectSet);
+    			}
+    			objectSet.add(adaptable);
 
-			Set<ISchedulingRule> ruleSet = rules.get(repository);
-			if (ruleSet == null) {
-				ruleSet = new HashSet<ISchedulingRule>();
-				rules.put(repository, ruleSet);
-			}
-			if (repository instanceof ISchedulingRule)
-       			ruleSet.add((ISchedulingRule) repository);
+    			Set<ISchedulingRule> ruleSet = rules.get(repository);
+    			if (ruleSet == null) {
+    				ruleSet = new HashSet<ISchedulingRule>();
+    				rules.put(repository, ruleSet);
+    			}
+    			if (repository instanceof ISchedulingRule)
+           			ruleSet.add((ISchedulingRule) repository);
+    		}
     	}
 
     	for (IRepository r : repositories.keySet()) {
@@ -364,37 +370,44 @@ public class RepositoryService implements IRepositoryService {
                 public IStatus run(IProgressMonitor monitor) throws Exception {
                 	try {
                 		for (IAdaptable adaptable : set) {
-                    		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-                			if (monitor != null && monitor.isCanceled())
-                				return Status.CANCEL_STATUS;
+                    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+                    		if (storeObjects == null) {
+                        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+                        		storeObjects = new IStoreObject[] { object };
+                    		}
 
-                			IStore store = object.getStore();
-                			if (store == null)
-                				store = repository.createObject();
+                    		for (IStoreObject object : storeObjects) {
+                    			if (monitor != null && monitor.isCanceled())
+                    				return Status.CANCEL_STATUS;
 
-                			IStoreProperties properties = object.getStoreProperties();
-                			store.putProperties(properties, monitor);
-                			object.setStore(store);
+                    			IStore store = object.getStore();
+                    			if (store == null)
+                    				store = repository.createObject();
 
-                			if (adaptable instanceof ISecurity) {
-                				uriMap.put(store.toURI(), (ISecurity) adaptable);
-                				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
-                			}
-                			if (adaptable instanceof IWatchList) {
-                				watchlistUriMap.put(store.toURI(), (IWatchList) adaptable);
-                				watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
-                			}
+                    			IStoreProperties properties = object.getStoreProperties();
+                    			store.putProperties(properties, monitor);
+                    			object.setStore(store);
 
-                			if (deltas != null) {
-                    	        int kind = RepositoryResourceDelta.MOVED_TO | RepositoryResourceDelta.ADDED;
-                    	        deltas.add(new RepositoryResourceDelta(
-                    	        		kind,
-                    	        		adaptable,
-                    	        		null,
-                    	        		store.getRepository(),
-                    	        		null,
-                    	        		properties));
-                			}
+                    			if (adaptable instanceof ISecurity) {
+                    				uriMap.put(store.toURI(), (ISecurity) adaptable);
+                    				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
+                    			}
+                    			if (adaptable instanceof IWatchList) {
+                    				watchlistUriMap.put(store.toURI(), (IWatchList) adaptable);
+                    				watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
+                    			}
+
+                    			if (deltas != null) {
+                        	        int kind = RepositoryResourceDelta.MOVED_TO | RepositoryResourceDelta.ADDED;
+                        	        deltas.add(new RepositoryResourceDelta(
+                        	        		kind,
+                        	        		adaptable,
+                        	        		null,
+                        	        		store.getRepository(),
+                        	        		null,
+                        	        		properties));
+                    			}
+                    		}
                 		}
                     } catch (Exception e) {
             			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error saving object", e); //$NON-NLS-1$

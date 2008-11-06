@@ -208,6 +208,6 @@ public class SecurityStore implements IStore {
     }
 
 	public IStore createHistoryStore(Date date) {
-    	return new AggregateHistoryStore(id, null);
+    	return new IntradayHistoryStore(id, null, date);
     }
 }

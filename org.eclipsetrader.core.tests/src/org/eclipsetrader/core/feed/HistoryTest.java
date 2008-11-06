@@ -85,30 +85,23 @@ public class HistoryTest extends TestCase {
     }
 
 	public void testGetAggregatedSubsetFromStore() throws Exception {
-		StoreProperties aggregateStoreProperties1 = new StoreProperties();
-		aggregateStoreProperties1.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.minutes(1));
+		StoreProperties day22StoreProperties = new StoreProperties();
+		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
 		IOHLC[] bars = new IOHLC[] {
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 6), 26.52, 26.52, 26.47, 26.47, 41756L),
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
 			};
-		aggregateStoreProperties1.setProperty(IPropertyConstants.BARS, bars);
-
-		StoreProperties day22StoreProperties = new StoreProperties();
-		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
-		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
+		day22StoreProperties.setProperty(TimeSpan.minutes(1).toString(), bars);
 
 		StoreProperties day23StoreProperties = new StoreProperties();
 		day23StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
 		day23StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 23));
 
 	    TestStore historyStore = new TestStore(new StoreProperties(), new IStore[] {
-	    		new TestStore(day22StoreProperties, new IStore[] {
-	    				new TestStore(aggregateStoreProperties1),
-		    		}),
-	    		new TestStore(day23StoreProperties, new IStore[] {
-	    				new TestStore(aggregateStoreProperties1),
-		    		}),
+	    		new TestStore(day22StoreProperties, null),
+	    		new TestStore(day23StoreProperties, null),
 	    	});
 
 	    History history = new History(historyStore, historyStore.fetchProperties(null));
@@ -120,30 +113,29 @@ public class HistoryTest extends TestCase {
     }
 
 	public void testGetMultidayAggregatedSubsetFromStore() throws Exception {
-		StoreProperties aggregateStoreProperties1 = new StoreProperties();
-		aggregateStoreProperties1.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.minutes(1));
-		IOHLC[] bars = new IOHLC[] {
+		StoreProperties day22StoreProperties = new StoreProperties();
+		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
+		IOHLC[] bars22 = new IOHLC[] {
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 6), 26.52, 26.52, 26.47, 26.47, 41756L),
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
 			};
-		aggregateStoreProperties1.setProperty(IPropertyConstants.BARS, bars);
-
-		StoreProperties day22StoreProperties = new StoreProperties();
-		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
-		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
+		day22StoreProperties.setProperty(TimeSpan.minutes(1).toString(), bars22);
 
 		StoreProperties day23StoreProperties = new StoreProperties();
 		day23StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
 		day23StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 23));
+		IOHLC[] bars23 = new IOHLC[] {
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 6), 26.52, 26.52, 26.47, 26.47, 41756L),
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
+			};
+		day23StoreProperties.setProperty(TimeSpan.minutes(1).toString(), bars23);
 
 	    TestStore historyStore = new TestStore(new StoreProperties(), new IStore[] {
-	    		new TestStore(day22StoreProperties, new IStore[] {
-	    				new TestStore(aggregateStoreProperties1),
-		    		}),
-	    		new TestStore(day23StoreProperties, new IStore[] {
-	    				new TestStore(aggregateStoreProperties1),
-		    		}),
+	    		new TestStore(day22StoreProperties, null),
+	    		new TestStore(day23StoreProperties, null),
 	    	});
 
 	    History history = new History(historyStore, historyStore.fetchProperties(null));
@@ -152,8 +144,9 @@ public class HistoryTest extends TestCase {
     }
 
 	public void testBuildMissingAggregatedSubset() throws Exception {
-		StoreProperties aggregateStoreProperties1 = new StoreProperties();
-		aggregateStoreProperties1.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.minutes(1));
+		StoreProperties day22StoreProperties = new StoreProperties();
+		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
 		IOHLC[] bars = new IOHLC[] {
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
@@ -161,16 +154,10 @@ public class HistoryTest extends TestCase {
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
 				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 8), 26.38, 26.41, 26.38, 26.41, 58018L),
 			};
-		aggregateStoreProperties1.setProperty(IPropertyConstants.BARS, bars);
-
-		StoreProperties day22StoreProperties = new StoreProperties();
-		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
-		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
+		day22StoreProperties.setProperty(TimeSpan.minutes(1).toString(), bars);
 
 	    TestStore historyStore = new TestStore(new StoreProperties(), new IStore[] {
-	    		new TestStore(day22StoreProperties, new IStore[] {
-	    				new TestStore(aggregateStoreProperties1),
-		    		}),
+	    		new TestStore(day22StoreProperties, null),
 	    	});
 
 	    History history = new History(historyStore, historyStore.fetchProperties(null));

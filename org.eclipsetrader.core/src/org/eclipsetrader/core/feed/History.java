@@ -38,6 +38,9 @@ public class History implements IHistory, IStoreObject {
 	private IOHLC highest;
 	private IOHLC lowest;
 
+	private Date rangeBegin;
+	private Date rangeEnd;
+
 	private IStore store;
 	private IStoreProperties storeProperties;
 
@@ -73,7 +76,7 @@ public class History implements IHistory, IStoreObject {
         }
 	}
 
-	private Map<Key, History> historyMap = new WeakHashMap<Key, History>();
+	private Map<Key, HistoryDay> historyMap = new WeakHashMap<Key, HistoryDay>();
 
 	protected History() {
 	}
@@ -83,14 +86,24 @@ public class History implements IHistory, IStoreObject {
 	}
 
 	public History(ISecurity security, IOHLC[] bars, TimeSpan timeSpan) {
-		this(security, bars, null, timeSpan);
+	    this.timeSpan = timeSpan;
+		setSecurity(security);
+		setOHLC(bars);
+	}
+
+	public History(ISecurity security, IOHLC[] bars, Date rangeBegin, Date rangeEnd, TimeSpan timeSpan) {
+		this.rangeBegin = rangeBegin;
+		this.rangeEnd = rangeEnd;
+	    this.timeSpan = timeSpan;
+		setSecurity(security);
+		setOHLC(bars);
 	}
 
 	public History(ISecurity security, IOHLC[] bars, ISplit[] splits, TimeSpan timeSpan) {
+	    this.timeSpan = timeSpan;
 		setSecurity(security);
 		setOHLC(bars);
 		setSplits(splits);
-	    this.timeSpan = timeSpan;
     }
 
 	public History(IStore store, IStoreProperties storeProperties) {
@@ -169,7 +182,7 @@ public class History implements IHistory, IStoreObject {
 			if ((first == null || !b.getDate().before(first)) && (last == null || !b.getDate().after(last)))
 				l.add(b);
 		}
-		return new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
+		return new History(security, l.toArray(new IOHLC[l.size()]), first, last, timeSpan);
 	}
 
 	/* (non-Javadoc)
@@ -181,7 +194,7 @@ public class History implements IHistory, IStoreObject {
 
     	Key key = new Key(first, last, timeSpan);
 
-    	History history = historyMap.get(key);
+    	HistoryDay history = historyMap.get(key);
     	if (history != null)
     		return history;
 
@@ -203,9 +216,10 @@ public class History implements IHistory, IStoreObject {
     		last = c.getTime();
     	}
 
-    	List<IOHLC> l = new ArrayList<IOHLC>();
+    	List<IStore> storeList = new ArrayList<IStore>();
+    	List<IStoreProperties> propertyList = new ArrayList<IStoreProperties>();
 
-		if (store != null) {
+    	if (store != null) {
     		IStore[] childStores = store.fetchChilds(null);
     		if (childStores != null) {
         		for (IStore childStore : childStores) {
@@ -215,28 +229,22 @@ public class History implements IHistory, IStoreObject {
     				if ((first != null && barsDate.before(first)) || (last != null && barsDate.after(last)))
     					continue;
 
-		    		IStore[] aggregateChilds = childStore.fetchChilds(null);
-		    		if (aggregateChilds != null) {
-    		    		for (IStore aggregateChild : aggregateChilds) {
-    		    			properties = aggregateChild.fetchProperties(null);
-    		    			if (timeSpan.equals(properties.getProperty(IPropertyConstants.TIME_SPAN))) {
-    		    				IOHLC[] bars = (IOHLC[]) properties.getProperty(IPropertyConstants.BARS);
-    		    			    if (bars != null)
-    		    			    	l.addAll(Arrays.asList(bars));
-    		    			}
-    		    		}
-		    		}
+    				storeList.add(childStore);
+    				propertyList.add(properties);
         		}
     		}
     	}
 
-		if (l.size() == 0 && !TimeSpan.minutes(1).equals(timeSpan)) {
-			IHistory temp = getSubset(first, last, TimeSpan.minutes(1));
+    	history = new HistoryDay(security, timeSpan, storeList.toArray(new IStore[storeList.size()]), propertyList.toArray(new IStoreProperties[propertyList.size()]));
+
+    	if (history.getOHLC().length == 0 && !TimeSpan.minutes(1).equals(timeSpan)) {
+    		IHistory temp = new HistoryDay(security, TimeSpan.minutes(1), storeList.toArray(new IStore[storeList.size()]), propertyList.toArray(new IStoreProperties[propertyList.size()]));
 
 			Date startDate = null, endDate = null;
 			Double open = null, high = null, low = null, close = null;
 			Long volume = 0L;
 
+			List<IOHLC> l = new ArrayList<IOHLC>();
 			for (IOHLC currentBar : temp.getOHLC()) {
 				if (startDate != null && !currentBar.getDate().before(endDate)) {
 					l.add(new OHLC(startDate, open, high, low, close, volume));
@@ -262,9 +270,10 @@ public class History implements IHistory, IStoreObject {
 
 			if (startDate != null)
 				l.add(new OHLC(startDate, open, high, low, close, volume));
-		}
 
-		history = new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
+			history.setOHLC(l.toArray(new IOHLC[l.size()]));
+    	}
+
 		historyMap.put(key, history);
 
 		return history;
@@ -295,6 +304,9 @@ public class History implements IHistory, IStoreObject {
      */
     public IOHLC[] getAdjustedOHLC() {
     	IDividend[] dividends = (IDividend[]) security.getAdapter(IDividend[].class);
+
+    	if ((dividends == null || dividends.length == 0) && (splits == null || splits.length == 0))
+    		return bars;
 
     	IOHLC[] l = new IOHLC[bars.length];
     	for (int i = 0; i < l.length; i++) {

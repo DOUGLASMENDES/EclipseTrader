@@ -75,8 +75,7 @@ public class RepositoryStore implements IStore {
 				if (securityStore instanceof RepositoryStore)
 					securityStore = ((RepositoryStore) securityStore).getStore();
 				if (securityStore instanceof SecurityStore) {
-					TimeSpan timeSpan = (TimeSpan) properties.getProperty(IPropertyConstants.TIME_SPAN);
-					if (timeSpan != null && timeSpan.getUnits() == Units.Minutes)
+					if (properties.getProperty(IPropertyConstants.BARS_DATE) != null)
 						store = ((SecurityStore) securityStore).createHistoryStore((Date) properties.getProperty(IPropertyConstants.BARS_DATE));
 					else
 						store = ((SecurityStore) securityStore).createHistoryStore();

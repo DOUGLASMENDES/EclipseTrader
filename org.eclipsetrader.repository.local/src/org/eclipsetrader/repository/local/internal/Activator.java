@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.repository.local.internal;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.repository.local.LocalRepository;
 import org.osgi.framework.BundleContext;
@@ -71,4 +72,13 @@ public class Activator extends AbstractUIPlugin {
 	public LocalRepository getRepository() {
     	return repository;
     }
+
+	public static void log(IStatus status) {
+		if (plugin != null)
+			plugin.getLog().log(status);
+		else if (status.getException() != null)
+			throw new RuntimeException(status.getException());
+		else
+			System.err.println(status);
+	}
 }

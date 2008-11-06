@@ -14,6 +14,7 @@ package org.eclipsetrader.repository.local.internal.stores;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
+import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -21,7 +22,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -52,6 +56,8 @@ import org.osgi.framework.ServiceReference;
 public class HistoryStore implements IStore {
 	private Integer id;
 	private ISecurity security;
+
+	private Map<String, WeakReference<IntradayHistoryStore>> intradayStores = new HashMap<String, WeakReference<IntradayHistoryStore>>();
 
 	public HistoryStore(Integer id) {
 		this.id = id;
@@ -109,6 +115,8 @@ public class HistoryStore implements IStore {
 				childFiles[i].delete();
 			file.delete();
 		}
+
+		intradayStores.clear();
 	}
 
 	/* (non-Javadoc)
@@ -118,6 +126,15 @@ public class HistoryStore implements IStore {
     	DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     	List<IStore> l = new ArrayList<IStore>();
+
+    	for (Iterator<WeakReference<IntradayHistoryStore>> iter = intradayStores.values().iterator(); iter.hasNext(); ) {
+    		WeakReference<IntradayHistoryStore> ref = iter.next();
+    		IntradayHistoryStore store = ref.get();
+    		if (store != null)
+    			l.add(store);
+    		else
+    			iter.remove();
+    	}
 
     	IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
 		File file = path.append("." + String.valueOf(id)).toFile();
@@ -129,12 +146,16 @@ public class HistoryStore implements IStore {
 			});
 			for (int i = 0; i < childFiles.length; i++) {
 				String name = childFiles[i].getName();
-				try {
-	                Date date = dateFormat.parse(name.substring(0, name.length() - 4));
-	                l.add(new IntradayHistoryStore(id, security, date));
-                } catch (ParseException e) {
-	                // Do nothing
-                }
+				if (!intradayStores.containsKey(name)) {
+					try {
+		                Date date = dateFormat.parse(name.substring(0, name.length() - 4));
+		                IntradayHistoryStore store = new IntradayHistoryStore(id, security, date);
+		                intradayStores.put(name, new WeakReference<IntradayHistoryStore>(store));
+		                l.add(store);
+	                } catch (ParseException e) {
+		                // Do nothing
+	                }
+				}
 			}
 		}
 

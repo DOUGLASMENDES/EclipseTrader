@@ -27,7 +27,7 @@ import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 
 @XmlRootElement(name = "history")
-public class HistoryType {
+public class HistoryType implements Comparable<HistoryType> {
 
 	@XmlTransient
 	private ISecurity security;
@@ -83,5 +83,14 @@ public class HistoryType {
 
 	public ISplit[] getSplits() {
     	return splits.toArray(new ISplit[splits.size()]);
+    }
+
+	/* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(HistoryType o) {
+    	if (period.getUnits() == o.period.getUnits())
+    		return period.getLength() - o.period.getLength();
+    	return period.getUnits().ordinal() - o.period.getUnits().ordinal();
     }
 }

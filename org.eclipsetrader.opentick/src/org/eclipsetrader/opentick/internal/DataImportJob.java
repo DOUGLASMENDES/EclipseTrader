@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.feed.History;
+import org.eclipsetrader.core.feed.HistoryDay;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.feed.IHistory;
@@ -139,26 +140,11 @@ public class DataImportJob extends Job {
 
 								IOHLC[] ohlc = backfill(connection, identifier, beginDate, endDate, currentTimeSpan);
 								if (ohlc != null && ohlc.length != 0) {
-									Calendar c = Calendar.getInstance();
-									int dayOfYear = -1;
+									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
+									if (intradayHistory instanceof HistoryDay)
+										((HistoryDay) intradayHistory).setOHLC(ohlc);
 
-									List<IOHLC> list = new ArrayList<IOHLC>(2048);
-									for (IOHLC d : ohlc) {
-										c.setTime(d.getDate());
-										if (c.get(Calendar.DAY_OF_YEAR) != dayOfYear) {
-											if (list.size() != 0) {
-												IHistory intradayHistory = new History(history.getSecurity(), list.toArray(new IOHLC[list.size()]), currentTimeSpan);
-												repository.saveAdaptable(new IHistory[] { intradayHistory });
-												list = new ArrayList<IOHLC>(2048);
-											}
-											dayOfYear = c.get(Calendar.DAY_OF_YEAR);
-										}
-										list.add(d);
-									}
-									if (list.size() != 0) {
-										IHistory intradayHistory = new History(history.getSecurity(), list.toArray(new IOHLC[list.size()]), currentTimeSpan);
-										repository.saveAdaptable(new IHistory[] { intradayHistory });
-									}
+									repository.saveAdaptable(new IHistory[] { intradayHistory });
 								}
 							}
 
