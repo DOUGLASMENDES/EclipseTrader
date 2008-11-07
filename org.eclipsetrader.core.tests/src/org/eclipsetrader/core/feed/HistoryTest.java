@@ -11,9 +11,14 @@
 
 package org.eclipsetrader.core.feed;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -228,6 +233,68 @@ public class HistoryTest extends TestCase {
 	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 14), 47.25 / 2 - 0.08, 48.50 / 2 - 0.08, 46.77 / 2 - 0.08, 48.30 / 2 - 0.08, 90446400L * 2), adjustedBars[0]);
 	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 18), 24.62 - 0.08, 24.99 - 0.08, 24.40 - 0.08, 24.96 - 0.08, 57415500L), adjustedBars[1]);
 	    assertEquals(new OHLC(getTime(2003, Calendar.FEBRUARY, 19), 24.82, 24.88, 24.17, 24.53, 46902700L), adjustedBars[2]);
+    }
+
+	public void testNotifyUpdatesOfIntradaySubsets() throws Exception {
+		StoreProperties day22StoreProperties = new StoreProperties();
+		day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+		day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
+		IOHLC[] bars22 = new IOHLC[] {
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 6), 26.52, 26.52, 26.47, 26.47, 41756L),
+				new OHLC(getTime(2008, Calendar.MAY, 22, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
+			};
+		day22StoreProperties.setProperty(TimeSpan.minutes(1).toString(), bars22);
+
+		StoreProperties day23StoreProperties = new StoreProperties();
+		day23StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+		day23StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 23));
+		IOHLC[] bars23 = new IOHLC[] {
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 6), 26.52, 26.52, 26.47, 26.47, 41756L),
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
+			};
+		day23StoreProperties.setProperty(TimeSpan.minutes(1).toString(), bars23);
+
+	    TestStore historyStore = new TestStore(new StoreProperties(), new IStore[] {
+	    		new TestStore(day22StoreProperties, null),
+	    		new TestStore(day23StoreProperties, null),
+	    	});
+
+	    History history = new History(historyStore, historyStore.fetchProperties(null));
+
+	    final Set<IHistory> updates = new HashSet<IHistory>();
+
+	    IHistory subset1 = history.getSubset(getTime(2008, Calendar.MAY, 22), getTime(2008, Calendar.MAY, 23), TimeSpan.minutes(1));
+	    assertEquals(6, subset1.getOHLC().length);
+    	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subset1.getAdapter(PropertyChangeSupport.class);
+		propertyChangeSupport.addPropertyChangeListener(IPropertyConstants.BARS, new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+            	updates.add((IHistory) evt.getSource());
+            }
+		});
+
+	    IHistory subset2 = history.getSubset(getTime(2008, Calendar.MAY, 23), getTime(2008, Calendar.MAY, 23), TimeSpan.minutes(1));
+	    assertEquals(3, subset2.getOHLC().length);
+    	propertyChangeSupport = (PropertyChangeSupport) subset2.getAdapter(PropertyChangeSupport.class);
+		propertyChangeSupport.addPropertyChangeListener(IPropertyConstants.BARS, new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+            	updates.add((IHistory) evt.getSource());
+            }
+		});
+
+	    ((HistoryDay) subset2).setOHLC(new IOHLC[] {
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 6), 26.52, 26.52, 26.47, 26.47, 41756L),
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 7), 26.47, 26.47, 26.37, 26.39, 144494L),
+				new OHLC(getTime(2008, Calendar.MAY, 23, 9, 9), 26.47, 26.47, 26.37, 26.39, 144494L),
+			});
+	    assertEquals(4, subset2.getOHLC().length);
+	    assertEquals(7, subset1.getOHLC().length);
+
+	    assertEquals(2, updates.size());
+	    assertTrue(updates.contains(subset1));
+	    assertTrue(updates.contains(subset2));
     }
 
 	private Date getTime(int year, int month, int day) {

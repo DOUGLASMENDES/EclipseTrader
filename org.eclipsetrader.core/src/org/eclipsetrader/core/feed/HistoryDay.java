@@ -77,6 +77,7 @@ public class HistoryDay implements IHistory {
          */
         public void setStoreProperties(IStoreProperties storeProperties) {
         	this.storeProperties = storeProperties;
+    		propertyChangeSupport.firePropertyChange("store_object", null, this);
         }
 	}
 
@@ -190,6 +191,7 @@ public class HistoryDay implements IHistory {
 						else {
 							IStoreProperties properties = object.getStoreProperties();
 							properties.setProperty(timeSpan.toString(), list.toArray(new IOHLC[list.size()]));
+							object.setStoreProperties(properties);
 						}
 
 						list = new ArrayList<IOHLC>(2048);
@@ -213,6 +215,7 @@ public class HistoryDay implements IHistory {
 				else {
 					IStoreProperties properties = object.getStoreProperties();
 					properties.setProperty(timeSpan.toString(), list.toArray(new IOHLC[list.size()]));
+					object.setStoreProperties(properties);
 				}
 			}
 		}
@@ -295,6 +298,8 @@ public class HistoryDay implements IHistory {
 		if (storeProperties.length != 0)
 	    	this.security = (ISecurity) storeProperties[0].getProperty(IPropertyConstants.SECURITY);
 
+		Object oldValue = this.bars;
+
 	    List<IOHLC> l1 = new ArrayList<IOHLC>(2048);
 
 		for (int i = 0; i < store.length; i++) {
@@ -315,6 +320,8 @@ public class HistoryDay implements IHistory {
 		this.bars = l1.toArray(new IOHLC[l1.size()]);
 
 	    updateRange();
+
+	    propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
     }
 
     protected void updateRange() {

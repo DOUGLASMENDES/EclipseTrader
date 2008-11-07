@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.core.feed;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.Map.Entry;
 
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -55,6 +58,14 @@ public class History implements IHistory, IStoreObject {
 	        this.first = first;
 	        this.last = last;
 	        this.timeSpan = timeSpan;
+        }
+
+		public Date getFirst() {
+        	return first;
+        }
+
+		public Date getLast() {
+        	return last;
         }
 
 		/* (non-Javadoc)
@@ -272,6 +283,42 @@ public class History implements IHistory, IStoreObject {
 				l.add(new OHLC(startDate, open, high, low, close, volume));
 
 			history.setOHLC(l.toArray(new IOHLC[l.size()]));
+    	}
+
+    	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+    	if (propertyChangeSupport != null) {
+    		propertyChangeSupport.addPropertyChangeListener("store_object", new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                	IStoreObject storeObject = (IStoreObject) evt.getNewValue();
+                	Date date = (Date) storeObject.getStoreProperties().getProperty(IPropertyConstants.BARS_DATE);
+
+                	for (Entry<Key, HistoryDay> entry : historyMap.entrySet()) {
+                		HistoryDay element = entry.getValue();
+                		if (element != null) {
+                			if (!date.before(entry.getKey().getFirst()) && !date.after(entry.getKey().getLast())) {
+                	    		IStore[] childStores = store.fetchChilds(null);
+                	    		if (childStores != null) {
+                	    	    	List<IStore> storeList = new ArrayList<IStore>();
+                	    	    	List<IStoreProperties> propertyList = new ArrayList<IStoreProperties>();
+
+                	    	    	for (IStore childStore : childStores) {
+                	        			IStoreProperties properties = childStore.fetchProperties(null);
+
+                	    				Date barsDate = (Date) properties.getProperty(IPropertyConstants.BARS_DATE);
+                	    				if (barsDate.before(entry.getKey().getFirst()) || barsDate.after(entry.getKey().getLast()))
+                	    					continue;
+
+                	    				storeList.add(childStore);
+                	    				propertyList.add(properties);
+                	        		}
+
+                	    	    	element.setStoreProperties(storeList.toArray(new IStore[storeList.size()]), propertyList.toArray(new IStoreProperties[propertyList.size()]));
+                	    		}
+                			}
+                		}
+                	}
+                }
+    		});
     	}
 
 		historyMap.put(key, history);
