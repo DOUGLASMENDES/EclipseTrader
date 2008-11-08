@@ -287,6 +287,7 @@ public class History implements IHistory, IStoreObject {
 
     	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
     	if (propertyChangeSupport != null) {
+    		final Object sourceObject = history;
     		propertyChangeSupport.addPropertyChangeListener("store_object", new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent evt) {
                 	IStoreObject storeObject = (IStoreObject) evt.getNewValue();
@@ -294,7 +295,7 @@ public class History implements IHistory, IStoreObject {
 
                 	for (Entry<Key, HistoryDay> entry : historyMap.entrySet()) {
                 		HistoryDay element = entry.getValue();
-                		if (element != null) {
+                		if (element != null && element != sourceObject) {
                 			if (!date.before(entry.getKey().getFirst()) && !date.after(entry.getKey().getLast())) {
                 	    		IStore[] childStores = store.fetchChilds(null);
                 	    		if (childStores != null) {
