@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.internal.views;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
@@ -28,14 +29,13 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -49,13 +49,11 @@ import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.views.IDataProvider;
-import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.providers.ChangeFactory;
@@ -65,8 +63,6 @@ import org.eclipsetrader.ui.internal.providers.SecurityNameFactory;
 import org.eclipsetrader.ui.internal.providers.TrendFactory;
 import org.eclipsetrader.ui.internal.repositories.RepositoryObjectTransfer;
 import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class TickersView extends ViewPart {
 	public static final String VIEW_ID = "org.eclipsetrader.ui.views.tickers";
@@ -125,8 +121,12 @@ public class TickersView extends ViewPart {
 		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
 		deleteAction.setEnabled(false);
 
-		site.getActionBars().setGlobalActionHandler(deleteAction.getId(), deleteAction);
-		site.getActionBars().updateActionBars();
+		settingsAction = new TickersSettingsAction(site.getShell(), this);
+
+		IActionBars actionBars = site.getActionBars();
+		actionBars.setGlobalActionHandler(settingsAction.getId(), settingsAction);
+		actionBars.setGlobalActionHandler(deleteAction.getId(), deleteAction);
+		actionBars.updateActionBars();
     }
 
 	/* (non-Javadoc)
@@ -161,7 +161,8 @@ public class TickersView extends ViewPart {
 							if (security != null) {
 								TickerViewItem viewItem = new TickerViewItem(security);
 								input.add(viewItem);
-								pricingEnvironment.addSecurities(new ISecurity[] { security });
+
+								pricingEnvironment.addSecurity(security);
 								viewItem.setTrade(pricingEnvironment.getTrade(security));
 								viewItem.setQuote(pricingEnvironment.getQuote(security));
 								viewItem.setLastClose(pricingEnvironment.getLastClose(security));
@@ -271,14 +272,6 @@ public class TickersView extends ViewPart {
 
 		viewer.setLabelProvider(new ViewItemLabelProvider());
 		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setSorter(new ViewerSorter() {
-            @Override
-            public int compare(Viewer viewer, Object e1, Object e2) {
-            	IAdaptable[] v1 = ((IViewItem) e1).getValues();
-            	IAdaptable[] v2 = ((IViewItem) e2).getValues();
-            	return compareValues(v1, v2, 0);
-            }
-		});
 
 		return viewer;
 	}
@@ -373,18 +366,37 @@ public class TickersView extends ViewPart {
     }
 
 	protected IRepositoryService getRepositoryService() {
-		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-		IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-		context.ungetService(serviceReference);
-		return service;
+		return UIActivator.getDefault().getRepositoryService();
 	}
 
     protected IMarketService getMarketService() {
-		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-		IMarketService service = (IMarketService) context.getService(serviceReference);
-		context.ungetService(serviceReference);
-		return service;
+    	return UIActivator.getDefault().getMarketService();
+    }
+
+    public TickerViewItem[] getViewItems() {
+    	return input.toArray(new TickerViewItem[input.size()]);
+    }
+
+    public void setViewItems(TickerViewItem[] input) {
+		for (TickerViewItem viewItem : input)
+			pricingEnvironment.removeSecurity(viewItem.getSecurity());
+
+		this.input = new ArrayList<TickerViewItem>(Arrays.asList(input));
+		saveInput();
+
+		for (TickerViewItem viewItem : input) {
+			pricingEnvironment.addSecurity(viewItem.getSecurity());
+
+			viewItem.setTrade(pricingEnvironment.getTrade(viewItem.getSecurity()));
+			viewItem.setQuote(pricingEnvironment.getQuote(viewItem.getSecurity()));
+			viewItem.setLastClose(pricingEnvironment.getLastClose(viewItem.getSecurity()));
+
+			IAdaptable[] newValues = new IAdaptable[providers.length];
+			for (int ii = 0; ii < newValues.length; ii++)
+				newValues[ii] = providers[ii] != null ? providers[ii].getValue(viewItem) : null;
+			viewItem.setValues(newValues);
+		}
+
+		viewer.setInput(this.input);
     }
 }
