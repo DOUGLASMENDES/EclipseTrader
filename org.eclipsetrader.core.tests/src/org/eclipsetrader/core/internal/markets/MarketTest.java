@@ -180,7 +180,7 @@ public class MarketTest extends TestCase {
 			}));
 		MarketDay day = market.getMarketDayFor(getTime(2007, Calendar.NOVEMBER, 6));
 		assertEquals(getTime(2007, Calendar.NOVEMBER, 6, 9, 0), day.getOpenTime());
-		assertEquals(getTime(2007, Calendar.NOVEMBER, 6, 16, 0), day.getCloseTime());
+		assertEquals(getTime(2007, Calendar.NOVEMBER, 6, 9, 30), day.getCloseTime());
 		assertNull(day.getMessage());
 	}
 

@@ -241,9 +241,12 @@ public class Market implements IMarket, IAdaptable {
 				if (!marketTime.isExcluded(time) && (time.equals(openTime) || time.after(openTime)) && time.before(closeTime))
 					return new MarketDay(openTime, closeTime, marketTime.getDescription());
 			}
-			Date openTime = getCombinedDateTime(time, schedule.first().getOpenTime());
-			Date closeTime = getCombinedDateTime(time, schedule.last().getCloseTime());
-			return new MarketDay(openTime, closeTime, null);
+			for (MarketTime marketTime : schedule) {
+				Date openTime = getCombinedDateTime(time, marketTime.getOpenTime());
+				Date closeTime = getCombinedDateTime(time, marketTime.getCloseTime());
+				if (openTime.equals(time) || openTime.after(time))
+					return new MarketDay(openTime, closeTime, null);
+			}
 		}
 
 		return new MarketDay(null, null, null);
