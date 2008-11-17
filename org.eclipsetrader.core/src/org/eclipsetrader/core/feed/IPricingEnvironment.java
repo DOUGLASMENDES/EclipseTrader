@@ -70,6 +70,14 @@ public interface IPricingEnvironment {
 	public ILastClose getLastClose(ISecurity security);
 
 	/**
+	 * Gets the level II book.
+	 *
+	 * @param security the security.
+	 * @return the level II book.
+	 */
+	public IBook getBook(ISecurity security);
+
+	/**
 	 * Disposes the receiver and all associated resources.
 	 */
 	public void dispose();

@@ -31,6 +31,7 @@ public class SingleFeedPricingEnvironment implements IPricingEnvironment {
 		IQuote quote;
 		ITodayOHL todayOHL;
 		ILastClose lastClose;
+		IBook book;
 		List<PricingDelta> deltas = new ArrayList<PricingDelta>();
 		IFeedSubscription subscription;
 	}
@@ -174,6 +175,13 @@ public class SingleFeedPricingEnvironment implements IPricingEnvironment {
 		return securitiesMap.get(security) != null ? securitiesMap.get(security).lastClose : null;
     }
 
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IPricingEnvironment#getBook(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    public IBook getBook(ISecurity security) {
+		return securitiesMap.get(security) != null ? securitiesMap.get(security).book : null;
+    }
+
 	protected void processUpdateQuotes(IFeedIdentifier identifier, QuoteDelta[] delta) {
 		SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
 		if (subscriptionStatus != null) {
@@ -189,6 +197,8 @@ public class SingleFeedPricingEnvironment implements IPricingEnvironment {
 							pricingStatus.todayOHL = (ITodayOHL) d.getNewValue();
 						if (d.getNewValue() instanceof ILastClose)
 							pricingStatus.lastClose = (ILastClose) d.getNewValue();
+						if (d.getNewValue() instanceof IBook)
+							pricingStatus.book = (IBook) d.getNewValue();
 						pricingStatus.deltas.add(new PricingDelta(security, d.getOldValue(), d.getNewValue()));
 					}
 				}

@@ -40,6 +40,7 @@ public class PricingEnvironment implements IPricingEnvironment {
 		IQuote quote;
 		ITodayOHL todayOHL;
 		ILastClose lastClose;
+		IBook book;
 		List<PricingDelta> deltas = new ArrayList<PricingDelta>();
 	}
 
@@ -180,6 +181,34 @@ public class PricingEnvironment implements IPricingEnvironment {
 		if ((oldValue == null && lastClose != null) || (oldValue != null && !oldValue.equals(lastClose))) {
 			status.lastClose = lastClose;
 			status.deltas.add(new PricingDelta(security, oldValue, lastClose));
+			if (doNotify)
+				notifyListeners();
+		}
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IPricingEnvironment#getBook(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    public IBook getBook(ISecurity security) {
+	    return map.get(security) != null ? map.get(security).book : null;
+    }
+
+    /**
+     * Sets the new level II book values for a security.
+     *
+     * @param security the security.
+     * @param book the new book values.
+     */
+    public void setBook(ISecurity security, IBook book) {
+		PricingStatus status = map.get(security);
+		if (status == null) {
+			status = new PricingStatus();
+			map.put(security, status);
+		}
+		Object oldValue = status.book;
+		if ((oldValue == null && book != null) || (oldValue != null && !oldValue.equals(book))) {
+			status.book = book;
+			status.deltas.add(new PricingDelta(security, oldValue, book));
 			if (doNotify)
 				notifyListeners();
 		}
