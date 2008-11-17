@@ -94,7 +94,8 @@ public class WatchListViewItemLabelProvider extends CellLabelProvider {
 			cell.setForeground(null);
 		}
 
-		updateBackground(cell);
+		if (cell.getImage() == null)
+			updateBackground(cell);
 	}
 
 	protected void updateBackground(ViewerCell cell) {

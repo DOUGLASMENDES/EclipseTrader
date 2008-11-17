@@ -23,6 +23,7 @@ import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITodayOHL;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IWatchListElement;
 
@@ -38,6 +39,7 @@ public class WatchListViewItem extends PlatformObject {
 	private IQuote quote;
 	private ITodayOHL todayOHL;
 	private ILastClose lastClose;
+	private MarketPricingEnvironment pricingEnvironment;
 
 	private Map<String, IDataProvider> dataProviders = new HashMap<String, IDataProvider>();
 	private Map<String, IAdaptable> values = new HashMap<String, IAdaptable>();
@@ -114,10 +116,7 @@ public class WatchListViewItem extends PlatformObject {
 	}
 
 	public void setValue(String propertyName, IAdaptable value) {
-		Object oldValue = this.values.get(propertyName);
     	this.values.put(propertyName, value);
-    	if (oldValue != null)
-    		this.updateTime.put(propertyName, 6);
     }
 
 	public void clearValue(String propertyName) {
@@ -158,6 +157,9 @@ public class WatchListViewItem extends PlatformObject {
 			return todayOHL;
 		if (adapter.isAssignableFrom(ILastClose.class))
 			return lastClose;
+		if (adapter.isAssignableFrom(MarketPricingEnvironment.class))
+			return pricingEnvironment;
+
 		if (adapter.isAssignableFrom(getClass()))
 			return this;
 
@@ -187,5 +189,13 @@ public class WatchListViewItem extends PlatformObject {
 
 	public void setLastClose(ILastClose lastClose) {
     	this.lastClose = lastClose;
+    }
+
+	public MarketPricingEnvironment getPricingEnvironment() {
+    	return pricingEnvironment;
+    }
+
+	public void setPricingEnvironment(MarketPricingEnvironment pricingEnvironment) {
+    	this.pricingEnvironment = pricingEnvironment;
     }
 }

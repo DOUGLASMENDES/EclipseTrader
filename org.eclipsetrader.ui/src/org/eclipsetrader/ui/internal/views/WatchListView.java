@@ -41,7 +41,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ColumnPixelData;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -61,6 +60,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -578,6 +578,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 					Class type = column.getDataProviderFactory().getType()[0];
 					if (type == Long.class || type == Double.class || type == Date.class)
 						alignment = SWT.RIGHT;
+					if (type == Image.class)
+						alignment = SWT.CENTER;
 				}
 
 				TableViewerColumn viewerColumn = new TableViewerColumn(viewer, alignment);
@@ -589,12 +591,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
 				properties[index] = column.getDataProviderFactory().getId();
 
-				if ("org.eclipsetrader.ui.providers.SecurityName".equals(column.getDataProviderFactory().getId()))
-					tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(100));
-				else {
-					int width = columnsSection != null && columnsSection.get(viewerColumn.getColumn().getText()) != null ? columnsSection.getInt(viewerColumn.getColumn().getText()) : 100;
-					tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(width));
-				}
+				int width = columnsSection != null && columnsSection.get(viewerColumn.getColumn().getText()) != null ? columnsSection.getInt(viewerColumn.getColumn().getText()) : 100;
+				tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(width));
 
 				viewerColumn.getColumn().addControlListener(columnControlListener);
 				viewerColumn.getColumn().addSelectionListener(columnSelectionAdapter);
@@ -660,6 +658,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 			viewItem.setQuote(pricingEnvironment.getQuote(security));
 			viewItem.setTrade(pricingEnvironment.getTrade(security));
 			viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(security));
+			viewItem.setPricingEnvironment(pricingEnvironment);
 		}
 
     	for (String propertyName : viewItem.getValueProperties())
@@ -698,6 +697,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 								continue;
 
 							viewItem.setValue(propertyName, newValue);
+							if (oldValue != null && viewColumn.getDataProviderFactory().getType()[0] != Image.class)
+								viewItem.setUpdateTime(propertyName, 6);
 
 	        				Set<String> propertyNames = updatedItems.get(viewItem);
 	        				if (propertyNames == null) {

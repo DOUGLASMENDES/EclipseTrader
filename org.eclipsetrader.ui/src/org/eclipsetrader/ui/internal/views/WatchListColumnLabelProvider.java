@@ -62,9 +62,13 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
     		if (s != null && !cell.getText().equals(s))
     			cell.setText(s);
 
-    		Image i = (Image) value.getAdapter(Image.class);
-    		if (i != cell.getImage())
-    			cell.setImage(i);
+    		Image newImage = (Image) value.getAdapter(Image.class);
+    		Image oldImage = cell.getImage();
+    		if (newImage != oldImage) {
+    			cell.setImage(newImage);
+    			if (oldImage != null)
+    				oldImage.dispose();
+    		}
 
     		Color color = (Color) value.getAdapter(Color.class);
     		cell.setForeground(color);
@@ -79,7 +83,8 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
     		cell.setFont(null);
     	}
 
-		updateBackground(cell);
+    	if (cell.getImage() == null)
+    		updateBackground(cell);
     }
 
 	protected void updateBackground(ViewerCell cell) {
