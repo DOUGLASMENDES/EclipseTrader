@@ -299,6 +299,90 @@ public class WatchListViewTest extends TestCase {
 	    assertEquals(1, part.getItemsMap().size());
     }
 
+	public void testCallInitOnInitialization() throws Exception {
+		DataProvider provider = new DataProvider();
+		WatchList watchList = new WatchList("Test", new WatchListColumn[] {
+				new WatchListColumn("col1", new DataProviderFactory("col1", "Col 1", provider)),
+			});
+	    watchList.setItems(new WatchListElement[] { new WatchListElement(new Security("Test1", null)) });
+
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		assertEquals(1, part.getItemsMap().size());
+		assertTrue(provider.isInitCalled());
+    }
+
+	public void testCallInitOnNewAdditions() throws Exception {
+		DataProvider provider = new DataProvider();
+		WatchList watchList = new WatchList("Test", new WatchListColumn[] {
+				new WatchListColumn("col1", new DataProviderFactory("col1", "Col 1", provider)),
+			});
+
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		assertEquals(0, part.getItemsMap().size());
+		assertFalse(provider.isInitCalled());
+
+		part.addItem(new Security("Test 1", null));
+
+		assertEquals(1, part.getItemsMap().size());
+		assertTrue(provider.isInitCalled());
+    }
+
+	public void testCallDisposeOnRemove() throws Exception {
+		DataProvider provider = new DataProvider();
+		WatchList watchList = new WatchList("Test", new WatchListColumn[] {
+				new WatchListColumn("col1", new DataProviderFactory("col1", "Col 1", provider)),
+			});
+
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		Security security = new Security("Test 1", null);
+		part.addItem(security);
+		part.removeItem(part.getItemsMap().get(security).iterator().next());
+
+		assertEquals(0, part.getItemsMap().size());
+		assertTrue(provider.isDisposed());
+    }
+
+	public void testInitializeNewColumns() throws Exception {
+		DataProvider provider = new DataProvider();
+		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
+	    watchList.setItems(new WatchListElement[] { new WatchListElement(new Security("Test1", null)) });
+
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+
+		part.setColumns(new WatchListViewColumn[] { new WatchListViewColumn("col1", new DataProviderFactory("col1", "Col 1", provider)) });
+		assertTrue(provider.isInitCalled());
+    }
+
+	public void testDisposeRemovedColumns() throws Exception {
+		DataProvider provider = new DataProvider();
+		WatchList watchList = new WatchList("Test", new WatchListColumn[0]);
+	    watchList.setItems(new WatchListElement[] { new WatchListElement(new Security("Test1", null)) });
+
+		WatchListView part = new WatchListView();
+        getField(WatchListView.class, "watchList").set(part, watchList);
+        getField(WorkbenchPart.class, "partSite").set(part, new TestWorkbenchPartSite(shell));
+		part.createPartControl(shell);
+		part.setColumns(new WatchListViewColumn[] { new WatchListViewColumn("col1", new DataProviderFactory("col1", "Col 1", provider)) });
+
+		part.setColumns(new WatchListViewColumn[0]);
+		assertTrue(provider.isDisposed());
+    }
+
 	@SuppressWarnings("unchecked")
     private Field getField(Class clazz, String name) {
 		Field[] fields = clazz.getDeclaredFields();
@@ -314,17 +398,24 @@ public class WatchListViewTest extends TestCase {
 	private class DataProviderFactory implements IDataProviderFactory {
 		private String id;
 		private String name;
+		private IDataProvider provider;
 
 		public DataProviderFactory(String id, String name) {
 	        this.id = id;
 	        this.name = name;
         }
 
+		public DataProviderFactory(String id, String name, IDataProvider provider) {
+	        this.id = id;
+	        this.name = name;
+	        this.provider = provider;
+        }
+
 		/* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProviderFactory#createProvider()
          */
         public IDataProvider createProvider() {
-	        return null;
+	        return provider;
         }
 
 		/* (non-Javadoc)
@@ -347,6 +438,50 @@ public class WatchListViewTest extends TestCase {
         @SuppressWarnings("unchecked")
         public Class[] getType() {
             return new Class[] { String.class };
+        }
+	}
+
+	private class DataProvider implements IDataProvider {
+		private boolean disposed;
+		private boolean initCalled;
+
+		public DataProvider() {
+		}
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.views.IDataProvider#init(org.eclipse.core.runtime.IAdaptable)
+         */
+        public void init(IAdaptable adaptable) {
+        	initCalled = true;
+        }
+
+		public boolean isInitCalled() {
+        	return initCalled;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.views.IDataProvider#dispose()
+         */
+        public void dispose() {
+        	disposed = true;
+        }
+
+		public boolean isDisposed() {
+        	return disposed;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.views.IDataProvider#getFactory()
+         */
+        public IDataProviderFactory getFactory() {
+	        return null;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.views.IDataProvider#getValue(org.eclipse.core.runtime.IAdaptable)
+         */
+        public IAdaptable getValue(IAdaptable adaptable) {
+	        return null;
         }
 	}
 }

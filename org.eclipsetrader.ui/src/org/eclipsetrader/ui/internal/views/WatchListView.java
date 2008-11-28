@@ -127,7 +127,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 	private int sortDirection = SWT.UP;
 
 	private MarketPricingEnvironment pricingEnvironment;
-	private Map<WatchListViewItem, Set<String>> updatedItems = new HashMap<WatchListViewItem, Set<String>>();
+	private Set<WatchListViewItem> updatedItems = new HashSet<WatchListViewItem>();
 
 	private ControlAdapter columnControlListener = new ControlAdapter() {
         @Override
@@ -206,9 +206,31 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         public void run() {
     		if (!viewer.getControl().isDisposed()) {
         		synchronized(updatedItems) {
-        			for (WatchListViewItem viewItem : updatedItems.keySet()) {
-        				Set<String> propertyNames = updatedItems.get(viewItem);
-        				viewer.update(viewItem, propertyNames.toArray(new String[propertyNames.size()]));
+        			for (WatchListViewItem viewItem : updatedItems) {
+        				Set<String> propertyNames = new HashSet<String>();
+
+        				for (WatchListViewColumn viewColumn : columns) {
+    						String propertyName = viewColumn.getDataProviderFactory().getId();
+    						IDataProvider dataProvider = viewItem.getDataProvider(propertyName);
+    						if (dataProvider != null) {
+    							IAdaptable oldValue = viewItem.getValue(propertyName);
+    							IAdaptable newValue = dataProvider.getValue(viewItem);
+
+    							if (oldValue == newValue)
+    								continue;
+    							if (oldValue != null && newValue != null && oldValue.equals(newValue))
+    								continue;
+
+    							viewItem.setValue(propertyName, newValue);
+    							if (oldValue != null && viewColumn.getDataProviderFactory().getType()[0] != Image.class)
+    								viewItem.setUpdateTime(propertyName, 6);
+
+    							propertyNames.add(propertyName);
+    						}
+    					}
+
+    					if (propertyNames.size() != 0)
+    						viewer.update(viewItem, propertyNames.toArray(new String[propertyNames.size()]));
         			}
         			updatedItems.clear();
         		}
@@ -385,6 +407,16 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 		}
 
 		UIActivator.getDefault().getRepositoryService().removeRepositoryResourceListener(repositoryListener);
+
+		for (Set<WatchListViewItem> set : items.values()) {
+			for (Iterator<WatchListViewItem> viewItemIterator = set.iterator(); viewItemIterator.hasNext(); ) {
+				WatchListViewItem viewItem = viewItemIterator.next();
+				for (WatchListViewColumn viewColumn : columns) {
+					String propertyName = viewColumn.getDataProviderFactory().getId();
+					viewItem.getDataProvider(propertyName).dispose();
+				}
+			}
+		}
 
 		for (int i = 0; i < tickEvenRowsFade.length; i++) {
 			if (tickEvenRowsFade[i] != null)
@@ -669,6 +701,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 			IDataProvider dataProvider = viewColumn.getDataProviderFactory().createProvider();
 			viewItem.setDataProvider(propertyName, dataProvider);
 
+			dataProvider.init(viewItem);
+
 			IAdaptable value = dataProvider.getValue(viewItem);
 			viewItem.setValue(propertyName, value);
 		}
@@ -683,39 +717,17 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 					viewItem.setQuote(pricingEnvironment.getQuote(security));
 					viewItem.setTrade(pricingEnvironment.getTrade(security));
 					viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(security));
+					viewItem.setBook(pricingEnvironment.getBook(security));
 
-					for (WatchListViewColumn viewColumn : columns) {
-						String propertyName = viewColumn.getDataProviderFactory().getId();
-						IDataProvider dataProvider = viewItem.getDataProvider(propertyName);
-						if (dataProvider != null) {
-							IAdaptable oldValue = viewItem.getValue(propertyName);
-							IAdaptable newValue = dataProvider.getValue(viewItem);
+					updatedItems.add(viewItem);
 
-							if (oldValue == newValue)
-								continue;
-							if (oldValue != null && newValue != null && oldValue.equals(newValue))
-								continue;
-
-							viewItem.setValue(propertyName, newValue);
-							if (oldValue != null && viewColumn.getDataProviderFactory().getType()[0] != Image.class)
-								viewItem.setUpdateTime(propertyName, 6);
-
-	        				Set<String> propertyNames = updatedItems.get(viewItem);
-	        				if (propertyNames == null) {
-	        					propertyNames = new HashSet<String>();
-	        					updatedItems.put(viewItem, propertyNames);
-	        				}
-							propertyNames.add(propertyName);
-
-							if (viewer != null && updatedItems.size() == 1) {
-								try {
-									if (!viewer.getControl().isDisposed())
-										viewer.getControl().getDisplay().asyncExec(updateRunnable);
-								} catch(SWTException e) {
-									if (e.code != SWT.ERROR_WIDGET_DISPOSED)
-										throw e;
-								}
-							}
+					if (viewer != null && updatedItems.size() == 1) {
+						try {
+							if (!viewer.getControl().isDisposed())
+								viewer.getControl().getDisplay().asyncExec(updateRunnable);
+						} catch(SWTException e) {
+							if (e.code != SWT.ERROR_WIDGET_DISPOSED)
+								throw e;
 						}
 					}
 				}
@@ -731,8 +743,15 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 			for (Iterator<WatchListViewItem> viewItemIterator = set.iterator(); viewItemIterator.hasNext(); ) {
 				WatchListViewItem viewItem = viewItemIterator.next();
 				if (viewItem.getReference() != null) {
-					if (!newItemsSet.contains(viewItem.getReference()))
+					if (!newItemsSet.contains(viewItem.getReference())) {
+						for (WatchListViewColumn viewColumn : columns) {
+							String propertyName = viewColumn.getDataProviderFactory().getId();
+							viewItem.getDataProvider(propertyName).dispose();
+							viewItem.clearDataProvider(propertyName);
+							viewItem.clearValue(propertyName);
+						}
 						viewItemIterator.remove();
+					}
 					else
 						existingItemsSet.add(viewItem.getReference());
 				}
@@ -761,12 +780,15 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 					viewItem.setQuote(pricingEnvironment.getQuote(newItem.getSecurity()));
 					viewItem.setTrade(pricingEnvironment.getTrade(newItem.getSecurity()));
 					viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(newItem.getSecurity()));
+					viewItem.setBook(pricingEnvironment.getBook(newItem.getSecurity()));
 				}
 
 				for (WatchListViewColumn viewColumn : columns) {
 					String propertyName = viewColumn.getDataProviderFactory().getId();
 					IDataProvider dataProvider = viewColumn.getDataProviderFactory().createProvider();
 					viewItem.setDataProvider(propertyName, dataProvider);
+
+					dataProvider.init(viewItem);
 
 					IAdaptable value = dataProvider.getValue(viewItem);
 					viewItem.setValue(propertyName, value);
@@ -813,6 +835,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 			IDataProvider dataProvider = viewColumn.getDataProviderFactory().createProvider();
 			viewItem.setDataProvider(propertyName, dataProvider);
 
+			dataProvider.init(viewItem);
+
 			IAdaptable value = dataProvider.getValue(viewItem);
 			viewItem.setValue(propertyName, value);
 		}
@@ -829,11 +853,16 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 			set.remove(viewItem);
 			if (set.isEmpty()) {
 				pricingEnvironment.removeSecurity(viewItem.getSecurity());
-				items.remove(set);
+				items.remove(viewItem.getSecurity());
 
 				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) viewItem.getSecurity().getAdapter(PropertyChangeSupport.class);
 				if (propertyChangeSupport != null)
 					propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+
+				for (WatchListViewColumn viewColumn : columns) {
+					String propertyName = viewColumn.getDataProviderFactory().getId();
+					viewItem.getDataProvider(propertyName).dispose();
+				}
 			}
 		}
 
@@ -888,11 +917,41 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 		}
 
 		if (doUpdate) {
-			this.columns = new ArrayList<WatchListViewColumn>(Arrays.asList(columns));
+			Set<WatchListViewColumn> newColumnsSet = new HashSet<WatchListViewColumn>(Arrays.asList(columns));
 
-			for (Set<WatchListViewItem> set : items.values()) {
-				for (WatchListViewItem viewItem : set)
-					setInitialValues(viewItem);
+			for (Iterator<WatchListViewColumn> iter = this.columns.iterator(); iter.hasNext(); ) {
+				WatchListViewColumn column = iter.next();
+				if (!newColumnsSet.contains(column)) {
+					String propertyName = column.getDataProviderFactory().getId();
+					for (Set<WatchListViewItem> set : items.values()) {
+						for (WatchListViewItem viewItem : set) {
+							viewItem.getDataProvider(propertyName).dispose();
+							viewItem.clearDataProvider(propertyName);
+							viewItem.clearValue(propertyName);
+						}
+					}
+					iter.remove();
+				}
+			}
+
+			for (WatchListViewColumn column : columns) {
+				if (!this.columns.contains(column)) {
+					String propertyName = column.getDataProviderFactory().getId();
+
+					for (Set<WatchListViewItem> set : items.values()) {
+						for (WatchListViewItem viewItem : set) {
+							IDataProvider dataProvider = column.getDataProviderFactory().createProvider();
+							viewItem.setDataProvider(propertyName, dataProvider);
+
+							dataProvider.init(viewItem);
+
+							IAdaptable value = dataProvider.getValue(viewItem);
+							viewItem.setValue(propertyName, value);
+						}
+					}
+
+					this.columns.add(column);
+				}
 			}
 
 			updateColumns();
@@ -928,7 +987,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 		return (ratio * v1 + (100 - ratio) * v2) / 100;
 	}
 
-	Map<WatchListViewItem, Set<String>> getUpdatedItems() {
+	Set<WatchListViewItem> getUpdatedItems() {
     	return updatedItems;
     }
 
