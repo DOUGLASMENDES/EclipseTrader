@@ -227,13 +227,17 @@ public class ColumnsViewer {
 
             public Object getValue(Object element, String property) {
             	IColumn column = (IColumn) element;
-            	return column.getName() != null ? column.getName() : "";
+            	return column.getName() != null ? column.getName() : column.getDataProviderFactory().getName();
             }
 
             public void modify(Object element, String property, Object value) {
             	IColumn column = (IColumn) (element instanceof IColumn ? element : ((Item) element).getData());
-            	if (column instanceof Column)
-            		((Column) column).setName(value.toString().equals("") ? null : value.toString());
+            	if (column instanceof Column) {
+            		String name = value.toString();
+            		if (name.equals("") || name.equals(column.getDataProviderFactory().getName()))
+            			name = null;
+            		((Column) column).setName(name);
+            	}
             	selected.update(column, null);
             }
 		});
