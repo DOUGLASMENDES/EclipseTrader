@@ -62,13 +62,9 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
     		if (s != null && !cell.getText().equals(s))
     			cell.setText(s);
 
-    		Image newImage = (Image) value.getAdapter(Image.class);
-    		Image oldImage = cell.getImage();
-    		if (newImage != oldImage) {
-    			cell.setImage(newImage);
-    			if (oldImage != null)
-    				oldImage.dispose();
-    		}
+    		Image image = (Image) value.getAdapter(Image.class);
+    		if (image != cell.getImage())
+    			cell.setImage(image);
 
     		Color color = (Color) value.getAdapter(Color.class);
     		cell.setForeground(color);

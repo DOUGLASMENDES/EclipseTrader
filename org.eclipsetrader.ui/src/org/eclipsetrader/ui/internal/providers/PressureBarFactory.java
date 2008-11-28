@@ -11,9 +11,6 @@
 
 package org.eclipsetrader.ui.internal.providers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -24,9 +21,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IBookEntry;
-import org.eclipsetrader.core.feed.IPricingListener;
-import org.eclipsetrader.core.feed.PricingDelta;
-import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.views.IDataProvider;
@@ -39,13 +33,13 @@ public class PressureBarFactory extends AbstractProviderFactory {
 	private Color askFillColor = new Color(Display.getDefault(), blend(askColor.getRGB(), new RGB(0, 0, 0), 75));
 	private Color backgroundColor = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
 
-	private Map<ISecurity, IBook> bookMap = new HashMap<ISecurity, IBook>();
-	private Map<ISecurity, ImageValue> imageMap = new HashMap<ISecurity, ImageValue>();
 	private Image image = new Image(Display.getDefault(), 128, 15);
 
 	public class DataProvider implements IDataProvider {
 		private ISecurity security;
 		private MarketPricingEnvironment pricingEnvironment;
+		private ImageValue value;
+		private IBook book;
 
 		public DataProvider() {
         }
@@ -54,6 +48,11 @@ public class PressureBarFactory extends AbstractProviderFactory {
          * @see org.eclipsetrader.core.views.IDataProvider#init(org.eclipse.core.runtime.IAdaptable)
          */
         public void init(IAdaptable adaptable) {
+       		security = (ISecurity) adaptable.getAdapter(ISecurity.class);
+
+       		pricingEnvironment = (MarketPricingEnvironment) adaptable.getAdapter(MarketPricingEnvironment.class);
+    		if (pricingEnvironment != null)
+    			pricingEnvironment.addLevel2Security(security);
         }
 
 		/* (non-Javadoc)
@@ -64,13 +63,8 @@ public class PressureBarFactory extends AbstractProviderFactory {
         		if (pricingEnvironment != null)
         			pricingEnvironment.removeLevel2Security(security);
 
-        		bookMap.remove(security);
-
-        		ImageValue oldValue = imageMap.get(security);
-            	if (oldValue != null) {
-            		oldValue.dispose();
-            		imageMap.remove(security);
-            	}
+        		if (value != null)
+            		value.dispose();
     		}
         }
 
@@ -85,22 +79,14 @@ public class PressureBarFactory extends AbstractProviderFactory {
          * @see org.eclipsetrader.core.views.IDataProvider#getValue(org.eclipse.core.runtime.IAdaptable)
          */
         public IAdaptable getValue(IAdaptable adaptable) {
-       		security = (ISecurity) adaptable.getAdapter(ISecurity.class);
-
-        	IBook book = bookMap.get(security);
-        	if (book == null) {
-        		pricingEnvironment = (MarketPricingEnvironment) adaptable.getAdapter(MarketPricingEnvironment.class);
-        		if (pricingEnvironment != null) {
-        			pricingEnvironment.addLevel2Security(security);
-        			pricingEnvironment.addPricingListener(pricingListener);
-        			if (pricingEnvironment.getBook(security) != null) {
-        				book = pricingEnvironment.getBook(security);
-        				bookMap.put(security, book);
-        			}
-        		}
+        	IBook newBook = (IBook) adaptable.getAdapter(IBook.class);
+        	if (newBook != null && (book == null || (book != null && !book.equals(newBook)))) {
+        		if (value != null)
+        			value.dispose();
+        		value = buildValue(newBook);
+        		book = newBook;
         	}
-
-    		return imageMap.get(security);
+        	return value;
         }
 	}
 
@@ -134,15 +120,6 @@ public class PressureBarFactory extends AbstractProviderFactory {
         }
 	}
 
-	private IPricingListener pricingListener = new IPricingListener() {
-        public void pricingUpdate(PricingEvent event) {
-        	for (PricingDelta delta : event.getDelta()) {
-        		if (delta.getNewValue() instanceof IBook)
-        			updateBook(delta.getSecurity(), (IBook) delta.getNewValue());
-        	}
-        }
-	};
-
 	public PressureBarFactory() {
 	}
 
@@ -163,7 +140,7 @@ public class PressureBarFactory extends AbstractProviderFactory {
 	    	};
 	}
 
-    protected void updateBook(ISecurity security, IBook book) {
+    protected ImageValue buildValue(IBook book) {
 		int level = 0;
 		double currentPrice = 0.0;
 
@@ -223,9 +200,7 @@ public class PressureBarFactory extends AbstractProviderFactory {
 
 		ImageData imageData = image.getImageData();
 		imageData.transparentPixel = imageData.palette.getPixel(backgroundColor.getRGB());
-		imageMap.put(security, new ImageValue(new Image(image.getDevice(), imageData)));
-
-		bookMap.put(security, book);
+		return new ImageValue(new Image(image.getDevice(), imageData));
     }
 
 	private RGB blend(RGB c1, RGB c2, int ratio) {
