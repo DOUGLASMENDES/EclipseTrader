@@ -32,6 +32,12 @@ public class ISINFactory implements IDataProviderFactory, IExecutableExtension, 
         }
 
 		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.views.IDataProvider#init(org.eclipse.core.runtime.IAdaptable)
+         */
+        public void init(IAdaptable adaptable) {
+        }
+
+		/* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#getFactory()
          */
         public IDataProviderFactory getFactory() {
