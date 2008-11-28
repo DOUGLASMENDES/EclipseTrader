@@ -20,6 +20,8 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 public interface IDataProvider {
 
+	public void init(IAdaptable adaptable);
+
 	public IAdaptable getValue(IAdaptable adaptable);
 
 	public IDataProviderFactory getFactory();

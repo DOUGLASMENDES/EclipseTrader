@@ -34,6 +34,12 @@ public class ChangeFactory extends AbstractProviderFactory {
         }
 
 		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.views.IDataProvider#init(org.eclipse.core.runtime.IAdaptable)
+         */
+        public void init(IAdaptable adaptable) {
+        }
+
+		/* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#getFactory()
          */
         public IDataProviderFactory getFactory() {
