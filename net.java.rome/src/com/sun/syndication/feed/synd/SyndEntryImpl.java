@@ -44,6 +44,7 @@ public class SyndEntryImpl implements Serializable,SyndEntry {
     private List _enclosures;
     private List _authors;
     private List _contributors;
+    private SyndFeed _source;
     private List _foreignMarkup;
     
     // ISSUE: some converters assume this is never null
@@ -105,6 +106,14 @@ public class SyndEntryImpl implements Serializable,SyndEntry {
      *
      */
     public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+        // while ObjectBean does this check this method does a cast to obtain the foreign markup
+        // so we need to check before doing so.
+        if (!(other instanceof SyndEntryImpl)) {
+            return false;
+        }
         // can't use foreign markup in equals, due to JDOM equals impl
         Object fm = getForeignMarkup();
         setForeignMarkup(((SyndEntryImpl)other).getForeignMarkup());              
@@ -519,6 +528,14 @@ public class SyndEntryImpl implements Serializable,SyndEntry {
      */
     public void setContributors(List contributors) {
         _contributors = contributors;
+    }
+    
+    public SyndFeed getSource() {
+    	return _source;
+    }
+    
+    public void setSource(SyndFeed source) {
+    	_source = source;
     }
     
     /**

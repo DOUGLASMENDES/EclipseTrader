@@ -35,6 +35,11 @@ import com.sun.syndication.feed.atom.Generator;
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.atom.Person;
 import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.WireFeedOutput;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Feed Generator for Atom
@@ -72,6 +77,7 @@ public class Atom10Generator extends BaseWireFeedGenerator {
         Feed feed = (Feed) wFeed;
         Element root = createRootElement(feed);
         populateFeed(feed,root);
+        purgeUnusedNamespaceDeclarations(root);
         return createDocument(root);
     }
 
@@ -99,6 +105,7 @@ public class Atom10Generator extends BaseWireFeedGenerator {
     protected void addFeed(Feed feed,Element parent) throws FeedException {
         Element eFeed = parent;
         populateFeedHeader(feed,eFeed);
+        generateForeignMarkup(eFeed, (List)feed.getForeignMarkup());
         checkFeedHeaderConstraints(eFeed);
         generateFeedModules(feed.getModules(),eFeed);
     }
@@ -117,14 +124,17 @@ public class Atom10Generator extends BaseWireFeedGenerator {
             eEntry.setAttribute("base", entry.getXmlBase(), Namespace.XML_NAMESPACE);
         }
         populateEntry(entry,eEntry);
+        generateForeignMarkup(eEntry, (List)entry.getForeignMarkup());
         checkEntryConstraints(eEntry);
         generateItemModules(entry.getModules(),eEntry);
         parent.addContent(eEntry);
     }
 
     protected void populateFeedHeader(Feed feed,Element eFeed) throws FeedException {
-        if (feed.getTitle() != null) {
-            eFeed.addContent(generateSimpleElement("title", feed.getTitle()));
+        if (feed.getTitleEx() != null) {
+            Element titleElement = new Element("title", getFeedNamespace());
+            fillContentElement(titleElement, feed.getTitleEx());
+            eFeed.addContent(titleElement);
         }
 
         List links = feed.getAlternateLinks();
@@ -160,8 +170,9 @@ public class Atom10Generator extends BaseWireFeedGenerator {
         }
 
         if (feed.getSubtitle() != null) {
-            eFeed.addContent(
-                generateSimpleElement("subtitle", feed.getSubtitle().getValue()));
+          Element subtitleElement = new Element("subtitle", getFeedNamespace());
+          fillContentElement(subtitleElement, feed.getSubtitle());
+                eFeed.addContent(subtitleElement);
         }
 
         if (feed.getId() != null) {
@@ -176,17 +187,26 @@ public class Atom10Generator extends BaseWireFeedGenerator {
             eFeed.addContent(generateSimpleElement("rights", feed.getRights()));
         }
 
+        if (feed.getIcon() != null) {
+          eFeed.addContent(generateSimpleElement("icon", feed.getIcon()));
+        }
+
+        if (feed.getLogo() != null) {
+          eFeed.addContent(generateSimpleElement("logo", feed.getLogo()));
+        }
+
         if (feed.getUpdated() != null) {
             Element updatedElement = new Element("updated", getFeedNamespace());
             updatedElement.addContent(DateParser.formatW3CDateTime(feed.getUpdated()));
             eFeed.addContent(updatedElement);
         }
-        generateForeignMarkup(eFeed, (List)feed.getForeignMarkup());
     }
 
     protected void populateEntry(Entry entry, Element eEntry) throws FeedException {
-        if (entry.getTitle() != null) {
-            eEntry.addContent(generateSimpleElement("title", entry.getTitle()));
+        if (entry.getTitleEx() != null) {
+            Element titleElement = new Element("title", getFeedNamespace());
+            fillContentElement(titleElement, entry.getTitleEx());
+            eEntry.addContent(titleElement);
         }
         List links = entry.getAlternateLinks();
         if (links != null) {
@@ -254,7 +274,11 @@ public class Atom10Generator extends BaseWireFeedGenerator {
             eEntry.addContent(summaryElement);
         }
 
-        generateForeignMarkup(eEntry, (List)entry.getForeignMarkup());
+        if (entry.getSource() != null) {
+        	Element sourceElement = new Element("source", getFeedNamespace());
+            populateFeedHeader(entry.getSource(), sourceElement);
+            eEntry.addContent(sourceElement);
+        }
     }
 
     protected void checkFeedHeaderConstraints(Element eFeed) throws FeedException {
@@ -291,7 +315,7 @@ public class Atom10Generator extends BaseWireFeedGenerator {
         Element linkElement = new Element("link", getFeedNamespace());
 
         if (link.getRel() != null) {
-            Attribute relAttribute = new Attribute("rel", link.getRel().toString());
+            Attribute relAttribute = new Attribute("rel", link.getRel());
             linkElement.setAttribute(relAttribute);
         }
 
@@ -308,6 +332,14 @@ public class Atom10Generator extends BaseWireFeedGenerator {
         if (link.getHreflang() != null) {
             Attribute hreflangAttribute = new Attribute("hreflang", link.getHreflang());
             linkElement.setAttribute(hreflangAttribute);
+        }
+        if (link.getTitle() != null) {
+            Attribute title = new Attribute("title", link.getTitle());
+            linkElement.setAttribute(title);
+        }
+        if (link.getLength() != 0) {
+            Attribute lenght = new Attribute("length", Long.toString(link.getLength()));
+            linkElement.setAttribute(lenght);
         }
         return linkElement;
     }
@@ -344,14 +376,13 @@ public class Atom10Generator extends BaseWireFeedGenerator {
         throws FeedException {
 
         String type = content.getType();
-        if (type != null) {
             String atomType = type;
-            
+        if (type != null) {
             // Fix for issue #39 "Atom 1.0 Text Types Not Set Correctly"
             // we're not sure who set this value, so ensure Atom types are used
-            if ("text/plain".equals(type)) atomType = "TEXT";
-            else if ("text/html".equals(type)) atomType = "HTML";
-            else if ("application/xhtml+xml".equals(type)) atomType = "XHTML";
+            if ("text/plain".equals(type)) atomType = Content.TEXT;
+            else if ("text/html".equals(type)) atomType = Content.HTML;
+            else if ("application/xhtml+xml".equals(type)) atomType = Content.XHTML;
             
             Attribute typeAttribute = new Attribute("type", atomType);
             contentElement.setAttribute(typeAttribute);
@@ -362,7 +393,9 @@ public class Atom10Generator extends BaseWireFeedGenerator {
             contentElement.setAttribute(srcAttribute);
         }
         if (content.getValue() != null) {
-            if (type != null && (type.equals(Content.XHTML) || (type.indexOf("/xml")) != -1)) {
+            if (atomType != null && (atomType.equals(Content.XHTML) || (atomType.indexOf("/xml")) != -1 ||
+                (atomType.indexOf("+xml")) != -1)) {
+
                 StringBuffer tmpDocString = new StringBuffer("<tmpdoc>");
                 tmpDocString.append(content.getValue());
                 tmpDocString.append("</tmpdoc>");
@@ -410,6 +443,30 @@ public class Atom10Generator extends BaseWireFeedGenerator {
         Element element = new Element(name, getFeedNamespace());
         element.addContent(value);
         return element;
+    }
+    
+    /**
+     * Utility method to serialize an entry to writer.
+     */
+    public static void serializeEntry(Entry entry, Writer writer)
+        throws IllegalArgumentException, FeedException, IOException {
+        
+        // Build a feed containing only the entry
+        List entries = new ArrayList();
+        entries.add(entry);
+        Feed feed1 = new Feed();
+        feed1.setFeedType("atom_1.0");
+        feed1.setEntries(entries);
+
+        // Get Rome to output feed as a JDOM document
+        WireFeedOutput wireFeedOutput = new WireFeedOutput();
+        Document feedDoc = wireFeedOutput.outputJDom(feed1);
+
+        // Grab entry element from feed and get JDOM to serialize it
+        Element entryElement= (Element)feedDoc.getRootElement().getChildren().get(0);
+
+        XMLOutputter outputter = new XMLOutputter();
+        outputter.output(entryElement, writer);
     }
 
 }

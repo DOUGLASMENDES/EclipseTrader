@@ -21,12 +21,7 @@ import com.sun.syndication.feed.module.impl.ModuleUtils;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Image;
 import com.sun.syndication.feed.rss.Item;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.Converter;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndImage;
-import com.sun.syndication.feed.synd.SyndImageImpl;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +108,13 @@ public class ConverterForRSS090 implements Converter {
         channel.setEncoding(syndFeed.getEncoding());
 
         channel.setTitle(syndFeed.getTitle());
-        channel.setLink(syndFeed.getLink());
+        if (syndFeed.getLink() != null) {
+            channel.setLink(syndFeed.getLink());
+        }
+        else
+        if (syndFeed.getLinks().size() > 0) {
+            channel.setLink(((SyndLink)syndFeed.getLinks().get(0)).getHref());
+        }
         channel.setDescription(syndFeed.getDescription());
         SyndImage sImage = syndFeed.getImage();
         if (sImage!=null) {
@@ -123,6 +124,10 @@ public class ConverterForRSS090 implements Converter {
         List sEntries = syndFeed.getEntries();
         if (sEntries!=null) {
             channel.setItems(createRSSItems(sEntries));
+        }
+
+        if (((List)syndFeed.getForeignMarkup()).size() > 0) {
+            channel.setForeignMarkup(syndFeed.getForeignMarkup());
         }
         return channel;
     }
@@ -148,6 +153,16 @@ public class ConverterForRSS090 implements Converter {
         item.setModules(ModuleUtils.cloneModules(sEntry.getModules()));
         item.setTitle(sEntry.getTitle());
         item.setLink(sEntry.getLink());
+        if (((List)sEntry.getForeignMarkup()).size() > 0) {
+            item.setForeignMarkup(sEntry.getForeignMarkup());
+        }
+
+        String uri = sEntry.getUri();
+        if (uri != null) {
+            item.setUri(uri);
+        }
+
+
         return item;
     }
 

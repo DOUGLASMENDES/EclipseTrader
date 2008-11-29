@@ -83,7 +83,10 @@ public abstract class WireFeed implements Cloneable, Serializable, Extendable {
      * @return <b>true</b> if 'this' object is equal to the 'other' object.
      *
      */
-    public boolean equals(Object other) {      
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
         // can't use foreign markup in equals, due to JDOM equals impl
         Object fm = getForeignMarkup();
         setForeignMarkup(((WireFeed)other).getForeignMarkup());        

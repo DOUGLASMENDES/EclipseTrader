@@ -23,6 +23,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.jdom.Document;
 import org.jdom.JDOMException;
@@ -51,7 +53,21 @@ import com.sun.syndication.io.impl.XmlFixerReader;
  *
  */
 public class WireFeedInput {
-    private static FeedParsers FEED_PARSERS = new FeedParsers();
+
+    private static Map clMap = new WeakHashMap();
+
+    private static FeedParsers getFeedParsers() {
+        synchronized(WireFeedInput.class) {
+            FeedParsers parsers = (FeedParsers)
+                clMap.get(Thread.currentThread().getContextClassLoader());
+            if (parsers == null) {
+                parsers = new FeedParsers();
+                clMap.put(Thread.currentThread().getContextClassLoader(), parsers);
+            }
+            return parsers;
+        }
+    }
+
     private static final InputSource EMPTY_INPUTSOURCE = new InputSource(new ByteArrayInputStream(new byte[0]));
     private static final EntityResolver RESOLVER = new EmptyEntityResolver();
 
@@ -75,7 +91,7 @@ public class WireFeedInput {
      *
      */
     public static List getSupportedFeedTypes() {
-        return FEED_PARSERS.getSupportedFeedTypes();
+        return getFeedParsers().getSupportedFeedTypes();
     }
 
     /**
@@ -181,6 +197,9 @@ public class WireFeedInput {
         catch (JDOMParseException ex) {
             throw new ParsingFeedException("Invalid XML: " + ex.getMessage(), ex);
         }
+        catch (IllegalArgumentException ex) {
+            throw ex;
+        }
         catch (Exception ex) {
             throw new ParsingFeedException("Invalid XML",ex);
         }
@@ -206,6 +225,9 @@ public class WireFeedInput {
         catch (JDOMParseException ex) {
             throw new ParsingFeedException("Invalid XML: " + ex.getMessage(), ex);
         }
+        catch (IllegalArgumentException ex) {
+            throw ex;
+        }
         catch (Exception ex) {
             throw new ParsingFeedException("Invalid XML",ex);
         }
@@ -228,6 +250,9 @@ public class WireFeedInput {
             Document jdomDoc = domBuilder.build(document);
             return build(jdomDoc);
         }
+        catch (IllegalArgumentException ex) {
+            throw ex;
+        }
         catch (Exception ex) {
             throw new ParsingFeedException("Invalid XML",ex);
         }
@@ -245,7 +270,7 @@ public class WireFeedInput {
      *
      */
     public WireFeed build(Document document) throws IllegalArgumentException,FeedException {
-        WireFeedParser parser = FEED_PARSERS.getParserFor(document);
+        WireFeedParser parser = getFeedParsers().getParserFor(document);
         if (parser==null) {
             throw new IllegalArgumentException("Invalid document");
         }

@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jdom.Document;
+import org.jdom.Document; 
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.jdom.output.XMLOutputter;
+import org.jdom.output.XMLOutputter; 
 
 import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.feed.atom.Category;
@@ -34,11 +34,16 @@ import com.sun.syndication.feed.atom.Generator;
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.atom.Person;
 import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.WireFeedInput;
+import com.sun.syndication.io.WireFeedOutput;
+import java.io.IOException;
+import java.io.Reader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.regex.Pattern;
 import org.jdom.Attribute;
+import org.jdom.JDOMException;
 import org.jdom.Parent;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Parser for Atom 1.0
@@ -46,18 +51,28 @@ import org.jdom.Parent;
  */
 public class Atom10Parser extends BaseWireFeedParser {
     private static final String ATOM_10_URI = "http://www.w3.org/2005/Atom";
-    Namespace ns = Namespace.getNamespace(ATOM_10_URI);
-    
+    private static final Namespace ATOM_10_NS = Namespace.getNamespace(ATOM_10_URI);
+
+    private static boolean resolveURIs = false;
+
+    public static void setResolveURIs(boolean resolveURIs) {
+        Atom10Parser.resolveURIs = resolveURIs;
+    }
+
+    public static boolean getResolveURIs() {
+        return resolveURIs;
+    }
+
     public Atom10Parser() {
         this("atom_1.0");
     }
     
     protected Atom10Parser(String type) {
-        super(type);
+        super(type, ATOM_10_NS);
     }
     
     protected Namespace getAtomNamespace() {
-        return ns;
+        return ATOM_10_NS;
     }
     
     public boolean isMyType(Document document) {
@@ -86,9 +101,6 @@ public class Atom10Parser extends BaseWireFeedParser {
     
     protected WireFeed parseFeed(Element eFeed) throws FeedException {
         
-        com.sun.syndication.feed.atom.Feed feed =
-                new com.sun.syndication.feed.atom.Feed(getType());
-        
         String baseURI = null;
         try {
             baseURI = findBaseURI(eFeed);
@@ -96,16 +108,37 @@ public class Atom10Parser extends BaseWireFeedParser {
             throw new FeedException("ERROR while finding base URI of feed", e);
         }
         
+        Feed feed = parseFeedMetadata(baseURI, eFeed);
+
         String xmlBase = eFeed.getAttributeValue("base", Namespace.XML_NAMESPACE);
         if (xmlBase != null) {
             feed.setXmlBase(xmlBase);
         }
         
+        feed.setModules(parseFeedModules(eFeed));
+
+        List eList = eFeed.getChildren("entry",getAtomNamespace());
+        if (eList.size()>0) {
+            feed.setEntries(parseEntries(feed, baseURI, eList));
+        }
+
+        List foreignMarkup =
+            extractForeignMarkup(eFeed, feed, getAtomNamespace());
+        if (foreignMarkup.size() > 0) {
+            feed.setForeignMarkup(foreignMarkup);
+        }
+        return feed;
+    }
+
+    private Feed parseFeedMetadata(String baseURI, Element eFeed) {
+        com.sun.syndication.feed.atom.Feed feed =
+            new com.sun.syndication.feed.atom.Feed(getType());
+
         Element e = eFeed.getChild("title",getAtomNamespace());
         if (e!=null) {
             Content c = new Content();
             c.setValue(parseTextConstructToString(e));
-            c.setType(e.getAttributeValue("type")); //, Namespace.XML_NAMESPACE));
+            c.setType(getAttributeValue(e, "type"));
             feed.setTitleEx(c);
         }
         
@@ -130,7 +163,7 @@ public class Atom10Parser extends BaseWireFeedParser {
         if (e!=null) {
             Content subtitle = new Content();
             subtitle.setValue(parseTextConstructToString(e));
-            subtitle.setType(e.getAttributeValue("type")); //, Namespace.XML_NAMESPACE));
+            subtitle.setType(getAttributeValue(e, "type"));
             feed.setSubtitle(subtitle);
         }
         
@@ -143,11 +176,11 @@ public class Atom10Parser extends BaseWireFeedParser {
         if (e!=null) {
             Generator gen = new Generator();
             gen.setValue(e.getText());
-            String att = e.getAttributeValue("uri");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+            String att = getAttributeValue(e, "uri");
             if (att!=null) {
                 gen.setUrl(att);
             }
-            att = e.getAttributeValue("version");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+            att = getAttributeValue(e, "version");
             if (att!=null) {
                 gen.setVersion(att);
             }
@@ -174,48 +207,35 @@ public class Atom10Parser extends BaseWireFeedParser {
             feed.setUpdated(DateParser.parseDate(e.getText()));
         }
         
-        feed.setModules(parseFeedModules(eFeed));
-        
-        eList = eFeed.getChildren("entry",getAtomNamespace());
-        if (eList.size()>0) {
-            feed.setEntries(parseEntries(feed, baseURI, eList));
-        }
-        
-        List foreignMarkup =
-                extractForeignMarkup(eFeed, feed, getAtomNamespace());
-        if (foreignMarkup.size() > 0) {
-            feed.setForeignMarkup(foreignMarkup);
-        }
         return feed;
     }
-    
+
     private Link parseLink(Feed feed , Entry entry, String baseURI, Element eLink) {
         Link link = new Link();
-        String att = eLink.getAttributeValue("rel");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        String att = getAttributeValue(eLink, "rel");
         if (att!=null) {
             link.setRel(att);
         }
-        att = eLink.getAttributeValue("type");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eLink, "type");
         if (att!=null) {
             link.setType(att);
         }
-        att = eLink.getAttributeValue("href");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eLink, "href");
         if (att!=null) {
+            link.setHref(att);
             if (isRelativeURI(att)) {
-                link.setHref(resolveURI(baseURI, eLink, att));
-            } else {
-                link.setHref(att);
-            }
+                link.setHrefResolved(resolveURI(baseURI, eLink, att));
+            } 
         }
-        att = eLink.getAttributeValue("title");
+        att = getAttributeValue(eLink, "title");
         if (att!=null) {
             link.setTitle(att);
         }
-        att = eLink.getAttributeValue("hreflang");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eLink, "hreflang");
         if (att!=null) {
             link.setHreflang(att);
         }
-        att = eLink.getAttributeValue("length");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eLink, "length");
         if (att!=null) {
             link.setLength(Long.parseLong(att));
         }
@@ -257,7 +277,10 @@ public class Atom10Parser extends BaseWireFeedParser {
         }
         e = ePerson.getChild("uri",getAtomNamespace());
         if (e!=null) {
-            person.setUri(resolveURI(baseURI, ePerson, e.getText()));
+            person.setUri(e.getText());
+            if (isRelativeURI(e.getText())) {
+               person.setUriResolved(resolveURI(baseURI, ePerson, e.getText())); 
+            }
         }
         e = ePerson.getChild("email",getAtomNamespace());
         if (e!=null) {
@@ -277,8 +300,8 @@ public class Atom10Parser extends BaseWireFeedParser {
     
     private Content parseContent(Element e) {
         String value = parseTextConstructToString(e);
-        String src = e.getAttributeValue("src");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
-        String type = e.getAttributeValue("type");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        String src = getAttributeValue(e, "src");
+        String type = getAttributeValue(e, "type");
         Content content = new Content();
         content.setSrc(src);
         content.setType(type);
@@ -288,9 +311,9 @@ public class Atom10Parser extends BaseWireFeedParser {
     
     private String parseTextConstructToString(Element e) {
         String value = null;
-        String type = e.getAttributeValue("type");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        String type = getAttributeValue(e, "type");
         type = (type!=null) ? type : Content.TEXT;
-        if (type.equals(Content.XHTML)) {
+        if (type.equals(Content.XHTML) || (type.indexOf("/xml")) != -1 || (type.indexOf("+xml")) != -1) {
             // XHTML content needs special handling
             XMLOutputter outputter = new XMLOutputter();
             List eContent = e.getContent();
@@ -333,7 +356,7 @@ public class Atom10Parser extends BaseWireFeedParser {
         if (e!=null) {
             Content c = new Content();
             c.setValue(parseTextConstructToString(e));
-            c.setType(e.getAttributeValue("type")); //, Namespace.XML_NAMESPACE));
+            c.setType(getAttributeValue(e, "type"));
             entry.setTitleEx(c);
         }
         
@@ -387,6 +410,10 @@ public class Atom10Parser extends BaseWireFeedParser {
         entry.setCategories(parseCategories(baseURI, cList));
         
         // TODO: SHOULD handle Atom entry source element
+        e = eEntry.getChild("source", getAtomNamespace());
+        if (e!=null) {
+            entry.setSource(parseFeedMetadata(baseURI, e));
+        }
         
         entry.setModules(parseItemModules(eEntry));
         
@@ -409,21 +436,27 @@ public class Atom10Parser extends BaseWireFeedParser {
     
     private Category parseCategory(String baseURI, Element eCategory) {
         Category category = new Category();
-        String att = eCategory.getAttributeValue("term");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        String att = getAttributeValue(eCategory, "term");
         if (att!=null) {
             category.setTerm(att);
         }
-        att = eCategory.getAttributeValue("scheme");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eCategory, "scheme");
         if (att!=null) {
-            category.setScheme(resolveURI(baseURI, eCategory, att));
+            category.setScheme(att);
+            if (isRelativeURI(att)) {
+                category.setSchemeResolved(resolveURI(baseURI, eCategory, att));
+            }
         }
-        att = eCategory.getAttributeValue("label");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eCategory, "label");
         if (att!=null) {
             category.setLabel(att);
         }
         return category;
         
     }
+    
+    // Once following relative URI methods are made public in the ROME 
+    // Atom10Parser, then use them instead and delete these.
     
     
     // Fix for issue #34 "valid IRI href attributes are stripped for atom:link"
@@ -432,24 +465,36 @@ public class Atom10Parser extends BaseWireFeedParser {
     // by a colon, followed by anything -- specified by this regex:
     static Pattern absoluteURIPattern = Pattern.compile("^[a-z0-9]*:.*$");
     
-    private boolean isAbsoluteURI(String uri) {
+    public static boolean isAbsoluteURI(String uri) {
         return absoluteURIPattern.matcher(uri).find();
     }
     
-    private boolean isRelativeURI(String uri) {
+    /** Returns true if URI is relative. */
+    public static boolean isRelativeURI(String uri) {
         return !isAbsoluteURI(uri);
     }
         
     /**
-     * } 
+     * Resolve URI via base URL and parent element.
      * Resolve URI based considering xml:base and baseURI.
-     * @param baseURI Base URI of feed
-     * @param parent  Parent from which to consider xml:base
+     * @param baseURI Base URI used to fetch the XML document
+     * @param parent  Parent element from which to consider xml:base
      * @param url     URL to be resolved
      */
-    private String resolveURI(String baseURI, Parent parent, String url) {
+    public static String resolveURI(String baseURI, Parent parent, String url) {
+        if (!resolveURIs) {
+            return url;
+        }
         if (isRelativeURI(url)) {
             url = (!".".equals(url) && !"./".equals(url)) ? url : "";
+            
+            if (url.startsWith("/") && baseURI != null) {
+                String base = null;
+                int slashslash = baseURI.indexOf("//");
+                int nextslash = baseURI.indexOf("/", slashslash + 2);
+                if (nextslash != -1) base = baseURI.substring(0, nextslash);
+                return formURI(base, url);               
+            } 
 
             // Relative URI with parent
             if (parent != null && parent instanceof Element) {
@@ -494,17 +539,15 @@ public class Atom10Parser extends BaseWireFeedParser {
      * @param root Root element of feed.
      */
     private String findBaseURI(Element root) throws MalformedURLException {
-        String ret = findAtomLink(root, "alternate");
-        if (ret != null && isRelativeURI(ret)) {
-            String self = findAtomLink(root, "self");
-            if (self != null) {
-                self = resolveURI(null, root, self);
-                self = self.substring(0, self.lastIndexOf("/"));
-                ret = resolveURI(self, root, ret);
-            }
+        String ret = null;
+        if (findAtomLink(root, "self") != null) {
+            ret = findAtomLink(root, "self");
+            if (".".equals(ret) || "./".equals(ret)) ret = "";
+            if (ret.indexOf("/") != -1) ret = ret.substring(0, ret.lastIndexOf("/"));
+            ret = resolveURI(null, root, ret);
         }
         return ret;
-    } 
+    }
     
     /** 
      * Return URL string of Atom link element under parent element.
@@ -512,14 +555,14 @@ public class Atom10Parser extends BaseWireFeedParser {
      * @param parent Consider only children of this parent element
      * @param rel    Consider only links with this relationship
      */
-    private String findAtomLink(Element parent, String rel) {
+    private  String findAtomLink(Element parent, String rel) {
         String ret = null;
-        List linksList = parent.getChildren("link", ns);
+        List linksList = parent.getChildren("link", ATOM_10_NS);
         if (linksList != null) {
             for (Iterator links = linksList.iterator(); links.hasNext(); ) {
                 Element link = (Element)links.next();
-                Attribute relAtt = link.getAttribute("rel");
-                Attribute hrefAtt = link.getAttribute("href");
+                Attribute relAtt = getAttribute(link, "rel");
+                Attribute hrefAtt = getAttribute(link, "href");
                 if (   (relAtt == null && "alternate".equals(rel)) 
                     || (relAtt != null && relAtt.getValue().equals(rel))) {
                     ret = hrefAtt.getValue();
@@ -574,5 +617,35 @@ public class Atom10Parser extends BaseWireFeedParser {
             s = s.substring(0, s.length() - 1);
         }
         return s;
-    }
+    }    
+
+    
+    /**
+     * Parse entry from reader.
+     */
+    public static Entry parseEntry(Reader rd, String baseURI)
+        throws JDOMException, IOException, IllegalArgumentException, FeedException {
+        // Parse entry into JDOM tree
+        SAXBuilder builder = new SAXBuilder();
+        Document entryDoc = builder.build(rd);
+        Element fetchedEntryElement = entryDoc.getRootElement();
+        fetchedEntryElement.detach();
+
+        // Put entry into a JDOM document with 'feed' root so that Rome can handle it
+        Feed feed = new Feed();
+        feed.setFeedType("atom_1.0");
+        WireFeedOutput wireFeedOutput = new WireFeedOutput();
+        Document feedDoc = wireFeedOutput.outputJDom(feed);
+        feedDoc.getRootElement().addContent(fetchedEntryElement);
+        
+        if (baseURI != null) {
+            feedDoc.getRootElement().setAttribute("base", baseURI, Namespace.XML_NAMESPACE);
+        }
+        
+        WireFeedInput input = new WireFeedInput();
+        Feed parsedFeed = (Feed)input.build(feedDoc);
+        return (Entry)parsedFeed.getEntries().get(0);
+    } 
 }
+
+

@@ -9,6 +9,7 @@ import org.jdom.Element;
 
 import java.util.List;
 import org.jdom.Namespace;
+import org.jdom.Attribute;
 
 /**
  * @author Alejandro Abdelnur
@@ -30,9 +31,11 @@ public abstract class BaseWireFeedParser implements WireFeedParser {
     private String _type;
     private ModuleParsers _feedModuleParsers;
     private ModuleParsers _itemModuleParsers;
+    private Namespace _namespace;
 
-    protected BaseWireFeedParser(String type) {
+    protected BaseWireFeedParser(String type, Namespace namespace) {
         _type = type;
+        _namespace = namespace;
         _feedModuleParsers = new ModuleParsers(type+FEED_MODULE_PARSERS_POSFIX_KEY, this);
         _itemModuleParsers = new ModuleParsers(type+ITEM_MODULE_PARSERS_POSFIX_KEY, this);
     }
@@ -81,5 +84,19 @@ public abstract class BaseWireFeedParser implements WireFeedParser {
         }
         return foreignMarkup;
     }
+
+    protected Attribute getAttribute(Element e, String attributeName) {
+        Attribute attribute = e.getAttribute(attributeName);
+        if (attribute == null) {
+            attribute = e.getAttribute(attributeName, _namespace);
+        }
+        return attribute;
+    }
+
+    protected String getAttributeValue(Element e, String attributeName) {
+        Attribute attr = getAttribute(e, attributeName);
+        return (attr != null) ? attr.getValue() : null;
+    }
+
 }
 

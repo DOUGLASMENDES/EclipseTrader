@@ -143,6 +143,9 @@ public class SyndFeedImpl implements Serializable, SyndFeed {
      *
      */
     public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
         // can't use foreign markup in equals, due to JDOM equals impl
         Object fm = getForeignMarkup();
         setForeignMarkup(((SyndFeedImpl)other).getForeignMarkup());       
@@ -654,7 +657,7 @@ public class SyndFeedImpl implements Serializable, SyndFeed {
      * @return Returns the links.
      */
     public List getLinks() {
-        return _links;
+        return (_links==null) ? (_links=new ArrayList()) : _links;
     }
     
     /**
@@ -667,7 +670,7 @@ public class SyndFeedImpl implements Serializable, SyndFeed {
     }
 
     public List getAuthors() {
-        return _authors;
+        return (_authors==null) ? (_authors=new ArrayList()) : _authors;
     }
 
     public void setAuthors(List authors) {
@@ -699,7 +702,7 @@ public class SyndFeedImpl implements Serializable, SyndFeed {
     }    
     
     public List getContributors() {
-        return _contributors;
+        return (_contributors==null) ? (_contributors=new ArrayList()) : _contributors;
     }
 
     public void setContributors(List contributors) {

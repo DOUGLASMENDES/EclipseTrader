@@ -204,7 +204,7 @@ public interface SyndEntry extends Cloneable, CopyFrom, Extendable {
     /**
      * Sets the entry updated date.
      * <p>
-     * @param publishedDate the entry updated date to set, <b>null</b> if none.
+     * @param updatedDate the entry updated date to set, <b>null</b> if none.
      *
      */
     void setUpdatedDate(Date updatedDate);
@@ -228,7 +228,7 @@ public interface SyndEntry extends Cloneable, CopyFrom, Extendable {
      * objects, for RSS feeds this method is a convenience method, it maps 
      * to the Dublin Core module creator.
      * <p>
-     * @param author the feed author to set, <b>null</b> if none.
+     * @param authors the feed author to set, <b>null</b> if none.
      *
      */
     void setAuthors(List authors);
@@ -268,11 +268,11 @@ public interface SyndEntry extends Cloneable, CopyFrom, Extendable {
     List getContributors();
 
     /**
-     * Sets the feed author.
+     * Sets the feed contributors.
      * <p>
      * Returns contributors as a list of SyndPerson objects.
      * <p>
-     * @param author the feed author to set, <b>null</b> if none.
+     * @param contributors the feed contributors to set, <b>null</b> if none.
      *
      */
     void setContributors(List contributors);
@@ -298,6 +298,24 @@ public interface SyndEntry extends Cloneable, CopyFrom, Extendable {
      *
      */
     void setCategories(List categories);
+    
+    /**
+     * Returns the entry source.
+     * <p>
+     * This returns the entry source as a SyndFeed
+     * <p>
+     * @return the SyndFeed to which this entry is attributed
+     * 
+     */
+    SyndFeed getSource();
+    
+    /**
+     * Sets the entry source feed (for use if different from containing feed)
+     * <p>
+     * @param source the original SyndFeed that contained this article
+     * 
+     */
+    void setSource(SyndFeed source);
 
     /**
      * Returns the module identified by a given URI.

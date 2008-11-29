@@ -127,7 +127,7 @@ public abstract class PluginManager {
      *
      */
     private Class[] getClasses() throws ClassNotFoundException {
-        ClassLoader classLoader = PluginManager.class.getClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         List classes = new ArrayList();
         for (int i = 0; i <_propertyValues.length; i++) {
             Class mClass = Class.forName(_propertyValues[i], true, classLoader);

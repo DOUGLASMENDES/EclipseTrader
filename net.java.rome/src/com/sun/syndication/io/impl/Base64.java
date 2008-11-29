@@ -48,6 +48,8 @@ public class Base64 {
      *
      */
     public static String decode(String s) throws IllegalArgumentException {
+        s = s.replaceAll("\n", "");
+        s = s.replaceAll("\r", "");
         byte[] sBytes = s.getBytes();
         sBytes = decode(sBytes);
         s = new String(sBytes);
@@ -160,8 +162,8 @@ public class Base64 {
 
         byte[] dData = new byte[dLength];
         int dIndex = 0;
-        for (int i=0;i<cleanELength;i+=4) {
-            if ((i+3)>cleanELength) {
+        for (int i = 0; i < eData.length; i += 4) {
+            if ((i + 3) > eData.length) {
                 throw new IllegalArgumentException("byte array is not a valid com.sun.syndication.io.impl.Base64 encoding");
             }
             int e1 = CODES[cleanEData[i]];

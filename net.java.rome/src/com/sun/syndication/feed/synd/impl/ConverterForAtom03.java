@@ -25,10 +25,14 @@ import com.sun.syndication.feed.atom.Person;
 import com.sun.syndication.feed.module.impl.ModuleUtils;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.Converter;
+import com.sun.syndication.feed.synd.SyndEnclosure;
+import com.sun.syndication.feed.synd.SyndEnclosureImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndLink;
+import com.sun.syndication.feed.synd.SyndLinkImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
 import com.sun.syndication.feed.synd.SyndPersonImpl;
 
@@ -69,11 +73,23 @@ public class ConverterForAtom03 implements Converter {
 
         syndFeed.setTitle(aFeed.getTitle());
 
-        String linkHref = null;
-        if (aFeed.getAlternateLinks().size() > 0) {
-            linkHref = ((Link) aFeed.getAlternateLinks().get(0)).getHref();
+        // use first alternate links as THE link
+        if (aFeed.getAlternateLinks() != null
+                && aFeed.getAlternateLinks().size() > 0) {
+            Link theLink = (Link)aFeed.getAlternateLinks().get(0);
+            syndFeed.setLink(theLink.getHrefResolved());
         }
-        syndFeed.setLink(linkHref);
+        // lump alternate and other links together
+        List syndLinks = new ArrayList();
+        if (aFeed.getAlternateLinks() != null
+                && aFeed.getAlternateLinks().size() > 0) {
+            syndLinks.addAll(createSyndLinks(aFeed.getAlternateLinks()));
+        }
+        if (aFeed.getOtherLinks() != null
+                && aFeed.getOtherLinks().size() > 0) {
+            syndLinks.addAll(createSyndLinks(aFeed.getOtherLinks()));
+        }
+        syndFeed.setLinks(syndLinks);
 
         Content tagline = aFeed.getTagline();
         if (tagline!=null) {
@@ -111,6 +127,27 @@ public class ConverterForAtom03 implements Converter {
 
     }
 
+    protected List createSyndLinks(List aLinks) {
+        ArrayList sLinks = new ArrayList();
+        for (Iterator iter = aLinks.iterator(); iter.hasNext();) {
+            Link link = (Link)iter.next();
+            if (!link.getRel().equals("enclosure")) {
+                SyndLink sLink = createSyndLink(link);
+                sLinks.add(sLink);
+            }
+        }
+        return sLinks;
+    }
+
+    public SyndLink createSyndLink(Link link) {
+        SyndLink syndLink = new SyndLinkImpl();
+        syndLink.setRel(     link.getRel());
+        syndLink.setType(    link.getType());
+        syndLink.setHref(    link.getHrefResolved());
+        syndLink.setTitle(   link.getTitle());
+        return syndLink;
+    }
+
     protected List createSyndEntries(List atomEntries) {
         List syndEntries = new ArrayList();
         for (int i=0;i<atomEntries.size();i++) {
@@ -129,11 +166,36 @@ public class ConverterForAtom03 implements Converter {
 
         syndEntry.setTitle(entry.getTitle());
 
-        String linkHref = null;
-        if (entry.getAlternateLinks().size() > 0) {
-            linkHref = ((Link) entry.getAlternateLinks().get(0)).getHref();
+        // if there is exactly one alternate link, use that as THE link
+        if (entry.getAlternateLinks() != null
+				&& entry.getAlternateLinks().size() == 1) {
+            Link theLink = (Link)entry.getAlternateLinks().get(0);
+            syndEntry.setLink(theLink.getHrefResolved());
         }
-        syndEntry.setLink(linkHref);
+
+        // Create synd enclosures from enclosure links
+        List syndEnclosures = new ArrayList();
+        if (entry.getOtherLinks() != null && entry.getOtherLinks().size() > 0) {
+            List oLinks = entry.getOtherLinks();
+            for (Iterator iter = oLinks.iterator(); iter.hasNext(); ) {
+                Link thisLink = (Link)iter.next();
+                if ("enclosure".equals(thisLink.getRel()))
+                    syndEnclosures.add(createSyndEnclosure(entry, thisLink));
+            }
+        }
+        syndEntry.setEnclosures(syndEnclosures);
+
+        // lump alternate and other links together
+        List syndLinks = new ArrayList();
+        if (entry.getAlternateLinks() != null
+                && entry.getAlternateLinks().size() > 0) {
+            syndLinks.addAll(createSyndLinks(entry.getAlternateLinks()));
+        }
+        if (entry.getOtherLinks() != null
+                && entry.getOtherLinks().size() > 0) {
+            syndLinks.addAll(createSyndLinks(entry.getOtherLinks()));
+        }
+        syndEntry.setLinks(syndLinks);
 
 
         String id = entry.getId();
@@ -193,6 +255,14 @@ public class ConverterForAtom03 implements Converter {
         return syndEntry;
     }
 
+    public SyndEnclosure createSyndEnclosure(Entry entry, Link link) {
+        SyndEnclosure syndEncl = new SyndEnclosureImpl();
+        syndEncl.setUrl(link.getHrefResolved());
+        syndEncl.setType(link.getType());
+        syndEncl.setLength(link.getLength());
+        return syndEncl;
+    }
+
     public WireFeed createRealFeed(SyndFeed syndFeed) {
         Feed aFeed = new Feed(getType());
         aFeed.setModules(ModuleUtils.cloneModules(syndFeed.getModules()));
@@ -201,17 +271,48 @@ public class ConverterForAtom03 implements Converter {
 
         aFeed.setId(syndFeed.getUri());
 
-        aFeed.setTitle(syndFeed.getTitle());
+        SyndContent sTitle = syndFeed.getTitleEx();
+        if (sTitle != null) {
+            Content title = new Content();
+            if (sTitle.getType() != null) {
+                title.setType(sTitle.getType());
+            }
 
-        String sLink = syndFeed.getLink();
-        if (sLink!=null) {
+            if (sTitle.getMode() != null) {
+                title.setMode(sTitle.getMode());
+            }
+
+            title.setValue(sTitle.getValue());
+            aFeed.setTitleEx(title);
+        }
+
+        // separate SyndEntry's links collection into alternate and other links
+        List alternateLinks = new ArrayList();
+        List otherLinks = new ArrayList();
+        List slinks = syndFeed.getLinks();
+        if (slinks != null) {
+            for (Iterator iter=slinks.iterator(); iter.hasNext();) {
+                SyndLink syndLink = (SyndLink)iter.next();
+                Link link = createAtomLink(syndLink);
+                if (link.getRel() == null ||
+                        "".equals(link.getRel().trim()) ||
+                        "alternate".equals(link.getRel())) {
+                    alternateLinks.add(link);
+                } else {
+                    otherLinks.add(link);
+                }
+            }
+        }
+        // no alternate link? then use THE link if there is one
+        if (alternateLinks.size() == 0 && syndFeed.getLink() != null) {
             Link link = new Link();
             link.setRel("alternate");
-            link.setHref(sLink);
-            List list = new ArrayList();
-            list.add(link);
-            aFeed.setAlternateLinks(list);
+            link.setHref(syndFeed.getLink());
+            alternateLinks.add(link);
         }
+
+        if (alternateLinks.size() > 0) aFeed.setAlternateLinks(alternateLinks);
+        if (otherLinks.size() > 0) aFeed.setOtherLinks(otherLinks);
 
         String sDesc = syndFeed.getDescription();
         if (sDesc!=null) {
@@ -279,17 +380,58 @@ public class ConverterForAtom03 implements Converter {
 
         aEntry.setId(sEntry.getUri());
 
-        aEntry.setTitle(sEntry.getTitle());
+        SyndContent sTitle = sEntry.getTitleEx();
+        if (sTitle!=null) {
+            Content title = new Content();
+            if (sTitle.getType() != null) {
+                title.setType(sTitle.getType());
+            }
 
-        String sLink = sEntry.getLink();
-        if (sLink!=null) {
+            if (sTitle.getMode() != null) {
+                title.setMode(sTitle.getMode());
+            }
+
+            title.setValue(sTitle.getValue());
+            aEntry.setTitleEx(title);
+        }
+
+        // separate SyndEntry's links collection into alternate and other links
+        List alternateLinks = new ArrayList();
+        List otherLinks = new ArrayList();
+        List slinks = sEntry.getLinks();
+        if (slinks != null) {
+            for (Iterator iter=slinks.iterator(); iter.hasNext();) {
+                SyndLink syndLink = (SyndLink)iter.next();
+                Link link = createAtomLink(syndLink);
+                if (link.getRel() == null ||
+                        "".equals(link.getRel().trim()) ||
+                        "alternate".equals(link.getRel())) {
+                    alternateLinks.add(link);
+                } else {
+                    otherLinks.add(link);
+                }
+            }
+        }
+        // no alternate link? then use THE link if there is one
+        if (alternateLinks.size() == 0 && sEntry.getLink() != null) {
             Link link = new Link();
             link.setRel("alternate");
-            link.setHref(sLink);
-            List list = new ArrayList();
-            list.add(link);
-            aEntry.setAlternateLinks(list);
+            link.setHref(sEntry.getLink());
+            alternateLinks.add(link);
         }
+
+        List sEnclosures = sEntry.getEnclosures();
+        if (sEnclosures != null) {
+            for (Iterator iter=sEnclosures.iterator(); iter.hasNext();) {
+                SyndEnclosure syndEnclosure = (SyndEnclosure) iter.next();
+                Link link = createAtomEnclosure(syndEnclosure);
+                otherLinks.add(link);
+            }
+        }
+
+        if (alternateLinks.size() > 0) aEntry.setAlternateLinks(alternateLinks);
+        if (otherLinks.size() > 0) aEntry.setOtherLinks(otherLinks);
+
 
         SyndContent sContent = sEntry.getDescription();
         if (sContent!=null) {
@@ -330,6 +472,24 @@ public class ConverterForAtom03 implements Converter {
         aEntry.setIssued(sEntry.getPublishedDate());
 
         return aEntry;
+    }
+
+    public Link createAtomLink(SyndLink syndLink) {
+        Link link = new Link();
+        link.setRel(     syndLink.getRel());
+        link.setType(    syndLink.getType());
+        link.setHref(    syndLink.getHref());
+        link.setTitle(   syndLink.getTitle());
+        return link;
+    }
+
+    public Link createAtomEnclosure(SyndEnclosure syndEnclosure) {
+      Link link = new Link();
+      link.setRel(     "enclosure");
+      link.setType(    syndEnclosure.getType());
+      link.setHref(    syndEnclosure.getUrl());
+      link.setLength(  syndEnclosure.getLength());
+      return link;
     }
 
 }

@@ -45,11 +45,11 @@ public class RSS090Parser extends BaseWireFeedParser {
 
 
     public RSS090Parser() {
-        this("rss_0.9");
+        this("rss_0.9", RSS_NS);
     }
 
-    protected RSS090Parser(String type) {
-        super(type);
+    protected RSS090Parser(String type, Namespace ns) {
+        super(type, ns);
     }
 
     public boolean isMyType(Document document) {
@@ -284,12 +284,23 @@ public class RSS090Parser extends BaseWireFeedParser {
         e = eItem.getChild("link",getRSSNamespace());
         if (e!=null) {
             item.setLink(e.getText());
+            item.setUri(e.getText());
         }
         
         item.setModules(parseItemModules(eItem));
                 
         List foreignMarkup = 
             extractForeignMarkup(eItem, item, getRSSNamespace());
+        //content:encoded elements are treated special, without a module, they have to be removed from the foreign
+        //markup to avoid duplication in case of read/write. Note that this fix will break if a content module is
+        //used
+        Iterator iterator = foreignMarkup.iterator();
+        while (iterator.hasNext()) {
+            Element ie = (Element)iterator.next();
+            if (getContentNamespace().equals(ie.getNamespace()) && ie.getName().equals("encoded")) {
+                iterator.remove();
+            }
+        }
         if (foreignMarkup.size() > 0) {
             item.setForeignMarkup(foreignMarkup);
         }

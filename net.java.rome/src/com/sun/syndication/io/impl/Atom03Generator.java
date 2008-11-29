@@ -18,7 +18,6 @@ package com.sun.syndication.io.impl;
 
 import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.feed.atom.*;
-import com.sun.syndication.feed.synd.SyndPerson;
 import com.sun.syndication.io.FeedException;
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -64,6 +63,7 @@ public class Atom03Generator extends BaseWireFeedGenerator {
         Feed feed = (Feed) wFeed;
         Element root = createRootElement(feed);
         populateFeed(feed,root);
+        purgeUnusedNamespaceDeclarations(root); 
         return createDocument(root);
     }
 
@@ -110,8 +110,10 @@ public class Atom03Generator extends BaseWireFeedGenerator {
     }
 
     protected void populateFeedHeader(Feed feed, Element eFeed) throws FeedException {
-        if (feed.getTitle() != null) {
-            eFeed.addContent(generateSimpleElement("title", feed.getTitle()));
+        if (feed.getTitleEx() != null) {
+            Element titleElement = new Element("title", getFeedNamespace());
+            fillContentElement(titleElement, feed.getTitleEx());
+            eFeed.addContent(titleElement);
         }
 
         List links = feed.getAlternateLinks();
@@ -168,8 +170,10 @@ public class Atom03Generator extends BaseWireFeedGenerator {
     }
 
     protected void populateEntry(Entry entry, Element eEntry) throws FeedException {
-        if (entry.getTitle() != null) {
-            eEntry.addContent(generateSimpleElement("title", entry.getTitle()));
+        if (entry.getTitleEx() != null) {
+            Element titleElement = new Element("title", getFeedNamespace());
+            fillContentElement(titleElement, entry.getTitleEx());
+            eEntry.addContent(titleElement);
         }
         List links = entry.getAlternateLinks();
         for (int i = 0; i < links.size(); i++) {

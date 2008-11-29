@@ -31,6 +31,7 @@ public class Category implements Cloneable, Serializable  {
     
     private String _term;
     private String _scheme;  
+    private String _schemeResolved;  
     private String _label;
 
     /**
@@ -122,6 +123,14 @@ public class Category implements Cloneable, Serializable  {
         this._scheme = scheme;
     }
     
+    public void setSchemeResolved(String schemeResolved) {
+        _schemeResolved = schemeResolved;
+    }
+
+    public String getSchemeResolved() {
+        return _schemeResolved != null ? _schemeResolved : _scheme;
+    }
+
     /**
      * Return term for category.
      * <p>

@@ -62,9 +62,9 @@ public class RSS10Generator extends RSS090Generator {
             for (int i=0;i<items.size();i++) {
                 Item item = (Item) items.get(i);
                 Element eLi = new Element("li",getRDFNamespace());
-                String link = item.getLink();
-                if (link!=null) {
-                    eLi.setAttribute("resource",link);
+                String uri = item.getUri();
+                if (uri!=null) {
+                    eLi.setAttribute("resource",uri,getRDFNamespace());
                 }
                 eSeq.addContent(eLi);
             }

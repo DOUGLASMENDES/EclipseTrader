@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * Bean for entry elements of Atom feeds.
@@ -85,6 +86,9 @@ public class Entry implements Cloneable, Serializable, Extendable {
      *
      */
     public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
         // can't use foreign markup in equals, due to JDOM equals impl
         Object fm = getForeignMarkup();
         setForeignMarkup(((Entry)other).getForeignMarkup());       
@@ -204,7 +208,7 @@ public class Entry implements Cloneable, Serializable, Extendable {
      *
      */
     public List getAuthors() {
-        return _authors;
+        return (_authors==null) ? (_authors=new ArrayList()) : _authors;
     }
 
     /**
@@ -470,7 +474,8 @@ public class Entry implements Cloneable, Serializable, Extendable {
      * @since Atom 1.0
      */
     public List getCategories() {
-        return _categories;
+       return (_categories==null) ? (_categories=new ArrayList()) : _categories;
+
     }
     
     /**
@@ -523,5 +528,22 @@ public class Entry implements Cloneable, Serializable, Extendable {
     public void setForeignMarkup(Object foreignMarkup) {
         _foreignMarkup = (List)foreignMarkup;
     }
+    
+    /**
+     * Returns true if entry is a media entry, i.e. has rel="edit-media".
+     *
+     */
+    public boolean isMediaEntry() {
+        boolean mediaEntry = false;
+        List links = getOtherLinks();
+        for (Iterator it = links.iterator(); it.hasNext();) {
+            Link link = (Link) it.next();
+            if ("edit-media".equals(link.getRel())) {
+                mediaEntry = true;
+                break;
+            }
+        }
+        return mediaEntry;
+    } 
 
 }

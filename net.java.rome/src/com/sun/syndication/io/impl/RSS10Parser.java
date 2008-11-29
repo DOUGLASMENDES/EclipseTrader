@@ -32,13 +32,14 @@ import java.util.List;
 public class RSS10Parser extends RSS090Parser {
 
     private static final String RSS_URI = "http://purl.org/rss/1.0/";
+    private static final Namespace RSS_NS = Namespace.getNamespace(RSS_URI);
 
     public RSS10Parser() {
-        this("rss_1.0");
+        this("rss_1.0", RSS_NS);
     }
 
-    protected RSS10Parser(String type) {
-        super(type);
+    protected RSS10Parser(String type, Namespace ns) {
+        super(type, ns);
     }
 
     /**

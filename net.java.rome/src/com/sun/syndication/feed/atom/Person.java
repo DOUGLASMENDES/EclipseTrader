@@ -32,6 +32,7 @@ public class Person implements Cloneable,Serializable  {
     
     private String _name;
     private String _uri;  // since Atom 1.0 (was called url)
+    private String _uriResolved; 
     private String _email;
 
     /**
@@ -123,6 +124,14 @@ public class Person implements Cloneable,Serializable  {
       */
     public void setUrl(String url) {
         _uri = url;
+    }
+
+    public void setUriResolved(String uriResolved) {
+        _uriResolved = uriResolved;
+    }
+
+    public String getUriResolved(String resolveURI) {
+        return _uriResolved != null ? _uriResolved : _uri;
     }
 
     /**

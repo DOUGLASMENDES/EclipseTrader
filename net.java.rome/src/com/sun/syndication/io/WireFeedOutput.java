@@ -29,6 +29,8 @@ import java.io.Writer;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Generates an XML document (String, File, OutputStream, Writer, W3C DOM document or JDOM document)
@@ -41,7 +43,19 @@ import java.util.List;
  *
  */
 public class WireFeedOutput {
-    private final static FeedGenerators GENERATORS = new FeedGenerators();
+    private static Map clMap = new WeakHashMap();
+
+    private static FeedGenerators getFeedGenerators() {
+        synchronized(WireFeedOutput.class) {
+            FeedGenerators generators = (FeedGenerators)
+                clMap.get(Thread.currentThread().getContextClassLoader());
+            if (generators == null) {
+                generators = new FeedGenerators();
+                clMap.put(Thread.currentThread().getContextClassLoader(), generators);
+            }
+            return generators;
+        }
+    }
 
     /**
      * Returns the list of supported output feed types.
@@ -52,7 +66,7 @@ public class WireFeedOutput {
      *
      */
     public static List getSupportedFeedTypes() {
-        return GENERATORS.getSupportedFeedTypes();
+        return getFeedGenerators().getSupportedFeedTypes();
     }
 
     /**
@@ -181,7 +195,7 @@ public class WireFeedOutput {
      */
     public Document outputJDom(WireFeed feed) throws IllegalArgumentException,FeedException {
         String type = feed.getFeedType();
-        WireFeedGenerator generator = GENERATORS.getGenerator(type);
+        WireFeedGenerator generator = getFeedGenerators().getGenerator(type);
         if (generator==null) {
             throw new IllegalArgumentException("Invalid feed type ["+type+"]");
         }

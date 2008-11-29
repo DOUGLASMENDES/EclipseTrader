@@ -30,17 +30,18 @@ import java.util.*;
  */
 public class Atom03Parser extends BaseWireFeedParser {
     private static final String ATOM_03_URI = "http://purl.org/atom/ns#";
+    private static final Namespace ATOM_03_NS = Namespace.getNamespace(ATOM_03_URI);
 
     public Atom03Parser() {
-        this("atom_0.3");
+        this("atom_0.3", ATOM_03_NS);
     }
 
-    protected Atom03Parser(String type) {
-        super(type);
+    protected Atom03Parser(String type, Namespace ns) {
+        super(type, ns);
     }
 
     protected Namespace getAtomNamespace() {
-        return Namespace.getNamespace(ATOM_03_URI);
+        return ATOM_03_NS;
     }
 
     public boolean isMyType(Document document) {
@@ -72,7 +73,7 @@ public class Atom03Parser extends BaseWireFeedParser {
 
         Element e = eFeed.getChild("title",getAtomNamespace());
         if (e!=null) {
-            feed.setTitle(e.getText());
+            feed.setTitleEx(parseContent(e));
         }
 
         List eList = eFeed.getChildren("link",getAtomNamespace());
@@ -105,11 +106,11 @@ public class Atom03Parser extends BaseWireFeedParser {
         if (e!=null) {
             Generator gen = new Generator();
             gen.setValue(e.getText());
-            String att = e.getAttributeValue("url");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+            String att = getAttributeValue(e, "url");
             if (att!=null) {
                 gen.setUrl(att);
             }
-            att = e.getAttributeValue("version");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+            att = getAttributeValue(e, "version");
             if (att!=null) {
                 gen.setVersion(att);
             }
@@ -148,15 +149,15 @@ public class Atom03Parser extends BaseWireFeedParser {
 
     private Link parseLink(Element eLink) {
         Link link = new Link();
-        String att = eLink.getAttributeValue("rel");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        String att = getAttributeValue(eLink, "rel");
         if (att!=null) {
             link.setRel(att);
         }
-        att = eLink.getAttributeValue("type");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eLink, "type");
         if (att!=null) {
             link.setType(att);
         }
-        att = eLink.getAttributeValue("href");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        att = getAttributeValue(eLink, "href");
         if (att!=null) {
             link.setHref(att);
         }
@@ -168,8 +169,7 @@ public class Atom03Parser extends BaseWireFeedParser {
         List links = new ArrayList();
         for (int i=0;i<eLinks.size();i++) {
             Element eLink = (Element) eLinks.get(i);
-            //Namespace ns = getAtomNamespace();
-            String rel = eLink.getAttributeValue("rel");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+            String rel = getAttributeValue(eLink, "rel");
             if (alternate) {
                 if ("alternate".equals(rel)) {
                     links.add(parseLink(eLink));
@@ -222,9 +222,9 @@ public class Atom03Parser extends BaseWireFeedParser {
 
     private Content parseContent(Element e) {
         String value = null;
-        String type = e.getAttributeValue("type");//getAtomNamespace()); DONT KNOW WHY DOESN'T WORK
+        String type = getAttributeValue(e, "type");
         type = (type!=null) ? type : "text/plain";
-        String mode = e.getAttributeValue("mode");//getAtomNamespace())); DONT KNOW WHY DOESN'T WORK
+        String mode = getAttributeValue(e, "mode");
         if (mode == null) {
             mode = Content.XML; // default to xml content
         }
@@ -274,7 +274,7 @@ public class Atom03Parser extends BaseWireFeedParser {
 
         Element e = eEntry.getChild("title",getAtomNamespace());
         if (e!=null) {
-            entry.setTitle(e.getText());
+            entry.setTitleEx(parseContent(e));
         }
 
         List eList = eEntry.getChildren("link",getAtomNamespace());

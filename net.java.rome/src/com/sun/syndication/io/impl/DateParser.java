@@ -69,20 +69,20 @@ public class DateParser {
         "yyyy-MM-dd't'HH:mm:ss'z'",
         "yyyy-MM-dd'T'HH:mmz",   // together with logic in the parseW3CDateTime they
         "yyyy-MM'T'HH:mmz",      // handle W3C dates without time forcing them to be GMT
-        "yyyy'T'HH:mmz",
-        "yyyy-MM-dd't'HH:mmz",
-        "yyyy-MM-dd'T'HH:mm'Z'",
-        "yyyy-MM-dd't'HH:mm'z'",
+        "yyyy'T'HH:mmz",          
+        "yyyy-MM-dd't'HH:mmz", 
+        "yyyy-MM-dd'T'HH:mm'Z'", 
+        "yyyy-MM-dd't'HH:mm'z'", 
         "yyyy-MM-dd",
         "yyyy-MM",
         "yyyy"
     };
-
-
-
+    
+    
+    
       /**
    * The masks used to validate and parse the input to this Atom date.
-   * These are a lot more forgiving than what the Atom spec allows.
+   * These are a lot more forgiving than what the Atom spec allows.  
    * The forms that are invalid according to the spec are indicated.
    */
   private static final String[] masks = {
@@ -102,9 +102,9 @@ public class DateParser {
     "yyyy-MM",
     "yyyy"
   };
-
-
-
+    
+    
+    
 
     /**
      * Private constructor to avoid DateParser instances creation.
@@ -170,13 +170,7 @@ public class DateParser {
      *
      */
     public static Date parseRFC822(String sDate) {
-        int utIndex = sDate.indexOf("Etc/");
-        if (utIndex>-1) {
-            String pre = sDate.substring(0,utIndex);
-            String post = sDate.substring(utIndex+4);
-            sDate = pre + post;
-        }
-        utIndex = sDate.indexOf(" UT");
+        int utIndex = sDate.indexOf(" UT");
         if (utIndex>-1) {
             String pre = sDate.substring(0,utIndex);
             String post = sDate.substring(utIndex+3);

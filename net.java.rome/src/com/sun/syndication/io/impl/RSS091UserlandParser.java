@@ -38,7 +38,7 @@ public class RSS091UserlandParser extends RSS090Parser {
     }
 
     protected RSS091UserlandParser(String type) {
-        super(type);
+        super(type, null);
     }
 
     public boolean isMyType(Document document) {

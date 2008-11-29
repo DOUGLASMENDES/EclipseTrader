@@ -26,16 +26,10 @@ public class PropertiesLoader {
     private static final String MASTER_PLUGIN_FILE = "com/sun/syndication/rome.properties";
     private static final String EXTRA_PLUGIN_FILE = "rome.properties";
 
-    private static PropertiesLoader PROPERTIES_LOADER;
 
-    static {
-        try {
-            PROPERTIES_LOADER = new PropertiesLoader(MASTER_PLUGIN_FILE,EXTRA_PLUGIN_FILE);
-        }
-        catch (IOException ioex) {
-            throw new RuntimeException(ioex.getMessage(),ioex);
-        }
-    }
+    private static Map clMap =
+        new WeakHashMap();
+
 
     /**
      * Returns the PropertiesLoader singleton used by ROME to load plugin components.
@@ -44,7 +38,20 @@ public class PropertiesLoader {
      *
      */
     public static PropertiesLoader getPropertiesLoader() {
-        return PROPERTIES_LOADER;
+        synchronized(PropertiesLoader.class) {
+            PropertiesLoader loader = (PropertiesLoader)
+                clMap.get(Thread.currentThread().getContextClassLoader());
+            if (loader == null) {
+                try {
+                    loader = new PropertiesLoader(MASTER_PLUGIN_FILE, EXTRA_PLUGIN_FILE);
+                    clMap.put(Thread.currentThread().getContextClassLoader(), loader);
+                }
+                catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            return loader;
+        }
     }
 
     private Properties[] _properties;
@@ -59,7 +66,7 @@ public class PropertiesLoader {
      */
     private PropertiesLoader(String masterFileLocation,String extraFileLocation) throws IOException {
         List propertiesList = new ArrayList();
-        ClassLoader classLoader = PluginManager.class.getClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
         try {
             InputStream is = classLoader.getResourceAsStream(masterFileLocation);

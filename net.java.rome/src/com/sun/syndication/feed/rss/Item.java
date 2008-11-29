@@ -83,6 +83,9 @@ public class Item implements Cloneable, Serializable, Extendable {
      *
      */
     public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
         // can't use foreign markup in equals, due to JDOM equals impl
         Object fm = getForeignMarkup();
         setForeignMarkup(((Item)other).getForeignMarkup());       

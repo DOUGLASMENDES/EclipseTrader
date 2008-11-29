@@ -31,6 +31,7 @@ public class Link implements Cloneable,Serializable {
     private ObjectBean _objBean;
     
     private String _href;
+    private String _hrefResolved;
     private String _rel = "alternate";
     private String _type;
     private String _hreflang;
@@ -149,6 +150,14 @@ public class Link implements Cloneable,Serializable {
      */
     public void setHref(String href) {
         _href = href;
+    }
+
+    public void setHrefResolved(String hrefResolved) {
+        _hrefResolved = hrefResolved;
+    }
+
+    public String getHrefResolved() {
+        return _hrefResolved != null ? _hrefResolved : _href;
     }
 
     /**

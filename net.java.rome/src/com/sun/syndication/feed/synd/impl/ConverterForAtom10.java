@@ -37,6 +37,7 @@ import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.feed.synd.SyndLink;
 import com.sun.syndication.feed.synd.SyndLinkImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
@@ -90,11 +91,11 @@ public class ConverterForAtom10 implements Converter {
             syndFeed.setDescriptionEx(c);
         }
 
-        // if there is exactly one alternate link, use that as THE link
+        // use first alternate links as THE link
         if (aFeed.getAlternateLinks() != null 
-                && aFeed.getAlternateLinks().size() == 1) {
+                && aFeed.getAlternateLinks().size() > 0) {
             Link theLink = (Link)aFeed.getAlternateLinks().get(0);
-            syndFeed.setLink(theLink.getHref());
+            syndFeed.setLink(theLink.getHrefResolved());
         }
         // lump alternate and other links together
         List syndLinks = new ArrayList();
@@ -106,6 +107,7 @@ public class ConverterForAtom10 implements Converter {
                 && aFeed.getOtherLinks().size() > 0) {
             syndLinks.addAll(createSyndLinks(aFeed.getOtherLinks()));
         }
+        syndFeed.setLinks(syndLinks);
             
         List aEntries = aFeed.getEntries();
         if (aEntries!=null) {
@@ -136,13 +138,7 @@ public class ConverterForAtom10 implements Converter {
         ArrayList sLinks = new ArrayList();
         for (Iterator iter = aLinks.iterator(); iter.hasNext();) {
             Link link = (Link)iter.next();
-            SyndLink sLink = new SyndLinkImpl();
-            sLink.setRel(      link.getRel());
-            sLink.setHref(     link.getHref());
-            sLink.setType(     link.getType());
-            sLink.setTitle( link.getTitle());
-            sLink.setLength(   link.getLength());
-            sLink.setHreflang( link.getHref());
+            SyndLink sLink = createSyndLink(link);
             sLinks.add(sLink);
         }
         return sLinks;
@@ -172,14 +168,6 @@ public class ConverterForAtom10 implements Converter {
         Content summary = entry.getSummary();
         if (summary!=null) {
             syndEntry.setDescription(createSyndContent(summary));
-        }
-
-        String id = entry.getId();
-        if (id!=null) {
-            syndEntry.setUri(entry.getId());
-        }
-        else {
-            syndEntry.setUri(syndEntry.getLink());
         }
 
         List contents = entry.getContents();
@@ -216,7 +204,7 @@ public class ConverterForAtom10 implements Converter {
                 Category c = (Category)iter.next();
                 SyndCategory syndCategory = new SyndCategoryImpl();
                 syndCategory.setName(c.getTerm()); 
-                syndCategory.setTaxonomyUri(c.getScheme());
+                syndCategory.setTaxonomyUri(c.getSchemeResolved());
                 // TODO: categories MAY have labels 
                 //       syndCategory.setLabel(c.getLabel());
                 syndCategories.add(syndCategory);
@@ -224,11 +212,11 @@ public class ConverterForAtom10 implements Converter {
             syndEntry.setCategories(syndCategories);
         }
                 
-        // if there is exactly one alternate link, use that as THE link
+        // use first alternate link as THE link
         if (entry.getAlternateLinks() != null
-				&& entry.getAlternateLinks().size() == 1) {
+				&& entry.getAlternateLinks().size() > 0) {
             Link theLink = (Link)entry.getAlternateLinks().get(0);
-            syndEntry.setLink(theLink.getHref());
+            syndEntry.setLink(theLink.getHrefResolved());
         }
 
         // Create synd enclosures from enclosure links
@@ -256,26 +244,63 @@ public class ConverterForAtom10 implements Converter {
         }
         syndEntry.setLinks(syndLinks);
 
+        String id = entry.getId();
+        if (id!=null) {
+            syndEntry.setUri(entry.getId());
+        }
+        else {
+            syndEntry.setUri(syndEntry.getLink());
+        }
+
+        // Convert source element Feed into SyndFeed and assign as SyndEntry
+        // source
+        Feed source = entry.getSource();
+        if (source != null) {
+        	SyndFeed syndSource = new SyndFeedImpl(source);
+        	syndEntry.setSource(syndSource);
+        }
+
         return syndEntry;
     }
 
     public SyndEnclosure createSyndEnclosure(Feed feed, Entry entry,
             Link link) {
         SyndEnclosure syndEncl = new SyndEnclosureImpl();
-        syndEncl.setUrl(link.getHref());
+        syndEncl.setUrl(link.getHrefResolved());
         syndEncl.setType(link.getType());
         syndEncl.setLength(link.getLength());
         return syndEncl;
     }
     
-    public SyndLink createSyndLink(Feed feed, Entry entry, Link link) {
+    public Link createAtomEnclosure(SyndEnclosure syndEnclosure) {
+      Link link = new Link();
+      link.setRel(     "enclosure");
+      link.setType(    syndEnclosure.getType());
+      link.setHref(    syndEnclosure.getUrl());
+      link.setLength(  syndEnclosure.getLength());
+      return link;
+    }
+
+    public SyndLink createSyndLink(Link link) {
         SyndLink syndLink = new SyndLinkImpl(); 
-        syndLink.setRel(link.getRel());
-        syndLink.setType(link.getType());
-        syndLink.setHref(link.getHref());
+        syndLink.setRel(     link.getRel());
+        syndLink.setType(    link.getType());
+        syndLink.setHref(    link.getHrefResolved());
         syndLink.setHreflang(link.getHreflang());
-        syndLink.setLength(link.getLength());
+        syndLink.setLength(  link.getLength());
+        syndLink.setTitle(   link.getTitle());
         return syndLink;
+    }
+    
+    public Link createAtomLink(SyndLink syndLink) {
+        Link link = new Link(); 
+        link.setRel(     syndLink.getRel());
+        link.setType(    syndLink.getType());
+        link.setHref(    syndLink.getHref());
+        link.setHreflang(syndLink.getHreflang());
+        link.setLength(  syndLink.getLength());
+        link.setTitle(   syndLink.getTitle());
+        return link;
     }
     
     public WireFeed createRealFeed(SyndFeed syndFeed) {
@@ -305,19 +330,14 @@ public class ConverterForAtom10 implements Converter {
         // separate SyndEntry's links collection into alternate and other links
         List alternateLinks = new ArrayList();
         List otherLinks = new ArrayList();
-        String sLink = syndFeed.getLink();
         List slinks = syndFeed.getLinks();
         if (slinks != null) {
             for (Iterator iter=slinks.iterator(); iter.hasNext();) {       
                 SyndLink syndLink = (SyndLink)iter.next();                
-                Link link = new Link();
-                link.setRel(syndLink.getRel());
-                link.setHref(syndLink.getHref());
-                link.setHreflang(syndLink.getHreflang());
-                link.setLength(syndLink.getLength());                
+                Link link = createAtomLink(syndLink);              
                 if (link.getRel() == null ||
                         "".equals(link.getRel().trim()) ||
-                        "alternate".equals(syndLink.getRel())) {
+                        "alternate".equals(link.getRel())) {
                     alternateLinks.add(link);
                 } else {
                     otherLinks.add(link);
@@ -424,15 +444,19 @@ public class ConverterForAtom10 implements Converter {
         List alternateLinks = new ArrayList();
         List otherLinks = new ArrayList();
         List slinks = sEntry.getLinks();
+        List enclosures = sEntry.getEnclosures();
+        boolean linkRelEnclosureExists = false;
         if (slinks != null) {
             for (Iterator iter=slinks.iterator(); iter.hasNext();) {       
                 SyndLink syndLink = (SyndLink)iter.next();                
-                Link link = new Link();
-                link.setRel(syndLink.getRel());
-                link.setHref(syndLink.getHref());
-                link.setHreflang(syndLink.getHreflang());
-                link.setLength(syndLink.getLength());                
-                link.setType(syndLink.getType());
+                Link link = createAtomLink(syndLink);
+                // Set this flag if there's a link of rel = enclosure so that
+                // enclosures won't be duplicated when pulled from
+                // SyndEntry.getEnclosures()
+                if (syndLink.getRel() != null &&
+                        "enclosure".equals(syndLink.getRel())) {
+                    linkRelEnclosureExists = true;
+                }
                 if (link.getRel() == null ||
                         "".equals(link.getRel().trim()) ||
                         "alternate".equals(syndLink.getRel())) {
@@ -448,6 +472,15 @@ public class ConverterForAtom10 implements Converter {
             link.setRel("alternate");
             link.setHref(sEntry.getLink());
             alternateLinks.add(link);
+        }
+        // add SyndEnclosures as links with rel="enclosure" ONLY if
+        // there are no SyndEntry.getLinks() with rel="enclosure"
+        if (enclosures != null && linkRelEnclosureExists == false) {
+            for (Iterator iter=enclosures.iterator(); iter.hasNext();) {
+                SyndEnclosure syndEncl = (SyndEnclosure)iter.next();
+                Link link = createAtomEnclosure(syndEncl);
+                otherLinks.add(link);
+            }
         }
         if (alternateLinks.size() > 0) aEntry.setAlternateLinks(alternateLinks);
         if (otherLinks.size() > 0) aEntry.setOtherLinks(otherLinks);
@@ -493,6 +526,12 @@ public class ConverterForAtom10 implements Converter {
 
         if (((List)sEntry.getForeignMarkup()).size() > 0) {
             aEntry.setForeignMarkup((List)sEntry.getForeignMarkup());
+        }
+        
+        SyndFeed sSource = sEntry.getSource();
+        if (sSource != null) {
+        	Feed aSource = (Feed) sSource.createWireFeed(getType());
+        	aEntry.setSource(aSource);
         }
         return aEntry;
     }

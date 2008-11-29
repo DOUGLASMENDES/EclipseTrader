@@ -54,6 +54,7 @@ public class RSS090Generator extends BaseWireFeedGenerator {
         Channel channel = (Channel)feed;
         Element root = createRootElement(channel);
         populateFeed(channel,root);
+        purgeUnusedNamespaceDeclarations(root);
         return createDocument(root);
     }
 

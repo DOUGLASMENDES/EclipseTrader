@@ -389,7 +389,7 @@ public class Feed extends WireFeed {
      * @since Atom 1.0
      */
     public List getCategories() {
-        return _categories;
+        return (_categories==null) ? (_categories=new ArrayList()) : _categories;
     }
     
     /**

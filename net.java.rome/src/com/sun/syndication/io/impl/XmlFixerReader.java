@@ -18,29 +18,15 @@ package com.sun.syndication.io.impl;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.net.URL;
 
 /**
  * @author Alejandro Abdelnur
  */
 public class XmlFixerReader extends Reader {
-
-    public static void main(String[] args) throws Exception {
-        Reader r = new InputStreamReader(new URL(args[0]).openStream());
-        r = new XmlFixerReader(r);
-        BufferedReader br = new BufferedReader(r);
-        String l = br.readLine();
-        while (l!=null) {
-            System.out.println(l);
-            l = br.readLine();
-        }
-    }
 
     protected Reader in;
 
@@ -258,12 +244,18 @@ public class XmlFixerReader extends Reader {
                             loop = true;
                         }
                         else {
+                            // no ';' to match the '&' lets just make the '&'
+                            // a legal xml character entity '&amp;'
+                            _buffer.insert(1, "amp;");
                             _buffer.append((char)c);
                             _state = 3;
                             loop = true;
                         }
                     }
                     else {
+                        // no ';' to match the '&' lets just make the '&'
+                        // a legal xml character entity '&amp;'
+                        _buffer.insert(1, "amp;");
                         _state = 3;
                         loop = true;
                     }
@@ -352,10 +344,10 @@ public class XmlFixerReader extends Reader {
     static {
         // note: refer to Character entity references in HTML 4
         // at http://www.w3.org/TR/REC-html40/sgml/entities.html
-            	
+
     	// Character entity set.
     	// HTMLlat1 "-//W3C//ENTITIES Latin 1//EN//HTML"
-    
+
     	CODED_ENTITIES.put("&nbsp;",  "&#160;");
         CODED_ENTITIES.put("&iexcl;", "&#161;");
         CODED_ENTITIES.put("&cent;",  "&#162;");
@@ -452,10 +444,10 @@ public class XmlFixerReader extends Reader {
         CODED_ENTITIES.put("&yacute;","&#253;");
         CODED_ENTITIES.put("&thorn;", "&#254;");
         CODED_ENTITIES.put("&yuml;",  "&#255;");
-        
+
         // Mathematical, Greek and Symbolic characters for HTML.
-        // HTMLsymbol "-//W3C//ENTITIES Symbols//EN//HTML" 
-        
+        // HTMLsymbol "-//W3C//ENTITIES Symbols//EN//HTML"
+
         CODED_ENTITIES.put("&fnof;",     "&#402;");
         CODED_ENTITIES.put("&Alpha;",    "&#913;");
         CODED_ENTITIES.put("&Beta;",     "&#914;");
@@ -580,10 +572,10 @@ public class XmlFixerReader extends Reader {
         CODED_ENTITIES.put("&clubs;",    "&#9827;");
         CODED_ENTITIES.put("&hearts;",   "&#9829;");
         CODED_ENTITIES.put("&diams;",    "&#9830;");
-         
+
        // Special characters for HTML.
        // HTMLspecial "-//W3C//ENTITIES Special//EN//HTML"
-        
+
         CODED_ENTITIES.put("&quot;",      "&#34;");
         CODED_ENTITIES.put("&amp;",       "&#38;");
         CODED_ENTITIES.put("&lt;",        "&#60;");
@@ -615,7 +607,7 @@ public class XmlFixerReader extends Reader {
         CODED_ENTITIES.put("&permil;",    "&#8240;");
         CODED_ENTITIES.put("&lsaquo;",    "&#8249;");
         CODED_ENTITIES.put("&rsaquo;",    "&#8250;");
-        CODED_ENTITIES.put("&euro;",      "&#8364;");       
+        CODED_ENTITIES.put("&euro;",      "&#8364;");
     }
 
     //
