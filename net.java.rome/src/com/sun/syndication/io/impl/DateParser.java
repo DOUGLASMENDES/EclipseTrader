@@ -170,7 +170,13 @@ public class DateParser {
      *
      */
     public static Date parseRFC822(String sDate) {
-        int utIndex = sDate.indexOf(" UT");
+        int utIndex = sDate.indexOf("Etc/");
+        if (utIndex>-1) {
+            String pre = sDate.substring(0,utIndex);
+            String post = sDate.substring(utIndex+4);
+            sDate = pre + post;
+        }
+        utIndex = sDate.indexOf(" UT");
         if (utIndex>-1) {
             String pre = sDate.substring(0,utIndex);
             String post = sDate.substring(utIndex+3);
