@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: HTML Parser Library
+Bundle-SymbolicName: org.htmlparser
+Bundle-Version: 1.6.0.R20060319
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: Eclipsetrader.org
+Eclipse-LazyStart: true
+Export-Package: org.htmlparser;version="1.6.0",
+ org.htmlparser.beans;version="1.6.0",
+ org.htmlparser.filters;version="1.6.0",
+ org.htmlparser.http;version="1.6.0",
+ org.htmlparser.lexer;version="1.6.0",
+ org.htmlparser.lexerapplications.tabby;version="1.6.0",
+ org.htmlparser.lexerapplications.thumbelina;version="1.6.0",
+ org.htmlparser.nodeDecorators;version="1.6.0",
+ org.htmlparser.nodes;version="1.6.0",
+ org.htmlparser.parserapplications;version="1.6.0",
+ org.htmlparser.parserapplications.filterbuilder;version="1.6.0",
+ org.htmlparser.parserapplications.filterbuilder.layouts;version="1.6.0",
+ org.htmlparser.parserapplications.filterbuilder.wrappers;version="1.6.0",
+ org.htmlparser.sax;version="1.6.0",
+ org.htmlparser.scanners;version="1.6.0",
+ org.htmlparser.tags;version="1.6.0",
+ org.htmlparser.util;version="1.6.0",
+ org.htmlparser.util.sort;version="1.6.0",
+ org.htmlparser.visitors;version="1.6.0"

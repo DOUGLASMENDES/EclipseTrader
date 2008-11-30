@@ -35,6 +35,7 @@
       <import feature="org.apache.commons" version="1.0.0" match="compatible"/>
       <import feature="org.eclipse.rcp" version="3.3.0" match="compatible"/>
       <import feature="org.jdom" version="1.0.0" match="compatible"/>
+      <import feature="org.htmlparser" version="1.6.0" match="compatible"/>
    </requires>
 
    <plugin

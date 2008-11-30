@@ -62,6 +62,9 @@
 
 			<export srcurl="${tag}/javax.xml.bind" destpath="${buildDirectory}/plugins/javax.xml.bind" revision="HEAD"/>
 
+			<export srcurl="${tag}/org.htmlparser" destpath="${buildDirectory}/plugins/org.htmlparser" revision="HEAD"/>
+			<export srcurl="${tag}/org.htmlparser-feature" destpath="${buildDirectory}/features/org.htmlparser" revision="HEAD"/>
+
 			<export srcurl="${tag}/org.eclipse.rcp.extras" destpath="${buildDirectory}/plugins/org.eclipse.rcp.extras" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipse.rcp.extras-feature" destpath="${buildDirectory}/features/org.eclipse.rcp.extras" revision="HEAD"/>
 
