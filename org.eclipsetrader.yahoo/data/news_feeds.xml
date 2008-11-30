@@ -90,7 +90,7 @@
                 <url>http://finance.yahoo.com/rss/taxes</url>
         </page>
 	</item>
-	<item id="IT" name="Italy">
+	<item id="IT" name="Italy" handler="org.eclipsetrader.yahoo.internal.news.ItalianNewsHandler">
         <page id="IT_AFTER">
                 <title>After Hours</title>
                 <url>http://it.biz.yahoo.com/attualita/after.html</url>

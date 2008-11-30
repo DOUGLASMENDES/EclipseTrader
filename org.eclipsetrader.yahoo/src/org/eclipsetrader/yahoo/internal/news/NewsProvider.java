@@ -55,6 +55,7 @@ import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
+@SuppressWarnings("restriction")
 public class NewsProvider implements INewsProvider {
 	public static final String HOST = "finance.yahoo.com";
 
@@ -124,22 +125,66 @@ public class NewsProvider implements INewsProvider {
     protected IStatus jobRunner(IProgressMonitor monitor) {
 		IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
 
-		URL[] urls = getPages();
-		ISecurity[] securities = getRepositoryService().getSecurities();
-
-		int total = urls.length;
-		if (store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS))
-			total += securities.length;
-
-		monitor.beginTask("Fetching Yahoo! News", total);
 		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(Category[].class);
+	        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+	        InputStream inputStream = FileLocator.openStream(YahooActivator.getDefault().getBundle(), new Path("data/news_feeds.xml"), false);
+	        JAXBElement<Category[]> element = unmarshaller.unmarshal(new StreamSource(inputStream), Category[].class);
+
+			int total = 0;
+	        for (Category category : element.getValue()) {
+	    		for (Page page : category.getPages()) {
+	        		if (store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId()))
+	        			total++;
+	    		}
+	        }
+
+	        ISecurity[] securities = getRepositoryService().getSecurities();
+	        total += securities.length;
+
+			monitor.beginTask("Fetching Yahoo! News", total);
+
 			resetRecentFlag();
 			if (monitor.isCanceled())
 				return Status.OK_STATUS;
 
-			fetchHeadLines(urls, monitor);
-			if (monitor.isCanceled())
-				return Status.OK_STATUS;
+	        for (Category category : element.getValue()) {
+	        	INewsHandler handler = new RSSNewsHandler();
+	        	if (category.getHandler() != null) {
+	        		try {
+	        			handler = (INewsHandler) Class.forName(category.getHandler()).newInstance();
+	        		} catch(Exception e) {
+	        			// Do nothing
+	        		}
+	        	}
+
+        		List<URL> l = new ArrayList<URL>();
+
+        		for (Page page : category.getPages()) {
+	        		if (store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId()))
+	        			l.add(new URL(page.getUrl()));
+            	}
+
+            	final List<HeadLine> added = new ArrayList<HeadLine>();
+
+            	HeadLine[] list = handler.parseNewsPages(l.toArray(new URL[l.size()]), monitor);
+				for (HeadLine headLine : list) {
+					if (!oldItems.contains(headLine)) {
+						headLine.setRecent(true);
+						oldItems.add(headLine);
+						added.add(headLine);
+					}
+				}
+
+				final INewsService service = getNewsService();
+				service.runInService(new INewsServiceRunnable() {
+                    public IStatus run(IProgressMonitor monitor) throws Exception {
+                    	service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
+                        return Status.OK_STATUS;
+                    }
+				}, null);
+	        }
 
 			if (store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS)) {
 				fetchHeadLines(securities, monitor);
@@ -172,87 +217,6 @@ public class NewsProvider implements INewsProvider {
                 return Status.OK_STATUS;
             }
 		}, null);
-    }
-
-    protected void fetchHeadLines(URL[] urls, IProgressMonitor monitor) {
-    	final List<HeadLine> added = new ArrayList<HeadLine>();
-
-		try {
-			HttpClient client = new HttpClient();
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-
-			for (int i = 0; i < urls.length && !monitor.isCanceled(); i++) {
-				added.clear();
-
-				monitor.subTask(urls[i].toString());
-
-				if (YahooActivator.getDefault() != null) {
-					BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
-					ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-					if (reference != null) {
-						IProxyService proxy = (IProxyService) context.getService(reference);
-						IProxyData data = proxy.getProxyDataForHost(urls[i].getHost(), IProxyData.HTTP_PROXY_TYPE);
-						if (data != null) {
-							if (data.getHost() != null)
-								client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-							if (data.isRequiresAuthentication())
-								client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
-						}
-						context.ungetService(reference);
-					}
-				}
-
-				try {
-					SyndFeed feed = fetcher.retrieveFeed(urls[i], client);
-					for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
-						SyndEntry entry = (SyndEntry) iter.next();
-
-						String url = entry.getLink();
-						if (url.lastIndexOf('*') != -1)
-							url = url.substring(url.lastIndexOf('*') + 1);
-
-						String source = null;
-
-						String title = entry.getTitle();
-						if (title.startsWith("[$$]"))
-							title = title.substring(4, title.length());
-
-						if (title.endsWith(")")) {
-							int s = title.lastIndexOf('(');
-							if (s != -1) {
-								source = title.substring(s + 1, title.length() - 1);
-								if (source.startsWith("at "))
-									source = source.substring(3);
-								title = title.substring(0, s - 1).trim();
-							}
-						}
-
-						HeadLine headLine = new HeadLine(entry.getPublishedDate(), source, title, null, url);
-						if (!oldItems.contains(headLine)) {
-							headLine.setRecent(true);
-							oldItems.add(headLine);
-							added.add(headLine);
-						}
-					}
-				} catch (IllegalArgumentException e) {
-					// Do nothing, could be an invalid URL
-				} catch (Exception e) {
-			        e.printStackTrace();
-				}
-
-				final INewsService service = getNewsService();
-				service.runInService(new INewsServiceRunnable() {
-                    public IStatus run(IProgressMonitor monitor) throws Exception {
-                    	service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
-                        return Status.OK_STATUS;
-                    }
-				}, null);
-
-				monitor.worked(1);
-			}
-		} catch (Exception e) {
-	        e.printStackTrace();
-		}
     }
 
     protected void fetchHeadLines(ISecurity[] securities, IProgressMonitor monitor) {
@@ -359,32 +323,6 @@ public class NewsProvider implements INewsProvider {
 	        e.printStackTrace();
 		}
     }
-
-	protected URL[] getPages() {
-		List<URL> list = new ArrayList<URL>();
-		IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
-
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Category[].class);
-	        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-	        InputStream inputStream = FileLocator.openStream(YahooActivator.getDefault().getBundle(), new Path("data/news_feeds.xml"), false);
-	        JAXBElement<Category[]> element = unmarshaller.unmarshal(new StreamSource(inputStream), Category[].class);
-
-	        for (Category category : element.getValue()) {
-	        	for (Page page : category.getPages()) {
-	        		if (store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId()))
-	        			list.add(new URL(page.getUrl()));
-	        	}
-	        }
-
-		} catch(Exception e) {
-    		Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Error reading feed sources", e); //$NON-NLS-1$
-    		YahooActivator.getDefault().getLog().log(status);
-		}
-
-		return list.toArray(new URL[list.size()]);
-	}
 
 	protected INewsService getNewsService() {
 		if (newsService == null) {

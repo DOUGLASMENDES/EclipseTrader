@@ -26,6 +26,9 @@ public class Category {
     @XmlAttribute(name = "id")
 	private String id;
 
+    @XmlAttribute(name = "handler")
+	private String handler;
+
     @XmlElement(name = "page")
     private List<Page> pages;
 
@@ -40,6 +43,11 @@ public class Category {
 	@XmlTransient
 	public String getId() {
     	return id;
+    }
+
+	@XmlTransient
+	public String getHandler() {
+    	return handler;
     }
 
 	@XmlTransient
