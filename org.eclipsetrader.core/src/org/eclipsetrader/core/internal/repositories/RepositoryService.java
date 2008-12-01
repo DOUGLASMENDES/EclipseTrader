@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.core.internal.repositories;
 
+import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -69,7 +69,7 @@ public class RepositoryService implements IRepositoryService {
 	private Map<URI, IWatchList> watchlistUriMap = new HashMap<URI, IWatchList>();
 	private Map<String, IWatchList> watchlistNameMap = new HashMap<String, IWatchList>();
 
-	private Map<ISecurity, IHistory> historyMap = new WeakHashMap<ISecurity, IHistory>();
+	private Map<ISecurity, WeakReference<IHistory>> historyMap = new HashMap<ISecurity, WeakReference<IHistory>>();
 
 	private IJobManager jobManager;
 	private final ILock lock;
@@ -139,7 +139,8 @@ public class RepositoryService implements IRepositoryService {
      * @see org.eclipsetrader.core.repositories.IRepositoryService#getHistoryFor(org.eclipsetrader.core.instruments.ISecurity)
      */
     public IHistory getHistoryFor(ISecurity security) {
-    	IHistory history = historyMap.get(security);
+    	WeakReference<IHistory> reference = historyMap.get(security);
+    	IHistory history = reference != null ? reference.get() : null;
 
     	if (history == null) {
         	IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
@@ -149,7 +150,7 @@ public class RepositoryService implements IRepositoryService {
         			IStoreObject object = createElement(stores[i], stores[i].fetchProperties(null));
         			if (object instanceof IHistory) {
         				history = (IHistory) object;
-        	    		historyMap.put(security, history);
+        	    		historyMap.put(security, new WeakReference<IHistory>(history));
         				break;
         			}
         		}
@@ -158,7 +159,7 @@ public class RepositoryService implements IRepositoryService {
 
     	if (history == null) {
     		history = new History(security, new IOHLC[0]);
-    		historyMap.put(security, history);
+    		historyMap.put(security, new WeakReference<IHistory>(history));
     	}
 
     	return history;

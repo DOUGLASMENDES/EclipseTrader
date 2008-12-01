@@ -14,15 +14,16 @@ package org.eclipsetrader.core.feed;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -87,7 +88,7 @@ public class History implements IHistory, IStoreObject {
         }
 	}
 
-	private Map<Key, HistoryDay> historyMap = new WeakHashMap<Key, HistoryDay>();
+	private Map<Key, WeakReference<HistoryDay>> historyMap = new HashMap<Key, WeakReference<HistoryDay>>();
 
 	protected History() {
 	}
@@ -205,7 +206,8 @@ public class History implements IHistory, IStoreObject {
 
     	Key key = new Key(first, last, timeSpan);
 
-    	HistoryDay history = historyMap.get(key);
+    	WeakReference<HistoryDay> reference = historyMap.get(key);
+    	HistoryDay history = reference != null ? reference.get() : null;
     	if (history != null)
     		return history;
 
@@ -293,8 +295,8 @@ public class History implements IHistory, IStoreObject {
                 	IStoreObject storeObject = (IStoreObject) evt.getNewValue();
                 	Date date = (Date) storeObject.getStoreProperties().getProperty(IPropertyConstants.BARS_DATE);
 
-                	for (Entry<Key, HistoryDay> entry : historyMap.entrySet()) {
-                		HistoryDay element = entry.getValue();
+                	for (Entry<Key, WeakReference<HistoryDay>> entry : historyMap.entrySet()) {
+                		HistoryDay element = entry.getValue().get();
                 		if (element != null && element != sourceObject) {
                 			if (!date.before(entry.getKey().getFirst()) && !date.after(entry.getKey().getLast())) {
                 	    		IStore[] childStores = store.fetchChilds(null);
@@ -322,7 +324,7 @@ public class History implements IHistory, IStoreObject {
     		});
     	}
 
-		historyMap.put(key, history);
+		historyMap.put(key, new WeakReference<HistoryDay>(history));
 
 		return history;
     }
