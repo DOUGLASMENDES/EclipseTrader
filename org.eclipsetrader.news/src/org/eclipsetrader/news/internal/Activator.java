@@ -11,9 +11,12 @@
 
 package org.eclipsetrader.news.internal;
 
+import java.net.URI;
 import java.util.Hashtable;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -21,6 +24,7 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.news.core.INewsService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -39,6 +43,12 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
+
+	private NewsServiceFactory newsServiceFactory;
+	private ServiceRegistration newsServiceRegistration;
+
+	private IRepositoryService repositoryService;
+	private ServiceReference repositoryServiceReference;
 
 	/**
 	 * The constructor
@@ -59,9 +69,15 @@ public class Activator extends AbstractUIPlugin {
 		context.getService(serviceReference);
 		context.ungetService(serviceReference);
 
-		NewsService service = new NewsService();
-		context.registerService(new String[] { INewsService.class.getName(), NewsService.class.getName() }, service, new Hashtable<Object,Object>());
-		service.startUp(null);
+		newsServiceFactory = new NewsServiceFactory();
+		newsServiceRegistration = context.registerService(new String[] {
+				INewsService.class.getName(),
+				NewsService.class.getName()
+			}, newsServiceFactory, new Hashtable<Object, Object>());
+
+		repositoryServiceReference = context.getServiceReference(IRepositoryService.class.getName());
+		if (repositoryServiceReference != null)
+			repositoryService = (IRepositoryService) context.getService(repositoryServiceReference);
 	}
 
 	/*
@@ -70,12 +86,14 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
-		ServiceReference serviceReference = context.getServiceReference(NewsService.class.getName());
-		if (serviceReference != null) {
-			NewsService service = (NewsService) context.getService(serviceReference);
-			if (service != null)
-				service.shutDown(null);
-			context.ungetService(serviceReference);
+		if (newsServiceFactory != null && newsServiceFactory.getServiceInstance() != null)
+			newsServiceFactory.getServiceInstance().shutDown(null);
+		if (newsServiceRegistration != null)
+			newsServiceRegistration.unregister();
+
+		if (repositoryServiceReference != null) {
+			context.ungetService(repositoryServiceReference);
+			repositoryService = null;
 		}
 
 		plugin = null;
@@ -114,5 +132,29 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	public IRepositoryService getRepositoryService() {
+		return repositoryService;
+	}
+
+	public IDialogSettings getDialogSettingsForView(URI uri) {
+		String uriString = uri.toString();
+
+		IDialogSettings rootSettings = getDialogSettings().getSection("Views");
+		if (rootSettings == null)
+			rootSettings = getDialogSettings().addNewSection("Views");
+
+		IDialogSettings[] sections = rootSettings.getSections();
+		for (int i = 0; i < sections.length; i++) {
+			if (uriString.equals(sections[i].get("uri")))
+				return sections[i];
+		}
+
+		String uuid = UUID.randomUUID().toString();
+		IDialogSettings dialogSettings = rootSettings.addNewSection(uuid);
+		dialogSettings.put("uri", uriString);
+
+		return dialogSettings;
 	}
 }

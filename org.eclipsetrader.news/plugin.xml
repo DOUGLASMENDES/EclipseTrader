@@ -73,5 +73,36 @@
             name="RSS News">
       </provider>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.open">
+         <command
+               commandId="org.eclipsetrader.ui.file.open.news">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="+">
+                  </count>
+                  <iterate
+                        operator="and">
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.Security">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            defaultHandler="org.eclipsetrader.news.internal.ui.OpenNewsHandler"
+            id="org.eclipsetrader.ui.file.open.news"
+            name="Open News">
+      </command>
+   </extension>
 
 </plugin>

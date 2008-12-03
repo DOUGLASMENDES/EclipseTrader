@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.news.internal.ui;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.ControlAdapter;
@@ -56,6 +58,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.news.core.HeadLineStatus;
 import org.eclipsetrader.news.core.IHeadLine;
 import org.eclipsetrader.news.core.INewsProvider;
@@ -67,6 +71,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class HeadLineViewer extends ViewPart {
+	public static final String VIEW_ID = "org.eclipsetrader.ui.views.headlines";
+
+	private static final String K_VIEWS = "Views";
+	private static final String K_URI = "uri";
 	private static final String K_COLUMNS = "columns";
 
 	private Action refreshAction;
@@ -74,6 +82,7 @@ public class HeadLineViewer extends ViewPart {
 	private Action showNextAction;
 
 	private Action openAction;
+	private Action openNewWindowAction;
 	private Action markAsReadAction;
 	private Action markAllAsReadAction;
 
@@ -82,6 +91,7 @@ public class HeadLineViewer extends ViewPart {
 
 	private INewsService service;
 	private List<IHeadLine> input;
+	private ISecurity security;
 
 	private ControlAdapter controlListener = new ControlAdapter() {
 		@Override
@@ -101,6 +111,8 @@ public class HeadLineViewer extends ViewPart {
 	private INewsServiceListener newsListener = new INewsServiceListener() {
         public void newsServiceUpdate(NewsEvent event) {
         	for (HeadLineStatus status : event.getStatus()) {
+        		if (security != null && !status.getHeadLine().contains(security))
+        			continue;
         		if (status.getKind() == HeadLineStatus.ADDED)
         			input.add(status.getHeadLine());
         		else if (status.getKind() == HeadLineStatus.REMOVED)
@@ -139,9 +151,26 @@ public class HeadLineViewer extends ViewPart {
 	    super.init(site, memento);
 
 	    IDialogSettings bundleDialogSettings = Activator.getDefault().getDialogSettings();
-	    dialogSettings = bundleDialogSettings.getSection(getClass().getName());
-	    if (dialogSettings == null)
-	    	dialogSettings = bundleDialogSettings.addNewSection(getClass().getName());
+	    if (site.getSecondaryId() != null) {
+	        try {
+	    		dialogSettings = bundleDialogSettings.getSection(K_VIEWS).getSection(site.getSecondaryId());
+	        	URI uri = new URI(dialogSettings.get(K_URI));
+
+	        	IRepositoryService repositoryService = Activator.getDefault().getRepositoryService();
+	        	security = repositoryService.getSecurityFromURI(uri);
+                if (security != null)
+                	setPartName(NLS.bind("{0} - {1}", new Object[] { security.getName(), getPartName() }));
+	        } catch (Exception e) {
+	        	Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
+	        	Activator.getDefault().getLog().log(status);
+	        }
+		}
+
+	    if (dialogSettings == null) {
+		    dialogSettings = bundleDialogSettings.getSection(getClass().getName());
+		    if (dialogSettings == null)
+		    	dialogSettings = bundleDialogSettings.addNewSection(getClass().getName());
+	    }
 
         refreshAction = new Action("Refresh") {
 			@Override
@@ -187,6 +216,16 @@ public class HeadLineViewer extends ViewPart {
             	if (!selection.isEmpty()) {
             		IHeadLine headLine = (IHeadLine) selection.getFirstElement();
             		doOpenHeadLine(headLine, false);
+            	}
+        	}
+        };
+        openNewWindowAction = new Action("Open in New Browser") {
+			@Override
+        	public void run() {
+				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+            	if (!selection.isEmpty()) {
+            		IHeadLine headLine = (IHeadLine) selection.getFirstElement();
+            		doOpenHeadLine(headLine, true);
             	}
         	}
         };
@@ -249,6 +288,7 @@ public class HeadLineViewer extends ViewPart {
 				menuManager.add(new Separator("group.properties"));
 
 				menuManager.appendToGroup("group.open", openAction);
+				menuManager.appendToGroup("group.open", openNewWindowAction);
 				menuManager.appendToGroup("group.edit", markAsReadAction);
 				menuManager.appendToGroup("group.edit", markAllAsReadAction);
 			}
@@ -443,7 +483,10 @@ public class HeadLineViewer extends ViewPart {
 		if (serviceReference != null) {
 			service = (INewsService) context.getService(serviceReference);
 			if (service != null) {
-				result = service.getHeadLines();
+                if (security != null)
+                	result = service.getHeadLinesFor(security);
+				else
+					result = service.getHeadLines();
 				service.addNewsServiceListener(newsListener);
 			}
 			context.ungetService(serviceReference);
