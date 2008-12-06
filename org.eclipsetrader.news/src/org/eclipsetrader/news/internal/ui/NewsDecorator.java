@@ -11,11 +11,11 @@
 
 package org.eclipsetrader.news.internal.ui;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -24,7 +24,6 @@ import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.views.IViewItem;
-import org.eclipsetrader.news.core.HeadLineStatus;
 import org.eclipsetrader.news.core.INewsService;
 import org.eclipsetrader.news.core.INewsServiceListener;
 import org.eclipsetrader.news.core.NewsEvent;
@@ -35,27 +34,23 @@ import org.osgi.framework.ServiceReference;
 public class NewsDecorator implements ILightweightLabelDecorator {
 	private ImageDescriptor unreadedDescriptor;
 	private ImageDescriptor readedDescriptor;
+	private boolean enabled;
 
 	private INewsService newsService;
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-	private Set<IViewItem> decoratedObjects = new HashSet<IViewItem>();
-
 	private INewsServiceListener newsListener = new INewsServiceListener() {
         public void newsServiceUpdate(NewsEvent event) {
-        	Set<IViewItem> updatedObjects = new HashSet<IViewItem>();
+    		fireLabelProviderChanged(new LabelProviderChangedEvent(NewsDecorator.this));
+        }
+	};
 
-        	HeadLineStatus[] status = event.getStatus();
-        	for (int i = 0; i < status.length; i++) {
-        		for (IViewItem element : decoratedObjects) {
-        			ISecurity security = (ISecurity) element.getAdapter(ISecurity.class);
-        			if (status[i].getHeadLine().contains(security))
-        				updatedObjects.add(element);
-        		}
+	IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent event) {
+        	if (event.getProperty().equals(Activator.PREFS_ENABLE_DECORATORS)) {
+        		enabled = ((Boolean) event.getNewValue()).booleanValue();
+        		fireLabelProviderChanged(new LabelProviderChangedEvent(NewsDecorator.this));
         	}
-
-        	if (updatedObjects.size() != 0)
-        		fireLabelProviderChanged(new LabelProviderChangedEvent(NewsDecorator.this, updatedObjects.toArray()));
         }
 	};
 
@@ -63,6 +58,10 @@ public class NewsDecorator implements ILightweightLabelDecorator {
 		if (Activator.getDefault() != null) {
 			unreadedDescriptor = Activator.getDefault().getImageRegistry().getDescriptor("unreaded_ovr");
 			readedDescriptor = Activator.getDefault().getImageRegistry().getDescriptor("readed_ovr");
+
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+			store.addPropertyChangeListener(propertyChangeListener);
+			enabled = store.getBoolean(Activator.PREFS_ENABLE_DECORATORS);
 		}
 		newsService = getNewsService();
 		newsService.addNewsServiceListener(newsListener);
@@ -79,8 +78,12 @@ public class NewsDecorator implements ILightweightLabelDecorator {
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
      */
     public void dispose() {
+		if (Activator.getDefault() != null) {
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+			store.removePropertyChangeListener(propertyChangeListener);
+		}
+
 		newsService.removeNewsServiceListener(newsListener);
-		decoratedObjects.clear();
     }
 
 	/* (non-Javadoc)
@@ -101,17 +104,18 @@ public class NewsDecorator implements ILightweightLabelDecorator {
      * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
      */
     public void decorate(Object element, IDecoration decoration) {
-    	if (element instanceof IViewItem) {
-    		IViewItem viewItem = (IViewItem) element;
-			ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
-			if (security != null) {
-	    		if (newsService.hasUnreadedHeadLinesFor(security))
-	    			decoration.addOverlay(unreadedDescriptor);
-	    		else if (newsService.hasHeadLinesFor(security))
-	    			decoration.addOverlay(readedDescriptor);
-	    		decoratedObjects.add(viewItem);
-			}
-    	}
+		if (enabled) {
+	    	if (element instanceof IViewItem) {
+	    		IViewItem viewItem = (IViewItem) element;
+				ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
+				if (security != null) {
+		    		if (newsService.hasUnreadedHeadLinesFor(security))
+		    			decoration.addOverlay(unreadedDescriptor);
+		    		else if (newsService.hasHeadLinesFor(security))
+		    			decoration.addOverlay(readedDescriptor);
+				}
+	    	}
+		}
     }
 
 	protected void fireLabelProviderChanged(final LabelProviderChangedEvent event) {

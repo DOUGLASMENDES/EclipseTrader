@@ -104,5 +104,11 @@
             name="Open News">
       </command>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.eclipsetrader.news.internal.NewsUpdateStartup">
+      </startup>
+   </extension>
 
 </plugin>

@@ -122,8 +122,13 @@ public class HeadLineViewer extends ViewPart {
         		try {
         			viewer.getControl().getDisplay().asyncExec(new Runnable() {
                         public void run() {
-                        	if (!viewer.getControl().isDisposed())
+                        	if (!viewer.getControl().isDisposed()) {
                         		viewer.refresh();
+                        		if (hasUnreadedHeadlines())
+                        			setTitleImage(Activator.getDefault().getImageRegistry().get("new_headlines_icon"));
+                        		else
+                        			setTitleImage(Activator.getDefault().getImageRegistry().get("normal_icon"));
+                        	}
                         }
         			});
         		} catch(SWTException e) {
@@ -301,6 +306,11 @@ public class HeadLineViewer extends ViewPart {
 			getSite().getPage().addSelectionListener(selectionListener);
 	       	viewer.setSelection(getSite().getPage().getSelection(), true);
 		}
+
+		if (hasUnreadedHeadlines())
+			setTitleImage(Activator.getDefault().getImageRegistry().get("new_headlines_icon"));
+		else
+			setTitleImage(Activator.getDefault().getImageRegistry().get("normal_icon"));
 	}
 
 	/* (non-Javadoc)
@@ -493,5 +503,13 @@ public class HeadLineViewer extends ViewPart {
 		}
 
 		return result;
+	}
+
+	protected boolean hasUnreadedHeadlines() {
+		for (IHeadLine headLine : input) {
+			if (!headLine.isReaded())
+				return true;
+		}
+		return false;
 	}
 }

@@ -46,7 +46,6 @@ import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.MultiRule;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.news.core.HeadLineStatus;
 import org.eclipsetrader.news.core.IHeadLine;
@@ -78,8 +77,6 @@ public class NewsService implements INewsService, ISchedulingRule {
 	}
 
 	public void startUp(IProgressMonitor monitor) throws JAXBException {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-
 		File file = Activator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
 		if (file.exists()) {
 			JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
@@ -95,6 +92,17 @@ public class NewsService implements INewsService, ISchedulingRule {
 	        headLines.addAll(Arrays.asList(element.getValue()));
 		}
 
+		IConfigurationElement[] elements = getProvidersConfigurationElements();
+		for (int i = 0; i < elements.length; i++) {
+			try {
+				INewsProvider newsProvider = (INewsProvider) elements[i].createExecutableExtension("class");
+		        headLines.addAll(Arrays.asList(newsProvider.getHeadLines()));
+				providers.add(newsProvider);
+			} catch(Exception e) {
+				// TODO Log
+			}
+		}
+
 		Date limitDate = getLimitDate();
 		for (Iterator<IHeadLine> iter = headLines.iterator(); iter.hasNext(); ) {
 			if (iter.next().getDate().before(limitDate))
@@ -102,18 +110,6 @@ public class NewsService implements INewsService, ISchedulingRule {
 		}
 
 		updateSecurityMap();
-
-		IConfigurationElement[] elements = getProvidersConfigurationElements();
-		for (int i = 0; i < elements.length; i++) {
-			try {
-				INewsProvider newsProvider = (INewsProvider) elements[i].createExecutableExtension("class");
-				if (store.getBoolean(Activator.PREFS_UPDATE_ON_STARTUP))
-					newsProvider.start();
-				providers.add(newsProvider);
-			} catch(Exception e) {
-				// TODO Log
-			}
-		}
 	}
 
 	public void shutDown(IProgressMonitor monitor) throws JAXBException, IOException {

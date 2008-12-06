@@ -19,6 +19,13 @@ package org.eclipsetrader.news.core;
 public interface INewsProvider {
 
 	/**
+	 * Gets a possibly empty array of headlines.
+	 *
+	 * @return the headlines.
+	 */
+	public IHeadLine[] getHeadLines();
+
+	/**
 	 * Starts the news feed.
 	 */
 	public void start();

@@ -40,6 +40,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String PREFS_DATE_RANGE = "DATE_RANGE"; //$NON-NLS-1$
 	public static final String PREFS_UPDATE_ON_STARTUP = "UPDATE_ON_STARTUP"; //$NON-NLS-1$
 	public static final String PREFS_FOLLOW_QUOTE_FEED = "FOLLOW_QUOTE_FEED"; //$NON-NLS-1$
+	public static final String PREFS_ENABLE_DECORATORS = "ENABLE_DECORATORS"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -121,6 +122,9 @@ public class Activator extends AbstractUIPlugin {
     protected void initializeImageRegistry(ImageRegistry reg) {
 	    reg.put("readed_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/readed_ovr.gif")));
 	    reg.put("unreaded_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/unreaded_ovr.gif")));
+
+	    reg.put("normal_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/newspaper.png")));
+	    reg.put("new_headlines_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/newspaper_add.png")));
     }
 
     /**

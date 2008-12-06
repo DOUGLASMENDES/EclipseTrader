@@ -87,6 +87,13 @@ public class RSSNewsProvider implements INewsProvider {
 	}
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
+     */
+    public IHeadLine[] getHeadLines() {
+	    return new IHeadLine[0];
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.news.core.INewsProvider#start()
      */
     public void start() {

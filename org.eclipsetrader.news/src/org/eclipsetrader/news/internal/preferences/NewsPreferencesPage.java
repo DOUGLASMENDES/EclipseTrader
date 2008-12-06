@@ -40,6 +40,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 	private Button updateStartup;
 	private Button followQuoteFeed;
 	private Spinner daysToKeep;
+	private Button enableDecorators;
 	private CheckboxTableViewer providers;
 
 	/* (non-Javadoc)
@@ -57,6 +58,10 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
 		content.setLayout(gridLayout);
+
+		enableDecorators = new Button(content, SWT.CHECK);
+		enableDecorators.setText("Enable decorators");
+		enableDecorators.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
 		updateStartup = new Button(content, SWT.CHECK);
 		updateStartup.setText(Messages.NewsPreferencesPage_StartupUpdate);
@@ -104,6 +109,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		updateStartup.setSelection(store.getBoolean(Activator.PREFS_UPDATE_ON_STARTUP));
 		followQuoteFeed.setSelection(store.getBoolean(Activator.PREFS_FOLLOW_QUOTE_FEED));
 		daysToKeep.setSelection(store.getInt(Activator.PREFS_DATE_RANGE));
+		enableDecorators.setSelection(store.getBoolean(Activator.PREFS_ENABLE_DECORATORS));
 
 		IConfigurationElement[] elements = getProvidersConfigurationElements();
 		providers.setInput(elements);
@@ -123,6 +129,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		store.setValue(Activator.PREFS_UPDATE_ON_STARTUP, updateStartup.getSelection());
 		store.setValue(Activator.PREFS_FOLLOW_QUOTE_FEED, followQuoteFeed.getSelection());
 		store.setValue(Activator.PREFS_DATE_RANGE, daysToKeep.getSelection());
+		store.setValue(Activator.PREFS_ENABLE_DECORATORS, enableDecorators.getSelection());
 
 		IConfigurationElement[] elements = getProvidersConfigurationElements();
 		for (int i = 0; i < elements.length; i++) {
