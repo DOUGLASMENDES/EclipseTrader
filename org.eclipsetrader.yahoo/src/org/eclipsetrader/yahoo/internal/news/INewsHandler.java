@@ -14,9 +14,7 @@ package org.eclipsetrader.yahoo.internal.news;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipsetrader.news.internal.repository.HeadLine;
 
-@SuppressWarnings("restriction")
 public interface INewsHandler {
 
 	public HeadLine[] parseNewsPages(URL[] url, IProgressMonitor monitor);

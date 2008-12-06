@@ -11,15 +11,26 @@
 
 package org.eclipsetrader.yahoo.internal.news;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -44,7 +55,6 @@ import org.eclipsetrader.news.core.IHeadLine;
 import org.eclipsetrader.news.core.INewsProvider;
 import org.eclipsetrader.news.core.INewsService;
 import org.eclipsetrader.news.core.INewsServiceRunnable;
-import org.eclipsetrader.news.internal.repository.HeadLine;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -55,9 +65,8 @@ import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
-@SuppressWarnings("restriction")
 public class NewsProvider implements INewsProvider {
-	public static final String HOST = "finance.yahoo.com";
+	public static final String HEADLINES_FILE = "headlines.xml"; //$NON-NLS-1$
 
 	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
 	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
@@ -86,6 +95,51 @@ public class NewsProvider implements INewsProvider {
 
 	public NewsProvider() {
 	}
+
+	public void startUp() throws JAXBException {
+		File file = YahooActivator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
+		if (file.exists()) {
+			JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
+	        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            unmarshaller.setEventHandler(new ValidationEventHandler() {
+            	public boolean handleEvent(ValidationEvent event) {
+            		Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+            		YahooActivator.getDefault().getLog().log(status);
+            		return true;
+            	}
+            });
+	        JAXBElement<HeadLine[]> element = unmarshaller.unmarshal(new StreamSource(file), HeadLine[].class);
+	        oldItems.addAll(Arrays.asList(element.getValue()));
+		}
+	}
+
+	protected void save() throws JAXBException, IOException {
+		File file = YahooActivator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
+		if (file.exists())
+			file.delete();
+
+		JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setEventHandler(new ValidationEventHandler() {
+			public boolean handleEvent(ValidationEvent event) {
+				Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+				YahooActivator.getDefault().getLog().log(status);
+				return true;
+			}
+		});
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+
+		JAXBElement<HeadLine[]> element = new JAXBElement<HeadLine[]>(new QName("list"), HeadLine[].class, oldItems.toArray(new HeadLine[oldItems.size()]));
+		marshaller.marshal(element, new FileWriter(file));
+	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
+     */
+    public IHeadLine[] getHeadLines() {
+	    return oldItems.toArray(new IHeadLine[oldItems.size()]);
+    }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.news.core.INewsProvider#start()
@@ -177,13 +231,15 @@ public class NewsProvider implements INewsProvider {
 					}
 				}
 
-				final INewsService service = getNewsService();
-				service.runInService(new INewsServiceRunnable() {
-                    public IStatus run(IProgressMonitor monitor) throws Exception {
-                    	service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
-                        return Status.OK_STATUS;
-                    }
-				}, null);
+				if (added.size() != 0) {
+					final INewsService service = getNewsService();
+					service.runInService(new INewsServiceRunnable() {
+	                    public IStatus run(IProgressMonitor monitor) throws Exception {
+	                    	service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
+	                        return Status.OK_STATUS;
+	                    }
+					}, null);
+				}
 	        }
 
 			if (store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS)) {
@@ -191,6 +247,8 @@ public class NewsProvider implements INewsProvider {
 				if (monitor.isCanceled())
 					return Status.OK_STATUS;
 			}
+
+			save();
 		} catch(Exception e) {
 			// TODO Log
 		} finally {
@@ -201,22 +259,30 @@ public class NewsProvider implements INewsProvider {
     }
 
     protected void resetRecentFlag() {
+    	int hoursAsRecent = YahooActivator.getDefault().getPreferenceStore().getInt(YahooActivator.PREFS_HOURS_AS_RECENT);
+
+    	Calendar today = Calendar.getInstance();
+    	today.add(Calendar.HOUR_OF_DAY, - hoursAsRecent);
+    	Date limit = today.getTime();
+
     	final List<HeadLine> updated = new ArrayList<HeadLine>();
 
     	for (HeadLine headLine : oldItems) {
-			if (headLine.isRecent()) {
+			if (headLine.getDownloadDate().before(limit) && headLine.isRecent()) {
 				headLine.setRecent(false);
 				updated.add(headLine);
 			}
 		}
 
-		final INewsService service = getNewsService();
-		service.runInService(new INewsServiceRunnable() {
-            public IStatus run(IProgressMonitor monitor) throws Exception {
-            	service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
-                return Status.OK_STATUS;
-            }
-		}, null);
+    	if (updated.size() != 0) {
+    		final INewsService service = getNewsService();
+    		service.runInService(new INewsServiceRunnable() {
+                public IStatus run(IProgressMonitor monitor) throws Exception {
+                	service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
+                    return Status.OK_STATUS;
+                }
+    		}, null);
+    	}
     }
 
     protected void fetchHeadLines(ISecurity[] securities, IProgressMonitor monitor) {
@@ -226,22 +292,6 @@ public class NewsProvider implements INewsProvider {
 		try {
 			HttpClient client = new HttpClient();
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-
-			if (YahooActivator.getDefault() != null) {
-				BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
-				ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-				if (reference != null) {
-					IProxyService proxy = (IProxyService) context.getService(reference);
-					IProxyData data = proxy.getProxyDataForHost(HOST, IProxyData.HTTP_PROXY_TYPE);
-					if (data != null) {
-						if (data.getHost() != null)
-							client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-						if (data.isRequiresAuthentication())
-							client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
-					}
-					context.ungetService(reference);
-				}
-			}
 
 			for (int i = 0; i < securities.length && !monitor.isCanceled(); i++) {
 				IFeedIdentifier identifier = (IFeedIdentifier) securities[i].getAdapter(IFeedIdentifier.class);
@@ -256,14 +306,37 @@ public class NewsProvider implements INewsProvider {
 						symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
 				}
 
-				String feedUrl = "http://" + HOST + "/rss/headline?s=" + symbol;
-				monitor.subTask(feedUrl);
+				URL feedUrl = new URL("http://finance.yahoo.com/rss/headline?s=" + symbol);
+				if (symbol.toLowerCase().endsWith(".mi"))
+					feedUrl = new URL("http://it.finance.yahoo.com/rss/headline?s=" + symbol);
+				else if (symbol.toLowerCase().endsWith(".pa"))
+					feedUrl = new URL("http://fr.finance.yahoo.com/rss/headline?s=" + symbol);
+				else if (symbol.toLowerCase().endsWith(".de"))
+					feedUrl = new URL("http://de.finance.yahoo.com/rss/headline?s=" + symbol);
+
+				monitor.subTask(feedUrl.toString());
 
 				added.clear();
 				updated.clear();
 
 				try {
-					SyndFeed feed = fetcher.retrieveFeed(new URL(feedUrl), client);
+					if (YahooActivator.getDefault() != null) {
+						BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
+						ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
+						if (reference != null) {
+							IProxyService proxy = (IProxyService) context.getService(reference);
+							IProxyData data = proxy.getProxyDataForHost(feedUrl.getHost(), IProxyData.HTTP_PROXY_TYPE);
+							if (data != null) {
+								if (data.getHost() != null)
+									client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
+								if (data.isRequiresAuthentication())
+									client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
+							}
+							context.ungetService(reference);
+						}
+					}
+
+					SyndFeed feed = fetcher.retrieveFeed(feedUrl, client);
 					for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
 						SyndEntry entry = (SyndEntry) iter.next();
 
@@ -308,14 +381,16 @@ public class NewsProvider implements INewsProvider {
 			        e.printStackTrace();
 				}
 
-				final INewsService service = getNewsService();
-				service.runInService(new INewsServiceRunnable() {
-                    public IStatus run(IProgressMonitor monitor) throws Exception {
-                    	service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
-                    	service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
-                        return Status.OK_STATUS;
-                    }
-				}, null);
+				if (added.size() != 0 || updated.size() != 0) {
+					final INewsService service = getNewsService();
+					service.runInService(new INewsServiceRunnable() {
+	                    public IStatus run(IProgressMonitor monitor) throws Exception {
+	                    	service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
+	                    	service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
+	                        return Status.OK_STATUS;
+	                    }
+					}, null);
+				}
 
 				monitor.worked(1);
 			}

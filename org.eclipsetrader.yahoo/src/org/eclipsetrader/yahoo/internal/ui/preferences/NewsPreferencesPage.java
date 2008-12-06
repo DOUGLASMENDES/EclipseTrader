@@ -44,6 +44,7 @@ import org.eclipsetrader.yahoo.internal.news.Page;
 
 public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage {
 	private Spinner interval;
+	private Spinner hoursAsRecent;
 	private Button updateNews;
 	private CheckboxTreeViewer providers;
 
@@ -75,6 +76,19 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		interval.setMaximum(9999);
 		label = new Label(group, SWT.NONE);
 		label.setText("minute(s)");
+
+		group = new Composite(content, SWT.NONE);
+		gridLayout = new GridLayout(3, false);
+		gridLayout.marginWidth = gridLayout.marginHeight = 0;
+		group.setLayout(gridLayout);
+		group.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+		label = new Label(group, SWT.NONE);
+		label.setText("Consider a news as recent for");
+		hoursAsRecent = new Spinner(group, SWT.BORDER);
+		hoursAsRecent.setMinimum(0);
+		hoursAsRecent.setMaximum(9999);
+		label = new Label(group, SWT.NONE);
+		label.setText("hour(s)");
 
 		updateNews = new Button(content, SWT.CHECK);
 		updateNews.setText("Update security news");
@@ -127,6 +141,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
 
 		interval.setSelection(store.getInt(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL));
+		hoursAsRecent.setSelection(store.getInt(YahooActivator.PREFS_HOURS_AS_RECENT));
 		updateNews.setSelection(store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS));
 
 		try {
@@ -168,6 +183,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
 
 		store.setValue(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL, interval.getSelection());
+		store.setValue(YahooActivator.PREFS_HOURS_AS_RECENT, hoursAsRecent.getSelection());
 		store.setValue(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS, updateNews.getSelection());
 
 		Category[] input = (Category[]) providers.getInput();

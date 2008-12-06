@@ -50,7 +50,7 @@
    <extension
          point="org.eclipsetrader.news.providers">
       <provider
-            class="org.eclipsetrader.yahoo.internal.news.NewsProvider"
+            class="org.eclipsetrader.yahoo.internal.news.NewsProviderFactory"
             id="org.eclipsetrader.news.yahoo"
             name="Yahoo! Finance">
       </provider>

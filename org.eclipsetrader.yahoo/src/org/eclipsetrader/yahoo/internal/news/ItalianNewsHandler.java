@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipsetrader.news.internal.repository.HeadLine;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.OrFilter;
 import org.htmlparser.filters.TagNameFilter;
@@ -29,7 +28,6 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
-@SuppressWarnings("restriction")
 public class ItalianNewsHandler implements INewsHandler {
 
 	public ItalianNewsHandler() {
