@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.net,
  org.eclipse.ui,
  org.eclipsetrader.core
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Import-Package: com.sun.syndication.feed,
  com.sun.syndication.feed.atom,
  com.sun.syndication.feed.impl,

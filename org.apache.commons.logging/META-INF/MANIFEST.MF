@@ -7,4 +7,4 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: org.apache.commons.logging;version="1.1.1",
  org.apache.commons.logging.impl;version="1.1.1"
 Bundle-Vendor: Apache Software Foundation
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy

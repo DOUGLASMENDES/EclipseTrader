@@ -13,4 +13,4 @@ Require-Bundle: org.apache.lucene,
  org.eclipse.help.ui,
  org.eclipse.help.webapp,
  org.eclipse.ui
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy

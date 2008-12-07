@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.htmlparser
 Bundle-Version: 1.6.0.R20060319
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: Eclipsetrader.org
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.htmlparser;version="1.6.0",
  org.htmlparser.beans;version="1.6.0",
  org.htmlparser.filters;version="1.6.0",

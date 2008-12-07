@@ -16,7 +16,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.IPreferenceConstants;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.presentations.defaultpresentation.DefaultSimpleTabListener;
 import org.eclipse.ui.internal.presentations.defaultpresentation.DefaultTabFolder;
@@ -37,7 +36,7 @@ public class TraderPresentationFactory extends WorkbenchPresentationFactory {
 
 	private static int viewTabPosition = WorkbenchPlugin.getDefault()
 			.getPreferenceStore()
-			.getInt(IPreferenceConstants.VIEW_TAB_POSITION);
+			.getInt(IWorkbenchPreferenceConstants.VIEW_TAB_POSITION);
 
 	public TraderPresentationFactory() {
 	}

@@ -11,4 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipsetrader.core.trading,
  org.eclipse.nebula.widgets.cdatetime;bundle-version="0.10.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy

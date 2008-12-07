@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.net,
  org.eclipse.ui,
  org.eclipsetrader.core
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Import-Package: javax.xml.bind;version="[2.1.6,2.2.0)",
  javax.xml.bind.annotation;version="[2.1.6,2.2.0)",
  javax.xml.bind.annotation.adapters;version="[2.1.6,2.2.0)",
@@ -28,3 +28,4 @@ Export-Package: org.eclipsetrader.directaworld.internal;x-internal:=true,
  org.eclipsetrader.directaworld.internal.core.connector;x-internal:=true,
  org.eclipsetrader.directaworld.internal.core.repository;x-internal:=true,
  org.eclipsetrader.directaworld.internal.ui.preferences;x-internal:=true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

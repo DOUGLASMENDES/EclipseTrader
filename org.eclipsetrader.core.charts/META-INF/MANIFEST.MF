@@ -7,7 +7,7 @@ Bundle-Activator: org.eclipsetrader.core.internal.charts.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipsetrader.core.charts,
  org.eclipsetrader.core.charts.repository,

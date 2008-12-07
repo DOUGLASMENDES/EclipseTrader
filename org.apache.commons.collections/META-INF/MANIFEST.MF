@@ -17,4 +17,4 @@ Export-Package: org.apache.commons.collections;version="3.2.0",
  org.apache.commons.collections.list;version="3.2.0",
  org.apache.commons.collections.map;version="3.2.0",
  org.apache.commons.collections.set;version="3.2.0"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy

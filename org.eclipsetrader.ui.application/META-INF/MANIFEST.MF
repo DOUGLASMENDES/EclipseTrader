@@ -9,5 +9,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipsetrader.ui,
  org.eclipse.update.ui
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

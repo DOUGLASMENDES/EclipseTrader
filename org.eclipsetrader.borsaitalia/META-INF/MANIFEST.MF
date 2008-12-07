@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipsetrader.core,
  org.eclipse.nebula.widgets.cdatetime
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.commons.httpclient;version="[3.0.0,4.0.0)",
  org.apache.commons.httpclient.auth;version="[3.0.0,4.0.0)",
  org.apache.commons.httpclient.cookie;version="[3.0.0,4.0.0)",

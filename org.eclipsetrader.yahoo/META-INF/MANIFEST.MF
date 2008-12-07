@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core,
  org.eclipsetrader.news,
  org.eclipse.nebula.widgets.cdatetime
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-Vendor: EclipseTrader.org
 Export-Package: org.eclipsetrader.yahoo.internal;x-internal:=true,
  org.eclipsetrader.yahoo.internal.core;x-internal:=true,

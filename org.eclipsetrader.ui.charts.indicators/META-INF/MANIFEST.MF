@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core,
  org.eclipsetrader.core.charts,
  org.eclipsetrader.ui.charts
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Import-Package: com.tictactec.ta.lib;version="0.4.0",
  com.tictactec.ta.lib.meta;version="0.4.0",
  com.tictactec.ta.lib.meta.annotation;version="0.4.0",
