@@ -65,9 +65,12 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISaveablePart;
@@ -540,6 +543,14 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 		viewer.getTable().setHeaderVisible(true);
 		viewer.getTable().setLinesVisible(false);
 		viewer.setUseHashlookup(true);
+
+		// This is a workaround for the sort column background color
+		viewer.getTable().addListener(SWT.EraseItem, new Listener() {
+            public void handleEvent(Event event) {
+            	event.gc.setBackground(((TableItem) event.item).getBackground());
+				event.gc.fillRectangle(event.getBounds());
+            }
+		});
 
 		viewer.setContentProvider(new WatchListViewContentProvider());
 		viewer.setSorter(new ViewerSorter() {
