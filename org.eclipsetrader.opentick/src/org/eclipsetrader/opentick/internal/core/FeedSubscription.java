@@ -12,10 +12,16 @@
 package org.eclipsetrader.opentick.internal.core;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TimeZone;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
 import org.eclipsetrader.core.feed.ILastClose;
@@ -33,7 +39,9 @@ import org.eclipsetrader.opentick.internal.OTActivator;
 import org.eclipsetrader.opentick.internal.core.repository.IdentifierType;
 import org.eclipsetrader.opentick.internal.core.repository.PriceDataType;
 import org.otfeed.IRequest;
+import org.otfeed.command.AggregationSpan;
 import org.otfeed.command.EquityInitCommand;
+import org.otfeed.command.HistDataCommand;
 import org.otfeed.command.TickStreamWithSnapshotCommand;
 import org.otfeed.command.TodaysOHLCommand;
 import org.otfeed.event.ICompletionDelegate;
@@ -41,6 +49,7 @@ import org.otfeed.event.IDataDelegate;
 import org.otfeed.event.OTBBO;
 import org.otfeed.event.OTEquityInit;
 import org.otfeed.event.OTError;
+import org.otfeed.event.OTOHLC;
 import org.otfeed.event.OTQuote;
 import org.otfeed.event.OTTodaysOHL;
 import org.otfeed.event.OTTrade;
@@ -53,7 +62,6 @@ public class FeedSubscription implements IFeedSubscription {
 	private List<QuoteDelta> deltaList = new ArrayList<QuoteDelta>();
 	private int instanceCount = 0;
 
-	private IRequest equityInitRequest;
 	private IRequest ohlRequest;
 	private IRequest quoteStreamRequest;
 
@@ -213,9 +221,17 @@ public class FeedSubscription implements IFeedSubscription {
     	connector.wakeupNotifyThread();
     }
 
-	protected void submitRequests(org.otfeed.IConnection connection) {
+	protected void submitRequests(final org.otfeed.IConnection connection) {
 		EquityInitCommand equityInitCommand = new EquityInitCommand(identifierType.getExchange(), identifierType.getSymbol(), equityInitDelegate);
-		equityInitRequest = connection.prepareRequest(equityInitCommand);
+		equityInitCommand.setCompletionDelegate(new ICompletionDelegate() {
+            public void onDataEnd(OTError error) {
+            	if (error != null && error.getCode() == 1003) {
+            		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("America/New_York"), Locale.US);
+            		getLastCloseFromHistory(connection, c);
+            	}
+            }
+    	});
+		IRequest equityInitRequest = connection.prepareRequest(equityInitCommand);
 		equityInitRequest.submit();
 
 		TodaysOHLCommand ohlCommand = new TodaysOHLCommand(identifierType.getExchange(), identifierType.getSymbol(), ohlDelegate);
@@ -228,25 +244,55 @@ public class FeedSubscription implements IFeedSubscription {
     	tickStreamCommand.setBboDelegate(bboDelegate);
     	tickStreamCommand.setCompletionDelegate(new ICompletionDelegate() {
             public void onDataEnd(OTError error) {
-            	System.err.println(getSymbol() + ": " + error);
+            	Status status = new Status(Status.ERROR, OTActivator.PLUGIN_ID,
+            			NLS.bind("Tick stream error for symbol {0}: {1}", new Object[] {
+            					getSymbol(),
+            					error.toString(),
+            				}));
+            	OTActivator.log(status);
             }
     	});
     	quoteStreamRequest = connection.prepareRequest(tickStreamCommand);
     	quoteStreamRequest.submit();
+	}
 
-    	if (getSymbol().endsWith("MSFT"))
-    		System.out.println("Requesting data for " + getSymbol());
+	// Recursively retrives the daily OHLC data until the last trade day is reached.
+	// Workaround, until EquityInit works again
+	private void getLastCloseFromHistory(final org.otfeed.IConnection connection, final Calendar refDay) {
+		refDay.set(Calendar.HOUR_OF_DAY, 0);
+		refDay.set(Calendar.MINUTE, 0);
+		refDay.set(Calendar.SECOND, 0);
+		refDay.set(Calendar.MILLISECOND, 0);
+
+		refDay.add(Calendar.DATE, -1);
+		while (refDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || refDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+			refDay.add(Calendar.DATE, -1);
+
+		final Set<OTOHLC> events = new HashSet<OTOHLC>();
+		HistDataCommand command = new HistDataCommand(identifierType.getExchange(), identifierType.getSymbol(), refDay.getTime(), refDay.getTime(), AggregationSpan.days(1), new IDataDelegate<OTOHLC>() {
+            public void onData(OTOHLC event) {
+    			PriceDataType priceData = identifierType.getPriceData();
+    			ILastClose oldValue = identifierType.getLastClose();
+    			priceData.setClose(event.getClosePrice());
+    			ILastClose newValue = new LastClose(priceData.getClose(), null);
+    			if (!newValue.equals(oldValue)) {
+    				addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+    				identifierType.setLastClose(newValue);
+    			}
+            	events.add(event);
+            }
+		});
+		command.setCompletionDelegate(new ICompletionDelegate() {
+            public void onDataEnd(OTError error) {
+            	if (events.size() == 0)
+            		getLastCloseFromHistory(connection, refDay);
+            }
+		});
+		IRequest request = connection.prepareRequest(command);
+		request.submit();
 	}
 
 	protected void cancelRequests() throws Exception {
-		if (equityInitRequest != null && !equityInitRequest.isCompleted()) {
-			try {
-				equityInitRequest.cancel();
-			} catch (IllegalStateException e) {
-				// Do nothing
-			}
-			equityInitRequest = null;
-		}
 		if (ohlRequest != null && !ohlRequest.isCompleted()) {
 			try {
 				ohlRequest.cancel();
