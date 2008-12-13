@@ -28,9 +28,10 @@ public class Messages extends NLS {
 	public static String RSSFeedDialog_Source;
 	public static String RSSFeedDialog_URL;
 
-	public static String NewsPreferencesPage_StartupUpdate;
+	public static String NewsPreferencesPage_RunAtStartup;
     public static String NewsPreferencesPage_FollowQuoteFeed;
     public static String NewsPreferencesPage_DaysToKeep;
+	public static String NewsPreferencesPage_EnableDecorators;
     public static String NewsPreferencesPage_Providers;
 
     public static String RSSPreferencesPage_AutoUpdate;

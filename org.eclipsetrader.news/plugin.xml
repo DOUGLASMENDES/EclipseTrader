@@ -21,7 +21,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipsetrader.news.internal.ui.Perspective"
-            icon="icons/eview16/newspaper.png"
+            icon="icons/eview16/headlines.png"
             id="org.eclipsetrader.news.perspective"
             name="News">
       </perspective>
@@ -32,7 +32,7 @@
             allowMultiple="true"
             category="org.eclipsetrader.ui.news"
             class="org.eclipsetrader.news.internal.ui.NewsViewer"
-            icon="icons/eview16/internal_browser.gif"
+            icon="icons/eview16/browser.png"
             id="org.eclipsetrader.news.browser"
             name="Browser">
       </view>
@@ -40,7 +40,7 @@
             allowMultiple="true"
             category="org.eclipsetrader.ui.news"
             class="org.eclipsetrader.news.internal.ui.HeadLineViewer"
-            icon="icons/eview16/newspaper.png"
+            icon="icons/eview16/headlines.png"
             id="org.eclipsetrader.ui.views.headlines"
             name="Headlines">
       </view>

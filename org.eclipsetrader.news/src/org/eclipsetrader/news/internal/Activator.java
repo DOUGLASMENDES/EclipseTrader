@@ -123,8 +123,8 @@ public class Activator extends AbstractUIPlugin {
 	    reg.put("readed_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/readed_ovr.gif")));
 	    reg.put("unreaded_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/unreaded_ovr.gif")));
 
-	    reg.put("normal_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/newspaper.png")));
-	    reg.put("new_headlines_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/newspaper_add.png")));
+	    reg.put("normal_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/headlines.png")));
+	    reg.put("new_headlines_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/headlines_unread.png")));
     }
 
     /**

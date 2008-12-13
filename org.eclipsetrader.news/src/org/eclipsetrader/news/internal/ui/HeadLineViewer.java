@@ -439,46 +439,42 @@ public class HeadLineViewer extends ViewPart {
 
 	protected IHeadLine getNextHeadLine() {
 		IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-		if (selection.isEmpty()) {
-			if (viewer.getTable().getItemCount() == 0)
-				return null;
-			return (IHeadLine) viewer.getTable().getItem(0).getData();
+		if (!selection.isEmpty()) {
+			int index = indexOf((IHeadLine) selection.getFirstElement());
+			if (index == -1) {
+				if (viewer.getTable().getItemCount() == 0)
+					return null;
+				return (IHeadLine) viewer.getTable().getItem(0).getData();
+			}
+
+			index++;
+			if (index < viewer.getTable().getItemCount())
+				return (IHeadLine) viewer.getTable().getItem(index).getData();
 		}
 
-		int index = indexOf((IHeadLine) selection.getFirstElement());
-		if (index == -1) {
-			if (viewer.getTable().getItemCount() == 0)
-				return null;
-			return (IHeadLine) viewer.getTable().getItem(0).getData();
-		}
-
-		index++;
-		if (index < viewer.getTable().getItemCount())
-			return (IHeadLine) viewer.getTable().getItem(index).getData();
-
-		return null;
+		if (viewer.getTable().getItemCount() == 0)
+			return null;
+		return (IHeadLine) viewer.getTable().getItem(0).getData();
 	}
 
 	protected IHeadLine getPreviousHeadLine() {
 		IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-		if (selection.isEmpty()) {
-			if (viewer.getTable().getItemCount() == 0)
-				return null;
-			return (IHeadLine) viewer.getTable().getItem(viewer.getTable().getItemCount() - 1).getData();
+		if (!selection.isEmpty()) {
+			int index = indexOf((IHeadLine) selection.getFirstElement());
+			if (index == -1) {
+				if (viewer.getTable().getItemCount() == 0)
+					return null;
+				return (IHeadLine) viewer.getTable().getItem(viewer.getTable().getItemCount() - 1).getData();
+			}
+
+			index--;
+			if (index >= 0)
+				return (IHeadLine) viewer.getTable().getItem(index).getData();
 		}
 
-		int index = indexOf((IHeadLine) selection.getFirstElement());
-		if (index == -1) {
-			if (viewer.getTable().getItemCount() == 0)
-				return null;
-			return (IHeadLine) viewer.getTable().getItem(viewer.getTable().getItemCount() - 1).getData();
-		}
-
-		index--;
-		if (index > 0)
-			return (IHeadLine) viewer.getTable().getItem(index).getData();
-
-		return null;
+		if (viewer.getTable().getItemCount() == 0)
+			return null;
+		return (IHeadLine) viewer.getTable().getItem(viewer.getTable().getItemCount() - 1).getData();
 	}
 
 	TableViewer getViewer() {
