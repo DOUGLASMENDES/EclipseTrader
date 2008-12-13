@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.yahoo.internal.core;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -19,6 +21,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
+import org.eclipsetrader.core.instruments.ISecurity;
 
 public class Util {
 	public static final String snapshotFeedHost = "download.finance.yahoo.com"; //$NON-NLS-1$
@@ -145,5 +148,29 @@ public class Util {
 		method.setFollowRedirects(true);
 
 		return method;
+	}
+
+	public static URL getRSSNewsFeedForSecurity(ISecurity security) throws MalformedURLException {
+		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+		if (identifier == null)
+			return null;
+
+		String symbol = identifier.getSymbol();
+
+		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+		if (properties != null) {
+			if (properties.getProperty("org.eclipsetrader.yahoo.symbol") != null)
+				symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
+		}
+
+		URL feedUrl = new URL("http://finance.yahoo.com/rss/headline?s=" + symbol);
+		if (symbol.toLowerCase().endsWith(".mi"))
+			feedUrl = new URL("http://it.finance.yahoo.com/rss/headline?s=" + symbol);
+		else if (symbol.toLowerCase().endsWith(".pa"))
+			feedUrl = new URL("http://fr.finance.yahoo.com/rss/headline?s=" + symbol);
+		else if (symbol.toLowerCase().endsWith(".de"))
+			feedUrl = new URL("http://de.finance.yahoo.com/rss/headline?s=" + symbol);
+
+		return feedUrl;
 	}
 }

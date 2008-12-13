@@ -34,10 +34,6 @@ public class HeadLine implements IHeadLine {
 	@XmlJavaTypeAdapter(DateTimeAdapter.class)
 	private Date date;
 
-	@XmlAttribute(name = "download-date")
-	@XmlJavaTypeAdapter(DateTimeAdapter.class)
-	private Date downloadDate;
-
 	private boolean recent;
 
 	@XmlAttribute(name = "readed")
@@ -62,7 +58,6 @@ public class HeadLine implements IHeadLine {
 
 	public HeadLine(Date date, String source, String text, ISecurity[] members, String link) {
 	    this.date = date;
-	    this.downloadDate = new Date();
 	    this.source = source;
 	    this.text = text;
 	    this.members = members != null ? new ArrayList<ISecurity>(Arrays.asList(members)) : null;
@@ -75,11 +70,6 @@ public class HeadLine implements IHeadLine {
 	@XmlTransient
 	public Date getDate() {
     	return date;
-    }
-
-	@XmlTransient
-	public Date getDownloadDate() {
-    	return downloadDate;
     }
 
 	/* (non-Javadoc)
