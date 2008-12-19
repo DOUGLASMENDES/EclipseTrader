@@ -16,6 +16,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
@@ -23,13 +26,16 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -43,18 +49,23 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepository;
+import org.eclipsetrader.core.repositories.IRepositoryRunnable;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IView;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
 import org.eclipsetrader.core.views.IViewVisitor;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.ui.UIConstants;
+import org.eclipsetrader.ui.internal.SelectionProvider;
 import org.eclipsetrader.ui.internal.UIActivator;
+import org.eclipsetrader.ui.internal.repositories.Messages;
 import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
 import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
 
@@ -64,6 +75,8 @@ public class Navigator extends ViewPart {
 
 	private Action collapseAllAction;
 	private Action expandAllAction;
+
+	private Action deleteAction;
 
 	public Navigator() {
 	}
@@ -77,6 +90,8 @@ public class Navigator extends ViewPart {
 		this.memento = memento;
 
 		ImageRegistry imageRegistry = UIActivator.getDefault().getImageRegistry();
+
+		site.setSelectionProvider(new SelectionProvider());
 
 		collapseAllAction = new Action("Collapse All", imageRegistry.getDescriptor(UIConstants.COLLAPSEALL_ICON)) {
 			@Override
@@ -92,9 +107,34 @@ public class Navigator extends ViewPart {
 			}
 		};
 
+		deleteAction = new Action("Delete") {
+			@Override
+			public void run() {
+				final IAdaptable[] objects = getSelectedObject(viewer.getSelection());
+				if (objects.length != 0) {
+					if (!MessageDialog.openConfirm(getViewSite().getShell(), getPartName(), Messages.RepositoryExplorer_DeleteConfirmMessage))
+						return;
+					final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
+					service.runInService(new IRepositoryRunnable() {
+						public IStatus run(IProgressMonitor monitor) throws Exception {
+							service.deleteAdaptable(objects);
+                            return Status.OK_STATUS;
+                        }
+					}, null);
+				}
+			}
+		};
+		deleteAction.setImageDescriptor(imageRegistry.getDescriptor(UIConstants.DELETE_EDIT_ICON));
+		deleteAction.setDisabledImageDescriptor(imageRegistry.getDescriptor(UIConstants.DELETE_EDIT_DISABLED_ICON));
+		deleteAction.setId(ActionFactory.DELETE.getId());
+		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
+		deleteAction.setEnabled(false);
+
 		IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
 		toolBarManager.add(expandAllAction);
 		toolBarManager.add(collapseAllAction);
+
+		site.getActionBars().setGlobalActionHandler(deleteAction.getId(), deleteAction);
 
 		site.getActionBars().updateActionBars();
 	}
@@ -169,6 +209,7 @@ public class Navigator extends ViewPart {
 							viewer.expandToLevel(iter.next(), TreeViewer.ALL_LEVELS);
 					}
 				});
+				menuManager.appendToGroup("group.reorganize", deleteAction);
 			}
 		});
 		viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
@@ -184,8 +225,13 @@ public class Navigator extends ViewPart {
                 }
             }
 		});
-
-		getViewSite().setSelectionProvider(viewer);
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+				IAdaptable[] objects = getSelectedObject(event.getSelection());
+				deleteAction.setEnabled(objects.length != 0);
+				getViewSite().getSelectionProvider().setSelection(event.getSelection());
+            }
+		});
 
 		NavigatorView view = new NavigatorView();
 		view.setContentProviders(new IStructuredContentProvider[] {
