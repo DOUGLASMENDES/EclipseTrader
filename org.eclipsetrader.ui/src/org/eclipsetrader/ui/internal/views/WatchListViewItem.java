@@ -25,6 +25,7 @@ import org.eclipsetrader.core.feed.ITodayOHL;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
+import org.eclipsetrader.core.views.Holding;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IWatchListElement;
 
@@ -32,9 +33,7 @@ public class WatchListViewItem extends PlatformObject {
 	private IWatchListElement reference;
 
 	private ISecurity security;
-	private Long position;
-	private Double purchasePrice;
-	private Date date;
+	private Holding holding;
 
 	private ITrade trade;
 	private IQuote quote;
@@ -51,11 +50,8 @@ public class WatchListViewItem extends PlatformObject {
 	}
 
 	public WatchListViewItem(IWatchListElement reference) {
+	    this(reference.getSecurity(), reference.getPosition(), reference.getPurchasePrice(), reference.getDate());
 	    this.reference = reference;
-	    this.security = reference.getSecurity();
-	    this.position = reference.getPosition();
-	    this.purchasePrice = reference.getPurchasePrice();
-	    this.date = reference.getDate();
     }
 
 	public WatchListViewItem(ISecurity security) {
@@ -68,9 +64,7 @@ public class WatchListViewItem extends PlatformObject {
 
 	public WatchListViewItem(ISecurity security, Long position, Double purchasePrice, Date date) {
 	    this.security = security;
-	    this.position = position;
-	    this.purchasePrice = purchasePrice;
-	    this.date = date;
+	    this.holding = new Holding(security, position, purchasePrice, date);
     }
 
 	public ISecurity getSecurity() {
@@ -78,27 +72,15 @@ public class WatchListViewItem extends PlatformObject {
 	}
 
 	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
+		return holding != null ? holding.getDate() : null;
 	}
 
 	public Long getPosition() {
-		return position;
-	}
-
-	public void setPosition(Long position) {
-		this.position = position;
+		return holding != null ? holding.getPosition() : null;
 	}
 
 	public Double getPurchasePrice() {
-		return purchasePrice;
-	}
-
-	public void setPurchasePrice(Double purchasePrice) {
-		this.purchasePrice = purchasePrice;
+		return holding != null ? holding.getPurchasePrice() : null;
 	}
 
 	public IWatchListElement getReference() {
@@ -154,6 +136,9 @@ public class WatchListViewItem extends PlatformObject {
 			if (obj != null)
 				return obj;
 		}
+
+		if (adapter.isAssignableFrom(Holding.class))
+			return holding;
 
 		if (adapter.isAssignableFrom(ITrade.class))
 			return trade;

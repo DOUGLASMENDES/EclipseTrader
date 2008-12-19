@@ -190,6 +190,11 @@
             id="org.eclipsetrader.ui.providers.pressure"
             name="Pressure">
       </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.GainFactory"
+            id="org.eclipsetrader.ui.providers.gain"
+            name="Gain">
+      </provider>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">

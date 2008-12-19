@@ -66,12 +66,20 @@ public class Holding implements IHolding {
 		return position;
 	}
 
+	public void setPosition(Long position) {
+    	this.position = position;
+    }
+
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.views.IHolding#getPurchasePrice()
 	 */
 	public Double getPurchasePrice() {
 		return purchasePrice;
 	}
+
+	public void setPurchasePrice(Double purchasePrice) {
+    	this.purchasePrice = purchasePrice;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)

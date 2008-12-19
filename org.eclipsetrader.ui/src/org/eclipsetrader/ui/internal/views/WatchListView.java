@@ -631,6 +631,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 				WatchListColumnLabelProvider labelProvider = new WatchListColumnLabelProvider(column);
 				labelProvider.setColors(evenRowsColor, oddRowsColor, tickBackgroundColor, tickEvenRowsFade, tickOddRowsFade);
 				viewerColumn.setLabelProvider(labelProvider);
+				viewerColumn.setEditingSupport(new WatchListColumEditingSupport(this, column));
 
 				properties[index] = column.getDataProviderFactory().getId();
 
@@ -741,6 +742,22 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 								throw e;
 						}
 					}
+				}
+			}
+		}
+	}
+
+	protected void doUpdateItem(WatchListViewItem viewItem) {
+		synchronized(updatedItems) {
+			updatedItems.add(viewItem);
+
+			if (viewer != null && updatedItems.size() == 1) {
+				try {
+					if (!viewer.getControl().isDisposed())
+						viewer.getControl().getDisplay().asyncExec(updateRunnable);
+				} catch(SWTException e) {
+					if (e.code != SWT.ERROR_WIDGET_DISPOSED)
+						throw e;
 				}
 			}
 		}

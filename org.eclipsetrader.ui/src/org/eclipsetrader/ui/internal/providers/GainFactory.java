@@ -12,20 +12,23 @@
 package org.eclipsetrader.ui.internal.providers;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipsetrader.core.views.Holding;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
+import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
-import org.eclipsetrader.core.views.IEditableDataProvider;
 import org.eclipsetrader.core.views.IHolding;
-import org.eclipsetrader.ui.internal.UIActivator;
 
-public class PurchasePriceFactory extends AbstractProviderFactory {
+public class GainFactory extends AbstractProviderFactory {
 	private NumberFormat formatter = NumberFormat.getInstance();
+	private NumberFormat percentageFormatter = NumberFormat.getInstance();
+	private Color positiveColor = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+	private Color negativeColor = Display.getDefault().getSystemColor(SWT.COLOR_RED);
 
-	public class DataProvider implements IDataProvider, IEditableDataProvider {
+	public class DataProvider implements IDataProvider {
 
 		public DataProvider() {
         }
@@ -40,23 +43,30 @@ public class PurchasePriceFactory extends AbstractProviderFactory {
          * @see org.eclipsetrader.core.views.IDataProvider#getFactory()
          */
         public IDataProviderFactory getFactory() {
-	        return PurchasePriceFactory.this;
+	        return GainFactory.this;
         }
 
 		/* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#getValue(org.eclipse.core.runtime.IAdaptable)
          */
         public IAdaptable getValue(IAdaptable adaptable) {
-        	IHolding element = (IHolding) adaptable.getAdapter(IHolding.class);
-        	if (element != null) {
-        		final Double value = element.getPurchasePrice();
+        	IHolding holding = (IHolding) adaptable.getAdapter(IHolding.class);
+        	ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
+        	if (holding != null && holding.getPosition() != null && holding.getPurchasePrice() != null && trade != null && trade.getPrice() != null) {
+        		Double purchaseValue = holding.getPosition() * holding.getPurchasePrice();
+        		Double marketValue = holding.getPosition() * trade.getPrice();
+        		final Double value = marketValue - purchaseValue;
+        		final Double percentage = (value)  / purchaseValue * 100.0;
+        		final Color color = value != 0 ? (value > 0 ? positiveColor : negativeColor) : null;
         		return new IAdaptable() {
                     @SuppressWarnings("unchecked")
                     public Object getAdapter(Class adapter) {
                     	if (adapter.isAssignableFrom(String.class))
-                    		return value != null ? formatter.format(value) : "";
+                    		return (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
                     	if (adapter.isAssignableFrom(Double.class))
                     		return value;
+                    	if (adapter.isAssignableFrom(Color.class))
+                    		return color;
 	                    return null;
                     }
 
@@ -73,37 +83,22 @@ public class PurchasePriceFactory extends AbstractProviderFactory {
         }
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.views.IEditableDataProvider#setValue(org.eclipse.core.runtime.IAdaptable, java.lang.Object)
-         */
-        public void setValue(IAdaptable adaptable, Object value) {
-        	Holding element = (Holding) adaptable.getAdapter(Holding.class);
-        	if (element != null) {
-        		Double l = null;
-        		if (value instanceof Number)
-        			l = ((Number) value).doubleValue();
-        		else if (value != null) {
-	                try {
-	                    l = formatter.parse(value.toString()).doubleValue();
-                    } catch (ParseException e) {
-	                    UIActivator.log("Error parsing edited purchase price value", e);
-                    }
-        		}
-        		element.setPurchasePrice(l);
-        	}
-        }
-
-		/* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#dispose()
          */
         public void dispose() {
         }
 	}
 
-	public PurchasePriceFactory() {
+	public GainFactory() {
 		formatter.setGroupingUsed(true);
 		formatter.setMinimumIntegerDigits(1);
-		formatter.setMinimumFractionDigits(2);
-		formatter.setMaximumFractionDigits(4);
+		formatter.setMinimumFractionDigits(0);
+		formatter.setMaximumFractionDigits(2);
+
+		percentageFormatter.setGroupingUsed(true);
+		percentageFormatter.setMinimumIntegerDigits(1);
+		percentageFormatter.setMinimumFractionDigits(2);
+		percentageFormatter.setMaximumFractionDigits(2);
 	}
 
 	/* (non-Javadoc)
@@ -119,7 +114,7 @@ public class PurchasePriceFactory extends AbstractProviderFactory {
     @SuppressWarnings("unchecked")
     public Class[] getType() {
 	    return new Class[] {
-	    		Double.class,
+	    		Long.class,
 	    		String.class,
 	    	};
     }

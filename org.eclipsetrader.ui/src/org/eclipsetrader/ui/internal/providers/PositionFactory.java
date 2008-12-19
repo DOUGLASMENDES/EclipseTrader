@@ -12,16 +12,20 @@
 package org.eclipsetrader.ui.internal.providers;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipsetrader.core.views.Holding;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
+import org.eclipsetrader.core.views.IEditableDataProvider;
 import org.eclipsetrader.core.views.IHolding;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class PositionFactory extends AbstractProviderFactory {
 	private NumberFormat formatter = NumberFormat.getInstance();
 
-	public class DataProvider implements IDataProvider {
+	public class DataProvider implements IDataProvider, IEditableDataProvider {
 
 		public DataProvider() {
         }
@@ -44,13 +48,13 @@ public class PositionFactory extends AbstractProviderFactory {
          */
         public IAdaptable getValue(IAdaptable adaptable) {
         	IHolding element = (IHolding) adaptable.getAdapter(IHolding.class);
-        	if (element != null && element.getPosition() != null) {
+        	if (element != null) {
         		final Long value = element.getPosition();
         		return new IAdaptable() {
                     @SuppressWarnings("unchecked")
                     public Object getAdapter(Class adapter) {
                     	if (adapter.isAssignableFrom(String.class))
-                    		return formatter.format(value);
+                    		return value != null ? formatter.format(value) : "";
                     	if (adapter.isAssignableFrom(Long.class))
                     		return value;
 	                    return null;
@@ -66,6 +70,26 @@ public class PositionFactory extends AbstractProviderFactory {
         		};
         	}
 	        return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.views.IEditableDataProvider#setValue(org.eclipse.core.runtime.IAdaptable, java.lang.Object)
+         */
+        public void setValue(IAdaptable adaptable, Object value) {
+        	Holding element = (Holding) adaptable.getAdapter(Holding.class);
+        	if (element != null) {
+        		Long l = null;
+        		if (value instanceof Number)
+        			l = ((Number) value).longValue();
+        		else if (value != null) {
+	                try {
+	                    l = formatter.parse(value.toString()).longValue();
+                    } catch (ParseException e) {
+	                    UIActivator.log("Error parsing edited position value", e);
+                    }
+        		}
+        		element.setPosition(l);
+        	}
         }
 
 		/* (non-Javadoc)
