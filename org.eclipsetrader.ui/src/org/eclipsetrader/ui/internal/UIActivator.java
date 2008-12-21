@@ -15,6 +15,8 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.eclipse.core.internal.runtime.AdapterManager;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -188,5 +190,20 @@ public class UIActivator extends AbstractUIPlugin {
 		dialogSettings.put("uri", uriString);
 
 		return dialogSettings;
+	}
+
+	public static void log(IStatus status) {
+		if (plugin != null)
+			plugin.getLog().log(status);
+		else
+			System.err.println(status);
+	}
+
+	public static void log(String message, Throwable throwable) {
+		Status status = new Status(Status.ERROR, PLUGIN_ID, message, throwable);
+		if (plugin != null)
+			plugin.getLog().log(status);
+		else
+			System.err.println(status);
 	}
 }
