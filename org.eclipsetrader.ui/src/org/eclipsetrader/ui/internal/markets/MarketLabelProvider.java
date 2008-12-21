@@ -106,29 +106,31 @@ public class MarketLabelProvider extends LabelProvider implements ITableLabelPro
 						midnight.add(Calendar.DATE, 1);
 
 						day = market.getNextDay();
-						long secondsToNextOpen = (day.getOpenTime().getTime() - now.getTimeInMillis()) / 1000;
-						if (secondsToNextOpen < 60)
-							return Messages.MarketLabelProvider_OpenInLessThanOneMinute;
-						else {
-							long minutesToNextOpen = secondsToNextOpen / 60 + 1;
-							if (minutesToNextOpen < 60) {
-								return NLS.bind(Messages.MarketLabelProvider_OpensInMinutes, new Object[] {
-										minutesToNextOpen
-									});
-							}
-							else if (day.getOpenTime().before(midnight.getTime()) && minutesToNextOpen < 1440) {
-								return NLS.bind(Messages.MarketLabelProvider_OpensInHours, new Object[] {
-										minutesToNextOpen / 60,
-										minutesToNextOpen % 60
-									});
-							}
+						if (day != null && day.getOpenTime() != null) {
+							long secondsToNextOpen = (day.getOpenTime().getTime() - now.getTimeInMillis()) / 1000;
+							if (secondsToNextOpen < 60)
+								return Messages.MarketLabelProvider_OpenInLessThanOneMinute;
 							else {
-								DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG); // Util.getDateFormat();
-								DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-								return NLS.bind(Messages.MarketLabelProvider_OpenDate, new Object[] {
-										dateFormat.format(day.getOpenTime()),
-										timeFormat.format(day.getOpenTime()),
-									});
+								long minutesToNextOpen = secondsToNextOpen / 60 + 1;
+								if (minutesToNextOpen < 60) {
+									return NLS.bind(Messages.MarketLabelProvider_OpensInMinutes, new Object[] {
+											minutesToNextOpen
+										});
+								}
+								else if (day.getOpenTime().before(midnight.getTime()) && minutesToNextOpen < 1440) {
+									return NLS.bind(Messages.MarketLabelProvider_OpensInHours, new Object[] {
+											minutesToNextOpen / 60,
+											minutesToNextOpen % 60
+										});
+								}
+								else {
+									DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG); // Util.getDateFormat();
+									DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+									return NLS.bind(Messages.MarketLabelProvider_OpenDate, new Object[] {
+											dateFormat.format(day.getOpenTime()),
+											timeFormat.format(day.getOpenTime()),
+										});
+								}
 							}
 						}
 					}
