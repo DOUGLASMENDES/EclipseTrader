@@ -11,22 +11,25 @@
 
 package org.eclipsetrader.ui.internal;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.eclipsetrader.core.feed.IFeedConnector;
-import org.eclipsetrader.core.feed.IFeedService;
-import org.eclipsetrader.core.trading.IBroker;
-import org.eclipsetrader.core.trading.ITradingService;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.eclipsetrader.core.ILauncher;
 
 public class StopFeedAction implements IWorkbenchWindowActionDelegate {
+	public static final String LAUNCHERS_EXTENSION_ID = "org.eclipsetrader.core.launchers";
 
 	public StopFeedAction() {
 	}
@@ -52,13 +55,27 @@ public class StopFeedAction implements IWorkbenchWindowActionDelegate {
             protected IStatus run(IProgressMonitor monitor) {
             	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
             	try {
-    				IFeedConnector[] connector = getFeedService().getConnectors();
-    				for (int i = 0; i < connector.length; i++)
-    					connector[i].disconnect();
+            		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LAUNCHERS_EXTENSION_ID);
+            		if (extensionPoint != null) {
+                		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 
-    				IBroker[] brokerConnector = getTradingService().getBrokers();
-    				for (int i = 0; i < brokerConnector.length; i++)
-    					brokerConnector[i].disconnect();
+                		boolean startAll = UIActivator.getDefault().getPreferenceStore().getBoolean("RUN_ALL_LAUNCHERS");
+                		Set<String> set = new HashSet<String>(Arrays.asList(UIActivator.getDefault().getPreferenceStore().getString("RUN_LAUNCHERS").split(";")));
+
+                    	for (int j = 0; j < configElements.length; j++) {
+                			String id = configElements[j].getAttribute("id"); //$NON-NLS-1$
+                			if (startAll || set.contains(id)) {
+                    			try {
+                    				ILauncher launcher = (ILauncher) configElements[j].createExecutableExtension("class");
+                    				if (launcher != null)
+                    					launcher.terminate(monitor);
+                    			} catch (Exception e) {
+                    	    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error launching " + id, e);
+                    	    		UIActivator.getDefault().getLog().log(status);
+                    			}
+                			}
+                		}
+            		}
             	} finally {
             		monitor.done();
             	}
@@ -74,32 +91,4 @@ public class StopFeedAction implements IWorkbenchWindowActionDelegate {
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 	}
-
-    protected IFeedService getFeedService() {
-    	try {
-    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
-    		IFeedService service = (IFeedService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-    		UIActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
-    }
-
-    protected ITradingService getTradingService() {
-    	try {
-    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-    		ITradingService service = (ITradingService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading trading service", e);
-    		UIActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
-    }
 }

@@ -6,5 +6,6 @@
    <extension-point id="org.eclipsetrader.core.connectors" name="Feed Connectors" schema="schema/connectors.exsd"/>
    <extension-point id="org.eclipsetrader.core.providers" name="Data Providers" schema="schema/providers.exsd"/>
    <extension-point id="org.eclipsetrader.core.brokers" name="Brokers" schema="schema/brokers.exsd"/>
+   <extension-point id="org.eclipsetrader.core.launchers" name="Launchers" schema="schema/launchers.exsd"/>
 
 </plugin>

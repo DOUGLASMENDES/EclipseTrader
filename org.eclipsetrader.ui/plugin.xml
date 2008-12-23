@@ -22,6 +22,11 @@
             id="org.eclipsetrader.ui.preferences.plugins"
             name="%pluginsPreferencesPageName">
       </page>
+      <page
+            class="org.eclipsetrader.ui.internal.preferences.LaunchersPreferences"
+            id="org.eclipsetrader.ui.preferences.launchers"
+            name="%launchersPreferencesPageName">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.views">

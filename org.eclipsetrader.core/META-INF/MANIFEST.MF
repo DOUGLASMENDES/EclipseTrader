@@ -7,7 +7,8 @@ Bundle-Activator: org.eclipsetrader.core.internal.CoreActivator
 Bundle-Vendor: Eclipsetrader.org
 Require-Bundle: org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipsetrader.core.feed,
+Export-Package: org.eclipsetrader.core,
+ org.eclipsetrader.core.feed,
  org.eclipsetrader.core.instruments,
  org.eclipsetrader.core.internal;x-friends:="org.eclipsetrader.ui",
  org.eclipsetrader.core.internal.feed;x-internal:=true,
