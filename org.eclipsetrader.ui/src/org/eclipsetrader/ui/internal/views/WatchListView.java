@@ -574,23 +574,28 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
     @SuppressWarnings("unchecked")
     protected int compareValues(IAdaptable v1, IAdaptable v2) {
-    	if (v1 == null || v2 == null)
-    		return 0;
-
-    	Object o1 = v1.getAdapter(Comparable.class);
-    	Object o2 = v2.getAdapter(Comparable.class);
-    	if (o1 != null && o2 != null)
-    		return ((Comparable) o1).compareTo(o2);
-
-    	o1 = v1.getAdapter(Number.class);
-    	o2 = v2.getAdapter(Number.class);
-    	if (o1 != null && o2 != null) {
-    		if (((Number) o1).doubleValue() < ((Number) o2).doubleValue())
+    	Number n1 = (Number) (v1 != null ? v1.getAdapter(Number.class) : null);
+    	Number n2 = (Number) (v2 != null ? v2.getAdapter(Number.class) : null);
+    	if (n1 != null && n2 != null) {
+    		if (n1.doubleValue() < n2.doubleValue())
     			return -1;
-    		if (((Number) o1).doubleValue() > ((Number) o2).doubleValue())
+    		if (n1.doubleValue() > n2.doubleValue())
     			return 1;
     		return 0;
     	}
+    	if (n1 != null && n2 == null)
+    		return 1;
+    	if (n1 == null && n2 != null)
+    		return -1;
+
+    	Comparable c1 = (Comparable) (v1 != null ? v1.getAdapter(Comparable.class) : null);
+    	Comparable c2 = (Comparable) (v2 != null ? v2.getAdapter(Comparable.class) : null);
+    	if (c1 != null && c2 != null)
+    		return c1.compareTo(c2);
+    	if (c1 != null && c2 == null)
+    		return 1;
+    	if (c1 == null && c2 != null)
+    		return -1;
 
     	return 0;
     }
