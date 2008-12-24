@@ -29,10 +29,14 @@ import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.feed.ConnectorOverrideAdapter;
 import org.eclipsetrader.core.internal.feed.FeedService;
+import org.eclipsetrader.core.internal.feed.FeedServiceFactory;
 import org.eclipsetrader.core.internal.markets.MarketService;
+import org.eclipsetrader.core.internal.markets.MarketServiceFactory;
 import org.eclipsetrader.core.internal.repositories.RepositoryService;
 import org.eclipsetrader.core.internal.trading.CurrencyService;
+import org.eclipsetrader.core.internal.trading.CurrencyServiceFactory;
 import org.eclipsetrader.core.internal.trading.TradingService;
+import org.eclipsetrader.core.internal.trading.TradingServiceFactory;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IRepositoryService;
@@ -41,6 +45,7 @@ import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -64,6 +69,18 @@ public class CoreActivator extends Plugin {
 	// The shared instance
 	private static CoreActivator plugin;
 
+	private RepositoryService repositoryService;
+	private ServiceRegistration repositoryServiceRegistration;
+
+	private FeedServiceFactory feedServiceFactory;
+	private ServiceRegistration feedServiceRegistration;
+	private TradingServiceFactory tradingServiceFactory;
+	private ServiceRegistration tradingServiceRegistration;
+	private MarketServiceFactory marketServiceFactory;
+	private ServiceRegistration marketServiceRegistration;
+	private CurrencyServiceFactory currencyServiceFactory;
+	private ServiceRegistration currencyServiceRegistration;
+
 	private Map<String, IRepositoryElementFactory> elementFactoryMap = new HashMap<String, IRepositoryElementFactory>();
 	private Map<String, IDataProviderFactory> providersFactoryMap = new HashMap<String, IDataProviderFactory>();
 
@@ -84,39 +101,53 @@ public class CoreActivator extends Plugin {
 		super.start(context);
 		plugin = this;
 
-		RepositoryService repositoryService = new RepositoryService();
-		context.registerService(new String[] { IRepositoryService.class.getName(), RepositoryService.class.getName() }, repositoryService, new Hashtable<Object,Object>());
+		repositoryService = new RepositoryService();
+		repositoryServiceRegistration = context.registerService(
+				new String[] {
+						IRepositoryService.class.getName(),
+						RepositoryService.class.getName()
+					},
+				repositoryService,
+				new Hashtable<Object,Object>());
 		repositoryService.startUp();
 
-		FeedService feedService = new FeedService();
-		context.registerService(new String[] { IFeedService.class.getName(), FeedService.class.getName() }, feedService, new Hashtable<Object,Object>());
-		feedService.startUp();
+		feedServiceFactory = new FeedServiceFactory();
+		feedServiceRegistration = context.registerService(
+				new String[] {
+						IFeedService.class.getName(),
+						FeedService.class.getName()
+					},
+					feedServiceFactory,
+				new Hashtable<Object,Object>());
 
-		TradingService tradingService = new TradingService();
-		context.registerService(
+		tradingServiceFactory = new TradingServiceFactory();
+		tradingServiceRegistration = context.registerService(
 				new String[] {
 						ITradingService.class.getName(),
 						TradingService.class.getName()
 					},
-				tradingService,
+				tradingServiceFactory,
 				new Hashtable<Object,Object>()
 			);
-		tradingService.startUp();
 
-		MarketService marketService = new MarketService();
-		context.registerService(new String[] { IMarketService.class.getName(), MarketService.class.getName() }, marketService, new Hashtable<Object,Object>());
-		marketService.startUp(null);
+		marketServiceFactory = new MarketServiceFactory();
+		marketServiceRegistration = context.registerService(
+			new String[] {
+					IMarketService.class.getName(),
+					MarketService.class.getName()
+				},
+			marketServiceFactory,
+			new Hashtable<Object,Object>());
 
-		CurrencyService currencyService = new CurrencyService(repositoryService, marketService);
-		context.registerService(
+		currencyServiceFactory = new CurrencyServiceFactory();
+		currencyServiceRegistration = context.registerService(
 				new String[] {
 						ICurrencyService.class.getName(),
 						CurrencyService.class.getName()
 					},
-				currencyService,
+				currencyServiceFactory,
 				new Hashtable<Object,Object>()
 			);
-		currencyService.startUp(null);
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
 		if (extensionPoint != null) {
@@ -156,45 +187,30 @@ public class CoreActivator extends Plugin {
     		getLog().log(status);
 		}
 
-		ServiceReference serviceReference = context.getServiceReference(TradingService.class.getName());
-		if (serviceReference != null) {
-			TradingService service = (TradingService) context.getService(serviceReference);
-			if (service != null)
-				service.shutDown();
-			context.ungetService(serviceReference);
-		}
+		if (tradingServiceRegistration != null)
+			tradingServiceRegistration.unregister();
+		if (tradingServiceFactory != null)
+			tradingServiceFactory.dispose();
 
-		serviceReference = context.getServiceReference(CurrencyService.class.getName());
-		if (serviceReference != null) {
-			CurrencyService service = (CurrencyService) context.getService(serviceReference);
-			if (service != null)
-				service.shutDown(null);
-			context.ungetService(serviceReference);
-		}
+		if (currencyServiceRegistration != null)
+			currencyServiceRegistration.unregister();
+		if (currencyServiceFactory != null)
+			currencyServiceFactory.dispose();
 
-		serviceReference = context.getServiceReference(MarketService.class.getName());
-		if (serviceReference != null) {
-			MarketService service = (MarketService) context.getService(serviceReference);
-			if (service != null)
-				service.shutDown(null);
-			context.ungetService(serviceReference);
-		}
+		if (marketServiceRegistration != null)
+			marketServiceRegistration.unregister();
+		if (marketServiceFactory != null)
+			marketServiceFactory.dispose();
 
-		serviceReference = context.getServiceReference(FeedService.class.getName());
-		if (serviceReference != null) {
-			FeedService service = (FeedService) context.getService(serviceReference);
-			if (service != null)
-				service.shutDown();
-			context.ungetService(serviceReference);
-		}
+		if (feedServiceRegistration != null)
+			feedServiceRegistration.unregister();
+		if (feedServiceFactory != null)
+			feedServiceFactory.dispose();
 
-		serviceReference = context.getServiceReference(RepositoryService.class.getName());
-		if (serviceReference != null) {
-			RepositoryService service = (RepositoryService) context.getService(serviceReference);
-			if (service != null)
-				service.shutDown();
-			context.ungetService(serviceReference);
-		}
+		if (repositoryServiceRegistration != null)
+			repositoryServiceRegistration.unregister();
+		if (repositoryService != null)
+			repositoryService.shutDown();
 
 		plugin = null;
 		super.stop(context);
@@ -210,6 +226,14 @@ public class CoreActivator extends Plugin {
 	}
 
 	public static void log(IStatus status) {
+		if (plugin != null)
+			plugin.getLog().log(status);
+		else
+			System.err.println(status);
+	}
+
+	public static void log(String message, Throwable throwable) {
+		Status status = new Status(Status.ERROR, PLUGIN_ID, message, throwable);
 		if (plugin != null)
 			plugin.getLog().log(status);
 		else

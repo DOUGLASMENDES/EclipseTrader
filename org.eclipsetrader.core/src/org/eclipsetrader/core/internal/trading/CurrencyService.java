@@ -27,7 +27,10 @@ import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
+import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
+import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
 import org.eclipsetrader.core.trading.Cash;
 import org.eclipsetrader.core.trading.ICurrencyService;
 
@@ -35,6 +38,22 @@ public class CurrencyService implements ICurrencyService {
 	private IRepositoryService repositoryService;
 	private MarketPricingEnvironment pricingEnvironment;
 	private List<ICurrencyExchange> exchanges = new ArrayList<ICurrencyExchange>();
+
+	private IRepositoryChangeListener repositoryListener = new IRepositoryChangeListener() {
+        public void repositoryResourceChanged(RepositoryChangeEvent event) {
+        	for (RepositoryResourceDelta delta : event.getDeltas()) {
+        		if (!(delta.getResource() instanceof ICurrencyExchange))
+        			continue;
+        		ICurrencyExchange exchange = (ICurrencyExchange) delta.getResource();
+        		if (delta.getKind() == RepositoryResourceDelta.ADDED) {
+        			if (!exchanges.contains(exchange))
+        				exchanges.add(exchange);
+        		}
+        		else if (delta.getKind() == RepositoryResourceDelta.REMOVED)
+       				exchanges.remove(exchange);
+        	}
+        }
+	};
 
 	public CurrencyService(IRepositoryService repositoryService, IMarketService marketService) {
 		this.repositoryService = repositoryService;
@@ -54,10 +73,12 @@ public class CurrencyService implements ICurrencyService {
 				pricingEnvironment.addSecurity(security);
 			}
 		}
+		repositoryService.addRepositoryResourceListener(repositoryListener);
 	}
 
 	public void shutDown(IProgressMonitor monitor) throws Exception {
 		pricingEnvironment.dispose();
+		repositoryService.removeRepositoryResourceListener(repositoryListener);
 	}
 
 	/* (non-Javadoc)
