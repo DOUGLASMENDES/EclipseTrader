@@ -418,6 +418,7 @@
                icon="icons/etool16/stop.png"
                id="org.eclipsetrader.ui.launcher.stop"
                label="Stop"
+               style="pulldown"
                toolbarPath="additions">
          </action>
          <action
@@ -426,6 +427,7 @@
                icon="icons/etool16/start.png"
                id="org.eclipsetrader.ui.launcher.run"
                label="Start"
+               style="pulldown"
                toolbarPath="additions">
          </action>
       </actionSet>
@@ -436,6 +438,12 @@
             id="org.eclipsetrader.ui.level2.open"
             name="Open Level II">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.eclipsetrader.ui.internal.LaunchersStartup">
+      </startup>
    </extension>
 
 </plugin>
