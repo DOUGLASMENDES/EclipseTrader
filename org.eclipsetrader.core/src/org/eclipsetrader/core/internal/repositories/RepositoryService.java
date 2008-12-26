@@ -144,7 +144,7 @@ public class RepositoryService implements IRepositoryService {
 
     	if (history == null) {
         	IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
-        	if (storeObject != null) {
+        	if (storeObject != null && storeObject.getStore() != null) {
         		IStore[] stores = storeObject.getStore().fetchChilds(null);
         		for (int i = 0; i < stores.length; i++) {
         			IStoreObject object = createElement(stores[i], stores[i].fetchProperties(null));
@@ -212,27 +212,34 @@ public class RepositoryService implements IRepositoryService {
 
     	// Computes the rules needed to access all repositories
     	for (IAdaptable adaptable : adaptables) {
-    		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-    		if (object == null)
-    			continue;
-    		IStore store = object.getStore();
-    		if (store != null) {
-    			IRepository repository = store.getRepository();
+    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+    		if (storeObjects == null) {
+        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+        		if (object == null)
+        			continue;
+        		storeObjects = new IStoreObject[] { object };
+    		}
 
-    			Set<IAdaptable> objectSet = repositories.get(repository);
-    			if (objectSet == null) {
-    				objectSet = new HashSet<IAdaptable>();
-    				repositories.put(repository, objectSet);
-    			}
-    			objectSet.add(adaptable);
+    		for (IStoreObject object : storeObjects) {
+        		IStore store = object.getStore();
+        		if (store != null) {
+        			IRepository repository = store.getRepository();
 
-    			Set<ISchedulingRule> ruleSet = rules.get(repository);
-    			if (ruleSet == null) {
-    				ruleSet = new HashSet<ISchedulingRule>();
-    				rules.put(repository, ruleSet);
-    			}
-    			if (repository instanceof ISchedulingRule)
-           			ruleSet.add((ISchedulingRule) repository);
+        			Set<IAdaptable> objectSet = repositories.get(repository);
+        			if (objectSet == null) {
+        				objectSet = new HashSet<IAdaptable>();
+        				repositories.put(repository, objectSet);
+        			}
+        			objectSet.add(adaptable);
+
+        			Set<ISchedulingRule> ruleSet = rules.get(repository);
+        			if (ruleSet == null) {
+        				ruleSet = new HashSet<ISchedulingRule>();
+        				rules.put(repository, ruleSet);
+        			}
+        			if (repository instanceof ISchedulingRule)
+               			ruleSet.add((ISchedulingRule) repository);
+        		}
     		}
     	}
 
@@ -251,34 +258,44 @@ public class RepositoryService implements IRepositoryService {
                 			if (monitor != null && monitor.isCanceled())
                 				return Status.CANCEL_STATUS;
 
-                    		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-                			IStore store = object.getStore();
-                			if (store != null) {
-                				store.delete(monitor);
-                				object.setStore(null);
-                			}
+                    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+                    		if (storeObjects == null) {
+                        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+                        		if (object == null)
+                        			continue;
+                        		storeObjects = new IStoreObject[] { object };
+                    		}
 
-                    		if (adaptable instanceof ISecurity) {
-                	        	uriMap.remove(store.toURI());
-                	        	nameMap.remove(((ISecurity) adaptable).getName());
-                	        	Set<IAdaptable> containers = removeSecurityFromContainers((ISecurity) adaptable);
-                	        	saveCascade.addAll(containers);
-                	        }
-                    		if (adaptable instanceof IWatchList) {
-                	        	watchlistUriMap.remove(store.toURI());
-                	        	watchlistNameMap.remove(((IWatchList) adaptable).getName());
-                	        }
+                    		for (IStoreObject object : storeObjects) {
+                    			IStore store = object.getStore();
+                    			if (store != null) {
+                    				store.delete(monitor);
+                    				object.setStore(null);
 
-                			if (deltas != null) {
-                    	        int kind = RepositoryResourceDelta.MOVED_FROM | RepositoryResourceDelta.REMOVED;
-                    	        deltas.add(new RepositoryResourceDelta(
-                    	        		kind,
-                    	        		adaptable,
-                    	        		store.getRepository(),
-                    	        		null,
-                    	        		null,
-                    	        		null));
-                			}
+                            		if (adaptable instanceof ISecurity) {
+                        	        	uriMap.remove(store.toURI());
+                        	        	nameMap.remove(((ISecurity) adaptable).getName());
+                        	        	Set<IAdaptable> containers = removeSecurityFromContainers((ISecurity) adaptable);
+                        	        	saveCascade.addAll(containers);
+                        	        	historyMap.remove(adaptable);
+                        	        }
+                            		if (adaptable instanceof IWatchList) {
+                        	        	watchlistUriMap.remove(store.toURI());
+                        	        	watchlistNameMap.remove(((IWatchList) adaptable).getName());
+                        	        }
+
+                        			if (deltas != null) {
+                            	        int kind = RepositoryResourceDelta.MOVED_FROM | RepositoryResourceDelta.REMOVED;
+                            	        deltas.add(new RepositoryResourceDelta(
+                            	        		kind,
+                            	        		adaptable,
+                            	        		store.getRepository(),
+                            	        		null,
+                            	        		null,
+                            	        		null));
+                        			}
+                    			}
+                    		}
                 		}
                     } catch (Exception e) {
             			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error deleting object", e); //$NON-NLS-1$
@@ -371,6 +388,9 @@ public class RepositoryService implements IRepositoryService {
                 public IStatus run(IProgressMonitor monitor) throws Exception {
                 	try {
                 		for (IAdaptable adaptable : set) {
+                			if (monitor != null && monitor.isCanceled())
+                				return Status.CANCEL_STATUS;
+
                     		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
                     		if (storeObjects == null) {
                         		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
@@ -378,9 +398,6 @@ public class RepositoryService implements IRepositoryService {
                     		}
 
                     		for (IStoreObject object : storeObjects) {
-                    			if (monitor != null && monitor.isCanceled())
-                    				return Status.CANCEL_STATUS;
-
                     			IStore store = object.getStore();
                     			if (store == null)
                     				store = repository.createObject();
@@ -436,66 +453,95 @@ public class RepositoryService implements IRepositoryService {
     	if (destination instanceof ISchedulingRule)
     		rules.add((ISchedulingRule) destination);
 
+    	final Set<IAdaptable> allAdaptables = new HashSet<IAdaptable>();
     	for (IAdaptable adaptable : adaptables) {
-    		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-    		if (object == null)
-    			continue;
-    		IStore store = object.getStore();
-    		if (store != null && store.getRepository() instanceof ISchedulingRule)
-    			rules.add((ISchedulingRule) store.getRepository());
+    		allAdaptables.add(adaptable);
+    		if (adaptable instanceof ISecurity) {
+    			IHistory history = getHistoryFor((ISecurity) adaptable);
+    			if (history != null) {
+    				IStoreObject historyStoreObject = (IStoreObject) history.getAdapter(IStoreObject.class);
+    				if (historyStoreObject != null && historyStoreObject.getStore() != null)
+    					allAdaptables.add(history);
+    			}
+    		}
+    	}
+
+    	for (IAdaptable adaptable : allAdaptables) {
+    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+    		if (storeObjects == null) {
+        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+        		if (object == null)
+        			continue;
+        		storeObjects = new IStoreObject[] { object };
+    		}
+
+    		for (IStoreObject object : storeObjects) {
+        		IStore store = object.getStore();
+        		if (store != null && store.getRepository() instanceof ISchedulingRule)
+        			rules.add((ISchedulingRule) store.getRepository());
+    		}
     	}
 
 		destination.runInRepository(new IRepositoryRunnable() {
             public IStatus run(IProgressMonitor monitor) throws Exception {
             	try {
-            		for (IAdaptable adaptable : adaptables) {
-                		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-                		if (object == null)
-                			continue;
+            		for (IAdaptable adaptable : allAdaptables) {
             			if (monitor != null && monitor.isCanceled())
             				return Status.CANCEL_STATUS;
 
-            			IStore  oldStore = object.getStore();
-            			if (oldStore != null && oldStore.getRepository() == destination)
-            				continue;
+                		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+                		if (storeObjects == null) {
+                    		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+                    		if (object == null)
+                    			continue;
+                    		storeObjects = new IStoreObject[] { object };
+                		}
 
-            			IStoreProperties properties = object.getStoreProperties();
+                		for (IStoreObject object : storeObjects) {
+                			IStore  oldStore = object.getStore();
+                			if (oldStore != null && oldStore.getRepository() == destination)
+                				continue;
 
-            	        IStore newStore = destination.createObject();
-            	        newStore.putProperties(properties, monitor);
-            	        object.setStore(newStore);
+                			IStoreProperties properties = object.getStoreProperties();
 
-            	        if (oldStore != null)
-            	        	oldStore.delete(monitor);
+                	        IStore newStore = destination.createObject();
+                	        newStore.putProperties(properties, monitor);
+                	        object.setStore(newStore);
 
-            	        if (adaptable instanceof ISecurity) {
                 	        if (oldStore != null)
-                	        	uriMap.remove(oldStore.toURI());
-            	        	uriMap.put(newStore.toURI(), (ISecurity) adaptable);
-            				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
-            	        }
-            	        if (adaptable instanceof IWatchList) {
-                	        if (oldStore != null)
-                	        	watchlistUriMap.remove(oldStore.toURI());
-                	        watchlistUriMap.put(newStore.toURI(), (IWatchList) adaptable);
-                	        watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
-            	        }
+                	        	oldStore.delete(monitor);
 
-            			if (deltas != null) {
-                	        int kind = RepositoryResourceDelta.MOVED_TO;
-                	        if (oldStore != null)
-                	        	kind |= RepositoryResourceDelta.MOVED_FROM;
-                	        else
-                	        	kind |= RepositoryResourceDelta.ADDED;
+                	        if (storeObjects.length == 1) {
+                    	        if (adaptable instanceof ISecurity) {
+                        	        if (oldStore != null)
+                        	        	uriMap.remove(oldStore.toURI());
+                    	        	uriMap.put(newStore.toURI(), (ISecurity) adaptable);
+                    				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
+                    	        }
+                    	        if (adaptable instanceof IWatchList) {
+                        	        if (oldStore != null)
+                        	        	watchlistUriMap.remove(oldStore.toURI());
+                        	        watchlistUriMap.put(newStore.toURI(), (IWatchList) adaptable);
+                        	        watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
+                    	        }
 
-                	        deltas.add(new RepositoryResourceDelta(
-                	        		kind,
-                	        		adaptable,
-                	        		oldStore != null ? oldStore.getRepository() : null,
-                	        		newStore.getRepository(),
-                	        		null,
-                	        		null));
-            			}
+                    			if (deltas != null) {
+                        	        int kind = RepositoryResourceDelta.MOVED_TO;
+                        	        if (oldStore != null)
+                        	        	kind |= RepositoryResourceDelta.MOVED_FROM;
+                        	        else
+                        	        	kind |= RepositoryResourceDelta.ADDED;
+
+                        	        deltas.add(new RepositoryResourceDelta(
+                        	        		kind,
+                        	        		adaptable,
+                        	        		oldStore != null ? oldStore.getRepository() : null,
+                        	        		newStore.getRepository(),
+                        	        		null,
+                        	        		null));
+                    			}
+                	        }
+                		}
             		}
                 } catch (Exception e) {
         			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error moving object", e); //$NON-NLS-1$

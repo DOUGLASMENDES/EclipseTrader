@@ -27,8 +27,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipsetrader.core.feed.FeedIdentifier;
+import org.eclipsetrader.core.feed.History;
+import org.eclipsetrader.core.feed.IHistory;
+import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IStore;
@@ -171,6 +175,20 @@ public class RepositoryServiceTest extends TestCase {
 	    assertEquals(0, list.getItemCount());
 	}
 
+	public void testMoveSecurityWithHistory() throws Exception {
+	    Security security = new Security("Security", new FeedIdentifier("ID", null));
+	    History history = new History(security, new IOHLC[0]);
+	    RepositoryService service = new TestRepositoryService();
+	    service.saveAdaptable(new IAdaptable[] { security, history });
+	    assertEquals(2, repositories.get("local").stores.size());
+	    assertEquals(0, repositories.get("remote").stores.size());
+	    service.moveAdaptable(new IAdaptable[] { security }, repositories.get("remote"));
+	    assertEquals(0, repositories.get("local").stores.size());
+	    assertEquals(2, repositories.get("remote").stores.size());
+	    assertTrue(repositories.get("remote").stores.contains(security.getStore()));
+	    assertTrue(repositories.get("remote").stores.contains(history.getStore()));
+	}
+
     public class TestRepositoryService extends RepositoryService {
 
     	public TestRepositoryService() {
@@ -296,7 +314,21 @@ public class RepositoryServiceTest extends TestCase {
          * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
          */
         public IStore[] fetchChilds(IProgressMonitor monitor) {
-	        return null;
+        	List<IStore> l = new ArrayList<IStore>();
+
+        	String type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
+			if (ISecurity.class.getName().equals(type)) {
+				for (TestStore store : repository.stores) {
+					IStoreProperties storeProperties = store.fetchProperties(monitor);
+					if (IHistory.class.getName().equals(storeProperties.getProperty(IPropertyConstants.OBJECT_TYPE))) {
+						Security security = (Security) storeProperties.getProperty(IPropertyConstants.SECURITY);
+						if (security.getStore().toURI().equals(toURI()))
+							l.add(store);
+					}
+				}
+			}
+
+			return l.toArray(new IStore[l.size()]);
         }
 
 		/* (non-Javadoc)

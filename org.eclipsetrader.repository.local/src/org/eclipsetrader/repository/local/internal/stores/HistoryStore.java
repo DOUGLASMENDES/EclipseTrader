@@ -130,7 +130,7 @@ public class HistoryStore implements IStore {
     	for (Iterator<WeakReference<IntradayHistoryStore>> iter = intradayStores.values().iterator(); iter.hasNext(); ) {
     		WeakReference<IntradayHistoryStore> ref = iter.next();
     		IntradayHistoryStore store = ref.get();
-    		if (store != null)
+    		if (store != null && store.getFile().exists())
     			l.add(store);
     		else
     			iter.remove();
