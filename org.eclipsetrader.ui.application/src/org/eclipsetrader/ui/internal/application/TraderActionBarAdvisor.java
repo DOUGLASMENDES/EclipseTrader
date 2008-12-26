@@ -96,15 +96,23 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		register(openAction);
 
 		saveAction = ActionFactory.SAVE.create(window);
+		saveAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/save.png"));
+		saveAction.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/save.png"));
 		register(saveAction);
 
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
+		saveAsAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/save_as.png"));
+		saveAsAction.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/save_as.png"));
 		register(saveAsAction);
 
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
+		saveAllAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/save_all.png"));
+		saveAllAction.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/save_all.png"));
 		register(saveAllAction);
 
 		printAction = ActionFactory.PRINT.create(window);
+		printAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/print.png"));
+		printAction.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/print.png"));
 		register(printAction);
 
         importResourcesAction = ActionFactory.IMPORT.create(window);
@@ -344,9 +352,16 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 			if (window == null) {
 				throw new IllegalArgumentException();
 			}
+
 			IWorkbenchAction innerAction = ActionFactory.NEW.create(window);
+			innerAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/new_wizard.png"));
+			innerAction.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/new_wizard.png"));
+
 			NewWizardMenu newWizardMenu = new NewWizardMenu(window);
+
 			IWorkbenchAction action = new NewWizardDropDownAction(window, innerAction, newWizardMenu);
+			action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/new_wizard.png"));
+	        action.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/new_wizard.png"));
 			action.setId(getId());
 			return action;
 		}

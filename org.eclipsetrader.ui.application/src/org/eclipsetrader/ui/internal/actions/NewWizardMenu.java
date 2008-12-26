@@ -24,6 +24,7 @@ import org.eclipse.ui.actions.BaseNewWizardMenu;
 import org.eclipse.ui.internal.actions.NewWizardShortcutAction;
 import org.eclipse.ui.internal.dialogs.WorkbenchWizardElement;
 import org.eclipse.ui.wizards.IWizardDescriptor;
+import org.eclipsetrader.ui.internal.application.Activator;
 
 @SuppressWarnings( { "restriction", "unchecked" })
 public class NewWizardMenu extends BaseNewWizardMenu {
@@ -51,6 +52,10 @@ public class NewWizardMenu extends BaseNewWizardMenu {
 		super(window, id);
 		//newExampleAction = new NewExampleAction(window);
 		//newProjectAction = new NewProjectAction(window);
+
+		IAction showDlgAction = getShowDialogAction();
+		showDlgAction.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/new_wizard.png"));
+		showDlgAction.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/new_wizard.png"));
 	}
 
 	/* (non-Javadoc)

@@ -47,6 +47,14 @@ public class TraderWorkbenchAdvisor extends WorkbenchAdvisor {
 	}
 
 	/* (non-Javadoc)
+     * @see org.eclipse.ui.application.WorkbenchAdvisor#getMainPreferencePageId()
+     */
+    @Override
+    public String getMainPreferencePageId() {
+	    return "org.eclipse.ui.preferencePages.Workbench";
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipse.ui.application.WorkbenchAdvisor#eventLoopException(java.lang.Throwable)
      */
     @Override
