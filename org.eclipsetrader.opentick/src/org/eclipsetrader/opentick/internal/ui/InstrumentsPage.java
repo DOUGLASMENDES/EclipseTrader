@@ -332,4 +332,9 @@ public class InstrumentsPage extends WizardPage {
 		System.arraycopy(o, 0, i, 0, i.length);
 		return i;
 	}
+
+	public Integer getType() {
+		IStructuredSelection selection = (IStructuredSelection) typeCombo.getSelection();
+		return selection.isEmpty() ? new Integer(0) : (Integer) selection.getFirstElement();
+	}
 }

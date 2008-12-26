@@ -15,6 +15,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.eclipsetrader.core.repositories.StoreProperties;
 import org.eclipsetrader.repository.local.LocalRepository;
 import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
+import org.eclipsetrader.repository.local.internal.types.CurrencyAdapter;
 import org.eclipsetrader.repository.local.internal.types.DividendType;
 import org.eclipsetrader.repository.local.internal.types.FeedIdentifierAdapter;
 import org.eclipsetrader.repository.local.internal.types.PropertyType;
@@ -60,12 +62,19 @@ public class SecurityStore implements IStore {
 	@XmlJavaTypeAdapter(RepositoryFactoryAdapter.class)
 	private IRepositoryElementFactory factory;
 
+	@XmlAttribute(name = "type")
+	private String type;
+
 	@XmlElement(name = "name")
 	private String name;
 
 	@XmlElement(name = "identifier")
 	@XmlJavaTypeAdapter(FeedIdentifierAdapter.class)
 	private IFeedIdentifier identifier;
+
+	@XmlElement(name = "currency")
+	@XmlJavaTypeAdapter(CurrencyAdapter.class)
+	private Currency currency;
 
 	@XmlElementWrapper(name = "dividends")
 	@XmlElementRef
@@ -86,6 +95,7 @@ public class SecurityStore implements IStore {
 
 		knownProperties.add(IPropertyConstants.NAME);
 		knownProperties.add(IPropertyConstants.IDENTIFIER);
+		knownProperties.add(IPropertyConstants.CURRENCY);
 		knownProperties.add(IPropertyConstants.DIVIDENDS);
 		knownProperties.add(IPropertyConstants.USER_PROPERTIES);
 	}
@@ -114,11 +124,15 @@ public class SecurityStore implements IStore {
     public IStoreProperties fetchProperties(IProgressMonitor monitor) {
     	StoreProperties properties = new StoreProperties();
 
-    	properties.setProperty(IPropertyConstants.ELEMENT_FACTORY, factory);
-    	properties.setProperty(IPropertyConstants.OBJECT_TYPE, ISecurity.class.getName());
+    	if (factory != null)
+    		properties.setProperty(IPropertyConstants.ELEMENT_FACTORY, factory);
+    	properties.setProperty(IPropertyConstants.OBJECT_TYPE, type == null ? ISecurity.class.getName() : type);
 
 		properties.setProperty(IPropertyConstants.NAME, name);
-		properties.setProperty(IPropertyConstants.IDENTIFIER, identifier);
+		if (identifier != null)
+			properties.setProperty(IPropertyConstants.IDENTIFIER, identifier);
+		if (currency != null)
+			properties.setProperty(IPropertyConstants.CURRENCY, currency);
 		properties.setProperty(IPropertyConstants.USER_PROPERTIES, userProperties);
 
 		if (dividends != null) {
@@ -142,9 +156,11 @@ public class SecurityStore implements IStore {
      */
     public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
 		this.factory = (IRepositoryElementFactory) properties.getProperty(IPropertyConstants.ELEMENT_FACTORY);
+		this.type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
 
 		this.name = (String) properties.getProperty(IPropertyConstants.NAME);
 		this.identifier = (IFeedIdentifier) properties.getProperty(IPropertyConstants.IDENTIFIER);
+		this.currency = (Currency) properties.getProperty(IPropertyConstants.CURRENCY);
 		this.userProperties = (IUserProperties) properties.getProperty(IPropertyConstants.USER_PROPERTIES);
 
 		IDividend[] dividends = (IDividend[]) properties.getProperty(IPropertyConstants.DIVIDENDS);
@@ -168,6 +184,15 @@ public class SecurityStore implements IStore {
      */
     public void delete(IProgressMonitor monitor) throws CoreException {
     	SecurityCollection.getInstance().delete(this);
+
+    	if (historyStore == null) {
+        	IPath path = LocalRepository.getInstance().getLocation().append(LocalRepository.SECURITIES_HISTORY_FILE);
+    		File file = path.append(String.valueOf(id) + ".xml").toFile();
+    		if (file.exists())
+				historyStore = new HistoryStore(id);
+    	}
+    	if (historyStore != null)
+    		historyStore.delete(monitor);
     }
 
 	/* (non-Javadoc)

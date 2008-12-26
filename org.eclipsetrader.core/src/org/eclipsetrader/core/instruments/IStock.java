@@ -13,16 +13,16 @@ package org.eclipsetrader.core.instruments;
 
 import java.util.Currency;
 
+import org.eclipsetrader.core.feed.IDividend;
+
 /**
- * Interface implemented by currency instruments.
+ * Interface implemented by common stock instruments.
  *
  * @since 1.0
  */
-public interface ICurrencyExchange extends ISecurity {
+public interface IStock extends ISecurity {
 
-	public Currency getFromCurrency();
+	public Currency getCurrency();
 
-	public Currency getToCurrency();
-
-	public Double getMultiplier();
+	public IDividend[] getDividends();
 }

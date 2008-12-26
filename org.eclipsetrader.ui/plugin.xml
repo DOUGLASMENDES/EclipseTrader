@@ -207,16 +207,32 @@
             id="org.eclipsetrader.ui.wizards.general"
             name="General">
       </category>
+      <category
+            id="org.eclipsetrader.ui.wizards.instruments"
+            name="Instruments">
+      </category>
       <wizard
-            category="org.eclipsetrader.ui.wizards.general"
+            category="org.eclipsetrader.ui.wizards.instruments"
             class="org.eclipsetrader.ui.internal.securities.wizards.SecurityWizard"
             hasPages="true"
-            icon="icons/etool16/newfile_wiz.gif"
-            id="org.eclipsetrader.ui.wizards.new.security"
-            name="Security"
+            icon="icons/etool16/security_new.png"
+            id="org.eclipsetrader.ui.wizards.new.stock"
+            name="Stock"
             preferredPerspectives="org.eclipsetrader.ui.traderPerspective">
          <description>
-            Create a new security.
+            Create a new common stock security.
+         </description>
+      </wizard>
+      <wizard
+            category="org.eclipsetrader.ui.wizards.instruments"
+            class="org.eclipsetrader.ui.internal.securities.wizards.CurrencyExchangeWizard"
+            hasPages="true"
+            icon="icons/etool16/security_new.png"
+            id="org.eclipsetrader.ui.wizards.new.currency"
+            name="Currency Exchange"
+            preferredPerspectives="org.eclipsetrader.ui.traderPerspective">
+         <description>
+            Create a new currency.
          </description>
       </wizard>
       <wizard

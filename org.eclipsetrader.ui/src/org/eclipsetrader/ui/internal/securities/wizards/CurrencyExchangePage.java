@@ -22,8 +22,10 @@ import java.util.Locale;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.wizard.WizardPage;
@@ -40,9 +42,10 @@ import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.internal.UIActivator;
 
-public class NamePage extends WizardPage {
+public class CurrencyExchangePage extends WizardPage {
 	private Text name;
-	private ComboViewer currency;
+	private ComboViewer fromCurrency;
+	private ComboViewer toCurrency;
 	private ComboViewer repository;
 
 	private ModifyListener modifyListener = new ModifyListener() {
@@ -52,9 +55,9 @@ public class NamePage extends WizardPage {
 		}
 	};
 
-	public NamePage() {
-		super("name", "Common Stock", null);
-		setDescription("Create a New Common Stock Security");
+	public CurrencyExchangePage() {
+		super("name", "Currency Exchange", null);
+		setDescription("Create a new Currency Exchange");
 	}
 
 	/* (non-Javadoc)
@@ -74,9 +77,9 @@ public class NamePage extends WizardPage {
 		name.setFocus();
 
 		label = new Label(content, SWT.NONE);
-		label.setText("Currency:");
-		currency = new ComboViewer(content, SWT.READ_ONLY);
-		currency.setLabelProvider(new LabelProvider() {
+		label.setText("From Currency:");
+		fromCurrency = new ComboViewer(content, SWT.READ_ONLY);
+		fromCurrency.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
             	Locale locale = (Locale) element;
@@ -86,10 +89,24 @@ public class NamePage extends WizardPage {
 	            	});
             }
 		});
-		currency.setContentProvider(new ArrayContentProvider());
-		currency.setSorter(new ViewerSorter());
-		currency.setInput(getAvailableCurrencies());
-		currency.setSelection(new StructuredSelection(Locale.getDefault()));
+		fromCurrency.setContentProvider(new ArrayContentProvider());
+		fromCurrency.setSorter(new ViewerSorter());
+
+		label = new Label(content, SWT.NONE);
+		label.setText("To Currency:");
+		toCurrency = new ComboViewer(content, SWT.READ_ONLY);
+		toCurrency.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+            	Locale locale = (Locale) element;
+	            return NLS.bind("{0} ({1})", new Object[] {
+	            		locale.getDisplayCountry(),
+	            		Currency.getInstance(locale).getCurrencyCode(),
+	            	});
+            }
+		});
+		toCurrency.setContentProvider(new ArrayContentProvider());
+		toCurrency.setSorter(new ViewerSorter());
 
 		label = new Label(content, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -104,6 +121,42 @@ public class NamePage extends WizardPage {
 		repository.setSorter(new ViewerSorter());
 		repository.setInput(getRepositoryService().getRepositories());
 		repository.setSelection(new StructuredSelection(getRepositoryService().getRepository("local")));
+
+	    List<Locale> locale = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));
+		Collections.sort(locale, new Comparator<Locale>() {
+			public int compare(Locale arg0, Locale arg1) {
+				return arg0.getDisplayCountry().compareTo(arg1.getDisplayCountry());
+			}
+		});
+		for (int i = locale.size() - 1; i >= 1; i--) {
+			if ((locale.get(i)).getDisplayCountry().equals((locale.get(i - 1)).getDisplayCountry()) == true)
+				locale.remove(i);
+		}
+		for (Iterator<Locale> iter = locale.iterator(); iter.hasNext(); ) {
+			try {
+				if (Currency.getInstance(iter.next()) == null)
+					iter.remove();
+			} catch(Exception e) {
+				iter.remove();
+			}
+		}
+
+		fromCurrency.setInput(locale);
+		fromCurrency.setSelection(new StructuredSelection(Locale.getDefault()));
+		toCurrency.setInput(locale);
+
+		fromCurrency.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+    			if (isCurrentPage())
+    				getContainer().updateButtons();
+            }
+		});
+		toCurrency.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+    			if (isCurrentPage())
+    				getContainer().updateButtons();
+            }
+		});
 	}
 
 	/* (non-Javadoc)
@@ -130,43 +183,35 @@ public class NamePage extends WizardPage {
     		setErrorMessage("A security with the same name already exists. Choose a different name.");
     		return false;
     	}
+
+    	if (fromCurrency.getSelection().isEmpty() || toCurrency.getSelection().isEmpty())
+    		return false;
+    	Object from = ((IStructuredSelection) fromCurrency.getSelection()).getFirstElement();
+    	Object to = ((IStructuredSelection) toCurrency.getSelection()).getFirstElement();
+    	if (from.equals(to))
+    		return false;
+
     	if (getErrorMessage() != null)
     		setErrorMessage(null);
-	    return true;
+
+    	return true;
     }
 
     public String getSecurityName() {
     	return name.getText();
     }
 
+    public Currency getFromCurrency() {
+    	IStructuredSelection selection = (IStructuredSelection) fromCurrency.getSelection();
+    	return (Currency) selection.getFirstElement();
+    }
+
+    public Currency getToCurrency() {
+    	IStructuredSelection selection = (IStructuredSelection) toCurrency.getSelection();
+    	return (Currency) selection.getFirstElement();
+    }
+
 	public IRepository getRepository() {
     	return (IRepository) ((IStructuredSelection) repository.getSelection()).getFirstElement();
     }
-
-	public Currency getCurrency() {
-    	Locale locale = (Locale) ((IStructuredSelection) currency.getSelection()).getFirstElement();
-    	return Currency.getInstance(locale);
-	}
-
-	protected List<Locale> getAvailableCurrencies() {
-	    List<Locale> locale = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));
-		Collections.sort(locale, new Comparator<Locale>() {
-			public int compare(Locale arg0, Locale arg1) {
-				return arg0.getDisplayCountry().compareTo(arg1.getDisplayCountry());
-			}
-		});
-		for (int i = locale.size() - 1; i >= 1; i--) {
-			if ((locale.get(i)).getDisplayCountry().equals((locale.get(i - 1)).getDisplayCountry()) == true)
-				locale.remove(i);
-		}
-		for (Iterator<Locale> iter = locale.iterator(); iter.hasNext(); ) {
-			try {
-				if (Currency.getInstance(iter.next()) == null)
-					iter.remove();
-			} catch(Exception e) {
-				iter.remove();
-			}
-		}
-		return locale;
-	}
 }

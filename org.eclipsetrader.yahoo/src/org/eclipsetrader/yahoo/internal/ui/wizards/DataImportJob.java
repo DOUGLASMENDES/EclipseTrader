@@ -27,7 +27,7 @@ import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.instruments.Stock;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
 import org.eclipsetrader.yahoo.internal.core.connector.BackfillConnector;
@@ -106,22 +106,24 @@ public class DataImportJob extends Job {
 							}
 						}
 
-						IDividend[] dividends = connector.backfillDividends(identifier, beginDate, endDate);
-						if (dividends != null && dividends.length != 0 && security instanceof Security) {
-							Map<Date, IDividend> dividendsMap = new HashMap<Date, IDividend>();
+						if (security instanceof Stock) {
+							IDividend[] dividends = connector.backfillDividends(identifier, beginDate, endDate);
+							if (dividends != null && dividends.length != 0) {
+								Map<Date, IDividend> dividendsMap = new HashMap<Date, IDividend>();
 
-							IDividend[] currentDividends = ((Security) security).getDividends();
-							if (currentDividends != null && mode != FULL) {
-								for (IDividend d : currentDividends)
-									dividendsMap.put(d.getExDate(), d);
-							}
+								IDividend[] currentDividends = ((Stock) security).getDividends();
+								if (currentDividends != null && mode != FULL) {
+									for (IDividend d : currentDividends)
+										dividendsMap.put(d.getExDate(), d);
+								}
 
-							for (int i = 0; i < dividends.length; i++)
-								dividendsMap.put(dividends[i].getExDate(), dividends[i]);
+								for (int i = 0; i < dividends.length; i++)
+									dividendsMap.put(dividends[i].getExDate(), dividends[i]);
 
-							if (dividendsMap.size() != 0) {
-								((Security) security).setDividends(dividendsMap.values().toArray(new IDividend[dividendsMap.values().size()]));
-								repository.saveAdaptable(new ISecurity[] { security });
+								if (dividendsMap.size() != 0) {
+									((Stock) security).setDividends(dividendsMap.values().toArray(new IDividend[dividendsMap.values().size()]));
+									repository.saveAdaptable(new ISecurity[] { security });
+								}
 							}
 						}
 					}

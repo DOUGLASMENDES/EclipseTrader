@@ -16,7 +16,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IHistory;
+import org.eclipsetrader.core.instruments.Stock;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
+import org.eclipsetrader.core.instruments.IStock;
 import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
@@ -67,6 +69,8 @@ public class DefaultElementFactory implements IRepositoryElementFactory, IExecut
 				return new CurrencyExchange(store, properties);
 			if (ISecurity.class.getName().equals(type))
 				return new Security(store, properties);
+			if (IStock.class.getName().equals(type))
+				return new Stock(store, properties);
 			if (IWatchList.class.getName().equals(type))
 				return new WatchList(store, properties);
 			if (IHistory.class.getName().equals(type))

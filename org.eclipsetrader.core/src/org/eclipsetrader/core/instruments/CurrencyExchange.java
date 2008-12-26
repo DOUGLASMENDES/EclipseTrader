@@ -18,22 +18,30 @@ import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 
+/**
+ * Default implementation of <code>ICurrencyExchange</code>.
+ *
+ * @since 1.0
+ */
 public class CurrencyExchange extends Security implements ICurrencyExchange {
 	private Currency from;
 	private Currency to;
 	private Double multiplier;
 
-	public CurrencyExchange() {
+	protected CurrencyExchange() {
 	}
 
-	public CurrencyExchange(Currency from, Currency to, Double multiplier) {
+	public CurrencyExchange(Currency from, Currency to, double multiplier) {
 	    this.from = from;
 	    this.to = to;
 	    this.multiplier = multiplier;
     }
 
-	public CurrencyExchange(String name, IFeedIdentifier identifier) {
+	public CurrencyExchange(String name, IFeedIdentifier identifier, Currency from, Currency to, double multiplier) {
 		super(name, identifier);
+	    this.from = from;
+	    this.to = to;
+	    this.multiplier = multiplier;
 	}
 
 	public CurrencyExchange(IStore store, IStoreProperties storeProperties) {

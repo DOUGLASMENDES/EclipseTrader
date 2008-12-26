@@ -13,7 +13,9 @@ package org.eclipsetrader.core.internal.repositories;
 
 import junit.framework.TestCase;
 
+import org.eclipsetrader.core.instruments.Stock;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
+import org.eclipsetrader.core.instruments.IStock;
 import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
@@ -37,6 +39,15 @@ public class DefaultElementFactoryTest extends TestCase {
 		Object object = factory.createElement(null, properties);
 		assertNotNull(object);
 		assertTrue(object instanceof Security);
+    }
+
+	public void testCreateCommonStock() throws Exception {
+		DefaultElementFactory factory = new DefaultElementFactory();
+		StoreProperties properties = new StoreProperties();
+		properties.setProperty(IPropertyConstants.OBJECT_TYPE, IStock.class.getName());
+		Object object = factory.createElement(null, properties);
+		assertNotNull(object);
+		assertTrue(object instanceof Stock);
     }
 
 	public void testCreateCurrencyExchange() throws Exception {

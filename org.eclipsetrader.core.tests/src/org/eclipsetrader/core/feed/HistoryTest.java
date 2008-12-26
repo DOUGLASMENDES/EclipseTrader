@@ -16,6 +16,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +26,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.instruments.Stock;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IStore;
@@ -200,7 +202,7 @@ public class HistoryTest extends TestCase {
 				new Dividend(getTime(2003, Calendar.FEBRUARY, 19), 0.08),
 			};
 
-		Security security = new Security("Test", null);
+		Stock security = new Stock("Test", null, Currency.getInstance("USD"));
 		security.setDividends(dividends);
 		History history = new History(security, bars, null, null);
 
@@ -224,7 +226,7 @@ public class HistoryTest extends TestCase {
 				new Dividend(getTime(2003, Calendar.FEBRUARY, 19), 0.08),
 			};
 
-		Security security = new Security("Test", null);
+		Stock security = new Stock("Test", null, Currency.getInstance("USD"));
 		security.setDividends(dividends);
 		History history = new History(security, bars, splits, null);
 

@@ -21,7 +21,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipsetrader.core.instruments.Stock;
+import org.eclipsetrader.core.instruments.CurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.repositories.IRepository;
@@ -29,13 +29,13 @@ import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.internal.UIActivator;
 
-public class SecurityWizard extends Wizard implements INewWizard {
+public class CurrencyExchangeWizard extends Wizard implements INewWizard {
 	private Image image;
-	private NamePage namePage;
+	private CurrencyExchangePage namePage;
 	private IdentifierPage identifierPage;
 	private MarketsPage marketsPage;
 
-	public SecurityWizard() {
+	public CurrencyExchangeWizard() {
 		ImageDescriptor descriptor = ImageDescriptor.createFromURL(UIActivator.getDefault().getBundle().getResource("icons/wizban/newfile_wiz.gif"));
 		image = descriptor.createImage();
 	}
@@ -61,7 +61,7 @@ public class SecurityWizard extends Wizard implements INewWizard {
      */
     @Override
     public String getWindowTitle() {
-	    return "New Common Stock";
+	    return "New Currency Exchange";
     }
 
 	/* (non-Javadoc)
@@ -77,7 +77,7 @@ public class SecurityWizard extends Wizard implements INewWizard {
      */
     @Override
     public void addPages() {
-	    addPage(namePage = new NamePage());
+	    addPage(namePage = new CurrencyExchangePage());
 	    addPage(identifierPage = new IdentifierPage());
 	    addPage(marketsPage = new MarketsPage());
     }
@@ -88,7 +88,7 @@ public class SecurityWizard extends Wizard implements INewWizard {
 	@Override
 	public boolean performFinish() {
 		final IRepository repository = namePage.getRepository();
-		final Stock resource = new Stock(namePage.getSecurityName(), identifierPage.getFeedIdentifier(), namePage.getCurrency());
+		final ISecurity resource = new CurrencyExchange(namePage.getSecurityName(), identifierPage.getFeedIdentifier(), namePage.getFromCurrency(), namePage.getToCurrency(), 1.0);
 		final IMarket[] markets = marketsPage.getSelectedMarkets();
 
 		final IRepositoryService service = UIActivator.getDefault().getRepositoryService();

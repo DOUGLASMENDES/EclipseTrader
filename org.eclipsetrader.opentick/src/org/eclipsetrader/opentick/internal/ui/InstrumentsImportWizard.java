@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.opentick.internal.ui;
 
+import java.util.Currency;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -20,6 +22,8 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.FeedProperties;
+import org.eclipsetrader.core.instruments.Stock;
+import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
@@ -30,6 +34,7 @@ import org.eclipsetrader.opentick.internal.core.repository.IdentifiersList;
 import org.eclipsetrader.opentick.internal.core.repository.Instrument;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.otfeed.event.InstrumentEnum;
 
 public class InstrumentsImportWizard extends Wizard implements IImportWizard {
 	private InstrumentsPage instrumentsPage;
@@ -67,15 +72,20 @@ public class InstrumentsImportWizard extends Wizard implements IImportWizard {
             public IStatus run(IProgressMonitor monitor) throws Exception {
         		Exchange exchange = instrumentsPage.getExchange();
         		Instrument[] instruments = instrumentsPage.getInstruments();
+        		Integer type = instrumentsPage.getType();
 
-        		Security[] security = new Security[instruments.length];
+        		ISecurity[] security = new ISecurity[instruments.length];
         		for (int i = 0; i < instruments.length; i++) {
         			FeedProperties properties = new FeedProperties();
         			properties.setProperty(IdentifiersList.SYMBOL_PROPERTY, instruments[i].getCode());
         			properties.setProperty(IdentifiersList.EXCHANGE_PROPERTY, exchange.getCode());
         			properties.setProperty("org.eclipsetrader.yahoo.symbol", instruments[i].getCode());
         			FeedIdentifier identifier = new FeedIdentifier(instruments[i].getCode(), properties);
-        			security[i] = new Security(!"".equals(instruments[i].getCompany()) ? instruments[i].getCompany(): instruments[i].getCode(), identifier);
+
+        			if (type == InstrumentEnum.STOCK.code)
+            			security[i] = new Stock(!"".equals(instruments[i].getCompany()) ? instruments[i].getCompany(): instruments[i].getCode(), identifier, Currency.getInstance("USD"));
+        			else
+            			security[i] = new Security(!"".equals(instruments[i].getCompany()) ? instruments[i].getCompany(): instruments[i].getCode(), identifier);
         		}
         		repository.saveAdaptable(security);
 
