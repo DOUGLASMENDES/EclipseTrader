@@ -105,10 +105,12 @@
       </command>
    </extension>
    <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="org.eclipsetrader.news.internal.NewsUpdateStartup">
-      </startup>
+         point="org.eclipsetrader.core.launchers">
+      <launcher
+            class="org.eclipsetrader.news.internal.NewsServiceLauncher"
+            id="org.eclipsetrader.news.launcher"
+            name="News Reader">
+      </launcher>
    </extension>
 
 </plugin>

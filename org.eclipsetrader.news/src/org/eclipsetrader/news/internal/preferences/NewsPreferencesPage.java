@@ -37,7 +37,6 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 	private static final String K_ID = "id"; //$NON-NLS-1$
 	private static final String K_NAME = "name"; //$NON-NLS-1$
 
-	private Button runAtStartup;
 	private Button followQuoteFeed;
 	private Spinner daysToKeep;
 	private Button enableDecorators;
@@ -62,10 +61,6 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		enableDecorators = new Button(content, SWT.CHECK);
 		enableDecorators.setText(Messages.NewsPreferencesPage_EnableDecorators);
 		enableDecorators.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-
-		runAtStartup = new Button(content, SWT.CHECK);
-		runAtStartup.setText(Messages.NewsPreferencesPage_RunAtStartup);
-		runAtStartup.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
 		followQuoteFeed = new Button(content, SWT.CHECK);
 		followQuoteFeed.setText(Messages.NewsPreferencesPage_FollowQuoteFeed);
@@ -106,7 +101,6 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 	protected void performDefaults() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		runAtStartup.setSelection(store.getBoolean(Activator.PREFS_UPDATE_ON_STARTUP));
 		followQuoteFeed.setSelection(store.getBoolean(Activator.PREFS_FOLLOW_QUOTE_FEED));
 		daysToKeep.setSelection(store.getInt(Activator.PREFS_DATE_RANGE));
 		enableDecorators.setSelection(store.getBoolean(Activator.PREFS_ENABLE_DECORATORS));
@@ -126,7 +120,6 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 	public boolean performOk() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		store.setValue(Activator.PREFS_UPDATE_ON_STARTUP, runAtStartup.getSelection());
 		store.setValue(Activator.PREFS_FOLLOW_QUOTE_FEED, followQuoteFeed.getSelection());
 		store.setValue(Activator.PREFS_DATE_RANGE, daysToKeep.getSelection());
 		store.setValue(Activator.PREFS_ENABLE_DECORATORS, enableDecorators.getSelection());

@@ -8,7 +8,8 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.net,
  org.eclipse.ui,
- org.eclipsetrader.core
+ org.eclipsetrader.core,
+ org.eclipsetrader.ui
 Bundle-ActivationPolicy: lazy
 Import-Package: com.sun.syndication.feed,
  com.sun.syndication.feed.atom,

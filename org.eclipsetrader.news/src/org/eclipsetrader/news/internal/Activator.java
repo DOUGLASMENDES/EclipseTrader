@@ -38,7 +38,6 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String PREFS_UPDATE_INTERVAL = "UPDATE_INTERVAL"; //$NON-NLS-1$
 	public static final String PREFS_DATE_RANGE = "DATE_RANGE"; //$NON-NLS-1$
-	public static final String PREFS_UPDATE_ON_STARTUP = "UPDATE_ON_STARTUP"; //$NON-NLS-1$
 	public static final String PREFS_FOLLOW_QUOTE_FEED = "FOLLOW_QUOTE_FEED"; //$NON-NLS-1$
 	public static final String PREFS_ENABLE_DECORATORS = "ENABLE_DECORATORS"; //$NON-NLS-1$
 

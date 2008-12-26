@@ -280,7 +280,7 @@ public class RSSNewsProvider implements INewsProvider {
 				}
 			}
 		} catch (Exception e) {
-    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscriptions", e); //$NON-NLS-1$
+    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscription " + feedUrl.toString(), e); //$NON-NLS-1$
     		Activator.getDefault().getLog().log(status);
 		}
 		return headLines.toArray(new HeadLine[headLines.size()]);
