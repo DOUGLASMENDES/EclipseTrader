@@ -117,15 +117,15 @@ public class UIActivator extends AbstractUIPlugin {
     @Override
     protected void initializeImageRegistry(ImageRegistry reg) {
     	reg.put(UIConstants.BLANK_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/blank_obj.gif")));
-    	reg.put(UIConstants.FOLDER_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/fldr_obj.gif")));
+    	reg.put(UIConstants.FOLDER_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/fldr_obj.png")));
 
-    	reg.put(UIConstants.MARKET_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market.gif")));
-    	reg.put(UIConstants.MARKET_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market_fldr.gif")));
+    	reg.put(UIConstants.MARKET_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market.png")));
+    	reg.put(UIConstants.MARKET_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market_fldr.png")));
 
-    	reg.put(UIConstants.REPOSITORY, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository.gif")));
-    	reg.put(UIConstants.REPOSITORY_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_fldr.gif")));
-    	reg.put(UIConstants.REPOSITORY_OBJECT_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object_fldr.gif")));
-    	reg.put(UIConstants.REPOSITORY_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object.gif")));
+    	reg.put(UIConstants.REPOSITORY, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository.png")));
+    	reg.put(UIConstants.REPOSITORY_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_fldr.png")));
+    	reg.put(UIConstants.REPOSITORY_OBJECT_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object_fldr.png")));
+    	reg.put(UIConstants.REPOSITORY_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object.png")));
 
     	reg.put(UIConstants.DELETE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/delete.gif")));
     	reg.put(UIConstants.DELETE_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dlcl16/delete.gif")));

@@ -34,6 +34,8 @@ public class UIConstants {
 
 	public static final String REPOSITORY_OBJECT = "repository_object"; //$NON-NLS-1$
 
+	public static final String SECURITY_OBJECT = "security_object"; //$NON-NLS-1$
+
 	public static final String DELETE_ICON = "delete"; //$NON-NLS-1$
 
 	public static final String DELETE_DISABLED_ICON = "delete_disabled"; //$NON-NLS-1$

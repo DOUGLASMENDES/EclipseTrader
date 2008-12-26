@@ -6,7 +6,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipsetrader.ui.internal.charts.ChartsPerspective"
-            icon="icons/view16/linecharticon.gif"
+            icon="icons/view16/chart_persp.png"
             id="org.eclipsetrader.ui.charts"
             name="Charts">
       </perspective>
@@ -17,14 +17,14 @@
             allowMultiple="true"
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.charts.views.ChartViewPart"
-            icon="icons/view16/linecharticon.gif"
+            icon="icons/view16/chart.png"
             id="org.eclipsetrader.ui.chart"
             name="Chart">
       </view>
       <view
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.charts.views.PaletteView"
-            icon="icons/view16/palette_view.gif"
+            icon="icons/view16/palette.png"
             id="org.eclipsetrader.ui.charts.palette"
             name="Palette">
       </view>

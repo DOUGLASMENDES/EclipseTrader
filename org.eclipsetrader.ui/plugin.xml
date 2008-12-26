@@ -5,7 +5,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipsetrader.ui.internal.TraderPerspective"
-            icon="icons/eview16/trader_persp.gif"
+            icon="icons/eview16/trader_persp.png"
             id="org.eclipsetrader.ui.traderPerspective"
             name="%traderPerspectiveName">
       </perspective>
@@ -37,21 +37,21 @@
       <view
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.navigator.Navigator"
-            icon="icons/eview16/navigator.gif"
+            icon="icons/eview16/navigator.png"
             id="org.eclipsetrader.ui.views.navigator"
             name="%navigatorViewName">
       </view>
       <view
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.markets.MarketsView"
-            icon="icons/eview16/markets.gif"
+            icon="icons/eview16/markets.png"
             id="org.eclipsetrader.ui.views.markets"
             name="%marketsViewName">
       </view>
       <view
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.repositories.RepositoryExplorer"
-            icon="icons/eview16/repositories.gif"
+            icon="icons/eview16/repositories.png"
             id="org.eclipsetrader.ui.views.repositories"
             name="%repositoryExplorerViewName">
       </view>
@@ -59,13 +59,13 @@
             allowMultiple="true"
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.views.WatchListView"
-            icon="icons/eview16/watchlist.gif"
+            icon="icons/eview16/watchlist.png"
             id="org.eclipsetrader.ui.views.watchlist"
             name="WatchList">
       </view>
       <view
             class="org.eclipsetrader.ui.internal.views.TickersView"
-            icon="icons/eview16/watchlist.gif"
+            icon="icons/eview16/watchlist.png"
             id="org.eclipsetrader.ui.views.tickers"
             name="Tickers">
       </view>
@@ -73,7 +73,7 @@
             allowMultiple="true"
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.views.Level2View"
-            icon="icons/eview16/watchlist.gif"
+            icon="icons/eview16/level2.png"
             id="org.eclipsetrader.ui.views.level2"
             name="Level II">
       </view>
@@ -252,7 +252,7 @@
             category="org.eclipsetrader.ui.wizards.general"
             class="org.eclipsetrader.ui.internal.markets.MarketWizard"
             hasPages="true"
-            icon="icons/obj16/market.gif"
+            icon="icons/etool16/market_new.png"
             id="org.eclipsetrader.ui.wizards.new.market"
             name="Market"
             preferredPerspectives="org.eclipsetrader.ui.traderPerspective">
@@ -414,16 +414,16 @@
             label="Launcher">
          <action
                class="org.eclipsetrader.ui.internal.StopFeedAction"
-               disabledIcon="icons/dtool16/stop.gif"
-               icon="icons/etool16/stop.gif"
+               disabledIcon="icons/dtool16/stop.png"
+               icon="icons/etool16/stop.png"
                id="org.eclipsetrader.ui.launcher.stop"
                label="Stop"
                toolbarPath="additions">
          </action>
          <action
                class="org.eclipsetrader.ui.internal.StartFeedAction"
-               disabledIcon="icons/dtool16/run.gif"
-               icon="icons/etool16/run.gif"
+               disabledIcon="icons/dtool16/start.png"
+               icon="icons/etool16/start.png"
                id="org.eclipsetrader.ui.launcher.run"
                label="Start"
                toolbarPath="additions">
