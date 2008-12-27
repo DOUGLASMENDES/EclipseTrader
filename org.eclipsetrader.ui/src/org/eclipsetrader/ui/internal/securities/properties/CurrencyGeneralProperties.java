@@ -43,19 +43,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipsetrader.core.instruments.CurrencyExchange;
+import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.instruments.IStock;
-import org.eclipsetrader.core.instruments.Security;
-import org.eclipsetrader.core.instruments.Stock;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.ui.internal.UIActivator;
 
-public class GeneralProperties extends PropertyPage implements IWorkbenchPropertyPage {
+public class CurrencyGeneralProperties extends PropertyPage implements IWorkbenchPropertyPage {
 	private Text name;
+	private ComboViewer fromCurrency;
+	private ComboViewer toCurrency;
 	private ComboViewer repository;
-	private ComboViewer currency;
 
 	private ModifyListener modifyListener = new ModifyListener() {
 		public void modifyText(ModifyEvent e) {
@@ -63,7 +63,7 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 		}
 	};
 
-	public GeneralProperties() {
+	public CurrencyGeneralProperties() {
 		setTitle("General");
 	}
 
@@ -83,22 +83,33 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 		name = new Text(content, SWT.BORDER);
 		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		IStock stock = (IStock) getElement().getAdapter(IStock.class);
-		if (stock != null) {
-			label = new Label(content, SWT.NONE);
-			label.setText("Currency:");
-			currency = new ComboViewer(content, SWT.READ_ONLY);
-			currency.setLabelProvider(new LabelProvider() {
-	            @Override
-	            public String getText(Object element) {
-	            	Currency c = (Currency) element;
-	            	return c.getCurrencyCode();
-	            }
-			});
-			currency.setContentProvider(new ArrayContentProvider());
-			currency.setSorter(new ViewerSorter());
-			currency.setInput(getAvailableCurrencies());
-		}
+		label = new Label(content, SWT.NONE);
+		label.setText("From Currency:");
+		fromCurrency = new ComboViewer(content, SWT.READ_ONLY);
+		fromCurrency.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+            	Currency c = (Currency) element;
+            	return c.getCurrencyCode();
+            }
+		});
+		fromCurrency.setContentProvider(new ArrayContentProvider());
+		fromCurrency.setSorter(new ViewerSorter());
+		fromCurrency.setInput(getAvailableCurrencies());
+
+		label = new Label(content, SWT.NONE);
+		label.setText("To Currency:");
+		toCurrency = new ComboViewer(content, SWT.READ_ONLY);
+		toCurrency.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+            	Currency c = (Currency) element;
+            	return c.getCurrencyCode();
+            }
+		});
+		toCurrency.setContentProvider(new ArrayContentProvider());
+		toCurrency.setSorter(new ViewerSorter());
+		toCurrency.setInput(getAvailableCurrencies());
 
 		label = new Label(content, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -126,12 +137,10 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
      */
     @Override
     protected void performDefaults() {
-		ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
+		ICurrencyExchange security = (ICurrencyExchange) getElement().getAdapter(ICurrencyExchange.class);
 		name.setText(security.getName());
-
-		IStock stock = (IStock) getElement().getAdapter(IStock.class);
-		if (stock != null)
-			currency.setSelection(stock.getCurrency() != null ? new StructuredSelection(stock.getCurrency()) : StructuredSelection.EMPTY);
+		fromCurrency.setSelection(new StructuredSelection(security.getFromCurrency()));
+		toCurrency.setSelection(new StructuredSelection(security.getToCurrency()));
 
 		IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
 		repository.setSelection(new StructuredSelection(storeObject.getStore().getRepository()));
@@ -140,14 +149,14 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
     }
 
     protected void applyChanges() {
-		Security security = (Security) getElement().getAdapter(Security.class);
-		if (security != null)
+		CurrencyExchange security = (CurrencyExchange) getElement().getAdapter(CurrencyExchange.class);
+		if (security != null) {
 			security.setName(name.getText());
 
-		Stock stock = (Stock) getElement().getAdapter(Stock.class);
-		if (stock != null) {
-			IStructuredSelection selection = (IStructuredSelection) currency.getSelection();
-			stock.setCurrency(selection.isEmpty() ? null : (Currency) selection.getFirstElement());
+			IStructuredSelection selection = (IStructuredSelection) fromCurrency.getSelection();
+			security.setFromCurrency((Currency) selection.getFirstElement());
+			selection = (IStructuredSelection) toCurrency.getSelection();
+			security.setToCurrency((Currency) selection.getFirstElement());
 		}
     }
 

@@ -203,12 +203,12 @@ public class CurrencyExchangePage extends WizardPage {
 
     public Currency getFromCurrency() {
     	IStructuredSelection selection = (IStructuredSelection) fromCurrency.getSelection();
-    	return (Currency) selection.getFirstElement();
+    	return Currency.getInstance((Locale) selection.getFirstElement());
     }
 
     public Currency getToCurrency() {
     	IStructuredSelection selection = (IStructuredSelection) toCurrency.getSelection();
-    	return (Currency) selection.getFirstElement();
+    	return Currency.getInstance((Locale) selection.getFirstElement());
     }
 
 	public IRepository getRepository() {

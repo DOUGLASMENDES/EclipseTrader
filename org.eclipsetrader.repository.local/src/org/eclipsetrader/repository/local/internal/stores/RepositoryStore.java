@@ -17,6 +17,7 @@ import java.util.Date;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipsetrader.core.feed.IHistory;
+import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.IStock;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -62,7 +63,7 @@ public class RepositoryStore implements IStore {
 	public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
 		if (store == null) {
 			String type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
-			if (ISecurity.class.getName().equals(type) || IStock.class.getName().equals(type))
+			if (ISecurity.class.getName().equals(type) || IStock.class.getName().equals(type) || ICurrencyExchange.class.getName().equals(type))
 				store = SecurityCollection.getInstance().create();
 			else if (IWatchList.class.getName().equals(type))
 				store = WatchListCollection.getInstance().create();

@@ -55,6 +55,10 @@ public class CurrencyExchange extends Security implements ICurrencyExchange {
 	    return from;
     }
 
+	public void setFromCurrency(Currency from) {
+    	this.from = from;
+    }
+
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.instruments.ICurrencyExchange#getToCurrency()
      */
@@ -62,11 +66,19 @@ public class CurrencyExchange extends Security implements ICurrencyExchange {
 	    return to;
     }
 
+	public void setToCurrency(Currency to) {
+    	this.to = to;
+    }
+
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.instruments.ICurrencyExchange#getMultiplier()
      */
     public Double getMultiplier() {
 	    return multiplier;
+    }
+
+	public void setMultiplier(Double multiplier) {
+    	this.multiplier = multiplier;
     }
 
 	/* (non-Javadoc)

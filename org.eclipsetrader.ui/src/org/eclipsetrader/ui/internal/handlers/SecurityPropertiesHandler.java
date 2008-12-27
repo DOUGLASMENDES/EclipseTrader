@@ -28,11 +28,13 @@ import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.internal.dialogs.FilteredPreferenceDialog;
+import org.eclipsetrader.core.instruments.CurrencyExchange;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.securities.properties.ConnectorOverrideProperties;
+import org.eclipsetrader.ui.internal.securities.properties.CurrencyGeneralProperties;
 import org.eclipsetrader.ui.internal.securities.properties.GeneralProperties;
 import org.eclipsetrader.ui.internal.securities.properties.IdentifierProperties;
 import org.eclipsetrader.ui.internal.securities.properties.MarketsProperties;
@@ -66,7 +68,10 @@ public class SecurityPropertiesHandler extends AbstractHandler {
 	protected void openPropertiesDialog(Shell shell, final IAdaptable adaptableElement) {
 		PreferenceManager pageManager = new PreferenceManager();
 		if (adaptableElement.getAdapter(Security.class) != null) {
-    		pageManager.addToRoot(new PreferenceNode("general", new GeneralProperties()));
+			if (adaptableElement.getAdapter(CurrencyExchange.class) != null)
+				pageManager.addToRoot(new PreferenceNode("general", new CurrencyGeneralProperties()));
+			else
+				pageManager.addToRoot(new PreferenceNode("general", new GeneralProperties()));
     		pageManager.addToRoot(new PreferenceNode("identifier", new IdentifierProperties()));
     		pageManager.addToRoot(new PreferenceNode("markets", new MarketsProperties()));
     		pageManager.addToRoot(new PreferenceNode("override", new ConnectorOverrideProperties()));
