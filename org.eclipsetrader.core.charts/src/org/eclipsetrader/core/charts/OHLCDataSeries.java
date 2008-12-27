@@ -105,9 +105,11 @@ public class OHLCDataSeries extends DataSeries {
     @Override
     public IAdaptable getHighest() {
     	IAdaptable v = super.getHighest();
-    	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
-    	if (ohlc != null)
-    		v = new DoubleWrapper(ohlc.getHigh());
+    	if (v != null) {
+        	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
+        	if (ohlc != null)
+        		v = new DoubleWrapper(ohlc.getHigh());
+    	}
     	return v;
     }
 
@@ -117,9 +119,11 @@ public class OHLCDataSeries extends DataSeries {
     @Override
     public IAdaptable getLowest() {
     	IAdaptable v = super.getLowest();
-    	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
-    	if (ohlc != null)
-    		v = new DoubleWrapper(ohlc.getLow());
+    	if (v != null) {
+        	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
+        	if (ohlc != null)
+        		v = new DoubleWrapper(ohlc.getLow());
+    	}
     	return v;
     }
 }
