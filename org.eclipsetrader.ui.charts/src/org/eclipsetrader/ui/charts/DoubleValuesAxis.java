@@ -105,6 +105,9 @@ public class DoubleValuesAxis implements IAxis {
 		if (value instanceof IAdaptable)
 			n = (Number) ((IAdaptable) value).getAdapter(Number.class);
 
+		if (n == null || scaleLow == null)
+			return 0;
+
 		double t = n.doubleValue() - scaleLow;
 		int y = (int) (t * span);
 		return height - y - marginHeight;

@@ -57,4 +57,11 @@ public class DoubleValuesAxisTest extends TestCase {
 		assertEquals(10.0, axis.mapToValue(90 + 5));
 		assertEquals(30.0, axis.mapToValue(70 + 5));
 	}
+
+	public void testMapToAxisWithNullScale() throws Exception {
+		DoubleValuesAxis axis = new DoubleValuesAxis();
+		axis.marginHeight = 0;
+		axis.computeSize(100);
+		assertEquals(0, axis.mapToAxis(10.0));
+	}
 }
