@@ -167,7 +167,10 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	    return false;
     }
 
-	protected String getSecurityFeedSymbol(ISecurity security) {
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    public String getSymbolFromSecurity(ISecurity security) {
 		IFeedIdentifier identifier = security.getIdentifier();
 		if (identifier == null)
 			return null;
@@ -197,7 +200,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 
 				ISecurity[] securities = service.getSecurities();
 				for (int i = 0; i < securities.length; i++) {
-					String feedSymbol = getSecurityFeedSymbol(securities[i]);
+					String feedSymbol = getSymbolFromSecurity(securities[i]);
 					if (feedSymbol != null && feedSymbol.equals(symbol)) {
 						security = securities[i];
 						break;

@@ -122,14 +122,14 @@ public class OrderDialog extends TitleAreaDialog {
     	ITradingService tradingService = getTradingService();
     	brokerCombo.setInput(tradingService.getBrokers());
 
-    	if (security != null) {
-    		symbol.setText(getSecuritySymbol(security));
-    		symbolDescription.setText(security.getName());
-    	}
     	if (broker != null) {
         	IStructuredSelection selection = new StructuredSelection(broker);
         	brokerCombo.setSelection(selection);
         	handleBrokerSelection(selection);
+    	}
+    	else if (security != null) {
+    		symbol.setText(getSecuritySymbol(security));
+    		symbolDescription.setText(security.getName());
     	}
 
     	symbol.addModifyListener(new ModifyListener() {
@@ -413,8 +413,8 @@ public class OrderDialog extends TitleAreaDialog {
 	protected void handleBrokerSelection(IStructuredSelection selection) {
 		IBroker connector = (IBroker) selection.getFirstElement();
 
-		if (!symbol.getText().equals("")) {
-			security = connector.getSecurityFromSymbol(symbol.getText());
+		if (security != null) {
+			symbol.setText(connector.getSymbolFromSecurity(security));
     		symbolDescription.setText(security.getName().replaceAll("&", "&&"));
 		}
 

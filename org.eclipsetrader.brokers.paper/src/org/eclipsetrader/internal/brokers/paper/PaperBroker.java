@@ -175,6 +175,13 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    public String getSymbolFromSecurity(ISecurity security) {
+	    return security.getIdentifier() != null ? security.getIdentifier().getSymbol() : null;
+    }
+
+	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedSides()
 	 */
 	public IOrderSide[] getAllowedSides() {

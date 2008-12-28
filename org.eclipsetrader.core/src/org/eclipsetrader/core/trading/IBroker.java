@@ -83,6 +83,11 @@ public interface IBroker {
 	 */
 	public IOrderValidity[] getAllowedValidity();
 
+	/**
+	 * Gets a possibly empty array of allowed order routes.
+	 *
+	 * @return the allowed order routes.
+	 */
 	public IOrderRoute[] getAllowedRoutes();
 
 	/**
@@ -93,9 +98,33 @@ public interface IBroker {
 	 */
 	public boolean canTrade(ISecurity security);
 
+	/**
+	 * Gets the security that the receiver trades with the given symbol.
+	 *
+	 * @param symbol the symbol.
+	 * @return the security, or <code>null</code> if no securities can be traded with the given symbol.
+	 */
 	public ISecurity getSecurityFromSymbol(String symbol);
 
+	/**
+	 * Gets the symbol used by the receiver to trade the given security.
+	 *
+	 * @param security the security to trade.
+	 * @return the symbol used to trade.
+	 */
+	public String getSymbolFromSecurity(ISecurity security);
+
+	/**
+	 * Adds a listener to list of listeners that receive notifications about order changes.
+	 *
+	 * @param listener the listener to add.
+	 */
 	public void addOrderChangeListener(IOrderChangeListener listener);
 
+	/**
+	 * Removes a listener from the list of listeners that receive notifications about order changes.
+	 *
+	 * @param listener the listener to remove.
+	 */
 	public void removeOrderChangeListener(IOrderChangeListener listener);
 }
