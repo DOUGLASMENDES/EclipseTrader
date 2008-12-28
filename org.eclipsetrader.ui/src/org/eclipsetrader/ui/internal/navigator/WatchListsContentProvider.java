@@ -11,7 +11,6 @@
 
 package org.eclipsetrader.ui.internal.navigator;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -20,10 +19,7 @@ import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.ui.internal.UIActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
-@SuppressWarnings("restriction")
 public class WatchListsContentProvider implements IStructuredContentProvider {
 	private Viewer viewer;
 
@@ -79,16 +75,6 @@ public class WatchListsContentProvider implements IStructuredContentProvider {
     }
 
 	protected IRepositoryService getRepositoryService() {
-		try {
-			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-			IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-			return service;
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading repository service", e); //$NON-NLS-1$
-			UIActivator.getDefault().getLog().log(status);
-		}
-		return null;
+		return UIActivator.getDefault().getRepositoryService();
 	}
 }

@@ -11,22 +11,22 @@
 
 package org.eclipsetrader.ui.internal.navigator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.core.runtime.Status;
-import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.markets.MarketService;
+import org.eclipsetrader.core.instruments.ICurrencyExchange;
+import org.eclipsetrader.core.instruments.IStock;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IWatchList;
-import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class InstrumentTypeGroup implements INavigatorContentGroup, IExecutableExtension {
 	private String id;
@@ -61,40 +61,45 @@ public class InstrumentTypeGroup implements INavigatorContentGroup, IExecutableE
      * @see org.eclipsetrader.ui.internal.securities.IContentGroup#getGroupedContent(org.eclipse.core.runtime.IAdaptable[])
      */
     public IViewItem[] getGroupedContent(IAdaptable[] elements) {
-    	Set<IViewItem> result = new HashSet<IViewItem>();
+    	Set<IAdaptable> elementsSet = new HashSet<IAdaptable>(Arrays.asList(elements));
+    	List<IViewItem> result = new ArrayList<IViewItem>();
 
-		NavigatorViewItem viewItem = new NavigatorViewItem(null, "Securities");
-    	for (IAdaptable e : elements) {
-    		ISecurity reference = (ISecurity) e.getAdapter(ISecurity.class);
-    		if (reference != null)
+    	NavigatorViewItem viewItem = new NavigatorViewItem(null, "Stocks");
+    	for (Iterator<IAdaptable> iter = elementsSet.iterator(); iter.hasNext(); ) {
+    		IAdaptable e = iter.next();
+    		Object reference = e.getAdapter(IStock.class);
+    		if (reference != null) {
 				viewItem.createChild(reference);
+				iter.remove();
+    		}
+    	}
+		if (viewItem.getItemCount() != 0)
+			result.add(viewItem);
+
+		viewItem = new NavigatorViewItem(null, "Currencies");
+    	for (Iterator<IAdaptable> iter = elementsSet.iterator(); iter.hasNext(); ) {
+    		IAdaptable e = iter.next();
+    		Object reference = e.getAdapter(ICurrencyExchange.class);
+    		if (reference != null) {
+				viewItem.createChild(reference);
+				iter.remove();
+    		}
     	}
 		if (viewItem.getItemCount() != 0)
 			result.add(viewItem);
 
 		viewItem = new NavigatorViewItem(null, "WatchLists");
-    	for (IAdaptable e : elements) {
-    		IWatchList reference = (IWatchList) e.getAdapter(IWatchList.class);
-    		if (reference != null)
+    	for (Iterator<IAdaptable> iter = elementsSet.iterator(); iter.hasNext(); ) {
+    		IAdaptable e = iter.next();
+    		Object reference = e.getAdapter(IWatchList.class);
+    		if (reference != null) {
 				viewItem.createChild(reference);
+				iter.remove();
+    		}
     	}
 		if (viewItem.getItemCount() != 0)
 			result.add(viewItem);
 
     	return result.toArray(new IViewItem[result.size()]);
-    }
-
-    protected MarketService getMarketService() {
-    	try {
-    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(MarketService.class.getName());
-    		MarketService service = (MarketService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading market service", e);
-    		UIActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
     }
 }

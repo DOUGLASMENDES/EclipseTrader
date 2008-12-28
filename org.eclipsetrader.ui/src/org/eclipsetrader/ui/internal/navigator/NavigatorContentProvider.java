@@ -11,23 +11,17 @@
 
 package org.eclipsetrader.ui.internal.navigator;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IView;
 import org.eclipsetrader.core.views.IViewChangeListener;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.ViewEvent;
-import org.eclipsetrader.ui.internal.UIActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
-@SuppressWarnings("restriction")
 public class NavigatorContentProvider implements ITreeContentProvider {
 	private TreeViewer viewer;
 
@@ -110,20 +104,6 @@ public class NavigatorContentProvider implements ITreeContentProvider {
 	public Object getParent(Object element) {
 		if (element instanceof IViewItem)
 			return ((IViewItem) element).getParent();
-		return null;
-	}
-
-	protected IRepositoryService getRepositoryService() {
-		try {
-			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-			IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-			return service;
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading repository service", e); //$NON-NLS-1$
-			UIActivator.getDefault().getLog().log(status);
-		}
 		return null;
 	}
 }

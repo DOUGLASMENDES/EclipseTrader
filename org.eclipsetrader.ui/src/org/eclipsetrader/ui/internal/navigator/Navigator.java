@@ -11,7 +11,7 @@
 
 package org.eclipsetrader.ui.internal.navigator;
 
-import java.util.HashSet;
+ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -69,6 +70,7 @@ import org.eclipsetrader.ui.internal.repositories.Messages;
 import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
 import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
 
+@SuppressWarnings("restriction")
 public class Navigator extends ViewPart {
 	private TreeViewer viewer;
 	private IMemento memento;
@@ -160,6 +162,18 @@ public class Navigator extends ViewPart {
             			return 3;
             	}
 	            return 0;
+            }
+
+			/* (non-Javadoc)
+             * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+             */
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2) {
+            	if ((e1 instanceof IAdaptable) && (e2 instanceof IAdaptable)) {
+            		if (((IAdaptable) e1).getAdapter(String.class) != null && ((IAdaptable) e2).getAdapter(String.class) != null)
+            			return 0;
+            	}
+	            return super.compare(viewer, e1, e2);
             }
 		});
 

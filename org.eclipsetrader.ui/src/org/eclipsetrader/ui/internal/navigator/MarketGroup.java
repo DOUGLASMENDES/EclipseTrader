@@ -18,15 +18,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.markets.IMarket;
+import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class MarketGroup implements INavigatorContentGroup, IExecutableExtension {
 	private String id;
@@ -83,17 +80,7 @@ public class MarketGroup implements INavigatorContentGroup, IExecutableExtension
     	return result.toArray(new IViewItem[result.size()]);
     }
 
-    protected MarketService getMarketService() {
-    	try {
-    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(MarketService.class.getName());
-    		MarketService service = (MarketService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading market service", e);
-    		UIActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
+    protected IMarketService getMarketService() {
+    	return UIActivator.getDefault().getMarketService();
     }
 }

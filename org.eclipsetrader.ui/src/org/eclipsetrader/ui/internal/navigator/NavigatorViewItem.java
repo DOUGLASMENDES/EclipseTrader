@@ -11,10 +11,9 @@
 
 package org.eclipsetrader.ui.internal.navigator;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.IAdaptable;
@@ -25,7 +24,7 @@ import org.eclipsetrader.core.views.IViewItemVisitor;
 public class NavigatorViewItem implements IViewItem {
 	private Object reference;
 	private NavigatorViewItem parent;
-	private Map<Object, NavigatorViewItem> childs = new HashMap<Object, NavigatorViewItem>();
+	private List<NavigatorViewItem> childs = new ArrayList<NavigatorViewItem>();
 
 	public NavigatorViewItem() {
 	}
@@ -46,14 +45,13 @@ public class NavigatorViewItem implements IViewItem {
      * @see org.eclipsetrader.core.views.IViewItem#getItems()
      */
     public IViewItem[] getItems() {
-		Collection<NavigatorViewItem> c = childs.values();
-		return c.toArray(new IViewItem[c.size()]);
+		return childs.toArray(new IViewItem[childs.size()]);
     }
 
     protected void setItems(NavigatorViewItem[] items) {
     	childs.clear();
     	for (NavigatorViewItem viewItem : items) {
-    		childs.put(viewItem.getReference(), viewItem);
+    		childs.add(viewItem);
     		viewItem.parent = this;
     	}
     }
@@ -72,7 +70,11 @@ public class NavigatorViewItem implements IViewItem {
 	 * @return <code>true</code> if it is a child.
 	 */
 	public boolean hasChild(Object reference) {
-		return childs.containsKey(reference);
+		for (NavigatorViewItem viewItem : childs) {
+			if (viewItem.getReference().equals(reference))
+				return true;
+		}
+		return false;
 	}
 
 	/**
@@ -82,7 +84,11 @@ public class NavigatorViewItem implements IViewItem {
 	 * @return the <code>WatchListViewItem</code> that holds the object, or <code>null</code>.
 	 */
 	public NavigatorViewItem getChild(Object reference) {
-		return childs.get(reference);
+		for (NavigatorViewItem viewItem : childs) {
+			if (viewItem.getReference().equals(reference))
+				return viewItem;
+		}
+		return null;
 	}
 
 	/**
@@ -93,12 +99,12 @@ public class NavigatorViewItem implements IViewItem {
 	 */
 	public NavigatorViewItem createChild(Object reference) {
 		NavigatorViewItem viewItem = new NavigatorViewItem(this, reference);
-		childs.put(reference, viewItem);
+		childs.add(viewItem);
 		return viewItem;
 	}
 
 	protected void addChild(NavigatorViewItem viewItem) {
-		childs.put(viewItem.getReference(), viewItem);
+		childs.add(viewItem);
 		viewItem.parent = this;
 	}
 
@@ -107,7 +113,7 @@ public class NavigatorViewItem implements IViewItem {
 	}
 
 	public Iterator<NavigatorViewItem> iterator() {
-		return childs.values().iterator();
+		return childs.iterator();
 	}
 
 	/* (non-Javadoc)

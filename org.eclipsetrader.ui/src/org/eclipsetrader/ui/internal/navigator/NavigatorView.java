@@ -11,10 +11,10 @@
 
 package org.eclipsetrader.ui.internal.navigator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ListenerList;
@@ -101,7 +101,7 @@ public class NavigatorView implements IView {
     }
 
 	public void update() {
-		Set<Object> instruments = new HashSet<Object>();
+		List<Object> instruments = new ArrayList<Object>();
 		if (contentProviders != null) {
 			for (int i = 0; i < contentProviders.length; i++)
 				instruments.addAll(Arrays.asList(contentProviders[i].getElements(this)));
@@ -165,7 +165,7 @@ public class NavigatorView implements IView {
     }
 
 	protected void groupElements(NavigatorViewItem parent, IAdaptable[] elements, INavigatorContentGroup[] groups) {
-		Set<IAdaptable> set = new HashSet<IAdaptable>();
+		List<IAdaptable> set = new ArrayList<IAdaptable>();
 		set.addAll(Arrays.asList(elements));
 
 		if (groups != null && groups.length != 0) {

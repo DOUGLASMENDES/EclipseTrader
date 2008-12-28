@@ -18,15 +18,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class RepositoryGroup implements INavigatorContentGroup, IExecutableExtension {
 	private String id;
@@ -78,16 +75,6 @@ public class RepositoryGroup implements INavigatorContentGroup, IExecutableExten
     }
 
 	protected IRepositoryService getRepositoryService() {
-		try {
-			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-			IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-			return service;
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading repository service", e); //$NON-NLS-1$
-			UIActivator.getDefault().getLog().log(status);
-		}
-		return null;
+		return UIActivator.getDefault().getRepositoryService();
 	}
 }
