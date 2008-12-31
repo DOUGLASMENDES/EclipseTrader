@@ -114,6 +114,13 @@ public class TestBroker implements IBroker {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    public String getSymbolFromSecurity(ISecurity security) {
+	    return null;
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
      */
     public void addOrderChangeListener(IOrderChangeListener listener) {
