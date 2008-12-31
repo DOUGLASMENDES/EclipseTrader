@@ -16,13 +16,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipsetrader.core.ILauncher;
 import org.eclipsetrader.news.core.INewsProvider;
-import org.eclipsetrader.news.internal.ui.HeadLineViewer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -59,7 +55,7 @@ public class NewsServiceLauncher implements ILauncher, IExecutableExtension {
 	 * @see org.eclipsetrader.core.ILauncher#launch(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void launch(IProgressMonitor monitor) {
-		Display.getDefault().syncExec(new Runnable() {
+		/*Display.getDefault().syncExec(new Runnable() {
             public void run() {
             	IWorkbenchPage[] page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages();
             	for (int p = 0; p < page.length; p++) {
@@ -70,15 +66,19 @@ public class NewsServiceLauncher implements ILauncher, IExecutableExtension {
                 	}
             	}
             }
-		});
+		});*/
 
 		try {
     		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
     		ServiceReference serviceReference = context.getServiceReference(NewsService.class.getName());
     		if (serviceReference != null) {
     			NewsService newsService = (NewsService) context.getService(serviceReference);
-    			for (INewsProvider newsProvider : newsService.getProviders())
-					newsProvider.start();
+
+    			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+    			for (INewsProvider newsProvider : newsService.getProviders()) {
+    				if (store.getBoolean(newsProvider.getId()))
+    					newsProvider.start();
+    			}
     		}
     		context.ungetService(serviceReference);
     	} catch(Exception e) {

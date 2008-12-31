@@ -19,6 +19,20 @@ package org.eclipsetrader.news.core;
 public interface INewsProvider {
 
 	/**
+	 * Gets the unique plugin id.
+	 *
+	 * @return the plugin id.
+	 */
+	public String getId();
+
+	/**
+	 * Gets the broker's display name.
+	 *
+	 * @return the name.
+	 */
+	public String getName();
+
+	/**
 	 * Gets a possibly empty array of headlines.
 	 *
 	 * @return the headlines.

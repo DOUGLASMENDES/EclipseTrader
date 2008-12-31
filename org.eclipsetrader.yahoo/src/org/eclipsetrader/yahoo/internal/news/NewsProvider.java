@@ -49,8 +49,6 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipsetrader.core.feed.IFeedIdentifier;
-import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.news.core.IHeadLine;
@@ -71,6 +69,9 @@ import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class NewsProvider implements INewsProvider {
 	public static final String HEADLINES_FILE = "headlines.xml"; //$NON-NLS-1$
+
+	private String id;
+    private String name;
 
 	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
 	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
@@ -99,6 +100,25 @@ public class NewsProvider implements INewsProvider {
 
 	public NewsProvider() {
 	}
+
+	public NewsProvider(String id, String name) {
+	    this.id = id;
+	    this.name = name;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getId()
+     */
+    public String getId() {
+	    return id;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getName()
+     */
+    public String getName() {
+	    return name;
+    }
 
 	public void startUp() throws JAXBException {
 		File file = YahooActivator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();

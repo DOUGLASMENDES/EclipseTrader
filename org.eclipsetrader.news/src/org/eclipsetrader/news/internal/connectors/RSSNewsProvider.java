@@ -33,6 +33,9 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -56,8 +59,11 @@ import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
-public class RSSNewsProvider implements INewsProvider {
+public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 	public static final String HEADLINES_FILE = "rss.xml"; //$NON-NLS-1$
+
+	private String id;
+    private String name;
 
 	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
 	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
@@ -85,6 +91,28 @@ public class RSSNewsProvider implements INewsProvider {
 
 	public RSSNewsProvider() {
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+     */
+    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+    	id = config.getAttribute("id");
+    	name = config.getAttribute("name");
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getId()
+     */
+    public String getId() {
+	    return id;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getName()
+     */
+    public String getName() {
+	    return name;
+    }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
