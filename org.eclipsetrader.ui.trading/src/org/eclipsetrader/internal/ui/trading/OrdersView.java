@@ -23,10 +23,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -43,7 +40,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -53,10 +49,10 @@ import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
+import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
-import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.ui.trading.AveragePriceColumn;
 import org.eclipsetrader.ui.trading.DateTimeColumn;
 import org.eclipsetrader.ui.trading.FilledQuantityColumn;
@@ -181,8 +177,7 @@ public class OrdersView extends ViewPart {
 	    tabFolder.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	Control c = ((CTabItem) e.item).getControl();
-	            TableViewer viewer = (TableViewer) c.getData("viewer");
+	            TableViewer viewer = (TableViewer) ((CTabItem) e.item).getControl().getData("viewer");
 	            if (viewer != null)
 	        	    selectionProvider.setSelectionProvider(viewer);
             }
@@ -278,7 +273,7 @@ public class OrdersView extends ViewPart {
         CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("All");
 		all = createViewer(tabFolder, true);
-        tabItem.setControl(all.getControl().getParent());
+        tabItem.setControl(all.getControl());
 
         tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Pending");
@@ -293,7 +288,7 @@ public class OrdersView extends ViewPart {
                     }
 				}
 			});
-        tabItem.setControl(pending.getControl().getParent());
+        tabItem.setControl(pending.getControl());
 
         tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Filled");
@@ -307,7 +302,7 @@ public class OrdersView extends ViewPart {
                     }
 				}
 			});
-        tabItem.setControl(filled.getControl().getParent());
+        tabItem.setControl(filled.getControl());
 
         tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Canceled");
@@ -322,7 +317,7 @@ public class OrdersView extends ViewPart {
                     }
 				}
 			});
-        tabItem.setControl(canceled.getControl().getParent());
+        tabItem.setControl(canceled.getControl());
 
         tabItem = new CTabItem(tabFolder, SWT.NONE);
         tabItem.setText("Rejected");
@@ -336,7 +331,7 @@ public class OrdersView extends ViewPart {
                     }
 				}
 			});
-        tabItem.setControl(rejected.getControl().getParent());
+        tabItem.setControl(rejected.getControl());
 	}
 
 	/* (non-Javadoc)
@@ -348,11 +343,7 @@ public class OrdersView extends ViewPart {
     }
 
 	protected TableViewer createViewer(Composite parent, boolean wrapLabelProviders) {
-		Composite content = new Composite(parent, SWT.NONE);
-		TableColumnLayout layout = new TableColumnLayout();
-		content.setLayout(layout);
-
-		TableViewer viewer = new TableViewer(content, SWT.FULL_SELECTION | SWT.MULTI);
+		TableViewer viewer = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
 		viewer.getTable().setHeaderVisible(true);
 		viewer.setContentProvider(new ArrayContentProvider() {
             @Override
@@ -368,56 +359,55 @@ public class OrdersView extends ViewPart {
 	            return o2.getDate().compareTo(o1.getDate());
             }
 		});
-		content.setData("viewer", viewer);
 
 		TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
 		viewerColumn.getColumn().setText("Id");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("ID") != null ? memento.getInteger("ID") : 115));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("ID") != null ? memento.getInteger("ID") : 115);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new OrderIdColumn()) : new OrderIdColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
 		viewerColumn.getColumn().setText("Date");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("DATE") != null ? memento.getInteger("DATE") : 140));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("DATE") != null ? memento.getInteger("DATE") : 140);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new DateTimeColumn()) : new DateTimeColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
 		viewerColumn.getColumn().setText("Security");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("INSTRUMENT") != null ? memento.getInteger("INSTRUMENT") : 150));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("INSTRUMENT") != null ? memento.getInteger("INSTRUMENT") : 150);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new SecurityNameColumn()) : new SecurityNameColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
 		viewerColumn.getColumn().setText("Side");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("SIDE") != null ? memento.getInteger("SIDE") : 60));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("SIDE") != null ? memento.getInteger("SIDE") : 60);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new SideColumn()) : new SideColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
 		viewerColumn.getColumn().setText("Type");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("TYPE") != null ? memento.getInteger("TYPE") : 60));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("TYPE") != null ? memento.getInteger("TYPE") : 60);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new TypeColumn()) : new TypeColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
 		viewerColumn.getColumn().setText("Q.ty");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("QTY") != null ? memento.getInteger("QTY") : 70));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("QTY") != null ? memento.getInteger("QTY") : 70);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new QuantityColumn()) : new QuantityColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
 		viewerColumn.getColumn().setText("Price");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("PRICE") != null ? memento.getInteger("PRICE") : 70));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("PRICE") != null ? memento.getInteger("PRICE") : 70);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new PriceColumn()) : new PriceColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
 		viewerColumn.getColumn().setText("Filled Q.ty");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("F-QTY") != null ? memento.getInteger("F-QTY") : 70));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("F-QTY") != null ? memento.getInteger("F-QTY") : 70);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new FilledQuantityColumn()) : new FilledQuantityColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
 		viewerColumn.getColumn().setText("Avg. Price");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(memento != null && memento.getString("AVG-PRICE") != null ? memento.getInteger("AVG-PRICE") : 70));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("AVG-PRICE") != null ? memento.getInteger("AVG-PRICE") : 70);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new AveragePriceColumn()) : new AveragePriceColumn());
 
 		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
 		viewerColumn.getColumn().setText("Status");
-		layout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(100));
+		viewerColumn.getColumn().setWidth(memento != null && memento.getString("STATUS") != null ? memento.getInteger("STATUS") : 100);
 		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new StatusColumn()) : new StatusColumn());
 
 		return viewer;

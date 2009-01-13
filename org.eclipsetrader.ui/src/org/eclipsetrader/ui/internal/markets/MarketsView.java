@@ -22,10 +22,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -33,7 +30,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
@@ -173,24 +169,19 @@ public class MarketsView extends ViewPart {
 	}
 
 	protected void createViewer(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		TableColumnLayout tableLayout = new TableColumnLayout();
-		content.setLayout(tableLayout);
-		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		viewer = new TableViewer(content, SWT.MULTI | SWT.FULL_SELECTION);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
 		viewer.getTable().setHeaderVisible(true);
 		viewer.getTable().setLinesVisible(false);
 
 		TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
 		tableColumn.setText("Market");
-		tableLayout.setColumnData(tableColumn, new ColumnPixelData(150));
+		tableColumn.setWidth(150);
 		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
 		tableColumn.setText("State");
-		tableLayout.setColumnData(tableColumn, new ColumnPixelData(150));
+		tableColumn.setWidth(150);
 		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
 		tableColumn.setText("Message");
-		tableLayout.setColumnData(tableColumn, new ColumnWeightData(100));
+		tableColumn.setWidth(250);
 
 		viewer.setLabelProvider(new MarketLabelProvider());
 		viewer.setComparator(new ViewerComparator());

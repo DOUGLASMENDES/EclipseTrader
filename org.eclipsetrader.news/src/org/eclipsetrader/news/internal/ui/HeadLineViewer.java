@@ -26,10 +26,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -335,11 +332,7 @@ public class HeadLineViewer extends ViewPart {
     }
 
 	protected void createViewer(Composite parent) {
-    	Composite container = new Composite(parent, SWT.NONE);
-		TableColumnLayout tableLayout = new TableColumnLayout();
-		container.setLayout(tableLayout);
-
-		viewer = new TableViewer(container, SWT.MULTI | SWT.FULL_SELECTION);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
 		viewer.getTable().setHeaderVisible(true);
 		viewer.getTable().setLinesVisible(false);
 
@@ -347,23 +340,23 @@ public class HeadLineViewer extends ViewPart {
 
 		TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.LEFT);
 		tableColumn.setText("Date");
+		tableColumn.setWidth(columnsSection != null && columnsSection.get(String.valueOf(viewer.getTable().indexOf(tableColumn))) != null ? columnsSection.getInt(String.valueOf(viewer.getTable().indexOf(tableColumn))) : 160);
 		tableColumn.addControlListener(controlListener);
-		tableLayout.setColumnData(tableColumn, new ColumnPixelData(columnsSection != null && columnsSection.get(String.valueOf(viewer.getTable().indexOf(tableColumn))) != null ? columnsSection.getInt(String.valueOf(viewer.getTable().indexOf(tableColumn))) : 160));
 
 		tableColumn = new TableColumn(viewer.getTable(), SWT.LEFT);
 		tableColumn.setText("Title");
+		tableColumn.setWidth(columnsSection != null && columnsSection.get(String.valueOf(viewer.getTable().indexOf(tableColumn))) != null ? columnsSection.getInt(String.valueOf(viewer.getTable().indexOf(tableColumn))) : 300);
 		tableColumn.addControlListener(controlListener);
-		tableLayout.setColumnData(tableColumn, new ColumnWeightData(100));
 
 		tableColumn = new TableColumn(viewer.getTable(), SWT.LEFT);
 		tableColumn.setText("Security");
+		tableColumn.setWidth(columnsSection != null && columnsSection.get(String.valueOf(viewer.getTable().indexOf(tableColumn))) != null ? columnsSection.getInt(String.valueOf(viewer.getTable().indexOf(tableColumn))) : 250);
 		tableColumn.addControlListener(controlListener);
-		tableLayout.setColumnData(tableColumn, new ColumnPixelData(columnsSection != null && columnsSection.get(String.valueOf(viewer.getTable().indexOf(tableColumn))) != null ? columnsSection.getInt(String.valueOf(viewer.getTable().indexOf(tableColumn))) : 250));
 
 		tableColumn = new TableColumn(viewer.getTable(), SWT.LEFT);
 		tableColumn.setText("Source");
+		tableColumn.setWidth(columnsSection != null && columnsSection.get(String.valueOf(viewer.getTable().indexOf(tableColumn))) != null ? columnsSection.getInt(String.valueOf(viewer.getTable().indexOf(tableColumn))) : 200);
 		tableColumn.addControlListener(controlListener);
-		tableLayout.setColumnData(tableColumn, new ColumnPixelData(columnsSection != null && columnsSection.get(String.valueOf(viewer.getTable().indexOf(tableColumn))) != null ? columnsSection.getInt(String.valueOf(viewer.getTable().indexOf(tableColumn))) : 200));
 
 		viewer.setLabelProvider(new HeadLineLabelProvider());
 		viewer.setContentProvider(new ArrayContentProvider());

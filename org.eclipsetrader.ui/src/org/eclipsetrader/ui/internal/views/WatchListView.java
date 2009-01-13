@@ -38,9 +38,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -522,11 +520,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
     }
 
 	protected TableViewer createViewer(Composite parent) {
-    	Composite container = new Composite(parent, SWT.NONE);
-		TableColumnLayout tableLayout = new TableColumnLayout();
-		container.setLayout(tableLayout);
-
-		viewer = new TableViewer(container, SWT.MULTI | SWT.FULL_SELECTION) {
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION) {
             @Override
             protected void inputChanged(Object input, Object oldInput) {
 	            super.inputChanged(input, oldInput);
@@ -608,7 +602,6 @@ public class WatchListView extends ViewPart implements ISaveablePart {
     @SuppressWarnings("unchecked")
 	protected String[] createColumns(TableViewer viewer, WatchListViewColumn[] columns) {
     	Table table = viewer.getTable();
-		TableColumnLayout tableLayout = (TableColumnLayout) table.getParent().getLayout();
 		IDialogSettings columnsSection = dialogSettings != null ? dialogSettings.getSection("columns") : null;
 
 		String[] properties = new String[columns.length];
@@ -641,7 +634,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 				properties[index] = column.getDataProviderFactory().getId();
 
 				int width = columnsSection != null && columnsSection.get(viewerColumn.getColumn().getText()) != null ? columnsSection.getInt(viewerColumn.getColumn().getText()) : 100;
-				tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(width));
+				viewerColumn.getColumn().setWidth(width);
 
 				viewerColumn.getColumn().addControlListener(columnControlListener);
 				viewerColumn.getColumn().addSelectionListener(columnSelectionAdapter);
