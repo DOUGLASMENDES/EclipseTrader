@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.core.databinding.beans;resolution:=optional
 Export-Package: org.eclipse.nebula.widgets.cdatetime
 Eclipse-LazyStart: true
+Bundle-Localization: plugin

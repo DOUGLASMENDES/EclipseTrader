@@ -273,7 +273,12 @@ public class CDateTime extends AbstractCombo {
 			} else {
 				setButtonVisibility(CDT.BUTTON_NEVER);
 				if((style & CDT.SPINNER) != 0) {
-					spinner = new Spinner(this, SWT.VERTICAL);
+					int spinnerStyle = SWT.VERTICAL;
+					if (gtk) {
+						if ((style & CDT.BORDER) != 0)
+							spinnerStyle |= SWT.BORDER;
+					}
+					spinner = new Spinner(this, spinnerStyle);
 					spinner.setMinimum(0);
 					spinner.setMaximum(50);
 					spinner.setDigits(1);

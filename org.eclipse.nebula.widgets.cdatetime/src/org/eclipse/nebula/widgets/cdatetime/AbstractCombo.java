@@ -51,7 +51,7 @@ public abstract class AbstractCombo extends Composite {
 	 * The value of {@link SWT#getVersion()} for the earliest known revision that fixes
 	 * the SWT bug mentioned in bug 185739.
 	 */
-	protected static int SWT_MODAL_FIX_VERSION = 3346;
+	protected static int SWT_MODAL_FIX_VERSION = 3400;
 
 	/**
 	 * Special layout implementation to position the combo's drop-down Button within
