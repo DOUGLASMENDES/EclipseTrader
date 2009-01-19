@@ -1,10 +1,213 @@
+Index: .classpath
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.pshelf/.classpath,v
+retrieving revision 1.1
+diff -u -r1.1 .classpath
+--- .classpath	28 Mar 2007 17:39:30 -0000	1.1
++++ .classpath	29 Sep 2008 09:07:17 -0000
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <classpath>
+ 	<classpathentry kind="src" path="src"/>
+-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.4"/>
+ 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+ 	<classpathentry kind="output" path="bin"/>
+ </classpath>
+Index: build.xml
+===================================================================
+RCS file: build.xml
+diff -N build.xml
+--- build.xml	28 Mar 2007 17:40:31 -0000	1.1
++++ /dev/null	1 Jan 1970 00:00:00 -0000
+@@ -1,158 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project name="org.eclipse.nebula.widgets.pshelf" default="build.jars" basedir=".">
+-
+-	<property name="basews" value="${ws}"/>
+-	<property name="baseos" value="${os}"/>
+-	<property name="basearch" value="${arch}"/>
+-	<property name="basenl" value="${nl}"/>
+-
+-	<!-- Compiler settings. -->
+-	<property name="javacFailOnError" value="false"/>
+-	<property name="javacDebugInfo" value="on"/>
+-	<property name="javacVerbose" value="false"/>
+-	<property name="logExtension" value=".log"/>
+-	<property name="compilerArg" value=""/>
+-	<property name="javacSource" value="1.3"/>
+-	<property name="javacTarget" value="1.2"/>
+-	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
+-		<os family="mac"/>
+-	</condition>
+-	<property name="dir_bootclasspath" value="${java.home}/lib"/>
+-	<path id="path_bootclasspath">
+-		<fileset dir="${dir_bootclasspath}">
+-			<include name="*.jar"/>
+-		</fileset>
+-	</path>
+-	<property name="bootclasspath" refid="path_bootclasspath"/>
+-	<property name="bundleJavacSource" value="${javacSource}"/>
+-	<property name="bundleJavacTarget" value="${javacTarget}"/>
+-	<property name="bundleBootClasspath" value="${bootclasspath}"/>
+-
+-	<target name="init" depends="properties">
+-		<condition property="pluginTemp" value="${buildTempFolder}/plugins">
+-			<isset property="buildTempFolder"/>
+-		</condition>
+-		<property name="pluginTemp" value="${basedir}"/>
+-		<condition property="build.result.folder" value="${pluginTemp}/org.eclipse.nebula.widgets.pshelf">
+-			<isset property="buildTempFolder"/>
+-		</condition>
+-		<property name="build.result.folder" value="${basedir}"/>
+-		<property name="temp.folder" value="${basedir}/temp.folder"/>
+-		<property name="plugin.destination" value="${basedir}"/>
+-	</target>
+-
+-	<target name="properties" if="eclipse.running">
+-		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+-
+-	</target>
+-
+-	<target name="build.update.jar" depends="init" description="Build the plug-in: org.eclipse.nebula.widgets.pshelf for an update site.">
+-		<delete dir="${temp.folder}"/>
+-		<mkdir dir="${temp.folder}"/>
+-		<antcall target="build.jars"/>
+-		<antcall target="gather.bin.parts">
+-			<param name="destination.temp.folder" value="${temp.folder}/"/>
+-		</antcall>
+-		<zip destfile="${plugin.destination}/org.eclipse.nebula.widgets.pshelf_1.0.0.jar" basedir="${temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0" filesonly="false" whenempty="skip" update="false"/>
+-		<delete dir="${temp.folder}"/>
+-	</target>
+-
+-	<target name="@dot" depends="init" unless="@dot" description="Create jar: org.eclipse.nebula.widgets.pshelf @dot.">
+-		<delete dir="${temp.folder}/@dot.bin"/>
+-		<mkdir dir="${temp.folder}/@dot.bin"/>
+-		<path id="@dot.classpath">
+-			<pathelement path="../org.eclipse.swt/bin"/>
+-			<pathelement path="../org.eclipse.swt/@dot"/>
+-			<pathelement path="../../../../eclipse33m6/eclipse/plugins/org.eclipse.swt.win32.win32.x86_3.3.0.v3333.jar"/>
+-		</path>
+-		<!-- compile the source code -->
+-		<javac destdir="${temp.folder}/@dot.bin" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}"		>
+-			<compilerarg line="${compilerArg}" compiler="${build.compiler}"/>
+-			<classpath refid="@dot.classpath" />
+-			<src path="src/"			/>
+-			<compilerarg value="@${basedir}/javaCompiler...args" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+-			<compilerarg line="-log '${temp.folder}/@dot.bin${logExtension}'" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+-		</javac>
+-		<!-- Copy necessary resources -->
+-		<copy todir="${temp.folder}/@dot.bin" failonerror="true" overwrite="false">
+-			<fileset dir="src/" excludes="**/*.java, **/package.htm*"			/>
+-		</copy>
+-		<mkdir dir="${build.result.folder}"/>
+-		<copy todir="${build.result.folder}/@dot" failonerror="true" overwrite="false">
+-			<fileset dir="${temp.folder}/@dot.bin"			/>
+-		</copy>
+-		<delete dir="${temp.folder}/@dot.bin"/>
+-	</target>
+-
+-	<target name="src.zip" depends="init" unless="src.zip">
+-		<mkdir dir="${build.result.folder}"/>
+-		<zip destfile="${build.result.folder}/src.zip" filesonly="false" whenempty="skip" update="false">
+-			<fileset dir="src/" includes="**/*.java"			/>
+-		</zip>
+-	</target>
+-
+-	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.eclipse.nebula.widgets.pshelf.">
+-		<available property="@dot" file="${build.result.folder}/@dot"/>
+-		<antcall target="@dot"/>
+-	</target>
+-
+-	<target name="build.sources" depends="init">
+-		<available property="src.zip" file="${build.result.folder}/src.zip"/>
+-		<antcall target="src.zip"/>
+-	</target>
+-
+-	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
+-		<mkdir dir="${destination.temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0"/>
+-		<copy todir="${destination.temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0" failonerror="true" overwrite="false">
+-			<fileset dir="${build.result.folder}/@dot" includes="**"			/>
+-		</copy>
+-		<copy todir="${destination.temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0" failonerror="true" overwrite="false">
+-			<fileset dir="${basedir}" includes="META-INF/"			/>
+-		</copy>
+-	</target>
+-
+-	<target name="build.zips" depends="init">
+-	</target>
+-
+-	<target name="gather.sources" depends="init" if="destination.temp.folder">
+-		<mkdir dir="${destination.temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0"/>
+-		<copy file="${build.result.folder}/src.zip" todir="${destination.temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0" failonerror="false" overwrite="false"/>
+-	</target>
+-
+-	<target name="gather.logs" depends="init" if="destination.temp.folder">
+-		<mkdir dir="${destination.temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0"/>
+-		<copy file="${temp.folder}/@dot.bin${logExtension}" todir="${destination.temp.folder}/org.eclipse.nebula.widgets.pshelf_1.0.0" failonerror="false" overwrite="false"/>
+-	</target>
+-
+-	<target name="clean" depends="init" description="Clean the plug-in: org.eclipse.nebula.widgets.pshelf of all the zips, jars and logs created.">
+-		<delete dir="${build.result.folder}/@dot"/>
+-		<delete file="${build.result.folder}/src.zip"/>
+-		<delete file="${plugin.destination}/org.eclipse.nebula.widgets.pshelf_1.0.0.jar"/>
+-		<delete file="${plugin.destination}/org.eclipse.nebula.widgets.pshelf_1.0.0.zip"/>
+-		<delete dir="${temp.folder}"/>
+-	</target>
+-
+-	<target name="refresh" depends="init" if="eclipse.running" description="Refresh this folder.">
+-		<eclipse.convertPath fileSystemPath="C:/Documents and Settings/Administrator/workspace/org.eclipse.nebula.widgets.pshelf" property="resourcePath"/>
+-		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
+-	</target>
+-
+-	<target name="zip.plugin" depends="init" description="Create a zip containing all the elements for the plug-in: org.eclipse.nebula.widgets.pshelf.">
+-		<delete dir="${temp.folder}"/>
+-		<mkdir dir="${temp.folder}"/>
+-		<antcall target="build.jars"/>
+-		<antcall target="build.sources"/>
+-		<antcall target="gather.bin.parts">
+-			<param name="destination.temp.folder" value="${temp.folder}/"/>
+-		</antcall>
+-		<antcall target="gather.sources">
+-			<param name="destination.temp.folder" value="${temp.folder}/"/>
+-		</antcall>
+-		<delete>
+-			<fileset dir="${temp.folder}" includes="**/*.bin${logExtension}"			/>
+-		</delete>
+-		<zip destfile="${plugin.destination}/org.eclipse.nebula.widgets.pshelf_1.0.0.zip" basedir="${temp.folder}" filesonly="true" whenempty="skip" update="false"/>
+-		<delete dir="${temp.folder}"/>
+-	</target>
+-
+-</project>
+Index: javaCompiler...args
+===================================================================
+RCS file: javaCompiler...args
+diff -N javaCompiler...args
+--- javaCompiler...args	28 Mar 2007 17:40:31 -0000	1.1
++++ /dev/null	1 Jan 1970 00:00:00 -0000
+@@ -1,3 +0,0 @@
+-#ADAPTER#ACCESS#org.eclipse.swt/bin[+org/eclipse/swt/*;+org/eclipse/swt/accessibility/*;+org/eclipse/swt/awt/*;+org/eclipse/swt/browser/*;+org/eclipse/swt/custom/*;+org/eclipse/swt/dnd/*;+org/eclipse/swt/events/*;+org/eclipse/swt/graphics/*;+org/eclipse/swt/layout/*;+org/eclipse/swt/opengl/*;+org/eclipse/swt/printing/*;+org/eclipse/swt/program/*;+org/eclipse/swt/widgets/*;~org/eclipse/swt/internal/*;~org/eclipse/swt/internal/image/*;~org/eclipse/swt/internal/theme/*;+org/eclipse/swt/ole/win32/*;~org/eclipse/swt/internal/gdip/*;~org/eclipse/swt/internal/ole/win32/*;~org/eclipse/swt/internal/win32/*;~org/eclipse/swt/internal/opengl/win32/*;?**/*]
+-#ADAPTER#ACCESS#org.eclipse.swt/@dot[+org/eclipse/swt/*;+org/eclipse/swt/accessibility/*;+org/eclipse/swt/awt/*;+org/eclipse/swt/browser/*;+org/eclipse/swt/custom/*;+org/eclipse/swt/dnd/*;+org/eclipse/swt/events/*;+org/eclipse/swt/graphics/*;+org/eclipse/swt/layout/*;+org/eclipse/swt/opengl/*;+org/eclipse/swt/printing/*;+org/eclipse/swt/program/*;+org/eclipse/swt/widgets/*;~org/eclipse/swt/internal/*;~org/eclipse/swt/internal/image/*;~org/eclipse/swt/internal/theme/*;+org/eclipse/swt/ole/win32/*;~org/eclipse/swt/internal/gdip/*;~org/eclipse/swt/internal/ole/win32/*;~org/eclipse/swt/internal/win32/*;~org/eclipse/swt/internal/opengl/win32/*;?**/*]
+-#ADAPTER#ACCESS#eclipse/plugins/org.eclipse.swt.win32.win32.x86_3.3.0.v3333.jar[+org/eclipse/swt/*;+org/eclipse/swt/accessibility/*;+org/eclipse/swt/awt/*;+org/eclipse/swt/browser/*;+org/eclipse/swt/custom/*;+org/eclipse/swt/dnd/*;+org/eclipse/swt/events/*;+org/eclipse/swt/graphics/*;+org/eclipse/swt/layout/*;+org/eclipse/swt/opengl/*;+org/eclipse/swt/printing/*;+org/eclipse/swt/program/*;+org/eclipse/swt/widgets/*;~org/eclipse/swt/internal/*;~org/eclipse/swt/internal/image/*;~org/eclipse/swt/internal/theme/*;+org/eclipse/swt/ole/win32/*;~org/eclipse/swt/internal/gdip/*;~org/eclipse/swt/internal/ole/win32/*;~org/eclipse/swt/internal/win32/*;~org/eclipse/swt/internal/opengl/win32/*;?**/*]
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.pshelf/META-INF/MANIFEST.MF,v
+retrieving revision 1.2
+diff -u -r1.2 MANIFEST.MF
+--- META-INF/MANIFEST.MF	3 May 2007 16:10:39 -0000	1.2
++++ META-INF/MANIFEST.MF	29 Sep 2008 09:07:17 -0000
+@@ -6,3 +6,4 @@
+ Bundle-Vendor: Eclipse.org
+ Require-Bundle: org.eclipse.swt
+ Export-Package: org.eclipse.nebula.widgets.pshelf
++Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Index: src/org/eclipse/nebula/widgets/pshelf/PShelf.java
 ===================================================================
 RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.pshelf/src/org/eclipse/nebula/widgets/pshelf/PShelf.java,v
 retrieving revision 1.4
 diff -u -r1.4 PShelf.java
 --- src/org/eclipse/nebula/widgets/pshelf/PShelf.java	19 Oct 2007 17:47:39 -0000	1.4
-+++ src/org/eclipse/nebula/widgets/pshelf/PShelf.java	12 Sep 2008 07:41:27 -0000
++++ src/org/eclipse/nebula/widgets/pshelf/PShelf.java	29 Sep 2008 09:07:18 -0000
 @@ -416,10 +416,11 @@
              redraw();
              update();

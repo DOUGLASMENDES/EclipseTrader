@@ -1,10 +1,26 @@
+Index: src/org/eclipse/nebula/widgets/cdatetime/AbstractCombo.java
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.cdatetime/src/org/eclipse/nebula/widgets/cdatetime/AbstractCombo.java,v
+retrieving revision 1.13
+diff -u -r1.13 AbstractCombo.java
+--- src/org/eclipse/nebula/widgets/cdatetime/AbstractCombo.java	5 Feb 2008 21:10:18 -0000	1.13
++++ src/org/eclipse/nebula/widgets/cdatetime/AbstractCombo.java	29 Sep 2008 09:04:37 -0000
+@@ -51,7 +51,7 @@
+ 	 * The value of {@link SWT#getVersion()} for the earliest known revision that fixes
+ 	 * the SWT bug mentioned in bug 185739.
+ 	 */
+-	protected static int SWT_MODAL_FIX_VERSION = 3346;
++	protected static int SWT_MODAL_FIX_VERSION = 3400;
+ 
+ 	/**
+ 	 * Special layout implementation to position the combo's drop-down Button within
 Index: src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java
 ===================================================================
 RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.cdatetime/src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java,v
 retrieving revision 1.5
 diff -u -r1.5 CDateTime.java
 --- src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java	16 Nov 2007 21:44:29 -0000	1.5
-+++ src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java	26 Apr 2008 08:29:37 -0000
++++ src/org/eclipse/nebula/widgets/cdatetime/CDateTime.java	29 Sep 2008 09:04:38 -0000
 @@ -273,7 +273,12 @@
  			} else {
  				setButtonVisibility(CDT.BUTTON_NEVER);
@@ -19,3 +35,31 @@ diff -u -r1.5 CDateTime.java
  					spinner.setMinimum(0);
  					spinner.setMaximum(50);
  					spinner.setDigits(1);
+Index: .classpath
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.cdatetime/.classpath,v
+retrieving revision 1.1
+diff -u -r1.1 .classpath
+--- .classpath	10 Mar 2007 12:37:37 -0000	1.1
++++ .classpath	29 Sep 2008 09:04:37 -0000
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <classpath>
+ 	<classpathentry kind="src" path="src"/>
+-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.4"/>
+ 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+ 	<classpathentry kind="output" path="bin"/>
+ </classpath>
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.cdatetime/META-INF/MANIFEST.MF,v
+retrieving revision 1.4
+diff -u -r1.4 MANIFEST.MF
+--- META-INF/MANIFEST.MF	31 Jul 2007 18:20:36 -0000	1.4
++++ META-INF/MANIFEST.MF	29 Sep 2008 09:04:37 -0000
+@@ -12,3 +12,4 @@
+  org.eclipse.core.databinding.beans;resolution:=optional
+ Export-Package: org.eclipse.nebula.widgets.cdatetime
+ Eclipse-LazyStart: true
++Bundle-Localization: plugin

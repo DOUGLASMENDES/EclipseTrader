@@ -4,7 +4,7 @@
 	<property name="eclipse.pde.build" value="${eclipse.home}/plugins/org.eclipse.pde.build_3.4.0.v20080604"/>
 
 	<property name="buildDirectory" value="${user.home}/eclipse.build"/>
-	<property name="baseLocation" value="${user.home}/eclipse-platform-3.3"/>
+	<property name="baseLocation" value="${user.home}/eclipse-platform-3.4"/>
 
 	<available file="${buildDirectory}/label.properties" property="label.properties.exists" />
 	<property file="${buildDirectory}/label.properties" />
@@ -65,6 +65,8 @@
 			<export srcurl="${tag}/org.htmlparser" destpath="${buildDirectory}/plugins/org.htmlparser" revision="HEAD"/>
 			<export srcurl="${tag}/org.htmlparser-feature" destpath="${buildDirectory}/features/org.htmlparser" revision="HEAD"/>
 
+			<export srcurl="${tag}/org.eclipse.nebula.widgets.cdatetime" destpath="${buildDirectory}/plugins/org.eclipse.nebula.widgets.cdatetime" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipse.nebula.widgets.pshelf" destpath="${buildDirectory}/plugins/org.eclipse.nebula.widgets.pshelf" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipse.rcp.extras" destpath="${buildDirectory}/plugins/org.eclipse.rcp.extras" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipse.rcp.extras-feature" destpath="${buildDirectory}/features/org.eclipse.rcp.extras" revision="HEAD"/>
 
@@ -93,12 +95,6 @@
 			<export srcurl="${tag}/org.eclipsetrader.brokers.paper" destpath="${buildDirectory}/plugins/org.eclipsetrader.brokers.paper" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.brokers.paper-feature" destpath="${buildDirectory}/features/org.eclipsetrader.brokers.paper" revision="HEAD"/>
 		</svn>
-
-		<cvs command="export -d org.eclipse.nebula.widgets.cdatetime" cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/technology" dest="${buildDirectory}/plugins" package="org.eclipse.swt.nebula/org.eclipse.nebula.widgets.cdatetime" tag="HEAD" taskname="CVS"/>
-		<patch patchfile="nebula-widgets-cdatetime.patch" dir="${buildDirectory}/plugins/org.eclipse.nebula.widgets.cdatetime" strip="0"/>
-
-		<cvs command="export -d org.eclipse.nebula.widgets.pshelf" cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/technology" dest="${buildDirectory}/plugins" package="org.eclipse.swt.nebula/org.eclipse.nebula.widgets.pshelf" tag="HEAD" taskname="CVS"/>
-		<patch patchfile="nebula-widgets-pshelf.patch" dir="${buildDirectory}/plugins/org.eclipse.nebula.widgets.pshelf" strip="0"/>
 	</target>
 
 	<target name="build" depends="create.label.properties">
