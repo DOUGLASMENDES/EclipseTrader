@@ -416,10 +416,11 @@ public class PShelf extends Canvas {
             redraw();
             update();
             //workaround for SWT bug 193357
-            if (SWT.getPlatform().equals("carbon"))
+            /*if (SWT.getPlatform().equals("carbon"))
             {
             	getDisplay().readAndDispatch();
-            }
+            }*/
+            while(getDisplay().readAndDispatch());
             percentOfWork += .02;
         } 
         
@@ -472,13 +473,14 @@ public class PShelf extends Canvas {
             }
             
             sizeClients();
-            redraw(getClientArea().x,getClientArea().y, getClientArea().width, getClientArea().height, false);
+            redraw();
             update();
             //workaround for SWT bug 193357
-            if (SWT.getPlatform().equals("carbon"))
+            /*if (SWT.getPlatform().equals("carbon"))
             {
             	getDisplay().readAndDispatch();
-            }
+            }*/
+            while(getDisplay().readAndDispatch());
             percentOfWork += .02;
         } 
         
