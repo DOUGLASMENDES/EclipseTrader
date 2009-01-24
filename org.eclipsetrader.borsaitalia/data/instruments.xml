@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<list>
+    <item code="A2A" isin="IT0001233417">A2A</item>
+    <item code="ACE" isin="IT0001207098">Acea</item>
+    <item code="AEG" isin="IT0003066146">Acegas-Aps</item>
+    <item code="ACO" isin="IT0001469953">Acotel Group</item>
+    <item code="ACP" isin="IT0004269327">Acque Potabili</item>
+    <item code="ACS" isin="IT0001382024">Acsm-Agam</item>
+    <item code="ACT" isin="IT0003198790">Actelios</item>
+    <item code="AE" isin="IT0000074028">Aedes Ord</item>
+    <item code="AEF" isin="IT0001384590">Aeffe</item>
+    <item code="AGN" isin="NL0000303709">Aegon</item>
+    <item code="AFI" isin="IT0000346798">Aerop Firenze</item>
+    <item code="AH" isin="NL0006033250">Ahold Kon</item>
+    <item code="AIC" isin="IT0004167760">Aicon</item>
+    <item code="ALU" isin="FR0000130007">Alcatel-Lucent</item>
+    <item code="ARN" isin="IT0000076171">Alerion</item>
+    <item code="AL" isin="IT0000078193">Alleanza</item>
+    <item code="ALV" isin="DE0008404005">Allianz</item>
+    <item code="AMP" isin="IT0004056880">Amplifon</item>
+    <item code="ANM" isin="IT0003886469">Anima Sgr</item>
+    <item code="STS" isin="IT0003977540">Ansaldo Sts</item>
+    <item code="AP" isin="IT0004016504">Ant Pellettieri</item>
+    <item code="APP" isin="IT0003890123">Apulia Pp</item>
+    <item code="ARE" isin="IT0001347175">Arena</item>
+    <item code="AKM" isin="IT0004056468">Arkimedica</item>
+    <item code="AKM12" isin="IT0004268667">Arkimedica Cv12</item>
+    <item code="ASC" isin="IT0004093263">Ascopiave</item>
+    <item code="AST" isin="IT0003261069">Astaldi</item>
+    <item code="ATL" isin="IT0003506190">Atlantia</item>
+    <item code="AGL" isin="IT0001137345">Autogrill</item>
+    <item code="AT" isin="IT0000084027">Autostrada Tomi</item>
+    <item code="AUTME" isin="IT0000084043">Autostrade Mer</item>
+    <item code="AXA" isin="FR0000120628">Axa</item>
+    <item code="AZM" isin="IT0003261697">Azimut</item>
+    <item code="BEC" isin="IT0001268561">B&amp;C Speakers</item>
+    <item code="CRGCV" isin="IT0003563035">Banca Car 13Cv</item>
+    <item code="CRGR" isin="IT0003308878">Banca Carig Rsp</item>
+    <item code="BFE" isin="IT0000088853">Banca Finnat</item>
+    <item code="BGN" isin="IT0001031084">Banca Generali</item>
+    <item code="IF" isin="IT0003188064">Banca Ifis</item>
+    <item code="IF09" isin="IT0003664122">Banca Ifis 09Cv</item>
+    <item code="BIM15" isin="IT0003853014">Banca Int Cv15</item>
+    <item code="BIM" isin="IT0000074077">Banca Intermob</item>
+    <item code="BIL" isin="IT0000226503">Banca Italease</item>
+    <item code="BMPS" isin="IT0001334587">Banca Mps</item>
+    <item code="BPE" isin="IT0000066123">Banca Pop Er</item>
+    <item code="PEL" isin="IT0000060878">Banca Pop Etr L</item>
+    <item code="PMI" isin="IT0000064482">Banca Pop Mi</item>
+    <item code="BPSO" isin="IT0000784196">Banca Pop Sondr</item>
+    <item code="SPO" isin="IT0001007209">Banca Pop Spol</item>
+    <item code="PRO" isin="IT0001073045">Banca Profilo</item>
+    <item code="BBVA" isin="ES0113211835">Banco Bilbao Va</item>
+    <item code="BDB" isin="IT0001041000">Banco Desio Br</item>
+    <item code="BDBR" isin="IT0001281374">Banco Desio Rsp</item>
+    <item code="BP" isin="IT0004231566">Banco Popolare</item>
+    <item code="SANT" isin="ES0113900J37">Banco Santander</item>
+    <item code="BSRP" isin="IT0001005070">Banco Sard Rsp</item>
+    <item code="BASF" isin="DE0005151005">Basf</item>
+    <item code="BAN" isin="IT0001033700">Basicnet</item>
+    <item code="B" isin="IT0004412497">Bastogi</item>
+    <item code="BAY" isin="DE0005752000">Bayer</item>
+    <item code="BB" isin="CH0038389992">Bb Biotech</item>
+    <item code="CRG" isin="IT0003211601">Bca Carige</item>
+    <item code="BE" isin="IT0001223277">Beghelli</item>
+    <item code="BEN" isin="IT0003106777">Benetton Group</item>
+    <item code="BNSCV" isin="IT0004115918">Beni Sta 2011Cv</item>
+    <item code="BNS" isin="IT0001389631">Beni Stabili</item>
+    <item code="BEST" isin="IT0004273915">Best Union</item>
+    <item code="BIA" isin="IT0004222102">Bialetti</item>
+    <item code="BCM" isin="IT0004095888">Biancamano</item>
+    <item code="BSS" isin="IT0003097257">Biesse</item>
+    <item code="BIE" isin="IT0003837041">Bioera</item>
+    <item code="BMW" isin="DE0005190003">Bmw</item>
+    <item code="BNP" isin="FR0000131104">Bnp Paribas</item>
+    <item code="BOE" isin="IT0000066966">Boero Bartol</item>
+    <item code="BLZ" isin="IT0004027279">Bolzoni</item>
+    <item code="BF" isin="IT0000074135">Bonifiche Ferr</item>
+    <item code="BO" isin="IT0003217335">Borgosesia Ord</item>
+    <item code="BOR" isin="IT0003217368">Borgosesia Rnc</item>
+    <item code="BTY" isin="IT0004222474">Bouty Health C</item>
+    <item code="BP10" isin="IT0001444360">Bp-10 Cv 4,75%</item>
+    <item code="BPE12" isin="IT0004105430">Bper Cv Sub 12</item>
+    <item code="BRE" isin="IT0001050910">Brembo</item>
+    <item code="BRI" isin="IT0000066180">Brioschi</item>
+    <item code="BUL" isin="IT0001119087">Bulgari</item>
+    <item code="BNG" isin="IT0001488607">Buongiorno</item>
+    <item code="BZUR" isin="IT0001369427">Buzzi Unic Rsp</item>
+    <item code="BZU" isin="IT0001347308">Buzzi Unicem</item>
+    <item code="CAD" isin="IT0001489720">Cad It</item>
+    <item code="CAI" isin="IT0004329733">Cairo Comm</item>
+    <item code="CLF" isin="IT0003025019">Caleffi</item>
+    <item code="CED" isin="IT0001472171">Caltagirone Ed</item>
+    <item code="CALT" isin="IT0003127930">Caltagirone Ord</item>
+    <item code="CMF" isin="IT0000070810">Camfin</item>
+    <item code="CL" isin="IT0004222458">Cape Live</item>
+    <item code="CARR" isin="IT0001046553">Carraro</item>
+    <item code="CRR" isin="FR0000120172">Carrefour</item>
+    <item code="CASS" isin="IT0000784154">Cattolica Ass</item>
+    <item code="CDC" isin="IT0001477337">Cdc Point</item>
+    <item code="CTIC" isin="US1509345039">Cell Therapeut</item>
+    <item code="CMB" isin="IT0001128047">Cembre</item>
+    <item code="CEM" isin="IT0003126783">Cementir</item>
+    <item code="CLT" isin="IT0003023980">Centr Latte To</item>
+    <item code="RIC" isin="IT0003690283">Ceramiche Ricch</item>
+    <item code="CHL" isin="IT0001446613">Chl</item>
+    <item code="CIA" isin="IT0003389522">Cia</item>
+    <item code="CC" isin="IT0000080421">Ciccolella</item>
+    <item code="CIR" isin="IT0000080447">Cir Ord</item>
+    <item code="CLE" isin="IT0001276408">Class Editori</item>
+    <item code="COB" isin="IT0001142022">Cobra</item>
+    <item code="COF" isin="IT0000070786">Cofide Ord</item>
+    <item code="COG" isin="IT0004092216">Cogeme Set</item>
+    <item code="A2ACV" isin="IT0003764765">Com  Mi-A2A Cv</item>
+    <item code="CNP" isin="IT0004105653">Conafi</item>
+    <item code="CE" isin="IT0003121677">Credem</item>
+    <item code="ACA" isin="FR0000045072">Credit Agricole</item>
+    <item code="CRA" isin="IT0001070769">Credito Artig</item>
+    <item code="CB" isin="IT0000064359">Credito Berg</item>
+    <item code="CVAL" isin="IT0000064516">Credito Valtell</item>
+    <item code="CRE" isin="IT0001054904">Crespi</item>
+    <item code="CSP" isin="IT0001127874">Csp Internat</item>
+    <item code="DIS" isin="LU0290697514">D'Amico</item>
+    <item code="DA" isin="IT0001455473">Dada</item>
+    <item code="DAI" isin="DE0007100000">Daimler</item>
+    <item code="DMN" isin="IT0004249329">Damiani</item>
+    <item code="DAN" isin="IT0000076502">Danieli Ord</item>
+    <item code="DANR" isin="IT0000076486">Danieli Rnc</item>
+    <item code="DNN" isin="FR0000120644">Danone</item>
+    <item code="DAS" isin="IT0001479523">Data Service</item>
+    <item code="DAL" isin="IT0004053440">Datalogic</item>
+    <item code="CPR" isin="IT0003849244">Davide Campari</item>
+    <item code="DLG" isin="IT0003115950">De'Longhi</item>
+    <item code="DEA" isin="IT0001431805">Dea Capital</item>
+    <item code="DBK" isin="DE0005140008">Deutsche Bank</item>
+    <item code="DTE" isin="DE0005557508">Deutsche Telek</item>
+    <item code="DIA" isin="IT0003492391">Diasorin</item>
+    <item code="DIB" isin="IT0001469995">Digital Bros</item>
+    <item code="DMA" isin="IT0001489357">Dmail Group</item>
+    <item code="DMT" isin="IT0003043418">Dmt</item>
+    <item code="EOAN" isin="DE000ENAG999">E.On</item>
+    <item code="EDN" isin="IT0003152417">Edison</item>
+    <item code="EDNR" isin="IT0003372205">Edison Rsp</item>
+    <item code="EEMS" isin="IT0001498234">Eems</item>
+    <item code="ELN" isin="IT0001481867">El.En</item>
+    <item code="ELC" isin="IT0003404214">Elica</item>
+    <item code="EM" isin="IT0001237053">Emak</item>
+    <item code="ENEL" isin="IT0003128367">Enel</item>
+    <item code="ENV" isin="IT0004356751">Enervit</item>
+    <item code="ENG" isin="IT0003029441">Engineering</item>
+    <item code="ENI" isin="IT0003132476">Eni</item>
+    <item code="EN" isin="IT0003830210">Enia</item>
+    <item code="ERG" isin="IT0001157020">Erg</item>
+    <item code="EGR" isin="IT0000076189">Erg Renew</item>
+    <item code="EGP" isin="IT0001026175">Ergo Previdenza</item>
+    <item code="ECA" isin="IT0004370448">Ergycapital</item>
+    <item code="PRT" isin="IT0003850929">Esprinet</item>
+    <item code="EEZ" isin="IT0003918635">Eurofly</item>
+    <item code="ETH" isin="IT0003895668">Eurotech</item>
+    <item code="EUT" isin="IT0001425211">Eutelia</item>
+    <item code="EVE" isin="IT0003351639">Everel Group</item>
+    <item code="XPR" isin="IT0001477402">Exprivia</item>
+    <item code="FWB" isin="IT0001423562">Fastweb</item>
+    <item code="F" isin="IT0001976403">Fiat</item>
+    <item code="FP" isin="IT0001976411">Fiat Prv</item>
+    <item code="FR" isin="IT0001976429">Fiat Rnc</item>
+    <item code="FDA" isin="IT0001498481">Fidia</item>
+    <item code="FM" isin="IT0003365613">Fiera Milano</item>
+    <item code="FDP" isin="IT0001339321">Filatura Poll</item>
+    <item code="FCD" isin="IT0000068178">Finarte</item>
+    <item code="FNC" isin="IT0003856405">Finmeccanica</item>
+    <item code="FMR" isin="IT0001441002">Fmr Art'E'</item>
+    <item code="FNM" isin="IT0000060886">Fnm</item>
+    <item code="FSAR" isin="IT0001463089">Fond-Sai Rsp</item>
+    <item code="FSA" isin="IT0001463071">Fondiaria - Sai</item>
+    <item code="FORA" isin="BE0003801181">Fortis</item>
+    <item code="FTE" isin="FR0000133308">France Telecom</item>
+    <item code="FUL" isin="IT0001487047">Fullsix</item>
+    <item code="GAB" isin="IT0000062650">Gabetti</item>
+    <item code="GSP" isin="IT0004098510">Gas Plus</item>
+    <item code="GSZ" isin="FR0010208488">Gdf Suez</item>
+    <item code="GE" isin="IT0003203947">Gefran</item>
+    <item code="GEM" isin="IT0001480323">Gemina Ord</item>
+    <item code="GEMR" isin="IT0001480349">Gemina Rnc</item>
+    <item code="G" isin="IT0000062072">Generali</item>
+    <item code="GEO" isin="IT0003697080">Geox</item>
+    <item code="GEW" isin="IT0001339842">Gewiss</item>
+    <item code="ES" isin="IT0001398541">Gr E L'Espresso</item>
+    <item code="GRF" isin="IT0003087258">Granitifiandre</item>
+    <item code="VIS" isin="IT0003654677">Greenvision Amb</item>
+    <item code="GCN" isin="IT0004092091">Gruppo Coin</item>
+    <item code="GMM" isin="IT0004395130">Gruppo Minerali</item>
+    <item code="HER" isin="IT0001250932">Hera</item>
+    <item code="IGV" isin="IT0001244026">I Grandi Viaggi</item>
+    <item code="IFP" isin="IT0001353157">Ifi Prv</item>
+    <item code="IFL" isin="IT0001353173">Ifil</item>
+    <item code="IFR" isin="IT0001353231">Ifil Rsp</item>
+    <item code="IGD" isin="IT0003745889">Igd</item>
+    <item code="S24" isin="IT0004269723">Il Sole 24 Ore</item>
+    <item code="IMA" isin="IT0001049623">Ima</item>
+    <item code="IMS" isin="IT0001413837">Immsi</item>
+    <item code="IPG" isin="IT0003865570">Impregilo Ord</item>
+    <item code="IPGR" isin="IT0003865588">Impregilo Rnc</item>
+    <item code="IND" isin="IT0000076197">Indesit</item>
+    <item code="INDR" isin="IT0000076320">Indesit Rsp</item>
+    <item code="INGA" isin="NL0000303600">Ing Groep</item>
+    <item code="ITK" isin="IT0000076791">Intek</item>
+    <item code="ITKRP" isin="IT0004168313">Intek Rsp</item>
+    <item code="IP" isin="IT0001078911">Interpump Group</item>
+    <item code="ISP" isin="IT0000072618">Intesa Sanpaolo</item>
+    <item code="ISPR" isin="IT0000072626">Intesa Sp  Rsp</item>
+    <item code="IESM" isin="IT0004283807">Invest Svil Med</item>
+    <item code="IES" isin="IT0001385324">Invest Sviluppo</item>
+    <item code="IPI" isin="IT0001354155">Ipi</item>
+    <item code="IRC" isin="IT0001077780">Irce</item>
+    <item code="IRD" isin="IT0003027817">Iride</item>
+    <item code="ISG" isin="IT0001069902">Isagro</item>
+    <item code="ITH" isin="IT0001165049">It Holding</item>
+    <item code="ITW" isin="IT0003057624">It Way</item>
+    <item code="IT" isin="IT0001465159">Italcementi</item>
+    <item code="ITR" isin="IT0001465167">Italcementi Rsp</item>
+    <item code="ITMR" isin="IT0000074614">Italmob  Rsp</item>
+    <item code="ITM" isin="IT0000074598">Italmobiliare</item>
+    <item code="IW" isin="IT0003477673">Iw Bank</item>
+    <item code="JUVE" isin="IT0000336518">Juventus Fc</item>
+    <item code="KRE" isin="IT0001356887">K.R.Energy</item>
+    <item code="KRS" isin="IT0003926661">Kerself</item>
+    <item code="KNX" isin="IT0004441603">Kinexia</item>
+    <item code="KME" isin="IT0004247273">Kme Group</item>
+    <item code="KMER" isin="IT0004247307">Kme Group Rsp</item>
+    <item code="OR" isin="FR0000120321">L'Oreal</item>
+    <item code="LD" isin="IT0001055521">La Doria</item>
+    <item code="LR" isin="IT0004210289">Landi Renzo</item>
+    <item code="LAV" isin="IT0001467072">Lavorwash</item>
+    <item code="SSL" isin="IT0003621783">Lazio</item>
+    <item code="LTO" isin="IT0003990402">Lottomatica</item>
+    <item code="LUX" isin="IT0001479374">Luxottica Group</item>
+    <item code="LVMH" isin="FR0000121014">Lvmh</item>
+    <item code="MT" isin="IT0004251689">Maire Tecnimont</item>
+    <item code="MEC" isin="IT0003955009">Management E C</item>
+    <item code="MCL" isin="IT0001129847">Marcolin</item>
+    <item code="MBFG" isin="IT0001403739">Mariella Burani</item>
+    <item code="MARR" isin="IT0003428445">Marr</item>
+    <item code="MCH" isin="IT0001210902">Mediacontech</item>
+    <item code="MS" isin="IT0001063210">Mediaset</item>
+    <item code="MB" isin="IT0000062957">Mediobanca</item>
+    <item code="MED" isin="IT0001279501">Mediolanum</item>
+    <item code="MEA" isin="IT0000068889">Mediterr Acque</item>
+    <item code="MEL" isin="IT0001346268">Meliorbanca</item>
+    <item code="MIC" isin="IT0004166762">Mid Industry</item>
+    <item code="MI" isin="IT0000062221">Milano Ass</item>
+    <item code="MIR" isin="IT0000062205">Milano Ass Rsp</item>
+    <item code="MRT" isin="IT0001080925">Mirato</item>
+    <item code="MIT" isin="IT0001447348">Mittel</item>
+    <item code="MLM" isin="IT0001080248">Molmed</item>
+    <item code="MN" isin="IT0001469383">Mondadori</item>
+    <item code="MHE" isin="IT0003765267">Mondo He</item>
+    <item code="MTV" isin="IT0001447785">Mondo Tv</item>
+    <item code="MON" isin="IT0000066016">Monrif</item>
+    <item code="MF" isin="IT0003111462">Montefibre</item>
+    <item code="MFNC" isin="IT0003111520">Montefibre Rsp</item>
+    <item code="MSA" isin="IT0003838817">Monti Ascensori</item>
+    <item code="MUV2" isin="DE0008430026">Munich Re</item>
+    <item code="MOL" isin="IT0004195308">Mutuionline</item>
+    <item code="NGB" isin="IT0003138671">Negri  Bossi</item>
+    <item code="NICE" isin="IT0003317945">Nice</item>
+    <item code="NOE" isin="IT0004014533">Noemalife</item>
+    <item code="NOK1V" isin="FI0009000681">Nokia Corp</item>
+    <item code="NR" isin="IT0001162509">Nova Re</item>
+    <item code="OLI" isin="IT0001350625">Olidata</item>
+    <item code="ONT" isin="IT0004103294">Omnia Network</item>
+    <item code="PAN" isin="IT0001467577">Panariagroup</item>
+    <item code="PLT" isin="IT0003826473">Parmalat</item>
+    <item code="PMS" isin="IT0001341111">Permasteelisa</item>
+    <item code="PHIA" isin="NL0000009538">Philips</item>
+    <item code="PIA" isin="IT0003073266">Piaggio</item>
+    <item code="PRL" isin="IT0004007560">Pierrel</item>
+    <item code="PINF" isin="IT0003056386">Pininfarina</item>
+    <item code="PQ" isin="IT0004240443">Piquadro</item>
+    <item code="PC" isin="IT0000072725">Pirelli&amp;C</item>
+    <item code="PRS" isin="IT0003270615">Pirelli&amp;C Re</item>
+    <item code="PCP" isin="IT0000072733">Pirelli&amp;C Rsp</item>
+    <item code="PSF" isin="IT0001352217">Poligraf S Faus</item>
+    <item code="POL" isin="IT0000086923">Poligrafici Ed</item>
+    <item code="PFG" isin="IT0004114846">Poltrona Frau</item>
+    <item code="PP" isin="FR0000121485">Ppr</item>
+    <item code="PRA" isin="IT0001493581">Pramac</item>
+    <item code="PF" isin="IT0001475109">Premafin</item>
+    <item code="PR" isin="IT0003676282">Premuda</item>
+    <item code="PRI" isin="IT0003124663">Prima Industrie</item>
+    <item code="PRY" isin="IT0004176001">Prysmian</item>
+    <item code="RAT" isin="IT0001343695">Ratti</item>
+    <item code="RCF" isin="IT0004223571">Rcf Group</item>
+    <item code="RCSR" isin="IT0003039028">Rcs Mediagr Rsp</item>
+    <item code="RCS" isin="IT0003039010">Rcs Mediagroup</item>
+    <item code="RDB" isin="IT0000795549">Rdb</item>
+    <item code="RLT" isin="IT0004179088">Realty Vailog</item>
+    <item code="REC" isin="IT0003828271">Recordati</item>
+    <item code="RNO" isin="FR0000131906">Renault</item>
+    <item code="RM" isin="IT0001178299">Reno De Medici</item>
+    <item code="REY" isin="IT0001499679">Reply</item>
+    <item code="LIT" isin="IT0004370463">Retelit</item>
+    <item code="RGI" isin="IT0004245954">Rgi</item>
+    <item code="RG" isin="IT0001280947">Richard-Ginori</item>
+    <item code="RN" isin="IT0001402269">Risanamento</item>
+    <item code="ASR" isin="IT0001008876">Roma</item>
+    <item code="ROS" isin="IT0004297575">Rosss</item>
+    <item code="RWE" isin="DE0007037129">Rwe</item>
+    <item code="SAB" isin="IT0001042610">Sabaf</item>
+    <item code="SSI" isin="IT0001042297">Sadi</item>
+    <item code="SGR" isin="IT0001037081">Saes Gett Rsp</item>
+    <item code="SG" isin="IT0001029492">Saes Getters</item>
+    <item code="SFL" isin="IT0003430813">Safilo Group</item>
+    <item code="SPM" isin="IT0000068525">Saipem</item>
+    <item code="SPMR" isin="IT0000068533">Saipem Rcv</item>
+    <item code="SANF" isin="FR0000120578">Sanofi-Aventis</item>
+    <item code="SAP" isin="DE0007164600">Sap</item>
+    <item code="SRS" isin="IT0000433307">Saras</item>
+    <item code="SAT" isin="IT0000214293">Sat</item>
+    <item code="SAVE" isin="IT0001490736">Save</item>
+    <item code="SSB" isin="IT0003745129">Screen Service</item>
+    <item code="PG" isin="IT0003479638">Seat Pg</item>
+    <item code="PGR" isin="IT0003479646">Seat Pg Rsp</item>
+    <item code="SRI" isin="IT0003814537">Servizi Italia</item>
+    <item code="SIS" isin="IT0003201198">Sias</item>
+    <item code="SIS17" isin="IT0003872394">Sias Cv</item>
+    <item code="SIE" isin="DE0007236101">Siemens</item>
+    <item code="SNA" isin="IT0000074903">Snai Ord</item>
+    <item code="SRG" isin="IT0003153415">Snam Rete Gas</item>
+    <item code="SN10" isin="IT0003873467">Snia Cv 10</item>
+    <item code="SN" isin="IT0004239510">Snia Ord</item>
+    <item code="GLE" isin="FR0000130809">Societe Gen</item>
+    <item code="SCT" isin="IT0003270904">Socotherm</item>
+    <item code="SO" isin="IT0000076536">Sogefi</item>
+    <item code="SOL" isin="IT0001206769">Sol</item>
+    <item code="SPF12" isin="IT0004227150">Sopaf Cv 12</item>
+    <item code="SPF" isin="IT0003836720">Sopaf Ord</item>
+    <item code="SRN" isin="IT0003544431">Sorin</item>
+    <item code="STEF" isin="IT0003149595">Stefanel</item>
+    <item code="STEFR" isin="IT0003149603">Stefanel Rsp</item>
+    <item code="STM" isin="NL0000226223">Stmicroelectron</item>
+    <item code="TIP" isin="IT0003153621">Tamburi Inv</item>
+    <item code="TAS" isin="IT0001424644">Tas</item>
+    <item code="TMER" isin="IT0001389938">Tel It Med Rsp</item>
+    <item code="TME" isin="IT0001389920">Tel It Media</item>
+    <item code="TICV10" isin="IT0003187215">Telecom It Cv10</item>
+    <item code="TITR" isin="IT0003497176">Telecom It Rsp</item>
+    <item code="TIT" isin="IT0003497168">Telecom Italia</item>
+    <item code="TEF" isin="ES0178430E18">Telefonica</item>
+    <item code="TEN" isin="LU0156801721">Tenaris</item>
+    <item code="TRN" isin="IT0003242622">Terna</item>
+    <item code="TER" isin="IT0004359037">Ternienergia</item>
+    <item code="TIS" isin="IT0001453924">Tiscali</item>
+    <item code="TOD" isin="IT0003007728">Tod'S</item>
+    <item code="TF" isin="IT0004146855">Toscana Finanza</item>
+    <item code="TOT" isin="FR0000120271">Total</item>
+    <item code="TFI" isin="IT0001351383">Trevi Fin</item>
+    <item code="TRV" isin="IT0003347652">Trevisan</item>
+    <item code="TXT" isin="IT0001454435">Txt E-Solutions</item>
+    <item code="UBI" isin="IT0003487029">Ubi Banca</item>
+    <item code="UNL" isin="IT0004375389">Uni Land</item>
+    <item code="UCG" isin="IT0000064854">Unicredit</item>
+    <item code="UCGR" isin="IT0000064839">Unicredit Rsp</item>
+    <item code="UNA" isin="NL0000009355">Unilever</item>
+    <item code="UNI" isin="IT0001074571">Unipol</item>
+    <item code="UNIP" isin="IT0001074589">Unipol Prv</item>
+    <item code="VLS" isin="IT0001018362">Valsoia</item>
+    <item code="VVE" isin="IT0003081475">Viaggi Ventag</item>
+    <item code="VIN" isin="IT0003127898">Vianini Ind</item>
+    <item code="VLA" isin="IT0003127864">Vianini Lavori</item>
+    <item code="VAS" isin="IT0000062882">Vittoria Ass</item>
+    <item code="VASCV" isin="IT0003184758">Vittoria Ass Cv</item>
+    <item code="VIV" isin="FR0000127771">Vivendi</item>
+    <item code="WBP10" isin="IT0003872279">W Banco Pop 10</item>
+    <item code="WCVAL9" isin="IT0004213523">W Cred Valt 09</item>
+    <item code="WECA" isin="IT0004370455">W Ergycapit 11</item>
+    <item code="WIT11" isin="IT0004168347">W Intek 11</item>
+    <item code="WIESM" isin="IT0004283930">W Inv Svi Med11</item>
+    <item code="WIES9" isin="IT0004147978">W Inv Svil  09</item>
+    <item code="WKME09" isin="IT0004077167">W Kme Group 09</item>
+    <item code="WMIC10" isin="IT0004167489">W Mid Ind C 10</item>
+    <item code="WNB10" isin="IT0004112659">W Negri Bos 10</item>
+    <item code="WPLT15" isin="IT0003826481">W Parmalat 15</item>
+    <item code="WPRL12" isin="IT0004366065">W Pierrel 12</item>
+    <item code="WLIT11" isin="IT0004371099">W Retelit 11</item>
+    <item code="WSN10" isin="IT0003825350">W Snia 10</item>
+    <item code="BY" isin="IT0003745962">Yorkville Bhn</item>
+    <item code="ZV" isin="IT0004171440">Zignago Vetro</item>
+    <item code="ZUC" isin="IT0000080553">Zucchi</item>
+    <item code="ZUCR" isin="IT0000080561">Zucchi Rsp</item>
+</list>

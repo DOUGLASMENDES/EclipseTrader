@@ -30,6 +30,16 @@
             Import historical data from Borsa Italiana.
          </description>
       </wizard>
+      <wizard
+            category="org.eclipsetrader.ui.import.instruments"
+            class="org.eclipsetrader.borsaitalia.internal.ui.wizards.InstrumentsImportWizard"
+            icon="borsaitalia16.gif"
+            id="org.eclipsetrader.borsaitalia.importInstrument"
+            name="Borsa Italiana">
+         <description>
+            Import instruments from Borsa Italiana.
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipsetrader.core.providers">
