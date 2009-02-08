@@ -40,17 +40,16 @@ public class TradeHandler extends AbstractHandler {
 		if (selection != null && !selection.isEmpty()) {
 			for (Iterator<?> iter = selection.iterator(); iter.hasNext(); ) {
 				Object target = iter.next();
-				if (target instanceof IAdaptable)
-					target = ((IAdaptable) target).getAdapter(ISecurity.class);
-				if (target instanceof ISecurity) {
+				if (target instanceof IAdaptable) {
 					OrderDialog dlg = new OrderDialog(site.getShell());
-					dlg.setSecurity((ISecurity) target);
+					dlg.setTarget((IAdaptable) target);
 
 					BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 					ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
 					if (serviceReference != null) {
 						ITradingService service = (ITradingService) context.getService(serviceReference);
-						dlg.setBroker(service.getBrokerForSecurity((ISecurity) target));
+						ISecurity security = (ISecurity) ((IAdaptable) target).getAdapter(ISecurity.class);
+						dlg.setBroker(service.getBrokerForSecurity(security));
 
 						String brokerId = event.getParameter("broker");
 						if (brokerId != null)

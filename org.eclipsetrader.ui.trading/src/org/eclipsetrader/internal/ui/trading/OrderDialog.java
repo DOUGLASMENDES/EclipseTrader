@@ -14,6 +14,7 @@ package org.eclipsetrader.internal.ui.trading;
 import java.text.NumberFormat;
 import java.util.Date;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -27,6 +28,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -41,6 +43,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
+import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.IBroker;
@@ -69,16 +72,23 @@ public class OrderDialog extends TitleAreaDialog {
 	private CDateTime expireDate;
 	private Text orderReference;
 
+	private Label summaryLabel;
+
+	private IAdaptable target;
 	private ISecurity security;
 	private IBroker broker;
 
 	private NumberFormat numberFormat;
 	private NumberFormat priceFormat;
+	private NumberFormat totalPriceFormat;
 
 	private ISelectionChangedListener orderTypeSelectionListener = new ISelectionChangedListener() {
         public void selectionChanged(SelectionChangedEvent event) {
         	IStructuredSelection selection = (IStructuredSelection) event.getSelection();
         	price.setEnabled(selection.getFirstElement() == IOrderType.Limit);
+
+        	updateSummary();
+
         	getButton(OK).setEnabled(isValid());
         }
 	};
@@ -95,6 +105,11 @@ public class OrderDialog extends TitleAreaDialog {
 		priceFormat.setMinimumFractionDigits(1);
 		priceFormat.setMaximumFractionDigits(4);
 		priceFormat.setGroupingUsed(true);
+
+		totalPriceFormat = NumberFormat.getInstance();
+		totalPriceFormat.setMinimumFractionDigits(2);
+		totalPriceFormat.setMaximumFractionDigits(2);
+		totalPriceFormat.setGroupingUsed(true);
 	}
 
 	/* (non-Javadoc)
@@ -118,9 +133,18 @@ public class OrderDialog extends TitleAreaDialog {
     	createContractDescriptionGroup(composite);
     	createOrderDescriptionGroup(composite);
     	createMiscellaneousGroup(composite);
+    	createSummaryGroup(composite);
 
     	ITradingService tradingService = getTradingService();
     	brokerCombo.setInput(tradingService.getBrokers());
+
+    	if (getTarget() != null) {
+    		security = (ISecurity) getTarget().getAdapter(ISecurity.class);
+
+    		ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
+    		if (trade != null && trade.getPrice() != null)
+    			price.setText(priceFormat.format(trade.getPrice()));
+    	}
 
     	if (broker != null) {
         	IStructuredSelection selection = new StructuredSelection(broker);
@@ -139,6 +163,13 @@ public class OrderDialog extends TitleAreaDialog {
         			security = connector.getSecurityFromSymbol(symbol.getText());
             		symbolDescription.setText(security.getName());
             	}
+            	getButton(OK).setEnabled(isValid());
+            }
+    	});
+
+    	price.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+            	updateSummary();
             	getButton(OK).setEnabled(isValid());
             }
     	});
@@ -216,6 +247,7 @@ public class OrderDialog extends TitleAreaDialog {
     	((GridData) quantity.getLayoutData()).horizontalAlignment = SWT.FILL;
     	quantity.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
+            	updateSummary();
             	getButton(OK).setEnabled(isValid());
             }
     	});
@@ -242,11 +274,6 @@ public class OrderDialog extends TitleAreaDialog {
     	price = new Text(content, SWT.BORDER);
     	price.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
     	((GridData) price.getLayoutData()).horizontalAlignment = SWT.FILL;
-    	price.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-            	getButton(OK).setEnabled(isValid());
-            }
-    	});
     	price.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent event) {
@@ -331,8 +358,12 @@ public class OrderDialog extends TitleAreaDialog {
 		return true;
     }
 
-	public void setSecurity(ISecurity security) {
-    	this.security = security;
+	public void setTarget(IAdaptable target) {
+    	this.target = target;
+    }
+
+	protected IAdaptable getTarget() {
+    	return target;
     }
 
 	public void setBroker(IBroker broker) {
@@ -439,5 +470,41 @@ public class OrderDialog extends TitleAreaDialog {
 		routeCombo.setInput(routes);
 		if (routes.length != 0 && routeCombo.getSelection().isEmpty())
 			routeCombo.setSelection(new StructuredSelection(routes[0]));
+	}
+
+	protected void createSummaryGroup(Composite parent) {
+		Group content = new Group(parent, SWT.NONE);
+		content.setText("Summary");
+    	content.setLayout(new GridLayout(1, false));
+    	content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
+
+    	summaryLabel = new Label(content, SWT.NONE);
+    	summaryLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	}
+
+	protected void updateSummary() {
+		try {
+	    	long quantity = numberFormat.parse(this.quantity.getText()).longValue();
+
+			double price = 0.0;
+			IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
+			if (orderType == IOrderType.Limit)
+		    	price = priceFormat.parse(this.price.getText()).doubleValue();
+			else {
+	    		ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
+	    		if (trade != null && trade.getPrice() != null)
+	    			price = trade.getPrice();
+			}
+
+			if (quantity != 0 && price != 0.0) {
+				summaryLabel.setText(NLS.bind("Total: {0}", new Object[] {
+						totalPriceFormat.format(quantity * price)
+					}));
+			}
+			else
+				summaryLabel.setText("");
+		} catch(Exception e) {
+			summaryLabel.setText("");
+		}
 	}
 }
