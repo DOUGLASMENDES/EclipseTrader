@@ -40,5 +40,6 @@ public class Perspective implements IPerspectiveFactory {
         // Bottom
         IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
         bottom.addView("org.eclipsetrader.ui.views.headlines"); //$NON-NLS-1$
+		bottom.addPlaceholder("org.eclipse.ui.views.ProgressView"); //$NON-NLS-1$
 	}
 }

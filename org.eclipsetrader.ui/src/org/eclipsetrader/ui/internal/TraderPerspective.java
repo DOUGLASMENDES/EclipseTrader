@@ -38,6 +38,7 @@ public class TraderPerspective implements IPerspectiveFactory {
         // Bottom
 		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, UIConstants.EDITOR_AREA); //$NON-NLS-1$
 		bottom.addView("org.eclipsetrader.ui.views.markets"); //$NON-NLS-1$
+		bottom.addPlaceholder("org.eclipse.ui.views.ProgressView"); //$NON-NLS-1$
 
         // Add "new wizards".
 		layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.stock");//$NON-NLS-1$

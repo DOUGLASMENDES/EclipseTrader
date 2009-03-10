@@ -107,5 +107,14 @@
          </action>
       </actionSet>
    </extension>
-
+   <extension  
+         point="org.eclipse.ui.views">  
+      <view  
+            name="Progress View"  
+            icon="icons/eview16/pview.gif"  
+            category="org.eclipse.ui"  
+            class="org.eclipse.ui.ExtensionFactory:progressView"  
+            id="org.eclipse.ui.views.ProgressView">  
+      </view>  
+   </extension>  
 </plugin>

@@ -37,6 +37,10 @@ public class ChartsPerspective implements IPerspectiveFactory {
         left.addPlaceholder("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
         layout.addView("org.eclipsetrader.ui.charts.palette", IPageLayout.BOTTOM, (float) 0.50, "left");
 
+        // Bottom
+		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
+		bottom.addPlaceholder("org.eclipse.ui.views.ProgressView"); //$NON-NLS-1$
+
         // Add "new wizards".
 		layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.security");//$NON-NLS-1$
 
