@@ -11,13 +11,25 @@
 
 package org.eclipsetrader.directa.internal.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.spi.SelectorProvider;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -37,15 +49,17 @@ import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IOrderValidity;
+import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
 import org.eclipsetrader.directa.internal.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class BrokerConnector implements IBroker, IExecutableExtension, IExecutableExtensionFactory {
+public class BrokerConnector implements IBroker, IExecutableExtension, IExecutableExtensionFactory, Runnable {
 	public static final IOrderRoute Immediate = new OrderRoute("1", "immed");
 	public static final IOrderRoute MTA = new OrderRoute("2", "MTA");
 	public static final IOrderRoute CloseMTA = new OrderRoute("4", "clos-MTA");
@@ -58,27 +72,15 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 
 	private String id;
 	private String name;
+	private String server = "213.92.13.4";
+	private int port = 1080;
 
-	private Set<OrderMonitor> orders;
+	Set<OrderMonitor> orders = new HashSet<OrderMonitor>();
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
+	private SocketChannel socketChannel;
 	private Thread thread;
-	private Runnable updateRunnable = new Runnable() {
-        public void run() {
-            orders = new HashSet<OrderMonitor>();
-
-            for (;;) {
-            	synchronized(thread) {
-            		try {
-            			updateOrders();
-    	                thread.wait(60 * 1000);
-                    } catch (InterruptedException e) {
-    	                break;
-                    }
-            	}
-        	}
-        }
-	};
+	private Log logger = LogFactory.getLog(getClass());
 
 	public BrokerConnector() {
 	}
@@ -128,7 +130,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     		WebConnector.getInstance().login();
 
     	if (thread == null || !thread.isAlive()) {
-    		thread = new Thread(updateRunnable, getName() + " - Orders Monitor");
+    		thread = new Thread(this, getName() + " - Orders Monitor");
+        	logger.info("Starting " + thread.getName());
         	thread.start();
     	}
     }
@@ -139,11 +142,18 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     public void disconnect() {
     	if (thread != null) {
     		try {
-        		thread.interrupt();
+    			if (socketChannel != null)
+    				socketChannel.close();
+            } catch (IOException e) {
+	            // Do nothing
+            }
+    		try {
+    			thread.interrupt();
 	            thread.join(30 * 1000);
             } catch (InterruptedException e) {
 	            // Do nothing
             }
+        	logger.info("Stopped " + thread.getName());
     		thread = null;
     	}
     }
@@ -288,43 +298,238 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	 * @see org.eclipsetrader.core.trading.IBroker#getOrders()
 	 */
 	public IOrderMonitor[] getOrders() {
-		if (orders == null)
-			return new IOrderMonitor[0];
 		return orders.toArray(new IOrderMonitor[orders.size()]);
 	}
 
-	public void updateOrders() {
-		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
+	private static final String LOGIN = "21";
+	private static final String UNKNOWN55 = "55";
+	private static final String UNKNOWN70 = "70";
+	private static final String HEARTBEAT = "40";
 
-		synchronized(orders) {
-			WebConnector.getInstance().updateOrders();
+	/* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     */
+    public void run() {
+    	Selector socketSelector;
+		ByteBuffer dst = ByteBuffer.wrap(new byte[2048]);
 
-			Collection<OrderMonitor> repositoryOrder = WebConnector.getInstance().getOrders();
-	        for (OrderMonitor order : repositoryOrder) {
-	        	if (!orders.contains(order)) {
-	        		orders.add(order);
-	        		deltas.add(new OrderDelta(OrderDelta.KIND_ADDED, order));
-	        	}
-	        	else
-	        		deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, order));
-	        }
-			for (Iterator<OrderMonitor> iter = orders.iterator(); iter.hasNext(); ) {
-				OrderMonitor order = iter.next();
-	        	if (!repositoryOrder.contains(order)) {
-	        		iter.remove();
-	        		deltas.add(new OrderDelta(OrderDelta.KIND_REMOVED, order));
-	        	}
-	        }
+		try {
+	    	// Create a non-blocking socket channel
+	        socketChannel = SocketChannel.open();
+	        socketChannel.configureBlocking(false);
+
+	        socketChannel.socket().setReceiveBufferSize(32768);
+	        socketChannel.socket().setSoLinger(true, 1);
+	        socketChannel.socket().setSoTimeout(0x15f90);
+	        socketChannel.socket().setReuseAddress(true);
+
+	        // Kick off connection establishment
+	        socketChannel.connect(new InetSocketAddress(server, port));
+
+	        // Create a new selector
+	        socketSelector = SelectorProvider.provider().openSelector();
+
+	        // Register the server socket channel, indicating an interest in
+	        // accepting new connections
+	        socketChannel.register(socketSelector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
+        } catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to orders monitor", e); //$NON-NLS-1$
+			Activator.log(status);
+			return;
+        }
+
+        for (;;) {
+    		try {
+            	if (socketSelector.select(30 * 1000) == 0) {
+                   	logger.trace(">" + HEARTBEAT);
+    				socketChannel.write(ByteBuffer.wrap(new String(HEARTBEAT + "\r\n").getBytes()));
+            	}
+            } catch (Exception e) {
+            	break;
+            }
+
+			// Iterate over the set of keys for which events are available
+			Iterator<SelectionKey> selectedKeys = socketSelector.selectedKeys().iterator();
+			while (selectedKeys.hasNext()) {
+				SelectionKey key = selectedKeys.next();
+				selectedKeys.remove();
+
+				if (!key.isValid()) {
+					continue;
+				}
+
+				try {
+					// Check what event is available and deal with it
+					if (key.isConnectable()) {
+						// Finish the connection. If the connection operation failed
+						// this will raise an IOException.
+						try {
+							socketChannel.finishConnect();
+						} catch (IOException e) {
+							// Cancel the channel's registration with our selector
+							key.cancel();
+							return;
+						}
+
+						// Register an interest in writing on this channel
+						key.interestOps(SelectionKey.OP_WRITE);
+					}
+					if (key.isWritable()) {
+			        	logger.info(">" + LOGIN + WebConnector.getInstance().getUser());
+						socketChannel.write(ByteBuffer.wrap(new String(LOGIN + WebConnector.getInstance().getUser() + "\r\n").getBytes()));
+
+						// Register an interest in reading on this channel
+						key.interestOps(SelectionKey.OP_READ);
+					}
+					if (key.isReadable()) {
+						dst.clear();
+						int readed = socketChannel.read(dst);
+						if (readed > 0) {
+							String[] s = new String(dst.array(), 0, readed).split("\r\n");
+							for (int i = 0; i < s.length; i++) {
+								logger.info("<" + s[i]);
+
+								if (s[i].endsWith(";" + WebConnector.getInstance().getUser() + ";")) {
+									logger.info(">" + UNKNOWN70);
+									socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN70 + "\r\n").getBytes()));
+						        	logger.info(">" + UNKNOWN55);
+									socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN55 + "\r\n").getBytes()));
+								}
+
+								if (s[i].indexOf(";6;5;") != -1 || s[i].indexOf(";8;0;") != -1) {
+		        		        	try {
+		        	                    OrderMonitor monitor = parseOrderLine(s[i]);
+
+		        	    	        	if (!orders.contains(monitor)) {
+		        	    	        		orders.add(monitor);
+		        	    	    			fireUpdateNotifications(new OrderDelta[] { new OrderDelta(OrderDelta.KIND_ADDED, monitor) });
+		        	    	        	}
+		        	    	        	else
+		        	    	    			fireUpdateNotifications(new OrderDelta[] { new OrderDelta(OrderDelta.KIND_UPDATED, monitor) });
+		        		        	} catch (ParseException e) {
+		        		    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + s[i], e); //$NON-NLS-1$
+		        		    			Activator.log(status);
+		                            }
+		        		        }
+							}
+						}
+					}
+	            } catch (Exception e) {
+	    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Connection error", e); //$NON-NLS-1$
+	    			Activator.log(status);
+	            }
+			}
+        }
+    }
+
+	private static final int IDX_ID = 3;
+	private static final int IDX_STATUS = 4;
+	private static final int IDX_SYMBOL = 5;
+	private static final int IDX_AVERAGE_PRICE = 10;
+	private static final int IDX_QUANTITY = 15;
+	private static final int IDX_PRICE = 16;
+	private static final int IDX_SIDE = 18;
+	private static final int IDX_DATE = 19;
+	private static final int IDX_TIME = 20;
+	private static final int IDX_FILLED_QUANTITY = 25;
+
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd HHmmss");
+	private NumberFormat numberFormatter = NumberFormat.getInstance(Locale.US);
+
+	protected OrderMonitor parseOrderLine(String line) throws ParseException {
+		String[] item = line.split(";");
+
+		OrderMonitor tracker = null;
+		for (OrderMonitor m : orders) {
+			if (item[IDX_ID].equals(m.getId())) {
+				tracker = m;
+				break;
+			}
+		}
+		if (tracker == null) {
+			for (OrderMonitor m : orders) {
+				if (m.getId() == null && getSymbolFromSecurity(m.getOrder().getSecurity()).equals(item[IDX_SYMBOL])) {
+					tracker = m;
+					tracker.setId(item[IDX_ID]);
+					break;
+				}
+			}
+		}
+		if (tracker == null) {
+			Long quantity = !item[IDX_QUANTITY].equals("") ? Long.parseLong(item[IDX_QUANTITY]) : null;
+			if (quantity == null && item.length > IDX_FILLED_QUANTITY && !item[IDX_FILLED_QUANTITY].equals("")) {
+				try {
+					quantity = numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue();
+				} catch(Exception e) {
+				}
+			}
+			Order order = new Order(
+					null,
+					!item[IDX_PRICE].equals("") ? IOrderType.Limit : IOrderType.Market,
+					item[IDX_SIDE].equalsIgnoreCase("V") ? IOrderSide.Sell : IOrderSide.Buy,
+					getSecurityFromSymbol(item[IDX_SYMBOL]),
+					quantity,
+					!item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null
+				);
+			tracker = new OrderMonitor(WebConnector.getInstance(), BrokerConnector.getInstance(), order);
+			tracker.setId(item[IDX_ID]);
 		}
 
-		if (deltas.size() != 0)
-			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
-	}
+		IOrder order = tracker.getOrder();;
 
-	public void wakeupOrdersUpdateThread() {
-		synchronized(thread) {
-			thread.notifyAll();
+		try {
+			Method classMethod = order.getClass().getMethod("setDate", Date.class);
+			if (classMethod != null) {
+				if (item[IDX_TIME].length() < 6)
+					item[IDX_TIME] = "0" + item[IDX_TIME];
+				classMethod.invoke(order, dateFormatter.parse(item[IDX_DATE] + " " + item[IDX_TIME]));
+			}
+		} catch(Exception e) {
 		}
+
+		if (item[IDX_STATUS].equals("e") || item[IDX_STATUS].equals("e ")) {
+			if (!item[IDX_AVERAGE_PRICE].equals("")) {
+				try {
+					tracker.setAveragePrice(numberFormatter.parse(item[IDX_AVERAGE_PRICE]).doubleValue());
+				} catch(Exception e) {
+				}
+			}
+			else
+				tracker.setAveragePrice(numberFormatter.parse(item[IDX_PRICE]).doubleValue());
+
+			if (!item[IDX_FILLED_QUANTITY].equals("")) {
+				try {
+					tracker.setFilledQuantity(numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue());
+				} catch(Exception e) {
+				}
+			}
+		}
+
+		IOrderStatus status = tracker.getStatus();
+		if (item[IDX_STATUS].equals("e") || item[IDX_STATUS].equals("e "))
+			status = IOrderStatus.Filled;
+		else if (item[IDX_STATUS].equals("n") || item[IDX_STATUS].equals("n ") || item[IDX_STATUS].equals("j"))
+			status = IOrderStatus.PendingNew;
+		else if (item[IDX_STATUS].equals("zA") || item[IDX_STATUS].equals("z "))
+			status = IOrderStatus.Canceled;
+		else if (item[IDX_STATUS].equals("na"))
+			status = IOrderStatus.PendingCancel;
+		else
+			status = IOrderStatus.PendingNew;
+
+		if (status != IOrderStatus.Canceled) {
+			if (tracker.getFilledQuantity() != null && !tracker.getFilledQuantity().equals(order.getQuantity()))
+				status = IOrderStatus.Partial;
+		}
+
+		if ((status == IOrderStatus.Filled || status == IOrderStatus.Canceled || status == IOrderStatus.Rejected) && tracker.getStatus() != status) {
+			tracker.setStatus(status);
+			tracker.fireOrderCompletedEvent();
+		}
+		else
+			tracker.setStatus(status);
+
+		return tracker;
 	}
 
 	/* (non-Javadoc)

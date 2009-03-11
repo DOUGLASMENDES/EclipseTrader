@@ -735,6 +735,16 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 		os = null;
 		is = null;
 		socket = null;
+
+		if (!isStopping()) {
+			thread = new Thread(this, name + " - Data Reader");
+			try {
+				Thread.sleep(2 * 1000);
+			} catch(Exception e) {
+				// Do nothing
+			}
+			thread.start();
+		}
     }
 
 	protected IPreferenceStore getPreferenceStore() {

@@ -79,7 +79,6 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 		}
 
 		connector.sendOrder(this);
-		brokerConnector.wakeupOrdersUpdateThread();
 	}
 
 	/* (non-Javadoc)
@@ -96,7 +95,6 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 			throw new BrokerException("Invalid order");
 
 		connector.cancelOrder(this);
-		brokerConnector.wakeupOrdersUpdateThread();
 	}
 
 	/* (non-Javadoc)

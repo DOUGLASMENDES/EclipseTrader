@@ -112,14 +112,19 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
-
 	public static void log(IStatus status) {
-		if (plugin == null) {
-			if (status.getException() != null)
-				status.getException().printStackTrace();
-			return;
-		}
-		plugin.getLog().log(status);
+		if (plugin != null)
+			plugin.getLog().log(status);
+		else
+			System.err.println(status);
+	}
+
+	public static void log(String message, Throwable throwable) {
+		Status status = new Status(Status.ERROR, PLUGIN_ID, message, throwable);
+		if (plugin != null)
+			plugin.getLog().log(status);
+		else
+			System.err.println(status);
 	}
 
 	public void startupRepository(File file) {

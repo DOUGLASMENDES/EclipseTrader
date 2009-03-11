@@ -13,20 +13,10 @@ package org.eclipsetrader.directa.internal.core;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -54,7 +44,6 @@ import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IOrderValidity;
-import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.directa.internal.Activator;
 import org.eclipsetrader.directa.internal.core.connector.LoginDialog;
 import org.htmlparser.Parser;
@@ -89,14 +78,13 @@ public class WebConnector {
 	private String prt = "";
 	private String urt = "";
 	private String user = "";
-	Map<String, OrderMonitor> orders = new HashMap<String, OrderMonitor>();
 
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	private NumberFormat numberFormatter = NumberFormat.getInstance(Locale.ITALY);
 
 	private Log logger = LogFactory.getLog(getClass());
 
 	WebConnector() {
+		instance = this;
 	}
 
 	public synchronized static WebConnector getInstance() {
@@ -221,128 +209,6 @@ public class WebConnector {
 		return user;
 	}
 
-	public Collection<OrderMonitor> getOrders() {
-		return orders.values();
-	}
-
-	public void updateOrders() {
-		try {
-			GetMethod method = new GetMethod("http://" + HOST + "/jscript/ordinij");
-			method.setFollowRedirects(true);
-			method.setQueryString(new NameValuePair[] {
-					new NameValuePair("DSUSER", user),
-					new NameValuePair("DSTITO", ""),
-					new NameValuePair("DSFUNZ", "2"),
-					new NameValuePair("PAG", "VT4.4.0.6"),
-					new NameValuePair("TAPPO", "X"),
-				});
-
-			logger.info(method.getURI().toString());
-			client.executeMethod(method);
-
-			Set<String> set = new HashSet<String>();
-
-			String line = "";
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-			while ((line = in.readLine()) != null) {
-				logger.trace(line);
-				if (line.startsWith("tr01[")) {
-					OrderMonitor tracker = parseOrderLine(line);
-					orders.put(tracker.getId(), tracker);
-					set.add(tracker.getId());
-				}
-			}
-
-			for (Iterator<OrderMonitor> iter = orders.values().iterator(); iter.hasNext(); ) {
-				if (!set.contains(iter.next().getId()))
-					iter.remove();
-			}
-
-			in.close();
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error updating orders", e);
-			Activator.log(status);
-		}
-	}
-
-	private static final int IDX_SYMBOL = 0;
-	private static final int IDX_ID = 1;
-	private static final int IDX_STATUS = 2;
-	private static final int IDX_DATE = 3;
-	private static final int IDX_TIME = 4;
-	private static final int IDX_SIDE = 5;
-	private static final int IDX_QUANTITY = 6;
-	private static final int IDX_PRICE = 7;
-	private static final int IDX_FILLED_QUANTITY = 10;
-	private static final int IDX_AVERAGE_PRICE = 11;
-
-	protected OrderMonitor parseOrderLine(String line) throws ParseException {
-		int sidx = line.indexOf("\"") + 1;
-		int eidx = line.indexOf("\"", sidx);
-		String[] item = line.substring(sidx, eidx).split(";");
-
-		OrderMonitor tracker = orders.get(item[IDX_ID]);
-		if (tracker == null) {
-			Order order = new Order(
-					null,
-					!item[IDX_PRICE].equals("") ? IOrderType.Limit : IOrderType.Market,
-					item[IDX_SIDE].equalsIgnoreCase("V") ? IOrderSide.Sell : IOrderSide.Buy,
-					getSecurityFromSymbol(item[IDX_SYMBOL]),
-					Long.parseLong(item[IDX_QUANTITY]),
-					!item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null
-				);
-			tracker = new OrderMonitor(this, BrokerConnector.getInstance(), order);
-			tracker.setId(item[IDX_ID]);
-		}
-
-		IOrder order = tracker.getOrder();;
-
-		try {
-			Method classMethod = order.getClass().getMethod("setDate", Date.class);
-			if (classMethod != null)
-				classMethod.invoke(order, dateFormatter.parse(item[IDX_DATE] + " " + item[IDX_TIME]));
-		} catch(Exception e) {
-		}
-
-		if (!item[IDX_AVERAGE_PRICE].equals("")) {
-			try {
-				tracker.setAveragePrice(numberFormatter.parse(item[IDX_AVERAGE_PRICE]).doubleValue());
-			} catch(Exception e) {
-			}
-		}
-
-		if (!item[IDX_FILLED_QUANTITY].equals("")) {
-			try {
-				tracker.setFilledQuantity(numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue());
-			} catch(Exception e) {
-			}
-		}
-
-		IOrderStatus status = tracker.getStatus();
-		if (item[IDX_STATUS].equals("e"))
-			status = IOrderStatus.Filled;
-		else if (item[IDX_STATUS].equals("n"))
-			status = IOrderStatus.PendingNew;
-		else if (item[IDX_STATUS].equals("zA"))
-			status = IOrderStatus.Canceled;
-		else
-			status = IOrderStatus.PendingNew;
-
-		if (status != IOrderStatus.Canceled) {
-			if (tracker.getFilledQuantity() != null && !tracker.getFilledQuantity().equals(order.getQuantity()))
-				status = IOrderStatus.Partial;
-		}
-
-		if ((status == IOrderStatus.Filled || status == IOrderStatus.Canceled || status == IOrderStatus.Rejected) && tracker.getStatus() != status) {
-			tracker.setStatus(status);
-			tracker.fireOrderCompletedEvent();
-		}
-		else
-			tracker.setStatus(status);
-
-		return tracker;
-	}
-
 	protected ISecurity getSecurityFromSymbol(String symbol) {
 		ISecurity security = null;
 
@@ -431,22 +297,15 @@ public class WebConnector {
 					ok = true;
 					confirm = false;
 				}
-
-				if (!confirm) {
-					int s = inputLine.indexOf("<i>rif.&nbsp;");
-					if (s != -1) {
-						s = inputLine.indexOf(">", s + 13) + 1;
-						int e = inputLine.indexOf("<", s);
-						tracker.setId(inputLine.substring(s, e));
-						logger.info(tracker.toString());
-					}
-				}
 			}
 			in.close();
 		} catch (Exception e) {
 			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error sending order [" + order.toString() + "]", e);
 			Activator.log(status);
 		}
+
+		if (!confirm && ok)
+			logger.info(tracker.toString());
 
 		// Se viene richiesta invia anche la conferma d'ordine
 		if (ok && confirm) {
@@ -467,26 +326,16 @@ public class WebConnector {
 					logger.trace(inputLine);
 					if (inputLine.indexOf("ORDINE IMMESSO") != -1)
 						ok = true;
-
-					if (ok) {
-						int s = inputLine.indexOf("<i>rif.&nbsp;");
-						if (s != -1) {
-							s = inputLine.indexOf(">", s) + 1;
-							int e = inputLine.indexOf("<", s);
-							tracker.setId(inputLine.substring(s, e));
-							logger.info(tracker.toString());
-						}
-					}
 				}
 				in.close();
 			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error confirming order [" + order.toString() + "]", e);
 				Activator.log(status);
 			}
-		}
 
-		if (tracker.getId() != null)
-			orders.put(tracker.getId(), tracker);
+			if (ok)
+				logger.info(tracker.toString());
+		}
 
 		tracker.setStatus(IOrderStatus.PendingNew);
 
