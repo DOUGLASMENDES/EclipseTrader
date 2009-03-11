@@ -12,8 +12,7 @@ Require-Bundle: org.eclipse.core.net,
  org.eclipsetrader.core.trading,
  org.eclipse.core.expressions
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- htmlparser.jar
+Bundle-ClassPath: .
 Import-Package: javax.xml.bind;version="[2.0.0,2.2.0)",
  javax.xml.bind.annotation;version="[2.0.0,2.2.0)",
  javax.xml.bind.annotation.adapters;version="[2.0.0,2.2.0)",
@@ -31,7 +30,26 @@ Import-Package: javax.xml.bind;version="[2.0.0,2.2.0)",
  org.apache.commons.httpclient.params,
  org.apache.commons.httpclient.protocol,
  org.apache.commons.httpclient.util,
- org.apache.commons.logging;version="[1.1.0,1.2.0)"
+ org.apache.commons.logging;version="[1.1.0,1.2.0)",
+ org.htmlparser;version="[1.6.0,2.0.0)",
+ org.htmlparser.beans;version="[1.6.0,2.0.0)",
+ org.htmlparser.filters;version="[1.6.0,2.0.0)",
+ org.htmlparser.http;version="[1.6.0,2.0.0)",
+ org.htmlparser.lexer;version="[1.6.0,2.0.0)",
+ org.htmlparser.lexerapplications.tabby;version="[1.6.0,2.0.0)",
+ org.htmlparser.lexerapplications.thumbelina;version="[1.6.0,2.0.0)",
+ org.htmlparser.nodeDecorators;version="[1.6.0,2.0.0)",
+ org.htmlparser.nodes;version="[1.6.0,2.0.0)",
+ org.htmlparser.parserapplications;version="[1.6.0,2.0.0)",
+ org.htmlparser.parserapplications.filterbuilder;version="[1.6.0,2.0.0)",
+ org.htmlparser.parserapplications.filterbuilder.layouts;version="[1.6.0,2.0.0)",
+ org.htmlparser.parserapplications.filterbuilder.wrappers;version="[1.6.0,2.0.0)",
+ org.htmlparser.sax;version="[1.6.0,2.0.0)",
+ org.htmlparser.scanners;version="[1.6.0,2.0.0)",
+ org.htmlparser.tags;version="[1.6.0,2.0.0)",
+ org.htmlparser.util;version="[1.6.0,2.0.0)",
+ org.htmlparser.util.sort;version="[1.6.0,2.0.0)",
+ org.htmlparser.visitors;version="[1.6.0,2.0.0)"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipsetrader.directa.internal,
  org.eclipsetrader.directa.internal.core,
