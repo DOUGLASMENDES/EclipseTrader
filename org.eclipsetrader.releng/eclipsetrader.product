@@ -47,6 +47,8 @@
       <feature id="org.htmlparser" version="0.0.0"/>
       <feature id="org.eclipsetrader.platform" version="0.0.0"/>
       <feature id="org.eclipsetrader.brokers.paper" version="0.0.0"/>
+      <feature id="org.eclipsetrader.directa" version="0.0.0"/>
    </features>
+
 
 </product>

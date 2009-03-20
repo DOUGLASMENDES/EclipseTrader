@@ -85,9 +85,11 @@
 			<export srcurl="${tag}/org.eclipsetrader.ui.trading" destpath="${buildDirectory}/plugins/org.eclipsetrader.ui.trading" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.platform-feature" destpath="${buildDirectory}/features/org.eclipsetrader.platform" revision="HEAD"/>
 
+			<export srcurl="${tag}/org.eclipsetrader.directa" destpath="${buildDirectory}/plugins/org.eclipsetrader.directa" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.directa-feature" destpath="${buildDirectory}/features/org.eclipsetrader.directa" revision="HEAD"/>
+
 			<export srcurl="${tag}/org.eclipsetrader.archipelago" destpath="${buildDirectory}/plugins/org.eclipsetrader.archipelago" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.borsaitalia" destpath="${buildDirectory}/plugins/org.eclipsetrader.borsaitalia" revision="HEAD"/>
-			<export srcurl="${tag}/org.eclipsetrader.directa" destpath="${buildDirectory}/plugins/org.eclipsetrader.directa" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.directaworld" destpath="${buildDirectory}/plugins/org.eclipsetrader.directaworld" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.opentick" destpath="${buildDirectory}/plugins/org.eclipsetrader.opentick" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.yahoo" destpath="${buildDirectory}/plugins/org.eclipsetrader.yahoo" revision="HEAD"/>

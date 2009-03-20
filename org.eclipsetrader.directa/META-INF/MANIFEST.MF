@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Directa Plug-in
+Bundle-Name: Directa Connector
 Bundle-SymbolicName: org.eclipsetrader.directa;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.directa.internal.Activator
