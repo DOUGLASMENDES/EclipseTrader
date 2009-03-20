@@ -30,168 +30,168 @@
          id="org.eclipse.help.appserver"
          download-size="0"
          install-size="0"
-         version="3.1.300.v20080507"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help.base"
          download-size="0"
          install-size="0"
-         version="3.3.101.M20080728_34x"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help.ui"
          download-size="0"
          install-size="0"
-         version="3.3.101.M20080715_34x"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help.webapp"
          download-size="0"
          install-size="0"
-         version="3.3.101.M20080805_34x"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.mortbay.jetty"
          download-size="0"
          install-size="0"
-         version="5.1.14.v200806031611"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="javax.servlet"
          download-size="0"
          install-size="0"
-         version="2.4.0.v200806031604"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="javax.servlet.jsp"
          download-size="0"
          install-size="0"
-         version="2.0.0.v200806031607"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.commons.logging"
          download-size="0"
          install-size="0"
-         version="1.1.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.lucene"
          download-size="0"
          install-size="0"
-         version="1.9.1.v20080530-1600"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.lucene.analysis"
          download-size="0"
          install-size="0"
-         version="1.9.1.v20080530-1600"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.osgi.services"
          download-size="0"
          install-size="0"
-         version="3.1.200.v20071203"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.http.registry"
          download-size="0"
          install-size="0"
-         version="1.0.100.v20080427-0830"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.jsp.jasper"
          download-size="0"
          install-size="0"
-         version="1.0.100.v20080427-0830"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.jsp.jasper.registry"
          download-size="0"
          install-size="0"
-         version="1.0.0.v20080427-0830"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.commons.el"
          download-size="0"
          install-size="0"
-         version="1.0.0.v200806031608"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.jasper"
          download-size="0"
          install-size="0"
-         version="5.5.17.v200806031609"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.configurator"
          download-size="0"
          install-size="0"
-         version="3.2.201.R34x_v20080819"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.core"
          download-size="0"
          install-size="0"
-         version="3.2.201.R34x_v20080714"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.scheduler"
          download-size="0"
          install-size="0"
-         version="3.2.100.v20080404"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.ui"
          download-size="0"
          install-size="0"
-         version="3.2.100.v20080318"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.http.jetty"
          download-size="0"
          install-size="0"
-         version="1.1.0.v20080425"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.forms"
          download-size="0"
          install-size="0"
-         version="3.3.101.v20080708_34x"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.http.servlet"
          download-size="0"
          install-size="0"
-         version="1.0.100.v20080427-0830"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.net"
          download-size="0"
          install-size="0"
-         version="1.1.0.I20080604"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -199,7 +199,7 @@
          os="linux"
          download-size="0"
          install-size="0"
-         version="3.2.0.v20080422"
+         version="0.0.0"
          fragment="true"
          unpack="false"/>
 
@@ -208,7 +208,7 @@
          os="win32"
          download-size="0"
          install-size="0"
-         version="3.2.100.v20080107"
+         version="0.0.0"
          fragment="true"
          unpack="false"/>
 
@@ -217,7 +217,7 @@
          ws="win32"
          download-size="0"
          install-size="0"
-         version="3.2.100.v20080408-0800"
+         version="0.0.0"
          fragment="true"
          unpack="false"/>
 
@@ -225,28 +225,54 @@
          id="org.eclipse.ui.net"
          download-size="0"
          install-size="0"
-         version="1.0.0.I20080605"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.rcp.extras"
          download-size="0"
          install-size="0"
-         version="3.4.1.v20080814"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.nebula.widgets.cdatetime"
          download-size="0"
          install-size="0"
-         version="0.10.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.nebula.widgets.pshelf"
          download-size="0"
          install-size="0"
-         version="1.0.0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.security"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.security.macosx"
+         os="macosx"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.security.win32.x86"
+         os="win32"
+         arch="x86"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>
