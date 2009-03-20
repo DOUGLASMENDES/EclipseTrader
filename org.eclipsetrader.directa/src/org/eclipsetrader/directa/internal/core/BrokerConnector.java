@@ -238,17 +238,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 		if (order.getValidity() != IOrderValidity.Day && order.getValidity() != Valid30Days)
 			throw new BrokerException("Invalid order validity, must be Day or 30 Days");
 
-		OrderMonitor tracker = new OrderMonitor(WebConnector.getInstance(), this, order);
-		orders.add(tracker);
-		fireUpdateNotifications(new OrderDelta[] {
-				new OrderDelta(OrderDelta.KIND_ADDED, tracker),
-			});
-
-		synchronized(thread) {
-			thread.notifyAll();
-		}
-
-		return tracker;
+		return new OrderMonitor(WebConnector.getInstance(), this, order);
 	}
 
 	/* (non-Javadoc)
@@ -298,7 +288,9 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	 * @see org.eclipsetrader.core.trading.IBroker#getOrders()
 	 */
 	public IOrderMonitor[] getOrders() {
-		return orders.toArray(new IOrderMonitor[orders.size()]);
+		synchronized(orders) {
+			return orders.toArray(new IOrderMonitor[orders.size()]);
+		}
 	}
 
 	private static final String LOGIN = "21";
@@ -400,12 +392,16 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 		        		        	try {
 		        	                    OrderMonitor monitor = parseOrderLine(s[i]);
 
-		        	    	        	if (!orders.contains(monitor)) {
-		        	    	        		orders.add(monitor);
-		        	    	    			fireUpdateNotifications(new OrderDelta[] { new OrderDelta(OrderDelta.KIND_ADDED, monitor) });
-		        	    	        	}
-		        	    	        	else
-		        	    	    			fireUpdateNotifications(new OrderDelta[] { new OrderDelta(OrderDelta.KIND_UPDATED, monitor) });
+		        	                    OrderDelta[] delta;
+		        	                    synchronized(orders) {
+			        	    	        	if (!orders.contains(monitor)) {
+			        	    	        		orders.add(monitor);
+			        	    	    			delta = new OrderDelta[] { new OrderDelta(OrderDelta.KIND_ADDED, monitor) };
+			        	    	        	}
+			        	    	        	else
+			        	    	    			delta = new OrderDelta[] { new OrderDelta(OrderDelta.KIND_UPDATED, monitor) };
+		        	                    }
+	        	    	    			fireUpdateNotifications(delta);
 		        		        	} catch (ParseException e) {
 		        		    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + s[i], e); //$NON-NLS-1$
 		        		    			Activator.log(status);
@@ -440,18 +436,20 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 		String[] item = line.split(";");
 
 		OrderMonitor tracker = null;
-		for (OrderMonitor m : orders) {
-			if (item[IDX_ID].equals(m.getId())) {
-				tracker = m;
-				break;
-			}
-		}
-		if (tracker == null) {
+		synchronized(orders) {
 			for (OrderMonitor m : orders) {
-				if (m.getId() == null && getSymbolFromSecurity(m.getOrder().getSecurity()).equals(item[IDX_SYMBOL])) {
+				if (item[IDX_ID].equals(m.getId())) {
 					tracker = m;
-					tracker.setId(item[IDX_ID]);
 					break;
+				}
+			}
+			if (tracker == null) {
+				for (OrderMonitor m : orders) {
+					if (m.getId() == null && getSymbolFromSecurity(m.getOrder().getSecurity()).equals(item[IDX_SYMBOL])) {
+						tracker = m;
+						tracker.setId(item[IDX_ID]);
+						break;
+					}
 				}
 			}
 		}
@@ -559,5 +557,15 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     			}
     		}
     	}
+    }
+
+	public void addWithNotification(OrderMonitor orderMonitor) {
+		synchronized(orders) {
+			if (!orders.contains(orderMonitor))
+				orders.add(orderMonitor);
+		}
+		fireUpdateNotifications(new OrderDelta[] {
+				new OrderDelta(OrderDelta.KIND_ADDED, orderMonitor),
+			});
     }
 }

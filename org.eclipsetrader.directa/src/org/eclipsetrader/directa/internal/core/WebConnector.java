@@ -297,6 +297,14 @@ public class WebConnector {
 					ok = true;
 					confirm = false;
 				}
+				if (!confirm && tracker.getId() == null) {
+					int s = inputLine.indexOf("<i>rif.&nbsp;");
+					if (s != -1) {
+						s = inputLine.indexOf(">", s + 13) + 1;
+						int e = inputLine.indexOf("<", s);
+						tracker.setId(inputLine.substring(s, e));
+					}
+				}
 			}
 			in.close();
 		} catch (Exception e) {
@@ -326,6 +334,15 @@ public class WebConnector {
 					logger.trace(inputLine);
 					if (inputLine.indexOf("ORDINE IMMESSO") != -1)
 						ok = true;
+
+					if (ok && tracker.getId() == null) {
+						int s = inputLine.indexOf("<i>rif.&nbsp;");
+						if (s != -1) {
+							s = inputLine.indexOf(">", s) + 1;
+							int e = inputLine.indexOf("<", s);
+							tracker.setId(inputLine.substring(s, e));
+						}
+					}
 				}
 				in.close();
 			} catch (Exception e) {

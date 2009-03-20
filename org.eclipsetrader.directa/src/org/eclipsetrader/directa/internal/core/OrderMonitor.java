@@ -78,7 +78,8 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 				throw new BrokerException("Unable to login");
 		}
 
-		connector.sendOrder(this);
+		if (connector.sendOrder(this))
+			brokerConnector.addWithNotification(this);
 	}
 
 	/* (non-Javadoc)
@@ -204,7 +205,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
      */
     @Override
     public int hashCode() {
-	    return order.hashCode();
+	    return id != null ? id.hashCode() : 0;
     }
 
 	/* (non-Javadoc)
@@ -214,7 +215,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
     public boolean equals(Object obj) {
     	if (!(obj instanceof OrderMonitor))
     		return false;
-	    return order.equals(((OrderMonitor) obj).order);
+	    return id != null && id.equals(((OrderMonitor) obj).id);
     }
 
 	/* (non-Javadoc)
