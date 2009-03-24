@@ -27,6 +27,8 @@ import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.IStoreProperties;
+import org.eclipsetrader.core.views.Holding;
+import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.core.views.WatchList;
 
@@ -75,6 +77,8 @@ public class DefaultElementFactory implements IRepositoryElementFactory, IExecut
 				return new WatchList(store, properties);
 			if (IHistory.class.getName().equals(type))
 				return new History(store, properties);
+			if (IHolding.class.getName().equals(type))
+				return new Holding(store, properties);
 		}
 		return null;
 	}

@@ -54,6 +54,7 @@ import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
+import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.core.views.IWatchListElement;
 import org.eclipsetrader.core.views.WatchList;
@@ -70,6 +71,8 @@ public class RepositoryService implements IRepositoryService {
 	private Map<String, IWatchList> watchlistNameMap = new HashMap<String, IWatchList>();
 
 	private Map<ISecurity, WeakReference<IHistory>> historyMap = new HashMap<ISecurity, WeakReference<IHistory>>();
+
+	private List<IHolding> trades = new ArrayList<IHolding>();
 
 	private IJobManager jobManager;
 	private final ILock lock;
@@ -204,6 +207,13 @@ public class RepositoryService implements IRepositoryService {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#getTrades()
+     */
+    public IHolding[] getTrades() {
+	    return trades.toArray(new IHolding[trades.size()]);
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IRepositoryService#deleteAdaptable(org.eclipse.core.runtime.IAdaptable[])
      */
     public void deleteAdaptable(IAdaptable[] adaptables) {
@@ -283,6 +293,8 @@ public class RepositoryService implements IRepositoryService {
                         	        	watchlistUriMap.remove(store.toURI());
                         	        	watchlistNameMap.remove(((IWatchList) adaptable).getName());
                         	        }
+                        			if (adaptable instanceof IHolding)
+                        				trades.remove(adaptable);
 
                         			if (deltas != null) {
                             	        int kind = RepositoryResourceDelta.MOVED_FROM | RepositoryResourceDelta.REMOVED;
@@ -414,6 +426,8 @@ public class RepositoryService implements IRepositoryService {
                     				watchlistUriMap.put(store.toURI(), (IWatchList) adaptable);
                     				watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
                     			}
+                    			if (adaptable instanceof IHolding)
+                    				trades.add((IHolding) adaptable);
 
                     			if (deltas != null) {
                         	        int kind = RepositoryResourceDelta.MOVED_TO | RepositoryResourceDelta.ADDED;
@@ -604,6 +618,8 @@ public class RepositoryService implements IRepositoryService {
 					putSecurity(store, (ISecurity) element);
 				else if (element instanceof IWatchList)
 					putWatchList(store, (IWatchList) element);
+				else if (element instanceof IHolding)
+					trades.add((IHolding) element);
 			}
 		}
 	}

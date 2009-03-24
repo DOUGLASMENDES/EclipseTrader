@@ -39,6 +39,7 @@ import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.Cash;
+import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 
 public class CurrencyServiceTest extends TestCase {
@@ -138,6 +139,13 @@ public class CurrencyServiceTest extends TestCase {
          * @see org.eclipsetrader.core.repositories.IRepositoryService#getWatchLists()
          */
         public IWatchList[] getWatchLists() {
+	        return null;
+        }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.repositories.IRepositoryService#getTrades()
+         */
+        public IHolding[] getTrades() {
 	        return null;
         }
 

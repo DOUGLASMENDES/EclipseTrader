@@ -39,6 +39,7 @@ import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.IdentifiersCollection;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
+import org.eclipsetrader.repository.local.internal.TradeCollection;
 import org.eclipsetrader.repository.local.internal.WatchListCollection;
 import org.eclipsetrader.repository.local.internal.stores.RepositoryStore;
 
@@ -48,11 +49,13 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 	public static final String URI_SECURITY_HISTORY_PART = "securities/history";
 	public static final String URI_SECURITY_INTRADAY_HISTORY_PART = "securities/history/{0}/{1}";
 	public static final String URI_WATCHLIST_PART = "watchlists";
+	public static final String URI_TRADE_PART = "trades";
 
 	public static final String IDENTIFIERS_FILE = "identifiers.xml"; //$NON-NLS-1$
 	public static final String SECURITIES_FILE = "securities.xml"; //$NON-NLS-1$
 	public static final String SECURITIES_HISTORY_FILE = ".history"; //$NON-NLS-1$
 	public static final String WATCHLISTS_FILE = "watchlists.xml"; //$NON-NLS-1$
+	public static final String TRADES_FILE = "trades.xml"; //$NON-NLS-1$
 
 	private static LocalRepository instance;
 	private IPath location;
@@ -60,6 +63,7 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 	private IdentifiersCollection identifiers;
 	private SecurityCollection securities;
 	private WatchListCollection watchlists;
+	private TradeCollection trades;
 
 	private IJobManager jobManager;
 	private final ILock lock;
@@ -109,6 +113,20 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 		}
 	}
 
+	protected synchronized void initializeTradesCollections() {
+		if (trades == null) {
+			if (Activator.getDefault() != null) {
+				File file = Activator.getDefault().getStateLocation().append(TRADES_FILE).toFile();
+				trades = (TradeCollection) unmarshal(TradeCollection.class, file);
+			}
+			if (trades == null) {
+				trades = TradeCollection.getInstance();
+				if (trades == null)
+					trades = new TradeCollection();
+			}
+		}
+	}
+
 	public void shutDown() {
 		if (watchlists != null) {
 			File file = location.append(WATCHLISTS_FILE).toFile();
@@ -120,6 +138,11 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 
 		file = location.append(IDENTIFIERS_FILE).toFile();
 		marshal(identifiers, IdentifiersCollection.class, file);
+
+		if (trades != null) {
+			file = location.append(TRADES_FILE).toFile();
+			marshal(trades, TradeCollection.class, file);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -154,6 +177,10 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 			initializeWatchListsCollections();
 		list.addAll(Arrays.asList(watchlists.getAll()));
 
+		if (trades == null)
+			initializeTradesCollections();
+		list.addAll(Arrays.asList(trades.getAll()));
+
 		return list.toArray(new IStore[list.size()]);
 	}
 
@@ -168,6 +195,12 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 			if (watchlists == null)
 				initializeWatchListsCollections();
 			return watchlists.get(uri);
+		}
+
+		if (URI_SECURITY_PART.equals(uri.getSchemeSpecificPart())) {
+			if (trades == null)
+				initializeTradesCollections();
+			return trades.get(uri);
 		}
 
 		return null;

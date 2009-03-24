@@ -28,6 +28,7 @@ import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 
 public class TestRepositoryService implements IRepositoryService {
@@ -154,6 +155,13 @@ public class TestRepositoryService implements IRepositoryService {
 		Collection<IWatchList> c = watchlists.values();
 		return c.toArray(new IWatchList[c.size()]);
 	}
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#getTrades()
+     */
+    public IHolding[] getTrades() {
+	    return new IHolding[0];
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.repositories.IRepositoryService#runInService(org.eclipsetrader.core.repositories.IRepositoryRunnable, org.eclipse.core.runtime.IProgressMonitor)

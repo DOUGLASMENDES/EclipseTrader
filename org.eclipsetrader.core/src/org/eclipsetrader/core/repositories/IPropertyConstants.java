@@ -103,4 +103,10 @@ public interface IPropertyConstants {
 	 * @see org.eclipsetrader.core.views.IColumn
 	 */
 	public static final String COLUMNS = "columns";
+
+	public static final String PURCHASE_DATE = "purchase-date";
+
+	public static final String PURCHASE_PRICE = "purchase-price";
+
+	public static final String PURCHASE_QUANTITY = "purchase-quantity";
 }

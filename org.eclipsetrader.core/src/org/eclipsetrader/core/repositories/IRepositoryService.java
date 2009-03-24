@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 
 /**
@@ -171,4 +172,6 @@ public interface IRepositoryService {
 	 * @param listener the listener to remove
 	 */
 	public void removeRepositoryResourceListener(IRepositoryChangeListener listener);
+
+	public IHolding[] getTrades();
 }
