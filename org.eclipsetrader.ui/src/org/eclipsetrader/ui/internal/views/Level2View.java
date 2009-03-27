@@ -371,7 +371,7 @@ public class Level2View extends ViewPart {
 		TableColumnLayout tableLayout = new TableColumnLayout();
 		content.setLayout(tableLayout);
 
-		table = new Table(content, SWT.MULTI | SWT.FULL_SELECTION | SWT.NO_FOCUS);
+		table = new Table(content, SWT.MULTI | SWT.FULL_SELECTION | SWT.NO_FOCUS | SWT.V_SCROLL);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 
@@ -620,6 +620,7 @@ public class Level2View extends ViewPart {
 		int rows = Math.max(bidEntries.length, askEntries.length);
 
 		table.setRedraw(false);
+		boolean doLayout = rows != table.getItemCount();
 		try {
 			for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
 				TableItem tableItem = rowIndex < table.getItemCount() ? table.getItem(rowIndex) : new TableItem(table, SWT.NONE);
@@ -641,13 +642,20 @@ public class Level2View extends ViewPart {
 			table.setRedraw(true);
 		}
 
+		if (doLayout) {
+			table.layout();
+			table.getParent().layout();
+		}
+
 		long[] leftWeights = new long[Math.min(bidEntries.length, 5)];
-		for (int i = 0; i < leftWeights.length; i++)
-			leftWeights[i] = bidEntries[i].getQuantity();
+		for (int i = 0; i < leftWeights.length; i++) {
+			leftWeights[i] = bidEntries[i] != null && bidEntries[i].getQuantity() != null ? bidEntries[i].getQuantity() : 0;
+		}
 
 		long[] rightWeights = new long[Math.min(askEntries.length, 5)];
-		for (int i = 0; i < rightWeights.length; i++)
-			rightWeights[i] = askEntries[i].getQuantity();
+		for (int i = 0; i < rightWeights.length; i++) {
+			rightWeights[i] = askEntries[i] != null && askEntries[i].getQuantity() != null ? askEntries[i].getQuantity() : 0;
+		}
 
 		pressureBar.setWeights(leftWeights, rightWeights);
 	}

@@ -59,11 +59,11 @@ public class PressureBar {
 
 		separatorColor = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
 		bandColors = new Color[] {
-				Display.getCurrent().getSystemColor(SWT.COLOR_BLUE),
-				Display.getCurrent().getSystemColor(SWT.COLOR_CYAN),
-				Display.getCurrent().getSystemColor(SWT.COLOR_GREEN),
 				Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW),
-				Display.getCurrent().getSystemColor(SWT.COLOR_RED),
+				Display.getCurrent().getSystemColor(SWT.COLOR_GREEN),
+				Display.getCurrent().getSystemColor(SWT.COLOR_CYAN),
+				Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED),
+				Display.getCurrent().getSystemColor(SWT.COLOR_BLUE),
 			};
 	}
 
