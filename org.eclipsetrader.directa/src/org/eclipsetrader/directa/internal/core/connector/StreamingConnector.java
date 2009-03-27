@@ -124,10 +124,9 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 	private Thread notificationThread;
 	private boolean stopping = false;
 
-	private String[] availableServers = new String[] { "213.92.13.41", "213.92.13.59" };
-	private String streamingServer;
+	private String streamingServer = "213.92.13.44";
 	private int streamingPort = 8002;
-	private String streamingVersion = "1.00";
+	private String streamingVersion = "3.0";
 	private Socket socket;
 	private OutputStream os;
 	private DataInputStream is;
@@ -401,45 +400,41 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 		Set<String> sTit2 = new HashSet<String>();
 
 		// Apertura del socket verso il server
-		streamingServer = null;
-		for (int i = 0; streamingServer == null && i < availableServers.length; i++) {
-			try {
-				Proxy socksProxy = Proxy.NO_PROXY;
-				if (Activator.getDefault() != null) {
-					BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-					ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-					if (reference != null) {
-						IProxyService proxy = (IProxyService) context.getService(reference);
-						IProxyData data = proxy.getProxyDataForHost(availableServers[i], IProxyData.SOCKS_PROXY_TYPE);
-						if (data != null) {
-							if (data.getHost() != null)
-								socksProxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(data.getHost(), data.getPort()));
-						}
-						context.ungetService(reference);
+		try {
+			Proxy socksProxy = Proxy.NO_PROXY;
+			if (Activator.getDefault() != null) {
+				BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+				ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
+				if (reference != null) {
+					IProxyService proxy = (IProxyService) context.getService(reference);
+					IProxyData data = proxy.getProxyDataForHost(streamingServer, IProxyData.SOCKS_PROXY_TYPE);
+					if (data != null) {
+						if (data.getHost() != null)
+							socksProxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(data.getHost(), data.getPort()));
 					}
+					context.ungetService(reference);
 				}
-				socket = new Socket(socksProxy);
-				socket.connect(new InetSocketAddress(availableServers[i], streamingPort));
-				os = socket.getOutputStream();
-				is = new DataInputStream(socket.getInputStream());
-				streamingServer = availableServers[i];
-			} catch (Exception e) {
-				Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server", e));
-				try {
-					if (socket != null) {
-						socket.close();
-						socket = null;
-					}
-				} catch(Exception e1) {
-					// Do nothing
-				}
-				return;
 			}
+			socket = new Socket(socksProxy);
+			socket.connect(new InetSocketAddress(streamingServer, streamingPort));
+			os = socket.getOutputStream();
+			is = new DataInputStream(socket.getInputStream());
+		} catch (Exception e) {
+			Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server", e));
+			try {
+				if (socket != null) {
+					socket.close();
+					socket = null;
+				}
+			} catch(Exception e1) {
+				// Do nothing
+			}
+			return;
 		}
 
 		// Login
 		try {
-			os.write(CreaMsg.creaLoginMsg(WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt(), streamingVersion));
+			os.write(CreaMsg.creaLoginMsg(WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt(), "flashBook", streamingVersion));
 			os.flush();
 
 			byte bHeaderLogin[] = new byte[4];
@@ -453,6 +448,14 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 			if (Util.byteToInt(bHeaderLogin[1]) == CreaMsg.ERROR_MSG) {
 				ErrorMessage eMsg = new ErrorMessage(msgResp);
 				Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server: " + eMsg.sMessageError, null));
+				return;
+			}
+			try {
+				os.write(CreaMsg.creaStartDataMsg());
+				os.flush();
+			} catch (Exception e) {
+				thread = null;
+				Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error starting data stream", e));
 				return;
 			}
 		} catch (Exception e) {
@@ -495,7 +498,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 						logger.info("Removing " + toRemove);
 						int flag[] = new int[toRemove.size()];
 						for (int i = 0; i < flag.length; i++)
-							flag[i] = 1;
+							flag[i] = 0;
 						os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_DEL, toRemove.toArray(new String[toRemove.size()]), flag));
 						os.flush();
 					} catch (Exception e) {
@@ -511,7 +514,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 						String s[] = toAdd.toArray(new String[toAdd.size()]);
 						int flag[] = new int[s.length];
 						for (int i = 0; i < flag.length; i++)
-							flag[i] = sTit2.contains(s[i]) || toAdd2.contains(s[i]) ? 1 : 0;
+							flag[i] = sTit2.contains(s[i]) || toAdd2.contains(s[i]) ? 105 : 0;
 						os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_ADD, s, flag));
 						os.flush();
 					} catch (Exception e) {
@@ -526,7 +529,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 			        	Map<String, Integer> toMod = new HashMap<String, Integer>();
 			        	for (String s : toAdd2) {
 			        		if (!toAdd.contains(s))
-			        			toMod.put(s, new Integer(1));
+			        			toMod.put(s, new Integer(105));
 			        	}
 			        	for (String s : toRemove2)
 		        			toMod.put(s, new Integer(0));
@@ -548,24 +551,16 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 					}
 				}
 
-				if (sTit.size() == 0) {
-					try {
-						os.write(CreaMsg.creaStartDataMsg());
-						os.flush();
-					} catch (Exception e) {
-						thread = null;
-						Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error starting data stream", e));
-						break;
-					}
-				}
-
 				sTit.removeAll(toRemove);
 				sTit.addAll(toAdd);
 				sTit2.removeAll(toRemove2);
 				sTit2.addAll(toAdd2);
 
-				if (toAdd.size() != 0)
-					fetchLatestSnapshot(toAdd.toArray(new String[toAdd.size()]));
+				if (toAdd.size() != 0) {
+					final String[] addSymbols = toAdd.toArray(new String[toAdd.size()]);
+					fetchLatestBookSnapshot(addSymbols);
+					fetchLatestSnapshot(addSymbols);
+				}
 			}
 
 			// Legge l'header di un messaggio (se c'e')
@@ -600,6 +595,14 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 				if (h.tipo == CreaMsg.ERROR_MSG) {
 					ErrorMessage eMsg = new ErrorMessage(mes);
 					Activator.log(new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Message from server: " + eMsg.sMessageError, null));
+				}
+				else if (h.tipo == Message.TIP_ECHO) {
+					try {
+						os.write(new byte[] { bHeader[0], bHeader[1], bHeader[2], bHeader[3], mes[0], mes[1] });
+						os.flush();
+					} catch (Exception e) {
+						// Do nothing
+					}
 				}
 				else if (h.len > 0) {
 					DataMessage obj;
@@ -643,22 +646,38 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 						}
 						else if (obj instanceof Book) {
 							Book bm = (Book) obj;
+
+							IBookEntry[] bidEntry = new IBookEntry[0];
+							IBookEntry[] askEntry = new IBookEntry[0];
+
 							IBook oldValue = subscription.getBook();
-							IBook newValue = new org.eclipsetrader.core.feed.Book(
-									new IBookEntry[] {
-											new BookEntry(null, bm.val_c[0], new Long(bm.q_pdn_c[0]), new Long(bm.n_pdn_c[0]), null),
-											new BookEntry(null, bm.val_c[1], new Long(bm.q_pdn_c[1]), new Long(bm.n_pdn_c[1]), null),
-											new BookEntry(null, bm.val_c[2], new Long(bm.q_pdn_c[2]), new Long(bm.n_pdn_c[2]), null),
-											new BookEntry(null, bm.val_c[3], new Long(bm.q_pdn_c[3]), new Long(bm.n_pdn_c[3]), null),
-											new BookEntry(null, bm.val_c[4], new Long(bm.q_pdn_c[4]), new Long(bm.n_pdn_c[4]), null),
-										},
-									new IBookEntry[] {
-											new BookEntry(null, bm.val_v[0], new Long(bm.q_pdn_v[0]), new Long(bm.n_pdn_v[0]), null),
-											new BookEntry(null, bm.val_v[1], new Long(bm.q_pdn_v[1]), new Long(bm.n_pdn_v[1]), null),
-											new BookEntry(null, bm.val_v[2], new Long(bm.q_pdn_v[2]), new Long(bm.n_pdn_v[2]), null),
-											new BookEntry(null, bm.val_v[3], new Long(bm.q_pdn_v[3]), new Long(bm.n_pdn_v[3]), null),
-											new BookEntry(null, bm.val_v[4], new Long(bm.q_pdn_v[4]), new Long(bm.n_pdn_v[4]), null),
-										});
+							if (oldValue != null) {
+								if (oldValue.getBidProposals() != null)
+									bidEntry = oldValue.getBidProposals();
+								if (oldValue.getAskProposals() != null)
+									askEntry = oldValue.getAskProposals();
+							}
+
+							int levels = bm.offset + 5;
+							if (bidEntry.length < levels) {
+								IBookEntry[] newEntry = new IBookEntry[levels];
+								for (int i = 0; i < bidEntry.length; i++)
+									newEntry[i] = bidEntry[i];
+								bidEntry = newEntry;
+							}
+							if (askEntry.length < levels) {
+								IBookEntry[] newEntry = new IBookEntry[levels];
+								for (int i = 0; i < askEntry.length; i++)
+									newEntry[i] = askEntry[i];
+								askEntry = newEntry;
+							}
+
+							int index = bm.offset;
+							for (int i = 0; i < 5; i++) {
+								bidEntry[index + i] = new BookEntry(null, bm.val_c[i], new Long(bm.q_pdn_c[i]), new Long(bm.n_pdn_c[i]), null);
+								askEntry[index + i] = new BookEntry(null, bm.val_v[i], new Long(bm.q_pdn_v[i]), new Long(bm.n_pdn_v[i]), null);
+							}
+							IBook newValue = new org.eclipsetrader.core.feed.Book(bidEntry, askEntry);
 							subscription.setBook(newValue);
 							subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 							wakeupNotifyThread();
@@ -751,6 +770,57 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 		return Activator.getDefault().getPreferenceStore();
 	}
 
+    protected void fetchLatestBookSnapshot(String[] sTit) {
+		Hashtable<String, String[]> hashtable = new Hashtable<String, String[]>();
+
+		try {
+			HttpMethod method = createMethod(sTit, "t", streamingServer, WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
+			method.setFollowRedirects(true);
+
+			HttpClient client = new HttpClient();
+			setupProxy(client, streamingServer);
+			client.executeMethod(method);
+
+			BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+
+			String s5;
+			while ((s5 = bufferedreader.readLine()) != null) {
+				String[] campo = s5.split("\\;");
+				if (campo.length != 0)
+					hashtable.put(campo[0], campo);
+			}
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e);
+			Activator.log(status);
+		}
+
+		for (String symbol : sTit) {
+			String sVal[] = hashtable.get(symbol);
+			if (sVal == null)
+				continue;
+			FeedSubscription subscription = symbolSubscriptions.get(symbol);
+			if (subscription == null)
+				continue;
+
+			try {
+				Object oldValue = subscription.getBook();
+				IBookEntry[] bidEntry = new IBookEntry[20];
+				IBookEntry[] askEntry = new IBookEntry[20];
+				for (int x = 0, k = 9; x < 20; x++, k += 6) {
+					bidEntry[x] = new BookEntry(null, Double.parseDouble(sVal[k + 2]), Long.parseLong(sVal[k + 1]), Long.parseLong(sVal[k]), null);
+					askEntry[x] = new BookEntry(null, Double.parseDouble(sVal[k + 5]), Long.parseLong(sVal[k + 4]), Long.parseLong(sVal[k + 3]), null);
+				}
+				Object newValue = new org.eclipsetrader.core.feed.Book(bidEntry, askEntry);
+				subscription.setBook((IBook) newValue);
+				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+			} catch (Exception e) {
+				Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e));
+			}
+		}
+
+		wakeupNotifyThread();
+    }
+
     protected void fetchLatestSnapshot(String[] sTit) {
 		int flag[] = new int[sTit.length];
 		for (int i = 0; i < flag.length; i++)
@@ -762,7 +832,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
 			Hashtable<String, String[]> hashtable = new Hashtable<String, String[]>();
 			try {
-				HttpMethod method = createMethod(sTit, DATI, streamingServer, WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
+				HttpMethod method = createMethodOld(sTit, DATI, "213.92.13.41", WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
 				method.setFollowRedirects(true);
 
 				HttpClient client = new HttpClient();
@@ -874,16 +944,6 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 					subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
 					identifierType.setLastClose((ILastClose) newValue);
 				}
-
-				IBookEntry[] bidEntry = new IBookEntry[5];
-				IBookEntry[] askEntry = new IBookEntry[5];
-				for (int x = 0, k = INIZIO_BOOK; x < 5; x++, k += 6) {
-					bidEntry[x] = new BookEntry(null, Double.parseDouble(sVal[k + 2]), Long.parseLong(sVal[k + 1]), Long.parseLong(sVal[k]), null);
-					askEntry[x] = new BookEntry(null, Double.parseDouble(sVal[k + 5]), Long.parseLong(sVal[k + 4]), Long.parseLong(sVal[k + 3]), null);
-				}
-				newValue = new org.eclipsetrader.core.feed.Book(bidEntry, askEntry);
-				subscription.setBook((IBook) newValue);
-				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
 			}
 
 			wakeupNotifyThread();
@@ -901,6 +961,27 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
     }
 
     private HttpMethod createMethod(String as[], String mode, String host, String urt, String prt) throws MalformedURLException {
+		GetMethod method = new GetMethod("http://" + host + "/preqs/getdata.php");
+
+		StringBuffer s = new StringBuffer();
+		for (int i = 0; i < as.length; i++) {
+			s.append(as[i]);
+			s.append("|");
+		}
+
+		method.setQueryString(new NameValuePair[] {
+				new NameValuePair("modo", mode),
+				new NameValuePair("u", urt),
+				new NameValuePair("p", prt),
+				new NameValuePair("out", "p"),
+				new NameValuePair("listaid", s.toString()),
+				new NameValuePair("lb", "20"),
+			});
+
+		return method;
+	}
+
+    private HttpMethod createMethodOld(String as[], String mode, String host, String urt, String prt) throws MalformedURLException {
 		GetMethod method = new GetMethod("http://" + host + "/cgi-bin/preqa.fcgi");
 
 		StringBuffer s = new StringBuffer();

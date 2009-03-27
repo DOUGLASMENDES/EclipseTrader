@@ -13,7 +13,7 @@ package org.eclipsetrader.directa.internal.core.messages;
 
 public class Message {
 	public static final int TIP_PRICE = 1;
-	public static final int TIP_BOOK = 2;
+	public static final int TIP_BOOK_5 = 2;
 	public static final int TIP_BIDASK = 3;
 	public static final int TIP_ASTA = 4;
 	public static final int TIP_STATOVALMOB = 5;
@@ -22,6 +22,10 @@ public class Message {
 	public static final int TIP_INDICIDAY = 8;
 	public static final int TIP_ASTACHIUSURA = 9;
 	public static final int TIP_TUTTIPREZZI = 10;
+	public static final int TIP_BOOK_10 = 11;
+	public static final int TIP_BOOK_15 = 13;
+	public static final int TIP_BOOK_20 = 14;
+	public static final int TIP_ECHO = 0x6E;
 
 	public static DataMessage decodeMessage(byte[] arr) {
 		HeaderRecord head = decodeHeader(arr);
@@ -34,8 +38,23 @@ public class Message {
 				msg.head = head;
 				return msg;
 			}
-			case TIP_BOOK: {
-				DataMessage msg = new Book(arr, head.lenHeader);
+			case TIP_BOOK_5: {
+				DataMessage msg = new Book(arr, head.lenHeader, 0);
+				msg.head = head;
+				return msg;
+			}
+			case TIP_BOOK_10: {
+				DataMessage msg = new Book(arr, head.lenHeader, 5);
+				msg.head = head;
+				return msg;
+			}
+			case TIP_BOOK_15: {
+				DataMessage msg = new Book(arr, head.lenHeader, 10);
+				msg.head = head;
+				return msg;
+			}
+			case TIP_BOOK_20: {
+				DataMessage msg = new Book(arr, head.lenHeader, 15);
 				msg.head = head;
 				return msg;
 			}

@@ -11,6 +11,9 @@
 
 package org.eclipsetrader.directa.internal.core.messages;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 public class CreaMsg {
 	public static final int LOGIN_MSG = 1;
 	public static final int LOGIN_ACK_MSG = 2;
@@ -29,18 +32,21 @@ public class CreaMsg {
 	public CreaMsg() {
 	}
 
-	public static byte[] creaLoginMsg(String urt, String prt, String version) {
+	public static byte[] creaLoginMsg(String urt, String prt, String appName, String version) {
 		byte[] msg = new byte[424];
 		internalCreaMsg(msg, LOGIN_MSG, 420);
 		System.arraycopy(urt.getBytes(), 0, msg, 4, urt.getBytes().length);
 		System.arraycopy(prt.getBytes(), 0, msg, 14, prt.getBytes().length);
-		String s3 = "multibook";
-		System.arraycopy(s3.getBytes(), 0, msg, 24, Math.min(s3.getBytes().length, 10));
+		System.arraycopy(appName.getBytes(), 0, msg, 24, Math.min(appName.getBytes().length, 10));
 		System.arraycopy(version.getBytes(), 0, msg, 34, Math.min(version.getBytes().length, 10));
+		System.arraycopy("DIRECTA".getBytes(), 0, msg, 44, Math.min("DIRECTA".getBytes().length, 10));
+		System.arraycopy("141".getBytes(), 0, msg, 54, Math.min("141".getBytes().length, 10));
 		return msg;
 	}
 
 	public static byte[] creaPortMsg(int op, String symbols[], int flags[]) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
 		int j = Math.min(symbols.length, 30);
 		byte[] msg = new byte[4 + j * 33 + 2];
 		internalCreaMsg(msg, PORT_MSG, j * 33 + 2);
@@ -56,8 +62,13 @@ public class CreaMsg {
 			k++;
 			l += 33;
 		}
+		try {
+	        os.write(msg);
+        } catch (IOException e) {
+	        e.printStackTrace();
+        }
 
-		return msg;
+		return os.toByteArray();
 	}
 
 	public static byte[] creaStartDataMsg() {

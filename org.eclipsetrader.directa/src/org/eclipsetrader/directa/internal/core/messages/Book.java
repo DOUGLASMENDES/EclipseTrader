@@ -14,6 +14,8 @@ package org.eclipsetrader.directa.internal.core.messages;
 public class Book extends DataMessage {
 	public static final int LEVELS = 5;
 
+	public int offset;
+
 	public int n_pdn_c[] = new int[LEVELS];
 	public long q_pdn_c[] = new long[LEVELS];
 	public double val_c[] = new double[LEVELS];
@@ -22,7 +24,9 @@ public class Book extends DataMessage {
 	public long q_pdn_v[] = new long[LEVELS];
 	public double val_v[] = new double[LEVELS];
 
-	public Book(byte[] arr, int i) {
+	public Book(byte[] arr, int i, int offset) {
+		this.offset = offset;
+
 		for (int j = 0; j < LEVELS; j++) {
 			n_pdn_c[j] = Util.getUInt(arr, i);
 			i += 2;
@@ -52,5 +56,28 @@ public class Book extends DataMessage {
 			val_v[k1] = Util.getFloat(arr, i);
 			i += 4;
 		}
+    }
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	StringBuilder sb = new StringBuilder();
+    	for (int i = 0; i < LEVELS; i++) {
+    		sb.append(n_pdn_c[i]);
+    		sb.append(":");
+    		sb.append(q_pdn_c[i]);
+    		sb.append(":");
+    		sb.append(val_c[i]);
+    		sb.append(" - ");
+    		sb.append(n_pdn_v[i]);
+    		sb.append(":");
+    		sb.append(q_pdn_v[i]);
+    		sb.append(":");
+    		sb.append(val_v[i]);
+    		sb.append("\r\n");
+    	}
+	    return sb.toString();
     }
 }
