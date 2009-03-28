@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <list>
-    <market weekDays="-MTWTF-" timeZone="America/New_York" name="NYSE">
-        <liveFeed id="org.eclipsetrader.opentick"/>
+    <market weekDays="-MTWTF-" timeZone="America/New_York" name="New York">
         <schedule>
     		<time close="16:00" open="09:30"/>
         </schedule>
@@ -26,34 +25,7 @@
             <day date="2009-12-25">Christmas</day>
         </holidays>
     </market>
-    <market weekDays="-MTWTF-" timeZone="America/New_York" name="Nasdaq">
-        <liveFeed id="org.eclipsetrader.opentick"/>
-        <schedule>
-    		<time close="16:00" open="09:30"/>
-        </schedule>
-        <holidays>
-            <day date="2008-01-01">New Year's Day</day>
-            <day date="2008-01-21">Martin Luther King, Jr. Day</day>
-            <day date="2008-02-18">Presidents' Day</day>
-            <day date="2008-03-21">Good Friday</day>
-            <day date="2008-05-26">Memorial Day</day>
-            <day date="2008-07-04">Independence Day</day>
-            <day date="2008-09-01">Labor Day</day>
-            <day date="2008-11-25">Thanksgiving</day>
-            <day date="2008-12-25">Christmas</day>
-            <day date="2009-01-01">New Year's Day</day>
-            <day date="2009-01-19">Martin Luther King, Jr. Day</day>
-            <day date="2009-02-16">Presidents' Day</day>
-            <day date="2009-03-10">Good Friday</day>
-            <day date="2009-04-25">Memorial Day</day>
-            <day date="2009-07-03">Independence Day</day>
-            <day date="2009-09-07">Labor Day</day>
-            <day date="2009-11-26">Thanksgiving</day>
-            <day date="2009-12-25">Christmas</day>
-        </holidays>
-    </market>
-    <market weekDays="-MTWTF-" timeZone="Europe/Rome" name="Borsa Italiana">
-        <liveFeed id="org.eclipsetrader.directa.connector"/>
+    <market weekDays="-MTWTF-" timeZone="Europe/Rome" name="Milan">
         <schedule>
     		<time open="08:00" close="09:01" description="Asta di apertura, pre-asta"/>
     		<time open="09:01" close="09:03" description="Asta di apertura, validazione"/>
