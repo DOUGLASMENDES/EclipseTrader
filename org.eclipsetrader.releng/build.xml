@@ -54,9 +54,6 @@
 			<export srcurl="${tag}/org.apache.log4j" destpath="${buildDirectory}/plugins/org.apache.log4j" revision="HEAD"/>
 			<export srcurl="${tag}/org.apache.log4j-feature" destpath="${buildDirectory}/features/org.apache.log4j" revision="HEAD"/>
 
-			<export srcurl="${tag}/org.otfeed" destpath="${buildDirectory}/plugins/org.otfeed" revision="HEAD"/>
-			<export srcurl="${tag}/org.otfeed-feature" destpath="${buildDirectory}/features/org.otfeed" revision="HEAD"/>
-
 			<export srcurl="${tag}/org.jdom" destpath="${buildDirectory}/plugins/org.jdom" revision="HEAD"/>
 			<export srcurl="${tag}/org.jdom-feature" destpath="${buildDirectory}/features/org.jdom" revision="HEAD"/>
 

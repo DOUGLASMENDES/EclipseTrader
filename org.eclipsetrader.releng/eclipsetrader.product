@@ -43,7 +43,6 @@
       <feature id="net.java.rome" version="0.0.0"/>
       <feature id="org.apache.commons" version="0.0.0"/>
       <feature id="org.apache.log4j" version="0.0.0"/>
-      <feature id="org.otfeed" version="0.0.0"/>
       <feature id="org.htmlparser" version="0.0.0"/>
       <feature id="org.eclipsetrader.platform" version="0.0.0"/>
       <feature id="org.eclipsetrader.brokers.paper" version="0.0.0"/>
