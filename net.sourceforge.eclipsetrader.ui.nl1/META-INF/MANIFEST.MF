@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: UI NLS Support
-Bundle-SymbolicName: net.sourceforge.eclipsetrader.ui.nl1
-Bundle-Version: 1.0.0
-Bundle-Vendor: Eclipsetrader.org
-Fragment-Host: net.sourceforge.eclipsetrader.ui;bundle-version="1.0.0"

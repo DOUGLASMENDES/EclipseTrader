@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: NLS Support
-Bundle-SymbolicName: net.sourceforge.eclipsetrader.yahoo.nl1
-Bundle-Version: 0.30.0
-Bundle-Vendor: Eclipsetrader.org
-Fragment-Host: net.sourceforge.eclipsetrader.yahoo;bundle-version="0.30.0"
