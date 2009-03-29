@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Yahoo! Finance Plug-in
+Bundle-Name: Yahoo! Finance Connector
 Bundle-SymbolicName: org.eclipsetrader.yahoo;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.yahoo.internal.YahooActivator

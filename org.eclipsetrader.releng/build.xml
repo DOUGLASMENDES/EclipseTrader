@@ -88,7 +88,9 @@
 			<export srcurl="${tag}/org.eclipsetrader.archipelago" destpath="${buildDirectory}/plugins/org.eclipsetrader.archipelago" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.borsaitalia" destpath="${buildDirectory}/plugins/org.eclipsetrader.borsaitalia" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.directaworld" destpath="${buildDirectory}/plugins/org.eclipsetrader.directaworld" revision="HEAD"/>
+
 			<export srcurl="${tag}/org.eclipsetrader.yahoo" destpath="${buildDirectory}/plugins/org.eclipsetrader.yahoo" revision="HEAD"/>
+			<export srcurl="${tag}/org.eclipsetrader.yahoo-feature" destpath="${buildDirectory}/features/org.eclipsetrader.yahoo" revision="HEAD"/>
 
 			<export srcurl="${tag}/org.eclipsetrader.brokers.paper" destpath="${buildDirectory}/plugins/org.eclipsetrader.brokers.paper" revision="HEAD"/>
 			<export srcurl="${tag}/org.eclipsetrader.brokers.paper-feature" destpath="${buildDirectory}/features/org.eclipsetrader.brokers.paper" revision="HEAD"/>
