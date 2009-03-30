@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DirectaWorld Plug-in
+Bundle-Name: DirectaWorld Connector
 Bundle-SymbolicName: org.eclipsetrader.directaworld;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.directaworld.internal.Activator

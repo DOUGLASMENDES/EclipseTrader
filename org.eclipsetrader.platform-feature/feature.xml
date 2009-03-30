@@ -80,13 +80,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipsetrader.directaworld"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipsetrader.borsaitalia"
          download-size="0"
          install-size="0"
@@ -95,13 +88,6 @@
 
    <plugin
          id="org.eclipsetrader.core.charts"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipsetrader.directa"
          download-size="0"
          install-size="0"
          version="0.0.0"
