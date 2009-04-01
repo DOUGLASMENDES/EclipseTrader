@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 
 package org.eclipsetrader.directa.internal.core;
 
-import java.io.IOException;
+ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -36,6 +36,8 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
@@ -56,6 +58,7 @@ import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
 import org.eclipsetrader.directa.internal.Activator;
+import org.eclipsetrader.directa.internal.ui.StatusLineContributionItem;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -78,11 +81,17 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	Set<OrderMonitor> orders = new HashSet<OrderMonitor>();
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
+	private NumberFormat amountParser = NumberFormat.getInstance(Locale.ITALY);
+	private NumberFormat amountFormatter = NumberFormat.getInstance();
+
 	private SocketChannel socketChannel;
 	private Thread thread;
 	private Log logger = LogFactory.getLog(getClass());
 
 	public BrokerConnector() {
+		amountFormatter.setMinimumFractionDigits(2);
+		amountFormatter.setMaximumFractionDigits(2);
+		amountFormatter.setGroupingUsed(true);
 	}
 
 	public static BrokerConnector getInstance() {
@@ -407,6 +416,9 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 		        		    			Activator.log(status);
 		                            }
 		        		        }
+								if (s[i].indexOf(";6;0;") != -1) {
+									updateStatusLine(s[i]);
+								}
 							}
 						}
 					}
@@ -528,6 +540,28 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			tracker.setStatus(status);
 
 		return tracker;
+	}
+
+	protected void updateStatusLine(String line) {
+		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+		ServiceReference serviceReference = context.getServiceReference(IStatusLineManager.class.getName());
+		if (serviceReference != null) {
+			IStatusLineManager statusLine = (IStatusLineManager) context.getService(serviceReference);
+			final StatusLineContributionItem contributionItem = (StatusLineContributionItem) statusLine.find(Activator.PLUGIN_ID);
+			try {
+				String[] item = line.split("\\;");
+				final double liquidity = amountParser.parse(item[3]).doubleValue();
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						contributionItem.setText("Liq: " + amountFormatter.format(liquidity));
+					}
+				});
+			} catch(Exception e) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + line, e); //$NON-NLS-1$
+				Activator.log(status);
+			}
+			context.ungetService(serviceReference);
+		}
 	}
 
 	/* (non-Javadoc)

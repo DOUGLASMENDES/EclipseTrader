@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 
 package org.eclipsetrader.directa.internal;
 
-import java.beans.PropertyChangeSupport;
+ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileWriter;
 
@@ -26,11 +26,14 @@ import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.directa.internal.core.OrderMonitor;
 import org.eclipsetrader.directa.internal.core.WebConnector;
 import org.eclipsetrader.directa.internal.core.repository.IdentifiersList;
+import org.eclipsetrader.directa.internal.ui.StatusLineContributionItem;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -89,6 +92,17 @@ public class Activator extends AbstractUIPlugin {
 		}, OrderMonitor.class);
 
 		WebConnector.getInstance();
+
+		ServiceReference serviceReference = context.getServiceReference(IStatusLineManager.class.getName());
+		if (serviceReference != null) {
+			IStatusLineManager statusLine = (IStatusLineManager) context.getService(serviceReference);
+
+			StatusLineContributionItem item = new StatusLineContributionItem(PLUGIN_ID);
+			item.setImage(imageDescriptorFromPlugin(PLUGIN_ID, "icons/d-small.gif").createImage());
+			statusLine.add(item);
+
+			context.ungetService(serviceReference);
+		}
 	}
 
 	/*
