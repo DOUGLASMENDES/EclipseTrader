@@ -11,11 +11,14 @@
 
 package org.eclipsetrader.ui.internal.application;
 
+ import java.util.Hashtable;
+
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -34,6 +37,7 @@ import org.eclipsetrader.ui.internal.actions.NewWizardMenu;
 import org.eclipsetrader.ui.internal.actions.OpenAction;
 import org.eclipsetrader.ui.internal.actions.QuickMenuAction;
 import org.eclipsetrader.ui.internal.actions.SettingsAction;
+import org.osgi.framework.BundleContext;
 
 public class TraderActionBarAdvisor extends ActionBarAdvisor {
 	private final IWorkbenchWindow window;
@@ -366,4 +370,18 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 			return action;
 		}
 	};
+
+	/* (non-Javadoc)
+     * @see org.eclipse.ui.application.ActionBarAdvisor#fillStatusLine(org.eclipse.jface.action.IStatusLineManager)
+     */
+    @Override
+    protected void fillStatusLine(IStatusLineManager statusLine) {
+    	BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+		context.registerService(
+				new String[] {
+						IStatusLineManager.class.getName(),
+					},
+				statusLine,
+				new Hashtable<Object,Object>());
+    }
 }
