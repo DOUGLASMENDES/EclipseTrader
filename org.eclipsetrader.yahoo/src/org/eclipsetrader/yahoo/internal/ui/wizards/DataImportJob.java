@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.feed.History;
+import org.eclipsetrader.core.feed.HistoryDay;
 import org.eclipsetrader.core.feed.IDividend;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IHistory;
@@ -63,7 +64,7 @@ public class DataImportJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor.beginTask(getName(), securities.length);
 		try {
-			IRepositoryService repository = getRepositoryService();
+			IRepositoryService repositoryService = getRepositoryService();
 
 			for (ISecurity security : securities) {
 				monitor.subTask(security.getName().replace("&", "&&"));
@@ -74,12 +75,12 @@ public class DataImportJob extends Job {
 						Date beginDate = fromDate;
 						Date endDate = toDate;
 
-						IHistory history = repository.getHistoryFor(security);
-						Map<Date, IOHLC> map = new HashMap<Date, IOHLC>(2048);
+						IHistory history = repositoryService.getHistoryFor(security);
+						Map<Date, IOHLC> dailyDataMap = new HashMap<Date, IOHLC>(2048);
 
 						if (history != null && mode != FULL) {
 							for (IOHLC d : history.getOHLC())
-								map.put(d.getDate(), d);
+								dailyDataMap.put(d.getDate(), d);
 							if (mode == INCREMENTAL) {
 								if (history.getLast() != null)
 									beginDate = history.getLast().getDate();
@@ -87,44 +88,67 @@ public class DataImportJob extends Job {
 							}
 						}
 
+						Map<TimeSpan, IOHLC[]> dataMap = new HashMap<TimeSpan, IOHLC[]>();
+
 						for (TimeSpan currentTimeSpan : timeSpan) {
 							if (monitor.isCanceled())
 								return Status.CANCEL_STATUS;
 
 							IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
-							if (ohlc != null && ohlc.length != 0) {
-								for (IOHLC d : ohlc)
-									map.put(d.getDate(), d);
-								ohlc = map.values().toArray(new IOHLC[map.values().size()]);
-
-								if (history == null)
-									history = new History(security, ohlc);
-								else if (history instanceof History)
-									((History) history).setOHLC(ohlc);
-
-								repository.saveAdaptable(new IHistory[] { history });
-							}
+							if (ohlc != null && ohlc.length != 0)
+								dataMap.put(currentTimeSpan, ohlc);
 						}
 
-						if (security instanceof Stock) {
-							IDividend[] dividends = connector.backfillDividends(identifier, beginDate, endDate);
-							if (dividends != null && dividends.length != 0) {
-								Map<Date, IDividend> dividendsMap = new HashMap<Date, IDividend>();
+						if (dataMap.size() == timeSpan.length) {
+							for (TimeSpan currentTimeSpan : dataMap.keySet()) {
+								IOHLC[] ohlc = dataMap.get(currentTimeSpan);
+								if (ohlc == null)
+									continue;
+								if (currentTimeSpan.equals(TimeSpan.days(1))) {
+									for (IOHLC d : ohlc)
+										dailyDataMap.put(d.getDate(), d);
+									ohlc = dailyDataMap.values().toArray(new IOHLC[dailyDataMap.values().size()]);
 
-								IDividend[] currentDividends = ((Stock) security).getDividends();
-								if (currentDividends != null && mode != FULL) {
-									for (IDividend d : currentDividends)
-										dividendsMap.put(d.getExDate(), d);
+									if (history == null)
+										history = new History(security, ohlc);
+									else if (history instanceof History)
+										((History) history).setOHLC(ohlc);
+
+									repositoryService.saveAdaptable(new IHistory[] { history });
 								}
+								else {
+									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
+									if (intradayHistory instanceof HistoryDay)
+										((HistoryDay) intradayHistory).setOHLC(ohlc);
 
-								for (int i = 0; i < dividends.length; i++)
-									dividendsMap.put(dividends[i].getExDate(), dividends[i]);
-
-								if (dividendsMap.size() != 0) {
-									((Stock) security).setDividends(dividendsMap.values().toArray(new IDividend[dividendsMap.values().size()]));
-									repository.saveAdaptable(new ISecurity[] { security });
+									repositoryService.saveAdaptable(new IHistory[] { intradayHistory });
 								}
 							}
+
+							if (security instanceof Stock) {
+								IDividend[] dividends = connector.backfillDividends(identifier, beginDate, endDate);
+								if (dividends != null && dividends.length != 0) {
+									Map<Date, IDividend> dividendsMap = new HashMap<Date, IDividend>();
+
+									IDividend[] currentDividends = ((Stock) security).getDividends();
+									if (currentDividends != null && mode != FULL) {
+										for (IDividend d : currentDividends)
+											dividendsMap.put(d.getExDate(), d);
+									}
+
+									for (int i = 0; i < dividends.length; i++)
+										dividendsMap.put(dividends[i].getExDate(), dividends[i]);
+
+									if (dividendsMap.size() != 0) {
+										((Stock) security).setDividends(dividendsMap.values().toArray(new IDividend[dividendsMap.values().size()]));
+										repositoryService.saveAdaptable(new ISecurity[] { security });
+									}
+								}
+							}
+						}
+						else {
+							Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Missing data for " + security.getName(), null);
+							YahooActivator.log(status);
 						}
 					}
 				} catch(Exception e) {

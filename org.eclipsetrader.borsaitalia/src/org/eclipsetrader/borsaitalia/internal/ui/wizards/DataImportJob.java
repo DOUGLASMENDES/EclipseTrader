@@ -70,7 +70,7 @@ public class DataImportJob extends Job {
 		monitor.beginTask(getName(), filteredList.length * timeSpan.length);
 
 		try {
-			IRepositoryService repository = getRepositoryService();
+			IRepositoryService repositoryService = getRepositoryService();
 
 			for (ISecurity security : filteredList) {
 				if (monitor.isCanceled())
@@ -84,12 +84,12 @@ public class DataImportJob extends Job {
 						Date beginDate = fromDate;
 						Date endDate = toDate;
 
-						IHistory history = repository.getHistoryFor(security);
-						Map<Date, IOHLC> map = new HashMap<Date, IOHLC>(2048);
+						IHistory history = repositoryService.getHistoryFor(security);
+						Map<Date, IOHLC> dailyDataMap = new HashMap<Date, IOHLC>(2048);
 
 						if (history != null && mode != FULL) {
 							for (IOHLC d : history.getOHLC())
-								map.put(d.getDate(), d);
+								dailyDataMap.put(d.getDate(), d);
 							if (mode == FULL_INCREMENTAL) {
 								if (history.getFirst() != null) {
 									beginDate = history.getFirst().getDate();
@@ -104,6 +104,8 @@ public class DataImportJob extends Job {
 							}
 						}
 
+						Map<TimeSpan, IOHLC[]> dataMap = new HashMap<TimeSpan, IOHLC[]>();
+
 						for (TimeSpan currentTimeSpan : timeSpan) {
 							if (monitor.isCanceled())
 								return Status.CANCEL_STATUS;
@@ -112,37 +114,53 @@ public class DataImportJob extends Job {
 								monitor.subTask(security.getName().replace("&", "&&"));
 
 								IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
-								if (ohlc != null && ohlc.length != 0) {
+								if (ohlc != null && ohlc.length != 0)
+									dataMap.put(currentTimeSpan, ohlc);
+							}
+							else {
+								monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
+
+								IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
+								if (ohlc != null && ohlc.length != 0)
+									dataMap.put(currentTimeSpan, ohlc);
+							}
+
+							monitor.worked(1);
+						}
+
+						if (dataMap.size() == timeSpan.length) {
+							for (TimeSpan currentTimeSpan : dataMap.keySet()) {
+								IOHLC[] ohlc = dataMap.get(currentTimeSpan);
+								if (ohlc == null)
+									continue;
+								if (currentTimeSpan.equals(TimeSpan.days(1))) {
 									for (IOHLC d : ohlc)
-										map.put(d.getDate(), d);
-									ohlc = map.values().toArray(new IOHLC[map.values().size()]);
+										dailyDataMap.put(d.getDate(), d);
+									ohlc = dailyDataMap.values().toArray(new IOHLC[dailyDataMap.values().size()]);
 
 									if (history == null)
 										history = new History(security, ohlc);
 									else if (history instanceof History)
 										((History) history).setOHLC(ohlc);
 
-									repository.saveAdaptable(new IHistory[] { history });
+									repositoryService.saveAdaptable(new IHistory[] { history });
 								}
-							}
-							else {
-								monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
-
-								IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
-								if (ohlc != null && ohlc.length != 0) {
+								else {
 									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
 									if (intradayHistory instanceof HistoryDay)
 										((HistoryDay) intradayHistory).setOHLC(ohlc);
 
-									repository.saveAdaptable(new IHistory[] { intradayHistory });
+									repositoryService.saveAdaptable(new IHistory[] { intradayHistory });
 								}
 							}
-
-							monitor.worked(1);
+						}
+						else {
+							Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Missing data for " + security.getName(), null);
+							Activator.log(status);
 						}
 					}
 				} catch (Exception e) {
-					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error downloading data for " + security, e);
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error downloading data for " + security.getName(), e);
 					Activator.log(status);
 				}
 			}

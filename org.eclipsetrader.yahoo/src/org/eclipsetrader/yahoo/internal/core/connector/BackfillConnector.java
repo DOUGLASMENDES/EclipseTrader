@@ -78,11 +78,9 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
      * @see org.eclipsetrader.core.feed.IBackfillConnector#canBackfill(org.eclipsetrader.core.feed.IFeedIdentifier, org.eclipsetrader.core.feed.TimeSpan)
      */
     public boolean canBackfill(IFeedIdentifier identifier, TimeSpan timeSpan) {
-		if (timeSpan.getUnits() != Units.Days)
-			return false;
-		if (timeSpan.getUnits() == Units.Days && timeSpan.getLength() != 1)
-			return false;
-	    return true;
+		if (timeSpan.getUnits() == Units.Days && timeSpan.getLength() == 1)
+			return true;
+	    return false;
     }
 
 	/* (non-Javadoc)

@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.internal.charts;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,6 +24,7 @@ import java.util.Map;
 import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
@@ -30,19 +32,20 @@ import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.HistoryDay;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IConnectorOverride;
+import org.eclipsetrader.core.feed.IDividend;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
-import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.ISplit;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.instruments.Stock;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
+@SuppressWarnings("restriction")
 public class DataImportJob extends Job {
 	public static final int FULL = 0;
 	public static final int INCREMENTAL = 1;
@@ -53,6 +56,17 @@ public class DataImportJob extends Job {
 	private TimeSpan[] timeSpan;
 	private Date fromDate;
 	private Date toDate;
+
+	private List<IStatus> results = new ArrayList<IStatus>();
+
+	public DataImportJob(ISecurity security, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
+		super("Historical Data Update");
+		this.securities = new ISecurity[] { security };
+		this.mode = mode;
+		this.fromDate = fromDate;
+		this.toDate = toDate;
+		this.timeSpan = timeSpan;
+	}
 
 	public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
 		super("Historical Data Update");
@@ -66,10 +80,10 @@ public class DataImportJob extends Job {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	@Override
+    @Override
 	protected IStatus run(IProgressMonitor monitor) {
 		ISecurity[] filteredList = getFilteredSecurities(securities);
-		monitor.beginTask(getName(), filteredList.length * timeSpan.length);
+		monitor.beginTask(getName(), filteredList.length);
 
 		IBackfillConnector defaultBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
 		IBackfillConnector defaultIntradayBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
@@ -79,8 +93,11 @@ public class DataImportJob extends Job {
 			IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
 
 			for (ISecurity security : filteredList) {
-				if (monitor.isCanceled())
+				if (monitor.isCanceled()) {
+					if (results.size() != 0)
+						return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), "Download wasn't completed correctly.", null);
 					return Status.CANCEL_STATUS;
+				}
 
 				monitor.subTask(security.getName().replace("&", "&&"));
 
@@ -110,11 +127,11 @@ public class DataImportJob extends Job {
 					Date endDate = toDate;
 
 					IHistory history = repositoryService.getHistoryFor(security);
-					Map<Date, IOHLC> map = new HashMap<Date, IOHLC>(2048);
+					Map<Date, IOHLC> dailyDataMap = new HashMap<Date, IOHLC>(2048);
 
 					if (history != null && mode != FULL) {
 						for (IOHLC d : history.getOHLC())
-							map.put(d.getDate(), d);
+							dailyDataMap.put(d.getDate(), d);
 						if (mode == INCREMENTAL) {
 							if (history.getLast() != null)
 								beginDate = history.getLast().getDate();
@@ -122,32 +139,79 @@ public class DataImportJob extends Job {
 						}
 					}
 
+					Map<TimeSpan, IOHLC[]> dataMap = new HashMap<TimeSpan, IOHLC[]>();
+
 					for (TimeSpan currentTimeSpan : timeSpan) {
-						if (monitor.isCanceled())
+						if (monitor.isCanceled()) {
+							if (results.size() != 0)
+								return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), "Download wasn't completed correctly.", null);
 							return Status.CANCEL_STATUS;
+						}
 
 						if (currentTimeSpan.equals(TimeSpan.days(1))) {
 							monitor.subTask(security.getName().replace("&", "&&"));
 
 							IOHLC[] ohlc = backfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
-							if (ohlc != null && ohlc.length != 0) {
+							if (ohlc != null && ohlc.length != 0)
+								dataMap.put(currentTimeSpan, ohlc);
+						}
+						else if (intradayBackfillConnector.canBackfill(identifier, currentTimeSpan)) {
+							monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
+
+							IOHLC[] ohlc = intradayBackfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
+							if (ohlc != null && ohlc.length != 0)
+								dataMap.put(currentTimeSpan, ohlc);
+						}
+						else
+							dataMap.put(currentTimeSpan, null);
+
+						if (!dataMap.containsKey(currentTimeSpan)) {
+							String message = NLS.bind("Can't download {0} data for {1}", new Object[] {
+									currentTimeSpan.toString(),
+									security.getName()
+								});
+							Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, message, null);
+							results.add(status);
+						}
+					}
+
+					if (dataMap.size() == timeSpan.length) {
+						for (TimeSpan currentTimeSpan : dataMap.keySet()) {
+							IOHLC[] ohlc = dataMap.get(currentTimeSpan);
+							if (ohlc == null)
+								continue;
+							if (currentTimeSpan.equals(TimeSpan.days(1))) {
 								for (IOHLC d : ohlc)
-									map.put(d.getDate(), d);
-								ohlc = map.values().toArray(new IOHLC[map.values().size()]);
+									dailyDataMap.put(d.getDate(), d);
+								ohlc = dailyDataMap.values().toArray(new IOHLC[dailyDataMap.values().size()]);
 
 								if (history == null)
 									history = new History(security, ohlc);
 								else if (history instanceof History)
 									((History) history).setOHLC(ohlc);
 
+								if ((security instanceof Stock) && (history instanceof History)) {
+									ISplit[] splits = backfillConnector.backfillSplits(identifier, beginDate, endDate);
+									if (splits != null && splits.length != 0) {
+										Map<Date, ISplit> splitsMap = new HashMap<Date, ISplit>();
+
+										ISplit[] currentSplits = history.getSplits();
+										if (currentSplits != null && mode != FULL) {
+											for (ISplit s : currentSplits)
+												splitsMap.put(s.getDate(), s);
+										}
+
+										for (int i = 0; i < splits.length; i++)
+											splitsMap.put(splits[i].getDate(), splits[i]);
+
+										Collection<ISplit> c = splitsMap.values();
+										((History) history).setSplits(c.toArray(new ISplit[c.size()]));
+									}
+								}
+
 								repositoryService.saveAdaptable(new IHistory[] { history });
 							}
-						}
-						else if (intradayBackfillConnector.canBackfill(identifier, currentTimeSpan)) {
-							monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
-
-							IOHLC[] ohlc = intradayBackfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
-							if (ohlc != null && ohlc.length != 0) {
+							else {
 								IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
 								if (intradayHistory instanceof HistoryDay)
 									((HistoryDay) intradayHistory).setOHLC(ohlc);
@@ -156,19 +220,43 @@ public class DataImportJob extends Job {
 							}
 						}
 
-						monitor.worked(1);
+						if (security instanceof Stock) {
+							IDividend[] dividends = backfillConnector.backfillDividends(identifier, beginDate, endDate);
+							if (dividends != null && dividends.length != 0) {
+								Map<Date, IDividend> dividendsMap = new HashMap<Date, IDividend>();
+
+								IDividend[] currentDividends = ((Stock) security).getDividends();
+								if (currentDividends != null && mode != FULL) {
+									for (IDividend d : currentDividends)
+										dividendsMap.put(d.getExDate(), d);
+								}
+
+								for (int i = 0; i < dividends.length; i++)
+									dividendsMap.put(dividends[i].getExDate(), dividends[i]);
+
+								if (dividendsMap.size() != 0) {
+									((Stock) security).setDividends(dividendsMap.values().toArray(new IDividend[dividendsMap.values().size()]));
+									repositoryService.saveAdaptable(new ISecurity[] { security });
+								}
+							}
+						}
 					}
 				} catch (Exception e) {
-					Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error downloading data for " + security, e);
-					ChartsUIActivator.log(status);
+					Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error downloading data for " + security.getName(), e);
+					results.add(status);
 				}
+
+				monitor.worked(1);
 			}
 		} catch (Exception e) {
 			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error downloading data", e);
-			ChartsUIActivator.log(status);
+			results.add(status);
 		} finally {
 			monitor.done();
 		}
+
+		if (results.size() != 0)
+			return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), "Download wasn't completed correctly.", null);
 		return Status.OK_STATUS;
 	}
 
