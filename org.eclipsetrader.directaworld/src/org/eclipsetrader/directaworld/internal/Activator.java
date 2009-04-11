@@ -23,6 +23,7 @@ import javax.xml.bind.ValidationEventHandler;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipsetrader.directaworld.internal.core.connector.SnapshotConnector;
 import org.eclipsetrader.directaworld.internal.core.repository.IdentifiersList;
 import org.osgi.framework.BundleContext;
 
@@ -43,6 +44,7 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 
 	private IdentifiersList identifiersList;
+	private SnapshotConnector connector;
 
 	/**
 	 * The constructor
@@ -60,6 +62,8 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 
 		startupRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
+
+		connector = new SnapshotConnector();
 	}
 
 	/*
@@ -138,4 +142,8 @@ public class Activator extends AbstractUIPlugin {
 			getLog().log(status);
 		}
 	}
+
+	public SnapshotConnector getConnector() {
+    	return connector;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,7 +74,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	private static final int I_CLOSE = 13;
 	private static final int I_LOW = 14;
 	private static final int I_HIGH = 15;
-    private static SnapshotConnector instance;
 
     private static final String HOST = "registrazioni.directaworld.it";
 
@@ -94,7 +93,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	private String password;
 
 	private Thread thread;
-	private boolean stopping = false;
+	private boolean connected;
+	private boolean stopping;
 	private int requiredDelay = 15;
 
 	public SnapshotConnector() {
@@ -109,12 +109,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 
 		numberFormat = NumberFormat.getInstance(Locale.ITALY);
 	}
-
-	public synchronized static SnapshotConnector getInstance() {
-		if (instance == null)
-			instance = new SnapshotConnector();
-    	return instance;
-    }
 
 	/* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
@@ -148,6 +142,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	    	if (subscription == null) {
 	    		subscription = new FeedSubscription(this, identifierType);
 	    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
+	    		if (connected)
+	    			startThread();
 	    	}
 	    	subscription.incrementInstanceCount();
 		    return subscription;
@@ -159,6 +155,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			if (subscription.decrementInstanceCount() <= 0) {
 				IdentifierType identifierType = subscription.getIdentifierType();
 				symbolSubscriptions.remove(identifierType.getSymbol());
+				if (symbolSubscriptions.size() == 0 && connected)
+			        stopThread();
 			}
 		}
     }
@@ -167,39 +165,56 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
      * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
      */
     public synchronized void connect() {
-    	final IPreferenceStore preferences = getPreferenceStore();
-		if (userName == null)
-			userName = preferences.getString(Activator.PREFS_USERNAME);
-		if (password == null)
-			password = preferences.getString(Activator.PREFS_PASSWORD);
+    	connected = true;
+		synchronized(symbolSubscriptions) {
+			if (symbolSubscriptions.size() != 0)
+				startThread();
+		}
+    }
 
-		if (userName.length() == 0 || password.length() == 0) {
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					Shell shell = PlatformUI.isWorkbenchRunning() ? PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell() : null;
-					LoginDialog dlg = new LoginDialog(shell, userName, password);
-					if (dlg.open() == LoginDialog.OK) {
-						userName = dlg.getUserName();
-						password = dlg.getPassword();
-						if (dlg.isSavePassword()) {
-							preferences.setValue(Activator.PREFS_USERNAME, userName);
-							preferences.setValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
-						}
-					}
-					else {
-						userName = null;
-						password = null;
-					}
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
+     */
+    public synchronized void disconnect() {
+        stopThread();
+    	connected = false;
+    }
+
+    protected void startThread() {
+		if (thread == null) {
+			stopping = false;
+			thread = new Thread(this, name + " - Data Reader");
+			thread.start();
+		}
+    }
+
+    protected void stopThread() {
+        stopping = true;
+        if (thread != null) {
+			try {
+				synchronized(thread) {
+					thread.notify();
 				}
-			});
-			if (userName == null || password == null)
-				return;
+		        if (thread != null)
+		        	thread.join(30 * 1000);
+			} catch (InterruptedException e) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error stopping thread", e);
+				Activator.log(status);
+			}
+			thread = null;
 		}
+    }
 
-		if (client == null) {
-			client = new HttpClient();
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-		}
+    public boolean isRunning() {
+    	return thread != null;
+    }
+
+	/* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     */
+    public void run() {
+    	client = new HttpClient();
+		client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
 		if (Activator.getDefault() != null) {
 			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
@@ -217,46 +232,42 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			}
 		}
 
-		if (thread == null) {
-			stopping = false;
-			thread = new Thread(this, name + " - Data Reader");
-			thread.start();
-		}
-    }
+    	final IPreferenceStore preferences = getPreferenceStore();
+		if (userName == null)
+			userName = preferences.getString(Activator.PREFS_USERNAME);
+		if (password == null)
+			password = preferences.getString(Activator.PREFS_PASSWORD);
 
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
-     */
-    public synchronized void disconnect() {
-        stopping = true;
-        if (thread != null) {
-			try {
-				synchronized(thread) {
-					thread.notify();
+		do {
+			if ("".equals(userName) || "".equals(password)) {
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						Shell shell = PlatformUI.isWorkbenchRunning() ? PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell() : null;
+						LoginDialog dlg = new LoginDialog(shell, userName, password);
+						if (dlg.open() == LoginDialog.OK) {
+							userName = dlg.getUserName();
+							password = dlg.getPassword();
+							if (dlg.isSavePassword()) {
+								preferences.setValue(Activator.PREFS_USERNAME, userName);
+								preferences.setValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
+							}
+						}
+						else {
+							userName = null;
+							password = null;
+						}
+					}
+				});
+				if (userName == null || password == null) {
+					client = null;
+					thread = null;
+					return;
 				}
-				thread.join(30 * 1000);
-			} catch (InterruptedException e) {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error stopping thread", e);
-				Activator.log(status);
 			}
-			thread = null;
-		}
-    }
+		} while (!checkLogin());
 
-    public boolean isRunning() {
-    	return thread != null;
-    }
-
-	public boolean isStopping() {
-    	return stopping;
-    }
-
-	/* (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    public void run() {
 		synchronized(thread) {
-			while (!isStopping()) {
+			while (!stopping) {
 				if (symbolSubscriptions.size() != 0)
 					fetchLatestSnapshot();
 				try {
@@ -266,6 +277,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 				}
 			}
 		}
+
+		client = null;
 		thread = null;
     }
 
@@ -344,7 +357,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 		}
 	}
 
-	public void parseLine(String line) throws ParseException {
+	protected void parseLine(String line) throws ParseException {
 		String[] item = line.split(";"); //$NON-NLS-1$
 
 		FeedSubscription subscription = symbolSubscriptions.get(item[I_SYMBOL]);
@@ -416,4 +429,43 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     public void removeConnectorListener(IConnectorListener listener) {
     	listeners.remove(listener);
     }
+
+	protected boolean checkLogin() {
+		boolean result = false;
+
+		BufferedReader in = null;
+		try {
+			StringBuilder url = new StringBuilder("http://" + HOST + "/cgi-bin/qta?idx=alfa&modo=t&appear=n");
+			int x = 0;
+			for (; x < 30; x++)
+				url.append("&id" + (x + 1) + "="); //$NON-NLS-1$ //$NON-NLS-2$
+			url.append("&u=" + userName + "&p=" + password); //$NON-NLS-1$ //$NON-NLS-2$
+
+			HttpMethod method = new GetMethod(url.toString());
+			method.setFollowRedirects(true);
+
+			client.executeMethod(method);
+			requiredDelay = 15;
+
+			String inputLine;
+			in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+			while ((inputLine = in.readLine()) != null) {
+				if (inputLine.indexOf("<!--QT START HERE-->") != -1)
+					result = true;
+			}
+			in.close();
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e);
+			Activator.log(status);
+		} finally {
+			try {
+	            if (in != null)
+	            	in.close();
+            } catch (Exception e) {
+            	// We can't do anything at this time, ignore
+            }
+		}
+
+		return result;
+	}
 }
