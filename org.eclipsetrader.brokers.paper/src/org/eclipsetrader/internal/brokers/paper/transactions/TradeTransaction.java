@@ -17,6 +17,7 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -35,6 +36,9 @@ import org.eclipsetrader.internal.brokers.paper.types.DateTimeAdapter;
 
 @XmlRootElement(name = "trade")
 public class TradeTransaction implements ITransaction {
+	@XmlAttribute(name = "id")
+	private String id;
+
 	@XmlAttribute(name = "date")
 	@XmlJavaTypeAdapter(DateTimeAdapter.class)
 	private Date date;
@@ -57,6 +61,7 @@ public class TradeTransaction implements ITransaction {
 	}
 
 	public TradeTransaction(IOrder order, ITransaction[] chunks, ITransaction expenses) {
+		this.id = UUID.randomUUID().toString();
 	    this.date = new Date();
 		this.order = order != null ? new OrderElement(order) : null;
 		this.childs = new ArrayList<ITransaction>(Arrays.asList(chunks));
@@ -69,7 +74,7 @@ public class TradeTransaction implements ITransaction {
 	 */
 	@XmlTransient
 	public String getId() {
-		return null;
+		return id;
 	}
 
 	/* (non-Javadoc)

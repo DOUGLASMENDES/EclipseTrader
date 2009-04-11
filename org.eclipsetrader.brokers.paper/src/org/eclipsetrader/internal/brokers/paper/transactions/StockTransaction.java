@@ -14,6 +14,7 @@ package org.eclipsetrader.internal.brokers.paper.transactions;
 import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,6 +32,9 @@ import org.eclipsetrader.internal.brokers.paper.types.SecurityAdapter;
 
 @XmlRootElement(name = "stock")
 public class StockTransaction implements ITransaction {
+	@XmlAttribute(name = "id")
+	private String id;
+
 	@XmlAttribute(name = "date")
 	@XmlJavaTypeAdapter(DateTimeAdapter.class)
 	private Date date;
@@ -50,6 +54,7 @@ public class StockTransaction implements ITransaction {
 	}
 
 	public StockTransaction(ISecurity security, Long quantity, Double price) {
+		this.id = UUID.randomUUID().toString();
 	    this.date = new Date();
 	    this.security = security;
 	    this.quantity = quantity;
@@ -61,7 +66,7 @@ public class StockTransaction implements ITransaction {
 	 */
 	@XmlTransient
 	public String getId() {
-		return null;
+		return id;
 	}
 
 	/* (non-Javadoc)

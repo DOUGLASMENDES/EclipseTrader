@@ -69,7 +69,7 @@ public class Account implements IAccount {
 	}
 
 	public Account(String description) {
-		this.id = Long.toHexString(UUID.randomUUID().getLeastSignificantBits());
+		this.id = UUID.randomUUID().toString();
 	    this.description = description;
 	    try {
 	    	this.currency = Currency.getInstance(Locale.getDefault());

@@ -13,6 +13,7 @@ package org.eclipsetrader.internal.brokers.paper.transactions;
 
 import java.util.Currency;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,6 +29,9 @@ import org.eclipsetrader.internal.brokers.paper.types.DoubleValueAdapter;
 
 @XmlRootElement(name = "expense")
 public class ExpenseTransaction implements ITransaction {
+	@XmlAttribute(name = "id")
+	private String id;
+
 	@XmlAttribute(name = "date")
 	@XmlJavaTypeAdapter(DateTimeAdapter.class)
 	private Date date;
@@ -44,12 +48,14 @@ public class ExpenseTransaction implements ITransaction {
 	}
 
 	public ExpenseTransaction(Cash amount) {
+		this.id = UUID.randomUUID().toString();
 	    this.date = new Date();
 	    this.amount = amount.getAmount();
 	    this.currency = amount.getCurrency();
     }
 
 	public ExpenseTransaction(Date date, Cash amount) {
+		this.id = UUID.randomUUID().toString();
 	    this.date = date;
 	    this.amount = amount.getAmount();
 	    this.currency = amount.getCurrency();
@@ -60,7 +66,7 @@ public class ExpenseTransaction implements ITransaction {
 	 */
 	@XmlTransient
 	public String getId() {
-		return null;
+		return id;
 	}
 
 	/* (non-Javadoc)
