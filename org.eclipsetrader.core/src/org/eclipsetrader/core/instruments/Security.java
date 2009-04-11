@@ -15,7 +15,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.eclipsetrader.core.feed.IDividend;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IStore;
@@ -32,7 +31,6 @@ public class Security implements ISecurity, IStoreObject {
 	private String name;
 	private IFeedIdentifier identifier;
 	private IUserProperties userProperties;
-	private IDividend[] dividends;
 
 	private IStore store;
 	private IStoreProperties storeProperties;
@@ -98,14 +96,6 @@ public class Security implements ISecurity, IStoreObject {
 		propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, oldValue, this.identifier);
     }
 
-	public IDividend[] getDividends() {
-    	return dividends;
-    }
-
-	public void setDividends(IDividend[] dividends) {
-    	this.dividends = dividends;
-    }
-
 	/* (non-Javadoc)
      * @see org.eclipsetrader.core.instruments.ISecurity#getProperties()
      */
@@ -131,8 +121,6 @@ public class Security implements ISecurity, IStoreObject {
 			return identifier;
 		if (userProperties != null && adapter.isAssignableFrom(userProperties.getClass()))
 			return userProperties;
-		if (dividends != null && adapter.isAssignableFrom(dividends.getClass()))
-			return dividends;
 
     	if (adapter.isAssignableFrom(PropertyChangeSupport.class))
     		return propertyChangeSupport;
@@ -167,9 +155,6 @@ public class Security implements ISecurity, IStoreObject {
 		storeProperties.setProperty(IPropertyConstants.IDENTIFIER, getIdentifier());
 		storeProperties.setProperty(IPropertyConstants.USER_PROPERTIES, getProperties());
 
-		if (dividends != null)
-			storeProperties.setProperty(IPropertyConstants.DIVIDENDS, dividends);
-
 		return storeProperties;
     }
 
@@ -188,7 +173,6 @@ public class Security implements ISecurity, IStoreObject {
 		this.name = (String) storeProperties.getProperty(IPropertyConstants.NAME);
 		this.identifier = (IFeedIdentifier) storeProperties.getProperty(IPropertyConstants.IDENTIFIER);
 		this.userProperties = (IUserProperties) storeProperties.getProperty(IPropertyConstants.USER_PROPERTIES);
-		this.dividends = (IDividend[]) storeProperties.getProperty(IPropertyConstants.DIVIDENDS);
 
 		if (this.identifier != null) {
 			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);

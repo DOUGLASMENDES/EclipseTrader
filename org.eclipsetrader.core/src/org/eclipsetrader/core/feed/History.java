@@ -42,9 +42,6 @@ public class History implements IHistory, IStoreObject {
 	private IOHLC highest;
 	private IOHLC lowest;
 
-	private Date rangeBegin;
-	private Date rangeEnd;
-
 	private IStore store;
 	private IStoreProperties storeProperties;
 
@@ -98,14 +95,6 @@ public class History implements IHistory, IStoreObject {
 	}
 
 	public History(ISecurity security, IOHLC[] bars, TimeSpan timeSpan) {
-	    this.timeSpan = timeSpan;
-		setSecurity(security);
-		setOHLC(bars);
-	}
-
-	public History(ISecurity security, IOHLC[] bars, Date rangeBegin, Date rangeEnd, TimeSpan timeSpan) {
-		this.rangeBegin = rangeBegin;
-		this.rangeEnd = rangeEnd;
 	    this.timeSpan = timeSpan;
 		setSecurity(security);
 		setOHLC(bars);
@@ -194,7 +183,7 @@ public class History implements IHistory, IStoreObject {
 			if ((first == null || !b.getDate().before(first)) && (last == null || !b.getDate().after(last)))
 				l.add(b);
 		}
-		return new History(security, l.toArray(new IOHLC[l.size()]), first, last, timeSpan);
+		return new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
 	}
 
 	/* (non-Javadoc)
@@ -429,9 +418,6 @@ public class History implements IHistory, IStoreObject {
 		storeProperties.setProperty(IPropertyConstants.BARS, bars);
 		storeProperties.setProperty(IPropertyConstants.TIME_SPAN, timeSpan);
 		storeProperties.setProperty(IPropertyConstants.SPLITS, splits);
-
-		if (bars != null && bars.length != 0)
-			storeProperties.setProperty(IPropertyConstants.BARS_DATE, bars[0].getDate());
 
 		return storeProperties;
     }
