@@ -101,6 +101,7 @@ import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IEditableChartObject;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.charts.DataImportJob;
 
 @SuppressWarnings("restriction")
 public class ChartViewPart extends ViewPart implements ISaveablePart {
@@ -136,6 +137,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	private Action zoomOutAction;
 	private Action zoomInAction;
 	private Action zoomResetAction;
+	private Action updateAction;
 
 	private IMemento memento;
 
@@ -200,7 +202,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
                 	}
             	}
 
-            	view.setRootDataSeries(new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", activeHistory.getOHLC()));
+            	view.setRootDataSeries(new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", activeHistory.getAdjustedOHLC()));
 
     	        if (!viewer.isDisposed()) {
     				try {
@@ -403,6 +405,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
     	IToolBarManager toolBarManager = actionBars.getToolBarManager();
     	toolBarManager.add(new Separator("additions"));
+    	toolBarManager.add(updateAction);
 
     	actionBars.updateActionBars();
     }
@@ -473,6 +476,41 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		deleteAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
 		deleteAction.setEnabled(false);
+
+        updateAction = new Action("Update") {
+            @Override
+            public void run() {
+            	Date first = null;
+            	if (history.getLast() != null)
+            		first = history.getLast().getDate();
+            	if (first == null) {
+            		Calendar c = Calendar.getInstance();
+            		c.add(Calendar.YEAR, -10);
+            		first = c.getTime();
+            	}
+    			DataImportJob job = new DataImportJob(
+    					security,
+    					DataImportJob.INCREMENTAL,
+    					first,
+    					Calendar.getInstance().getTime(),
+    					new TimeSpan[] {
+    						TimeSpan.days(1),
+    						TimeSpan.minutes(1),
+    						TimeSpan.minutes(2),
+    						TimeSpan.minutes(3),
+    						TimeSpan.minutes(5),
+    						TimeSpan.minutes(10),
+    						TimeSpan.minutes(15),
+    						TimeSpan.minutes(30),
+    					});
+    			job.setUser(true);
+    			job.schedule();
+            }
+		};
+		updateAction.setId("update"); //$NON-NLS-1$
+		updateAction.setActionDefinitionId("org.eclipse.ui.edit.update"); //$NON-NLS-1$
+		updateAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/refresh.gif"));
+		updateAction.setEnabled(true);
     }
 
 	/* (non-Javadoc)
