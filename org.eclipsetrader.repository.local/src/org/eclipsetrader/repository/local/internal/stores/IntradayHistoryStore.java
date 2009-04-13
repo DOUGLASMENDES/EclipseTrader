@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -144,6 +145,8 @@ public class IntradayHistoryStore implements IStore {
 	            return null;
             }
 		};
+
+		properties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
 
 		properties.setProperty(IPropertyConstants.SECURITY, security);
 		properties.setProperty(IPropertyConstants.BARS_DATE, date);

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Hibernate Relational Persistence Source
+Bundle-SymbolicName: org.hibernate.source
+Bundle-Version: 3.2.6.20080315
+Bundle-Vendor: Hibernate.org
+Eclipse-SourceBundle: org.hibernate;version="3.2.6.20080315"

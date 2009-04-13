@@ -43,7 +43,9 @@ import org.eclipsetrader.core.instruments.Stock;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.repositories.IStoreObject;
 
 @SuppressWarnings("restriction")
 public class DataImportJob extends Job {
@@ -102,6 +104,9 @@ public class DataImportJob extends Job {
 				monitor.subTask(security.getName().replace("&", "&&"));
 
 				try {
+					IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
+					IRepository defaultRepository = storeObject.getStore().getRepository();
+
 					IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
 					IBackfillConnector backfillConnector = defaultBackfillConnector;
@@ -209,14 +214,22 @@ public class DataImportJob extends Job {
 									}
 								}
 
-								repositoryService.saveAdaptable(new IHistory[] { history });
+								repositoryService.saveAdaptable(new IHistory[] { history }, defaultRepository);
 							}
 							else {
-								IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
-								if (intradayHistory instanceof HistoryDay)
-									((HistoryDay) intradayHistory).setOHLC(ohlc);
-
-								repositoryService.saveAdaptable(new IHistory[] { intradayHistory });
+								if (history == null) {
+									history = new History(security, ohlc);
+									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
+									if (intradayHistory instanceof HistoryDay)
+										((HistoryDay) intradayHistory).setOHLC(ohlc);
+									repositoryService.saveAdaptable(new IHistory[] { history, intradayHistory }, defaultRepository);
+								}
+								else {
+									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
+									if (intradayHistory instanceof HistoryDay)
+										((HistoryDay) intradayHistory).setOHLC(ohlc);
+									repositoryService.saveAdaptable(new IHistory[] { intradayHistory }, defaultRepository);
+								}
 							}
 						}
 

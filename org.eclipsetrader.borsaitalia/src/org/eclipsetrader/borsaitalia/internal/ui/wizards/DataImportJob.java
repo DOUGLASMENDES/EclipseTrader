@@ -36,6 +36,7 @@ import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.repositories.IStoreObject;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -79,6 +80,8 @@ public class DataImportJob extends Job {
 				monitor.subTask(security.getName().replace("&", "&&"));
 
 				try {
+					IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
+
 					IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 					if (identifier != null) {
 						Date beginDate = fromDate;
@@ -143,14 +146,14 @@ public class DataImportJob extends Job {
 									else if (history instanceof History)
 										((History) history).setOHLC(ohlc);
 
-									repositoryService.saveAdaptable(new IHistory[] { history });
+									repository.moveAdaptable(new IHistory[] { history }, storeObject.getStore().getRepository());
 								}
 								else {
 									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
 									if (intradayHistory instanceof HistoryDay)
 										((HistoryDay) intradayHistory).setOHLC(ohlc);
 
-									repositoryService.saveAdaptable(new IHistory[] { intradayHistory });
+									repository.moveAdaptable(new IHistory[] { intradayHistory }, storeObject.getStore().getRepository());
 								}
 							}
 						}

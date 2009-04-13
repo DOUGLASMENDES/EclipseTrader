@@ -218,4 +218,12 @@ public class WatchList implements IWatchList, IStoreObject {
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	    return name;
+    }
 }

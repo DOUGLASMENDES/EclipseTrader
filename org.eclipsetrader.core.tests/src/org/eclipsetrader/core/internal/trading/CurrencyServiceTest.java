@@ -180,6 +180,12 @@ public class CurrencyServiceTest extends TestCase {
          */
         public void saveAdaptable(IAdaptable[] adaptables) {
         }
+
+		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[], org.eclipsetrader.core.repositories.IRepository)
+         */
+        public void saveAdaptable(IAdaptable[] adaptables, IRepository defaultRepository) {
+        }
 	};
 
 	private MarketPricingEnvironment pricingEnvironment = new MarketPricingEnvironment() {

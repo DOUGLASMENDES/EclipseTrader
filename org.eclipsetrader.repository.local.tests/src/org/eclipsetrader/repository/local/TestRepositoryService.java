@@ -63,6 +63,13 @@ public class TestRepositoryService implements IRepositoryService {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[], org.eclipsetrader.core.repositories.IRepository)
+     */
+    public void saveAdaptable(IAdaptable[] adaptables, IRepository defaultRepository) {
+    	saveAdaptable(adaptables);
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[])
      */
     public void saveAdaptable(IAdaptable[] adaptables) {

@@ -254,6 +254,7 @@ public class TickersView extends ViewPart {
     		pricingEnvironment.removePricingListener(pricingListener);
     		pricingEnvironment.dispose();
     	}
+		saveInput();
 	    super.dispose();
     }
 

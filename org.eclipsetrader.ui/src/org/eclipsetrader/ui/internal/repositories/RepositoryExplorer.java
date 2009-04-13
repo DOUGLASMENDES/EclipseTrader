@@ -232,19 +232,15 @@ public class RepositoryExplorer extends ViewPart {
 					RepositoryViewItem element = (RepositoryViewItem) selection.getFirstElement();
 					while(element.getParent() != null && !(element.getObject() instanceof IRepository))
 						element = (RepositoryViewItem) element.getParent();
-	        		final IRepository destinationRepository = (IRepository) element.getObject();
+	        		IRepository destinationRepository = (IRepository) element.getObject();
 
 					Clipboard clipboard = new Clipboard(Display.getDefault());
 					try {
-						final IAdaptable[] contents = (IAdaptable[]) clipboard.getContents(RepositoryObjectTransfer.getInstance());
+						IAdaptable[] contents = (IAdaptable[]) clipboard.getContents(RepositoryObjectTransfer.getInstance());
 						if (contents.length != 0) {
-							final IRepositoryService service = getRepositoryService();
-							service.runInService(new IRepositoryRunnable() {
-								public IStatus run(IProgressMonitor monitor) throws Exception {
-									service.moveAdaptable(contents, destinationRepository);
-		                            return Status.OK_STATUS;
-	                            }
-							}, null);
+							IRepositoryService service = getRepositoryService();
+							RepositoryMoveJob job = new RepositoryMoveJob(service, contents, destinationRepository);
+							job.schedule();
 						}
 					} finally {
 						clipboard.dispose();
@@ -392,17 +388,13 @@ public class RepositoryExplorer extends ViewPart {
                     	RepositoryViewItem element = (RepositoryViewItem) getCurrentTarget();
     					while(element.getParent() != null && !(element.getObject() instanceof IRepository))
     						element = (RepositoryViewItem) element.getParent();
-    	        		final IRepository destinationRepository = (IRepository) element.getObject();
+    					IRepository destinationRepository = (IRepository) element.getObject();
 
-						final IAdaptable[] contents = (IAdaptable[]) data;
+						IAdaptable[] contents = (IAdaptable[]) data;
 						if (contents.length != 0) {
-							final IRepositoryService service = getRepositoryService();
-							service.runInService(new IRepositoryRunnable() {
-								public IStatus run(IProgressMonitor monitor) throws Exception {
-									service.moveAdaptable(contents, destinationRepository);
-		                            return Status.OK_STATUS;
-	                            }
-							}, null);
+							IRepositoryService service = getRepositoryService();
+							RepositoryMoveJob job = new RepositoryMoveJob(service, contents, destinationRepository);
+							job.schedule();
 						}
 
 						return true;

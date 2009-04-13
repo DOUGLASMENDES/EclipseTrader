@@ -16,6 +16,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -352,7 +354,13 @@ public class RepositoryService implements IRepositoryService {
      * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[])
      */
     public void saveAdaptable(IAdaptable[] adaptables) {
-		IRepository defaultDestination = getRepository("local");
+    	saveAdaptable(adaptables, getRepository("local"));
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[], org.eclipsetrader.core.repositories.IRepository)
+     */
+    public void saveAdaptable(IAdaptable[] adaptables, IRepository defaultRepository) {
     	Map<IRepository,Set<IAdaptable>> repositories = new HashMap<IRepository,Set<IAdaptable>>();
     	Map<IRepository,Set<ISchedulingRule>> rules = new HashMap<IRepository,Set<ISchedulingRule>>();
 
@@ -367,7 +375,7 @@ public class RepositoryService implements IRepositoryService {
     		}
 
     		for (IStoreObject object : storeObjects) {
-        		IRepository repository = defaultDestination;
+        		IRepository repository = defaultRepository;
         		IStore store = object.getStore();
         		if (store != null && store.getRepository() != null)
         			repository = store.getRepository();
@@ -467,20 +475,7 @@ public class RepositoryService implements IRepositoryService {
     	if (destination instanceof ISchedulingRule)
     		rules.add((ISchedulingRule) destination);
 
-    	final Set<IAdaptable> allAdaptables = new HashSet<IAdaptable>();
     	for (IAdaptable adaptable : adaptables) {
-    		allAdaptables.add(adaptable);
-    		if (adaptable instanceof ISecurity) {
-    			IHistory history = getHistoryFor((ISecurity) adaptable);
-    			if (history != null) {
-    				IStoreObject historyStoreObject = (IStoreObject) history.getAdapter(IStoreObject.class);
-    				if (historyStoreObject != null && historyStoreObject.getStore() != null)
-    					allAdaptables.add(history);
-    			}
-    		}
-    	}
-
-    	for (IAdaptable adaptable : allAdaptables) {
     		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
     		if (storeObjects == null) {
         		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
@@ -499,7 +494,7 @@ public class RepositoryService implements IRepositoryService {
 		destination.runInRepository(new IRepositoryRunnable() {
             public IStatus run(IProgressMonitor monitor) throws Exception {
             	try {
-            		for (IAdaptable adaptable : allAdaptables) {
+            		for (IAdaptable adaptable : adaptables) {
             			if (monitor != null && monitor.isCanceled())
             				return Status.CANCEL_STATUS;
 
@@ -509,6 +504,30 @@ public class RepositoryService implements IRepositoryService {
                     		if (object == null)
                     			continue;
                     		storeObjects = new IStoreObject[] { object };
+                		}
+
+                		List<IStoreObject> childStoreObjects = new ArrayList<IStoreObject>();
+                		if (adaptable instanceof ISecurity) {
+                			IHistory history = getHistoryFor((ISecurity) adaptable);
+                			if (history != null) {
+                				IStoreObject historyStoreObject = (IStoreObject) history.getAdapter(IStoreObject.class);
+                				if (historyStoreObject != null && historyStoreObject.getStore() != null)
+                					childStoreObjects.add(historyStoreObject);
+
+                				IOHLC[] ohlc = history.getOHLC();
+                				if (ohlc != null && ohlc.length != 0) {
+                					Date first = ohlc[0].getDate();
+                					if (ohlc.length > 10)
+                    					first = ohlc[ohlc.length - 10].getDate();
+                					Date last = ohlc[ohlc.length - 1].getDate();
+                					IHistory historySubset = history.getSubset(first, last, TimeSpan.minutes(1));
+                					if (historySubset != null) {
+                						IStoreObject[] subsetStoreObject = (IStoreObject[]) historySubset.getAdapter(IStoreObject[].class);
+                	    				if (subsetStoreObject != null)
+                	    					childStoreObjects.addAll(Arrays.asList(subsetStoreObject));
+                					}
+                				}
+                			}
                 		}
 
                 		for (IStoreObject object : storeObjects) {
@@ -522,39 +541,57 @@ public class RepositoryService implements IRepositoryService {
                 	        newStore.putProperties(properties, monitor);
                 	        object.setStore(newStore);
 
+                	        for (IStoreObject childObject : childStoreObjects) {
+                    			IStore oldChildStore = childObject.getStore();
+                    			if (oldChildStore != null && oldChildStore.getRepository() == destination)
+                    				continue;
+
+                    			IStoreProperties childProperties = childObject.getStoreProperties();
+
+                    	        IStore newChildStore = destination.createObject();
+                    	        newChildStore.putProperties(childProperties, monitor);
+                    	        childObject.setStore(newStore);
+                	        }
+
                 	        if (oldStore != null)
                 	        	oldStore.delete(monitor);
 
-                	        if (storeObjects.length == 1) {
-                    	        if (adaptable instanceof ISecurity) {
-                        	        if (oldStore != null)
-                        	        	uriMap.remove(oldStore.toURI());
-                    	        	uriMap.put(newStore.toURI(), (ISecurity) adaptable);
-                    				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
-                    	        }
-                    	        if (adaptable instanceof IWatchList) {
-                        	        if (oldStore != null)
-                        	        	watchlistUriMap.remove(oldStore.toURI());
-                        	        watchlistUriMap.put(newStore.toURI(), (IWatchList) adaptable);
-                        	        watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
-                    	        }
+                	        if (adaptable instanceof ISecurity) {
+                    	        if (oldStore != null)
+                    	        	uriMap.remove(oldStore.toURI());
+                	        	uriMap.put(newStore.toURI(), (ISecurity) adaptable);
+                				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
 
-                    			if (deltas != null) {
-                        	        int kind = RepositoryResourceDelta.MOVED_TO;
-                        	        if (oldStore != null)
-                        	        	kind |= RepositoryResourceDelta.MOVED_FROM;
-                        	        else
-                        	        	kind |= RepositoryResourceDelta.ADDED;
-
-                        	        deltas.add(new RepositoryResourceDelta(
-                        	        		kind,
-                        	        		adaptable,
-                        	        		oldStore != null ? oldStore.getRepository() : null,
-                        	        		newStore.getRepository(),
-                        	        		null,
-                        	        		null));
-                    			}
+                				for (IWatchList watchList : watchlistUriMap.values()) {
+                					if (watchList.getItem((ISecurity) adaptable) != null) {
+                                		IStoreObject otherObject = (IStoreObject) watchList.getAdapter(IStoreObject.class);
+                            			IStoreProperties otherProperties = otherObject.getStoreProperties();
+                            			otherObject.getStore().putProperties(otherProperties, monitor);
+                					}
+                				}
                 	        }
+                	        if (adaptable instanceof IWatchList) {
+                    	        if (oldStore != null)
+                    	        	watchlistUriMap.remove(oldStore.toURI());
+                    	        watchlistUriMap.put(newStore.toURI(), (IWatchList) adaptable);
+                    	        watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
+                	        }
+
+                			if (deltas != null) {
+                    	        int kind = RepositoryResourceDelta.MOVED_TO;
+                    	        if (oldStore != null)
+                    	        	kind |= RepositoryResourceDelta.MOVED_FROM;
+                    	        else
+                    	        	kind |= RepositoryResourceDelta.ADDED;
+
+                    	        deltas.add(new RepositoryResourceDelta(
+                    	        		kind,
+                    	        		adaptable,
+                    	        		oldStore != null ? oldStore.getRepository() : null,
+                    	        		newStore.getRepository(),
+                    	        		null,
+                    	        		null));
+                			}
                 		}
             		}
                 } catch (Exception e) {
@@ -566,6 +603,7 @@ public class RepositoryService implements IRepositoryService {
         			CoreActivator.getDefault().getLog().log(status);
         			return status;
                 }
+
 	            return Status.OK_STATUS;
             }
     	}, new MultiRule(rules.toArray(new ISchedulingRule[rules.size()])), null);

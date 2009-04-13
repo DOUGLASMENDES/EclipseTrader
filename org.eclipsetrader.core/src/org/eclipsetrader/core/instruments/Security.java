@@ -180,4 +180,12 @@ public class Security implements ISecurity, IStoreObject {
 				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
 		}
     }
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	    return name;
+    }
 }

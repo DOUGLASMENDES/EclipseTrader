@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Hibernate Repository Tests Fragment
+Bundle-SymbolicName: org.eclipsetrader.repository.hibernate.tests
+Bundle-Version: 1.0.0
+Bundle-Vendor: EclipseTrader.org
+Fragment-Host: org.eclipsetrader.repository.hibernate;bundle-version="1.0.0"
+Require-Bundle: org.junit
+Bundle-ClassPath: fragment.jar,
+ hsqldb.jar,
+ easymock.jar,
+ easymockclassextension.jar
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

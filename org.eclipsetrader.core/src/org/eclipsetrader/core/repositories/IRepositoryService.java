@@ -55,6 +55,16 @@ public interface IRepositoryService {
 	public void saveAdaptable(IAdaptable[] adaptables);
 
 	/**
+	 * Saves the given objects to their' repositories. If the object doesn't have
+	 * a repository (i.e. newly created objects) they are saved to the specified
+	 * default repository.
+	 *
+	 * @param adaptables the objects to save.
+	 * @param defaultRepository the default destination repository.
+	 */
+	public void saveAdaptable(IAdaptable[] adaptables, IRepository defaultRepository);
+
+	/**
 	 * Moves a set of objects to a new repository.
 	 *
 	 * @param adaptables the objects to move.
