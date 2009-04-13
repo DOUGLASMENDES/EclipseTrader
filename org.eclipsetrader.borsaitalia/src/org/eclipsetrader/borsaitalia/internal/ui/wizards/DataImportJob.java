@@ -146,14 +146,14 @@ public class DataImportJob extends Job {
 									else if (history instanceof History)
 										((History) history).setOHLC(ohlc);
 
-									repository.moveAdaptable(new IHistory[] { history }, storeObject.getStore().getRepository());
+									repositoryService.moveAdaptable(new IHistory[] { history }, storeObject.getStore().getRepository());
 								}
 								else {
 									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
 									if (intradayHistory instanceof HistoryDay)
 										((HistoryDay) intradayHistory).setOHLC(ohlc);
 
-									repository.moveAdaptable(new IHistory[] { intradayHistory }, storeObject.getStore().getRepository());
+									repositoryService.moveAdaptable(new IHistory[] { intradayHistory }, storeObject.getStore().getRepository());
 								}
 							}
 						}
