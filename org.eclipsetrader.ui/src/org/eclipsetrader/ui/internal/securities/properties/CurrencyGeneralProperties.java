@@ -33,12 +33,14 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
@@ -46,6 +48,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
 import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
@@ -56,6 +59,8 @@ public class CurrencyGeneralProperties extends PropertyPage implements IWorkbenc
 	private ComboViewer fromCurrency;
 	private ComboViewer toCurrency;
 	private ComboViewer repository;
+
+	private IRepository targetRepository;
 
 	private ModifyListener modifyListener = new ModifyListener() {
 		public void modifyText(ModifyEvent e) {
@@ -123,8 +128,10 @@ public class CurrencyGeneralProperties extends PropertyPage implements IWorkbenc
 		repository.setLabelProvider(new LabelProvider());
 		repository.setContentProvider(new ArrayContentProvider());
 		repository.setSorter(new ViewerSorter());
-		repository.setInput(getRepositoryService().getRepositories());
-		repository.getControl().setEnabled(false);
+
+		IRepository[] repositories = getRepositoryService().getRepositories();
+		repository.setInput(repositories);
+		repository.getControl().setEnabled(repositories.length > 1);
 
 		performDefaults();
 		name.addModifyListener(modifyListener);
@@ -158,6 +165,8 @@ public class CurrencyGeneralProperties extends PropertyPage implements IWorkbenc
 			selection = (IStructuredSelection) toCurrency.getSelection();
 			security.setToCurrency((Currency) selection.getFirstElement());
 		}
+
+		targetRepository = (IRepository) ((IStructuredSelection) repository.getSelection()).getFirstElement();
     }
 
 	/* (non-Javadoc)
@@ -198,21 +207,29 @@ public class CurrencyGeneralProperties extends PropertyPage implements IWorkbenc
 
     	final ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
 		final IRepositoryService service = getRepositoryService();
-		service.runInService(new IRepositoryRunnable() {
-            public IStatus run(IProgressMonitor monitor) throws Exception {
-            	service.saveAdaptable(new IAdaptable[] { security });
-	            return Status.OK_STATUS;
+		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+            public void run() {
+        		service.runInService(new IRepositoryRunnable() {
+                    public IStatus run(IProgressMonitor monitor) throws Exception {
+                		IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
+                		if (targetRepository != storeObject.getStore().getRepository())
+                			service.moveAdaptable(new IAdaptable[] { security }, targetRepository);
+                		else
+                			service.saveAdaptable(new IAdaptable[] { security });
+        	            return Status.OK_STATUS;
+                    }
+        		}, null);
             }
-		}, null);
+		});
 
 	    super.performApply();
     }
 
-	protected IRepositoryService getRepositoryService() {
+    protected IRepositoryService getRepositoryService() {
 		return UIActivator.getDefault().getRepositoryService();
 	}
 
-	protected Set<Currency> getAvailableCurrencies() {
+    protected Set<Currency> getAvailableCurrencies() {
 	    List<Locale> locale = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));
 		Collections.sort(locale, new Comparator<Locale>() {
 			public int compare(Locale arg0, Locale arg1) {
@@ -237,4 +254,8 @@ public class CurrencyGeneralProperties extends PropertyPage implements IWorkbenc
 		}
 		return result;
 	}
+
+    public IRepository getRepository() {
+    	return targetRepository;
+    }
 }

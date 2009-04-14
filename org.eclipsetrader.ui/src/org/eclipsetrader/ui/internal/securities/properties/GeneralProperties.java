@@ -33,12 +33,14 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
@@ -47,6 +49,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.IStock;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.instruments.Stock;
+import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
@@ -56,6 +59,8 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 	private Text name;
 	private ComboViewer repository;
 	private ComboViewer currency;
+
+	private IRepository targetRepository;
 
 	private ModifyListener modifyListener = new ModifyListener() {
 		public void modifyText(ModifyEvent e) {
@@ -112,8 +117,10 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 		repository.setLabelProvider(new LabelProvider());
 		repository.setContentProvider(new ArrayContentProvider());
 		repository.setSorter(new ViewerSorter());
-		repository.setInput(getRepositoryService().getRepositories());
-		repository.getControl().setEnabled(false);
+
+		IRepository[] repositories = getRepositoryService().getRepositories();
+		repository.setInput(repositories);
+		repository.getControl().setEnabled(repositories.length > 1);
 
 		performDefaults();
 		name.addModifyListener(modifyListener);
@@ -149,6 +156,8 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 			IStructuredSelection selection = (IStructuredSelection) currency.getSelection();
 			stock.setCurrency(selection.isEmpty() ? null : (Currency) selection.getFirstElement());
 		}
+
+		targetRepository = (IRepository) ((IStructuredSelection) repository.getSelection()).getFirstElement();
     }
 
 	/* (non-Javadoc)
@@ -189,12 +198,20 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 
     	final ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
 		final IRepositoryService service = getRepositoryService();
-		service.runInService(new IRepositoryRunnable() {
-            public IStatus run(IProgressMonitor monitor) throws Exception {
-            	service.saveAdaptable(new IAdaptable[] { security });
-	            return Status.OK_STATUS;
+		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+            public void run() {
+        		service.runInService(new IRepositoryRunnable() {
+                    public IStatus run(IProgressMonitor monitor) throws Exception {
+                		IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
+                		if (targetRepository != storeObject.getStore().getRepository())
+                			service.moveAdaptable(new IAdaptable[] { security }, targetRepository);
+                		else
+                			service.saveAdaptable(new IAdaptable[] { security });
+        	            return Status.OK_STATUS;
+                    }
+        		}, null);
             }
-		}, null);
+		});
 
 	    super.performApply();
     }
@@ -228,4 +245,8 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 		}
 		return result;
 	}
+
+	public IRepository getRepository() {
+    	return targetRepository;
+    }
 }

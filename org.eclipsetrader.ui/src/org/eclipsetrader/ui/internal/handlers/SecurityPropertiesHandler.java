@@ -23,6 +23,8 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.dialogs.PropertyPage;
@@ -30,8 +32,10 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.internal.dialogs.FilteredPreferenceDialog;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
 import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.securities.properties.ConnectorOverrideProperties;
 import org.eclipsetrader.ui.internal.securities.properties.CurrencyGeneralProperties;
@@ -43,6 +47,8 @@ import org.osgi.framework.ServiceReference;
 
 @SuppressWarnings("restriction")
 public class SecurityPropertiesHandler extends AbstractHandler {
+	private GeneralProperties generalProperties;
+	private CurrencyGeneralProperties currencyGeneralProperties;
 
 	public SecurityPropertiesHandler() {
 	}
@@ -69,9 +75,9 @@ public class SecurityPropertiesHandler extends AbstractHandler {
 		PreferenceManager pageManager = new PreferenceManager();
 		if (adaptableElement.getAdapter(Security.class) != null) {
 			if (adaptableElement.getAdapter(CurrencyExchange.class) != null)
-				pageManager.addToRoot(new PreferenceNode("general", new CurrencyGeneralProperties()));
+				pageManager.addToRoot(new PreferenceNode("general", currencyGeneralProperties = new CurrencyGeneralProperties()));
 			else
-				pageManager.addToRoot(new PreferenceNode("general", new GeneralProperties()));
+				pageManager.addToRoot(new PreferenceNode("general", generalProperties = new GeneralProperties()));
     		pageManager.addToRoot(new PreferenceNode("identifier", new IdentifierProperties()));
     		pageManager.addToRoot(new PreferenceNode("markets", new MarketsProperties()));
     		pageManager.addToRoot(new PreferenceNode("override", new ConnectorOverrideProperties()));
@@ -97,12 +103,21 @@ public class SecurityPropertiesHandler extends AbstractHandler {
 			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
 			if (serviceReference != null) {
 				final IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-    			service.runInService(new IRepositoryRunnable() {
-    	            public IStatus run(IProgressMonitor monitor) throws Exception {
-    	            	service.saveAdaptable(new IAdaptable[] { adaptableElement });
-    		            return Status.OK_STATUS;
-    	            }
-    			}, null);
+				BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+		            public void run() {
+		    			service.runInService(new IRepositoryRunnable() {
+		    	            public IStatus run(IProgressMonitor monitor) throws Exception {
+		    	        		IStoreObject storeObject = (IStoreObject) adaptableElement.getAdapter(IStoreObject.class);
+		    	        		IRepository repository = generalProperties != null ? generalProperties.getRepository() : currencyGeneralProperties.getRepository();
+		    	            	if (repository != storeObject.getStore().getRepository())
+		    	            		service.moveAdaptable(new IAdaptable[] { adaptableElement }, repository);
+		    	            	else
+		    	            		service.saveAdaptable(new IAdaptable[] { adaptableElement });
+		    	            	return Status.OK_STATUS;
+		    	            }
+		    			}, null);
+		            }
+				});
 			}
 		}
 	}
