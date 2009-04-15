@@ -26,6 +26,13 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 public interface IRepository extends IAdaptable {
 
 	/**
+	 * Gets the repository schema.
+	 *
+	 * @return the schema.
+	 */
+	public String getSchema();
+
+	/**
 	 * Returns whether this repository supports modification.
 	 *
 	 * @return true if this repository allows modification of objects, and false otherwise

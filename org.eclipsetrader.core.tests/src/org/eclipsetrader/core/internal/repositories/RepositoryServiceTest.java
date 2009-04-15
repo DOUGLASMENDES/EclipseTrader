@@ -213,6 +213,13 @@ public class RepositoryServiceTest extends TestCase {
         }
 
 		/* (non-Javadoc)
+         * @see org.eclipsetrader.core.repositories.IRepository#getSchema()
+         */
+        public String getSchema() {
+	        return scheme;
+        }
+
+		/* (non-Javadoc)
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
          */
         @SuppressWarnings("unchecked")

@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
@@ -49,6 +50,7 @@ import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
+import org.eclipsetrader.core.repositories.IRepositoryProvider;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStore;
@@ -517,8 +519,6 @@ public class RepositoryService implements IRepositoryService {
                 				IOHLC[] ohlc = history.getOHLC();
                 				if (ohlc != null && ohlc.length != 0) {
                 					Date first = ohlc[0].getDate();
-                					if (ohlc.length > 10)
-                    					first = ohlc[ohlc.length - 10].getDate();
                 					Date last = ohlc[ohlc.length - 1].getDate();
                 					IHistory historySubset = history.getSubset(first, last, TimeSpan.minutes(1));
                 					if (historySubset != null) {
@@ -630,7 +630,11 @@ public class RepositoryService implements IRepositoryService {
 			return;
 
 		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+
+		// Reads the static repositories
 		for (int j = 0; j < configElements.length; j++) {
+			if (!"repository".equals(configElements[j].getName()))
+				continue;
 			String id = configElements[j].getAttribute("id"); //$NON-NLS-1$
 			String schema = configElements[j].getAttribute("scheme"); //$NON-NLS-1$
 			try {
@@ -638,10 +642,29 @@ public class RepositoryService implements IRepositoryService {
 				repositoryMap.put(schema, repository);
 			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to create repository with id " + id, e);
-				CoreActivator.getDefault().getLog().log(status);
+				CoreActivator.log(status);
             } catch (LinkageError e) {
 				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to create repository with id " + id, e);
-    			CoreActivator.getDefault().getLog().log(status);
+    			CoreActivator.log(status);
+			}
+		}
+
+		// Reads the user-created repositories from providers
+		for (int j = 0; j < configElements.length; j++) {
+			if (!"provider".equals(configElements[j].getName()))
+				continue;
+			String clazz = configElements[j].getAttribute("class"); //$NON-NLS-1$
+			try {
+				IRepositoryProvider provider = (IRepositoryProvider) configElements[j].createExecutableExtension("class");
+				IRepository[] repository = provider.getRepositories(new NullProgressMonitor());
+				for (int i = 0; i < repository.length; i++)
+					repositoryMap.put(repository[i].getSchema(), repository[i]);
+			} catch (Exception e) {
+				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to instantiate repository provider " + clazz, e);
+				CoreActivator.log(status);
+            } catch (LinkageError e) {
+				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to instantiate repository provider " + clazz, e);
+    			CoreActivator.log(status);
 			}
 		}
 

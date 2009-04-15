@@ -320,6 +320,13 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 	}
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepository#getSchema()
+     */
+    public String getSchema() {
+	    return URI_SCHEMA;
+    }
+
+	/* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override

@@ -134,24 +134,14 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
     		this.properties.put(key, variableManager.performStringSubstitution(value));
     	}
 
-    	this.properties.put("hibernate.query.factory_class", "org.hibernate.hql.classic.ClassicQueryTranslatorFactory");
-    	this.properties.put("hibernate.connection.pool_size", "5");
-    	this.properties.put("hibernate.jdbc.batch_size", "20");
-    	this.properties.put("hibernate.show_sql", "false");
-
-    	// Build suitable defaults for file-based databases (Apache Derby and HSQL)
-    	if (!this.properties.contains("hibernate.connection.url")) {
-    		if ("org.apache.derby.jdbc.EmbeddedDriver".equals(this.properties.get("hibernate.connection.driver_class")))
-        		this.properties.put("hibernate.connection.url", "jdbc:derby:" + Activator.getDefault().getStateLocation().toOSString() + "/.derby;create=true");
-    		if ("org.hsqldb.jdbcDriver".equals(this.properties.get("hibernate.connection.driver_class")))
-        		this.properties.put("hibernate.connection.url", "jdbc:hsqldb:file:" + Activator.getDefault().getStateLocation().toOSString() + "/.hsqldb");
-    	}
-
     	startUp(null);
     	Activator.getDefault().getRepositories().add(this);
     }
 
-	public String getSchema() {
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepository#getSchema()
+     */
+    public String getSchema() {
     	return schema;
     }
 
@@ -205,6 +195,19 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 
 	@SuppressWarnings("unchecked")
     public void startUp(IProgressMonitor monitor) {
+    	properties.put("hibernate.query.factory_class", "org.hibernate.hql.classic.ClassicQueryTranslatorFactory");
+    	properties.put("hibernate.connection.pool_size", "5");
+    	properties.put("hibernate.jdbc.batch_size", "20");
+    	properties.put("hibernate.show_sql", "false");
+
+    	// Build suitable defaults for file-based databases (Apache Derby and HSQL)
+    	if (!properties.contains("hibernate.connection.url") && Activator.getDefault() != null) {
+    		if ("org.apache.derby.jdbc.EmbeddedDriver".equals(properties.get("hibernate.connection.driver_class")))
+        		properties.put("hibernate.connection.url", "jdbc:derby:" + Activator.getDefault().getStateLocation().toOSString() + "/.derby;create=true");
+    		if ("org.hsqldb.jdbcDriver".equals(properties.get("hibernate.connection.driver_class")))
+        		properties.put("hibernate.connection.url", "jdbc:hsqldb:file:" + Activator.getDefault().getStateLocation().toOSString() + "/.hsqldb");
+    	}
+
 		try {
 			AnnotationConfiguration cfg = buildConfiguration();
 			try {
