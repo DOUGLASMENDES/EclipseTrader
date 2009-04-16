@@ -109,3 +109,4 @@ Import-Package: javax.persistence,
  org.apache.commons.collections.map,
  org.apache.commons.collections.set,
  org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

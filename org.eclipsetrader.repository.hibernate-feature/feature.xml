@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipsetrader.repository.hibernate"
+      label="Hibernate Repository"
+      version="1.0.0.qualifier"
+      provider-name="EclipseTrader.org">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license>
+      %license
+   </license>
+
+   <url>
+      <update label="EclipseTrader Update Site" url="http://www.eclipsetrader.org/updates"/>
+      <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
+   </url>
+
+   <includes
+         id="org.hibernate"
+         version="0.0.0"/>
+
+   <requires>
+      <import feature="org.eclipsetrader.platform" version="1.0.0.qualifier"/>
+   </requires>
+
+   <plugin
+         id="org.eclipsetrader.repository.hibernate"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.bind"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>

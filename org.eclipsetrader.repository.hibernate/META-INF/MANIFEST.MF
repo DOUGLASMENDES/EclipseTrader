@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Hibernate Repository Plug-in
+Bundle-Name: Hibernate Repository
 Bundle-SymbolicName: org.eclipsetrader.repository.hibernate;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.repository.hibernate.internal.Activator
@@ -112,5 +112,6 @@ Import-Package: javax.persistence,
 Export-Package: org.eclipsetrader.repository.hibernate,
  org.eclipsetrader.repository.hibernate.internal,
  org.eclipsetrader.repository.hibernate.internal.stores,
- org.eclipsetrader.repository.hibernate.internal.types
+ org.eclipsetrader.repository.hibernate.internal.types,
+ org.eclipsetrader.repository.hibernate.internal.ui;x-internal:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
