@@ -8,11 +8,18 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipsetrader.core,
- org.eclipse.core.variables
+ org.eclipse.core.variables,
+ org.eclipse.core.expressions
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Import-Package: javax.persistence,
  javax.persistence.spi,
+ javax.xml.bind,
+ javax.xml.bind.annotation,
+ javax.xml.bind.annotation.adapters,
+ javax.xml.bind.attachment,
+ javax.xml.bind.helpers,
+ javax.xml.bind.util,
  org.hibernate;version="[3.2.0,3.3.0)",
  org.hibernate.action;version="[3.2.0,3.3.0)",
  org.hibernate.annotations;version="[3.3.0,3.4.0)",

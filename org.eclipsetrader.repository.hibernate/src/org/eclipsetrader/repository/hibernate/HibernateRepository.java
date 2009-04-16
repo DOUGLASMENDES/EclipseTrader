@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 
 package org.eclipsetrader.repository.hibernate;
 
-import java.net.URI;
+ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +39,7 @@ import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.repository.hibernate.internal.Activator;
+import org.eclipsetrader.repository.hibernate.internal.RepositoryDefinition;
 import org.eclipsetrader.repository.hibernate.internal.stores.HistoryStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.IntradayHistoryStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.RepositoryStore;
@@ -75,6 +76,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 	private String schema;
 	private String name;
 	private Properties properties;
+	private RepositoryDefinition repositoryDefinition;
 	private Session session;
 
 	private Map<String, IdentifierType> identifiersMap;
@@ -86,6 +88,11 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 
 	public HibernateRepository() {
 		this(null, null, new Properties());
+	}
+
+	public HibernateRepository(RepositoryDefinition repositoryDefinition) {
+		this(repositoryDefinition.getSchema(), repositoryDefinition.getLabel(), repositoryDefinition.getProperties());
+		this.repositoryDefinition = repositoryDefinition;
 	}
 
 	public HibernateRepository(String schema, String name, Properties properties) {
@@ -422,8 +429,18 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
+		if (repositoryDefinition != null && adapter.isAssignableFrom(repositoryDefinition.getClass()))
+			return repositoryDefinition;
+
+		if (adapter.isAssignableFrom(getClass()))
+			return this;
+
 		return null;
 	}
+
+	public RepositoryDefinition getRepositoryDefinition() {
+    	return repositoryDefinition;
+    }
 
 	/* (non-Javadoc)
      * @see java.lang.Object#toString()

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="org.eclipsetrader.repository.hibernate.connectivity" name="Hibernate Database Enablement" schema="schema/connectivity.exsd"/>
+   <extension
+         point="org.eclipsetrader.core.repositories">
+      <provider
+            class="org.eclipsetrader.repository.hibernate.HibernateRepositoryProvider">
+      </provider>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            class="org.eclipsetrader.repository.hibernate.internal.ui.RepositoryWizard"
+            hasPages="true"
+            icon="hibernate.png"
+            id="org.eclipsetrader.repository.hibernate.repository"
+            name="Hibernate Repository">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="org.eclipse.ui.file.properties">
+         <class
+               class="org.eclipsetrader.repository.hibernate.internal.ui.RepositoryPropertiesHandler">
+         </class>
+         <activeWhen>
+            <and>
+               <count
+                     value="1">
+               </count>
+               <iterate>
+                  <adapt
+                        type="org.eclipsetrader.core.repositories.IRepository">
+                  </adapt>
+               </iterate>
+            </and>
+         </activeWhen>
+      </handler>
+   </extension>
+
+</plugin>
