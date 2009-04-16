@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<fragment>
+   <extension
+         point="org.eclipsetrader.repository.hibernate.connectivity">
+      <database
+            dialect="org.hibernate.dialect.DerbyDialect"
+            driver_class="org.apache.derby.jdbc.EmbeddedDriver"
+            icon="apache.png"
+            name="Apache Derby">
+      </database>
+   </extension>
+
+</fragment>
