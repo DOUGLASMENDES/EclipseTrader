@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.eclipsetrader.repository.hibernate.connectivity">
+      <database
+            dialect="org.hibernate.dialect.PostgreSQLDialect"
+            driver_class="org.postgresql.Driver"
+            icon="postgresql.png"
+            name="PostgreSQL">
+      </database>
+   </extension>
+
+</fragment>
