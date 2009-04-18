@@ -36,7 +36,7 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipsetrader.repository.hibernate";
-	public static final String ENABLEMENT_EXTENSION_ID = "org.hibernate.enablements";
+	public static final String CONNECTIVITY_EXTENSION_ID = "org.eclipsetrader.repository.hibernate.connectivity";
 
 	public static final String REPOSITORIES_FILE = "repositories.xml"; //$NON-NLS-1$
 

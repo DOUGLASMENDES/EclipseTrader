@@ -98,7 +98,7 @@ public class RepositoryDialog extends TitleAreaDialog {
 	    password = new Text(content, SWT.BORDER);
 	    password.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
 
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.ENABLEMENT_EXTENSION_ID);
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.CONNECTIVITY_EXTENSION_ID);
 		if (extensionPoint != null) {
 			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 			DatabaseElement[] elements = new DatabaseElement[configElements.length];
