@@ -84,6 +84,7 @@ import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.TimeSpan;
+import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -113,6 +114,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	public static final String K_PRIVATE_TEMPLATE = "private-template";
 
 	public static final String K_PERIOD = "period";
+	public static final String K_RESOLUTION = "resolution";
 	public static final String K_CUSTOM = "custom";
 	public static final String K_FIRST_DATE = "first-date";
 	public static final String K_LAST_DATE = "last-date";
@@ -126,6 +128,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	private BaseChartViewer viewer;
 	private ChartView view;
 	private IHistory history;
+	private IHistory activeHistory;
 	private boolean dirty;
 
 	private IDialogSettings dialogSettings;
@@ -160,12 +163,20 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         protected IStatus run(IProgressMonitor monitor) {
         	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
             try {
+            	if (history != null) {
+                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+                	if (propertyChangeSupport != null)
+                		propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+            	}
+            	if (activeHistory != null) {
+                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeHistory.getAdapter(PropertyChangeSupport.class);
+                	if (propertyChangeSupport != null)
+                		propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+            	}
+
             	if (history == null) {
                 	IRepositoryService repositoryService = ChartsUIActivator.getDefault().getRepositoryService();
                 	history = repositoryService.getHistoryFor(security);
-                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
-                	if (propertyChangeSupport != null)
-                		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
             	}
 
             	if (view == null) {
@@ -173,7 +184,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             		view.addViewChangeListener(viewChangeListener);
             	}
 
-            	IHistory activeHistory = history;
+            	activeHistory = history;
 
             	if (K_CUSTOM.equals(dialogSettings.get(K_PERIOD))) {
     				try {
@@ -185,31 +196,69 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     				}
             	}
             	else {
+            		TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
             		TimeSpan timeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
                 	if (timeSpan != null) {
-                		Calendar c = Calendar.getInstance();
-                		c.setTime(history.getLast().getDate());
-                		switch(timeSpan.getUnits()) {
-                			case Months:
-                        		c.add(Calendar.MONTH, - timeSpan.getLength());
-                        		activeHistory = history.getSubset(c.getTime(), history.getLast().getDate());
-                				break;
-                			case Years:
-                        		c.add(Calendar.YEAR, - timeSpan.getLength());
-                        		activeHistory = history.getSubset(c.getTime(), history.getLast().getDate());
-                				break;
+                		if (timeSpan.getUnits() == Units.Days) {
+                    		Calendar c = Calendar.getInstance();
+                    		c.set(Calendar.HOUR_OF_DAY, 23);
+                    		c.set(Calendar.MINUTE, 59);
+                    		c.set(Calendar.SECOND, 59);
+                    		c.set(Calendar.MILLISECOND, 999);
+                    		Date last = c.getTime();
+                			int index = history.getOHLC().length - timeSpan.getLength();
+                			if (index < 0)
+                				index = 0;
+                			Date first = history.getOHLC()[index].getDate();
+                    		activeHistory = history.getSubset(first, last, resolutionTimeSpan);
+                		}
+                		else {
+                    		Calendar c = Calendar.getInstance();
+                    		c.setTime(history.getLast().getDate());
+                    		switch(timeSpan.getUnits()) {
+                    			case Months:
+                            		c.add(Calendar.MONTH, - timeSpan.getLength() - 1);
+                            		if (resolutionTimeSpan != null)
+                            			activeHistory = history.getSubset(c.getTime(), history.getLast().getDate(), resolutionTimeSpan);
+                            		else
+                            			activeHistory = history.getSubset(c.getTime(), history.getLast().getDate());
+                    				break;
+                    			case Years:
+                            		c.add(Calendar.YEAR, - timeSpan.getLength() - 1);
+                            		activeHistory = history.getSubset(c.getTime(), history.getLast().getDate());
+                    				break;
+                    		}
                 		}
                 	}
             	}
 
-            	view.setRootDataSeries(new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", activeHistory.getAdjustedOHLC()));
+            	if (activeHistory.getTimeSpan().getUnits() != TimeSpan.Units.Days) {
+                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeHistory.getAdapter(PropertyChangeSupport.class);
+                	if (propertyChangeSupport != null)
+                		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+            	}
+            	else {
+                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+                	if (propertyChangeSupport != null)
+                		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+            	}
+
+        		TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
+        		if (resolutionTimeSpan == null)
+        			resolutionTimeSpan = TimeSpan.days(1);
+            	view.setRootDataSeries(new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", activeHistory.getAdjustedOHLC(), resolutionTimeSpan));
 
     	        if (!viewer.isDisposed()) {
     				try {
     					viewer.getDisplay().asyncExec(new Runnable() {
     						public void run() {
-    							if (!viewer.isDisposed())
+    							if (!viewer.isDisposed()) {
+    				        		TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
+    				        		if (resolutionTimeSpan == null)
+    				        			resolutionTimeSpan = TimeSpan.days(1);
+    								viewer.setResolutionTimeSpan(resolutionTimeSpan);
     								refreshChart();
+    							}
     						}
     					});
     				} catch (SWTException e) {
@@ -370,13 +419,27 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         		TimeSpan.years(2),
         		TimeSpan.years(1),
         		TimeSpan.months(6),
+        		TimeSpan.months(3),
+        		TimeSpan.months(1),
+        		TimeSpan.days(5),
+        		TimeSpan.days(1),
         	};
-        PeriodMenu periodMenu = new PeriodMenu(site.getShell(), availablePeriods) {
+        TimeSpan[] availableResolutions = new TimeSpan[] {
+        		null,
+        		null,
+        		null,
+        		TimeSpan.minutes(30),
+        		TimeSpan.minutes(15),
+        		TimeSpan.minutes(5),
+        		TimeSpan.minutes(1),
+        	};
+        PeriodMenu periodMenu = new PeriodMenu(site.getShell(), availablePeriods, availableResolutions) {
             @Override
-            protected void selectionChanged(TimeSpan selection) {
+            protected void selectionChanged(TimeSpan selection, TimeSpan resolutionSelection) {
             	dialogSettings.put(K_PERIOD, selection != null ? selection.toString() : (String) null);
+            	dialogSettings.put(K_RESOLUTION, resolutionSelection != null ? resolutionSelection.toString() : (String) null);
 	            job.schedule();
-	            super.selectionChanged(selection);
+	            super.selectionChanged(selection, resolutionSelection);
             }
 
             @Override
@@ -496,12 +559,6 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     					new TimeSpan[] {
     						TimeSpan.days(1),
     						TimeSpan.minutes(1),
-    						TimeSpan.minutes(2),
-    						TimeSpan.minutes(3),
-    						TimeSpan.minutes(5),
-    						TimeSpan.minutes(10),
-    						TimeSpan.minutes(15),
-    						TimeSpan.minutes(30),
     					});
     			job.setUser(true);
     			job.schedule();
@@ -707,6 +764,11 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     public void dispose() {
     	if (history != null) {
         	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+        	if (propertyChangeSupport != null)
+        		propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+    	}
+    	if (activeHistory != null) {
+        	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeHistory.getAdapter(PropertyChangeSupport.class);
         	if (propertyChangeSupport != null)
         		propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
     	}

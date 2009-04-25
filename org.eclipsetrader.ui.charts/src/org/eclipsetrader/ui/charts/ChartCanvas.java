@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.core.charts.IDataSeries;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ChartCanvas {
@@ -52,6 +53,7 @@ public class ChartCanvas {
 
 	private BaseChartViewer viewer;
 	private IChartObject chartObject;
+	private TimeSpan resolutionTimeSpan;
 	private DoubleValuesAxis verticalAxis;
 	private NumberFormat nf = NumberFormat.getInstance();
 
@@ -224,10 +226,18 @@ public class ChartCanvas {
 					currentDate.setTime(date);
 
 					if (oldDate != null) {
-						if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
-							tick = true;
-						else if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
-							tick = true;
+						if (resolutionTimeSpan == null || resolutionTimeSpan.getUnits() == TimeSpan.Units.Days) {
+							if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
+								tick = true;
+							else if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+								tick = true;
+						}
+						else {
+							if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+								tick = true;
+							else if (currentDate.get(Calendar.DAY_OF_MONTH) != oldDate.get(Calendar.DAY_OF_MONTH))
+								tick = true;
+						}
 						oldDate.setTime(date);
 					}
 					else {
@@ -383,4 +393,12 @@ public class ChartCanvas {
 		summary.layout();
 		summary.getParent().layout();
 	}
+
+	public TimeSpan getResolutionTimeSpan() {
+    	return resolutionTimeSpan;
+    }
+
+	public void setResolutionTimeSpan(TimeSpan resolutionTimeSpan) {
+    	this.resolutionTimeSpan = resolutionTimeSpan;
+    }
 }

@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class DateScaleCanvas {
@@ -42,10 +43,13 @@ public class DateScaleCanvas {
 	private Label label;
 
 	private BaseChartViewer viewer;
+	private TimeSpan resolutionTimeSpan;
 
 	private SimpleDateFormat monthYearFormatter = new SimpleDateFormat("MMM, yyyy"); //$NON-NLS-1$
 	private SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM"); //$NON-NLS-1$
+	private SimpleDateFormat dayFormatter = new SimpleDateFormat("MMM, d"); //$NON-NLS-1$
 	private DateFormat dateFormat = DateFormat.getDateInstance();
+	private DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
 
 	DateScaleCanvas(BaseChartViewer viewer, Composite parent) {
 		this.viewer = viewer;
@@ -128,15 +132,29 @@ public class DateScaleCanvas {
 					currentDate.setTime(date);
 
 					if (oldDate != null) {
-						if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR)) {
-							tick = true;
-							highlight = true;
-							text = monthYearFormatter.format(currentDate.getTime());
+						if (resolutionTimeSpan == null || resolutionTimeSpan.getUnits() == TimeSpan.Units.Days) {
+							if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR)) {
+								tick = true;
+								highlight = true;
+								text = monthYearFormatter.format(currentDate.getTime());
+							}
+							else if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH)) {
+								tick = true;
+								highlight = false;
+								text = monthFormatter.format(currentDate.getTime());
+							}
 						}
-						else if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH)) {
-							tick = true;
-							highlight = false;
-							text = monthFormatter.format(currentDate.getTime());
+						else {
+							if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH)) {
+								tick = true;
+								highlight = true;
+								text = monthFormatter.format(currentDate.getTime());
+							}
+							else if (currentDate.get(Calendar.DAY_OF_MONTH) != oldDate.get(Calendar.DAY_OF_MONTH)) {
+								tick = true;
+								highlight = false;
+								text = dayFormatter.format(currentDate.getTime());
+							}
 						}
 						oldDate.setTime(date);
 					}
@@ -169,9 +187,20 @@ public class DateScaleCanvas {
 
 	public void showToolTip(int x, int y, Date value) {
     	if (value != null) {
-    		label.setText(dateFormat.format(value));
+			if (resolutionTimeSpan == null || resolutionTimeSpan.getUnits() == TimeSpan.Units.Days)
+				label.setText(dateFormat.format(value));
+			else
+				label.setText(dateTimeFormat.format(value));
     		label.pack();
     		label.setLocation(x - label.getSize().x / 2, 0);
     	}
+    }
+
+	public TimeSpan getResolutionTimeSpan() {
+    	return resolutionTimeSpan;
+    }
+
+	public void setResolutionTimeSpan(TimeSpan resolutionTimeSpan) {
+    	this.resolutionTimeSpan = resolutionTimeSpan;
     }
 }

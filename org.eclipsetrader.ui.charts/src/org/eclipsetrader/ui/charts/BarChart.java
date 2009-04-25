@@ -21,7 +21,9 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.IDataSeries;
+import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.TimeSpan;
 
 public class BarChart implements IChartObject {
 	private IDataSeries dataSeries;
@@ -41,6 +43,12 @@ public class BarChart implements IChartObject {
 
 	public BarChart(IDataSeries dataSeries) {
 	    this.dataSeries = dataSeries;
+
+	    if (dataSeries instanceof OHLCDataSeries) {
+	    	TimeSpan resolution = ((OHLCDataSeries) dataSeries).getResolution();
+	    	if (resolution != null && resolution.getUnits() == TimeSpan.Units.Minutes)
+	    		dateFormat = DateFormat.getDateTimeInstance();
+	    }
 
 	    numberFormat.setGroupingUsed(true);
 	    numberFormat.setMinimumIntegerDigits(1);

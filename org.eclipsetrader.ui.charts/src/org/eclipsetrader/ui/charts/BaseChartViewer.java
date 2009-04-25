@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.ui.internal.charts.ChartObjectHitVisitor;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
@@ -417,6 +418,7 @@ public class BaseChartViewer implements ISelectionProvider {
 			if (selectedChartCanvas == null)
 				selectedChartCanvas = chartCanvas[i];
 
+			chartCanvas[i].setResolutionTimeSpan(getResolutionTimeSpan());
 			chartCanvas[i].setChartObject(input[i]);
 			chartCanvas[i].redraw();
 
@@ -653,5 +655,13 @@ public class BaseChartViewer implements ISelectionProvider {
 	public void setZoomFactor(int zoomFactor) {
     	datesAxis.setZoomFactor(zoomFactor);
 		redraw();
+    }
+
+	public TimeSpan getResolutionTimeSpan() {
+    	return dateScaleCanvas.getResolutionTimeSpan();
+    }
+
+	public void setResolutionTimeSpan(TimeSpan resolutionTimeSpan) {
+		dateScaleCanvas.setResolutionTimeSpan(resolutionTimeSpan);
     }
 }

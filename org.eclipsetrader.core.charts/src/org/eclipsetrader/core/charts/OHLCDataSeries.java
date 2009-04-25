@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.feed.IOHLC;
+import org.eclipsetrader.core.feed.TimeSpan;
 
 /**
  * Data series implementation representing <code>IOHLC</code> values.
@@ -23,6 +24,7 @@ import org.eclipsetrader.core.feed.IOHLC;
  * @see org.eclipsetrader.core.feed.IOHLC
  */
 public class OHLCDataSeries extends DataSeries {
+	private TimeSpan resolution;
 
     private static class OHLCWrapper implements IAdaptable {
     	private IOHLC ohlc;
@@ -30,18 +32,6 @@ public class OHLCDataSeries extends DataSeries {
 		public OHLCWrapper(IOHLC ohlc) {
 	        this.ohlc = ohlc;
         }
-
-		public Date getDate() {
-			return ohlc.getDate();
-		}
-
-		public Double getHigh() {
-			return ohlc.getHigh() != 0 ? ohlc.getHigh() : ohlc.getClose();
-		}
-
-		public Double getLow() {
-			return ohlc.getLow() != 0 ? ohlc.getLow() : ohlc.getClose();
-		}
 
 		/* (non-Javadoc)
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
@@ -83,12 +73,14 @@ public class OHLCDataSeries extends DataSeries {
 		return v;
     }
 
-	public OHLCDataSeries(String name, IOHLC[] values) {
+	public OHLCDataSeries(String name, IOHLC[] values, TimeSpan resolution) {
 		super(name, convertValues(values));
+		this.resolution = resolution;
 	}
 
-	protected OHLCDataSeries(String name, IAdaptable[] values) {
+	protected OHLCDataSeries(String name, IAdaptable[] values, TimeSpan resolution) {
 	    super(name, values);
+		this.resolution = resolution;
     }
 
 	/* (non-Javadoc)
@@ -96,7 +88,7 @@ public class OHLCDataSeries extends DataSeries {
      */
 	@Override
     public IDataSeries getSeries(IAdaptable first, IAdaptable last) {
-    	return new OHLCDataSeries(getName(), getSubset(first, last));
+    	return new OHLCDataSeries(getName(), getSubset(first, last), resolution);
     }
 
 	/* (non-Javadoc)
@@ -125,5 +117,9 @@ public class OHLCDataSeries extends DataSeries {
         		v = new DoubleWrapper(ohlc.getLow());
     	}
     	return v;
+    }
+
+	public TimeSpan getResolution() {
+    	return resolution;
     }
 }
