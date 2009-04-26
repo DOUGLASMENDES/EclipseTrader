@@ -313,6 +313,15 @@ public class BaseChartViewer implements ISelectionProvider {
 		selectedChartCanvas = null;
 
     	datesAxis.clear();
+    	for (int i = 0; i < input.length; i++) {
+			input[i].accept(new IChartObjectVisitor() {
+                public boolean visit(IChartObject object) {
+                	if (object.getDataSeries() != null)
+                		datesAxis.addValues(object.getDataSeries().getValues());
+    	            return true;
+                }
+        	});
+    	}
 
     	for (int i = 0; i < input.length; i++) {
 			if (chartCanvas[i] == null || chartCanvas[i].isDisposed()) {
@@ -421,14 +430,6 @@ public class BaseChartViewer implements ISelectionProvider {
 			chartCanvas[i].setResolutionTimeSpan(getResolutionTimeSpan());
 			chartCanvas[i].setChartObject(input[i]);
 			chartCanvas[i].redraw();
-
-			input[i].accept(new IChartObjectVisitor() {
-                public boolean visit(IChartObject object) {
-                	if (object.getDataSeries() != null)
-                		datesAxis.addValues(object.getDataSeries().getValues());
-    	            return true;
-                }
-        	});
     	}
 
     	int[] weights = new int[chartCanvas.length];

@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -115,9 +114,6 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
 	public static final String K_PERIOD = "period";
 	public static final String K_RESOLUTION = "resolution";
-	public static final String K_CUSTOM = "custom";
-	public static final String K_FIRST_DATE = "first-date";
-	public static final String K_LAST_DATE = "last-date";
 	public static final String K_SHOW_TOOLTIPS = "show-tooltips";
 	public static final String K_ZOOM_FACTOR = "zoom-factor";
 
@@ -141,13 +137,34 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	private Action zoomInAction;
 	private Action zoomResetAction;
 	private Action updateAction;
+	private PeriodAction periodAllAction;
+	private PeriodAction[] periodAction;
 
 	private IMemento memento;
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
-        	if (IPropertyConstants.BARS.equals(evt.getPropertyName()))
-        		job.schedule();
+        	if (IPropertyConstants.BARS.equals(evt.getPropertyName())) {
+    	        if (!viewer.isDisposed()) {
+    				try {
+    					viewer.getDisplay().asyncExec(new Runnable() {
+    						public void run() {
+    							if (!viewer.isDisposed()) {
+    				        		TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
+    				        		if (resolutionTimeSpan == null)
+    				        			resolutionTimeSpan = TimeSpan.days(1);
+    								viewer.setResolutionTimeSpan(resolutionTimeSpan);
+    				            	view.setRootDataSeries(new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", activeHistory.getAdjustedOHLC(), resolutionTimeSpan));
+    								refreshChart();
+    							}
+    						}
+    					});
+    				} catch (SWTException e) {
+    					if (e.code != SWT.ERROR_DEVICE_DISPOSED)
+    						throw e;
+    				}
+    			}
+        	}
         }
 	};
 
@@ -163,11 +180,6 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         protected IStatus run(IProgressMonitor monitor) {
         	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
             try {
-            	if (history != null) {
-                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
-                	if (propertyChangeSupport != null)
-                		propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-            	}
             	if (activeHistory != null) {
                 	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeHistory.getAdapter(PropertyChangeSupport.class);
                 	if (propertyChangeSupport != null)
@@ -186,66 +198,53 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
             	activeHistory = history;
 
-            	if (K_CUSTOM.equals(dialogSettings.get(K_PERIOD))) {
-    				try {
-    					Date firstDate = new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_FIRST_DATE));
-    					Date lastDate = new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_LAST_DATE));
-                		activeHistory = history.getSubset(firstDate, lastDate);
-    				} catch(Exception e) {
-    					// Do nothing
-    				}
-            	}
-            	else {
-            		TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
-            		TimeSpan timeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
-                	if (timeSpan != null) {
-                		if (timeSpan.getUnits() == Units.Days) {
-                    		Calendar c = Calendar.getInstance();
-                    		c.set(Calendar.HOUR_OF_DAY, 23);
-                    		c.set(Calendar.MINUTE, 59);
-                    		c.set(Calendar.SECOND, 59);
-                    		c.set(Calendar.MILLISECOND, 999);
-                    		Date last = c.getTime();
-                			int index = history.getOHLC().length - timeSpan.getLength();
-                			if (index < 0)
-                				index = 0;
-                			Date first = history.getOHLC()[index].getDate();
-                    		activeHistory = history.getSubset(first, last, resolutionTimeSpan);
-                		}
-                		else {
-                    		Calendar c = Calendar.getInstance();
-                    		c.setTime(history.getLast().getDate());
-                    		switch(timeSpan.getUnits()) {
-                    			case Months:
-                            		c.add(Calendar.MONTH, - timeSpan.getLength() - 1);
-                            		if (resolutionTimeSpan != null)
-                            			activeHistory = history.getSubset(c.getTime(), history.getLast().getDate(), resolutionTimeSpan);
-                            		else
-                            			activeHistory = history.getSubset(c.getTime(), history.getLast().getDate());
-                    				break;
-                    			case Years:
-                            		c.add(Calendar.YEAR, - timeSpan.getLength() - 1);
-                            		activeHistory = history.getSubset(c.getTime(), history.getLast().getDate());
-                    				break;
-                    		}
-                		}
-                	}
-            	}
-
-            	if (activeHistory.getTimeSpan().getUnits() != TimeSpan.Units.Days) {
-                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeHistory.getAdapter(PropertyChangeSupport.class);
-                	if (propertyChangeSupport != null)
-                		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-            	}
-            	else {
-                	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
-                	if (propertyChangeSupport != null)
-                		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-            	}
-
+        		TimeSpan timeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
         		TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
-        		if (resolutionTimeSpan == null)
-        			resolutionTimeSpan = TimeSpan.days(1);
+            	if (timeSpan != null) {
+            		Calendar c = Calendar.getInstance();
+            		c.set(Calendar.HOUR_OF_DAY, 23);
+            		c.set(Calendar.MINUTE, 59);
+            		c.set(Calendar.SECOND, 59);
+            		c.set(Calendar.MILLISECOND, 999);
+            		Date lastDate = c.getTime();
+
+            		if (timeSpan.getUnits() == Units.Days) {
+            			int index = history.getOHLC().length - timeSpan.getLength();
+            			if (index < 0)
+            				index = 0;
+            			Date firstDate = history.getOHLC()[index].getDate();
+                		activeHistory = history.getSubset(firstDate, lastDate, resolutionTimeSpan);
+            		}
+            		else {
+                		c = Calendar.getInstance();
+                		if (history.getLast() != null)
+                			c.setTime(history.getLast().getDate());
+                		else {
+                    		c.set(Calendar.HOUR_OF_DAY, 0);
+                    		c.set(Calendar.MINUTE, 0);
+                    		c.set(Calendar.SECOND, 0);
+                    		c.set(Calendar.MILLISECOND, 0);
+                		}
+                		switch(timeSpan.getUnits()) {
+                			case Months:
+                        		c.add(Calendar.MONTH, - timeSpan.getLength());
+                        		if (resolutionTimeSpan != null)
+                        			activeHistory = history.getSubset(c.getTime(), lastDate, resolutionTimeSpan);
+                        		else
+                        			activeHistory = history.getSubset(c.getTime(), lastDate);
+                				break;
+                			case Years:
+                        		c.add(Calendar.YEAR, - timeSpan.getLength());
+                        		activeHistory = history.getSubset(c.getTime(), lastDate);
+                				break;
+                		}
+            		}
+            	}
+
+            	PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) activeHistory.getAdapter(PropertyChangeSupport.class);
+            	if (propertyChangeSupport != null)
+            		propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+
             	view.setRootDataSeries(new OHLCDataSeries(history.getSecurity() != null ? history.getSecurity().getName() : "MAIN", activeHistory.getAdjustedOHLC(), resolutionTimeSpan));
 
     	        if (!viewer.isDisposed()) {
@@ -413,58 +412,30 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		zoomOutAction.setEnabled(false);
     	zoomResetAction.setEnabled(false);
 
+    	periodAllAction = new PeriodAction(this, "All", null, null);
+    	periodAction = new PeriodAction[] {
+    			new PeriodAction(this, TimeSpan.years(2), null),
+    			new PeriodAction(this, TimeSpan.years(1), null),
+    			new PeriodAction(this, TimeSpan.months(6), null),
+    			new PeriodAction(this, TimeSpan.months(3), TimeSpan.minutes(30)),
+    			new PeriodAction(this, TimeSpan.months(1), TimeSpan.minutes(15)),
+    			new PeriodAction(this, TimeSpan.days(5), TimeSpan.minutes(5)),
+    			new PeriodAction(this, TimeSpan.days(1), TimeSpan.minutes(1)),
+    		};
+
+    	TimeSpan timeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
+    	periodAllAction.setChecked(timeSpan == null);
+    	for (int i = 0; i < periodAction.length; i++)
+    		periodAction[i].setChecked(periodAction[i].getPeriod().equals(timeSpan));
+
         IMenuManager menuManager = actionBars.getMenuManager();
+    	menuManager.add(new Separator("periods.top"));
+    	menuManager.add(new Separator("periods"));
+    	menuManager.add(new Separator("periods.bottom"));
 
-        TimeSpan[] availablePeriods = new TimeSpan[] {
-        		TimeSpan.years(2),
-        		TimeSpan.years(1),
-        		TimeSpan.months(6),
-        		TimeSpan.months(3),
-        		TimeSpan.months(1),
-        		TimeSpan.days(5),
-        		TimeSpan.days(1),
-        	};
-        TimeSpan[] availableResolutions = new TimeSpan[] {
-        		null,
-        		null,
-        		null,
-        		TimeSpan.minutes(30),
-        		TimeSpan.minutes(15),
-        		TimeSpan.minutes(5),
-        		TimeSpan.minutes(1),
-        	};
-        PeriodMenu periodMenu = new PeriodMenu(site.getShell(), availablePeriods, availableResolutions) {
-            @Override
-            protected void selectionChanged(TimeSpan selection, TimeSpan resolutionSelection) {
-            	dialogSettings.put(K_PERIOD, selection != null ? selection.toString() : (String) null);
-            	dialogSettings.put(K_RESOLUTION, resolutionSelection != null ? resolutionSelection.toString() : (String) null);
-	            job.schedule();
-	            super.selectionChanged(selection, resolutionSelection);
-            }
-
-            @Override
-            protected void customPeriodSelection(Date firstDate, Date lastDate) {
-            	dialogSettings.put(K_PERIOD, K_CUSTOM);
-            	dialogSettings.put(K_FIRST_DATE, new SimpleDateFormat("yyyyMMdd").format(firstDate));
-            	dialogSettings.put(K_LAST_DATE, new SimpleDateFormat("yyyyMMdd").format(lastDate));
-	            job.schedule();
-	            super.customPeriodSelection(firstDate, lastDate);
-            }
-       	};
-    	if (K_CUSTOM.equals(dialogSettings.get(K_PERIOD)))
-			try {
-				Date beginDate = new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_FIRST_DATE));
-				Date endDate = new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_LAST_DATE));
-	    		periodMenu.setCustomSelection(beginDate, endDate);
-			} catch(Exception e) {
-				// Do nothing
-			}
-    	else {
-    		TimeSpan timeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
-    		periodMenu.setSelection(timeSpan);
-    	}
-
-    	menuManager.add(periodMenu);
+    	menuManager.appendToGroup("periods.top", periodAllAction);
+        for (int i = 0; i < periodAction.length; i++)
+        	menuManager.appendToGroup("periods", periodAction[i]);
 
     	IToolBarManager toolBarManager = actionBars.getToolBarManager();
     	toolBarManager.add(new Separator("additions"));
@@ -491,7 +462,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
 		};
 		cutAction.setId("cut"); //$NON-NLS-1$
-		cutAction.setActionDefinitionId("org.eclipse.ui.edit.cut"); //$NON-NLS-1$
+		cutAction.setActionDefinitionId("org.eclipse.ui.edit.cut");
 		cutAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
 		cutAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
 		cutAction.setEnabled(false);
@@ -502,7 +473,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
 		};
 		copyAction.setId("copy"); //$NON-NLS-1$
-		copyAction.setActionDefinitionId("org.eclipse.ui.edit.copy"); //$NON-NLS-1$
+		copyAction.setActionDefinitionId("org.eclipse.ui.edit.copy");
 		copyAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 		copyAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
 		copyAction.setEnabled(false);
@@ -513,7 +484,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
 		};
 		pasteAction.setId("copy"); //$NON-NLS-1$
-		pasteAction.setActionDefinitionId("org.eclipse.ui.edit.paste"); //$NON-NLS-1$
+		pasteAction.setActionDefinitionId("org.eclipse.ui.edit.paste");
 		pasteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 		pasteAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE_DISABLED));
 		pasteAction.setEnabled(false);
@@ -535,7 +506,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
 		};
 		deleteAction.setId("delete"); //$NON-NLS-1$
-		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
+		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete");
 		deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		deleteAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
 		deleteAction.setEnabled(false);
@@ -559,13 +530,19 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     					new TimeSpan[] {
     						TimeSpan.days(1),
     						TimeSpan.minutes(1),
+    						TimeSpan.minutes(2),
+    						TimeSpan.minutes(3),
+    						TimeSpan.minutes(5),
+    						TimeSpan.minutes(10),
+    						TimeSpan.minutes(15),
+    						TimeSpan.minutes(30),
     					});
     			job.setUser(true);
     			job.schedule();
             }
 		};
 		updateAction.setId("update"); //$NON-NLS-1$
-		updateAction.setActionDefinitionId("org.eclipse.ui.edit.update"); //$NON-NLS-1$
+		updateAction.setActionDefinitionId("org.eclipse.ui.edit.update");
 		updateAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/refresh.gif"));
 		updateAction.setEnabled(true);
     }
@@ -714,7 +691,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
 		};
 		propertiesAction.setId(ActionFactory.PROPERTIES.getId());
-		propertiesAction.setActionDefinitionId("org.eclipse.ui.file.properties"); //$NON-NLS-1$
+		propertiesAction.setActionDefinitionId("org.eclipse.ui.file.properties");
 		propertiesAction.setEnabled(false);
         IActionBars actionBars = getViewSite().getActionBars();
 		actionBars.setGlobalActionHandler(propertiesAction.getId(), propertiesAction);
@@ -882,7 +859,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		JAXBContext jaxbContext = JAXBContext.newInstance(ChartTemplate.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //$NON-NLS-1$
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 		marshaller.marshal(object, string);
 		return string.toString();
 	}
@@ -912,4 +889,15 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			}
 		});
 	}
+
+	public void setPeriod(TimeSpan period, TimeSpan resolution) {
+    	dialogSettings.put(K_PERIOD, period != null ? period.toString() : (String) null);
+    	dialogSettings.put(K_RESOLUTION, resolution != null ? resolution.toString() : (String) null);
+
+    	periodAllAction.setChecked(period == null);
+    	for (int i = 0; i < periodAction.length; i++)
+    		periodAction[i].setChecked(period == periodAction[i].getPeriod());
+
+    	job.schedule();
+    }
 }

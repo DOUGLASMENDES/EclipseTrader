@@ -116,12 +116,6 @@ public class PaletteView extends ViewPart {
 				contributionElements.add(configElements[i]);
 		}
 
-		Collections.sort(categories, new Comparator<IConfigurationElement>() {
-            public int compare(IConfigurationElement o1, IConfigurationElement o2) {
-	            return o1.getAttribute(K_NAME).compareTo(o2.getAttribute(K_NAME));
-            }
-		});
-
 		for (IConfigurationElement categoryElement : categories) {
 			PShelfItem shelfItem = new PShelfItem(shelf, SWT.NONE);
 			shelfItem.setText(categoryElement.getAttribute(K_NAME));

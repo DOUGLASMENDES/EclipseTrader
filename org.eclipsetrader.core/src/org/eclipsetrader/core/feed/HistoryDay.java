@@ -19,8 +19,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.Assert;
@@ -77,7 +79,6 @@ public class HistoryDay implements IHistory {
          */
         public void setStoreProperties(IStoreProperties storeProperties) {
         	this.storeProperties = storeProperties;
-    		propertyChangeSupport.firePropertyChange("store_object", null, this);
         }
 	}
 
@@ -95,6 +96,12 @@ public class HistoryDay implements IHistory {
 		this.security = security;
 	    this.timeSpan = timeSpan;
 	    setStoreProperties(store, storeProperties);
+    }
+
+	public HistoryDay(ISecurity security, TimeSpan timeSpan, IOHLC[] bars) {
+		this.security = security;
+	    this.timeSpan = timeSpan;
+	    this.bars = bars;
     }
 
 	/* (non-Javadoc)
@@ -156,11 +163,14 @@ public class HistoryDay implements IHistory {
 		propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
     }
 
-	protected void updateStoreObjects() {
+	protected IStoreObject[] updateStoreObjects() {
+		Set<StoreObject> updatedStoreObjects = new HashSet<StoreObject>();
+
 		IRepository repository = null;
 		if (storeObjects.size() != 0) {
 			IStore store = storeObjects.values().iterator().next().getStore();
-			repository = store.getRepository();
+			if (store != null)
+				repository = store.getRepository();
 		}
 
 		if (bars.length != 0) {
@@ -187,11 +197,13 @@ public class HistoryDay implements IHistory {
 							properties.setProperty(timeSpan.toString(), list.toArray(new IOHLC[list.size()]));
 							object = new StoreObject(repository != null ? repository.createObject() : null, properties);
 							storeObjects.put(date, object);
+							updatedStoreObjects.add(object);
 						}
 						else {
 							IStoreProperties properties = object.getStoreProperties();
 							properties.setProperty(timeSpan.toString(), list.toArray(new IOHLC[list.size()]));
 							object.setStoreProperties(properties);
+							updatedStoreObjects.add(object);
 						}
 
 						list = new ArrayList<IOHLC>(2048);
@@ -211,14 +223,18 @@ public class HistoryDay implements IHistory {
 					properties.setProperty(timeSpan.toString(), list.toArray(new IOHLC[list.size()]));
 					object = new StoreObject(repository != null ? repository.createObject() : null, properties);
 					storeObjects.put(date, object);
+					updatedStoreObjects.add(object);
 				}
 				else {
 					IStoreProperties properties = object.getStoreProperties();
 					properties.setProperty(timeSpan.toString(), list.toArray(new IOHLC[list.size()]));
 					object.setStoreProperties(properties);
+					updatedStoreObjects.add(object);
 				}
 			}
 		}
+
+		return updatedStoreObjects.toArray(new IStoreObject[updatedStoreObjects.size()]);
 	}
 
 	/* (non-Javadoc)
@@ -252,7 +268,7 @@ public class HistoryDay implements IHistory {
 			if ((first == null || !b.getDate().before(first)) && (last == null || !b.getDate().after(last)))
 				l.add(b);
 		}
-		return new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
+		return new HistoryDay(security, timeSpan, l.toArray(new IOHLC[l.size()]));
 	}
 
 	/* (non-Javadoc)
@@ -308,6 +324,44 @@ public class HistoryDay implements IHistory {
 			storeObjects.put(date, object);
 
 		    IOHLC[] bars = (IOHLC[]) storeProperties[i].getProperty(timeSpan.toString());
+		    if (bars == null) {
+		    	IOHLC[] minuteBars = (IOHLC[]) storeProperties[i].getProperty(TimeSpan.minutes(1).toString());
+		    	if (minuteBars != null) {
+					Date startDate = null, endDate = null;
+					Double open = null, high = null, low = null, close = null;
+					Long volume = 0L;
+			    	Calendar c = Calendar.getInstance();
+
+					List<IOHLC> l = new ArrayList<IOHLC>();
+					for (IOHLC currentBar : minuteBars) {
+						if (startDate != null && !currentBar.getDate().before(endDate)) {
+							l.add(new OHLC(startDate, open, high, low, close, volume));
+							startDate = null;
+						}
+
+						if (startDate == null) {
+				    		c.setTime(currentBar.getDate());
+				    		startDate = c.getTime();
+				    		c.add(Calendar.MINUTE, timeSpan.getLength());
+				    		endDate = c.getTime();
+							open = high = low = close = null;
+							volume = 0L;
+						}
+
+						if (open == null)
+							open = currentBar.getOpen();
+						high = high != null ? Math.max(high, currentBar.getHigh()) : currentBar.getHigh();
+						low = low != null ? Math.min(low, currentBar.getLow()) : currentBar.getLow();
+						close = currentBar.getClose();
+						volume += currentBar.getVolume();
+					}
+
+					if (startDate != null)
+						l.add(new OHLC(startDate, open, high, low, close, volume));
+
+					bars = l.toArray(new IOHLC[l.size()]);
+		    	}
+		    }
 			if (bars != null)
 				l1.addAll(Arrays.asList(bars));
 		}

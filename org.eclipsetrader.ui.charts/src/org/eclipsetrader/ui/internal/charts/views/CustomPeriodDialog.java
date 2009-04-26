@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,12 @@ package org.eclipsetrader.ui.internal.charts.views;
 import java.util.Date;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
@@ -23,13 +29,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipsetrader.core.feed.TimeSpan;
 
 public class CustomPeriodDialog extends Dialog {
 	private CDateTime from;
 	private CDateTime to;
+	private ComboViewer resolution;
 
 	private Date firstDate;
 	private Date lastDate;
+	private TimeSpan resolutionTimeSpan;
 
 	public CustomPeriodDialog(Shell parentShell, Date firstDate, Date lastDate) {
 		super(parentShell);
@@ -67,8 +76,25 @@ public class CustomPeriodDialog extends Dialog {
 		label.setText("End Date");
 		to = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
 
+		label = new Label(content, SWT.NONE);
+		label.setText("Resolution");
+		resolution = new ComboViewer(content, SWT.DROP_DOWN | SWT.READ_ONLY);
+		resolution.setLabelProvider(new LabelProvider());
+		resolution.setContentProvider(new ArrayContentProvider());
+		resolution.setSorter(new ViewerSorter());
+		resolution.setInput(new Object[] {
+				TimeSpan.days(1),
+				TimeSpan.minutes(1),
+				TimeSpan.minutes(5),
+				TimeSpan.minutes(10),
+				TimeSpan.minutes(15),
+				TimeSpan.minutes(30),
+				TimeSpan.minutes(60),
+			});
+
 		from.setSelection(firstDate);
 		to.setSelection(lastDate);
+		resolution.setSelection(new StructuredSelection(resolutionTimeSpan));
 
 		return content;
 	}
@@ -80,6 +106,7 @@ public class CustomPeriodDialog extends Dialog {
     protected void okPressed() {
 		firstDate = from.getSelection();
 		lastDate = to.getSelection();
+		resolutionTimeSpan = (TimeSpan) ((IStructuredSelection) resolution.getSelection()).getFirstElement();
 		super.okPressed();
 	}
 
