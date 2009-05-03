@@ -12,6 +12,7 @@
 package org.eclipsetrader.ui.internal;
 
 import java.net.URI;
+import java.util.Hashtable;
 import java.util.UUID;
 
 import org.eclipse.core.internal.runtime.AdapterManager;
@@ -27,6 +28,7 @@ import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IWatchList;
+import org.eclipsetrader.ui.INotificationService;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.adapters.MarketAdapterFactory;
 import org.eclipsetrader.ui.internal.adapters.RepositoryAdapterFactory;
@@ -40,6 +42,7 @@ import org.eclipsetrader.ui.internal.views.WatchListViewItem;
 import org.eclipsetrader.ui.internal.views.WatchListViewItemAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -52,6 +55,8 @@ public class UIActivator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static UIActivator plugin;
+
+	private ServiceRegistration notificationServiceRegistration;
 
 	private IRepositoryService repositoryService;
 	private IMarketService marketService;
@@ -79,6 +84,12 @@ public class UIActivator extends AbstractUIPlugin {
 		AdapterManager.getDefault().registerAdapters(new NavigatorViewItemAdapterFactory(), NavigatorViewItem.class);
 		AdapterManager.getDefault().registerAdapters(new RepositoryViewItemAdapterFactory(), RepositoryViewItem.class);
 		AdapterManager.getDefault().registerAdapters(new WatchListViewItemAdapterFactory(), WatchListViewItem.class);
+
+		NotificationService notificationService = new NotificationService();
+		notificationServiceRegistration = context.registerService(new String[] {
+				INotificationService.class.getName(),
+				NotificationService.class.getName()
+			}, notificationService, new Hashtable<Object, Object>());
 	}
 
 	/*
@@ -87,6 +98,9 @@ public class UIActivator extends AbstractUIPlugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
+		if (notificationServiceRegistration != null)
+            notificationServiceRegistration.unregister();
+
 		plugin = null;
 		super.stop(context);
 	}
