@@ -18,7 +18,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipsetrader.core.ILauncher;
+import org.eclipsetrader.news.core.HeadLineStatus;
 import org.eclipsetrader.news.core.INewsProvider;
+import org.eclipsetrader.news.core.INewsServiceListener;
+import org.eclipsetrader.news.core.NewsEvent;
+import org.eclipsetrader.ui.INotification;
+import org.eclipsetrader.ui.INotificationService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -73,6 +78,32 @@ public class NewsServiceLauncher implements ILauncher, IExecutableExtension {
     		ServiceReference serviceReference = context.getServiceReference(NewsService.class.getName());
     		if (serviceReference != null) {
     			NewsService newsService = (NewsService) context.getService(serviceReference);
+
+    			newsService.addNewsServiceListener(new INewsServiceListener() {
+					public void newsServiceUpdate(NewsEvent event) {
+						int count = 0;
+						for (HeadLineStatus status : event.getStatus())
+							if (status.getKind() == HeadLineStatus.ADDED) {
+								count++;
+						}
+						if (count != 0) {
+							try {
+								BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+								ServiceReference serviceReference = context.getServiceReference(INotificationService.class.getName());
+								if (serviceReference != null) {
+									INotificationService notificationService = (INotificationService) context.getService(serviceReference);
+									notificationService.popupNotification(new INotification[] {
+										new HeadLineCountNotification(count)
+									});
+								}
+								context.ungetService(serviceReference);
+							} catch (Exception e) {
+								Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading news service", e);
+								Activator.getDefault().getLog().log(status);
+							}
+						}
+					}
+				});
 
     			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
     			for (INewsProvider newsProvider : newsService.getProviders()) {
