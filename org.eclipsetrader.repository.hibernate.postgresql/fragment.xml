@@ -7,7 +7,9 @@
             dialect="org.hibernate.dialect.PostgreSQLDialect"
             driver_class="org.postgresql.Driver"
             icon="postgresql.png"
-            name="PostgreSQL">
+            name="PostgreSQL"
+            schema="psql"
+            url="jdbc:postgresql://localhost/database">
       </database>
    </extension>
 

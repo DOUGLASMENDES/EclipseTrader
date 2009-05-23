@@ -15,8 +15,11 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -28,6 +31,7 @@ public class RepositoryDetailsPage extends WizardPage {
 	private Text url;
 	private Text user;
 	private Text password;
+	private Button validate;
 
 	private ModifyListener modifyListener = new ModifyListener() {
         public void modifyText(ModifyEvent e) {
@@ -81,9 +85,34 @@ public class RepositoryDetailsPage extends WizardPage {
 	    password.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
 	    password.addModifyListener(modifyListener);
 
-	    description.setFocus();
-		setPageComplete(false);
+	    label = new Label(content, SWT.NONE);
+	    label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, true, 2, 1));
+
+	    validate = new Button(content, SWT.NONE);
+	    validate.setText("Validate Settings");
+	    validate.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false, 2, 1));
+	    validate.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+	            doSettingsValidation();
+            }
+		});
+
+	    setPageComplete(false);
 	}
+
+	protected void doSettingsValidation() {
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(boolean visible) {
+    	if (visible)
+    	    description.setFocus();
+	    super.setVisible(visible);
+    }
 
 	protected boolean isComplete() {
 		if ("".equals(description.getText()))
@@ -92,10 +121,6 @@ public class RepositoryDetailsPage extends WizardPage {
 			return false;
 		if ("".equals(url.getText()))
 			return false;
-		if (!"".equals(user.getText())) {
-			if ("".equals(password.getText()))
-				return false;
-		}
 		return true;
 	}
 
@@ -118,4 +143,16 @@ public class RepositoryDetailsPage extends WizardPage {
 	public String getPassword() {
 		return password.getText();
 	}
+
+	public void setDefaultName(String name) {
+    	this.description.setText(name);
+    }
+
+	public void setDefaultSchema(String schema) {
+    	this.schema.setText(schema);
+    }
+
+	public void setDefaultUrl(String url) {
+    	this.url.setText(url);
+    }
 }

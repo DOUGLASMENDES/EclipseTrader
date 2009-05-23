@@ -7,7 +7,9 @@
             dialect="org.hibernate.dialect.DerbyDialect"
             driver_class="org.apache.derby.jdbc.EmbeddedDriver"
             icon="apache.png"
-            name="Apache Derby">
+            name="Apache Derby"
+            schema="derby"
+            url="jdbc:derby:database;create=true">
       </database>
    </extension>
 

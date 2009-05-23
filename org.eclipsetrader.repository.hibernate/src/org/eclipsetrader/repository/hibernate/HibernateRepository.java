@@ -34,12 +34,14 @@ import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.IValueVariable;
 import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.repository.hibernate.internal.Activator;
 import org.eclipsetrader.repository.hibernate.internal.RepositoryDefinition;
+import org.eclipsetrader.repository.hibernate.internal.RepositoryValidator;
 import org.eclipsetrader.repository.hibernate.internal.stores.HistoryStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.IntradayHistoryStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.RepositoryStore;
@@ -64,7 +66,6 @@ import org.hibernate.event.PostInsertEvent;
 import org.hibernate.event.PostInsertEventListener;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.hibernate.tool.hbm2ddl.SchemaValidator;
 
 public class HibernateRepository implements IRepository, ISchedulingRule, IExecutableExtension {
 	public static final String URI_SECURITY_PART = "securities";
@@ -72,6 +73,8 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 	public static final String URI_SECURITY_INTRADAY_HISTORY_PART = "securities/history/{0}/{1}";
 	public static final String URI_WATCHLIST_PART = "watchlists";
 	public static final String URI_TRADE_PART = "trades";
+
+	private static final String ERROR_MESSAGE = "Errors occurred updating database";
 
 	private String schema;
 	private String name;
@@ -141,8 +144,14 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
     		this.properties.put(key, variableManager.performStringSubstitution(value));
     	}
 
-    	startUp(null);
-    	Activator.getDefault().getRepositories().add(this);
+		try {
+	    	startUp(null);
+	    	Activator.getDefault().getRepositories().add(this);
+		} catch (Exception e) {
+			String message = NLS.bind("Error loading repository '{1}' ({0})", new Object[] { schema, name });
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, message, e);
+			Activator.log(status);
+		}
     }
 
 	/* (non-Javadoc)
@@ -200,7 +209,6 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 		return cfg;
 	}
 
-	@SuppressWarnings("unchecked")
     public void startUp(IProgressMonitor monitor) {
     	properties.put("hibernate.query.factory_class", "org.hibernate.hql.classic.ClassicQueryTranslatorFactory");
     	properties.put("hibernate.connection.pool_size", "5");
@@ -208,54 +216,62 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
     	properties.put("hibernate.show_sql", "false");
 
     	// Build suitable defaults for file-based databases (Apache Derby and HSQL)
-    	if (!properties.contains("hibernate.connection.url") && Activator.getDefault() != null) {
+    	if (!properties.containsKey("hibernate.connection.url") && Activator.getDefault() != null) {
     		if ("org.apache.derby.jdbc.EmbeddedDriver".equals(properties.get("hibernate.connection.driver_class")))
         		properties.put("hibernate.connection.url", "jdbc:derby:" + Activator.getDefault().getStateLocation().toOSString() + "/.derby;create=true");
     		if ("org.hsqldb.jdbcDriver".equals(properties.get("hibernate.connection.driver_class")))
         		properties.put("hibernate.connection.url", "jdbc:hsqldb:file:" + Activator.getDefault().getStateLocation().toOSString() + "/.hsqldb");
     	}
 
+		AnnotationConfiguration cfg = buildConfiguration();
 		try {
-			AnnotationConfiguration cfg = buildConfiguration();
-			try {
-				SchemaValidator schemaValidator = new SchemaValidator(cfg);
-				schemaValidator.validate();
-			} catch(Exception e) {
-				try {
+			initializeDatabase(cfg);
+		} catch (Exception e) {
+			String message = NLS.bind("Error initializing repository '{1}' ({0})", new Object[] { schema, name });
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, message, e);
+			Activator.log(status);
+
+			int userChoice = new RepositoryValidator(name, cfg).validate();
+
+			switch (userChoice) {
+	        	case RepositoryValidator.UPDATE_ID:
 					SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
 					schemaUpdate.execute(true, true);
 					if (schemaUpdate.getExceptions().size() != 0) {
-						MultiStatus status = new MultiStatus(Activator.PLUGIN_ID, 0, new IStatus[0], "Errors occurred updating database", null);
+						MultiStatus multiStatus = new MultiStatus(Activator.PLUGIN_ID, 0, new IStatus[0], ERROR_MESSAGE, null);
 						for (Object o : schemaUpdate.getExceptions())
-							status.add(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, null, (Exception) o));
+							multiStatus.add(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, null, (Exception) o));
+						Activator.log(multiStatus);
 					}
-				} catch(Exception e1) {
+	        		break;
+	        	case RepositoryValidator.CREATE_ID:
 					SchemaExport schemaExport = new SchemaExport(cfg);
 					schemaExport.create(true, true);
 					if (schemaExport.getExceptions().size() != 0) {
-						MultiStatus status = new MultiStatus(Activator.PLUGIN_ID, 0, new IStatus[0], "Errors occurred creating database", null);
+						MultiStatus multiStatus = new MultiStatus(Activator.PLUGIN_ID, 0, new IStatus[0], ERROR_MESSAGE, null);
 						for (Object o : schemaExport.getExceptions())
-							status.add(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, null, (Exception) o));
+							multiStatus.add(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, null, (Exception) o));
+						Activator.log(multiStatus);
 					}
-				}
-			}
+	        		break;
+	        }
+		}
+		initializeDatabase(cfg);
+	}
 
-			SessionFactory sessionFactory = cfg.buildSessionFactory();
-			session = sessionFactory.openSession();
+	@SuppressWarnings("unchecked")
+	void initializeDatabase(AnnotationConfiguration cfg) {
+		SessionFactory sessionFactory = cfg.buildSessionFactory();
+		session = sessionFactory.openSession();
 
-			List<IdentifierType> identifiers = session.createCriteria(IdentifierType.class).list();
-			for (IdentifierType identifierType : identifiers)
-				identifiersMap.put(identifierType.getSymbol(), identifierType);
+		List<IdentifierType> identifiers = session.createCriteria(IdentifierType.class).list();
+		for (IdentifierType identifierType : identifiers)
+			identifiersMap.put(identifierType.getSymbol(), identifierType);
 
-			List<SecurityStore> securities = session.createCriteria(SecurityStore.class).list();
-			for (SecurityStore store : securities) {
-				store.setRepository(this);
-				uriMap.put(store.toURI(), store);
-			}
-
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
-			Activator.log(status);
+		List<SecurityStore> securities = session.createCriteria(SecurityStore.class).list();
+		for (SecurityStore store : securities) {
+			store.setRepository(this);
+			uriMap.put(store.toURI(), store);
 		}
 	}
 
@@ -264,7 +280,8 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 			if (session != null)
 				session.close();
 		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
+			String message = NLS.bind("Error shutting down repository {0}:{1}", new Object[] { schema, name });
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, message, e);
 			Activator.log(status);
 		}
 	}
@@ -279,7 +296,8 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 					uriMap.put(store.toURI(), store);
 				}
 			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
+				String message = NLS.bind("Error loading repository {0}:{1}", new Object[] { schema, name });
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, message, e);
 				Activator.log(status);
 			}
 		}

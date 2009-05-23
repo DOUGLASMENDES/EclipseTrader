@@ -26,15 +26,19 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.eclipsetrader.repository.hibernate.HibernateRepository;
 import org.eclipsetrader.repository.hibernate.internal.Activator;
 import org.eclipsetrader.repository.hibernate.internal.RepositoryDefinition;
 
@@ -61,7 +65,37 @@ public class RepositoryWizard extends Wizard implements INewWizard {
     public void addPages() {
     	setWindowTitle("Hibernate Repository");
 	    addPage(databaseSelectionPage = new DatabaseSelectionPage());
-	    addPage(repositoryDetailsPage = new RepositoryDetailsPage());
+	    addPage(repositoryDetailsPage = new RepositoryDetailsPage() {
+            @Override
+            protected void doSettingsValidation() {
+        		RepositoryDefinition repository = getDefinition();
+
+        		HibernateRepository hibernateRepository = new HibernateRepository(repository);
+	    		try {
+	    			hibernateRepository.startUp(new NullProgressMonitor());
+	        		MessageDialog.openInformation(getShell(), "EclipseTrader", "Database created or updated successfully!");
+	    		} catch (Exception e) {
+	    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error validating repository", e);
+	    			Activator.log(status);
+	    			ErrorDialog.openError(getShell(), "EclipseTrader", "Database not created or update failed.", status);
+	    		}
+        		hibernateRepository.shutDown(new NullProgressMonitor());
+            }
+	    });
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
+     */
+    @Override
+    public IWizardPage getNextPage(IWizardPage page) {
+    	if (page == databaseSelectionPage) {
+    		DatabaseElement element = databaseSelectionPage.getSelection();
+    		repositoryDetailsPage.setDefaultName(element.getLabel());
+    		repositoryDetailsPage.setDefaultSchema(element.getSchema());
+    		repositoryDetailsPage.setDefaultUrl(element.getUrl());
+    	}
+	    return super.getNextPage(page);
     }
 
 	/* (non-Javadoc)
@@ -91,17 +125,7 @@ public class RepositoryWizard extends Wizard implements INewWizard {
     		Activator.getDefault().getLog().log(status);
 		}
 
-		RepositoryDefinition repository = new RepositoryDefinition();
-
-		repository.setDatabaseDriver(databaseSelectionPage.getDriver());
-    	repository.setDialect(databaseSelectionPage.getDialect());
-
-    	repository.setSchema(repositoryDetailsPage.getSchema());
-    	repository.setLabel(repositoryDetailsPage.getLabel());
-    	repository.setUrl(repositoryDetailsPage.getUrl());
-    	repository.setUser(repositoryDetailsPage.getUserName());
-    	repository.setPassword(repositoryDetailsPage.getPassword());
-
+		RepositoryDefinition repository = getDefinition();
     	list.add(repository);
 
     	try {
@@ -125,11 +149,26 @@ public class RepositoryWizard extends Wizard implements INewWizard {
 
 		Display.getDefault().asyncExec(new Runnable() {
             public void run() {
-            	if (MessageDialog.openQuestion(shell, "EclipseTrader", "The workbench must be restarted for the changes to take effect.\r\nRestart the workbench now ?"))
+        		if (MessageDialog.openQuestion(shell, "EclipseTrader", "The workbench must be restarted for the changes to take effect.\r\nRestart the workbench now ?"))
             		PlatformUI.getWorkbench().restart();
             }
 		});
 
 		return true;
+	}
+
+	RepositoryDefinition getDefinition() {
+		RepositoryDefinition repository = new RepositoryDefinition();
+
+		repository.setDatabaseDriver(databaseSelectionPage.getDriver());
+    	repository.setDialect(databaseSelectionPage.getDialect());
+
+    	repository.setSchema(repositoryDetailsPage.getSchema());
+    	repository.setLabel(repositoryDetailsPage.getLabel());
+    	repository.setUrl(repositoryDetailsPage.getUrl());
+    	repository.setUser(repositoryDetailsPage.getUserName());
+    	repository.setPassword(repositoryDetailsPage.getPassword());
+
+    	return repository;
 	}
 }

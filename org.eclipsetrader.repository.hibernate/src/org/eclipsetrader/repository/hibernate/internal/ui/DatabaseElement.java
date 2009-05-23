@@ -22,10 +22,16 @@ public class DatabaseElement {
 	private String driver;
 	private String dialect;
 
+	private String schema;
+	private String url;
+
 	public DatabaseElement(IConfigurationElement element) {
 		label = element.getAttribute("name");
 		driver = element.getAttribute("driver_class");
 		dialect = element.getAttribute("dialect");
+
+		schema = element.getAttribute("schema");
+		url = element.getAttribute("url");
 
 		if (!"".equals(element.getAttribute("icon"))) {
 			String pluginId = element.getContributor().getName();
@@ -48,6 +54,14 @@ public class DatabaseElement {
 
 	public Image getIcon() {
     	return icon;
+    }
+
+	public String getSchema() {
+    	return schema;
+    }
+
+	public String getUrl() {
+    	return url;
     }
 
 	/* (non-Javadoc)

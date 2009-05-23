@@ -84,6 +84,12 @@ public class DatabaseSelectionPage extends WizardPage {
 		setPageComplete(false);
 	}
 
+	DatabaseElement getSelection() {
+    	IStructuredSelection selection = (IStructuredSelection) database.getSelection();
+    	DatabaseElement element = (DatabaseElement) selection.getFirstElement();
+    	return element;
+	}
+
 	public String getDriver() {
     	IStructuredSelection selection = (IStructuredSelection) database.getSelection();
     	DatabaseElement element = (DatabaseElement) selection.getFirstElement();

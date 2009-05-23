@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryProvider;
 import org.eclipsetrader.repository.hibernate.internal.Activator;
@@ -58,10 +59,15 @@ public class HibernateRepositoryProvider implements IRepositoryProvider {
         	        JAXBElement<RepositoryDefinition[]> element = unmarshaller.unmarshal(new StreamSource(file), RepositoryDefinition[].class);
         	        for (RepositoryDefinition repository : element.getValue()) {
         	    		HibernateRepository hibernateRepository = new HibernateRepository(repository);
-        	    		hibernateRepository.startUp(new NullProgressMonitor());
-
-        	        	list.add(hibernateRepository);
-        	        	Activator.getDefault().getRepositories().add(hibernateRepository);
+        	    		try {
+            	    		hibernateRepository.startUp(new NullProgressMonitor());
+            	        	list.add(hibernateRepository);
+            	        	Activator.getDefault().getRepositories().add(hibernateRepository);
+        	    		} catch (Exception e) {
+        	    			String message = NLS.bind("Error loading repository '{1}' ({0})", new Object[] { repository.getSchema(), repository.getLabel() });
+        	    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, message, e);
+        	    			Activator.log(status);
+        	    		}
         	        }
         		}
     		} catch(Exception e) {
