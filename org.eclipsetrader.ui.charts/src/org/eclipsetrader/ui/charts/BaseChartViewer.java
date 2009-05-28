@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -38,6 +39,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -56,9 +58,6 @@ import org.eclipsetrader.ui.internal.charts.ChartObjectHitVisitor;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class BaseChartViewer implements ISelectionProvider {
-	public static final int VERTICAL_SCALE_WIDTH = 86;
-	public static final int HORIZONTAL_SCALE_HEIGHT = 26;
-
 	static final String K_NEEDS_REDRAW = "needs_redraw";
 
 	private Composite composite;
@@ -89,21 +88,27 @@ public class BaseChartViewer implements ISelectionProvider {
 		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 3;
 		composite.setLayout(gridLayout);
 
+		GC gc = new GC(composite);
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		gc.dispose();
+
 		sashForm = new SashForm(composite, SWT.VERTICAL | SWT.NO_FOCUS);
 		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-		dateScaleCanvas = new DateScaleCanvas(this, composite);
+		dateScaleCanvas = new DateScaleCanvas(composite);
 		dateScaleCanvas.getControl().setVisible(false);
 		((GridData) dateScaleCanvas.getControl().getLayoutData()).exclude = true;
 		dateScaleCanvas.getControl().addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
+            	updateScrollbars();
+        		revalidate();
             	redraw();
             }
 		});
 
 		verticalScaleLabel = new Label(composite, SWT.NONE);
-		verticalScaleLabel.setLayoutData(new GridData(ChartItem.VERTICAL_SCALE_WIDTH, SWT.DEFAULT));
+		verticalScaleLabel.setLayoutData(new GridData(Dialog.convertWidthInCharsToPixels(fontMetrics, 12), SWT.DEFAULT));
 		verticalScaleLabel.setVisible(false);
 		((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
 
@@ -114,7 +119,11 @@ public class BaseChartViewer implements ISelectionProvider {
 		composite.getHorizontalBar().addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+            	revalidate();
             	redraw();
+
+            	ScrollBar bar = composite.getHorizontalBar();;
+            	System.out.println(String.format("selection=%d, max=%d", bar.getSelection(), bar.getMaximum()));
             }
 		});
 
@@ -174,47 +183,38 @@ public class BaseChartViewer implements ISelectionProvider {
 		return composite.getDisplay();
 	}
 
-	Date firstDate;
-	Date lastDate;
-	Date[] visibleDates;
-
 	protected Point getLocation() {
 		return new Point(composite.getHorizontalBar().getSelection(), 0);
 	}
 
 	void revalidate() {
-    	updateScrollbars();
-
 		Rectangle clientArea = dateScaleCanvas.getCanvas().getClientArea();
 		ScrollBar hScroll = composite.getHorizontalBar();
 
-		if (visibleDates == null) {
-			firstDate = (Date) datesAxis.mapToValue(hScroll.getSelection());
-			lastDate = (Date) datesAxis.mapToValue(hScroll.getSelection() + clientArea.width);
+		Date firstDate = (Date) datesAxis.mapToValue(hScroll.getSelection());
+		Date lastDate = (Date) datesAxis.mapToValue(hScroll.getSelection() + clientArea.width);
 
-			List<Date> l = new ArrayList<Date>();
-			Object[] values = datesAxis.getValues();
-			for (int i = 0; i < values.length; i++) {
-	        	Date date = (Date) values[i];
-	        	if ((firstDate == null || !date.before(firstDate)) && (lastDate == null || !date.after(lastDate)))
-	        		l.add(date);
-			}
-			visibleDates = l.toArray(new Date[l.size()]);
+		List<Date> l = new ArrayList<Date>();
+		Object[] values = datesAxis.getValues();
+		for (int i = 0; i < values.length; i++) {
+        	Date date = (Date) values[i];
+        	if ((firstDate == null || !date.before(firstDate)) && (lastDate == null || !date.after(lastDate)))
+        		l.add(date);
 		}
-	}
+		Date[] visibleDates = l.toArray(new Date[l.size()]);
 
-	protected void paintImage(PaintEvent event, Image image) {
-		if (image != null && !image.isDisposed()) {
-			Rectangle bounds = image.getBounds();
-			int width = event.width;
-			if ((event.x + width) > bounds.width)
-				width = bounds.width - event.x;
-			int height = event.height;
-			if ((event.y + height) > bounds.height)
-				height = bounds.height - event.y;
-			if (width != 0 && height != 0)
-				event.gc.drawImage(image, event.x, event.y, width, height, event.x, event.y, width, height);
-		}
+		dateScaleCanvas.setDatesAxis(datesAxis);
+		dateScaleCanvas.setVisibleDates(visibleDates);
+		dateScaleCanvas.setLocation(getLocation());
+
+    	for (int i = 0; i < chartCanvas.length; i++) {
+    		if (chartCanvas[i] != null && !chartCanvas[i].isDisposed()) {
+    			chartCanvas[i].setDatesAxis(datesAxis);
+    			chartCanvas[i].setVisibleDates(visibleDates);
+    			chartCanvas[i].setDateRange(firstDate, lastDate);
+    			chartCanvas[i].setLocation(getLocation());
+    		}
+    	}
 	}
 
 	public void print(Printer printer) {
@@ -272,21 +272,17 @@ public class BaseChartViewer implements ISelectionProvider {
 			int currentSelection = hScroll.getSelection();
 			int rightAnchor = hScroll.getMaximum() - hScroll.getThumb();
 
-			int selection = Math.min(currentSelection, hiddenArea - 1);
+			/*int selection = Math.min(currentSelection, hiddenArea - 1);
 			if (!wasVisible || currentSelection == rightAnchor)
-				selection = hiddenArea - 1;
+				selection = hiddenArea;*/
 
-			hScroll.setValues(selection, 0, hiddenArea + clientArea.width - 1, clientArea.width, 5, clientArea.width);
+			hScroll.setValues(0, 0, chartSize.x, clientArea.width, 5, clientArea.width);
 		}
 	}
 
 	public Object getInput() {
     	return input;
     }
-
-	public void setInput(IChartObject input) {
-		setInput(new IChartObject[] { input });
-	}
 
 	public void setInput(IChartObject[] input) {
     	this.input = input;
@@ -325,7 +321,7 @@ public class BaseChartViewer implements ISelectionProvider {
 
     	for (int i = 0; i < input.length; i++) {
 			if (chartCanvas[i] == null || chartCanvas[i].isDisposed()) {
-				chartCanvas[i] = new ChartCanvas(this, sashForm);
+				chartCanvas[i] = new ChartCanvas(sashForm);
 				chartCanvas[i].getCanvas().setMenu(composite.getMenu());
 				chartCanvas[i].getCanvas().addMouseTrackListener(new MouseTrackAdapter() {
                     @Override
@@ -467,6 +463,9 @@ public class BaseChartViewer implements ISelectionProvider {
     	}
 		handleSelectionChanged(selectedChartCanvas, (IChartObject) set.get("selectedObject"));
 
+		updateScrollbars();
+		revalidate();
+
     	redraw();
     }
 
@@ -489,25 +488,12 @@ public class BaseChartViewer implements ISelectionProvider {
 	}
 
 	public void redraw() {
-		visibleDates = null;
-
     	for (int i = 0; i < chartCanvas.length; i++) {
     		if (chartCanvas[i] != null && !chartCanvas[i].isDisposed())
     			chartCanvas[i].redraw();
     	}
 
     	dateScaleCanvas.redraw();
-	}
-
-	RGB blend(RGB c1, RGB c2, int ratio) {
-		int r = blend(c1.red, c2.red, ratio);
-		int g = blend(c1.green, c2.green, ratio);
-		int b = blend(c1.blue, c2.blue, ratio);
-		return new RGB(r, g, b);
-	}
-
-    private int blend(int v1, int v2, int ratio) {
-		return (ratio * v1 + (100 - ratio) * v2) / 100;
 	}
 
 	/* (non-Javadoc)

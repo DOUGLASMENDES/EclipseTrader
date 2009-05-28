@@ -17,6 +17,8 @@ import java.util.List;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -50,6 +52,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
 	private Point location;
 	private ChartCanvas focusCanvas;
 
+	private int scaleCanvasWidth;
 	private List<ChartCanvas> decoratedCanvas = new ArrayList<ChartCanvas>();
 
 	private class DecoratorToolTip extends ToolTip {
@@ -102,7 +105,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
         public Point getLocation(Point tipSize, Event event) {
 			Rectangle bounds = parent.getBounds();
 			Point p = new Point(event.x + OFFSET_X, event.y + OFFSET_Y);
-			if ((p.x + tipSize.x) > (bounds.width - BaseChartViewer.VERTICAL_SCALE_WIDTH)) {
+			if ((p.x + tipSize.x) > (bounds.width - scaleCanvasWidth)) {
 				p.x = event.x - tipSize.x - OFFSET_X;
 				if (p.x < 0)
 					p.x = event.x + OFFSET_X;
@@ -158,6 +161,15 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
 		canvas.getCanvas().addMouseTrackListener(this);
 		canvas.getCanvas().addDisposeListener(this);
 		canvas.getCanvas().addPaintListener(this);
+
+		canvas.getVerticalScaleCanvas().addControlListener(new ControlAdapter() {
+            @Override
+            public void controlResized(ControlEvent e) {
+            	scaleCanvasWidth = ((Control) e.widget).getBounds().width;
+            }
+		});
+    	scaleCanvasWidth = canvas.getVerticalScaleCanvas().getBounds().width;
+
 		decoratedCanvas.add(canvas);
 	}
 

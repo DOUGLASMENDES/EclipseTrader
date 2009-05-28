@@ -17,6 +17,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -24,7 +25,10 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,8 +43,6 @@ import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ChartCanvas {
-	public static final int VERTICAL_SCALE_WIDTH = 86;
-
 	private Composite composite;
 	private Composite summary;
 	private Canvas canvas;
@@ -51,15 +53,18 @@ public class ChartCanvas {
 
 	private Label label;
 
-	private BaseChartViewer viewer;
 	private IChartObject chartObject;
 	private TimeSpan resolutionTimeSpan;
 	private DoubleValuesAxis verticalAxis;
 	private NumberFormat nf = NumberFormat.getInstance();
 
-	ChartCanvas(BaseChartViewer viewer, Composite parent) {
-		this.viewer = viewer;
+	Date[] visibleDates;
+	Date firstDate;
+	Date lastDate;
+	Point location;
+	DateValuesAxis datesAxis;
 
+	public ChartCanvas(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
@@ -67,6 +72,10 @@ public class ChartCanvas {
 		gridLayout.verticalSpacing = 0;
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		GC gc = new GC(composite);
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		gc.dispose();
 
 		summary = new Composite(composite, SWT.NONE);
 		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
@@ -114,7 +123,7 @@ public class ChartCanvas {
 		verticalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 		verticalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		verticalScaleCanvas.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
-		((GridData) verticalScaleCanvas.getLayoutData()).widthHint = VERTICAL_SCALE_WIDTH;
+		((GridData) verticalScaleCanvas.getLayoutData()).widthHint = Dialog.convertWidthInCharsToPixels(fontMetrics, 12);
 		verticalScaleCanvas.addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
@@ -144,6 +153,23 @@ public class ChartCanvas {
 		label.setBackground(verticalScaleCanvas.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 		label.setBounds(-200, 0, 0, 0);
 	}
+
+	public void setDatesAxis(DateValuesAxis datesAxis) {
+    	this.datesAxis = datesAxis;
+    }
+
+	public void setLocation(Point location) {
+    	this.location = location;
+    }
+
+	public void setDateRange(Date firstDate, Date lastDate) {
+		this.firstDate = firstDate;
+		this.lastDate = lastDate;
+	}
+
+	public void setVisibleDates(Date[] visibleDates) {
+    	this.visibleDates = visibleDates;
+    }
 
 	public void dispose() {
 		composite.dispose();
@@ -178,7 +204,7 @@ public class ChartCanvas {
 			chartObject.accept(new IChartObjectVisitor() {
 	            public boolean visit(IChartObject object) {
 	            	if (object.getDataSeries() != null) {
-	            		IDataSeries series = object.getDataSeries().getSeries(new AdaptableWrapper(viewer.firstDate), new AdaptableWrapper(viewer.lastDate));
+	            		IDataSeries series = object.getDataSeries().getSeries(new AdaptableWrapper(firstDate), new AdaptableWrapper(lastDate));
 	            		if (series != null)
 	            			verticalAxis.addValues(new Object[] { series.getLowest(), series.getHighest() });
 	            	}
@@ -189,8 +215,6 @@ public class ChartCanvas {
 	}
 
 	private void onPaint(PaintEvent event) {
-		viewer.revalidate();
-
 		Rectangle clientArea = canvas.getClientArea();
 		boolean needsRedraw = Boolean.TRUE.equals(canvas.getData(BaseChartViewer.K_NEEDS_REDRAW));
 
@@ -208,20 +232,20 @@ public class ChartCanvas {
 
 			verticalAxis.computeSize(clientArea.height);
 
-	    	Graphics graphics = new Graphics(image, viewer.getLocation(), viewer.datesAxis, verticalAxis);
+	    	Graphics graphics = new Graphics(image, location, datesAxis, verticalAxis);
 			try {
 		    	graphics.fillRectangle(clientArea);
 
 		    	graphics.pushState();
 
 		    	graphics.setLineDash(new int[] { 3, 3 });
-				graphics.setForegroundColor(viewer.blend(graphics.getForegroundColor(), graphics.getBackgroundColor(), 15));
+				graphics.setForegroundColor(Util.blend(graphics.getForegroundColor(), graphics.getBackgroundColor(), 15));
 
 				Calendar oldDate = null;
 				Calendar currentDate = Calendar.getInstance();
 
-				for (int i = 0; i < viewer.visibleDates.length; i++) {
-					Date date = viewer.visibleDates[i];
+				for (int i = 0; i < visibleDates.length; i++) {
+					Date date = visibleDates[i];
 					boolean tick = false;
 					currentDate.setTime(date);
 
@@ -262,7 +286,7 @@ public class ChartCanvas {
 				Double lowestValue = (Double) verticalAxis.getFirstValue();
 				Double highestValue = (Double) verticalAxis.getLastValue();
 
-		    	DataBounds dataBounds = new DataBounds(viewer.visibleDates, lowestValue, highestValue, clientArea, (int) viewer.datesAxis.gridSize);
+		    	DataBounds dataBounds = new DataBounds(visibleDates, lowestValue, highestValue, clientArea, (int) datesAxis.gridSize);
 				chartObject.setDataBounds(dataBounds);
 				chartObject.paint(graphics);
 			} catch(Error e) {
@@ -274,12 +298,10 @@ public class ChartCanvas {
 			}
 		}
 
-		viewer.paintImage(event, image);
+		Util.paintImage(event, image);
 	}
 
 	private void onPaintVerticalScale(PaintEvent event) {
-		viewer.revalidate();
-
 		Rectangle clientArea = verticalScaleCanvas.getClientArea();
 		boolean needsRedraw = Boolean.TRUE.equals(verticalScaleCanvas.getData(BaseChartViewer.K_NEEDS_REDRAW));
 
@@ -297,14 +319,22 @@ public class ChartCanvas {
 
 			verticalAxis.computeSize(clientArea.height);
 
-	    	Graphics graphics = new Graphics(verticalScaleImage, viewer.getLocation(), viewer.datesAxis, verticalAxis);
+	    	Graphics graphics = new Graphics(verticalScaleImage, location, datesAxis, verticalAxis);
 			try {
 		    	graphics.fillRectangle(clientArea);
 
 				Object[] scaleArray = verticalAxis.getValues();
 				for (int loop = 0; loop < scaleArray.length; loop++) {
 					int y = verticalAxis.mapToAxis(scaleArray[loop]);
-					String s = nf.format(scaleArray[loop]);
+
+					String s;
+					if (((Double) scaleArray[loop]).doubleValue() > 1000000) {
+						Double value = (Double) scaleArray[loop];
+						s = nf.format(value / 1000000.0) + "M";
+					}
+					else
+						s = nf.format(scaleArray[loop]);
+
 					int h = graphics.stringExtent(s).y / 2;
 					graphics.drawLine(0, y, 4, y);
 					graphics.drawString(s, 7, y - h);
@@ -318,7 +348,7 @@ public class ChartCanvas {
 			}
 		}
 
-		viewer.paintImage(event, verticalScaleImage);
+		Util.paintImage(event, verticalScaleImage);
 	}
 
 	public void setVerticalScaleVisible(boolean visible) {

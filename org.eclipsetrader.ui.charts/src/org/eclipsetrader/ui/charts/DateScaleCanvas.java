@@ -18,6 +18,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -25,7 +26,10 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -42,7 +46,6 @@ public class DateScaleCanvas {
 	private Image horizontalScaleImage;
 	private Label label;
 
-	private BaseChartViewer viewer;
 	private TimeSpan resolutionTimeSpan;
 
 	private SimpleDateFormat monthYearFormatter = new SimpleDateFormat("MMM, yyyy"); //$NON-NLS-1$
@@ -51,13 +54,19 @@ public class DateScaleCanvas {
 	private DateFormat dateFormat = DateFormat.getDateInstance();
 	private DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
 
-	DateScaleCanvas(BaseChartViewer viewer, Composite parent) {
-		this.viewer = viewer;
+	Point location;
+	DateValuesAxis datesAxis;
+	Date[] visibleDates;
+
+	public DateScaleCanvas(Composite parent) {
+		GC gc = new GC(parent);
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		gc.dispose();
 
 		horizontalScaleCanvas = new Canvas(parent, SWT.DOUBLE_BUFFERED | SWT.NO_FOCUS | SWT.NO_BACKGROUND);
 		horizontalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		horizontalScaleCanvas.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		((GridData) horizontalScaleCanvas.getLayoutData()).heightHint = BaseChartViewer.HORIZONTAL_SCALE_HEIGHT;
+		((GridData) horizontalScaleCanvas.getLayoutData()).heightHint = Dialog.convertVerticalDLUsToPixels(fontMetrics, 14);
 		horizontalScaleCanvas.addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
@@ -87,6 +96,14 @@ public class DateScaleCanvas {
 		label.setBounds(-200, 0, 0, 0);
 	}
 
+	public void setLocation(Point location) {
+    	this.location = location;
+    }
+
+	public void setDatesAxis(DateValuesAxis datesAxis) {
+    	this.datesAxis = datesAxis;
+    }
+
 	public Control getControl() {
 		return horizontalScaleCanvas;
 	}
@@ -95,14 +112,16 @@ public class DateScaleCanvas {
 		return horizontalScaleCanvas;
 	}
 
+	public void setVisibleDates(Date[] visibleDates) {
+    	this.visibleDates = visibleDates;
+    }
+
 	public void redraw() {
 		horizontalScaleCanvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.TRUE);
     	horizontalScaleCanvas.redraw();
 	}
 
 	private void onPaint(PaintEvent event) {
-		viewer.revalidate();
-
 		Rectangle clientArea = horizontalScaleCanvas.getClientArea();
 		boolean needsRedraw = Boolean.TRUE.equals(horizontalScaleCanvas.getData(BaseChartViewer.K_NEEDS_REDRAW));
 
@@ -116,15 +135,15 @@ public class DateScaleCanvas {
 		}
 
 		if (needsRedraw) {
-	    	Graphics graphics = new Graphics(horizontalScaleImage, viewer.getLocation(), viewer.datesAxis, new DoubleValuesAxis());
+	    	Graphics graphics = new Graphics(horizontalScaleImage, location, datesAxis, new DoubleValuesAxis());
 			try {
 		    	graphics.fillRectangle(clientArea);
 
 				Calendar oldDate = null;
 				Calendar currentDate = Calendar.getInstance();
 
-				for (int i = 0; i < viewer.visibleDates.length; i++) {
-					Date date = viewer.visibleDates[i];
+				for (int i = 0; i < visibleDates.length; i++) {
+					Date date = visibleDates[i];
 					boolean tick = false; // Draw a longer tick
 					boolean highlight = false; // Highlight the tick
 					String text = "";
@@ -178,7 +197,7 @@ public class DateScaleCanvas {
 			}
 		}
 
-		viewer.paintImage(event, horizontalScaleImage);
+		Util.paintImage(event, horizontalScaleImage);
 	}
 
 	public void hideToolTip() {
