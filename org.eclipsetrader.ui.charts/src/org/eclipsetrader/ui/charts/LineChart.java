@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipsetrader.core.charts.IDataSeries;
 
 /**
@@ -27,7 +28,7 @@ import org.eclipsetrader.core.charts.IDataSeries;
  *
  * @since 1.0
  */
-public class LineChart implements IChartObject {
+public class LineChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
 	private IDataSeries dataSeries;
 	private IChartObject parent;
 
@@ -39,6 +40,8 @@ public class LineChart implements IChartObject {
 	private Point[] pointArray;
 	private boolean valid;
 	private boolean hasFocus;
+
+	private SummaryNumberItem numberItem;
 
 	private NumberFormat numberFormat = NumberFormat.getInstance();
 
@@ -230,5 +233,52 @@ public class LineChart implements IChartObject {
      */
     public void accept(IChartObjectVisitor visitor) {
     	visitor.visit(this);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+    	if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
+    		return this;
+    	}
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
+     */
+    public void createDecorator(Composite parent) {
+		IAdaptable[] values = dataSeries.getValues();
+		Number value = (Number) (values.length > 0 ? values[values.length - 1].getAdapter(Number.class) : null);
+
+		numberItem = new SummaryNumberItem(parent, SWT.NONE);
+		numberItem.setValue(dataSeries.getName() + ": ", value);
+		if (color != null)
+			numberItem.setForeground(color);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
+     */
+    public void updateDecorator(int x, int y) {
+		if (pointArray != null) {
+			Number value = null;
+			if (y == SWT.DEFAULT) {
+				for (int i = 0; i < pointArray.length; i++) {
+					if (x >= (pointArray[i].x - width / 2) && x <= (pointArray[i].x + width / 2))
+						value = (Number) values[i].getAdapter(Number.class);
+				}
+			}
+			else {
+				for (int i = 1; i < pointArray.length; i++) {
+					if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y))
+						value = (Number) values[i - 1].getAdapter(Number.class);
+				}
+			}
+			if (value != null)
+				numberItem.setValue(dataSeries.getName() + ": ", value);
+		}
     }
 }

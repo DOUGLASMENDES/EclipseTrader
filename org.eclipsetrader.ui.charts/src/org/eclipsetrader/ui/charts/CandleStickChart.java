@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.feed.IOHLC;
 
@@ -27,7 +29,7 @@ import org.eclipsetrader.core.feed.IOHLC;
  *
  * @since 1.0
  */
-public class CandleStickChart implements IChartObject {
+public class CandleStickChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
 	private IDataSeries dataSeries;
 	private IChartObject parent;
 
@@ -40,6 +42,9 @@ public class CandleStickChart implements IChartObject {
 	private List<Candle> pointArray;
 	private boolean valid;
 	private boolean hasFocus;
+
+	private SummaryDateItem dateItem;
+	private SummaryOHLCItem ohlcItem;
 
 	private DateFormat dateFormat = DateFormat.getDateInstance();
 	private NumberFormat numberFormat = NumberFormat.getInstance();
@@ -222,6 +227,55 @@ public class CandleStickChart implements IChartObject {
      */
     public void accept(IChartObjectVisitor visitor) {
     	visitor.visit(this);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+    	if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
+    		return this;
+    	}
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
+     */
+    public void createDecorator(Composite parent) {
+		IAdaptable[] values = dataSeries.getValues();
+		IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
+		IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
+
+		dateItem = new SummaryDateItem(parent, SWT.DATE);
+		dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
+
+		ohlcItem = new SummaryOHLCItem(parent, SWT.NONE);
+		ohlcItem.setOHLC(ohlc, previousOhlc);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
+     */
+    public void updateDecorator(int x, int y) {
+    	if (x == SWT.DEFAULT) {
+			IAdaptable[] values = dataSeries.getValues();
+			IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
+			IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
+
+			dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
+			ohlcItem.setOHLC(ohlc, previousOhlc);
+    	}
+    	else if (pointArray != null) {
+			for (int i = 1; i < pointArray.size(); i++) {
+				Candle c = pointArray.get(i);
+       			if (c.containsPoint(x, y)) {
+       				dateItem.setDate(c.ohlc.getDate());
+       				ohlcItem.setOHLC(c.ohlc, pointArray.get(i - 1).ohlc);
+       			}
+			}
+		}
     }
 
 	private class Candle {

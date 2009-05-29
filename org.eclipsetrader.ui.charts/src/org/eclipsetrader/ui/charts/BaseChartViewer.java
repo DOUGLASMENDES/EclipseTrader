@@ -35,7 +35,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
-import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -43,7 +42,6 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -76,7 +74,8 @@ public class BaseChartViewer implements ISelectionProvider {
 	private boolean showTooltips;
 	private boolean showScaleTooltips;
 
-	private CrosshairDecorator decorator = new CrosshairDecorator();
+	private SummaryBarDecorator summaryDecorator;
+	private CrosshairDecorator decorator;
 	private int decoratorMode;
 
 	private ChartToolEditor activeEditor = new ChartToolEditor();
@@ -121,9 +120,6 @@ public class BaseChartViewer implements ISelectionProvider {
             public void widgetSelected(SelectionEvent e) {
             	revalidate();
             	redraw();
-
-            	ScrollBar bar = composite.getHorizontalBar();;
-            	System.out.println(String.format("selection=%d, max=%d", bar.getSelection(), bar.getMaximum()));
             }
 		});
 
@@ -134,6 +130,9 @@ public class BaseChartViewer implements ISelectionProvider {
             }
 		});
 
+		summaryDecorator = new SummaryBarDecorator();
+
+		decorator = new CrosshairDecorator();
 		decorator.createSummaryLabel(sashForm);
 	}
 
@@ -272,11 +271,11 @@ public class BaseChartViewer implements ISelectionProvider {
 			int currentSelection = hScroll.getSelection();
 			int rightAnchor = hScroll.getMaximum() - hScroll.getThumb();
 
-			/*int selection = Math.min(currentSelection, hiddenArea - 1);
+			int selection = Math.min(currentSelection, hiddenArea - 1);
 			if (!wasVisible || currentSelection == rightAnchor)
-				selection = hiddenArea;*/
+				selection = hiddenArea;
 
-			hScroll.setValues(0, 0, chartSize.x, clientArea.width, 5, clientArea.width);
+			hScroll.setValues(selection, 0, chartSize.x, clientArea.width, 5, clientArea.width);
 		}
 	}
 
@@ -417,6 +416,7 @@ public class BaseChartViewer implements ISelectionProvider {
 		            	}
                     }
 				});
+				summaryDecorator.decorateCanvas(chartCanvas[i]);
 				decorator.decorateCanvas(chartCanvas[i]);
 			}
 

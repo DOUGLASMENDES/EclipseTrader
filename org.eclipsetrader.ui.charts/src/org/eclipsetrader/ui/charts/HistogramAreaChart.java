@@ -17,8 +17,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipsetrader.core.charts.IDataSeries;
 
 /**
@@ -26,7 +28,7 @@ import org.eclipsetrader.core.charts.IDataSeries;
  *
  * @since 1.0
  */
-public class HistogramAreaChart implements IChartObject {
+public class HistogramAreaChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
 	private IDataSeries dataSeries;
 	private IChartObject parent;
 
@@ -35,18 +37,29 @@ public class HistogramAreaChart implements IChartObject {
 	private boolean valid;
 	private boolean focus;
 
-	private RGB color = new RGB(0, 0, 0);
+	private RGB color;
 	private RGB fillColor;
+
+	private SummaryNumberItem numberItem;
 
 	private NumberFormat numberFormat = NumberFormat.getInstance();
 
-	public HistogramAreaChart(IDataSeries dataSeries) {
+	public HistogramAreaChart(IDataSeries dataSeries, RGB color) {
 	    this.dataSeries = dataSeries;
+	    this.color = color;
 
 	    numberFormat.setGroupingUsed(true);
 	    numberFormat.setMinimumIntegerDigits(1);
 	    numberFormat.setMinimumFractionDigits(0);
 	    numberFormat.setMaximumFractionDigits(4);
+    }
+
+	public RGB getColor() {
+    	return color;
+    }
+
+	public void setColor(RGB color) {
+    	this.color = color;
     }
 
 	/* (non-Javadoc)
@@ -102,7 +115,7 @@ public class HistogramAreaChart implements IChartObject {
     	}
 
     	if (fillColor == null)
-    		fillColor = blend(color, graphics.getBackgroundColor(), 25);
+    		fillColor = Util.blend(color, graphics.getBackgroundColor(), 25);
 
     	graphics.pushState();
     	graphics.setLineWidth(hasFocus() ? 2 : 1);
@@ -207,18 +220,46 @@ public class HistogramAreaChart implements IChartObject {
     	visitor.visit(this);
     }
 
-	private RGB blend(RGB c1, RGB c2, int ratio) {
-		int r = blend(c1.red, c2.red, ratio);
-		int g = blend(c1.green, c2.green, ratio);
-		int b = blend(c1.blue, c2.blue, ratio);
-		return new RGB(r, g, b);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+    	if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
+    		return this;
+    	}
+	    return null;
+    }
 
-    private int blend(int v1, int v2, int ratio) {
-		return (ratio * v1 + (100 - ratio) * v2) / 100;
-	}
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
+     */
+    public void createDecorator(Composite parent) {
+		IAdaptable[] values = dataSeries.getValues();
+		Number value = (Number) (values.length > 0 ? values[values.length - 1].getAdapter(Number.class) : null);
 
-    private class Polygon {
+		numberItem = new SummaryNumberItem(parent, SWT.NONE);
+		numberItem.setValue(dataSeries.getName() + ": ", value);
+		if (color != null)
+			numberItem.setForeground(color);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
+     */
+    public void updateDecorator(int x, int y) {
+		if (pointArray != null) {
+			for (int i = 0; i < pointArray.size(); i++) {
+				if (pointArray.get(i).containsPoint(x, y)) {
+	    			Number value = (Number) values[i].getAdapter(Number.class);
+	    			if (value != null)
+	    				numberItem.setValue(dataSeries.getName() + ": ", value);
+				}
+			}
+		}
+    }
+
+    public class Polygon {
 		int x1;
 		int x2;
 		int y1;
@@ -262,6 +303,9 @@ public class HistogramAreaChart implements IChartObject {
 		}
 
 		public boolean containsPoint(int x, int y) {
+			if (y == SWT.DEFAULT)
+				return x >= x1 && x < x2;
+
 			int crossings = 0;
 			for (int i = 0; i < points.length - 1; i++) {
 				int div = (points[i + 1].y - points[i].y);

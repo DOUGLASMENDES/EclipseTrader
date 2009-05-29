@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
@@ -44,7 +45,7 @@ import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ChartCanvas {
 	private Composite composite;
-	private Composite summary;
+	private SummaryBar summary;
 	private Canvas canvas;
 	private Canvas verticalScaleCanvas;
 
@@ -77,19 +78,8 @@ public class ChartCanvas {
 		FontMetrics fontMetrics = gc.getFontMetrics();
 		gc.dispose();
 
-		summary = new Composite(composite, SWT.NONE);
-		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
-		rowLayout.marginTop = rowLayout.marginBottom = 1;
-		summary.setLayout(rowLayout);
+		summary = new SummaryBar(composite, SWT.NONE);
 		summary.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		summary.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-		summary.setBackgroundMode(SWT.INHERIT_FORCE);
-		summary.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent e) {
-            	Rectangle bounds = summary.getBounds();
-            	e.gc.drawLine(0, bounds.height - 1, bounds.width, bounds.height - 1);
-            }
-		});
 
 		canvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 		canvas.setData(this);
@@ -403,17 +393,16 @@ public class ChartCanvas {
     }
 
 	protected void updateSummary() {
-		Control[] children = summary.getChildren();
-		for (int i = 0; i < children.length; i++)
-			children[i].dispose();
+		summary.removeAll();
 
 		if (chartObject != null) {
 			chartObject.accept(new IChartObjectVisitor() {
 		        public boolean visit(IChartObject object) {
-		    		String s = object.getToolTip();
-		        	if (s != null) {
-		        		Label label = new Label(summary, SWT.NONE);
-		        		label.setText(s);
+		        	ISummaryBarDecorator factory = null;
+		        	if (object instanceof IAdaptable) {
+		        		factory = (ISummaryBarDecorator) ((IAdaptable) object).getAdapter(ISummaryBarDecorator.class);
+		        		if (factory != null)
+		        			factory.createDecorator(summary.getCompositeControl());
 		        	}
 			        return true;
 		        }

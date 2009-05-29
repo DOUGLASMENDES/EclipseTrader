@@ -14,11 +14,7 @@ package org.eclipsetrader.ui.charts;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -31,14 +27,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Shell;
 
 public class CrosshairDecorator implements MouseListener, MouseMoveListener, MouseTrackListener, DisposeListener, PaintListener {
-	public int OFFSET_X = 12;
-	public int OFFSET_Y = 12;
-
 	public static final int MODE_OFF = 0;
 	public static final int MODE_MOUSE_DOWN = 1;
 	public static final int MODE_MOUSE_HOVER = 2;
@@ -52,94 +42,12 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
 	private Point location;
 	private ChartCanvas focusCanvas;
 
-	private int scaleCanvasWidth;
 	private List<ChartCanvas> decoratedCanvas = new ArrayList<ChartCanvas>();
-
-	private class DecoratorToolTip extends ToolTip {
-		private Control parent;
-		private CLabel label;
-		private String text;
-
-		public DecoratorToolTip(Control control) {
-	        super(control, ToolTip.NO_RECREATE, true);
-	        this.parent = control;
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.jface.window.ToolTip#createToolTipContentArea(org.eclipse.swt.widgets.Event, org.eclipse.swt.widgets.Composite)
-         */
-        @Override
-        protected Composite createToolTipContentArea(Event event, Composite parent) {
-        	label = new CLabel(parent, SWT.SHADOW_NONE);
-        	label.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        	label.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-        	if (text != null)
-        		label.setText(text);
-	        return label;
-        }
-
-		public String getText() {
-        	return text;
-        }
-
-		public void setText(String text) {
-        	this.text = text;
-        	if (label != null && !label.isDisposed()) {
-        		label.setText(text);
-            	label.getParent().pack();
-        	}
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.jface.window.ToolTip#shouldCreateToolTip(org.eclipse.swt.widgets.Event)
-         */
-        @Override
-        protected boolean shouldCreateToolTip(Event event) {
-            return label == null || label.isDisposed();
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.jface.window.ToolTip#getLocation(org.eclipse.swt.graphics.Point, org.eclipse.swt.widgets.Event)
-         */
-        @Override
-        public Point getLocation(Point tipSize, Event event) {
-			Rectangle bounds = parent.getBounds();
-			Point p = new Point(event.x + OFFSET_X, event.y + OFFSET_Y);
-			if ((p.x + tipSize.x) > (bounds.width - scaleCanvasWidth)) {
-				p.x = event.x - tipSize.x - OFFSET_X;
-				if (p.x < 0)
-					p.x = event.x + OFFSET_X;
-			}
-			if ((p.y + tipSize.y) > bounds.height) {
-				p.y = event.y - tipSize.y - OFFSET_Y;
-				if (p.y < 0)
-					p.y = event.y + OFFSET_Y;
-			}
-            return parent.toDisplay(p);
-        }
-
-		/* (non-Javadoc)
-         * @see org.eclipse.jface.window.ToolTip#show(org.eclipse.swt.graphics.Point)
-         */
-        @Override
-        public void show(Point location) {
-        	location = parent.toControl(location);
-        	if (label != null && !label.isDisposed()) {
-        		Shell tip = (Shell) label.getParent();
-        		Event event = new Event();
-        		event.x = location.x;
-        		event.y = location.y;
-        		event.widget = parent;
-    			tip.setLocation(getLocation(tip.getSize(), event));
-        	}
-        	else
-        		super.show(location);
-        }
-	}
 
 	private DecoratorToolTip tooltip;
 
 	private StringBuilder summary = new StringBuilder();
+
 	private IChartObjectVisitor summaryLabelVisitor = new IChartObjectVisitor() {
         public boolean visit(IChartObject object) {
     		String s = object.getToolTip(location.x, SWT.DEFAULT);
@@ -161,14 +69,6 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
 		canvas.getCanvas().addMouseTrackListener(this);
 		canvas.getCanvas().addDisposeListener(this);
 		canvas.getCanvas().addPaintListener(this);
-
-		canvas.getVerticalScaleCanvas().addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-            	scaleCanvasWidth = ((Control) e.widget).getBounds().width;
-            }
-		});
-    	scaleCanvasWidth = canvas.getVerticalScaleCanvas().getBounds().width;
 
 		decoratedCanvas.add(canvas);
 	}

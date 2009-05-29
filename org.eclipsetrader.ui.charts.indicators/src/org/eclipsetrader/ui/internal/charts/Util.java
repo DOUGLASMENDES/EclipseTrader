@@ -127,7 +127,7 @@ public class Util {
 	    	case HistogramBars:
 				return new HistogramBarChart(result);
 	    	case Histogram:
-				return new HistogramAreaChart(result);
+				return new HistogramAreaChart(result, color);
 	    	case Invisible:
 	    		lineStyle = LineStyle.Invisible;
 	    		break;

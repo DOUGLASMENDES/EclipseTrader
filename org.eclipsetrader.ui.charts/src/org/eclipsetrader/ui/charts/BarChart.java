@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,12 +20,13 @@ import java.util.List;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 
-public class BarChart implements IChartObject {
+public class BarChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
 	private IDataSeries dataSeries;
 	private IChartObject parent;
 
@@ -37,6 +38,9 @@ public class BarChart implements IChartObject {
 	private List<Bar> pointArray;
 	private boolean valid;
 	private boolean hasFocus;
+
+	private SummaryDateItem dateItem;
+	private SummaryOHLCItem ohlcItem;
 
 	private DateFormat dateFormat = DateFormat.getDateInstance();
 	private NumberFormat numberFormat = NumberFormat.getInstance();
@@ -99,13 +103,14 @@ public class BarChart implements IChartObject {
     			int x = graphics.mapToHorizontalAxis(ohlc.getDate());
 
     			Bar bar;
-        		if (i < pointArray.size())
+        		if (i < pointArray.size()) {
         			bar = pointArray.get(i);
+            		bar.setBounds(x, h, o, c, l);
+        		}
         		else {
-        			bar = new Bar();
+        			bar = new Bar(x, h, o, c, l);
         			pointArray.add(bar);
         		}
-        		bar.setBounds(x, h, o, c, l);
         		bar.setOhlc(ohlc);
     			bar.setColor(ohlc.getClose() < ohlc.getOpen() ? negativeColor : positiveColor);
     		}
@@ -226,7 +231,56 @@ public class BarChart implements IChartObject {
     	visitor.visit(this);
     }
 
-    private class Bar {
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+    	if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
+    		return this;
+    	}
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
+     */
+    public void createDecorator(Composite parent) {
+		IAdaptable[] values = dataSeries.getValues();
+		IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
+		IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
+
+		dateItem = new SummaryDateItem(parent, SWT.DATE);
+		dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
+
+		ohlcItem = new SummaryOHLCItem(parent, SWT.NONE);
+		ohlcItem.setOHLC(ohlc, previousOhlc);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
+     */
+    public void updateDecorator(int x, int y) {
+    	if (x == SWT.DEFAULT) {
+			IAdaptable[] values = dataSeries.getValues();
+			IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
+			IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
+
+			dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
+			ohlcItem.setOHLC(ohlc, previousOhlc);
+    	}
+    	else if (pointArray != null) {
+			for (int i = 1; i < pointArray.size(); i++) {
+				Bar c = pointArray.get(i);
+       			if (c.containsPoint(x, y)) {
+       				dateItem.setDate(c.ohlc.getDate());
+       				ohlcItem.setOHLC(c.ohlc, pointArray.get(i - 1).ohlc);
+       			}
+			}
+		}
+    }
+
+	private class Bar {
 		int x;
 		int yHigh;
 		int yOpen;
@@ -236,7 +290,12 @@ public class BarChart implements IChartObject {
 		IOHLC ohlc;
 		RGB color;
 
-		public Bar() {
+		public Bar(int x, int yHigh, int yOpen, int yClose, int yLow) {
+	        this.x = x;
+	        this.yHigh = yHigh;
+	        this.yOpen = yOpen;
+	        this.yClose = yClose;
+	        this.yLow = yLow;
         }
 
 		public void setBounds(int x, int yHigh, int yOpen, int yClose, int yLow) {

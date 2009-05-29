@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipsetrader.core.charts.IDataSeries;
 
 /**
@@ -26,7 +27,7 @@ import org.eclipsetrader.core.charts.IDataSeries;
  *
  * @since 1.0
  */
-public class HistogramBarChart implements IChartObject {
+public class HistogramBarChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
 	private IDataSeries dataSeries;
 	private IChartObject parent;
 
@@ -38,6 +39,8 @@ public class HistogramBarChart implements IChartObject {
 	private List<Bar> pointArray = new ArrayList<Bar>(2048);
 	private boolean valid;
 	private boolean hasFocus;
+
+	private SummaryNumberItem numberItem;
 
 	private NumberFormat numberFormat = NumberFormat.getInstance();
 
@@ -226,6 +229,43 @@ public class HistogramBarChart implements IChartObject {
     private int blend(int v1, int v2, int ratio) {
 		return (ratio * v1 + (100 - ratio) * v2) / 100;
 	}
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+    	if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
+    		return this;
+    	}
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
+     */
+    public void createDecorator(Composite parent) {
+		IAdaptable[] values = dataSeries.getValues();
+		Number value = (Number) (values.length > 0 ? values[values.length - 1].getAdapter(Number.class) : null);
+
+		numberItem = new SummaryNumberItem(parent, SWT.NONE);
+		numberItem.setValue(dataSeries.getName() + ": ", value);
+    }
+
+	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
+     */
+    public void updateDecorator(int x, int y) {
+		if (pointArray != null) {
+			for (int i = 0; i < pointArray.size(); i++) {
+				if (pointArray.get(i).containsPoint(x, y)) {
+	    			Number value = (Number) values[i].getAdapter(Number.class);
+	    			if (value != null)
+	    				numberItem.setValue(dataSeries.getName() + ": ", value);
+				}
+			}
+		}
+    }
 
     private class Bar {
 		int x;

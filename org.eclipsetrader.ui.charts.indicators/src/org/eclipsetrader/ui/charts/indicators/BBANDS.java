@@ -222,7 +222,7 @@ public class BBANDS implements IChartObjectFactory, IExecutableExtension {
 		            }
 				};
 	    	case Histogram:
-				return new HistogramAreaChart(result) {
+				return new HistogramAreaChart(result, color) {
 		            @Override
 		            protected boolean hasFocus() {
 			            return ((GroupChartObject) getParent()).hasFocus();
