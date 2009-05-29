@@ -264,6 +264,8 @@ public class History implements IHistory, IStoreObject {
 
             	for (Key key : updatedElements) {
             		HistoryDay element = historyMap.get(key).get();
+            		if (element == null)
+            			continue;
 
             		Map<Date,IStore> storeList = new HashMap<Date,IStore>();
 	    	    	Map<Date,IStoreProperties> propertyList = new HashMap<Date,IStoreProperties>();
