@@ -48,7 +48,7 @@ public class FiboarcToolFactory implements IChartObjectFactory, IExecutableExten
 
 	private RGB color = new RGB(0, 0, 0);
 
-	private FanlineToolObject object;
+	private FiboarcToolObject object;
 
 	public static class Value implements IAdaptable {
 		private Date date;
@@ -88,7 +88,7 @@ public class FiboarcToolFactory implements IChartObjectFactory, IExecutableExten
         }
 	}
 
-    public class FanlineToolObject implements IChartObject, IEditableChartObject {
+    public class FiboarcToolObject implements IChartObject, IEditableChartObject {
     	private Point p1;
     	private Point p2;
     	private int[] factorLine;
@@ -104,7 +104,7 @@ public class FiboarcToolFactory implements IChartObjectFactory, IExecutableExten
     	private Point p2start;
     	private int lastX = -1, lastY = -1;
 
-    	public FanlineToolObject() {
+    	public FiboarcToolObject() {
     		numberFormat.setGroupingUsed(true);
     		numberFormat.setMinimumFractionDigits(0);
     		numberFormat.setMaximumFractionDigits(4);
@@ -143,26 +143,6 @@ public class FiboarcToolFactory implements IChartObjectFactory, IExecutableExten
         		}
         	}
     	    return false;
-        }
-
-    	/* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#add(org.eclipsetrader.ui.charts.IChartObject)
-         */
-        public void add(IChartObject object) {
-        }
-
-    	/* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#getChildren()
-         */
-        public IChartObject[] getChildren() {
-    	    return null;
-        }
-
-    	/* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#getParent()
-         */
-        public IChartObject getParent() {
-    	    return null;
         }
 
     	/* (non-Javadoc)
@@ -359,18 +339,6 @@ public class FiboarcToolFactory implements IChartObjectFactory, IExecutableExten
         }
 
     	/* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#remove(org.eclipsetrader.ui.charts.IChartObject)
-         */
-        public void remove(IChartObject object) {
-        }
-
-    	/* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#setParent(org.eclipsetrader.ui.charts.IChartObject)
-         */
-        public void setParent(IChartObject parent) {
-        }
-
-    	/* (non-Javadoc)
          * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
          */
         public void accept(IChartObjectVisitor visitor) {
@@ -379,7 +347,7 @@ public class FiboarcToolFactory implements IChartObjectFactory, IExecutableExten
     }
 
 	public FiboarcToolFactory() {
-		object = new FanlineToolObject();
+		object = new FiboarcToolObject();
 	}
 
 	/* (non-Javadoc)

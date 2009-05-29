@@ -30,7 +30,6 @@ import org.eclipsetrader.core.charts.IDataSeries;
  */
 public class HistogramAreaChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
 	private IDataSeries dataSeries;
-	private IChartObject parent;
 
 	private IAdaptable[] values;
 	private List<Polygon> pointArray = new ArrayList<Polygon>(2048);
@@ -160,39 +159,6 @@ public class HistogramAreaChart implements IChartObject, ISummaryBarDecorator, I
    				return c.getToolTip();
     	}
 	    return null;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#add(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void add(IChartObject object) {
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#remove(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void remove(IChartObject object) {
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getChildren()
-     */
-    public IChartObject[] getChildren() {
-	    return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getParent()
-     */
-    public IChartObject getParent() {
-	    return parent;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#setParent(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void setParent(IChartObject parent) {
-    	this.parent = parent;
     }
 
 	/* (non-Javadoc)

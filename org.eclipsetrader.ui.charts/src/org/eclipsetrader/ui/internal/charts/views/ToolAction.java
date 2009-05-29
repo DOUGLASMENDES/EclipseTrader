@@ -72,11 +72,15 @@ public class ToolAction extends Action {
     protected void handleApplyEditorValue() {
 		BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
 
-		IChartObject containerObject = viewer.getSelectedChartCanvas().getChartObject();
+		IChartObject[] currentObject = viewer.getSelectedChartCanvas().getChartObject();
 		int index = viewer.getSelectedChartCanvasIndex();
 
-		if (containerObject != null && index != -1) {
-			containerObject.add(chartObject);
+		if (index != -1) {
+			IChartObject[] newObject = new IChartObject[currentObject.length + 1];
+			System.arraycopy(currentObject, 0, newObject, 0, currentObject.length);
+			newObject[currentObject.length] = chartObject;
+
+			viewer.getSelectedChartCanvas().setChartObject(newObject);
 
 			ChartView view = (ChartView) viewPart.getAdapter(ChartView.class);
 			((ChartRowViewItem) view.getItems()[index]).addFactory(factory);

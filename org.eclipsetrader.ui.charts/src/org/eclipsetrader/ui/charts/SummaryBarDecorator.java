@@ -87,10 +87,8 @@ public class SummaryBarDecorator implements MouseListener, MouseMoveListener, Mo
 	}
 
 	private void updateLabel() {
-		for (ChartCanvas canvas : decoratedCanvas) {
-	    	if (canvas.getChartObject() != null)
-	    		canvas.getChartObject().accept(summaryLabelVisitor);
-		}
+		for (ChartCanvas canvas : decoratedCanvas)
+    		canvas.accept(summaryLabelVisitor);
 	}
 
 	/* (non-Javadoc)

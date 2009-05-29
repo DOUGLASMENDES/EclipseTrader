@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,66 +17,30 @@ import java.util.List;
 import org.eclipsetrader.core.charts.IDataSeries;
 
 /**
- * Default implementation of the <code>IChartObject</code> interface.
+ * Default implementation of on <code>IChartObject</code> that is composed
+ * of other child objects.
  *
  * @since 1.0
  */
 public class GroupChartObject implements IChartObject {
-	private IChartObject parent;
-	private List<IChartObject> objects;
-	private boolean hasFocus;
+	private List<IChartObject> objects = new ArrayList<IChartObject>();
 
 	public GroupChartObject() {
-		this.objects = new ArrayList<IChartObject>();
 	}
+
+    public void add(IChartObject object) {
+		objects.add(object);
+    }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
      */
     public boolean containsPoint(int x, int y) {
-    	IChartObject[] children = getChildren();
-    	for (int i = 0; i < children.length; i++) {
-    		if (children[i].containsPoint(x, y))
+    	for (IChartObject o : objects) {
+    		if (o.containsPoint(x, y))
     			return true;
     	}
 	    return false;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#add(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void add(IChartObject object) {
-		objects.add(object);
-		object.setParent(this);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#remove(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void remove(IChartObject object) {
-		objects.remove(object);
-		object.setParent(null);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getChildren()
-     */
-    public IChartObject[] getChildren() {
-	    return objects.toArray(new IChartObject[objects.size()]);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getParent()
-     */
-    public IChartObject getParent() {
-	    return parent;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#setParent(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void setParent(IChartObject parent) {
-    	this.parent = parent;
     }
 
 	/* (non-Javadoc)
@@ -112,6 +76,8 @@ public class GroupChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
      */
     public void invalidate() {
+    	for (IChartObject o : objects)
+    		o.invalidate();
     }
 
 	/* (non-Javadoc)
@@ -126,18 +92,16 @@ public class GroupChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
      */
     public void handleFocusGained(ChartObjectFocusEvent event) {
-    	hasFocus = true;
+    	for (IChartObject o : objects)
+    		o.handleFocusGained(event);
     }
 
 	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
      */
     public void handleFocusLost(ChartObjectFocusEvent event) {
-    	hasFocus = false;
-    }
-
-    public boolean hasFocus() {
-    	return hasFocus;
+    	for (IChartObject o : objects)
+    		o.handleFocusLost(event);
     }
 
 	/* (non-Javadoc)

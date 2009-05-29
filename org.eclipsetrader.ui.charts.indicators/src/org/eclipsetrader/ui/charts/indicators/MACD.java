@@ -236,30 +236,15 @@ public class MACD implements IChartObjectFactory, IExecutableExtension {
 	    		lineStyle = LineStyle.Dot;
 	    		break;
 	    	case HistogramBars:
-				return new HistogramBarChart(result) {
-		            @Override
-		            protected boolean hasFocus() {
-			            return ((GroupChartObject) getParent()).hasFocus();
-		            }
-				};
+				return new HistogramBarChart(result);
 	    	case Histogram:
-				return new HistogramAreaChart(result, color) {
-		            @Override
-		            protected boolean hasFocus() {
-			            return ((GroupChartObject) getParent()).hasFocus();
-		            }
-				};
+				return new HistogramAreaChart(result, color);
 	    	case Invisible:
 	    		lineStyle = LineStyle.Invisible;
 	    		break;
 	    }
 
-	    return new LineChart(result, lineStyle, color) {
-            @Override
-            protected boolean hasFocus() {
-	            return ((GroupChartObject) getParent()).hasFocus();
-            }
-	    };
+	    return new LineChart(result, lineStyle, color);
     }
 
 	/* (non-Javadoc)

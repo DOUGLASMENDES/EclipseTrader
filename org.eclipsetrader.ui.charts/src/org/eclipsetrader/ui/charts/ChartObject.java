@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,6 @@
 
 package org.eclipsetrader.ui.charts;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipsetrader.core.charts.IDataSeries;
 
 /**
@@ -22,11 +19,8 @@ import org.eclipsetrader.core.charts.IDataSeries;
  * @since 1.0
  */
 public class ChartObject implements IChartObject {
-	private IChartObject parent;
-	private List<IChartObject> objects;
 
 	public ChartObject() {
-		this.objects = new ArrayList<IChartObject>();
 	}
 
 	/* (non-Javadoc)
@@ -34,45 +28,6 @@ public class ChartObject implements IChartObject {
      */
     public boolean containsPoint(int x, int y) {
 	    return false;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#add(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void add(IChartObject object) {
-    	if (!objects.contains(object)) {
-    		objects.add(object);
-    		object.setParent(this);
-    	}
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#remove(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void remove(IChartObject object) {
-		objects.remove(object);
-		object.setParent(null);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getChildren()
-     */
-    public IChartObject[] getChildren() {
-	    return objects.toArray(new IChartObject[objects.size()]);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getParent()
-     */
-    public IChartObject getParent() {
-	    return parent;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#setParent(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void setParent(IChartObject parent) {
-    	this.parent = parent;
     }
 
 	/* (non-Javadoc)
@@ -100,9 +55,6 @@ public class ChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
      */
     public void paint(IGraphics graphics) {
-		IChartObject[] o = getChildren();
-    	for (int i = 0; i < o.length; i++)
-    		o[i].paint(graphics);
     }
 
 	/* (non-Javadoc)
@@ -115,9 +67,6 @@ public class ChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
      */
     public void setDataBounds(DataBounds bounds) {
-		IChartObject[] o = getChildren();
-    	for (int i = 0; i < o.length; i++)
-    		o[i].setDataBounds(bounds);
     }
 
 	/* (non-Javadoc)
@@ -136,10 +85,6 @@ public class ChartObject implements IChartObject {
      * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
      */
     public void accept(IChartObjectVisitor visitor) {
-    	if (visitor.visit(this)) {
-    		IChartObject[] o = getChildren();
-        	for (int i = 0; i < o.length; i++)
-        		o[i].accept(visitor);
-    	}
+    	visitor.visit(this);
     }
 }

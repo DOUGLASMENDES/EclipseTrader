@@ -33,7 +33,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -54,7 +53,7 @@ public class ChartCanvas {
 
 	private Label label;
 
-	private IChartObject chartObject;
+	private IChartObject[] chartObject;
 	private TimeSpan resolutionTimeSpan;
 	private DoubleValuesAxis verticalAxis;
 	private NumberFormat nf = NumberFormat.getInstance();
@@ -191,7 +190,7 @@ public class ChartCanvas {
 
 		if (Boolean.TRUE.equals(verticalScaleCanvas.getData(BaseChartViewer.K_NEEDS_REDRAW))) {
 			verticalAxis.clear();
-			chartObject.accept(new IChartObjectVisitor() {
+			accept(new IChartObjectVisitor() {
 	            public boolean visit(IChartObject object) {
 	            	if (object.getDataSeries() != null) {
 	            		IDataSeries series = object.getDataSeries().getSeries(new AdaptableWrapper(firstDate), new AdaptableWrapper(lastDate));
@@ -277,8 +276,10 @@ public class ChartCanvas {
 				Double highestValue = (Double) verticalAxis.getLastValue();
 
 		    	DataBounds dataBounds = new DataBounds(visibleDates, lowestValue, highestValue, clientArea, (int) datesAxis.gridSize);
-				chartObject.setDataBounds(dataBounds);
-				chartObject.paint(graphics);
+				for (int i = 0; i < chartObject.length; i++) {
+					chartObject[i].setDataBounds(dataBounds);
+					chartObject[i].paint(graphics);
+				}
 			} catch(Error e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
 				ChartsUIActivator.log(status);
@@ -354,11 +355,11 @@ public class ChartCanvas {
 		}
 	}
 
-	public IChartObject getChartObject() {
+	public IChartObject[] getChartObject() {
     	return chartObject;
     }
 
-	public void setChartObject(IChartObject chartObject) {
+	public void setChartObject(IChartObject[] chartObject) {
     	this.chartObject = chartObject;
 		updateSummary();
     }
@@ -376,6 +377,8 @@ public class ChartCanvas {
 	}
 
 	public void showToolTip(int x, int y) {
+		if (verticalAxis == null)
+			return;
 		Number value = (Number) verticalAxis.mapToValue(y);
     	if (value != null) {
     		label.setText(nf.format(value));
@@ -395,19 +398,17 @@ public class ChartCanvas {
 	protected void updateSummary() {
 		summary.removeAll();
 
-		if (chartObject != null) {
-			chartObject.accept(new IChartObjectVisitor() {
-		        public boolean visit(IChartObject object) {
-		        	ISummaryBarDecorator factory = null;
-		        	if (object instanceof IAdaptable) {
-		        		factory = (ISummaryBarDecorator) ((IAdaptable) object).getAdapter(ISummaryBarDecorator.class);
-		        		if (factory != null)
-		        			factory.createDecorator(summary.getCompositeControl());
-		        	}
-			        return true;
-		        }
-			});
-		}
+		accept(new IChartObjectVisitor() {
+	        public boolean visit(IChartObject object) {
+	        	ISummaryBarDecorator factory = null;
+	        	if (object instanceof IAdaptable) {
+	        		factory = (ISummaryBarDecorator) ((IAdaptable) object).getAdapter(ISummaryBarDecorator.class);
+	        		if (factory != null)
+	        			factory.createDecorator(summary.getCompositeControl());
+	        	}
+		        return true;
+	        }
+		});
 
 		summary.layout();
 		summary.getParent().layout();
@@ -420,4 +421,12 @@ public class ChartCanvas {
 	public void setResolutionTimeSpan(TimeSpan resolutionTimeSpan) {
     	this.resolutionTimeSpan = resolutionTimeSpan;
     }
+
+	public void accept(IChartObjectVisitor visitor) {
+		if (chartObject == null)
+			return;
+
+		for (int i = 0; i < chartObject.length; i++)
+			chartObject[i].accept(visitor);
+	}
 }

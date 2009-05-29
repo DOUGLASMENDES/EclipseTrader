@@ -28,7 +28,6 @@ import org.eclipsetrader.core.feed.TimeSpan;
 
 public class BarChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
 	private IDataSeries dataSeries;
-	private IChartObject parent;
 
 	private int width = 5;
 	private RGB positiveColor = new RGB(0, 254, 0);
@@ -175,39 +174,6 @@ public class BarChart implements IChartObject, ISummaryBarDecorator, IAdaptable 
         	}
     	}
 	    return null;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#add(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void add(IChartObject object) {
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#remove(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void remove(IChartObject object) {
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getChildren()
-     */
-    public IChartObject[] getChildren() {
-	    return null;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getParent()
-     */
-    public IChartObject getParent() {
-	    return parent;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#setParent(org.eclipsetrader.ui.charts.IChartObject)
-     */
-    public void setParent(IChartObject parent) {
-    	this.parent = parent;
     }
 
 	/* (non-Javadoc)

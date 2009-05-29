@@ -35,7 +35,7 @@ public class ChartRowViewItem implements IViewItem {
 	private String name;
 
 	private IDataSeries rootDataSeries;
-	private IChartObject rootChart = new ChartObject();
+	private List<IChartObject> rootChart = new ArrayList<IChartObject>();
 
 	private List<ChartViewItem> items = new ArrayList<ChartViewItem>();
 
@@ -89,7 +89,7 @@ public class ChartRowViewItem implements IViewItem {
     }
 
 	public void refresh() {
-    	rootChart = new ChartObject();
+    	rootChart = new ArrayList<IChartObject>();
     	for (ChartViewItem value : items) {
     		IChartObject object = value.getFactory().createObject(rootDataSeries);
     		if (object != null)
@@ -174,8 +174,8 @@ public class ChartRowViewItem implements IViewItem {
 	 */
 	@SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-		if (adapter.isAssignableFrom(IChartObject.class))
-			return rootChart;
+		if (adapter.isAssignableFrom(IChartObject[].class))
+			return rootChart.toArray(new IChartObject[rootChart.size()]);
 
 		if (adapter.isAssignableFrom(IDataSeries.class))
 			return rootDataSeries;

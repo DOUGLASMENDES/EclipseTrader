@@ -63,7 +63,7 @@ public class BaseChartViewer implements ISelectionProvider {
 	private DateScaleCanvas dateScaleCanvas;
 	private Label verticalScaleLabel;
 
-	private IChartObject[] input;
+	private IChartObject[][] input;
 	private ChartCanvas[] chartCanvas = new ChartCanvas[0];
 
 	DateValuesAxis datesAxis = new DateValuesAxis();
@@ -283,7 +283,7 @@ public class BaseChartViewer implements ISelectionProvider {
     	return input;
     }
 
-	public void setInput(IChartObject[] input) {
+	public void setInput(IChartObject[][] input) {
     	this.input = input;
     	refresh();
 	}
@@ -309,13 +309,15 @@ public class BaseChartViewer implements ISelectionProvider {
 
     	datesAxis.clear();
     	for (int i = 0; i < input.length; i++) {
-			input[i].accept(new IChartObjectVisitor() {
-                public boolean visit(IChartObject object) {
-                	if (object.getDataSeries() != null)
-                		datesAxis.addValues(object.getDataSeries().getValues());
-    	            return true;
-                }
-        	});
+    		for (int c = 0; c < input[i].length; c++) {
+    			input[i][c].accept(new IChartObjectVisitor() {
+                    public boolean visit(IChartObject object) {
+                    	if (object.getDataSeries() != null)
+                    		datesAxis.addValues(object.getDataSeries().getValues());
+        	            return true;
+                    }
+            	});
+    		}
     	}
 
     	for (int i = 0; i < input.length; i++) {
@@ -358,8 +360,7 @@ public class BaseChartViewer implements ISelectionProvider {
 
 		            	if (activeEditor != null && !activeEditor.isActive()) {
 		            		visitor.setLocation(e.x, e.y);
-			            	if (chartCanvas.getChartObject() != null)
-		                    	chartCanvas.getChartObject().accept(visitor);
+	                    	chartCanvas.accept(visitor);
 
 	                    	if (visitor.getChartObject() instanceof IEditableChartObject) {
 	                    		IEditableChartObject editableObject = (IEditableChartObject) visitor.getChartObject();
@@ -391,8 +392,7 @@ public class BaseChartViewer implements ISelectionProvider {
 		            	ChartCanvas eventCanvas = (ChartCanvas) e.widget.getData();
 
 	            		visitor.setLocation(e.x, e.y);
-		            	if (eventCanvas.getChartObject() != null)
-	                    	eventCanvas.getChartObject().accept(visitor);
+                    	eventCanvas.accept(visitor);
 
 		            	if (selectedObject != visitor.getChartObject()) {
 		            		if (decorator.getMode() != CrosshairDecorator.MODE_MOUSE_HOVER)
@@ -453,7 +453,7 @@ public class BaseChartViewer implements ISelectionProvider {
 
     	final Map<String, Object> set = new HashMap<String, Object>();
     	for (int i = 0; i < chartCanvas.length; i++) {
-    		chartCanvas[i].getChartObject().accept(new IChartObjectVisitor() {
+    		chartCanvas[i].accept(new IChartObjectVisitor() {
                 public boolean visit(IChartObject object) {
                 	if (object == selectedObject)
                 		set.put("selectedObject", object);
@@ -526,7 +526,7 @@ public class BaseChartViewer implements ISelectionProvider {
     		if (element instanceof IChartObject) {
     			for (int i = 0; i < chartCanvas.length; i++) {
     				final ChartCanvas currentCanvas = chartCanvas[i];;
-    				currentCanvas.getChartObject().accept(new IChartObjectVisitor() {
+    				currentCanvas.accept(new IChartObjectVisitor() {
                         public boolean visit(IChartObject object) {
                         	if (object == element)
                         		handleSelectionChanged(currentCanvas, object);

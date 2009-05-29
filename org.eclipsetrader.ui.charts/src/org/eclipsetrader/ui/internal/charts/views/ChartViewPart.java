@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -601,11 +601,16 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		    			        public void applyEditorValue() {
 		    						viewer.getEditor().removeListener(this);
 
-		    						IChartObject containerObject = viewer.getSelectedChartCanvas().getChartObject();
+		    						IChartObject[] currentObject = viewer.getSelectedChartCanvas().getChartObject();
 		    						int index = viewer.getSelectedChartCanvasIndex();
 
-		    						if (containerObject != null && index != -1) {
-		    							containerObject.add(chartObject);
+		    						if (index != -1) {
+		    							IChartObject[] newObject = new IChartObject[currentObject.length + 1];
+		    							System.arraycopy(currentObject, 0, newObject, 0, currentObject.length);
+		    							newObject[currentObject.length] = chartObject;
+
+		    							viewer.getSelectedChartCanvas().setChartObject(newObject);
+
 		    							((ChartRowViewItem) view.getItems()[index]).addFactory(factory);
 		    							viewer.setSelection(new StructuredSelection(chartObject));
 		    						}
@@ -881,9 +886,9 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			public void run() {
 				ChartRowViewItem[] rowViewItem = (ChartRowViewItem[]) view.getAdapter(ChartRowViewItem[].class);
 				if (rowViewItem != null) {
-					IChartObject[] input = new IChartObject[rowViewItem.length];
+					IChartObject[][] input = new IChartObject[rowViewItem.length][];
 					for (int i = 0; i < input.length; i++)
-						input[i] = (IChartObject) rowViewItem[i].getAdapter(IChartObject.class);
+						input[i] = (IChartObject[]) rowViewItem[i].getAdapter(IChartObject[].class);
 		    			viewer.setInput(input);
 				}
 			}

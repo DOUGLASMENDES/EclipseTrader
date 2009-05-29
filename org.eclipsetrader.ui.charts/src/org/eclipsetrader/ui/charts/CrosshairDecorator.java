@@ -263,10 +263,8 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
 	private void updateLabel(Point location) {
 		if (tooltip != null && location != null) {
 	    	summary = new StringBuilder();
-			for (ChartCanvas canvas : decoratedCanvas) {
-		    	if (canvas.getChartObject() != null)
-		    		canvas.getChartObject().accept(summaryLabelVisitor);
-			}
+			for (ChartCanvas canvas : decoratedCanvas)
+	    		canvas.accept(summaryLabelVisitor);
     		tooltip.setText(summary.toString());
 
     		if (showSummaryTooltip) {

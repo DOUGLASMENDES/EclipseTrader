@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,23 +15,37 @@ import org.eclipsetrader.core.charts.IDataSeries;
 
 /**
  * A lightweight chart object.
- * Charts are rendered to an <code>IGraphics</code> object.  Objects can be composed to
- * create complex charts.
+ * Charts are rendered to an <code>IGraphics</code> object.
  *
  * @since 1.0
  */
 public interface IChartObject {
 
+	/**
+	 * Gets the data series associated with the receiver.
+	 *
+	 * @return the data series.
+	 */
 	public IDataSeries getDataSeries();
 
 	public void setDataBounds(DataBounds bounds);
 
+	/**
+	 * Paints the received using the given graphics object.
+	 *
+	 * @param graphics the graphics object to paint on.
+	 */
 	public void paint(IGraphics graphics);
 
+	/**
+	 * Gets the tooltip string which describes the receiver's content.
+	 *
+	 * @return the tooltip text, or <code>null</code>
+	 */
 	public String getToolTip();
 
 	/**
-	 * Returns the tooltip string for the element at the given location.
+	 * Gets the tooltip string for the element at the given location.
 	 * <p>A value of <code>SWT.DEFAULT</code> for either x or y means that that value
 	 * should not be considered.</p>
 	 *
@@ -53,31 +67,6 @@ public interface IChartObject {
 	public boolean containsPoint(int x, int y);
 
 	/**
-	 * Adds the given object as a child of this object.
-	 *
-	 * @param object the object to add.
-	 */
-	public void add(IChartObject object);
-
-	/**
-	 * Removes the given object from this object's children.
-	 *
-	 * @param object the object to remove.
-	 */
-	public void remove(IChartObject object);
-
-	/**
-	 * Returns a possibly empty array of children by reference.
-	 *
-	 * @return the children array.
-	 */
-	public IChartObject[] getChildren();
-
-	public IChartObject getParent();
-
-	public void setParent(IChartObject parent);
-
-	/**
 	 * Called when this object has gained focus.
 	 *
 	 * @param event the focus event.
@@ -91,6 +80,9 @@ public interface IChartObject {
 	 */
 	public void handleFocusLost(ChartObjectFocusEvent event);
 
+	/**
+	 * Invalidate any cached content.
+	 */
 	public void invalidate();
 
 	public void accept(IChartObjectVisitor visitor);
