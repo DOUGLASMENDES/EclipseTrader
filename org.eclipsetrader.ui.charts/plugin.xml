@@ -213,8 +213,13 @@
          point="org.eclipsetrader.ui.indicators">
       <category
             icon="icons/obj16/linecharticon.gif"
-            id="org.eclipsetrader.ui.charts.indicators"
-            name="Indicators">
+            id="org.eclipsetrader.ui.charts.indicators.top"
+            name="Top Indicators">
+      </category>
+      <category
+            icon="icons/obj16/linecharticon.gif"
+            id="org.eclipsetrader.ui.charts.indicators.bottom"
+            name="Bottom Indicators">
       </category>
       <category
             icon="icons/obj16/build_exec.png"

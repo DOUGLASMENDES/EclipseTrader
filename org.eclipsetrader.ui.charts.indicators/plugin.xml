@@ -8,7 +8,6 @@
             class="org.eclipsetrader.ui.charts.indicators.AD"
             description="Chaikin A/D Line"
             id="org.eclipsetrader.indicators.ad"
-            location="bottom"
             name="AD">
       </indicator>
       <indicator
@@ -16,7 +15,6 @@
             class="org.eclipsetrader.ui.charts.indicators.ADX"
             description="A/D Movement Index"
             id="org.eclipsetrader.indicators.adx"
-            location="bottom"
             name="ADX">
       </indicator>
       <indicator
@@ -24,7 +22,6 @@
             class="org.eclipsetrader.ui.charts.indicators.ADXR"
             description="A/D Movement Index Rating"
             id="org.eclipsetrader.indicators.adxr"
-            location="bottom"
             name="ADXR">
       </indicator>
       <indicator
@@ -32,7 +29,6 @@
             class="org.eclipsetrader.ui.charts.indicators.ADOSC"
             description="Chaikin A/D Oscillator"
             id="org.eclipsetrader.indicators.adosc"
-            location="bottom"
             name="ADOSC">
       </indicator>
       <indicator
@@ -40,7 +36,6 @@
             class="org.eclipsetrader.ui.charts.indicators.APO"
             description="Absolute Price Oscillator"
             id="org.eclipsetrader.indicators.apo"
-            location="bottom"
             name="APO">
       </indicator>
       <indicator
@@ -48,7 +43,6 @@
             class="org.eclipsetrader.ui.charts.indicators.AROON"
             description="Aroon"
             id="org.eclipsetrader.indicators.aroon"
-            location="bottom"
             name="AROON">
       </indicator>
       <indicator
@@ -56,7 +50,6 @@
             class="org.eclipsetrader.ui.charts.indicators.AROONOSC"
             description="Aroon Oscillator"
             id="org.eclipsetrader.indicators.aroonosc"
-            location="bottom"
             name="AROONOSC">
       </indicator>
       <indicator
@@ -64,7 +57,6 @@
             class="org.eclipsetrader.ui.charts.indicators.AVGPRICE"
             description="Average Price"
             id="org.eclipsetrader.indicators.avgprice"
-            location="bottom"
             name="AVGPRICE">
       </indicator>
       <indicator
@@ -72,14 +64,12 @@
             class="org.eclipsetrader.ui.charts.indicators.ATR"
             description="Average True Range"
             id="org.eclipsetrader.indicators.atr"
-            location="bottom"
             name="ATR">
       </indicator>
       <indicator
             class="org.eclipsetrader.ui.charts.indicators.BARS"
             description="Bars"
             id="org.eclipsetrader.indicators.bars"
-            location="top"
             name="BAR">
       </indicator>
       <indicator
@@ -88,7 +78,6 @@
             description="Bollinger Bands"
             exclusive="false"
             id="org.eclipsetrader.indicators.bbands"
-            location="top"
             name="BBANDS">
       </indicator>
       <indicator
@@ -96,7 +85,6 @@
             class="org.eclipsetrader.ui.charts.indicators.BOP"
             description="Balance Of Power"
             id="org.eclipsetrader.indicators.bop"
-            location="bottom"
             name="BOP">
       </indicator>
       <indicator
@@ -104,7 +92,6 @@
             class="org.eclipsetrader.ui.charts.indicators.CCI"
             description="Commodity Channel Index"
             id="org.eclipsetrader.indicators.cci"
-            location="bottom"
             name="CCI">
       </indicator>
       <indicator
@@ -112,7 +99,6 @@
             class="org.eclipsetrader.ui.charts.indicators.CMO"
             description="Chande Momentum Oscillator"
             id="org.eclipsetrader.indicators.cmo"
-            location="bottom"
             name="CMO">
       </indicator>
       <indicator
@@ -120,15 +106,14 @@
             class="org.eclipsetrader.ui.charts.indicators.DX"
             description="Directional Movement Index"
             id="org.eclipsetrader.indicators.dx"
-            location="bottom"
             name="DX">
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.indicators.top"
             class="org.eclipsetrader.ui.charts.indicators.LINEARREG"
             description="Linear Regression"
+            exclusive="false"
             id="org.eclipsetrader.indicators.linearreg"
-            location="top"
             name="LINEARREG">
       </indicator>
       <indicator
@@ -137,7 +122,6 @@
             description="Moving Average"
             exclusive="false"
             id="org.eclipsetrader.indicators.ma"
-            location="top"
             name="MA">
       </indicator>
       <indicator
@@ -145,7 +129,6 @@
             class="org.eclipsetrader.ui.charts.indicators.MACD"
             description="M/A Convergence/Divergence"
             id="org.eclipsetrader.indicators.macd"
-            location="bottom"
             name="MACD">
       </indicator>
       <indicator
@@ -153,7 +136,6 @@
             class="org.eclipsetrader.ui.charts.indicators.MFI"
             description="Money Flow Index"
             id="org.eclipsetrader.indicators.mfi"
-            location="bottom"
             name="MFI">
       </indicator>
       <indicator
@@ -161,7 +143,6 @@
             class="org.eclipsetrader.ui.charts.indicators.MOM"
             description="Momentum"
             id="org.eclipsetrader.indicators.mom"
-            location="bottom"
             name="MOM">
       </indicator>
       <indicator
@@ -169,7 +150,6 @@
             class="org.eclipsetrader.ui.charts.indicators.NATR"
             description="Normalized Average True Range"
             id="org.eclipsetrader.indicators.natr"
-            location="bottom"
             name="NATR">
       </indicator>
       <indicator
@@ -177,7 +157,6 @@
             class="org.eclipsetrader.ui.charts.indicators.OBV"
             description="On Balance Volume"
             id="org.eclipsetrader.indicators.obv"
-            location="bottom"
             name="OBV">
       </indicator>
       <indicator
@@ -185,7 +164,6 @@
             class="org.eclipsetrader.ui.charts.indicators.PPO"
             description="Percentage Price Oscillator"
             id="org.eclipsetrader.indicators.ppo"
-            location="bottom"
             name="PPO">
       </indicator>
       <indicator
@@ -193,7 +171,6 @@
             class="org.eclipsetrader.ui.charts.indicators.ROC"
             description="Rate of Change"
             id="org.eclipsetrader.indicators.roc"
-            location="bottom"
             name="ROC">
       </indicator>
       <indicator
@@ -201,7 +178,6 @@
             class="org.eclipsetrader.ui.charts.indicators.RSI"
             description="Relative Strength Index"
             id="org.eclipsetrader.indicators.rsi"
-            location="bottom"
             name="RSI">
       </indicator>
       <indicator
@@ -209,7 +185,6 @@
             class="org.eclipsetrader.ui.charts.indicators.SAR"
             description="Parabolic SAR"
             id="org.eclipsetrader.indicators.sar"
-            location="bottom"
             name="SAR">
       </indicator>
       <indicator
@@ -217,7 +192,6 @@
             class="org.eclipsetrader.ui.charts.indicators.STOCH"
             description="Stochastic"
             id="org.eclipsetrader.indicators.stoch"
-            location="bottom"
             name="STOCH">
       </indicator>
       <indicator
@@ -225,7 +199,6 @@
             class="org.eclipsetrader.ui.charts.indicators.STOCHRSI"
             description="Stochastic RSI"
             id="org.eclipsetrader.indicators.stochrsi"
-            location="bottom"
             name="STOCHRSI">
       </indicator>
       <indicator
@@ -233,7 +206,6 @@
             class="org.eclipsetrader.ui.charts.indicators.SUM"
             description="Summation"
             id="org.eclipsetrader.indicators.sum"
-            location="bottom"
             name="SUM">
       </indicator>
       <indicator
@@ -241,7 +213,6 @@
             class="org.eclipsetrader.ui.charts.indicators.TRANGE"
             description="True Range"
             id="org.eclipsetrader.indicators.trange"
-            location="bottom"
             name="TRANGE">
       </indicator>
       <indicator
@@ -249,7 +220,6 @@
             class="org.eclipsetrader.ui.charts.indicators.TRIX"
             description="1-day ROC of a Triple Smooth EMA"
             id="org.eclipsetrader.indicators.trix"
-            location="bottom"
             name="TRIX">
       </indicator>
       <indicator
@@ -257,15 +227,14 @@
             class="org.eclipsetrader.ui.charts.indicators.TSF"
             description="Time Series Forecast"
             id="org.eclipsetrader.indicators.tsf"
-            location="bottom"
             name="TSF">
       </indicator>
       <indicator
-            category="org.eclipsetrader.ui.charts.indicators.bottom"
+            category="org.eclipsetrader.ui.charts.indicators.top"
             class="org.eclipsetrader.ui.charts.indicators.TYPPRICE"
             description="Typical Price"
+            exclusive="false"
             id="org.eclipsetrader.indicators.typprice"
-            location="bottom"
             name="TYPPRICE">
       </indicator>
       <indicator
@@ -273,14 +242,12 @@
             class="org.eclipsetrader.ui.charts.indicators.ULTOSC"
             description="Ultimate Oscillator"
             id="org.eclipsetrader.indicators.ultosc"
-            location="bottom"
             name="ULTOSC">
       </indicator>
       <indicator
             class="org.eclipsetrader.ui.charts.indicators.VOLUME"
             description="Volume"
             id="org.eclipsetrader.indicators.volume"
-            location="bottom"
             name="VOL">
       </indicator>
       <indicator
@@ -288,7 +255,6 @@
             class="org.eclipsetrader.ui.charts.indicators.VAR"
             description="Variance"
             id="org.eclipsetrader.indicators.var"
-            location="bottom"
             name="VAR">
       </indicator>
    </extension>
