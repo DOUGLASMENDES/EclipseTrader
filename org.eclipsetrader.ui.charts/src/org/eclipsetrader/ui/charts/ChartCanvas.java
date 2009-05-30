@@ -240,70 +240,10 @@ public class ChartCanvas {
 			Graphics graphics = new Graphics(image, location, datesAxis, verticalAxis);
 			try {
 				graphics.fillRectangle(clientArea);
-
-				graphics.pushState();
-
-				graphics.setLineDash(new int[] {
-				    3, 3
-				});
-				graphics.setForegroundColor(Util.blend(graphics.getForegroundColor(), graphics.getBackgroundColor(), 15));
-
-				Calendar oldDate = null;
-				Calendar currentDate = Calendar.getInstance();
-
-				for (int i = 0; i < visibleDates.length; i++) {
-					Date date = visibleDates[i];
-					boolean tick = false;
-					currentDate.setTime(date);
-
-					if (oldDate != null) {
-						if (resolutionTimeSpan == null || resolutionTimeSpan.getUnits() == TimeSpan.Units.Days) {
-							if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
-								tick = true;
-							else if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
-								tick = true;
-						}
-						else {
-							if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
-								tick = true;
-							else if (currentDate.get(Calendar.DAY_OF_MONTH) != oldDate.get(Calendar.DAY_OF_MONTH))
-								tick = true;
-						}
-						oldDate.setTime(date);
-					}
-					else {
-						oldDate = Calendar.getInstance();
-						oldDate.setTime(date);
-					}
-
-					if (tick) {
-						int x = graphics.mapToHorizontalAxis(date);
-						graphics.drawLine(x, 0, x, clientArea.height);
-					}
-				}
-
-				Object[] numberArray = verticalAxis.getValues();
-				for (int i = 0; i < numberArray.length; i++) {
-					int y = graphics.mapToVerticalAxis(numberArray[i]);
-					graphics.drawLine(0, y, clientArea.width, y);
-				}
-
-				graphics.popState();
-
-				Double lowestValue = (Double) verticalAxis.getFirstValue();
-				Double highestValue = (Double) verticalAxis.getLastValue();
-
-				DataBounds dataBounds = new DataBounds(visibleDates, lowestValue, highestValue, clientArea, (int) datesAxis.gridSize);
-				for (int i = 0; i < chartObject.length; i++) {
-					graphics.pushState();
-					try {
-						chartObject[i].setDataBounds(dataBounds);
-						chartObject[i].paint(graphics);
-					} finally {
-						graphics.popState();
-					}
-				}
-			} catch (Error e) {
+				if (visibleDates != null)
+					paintBackground(graphics, clientArea);
+				paintObjects(graphics, clientArea);
+			} catch (Throwable e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
 				ChartsUIActivator.log(status);
 			} finally {
@@ -313,6 +253,74 @@ public class ChartCanvas {
 		}
 
 		Util.paintImage(event, image);
+	}
+
+	void paintBackground(Graphics graphics, Rectangle clientArea) {
+		graphics.pushState();
+		try {
+			graphics.setLineDash(new int[] {
+			    3, 3
+			});
+			graphics.setForegroundColor(Util.blend(graphics.getForegroundColor(), graphics.getBackgroundColor(), 15));
+
+			Calendar oldDate = null;
+			Calendar currentDate = Calendar.getInstance();
+
+			for (int i = 0; i < visibleDates.length; i++) {
+				Date date = visibleDates[i];
+				boolean tick = false;
+				currentDate.setTime(date);
+
+				if (oldDate != null) {
+					if (resolutionTimeSpan == null || resolutionTimeSpan.getUnits() == TimeSpan.Units.Days) {
+						if (currentDate.get(Calendar.YEAR) != oldDate.get(Calendar.YEAR))
+							tick = true;
+						else if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+							tick = true;
+					}
+					else {
+						if (currentDate.get(Calendar.MONTH) != oldDate.get(Calendar.MONTH))
+							tick = true;
+						else if (currentDate.get(Calendar.DAY_OF_MONTH) != oldDate.get(Calendar.DAY_OF_MONTH))
+							tick = true;
+					}
+					oldDate.setTime(date);
+				}
+				else {
+					oldDate = Calendar.getInstance();
+					oldDate.setTime(date);
+				}
+
+				if (tick) {
+					int x = graphics.mapToHorizontalAxis(date);
+					graphics.drawLine(x, 0, x, clientArea.height);
+				}
+			}
+
+			Object[] numberArray = verticalAxis.getValues();
+			for (int i = 0; i < numberArray.length; i++) {
+				int y = graphics.mapToVerticalAxis(numberArray[i]);
+				graphics.drawLine(0, y, clientArea.width, y);
+			}
+		} finally {
+			graphics.popState();
+		}
+	}
+
+	void paintObjects(Graphics graphics, Rectangle clientArea) {
+		Double lowestValue = (Double) verticalAxis.getFirstValue();
+		Double highestValue = (Double) verticalAxis.getLastValue();
+
+		DataBounds dataBounds = new DataBounds(visibleDates, lowestValue, highestValue, clientArea, (int) datesAxis.gridSize);
+		for (int i = 0; i < chartObject.length; i++) {
+			graphics.pushState();
+			try {
+				chartObject[i].setDataBounds(dataBounds);
+				chartObject[i].paint(graphics);
+			} finally {
+				graphics.popState();
+			}
+		}
 	}
 
 	private void onPaintVerticalScale(PaintEvent event) {

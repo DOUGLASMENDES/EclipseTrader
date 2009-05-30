@@ -21,14 +21,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.core.feed.IOHLC;
 
 public class SummaryOHLCItem {
-    private Label label;
-	private Label changeLabel;
+	Label label;
+	Label changeLabel;
 
-    private NumberFormat numberFormat = NumberFormat.getInstance();
-    private NumberFormat percentFormat = NumberFormat.getInstance();
-    private Color foreground;
-    private Color positiveForeground;
-    private Color negativeForeground;
+	NumberFormat numberFormat = NumberFormat.getInstance();
+	NumberFormat percentFormat = NumberFormat.getInstance();
+	Color foreground;
+	Color positiveForeground;
+	Color negativeForeground;
 
 	public SummaryOHLCItem(Composite parent, int style) {
 		changeLabel = new Label(parent, SWT.NONE);
@@ -48,49 +48,58 @@ public class SummaryOHLCItem {
 	}
 
 	public Color getForeground() {
-    	return foreground;
-    }
+		return foreground;
+	}
 
 	public void setForeground(Color color) {
-    	this.foreground = color;
-    }
+		this.foreground = color;
+	}
 
 	public Color getPositiveForeground() {
-    	return positiveForeground;
-    }
+		return positiveForeground;
+	}
 
 	public void setPositiveForeground(Color positiveColor) {
-    	this.positiveForeground = positiveColor;
-    }
+		this.positiveForeground = positiveColor;
+	}
 
 	public Color getNegativeForeground() {
-    	return negativeForeground;
-    }
+		return negativeForeground;
+	}
 
 	public void setNegativeForeground(Color negativeColor) {
-    	this.negativeForeground = negativeColor;
-    }
+		this.negativeForeground = negativeColor;
+	}
 
 	public void setOHLC(IOHLC currentOHLC, IOHLC previousOHLC) {
-		label.setText(NLS.bind("O={0} H={1} L={2} C={3}", new Object[] {
-				numberFormat.format(currentOHLC.getOpen()),
-				numberFormat.format(currentOHLC.getHigh()),
-				numberFormat.format(currentOHLC.getLow()),
-				numberFormat.format(currentOHLC.getClose()),
-		}));
-		label.setForeground(foreground);
-		if (previousOHLC != null) {
-			double change = (currentOHLC.getClose() - previousOHLC.getClose()) / previousOHLC.getClose() * 100.0;
-			changeLabel.setText(NLS.bind("{0}%", new Object[] {
-					(change > 0 ? "+" : "") + percentFormat.format(change),
+		if (currentOHLC != null) {
+			label.setText(NLS.bind("O={0} H={1} L={2} C={3}", new Object[] {
+			    numberFormat.format(currentOHLC.getOpen()),
+			    numberFormat.format(currentOHLC.getHigh()),
+			    numberFormat.format(currentOHLC.getLow()),
+			    numberFormat.format(currentOHLC.getClose()),
 			}));
-			if (change > 0)
-				changeLabel.setForeground(positiveForeground);
-			else if (change < 0)
-				changeLabel.setForeground(negativeForeground);
-			else
-				changeLabel.setForeground(null);
+
+			if (previousOHLC != null) {
+				double change = (currentOHLC.getClose() - previousOHLC.getClose()) / previousOHLC.getClose() * 100.0;
+				changeLabel.setText(NLS.bind("{0}%", new Object[] {
+					(change > 0 ? "+" : "") + percentFormat.format(change),
+				}));
+				if (change > 0)
+					changeLabel.setForeground(positiveForeground);
+				else if (change < 0)
+					changeLabel.setForeground(negativeForeground);
+				else
+					changeLabel.setForeground(null);
+			}
 		}
+		else {
+			label.setText("");
+			changeLabel.setText("");
+			changeLabel.setForeground(null);
+		}
+		label.setForeground(foreground);
+
 		label.getParent().layout();
 	}
 }
