@@ -31,8 +31,8 @@ public class SummaryOHLCItem {
     private Color negativeForeground;
 
 	public SummaryOHLCItem(Composite parent, int style) {
-		label = new Label(parent, SWT.NONE);
 		changeLabel = new Label(parent, SWT.NONE);
+		label = new Label(parent, SWT.NONE);
 
 		foreground = parent.getDisplay().getSystemColor(SWT.COLOR_BLUE);
 		positiveForeground = parent.getDisplay().getSystemColor(SWT.COLOR_GREEN);
