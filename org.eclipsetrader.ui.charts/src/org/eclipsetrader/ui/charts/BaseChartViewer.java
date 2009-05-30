@@ -98,12 +98,12 @@ public class BaseChartViewer implements ISelectionProvider {
 		dateScaleCanvas.getControl().setVisible(false);
 		((GridData) dateScaleCanvas.getControl().getLayoutData()).exclude = true;
 		dateScaleCanvas.getControl().addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-            	updateScrollbars();
-        		revalidate();
-            	redraw();
-            }
+			@Override
+			public void controlResized(ControlEvent e) {
+				updateScrollbars();
+				revalidate();
+				redraw();
+			}
 		});
 
 		verticalScaleLabel = new Label(composite, SWT.NONE);
@@ -116,18 +116,18 @@ public class BaseChartViewer implements ISelectionProvider {
 
 		composite.getHorizontalBar().setVisible(false);
 		composite.getHorizontalBar().addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-            	revalidate();
-            	redraw();
-            }
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				revalidate();
+				redraw();
+			}
 		});
 
 		composite.addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-            	redraw();
-            }
+			@Override
+			public void controlResized(ControlEvent e) {
+				redraw();
+			}
 		});
 
 		summaryDecorator = new SummaryBarDecorator();
@@ -196,9 +196,9 @@ public class BaseChartViewer implements ISelectionProvider {
 		List<Date> l = new ArrayList<Date>();
 		Object[] values = datesAxis.getValues();
 		for (int i = 0; i < values.length; i++) {
-        	Date date = (Date) values[i];
-        	if ((firstDate == null || !date.before(firstDate)) && (lastDate == null || !date.after(lastDate)))
-        		l.add(date);
+			Date date = (Date) values[i];
+			if ((firstDate == null || !date.before(firstDate)) && (lastDate == null || !date.after(lastDate)))
+				l.add(date);
 		}
 		Date[] visibleDates = l.toArray(new Date[l.size()]);
 
@@ -206,14 +206,14 @@ public class BaseChartViewer implements ISelectionProvider {
 		dateScaleCanvas.setVisibleDates(visibleDates);
 		dateScaleCanvas.setLocation(getLocation());
 
-    	for (int i = 0; i < chartCanvas.length; i++) {
-    		if (chartCanvas[i] != null && !chartCanvas[i].isDisposed()) {
-    			chartCanvas[i].setDatesAxis(datesAxis);
-    			chartCanvas[i].setVisibleDates(visibleDates);
-    			chartCanvas[i].setDateRange(firstDate, lastDate);
-    			chartCanvas[i].setLocation(getLocation());
-    		}
-    	}
+		for (int i = 0; i < chartCanvas.length; i++) {
+			if (chartCanvas[i] != null && !chartCanvas[i].isDisposed()) {
+				chartCanvas[i].setDatesAxis(datesAxis);
+				chartCanvas[i].setVisibleDates(visibleDates);
+				chartCanvas[i].setDateRange(firstDate, lastDate);
+				chartCanvas[i].setLocation(getLocation());
+			}
+		}
 	}
 
 	public void print(Printer printer) {
@@ -241,7 +241,7 @@ public class BaseChartViewer implements ISelectionProvider {
 					gc.drawLine(printerBounds.x, y, printerBounds.x + printerBounds.width, y);
 				}
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -258,8 +258,8 @@ public class BaseChartViewer implements ISelectionProvider {
 				if (chartSize.x > clientArea.width)
 					hScroll.setVisible(true);
 				else {
-	                hScroll.setVisible(false);
-	                hScroll.setValues(0, 0, 1, 1, 1, 1);
+					hScroll.setVisible(false);
+					hScroll.setValues(0, 0, 1, 1, 1, 1);
 				}
 			}
 			clientArea = dateScaleCanvas.getCanvas().getClientArea();
@@ -280,18 +280,18 @@ public class BaseChartViewer implements ISelectionProvider {
 	}
 
 	public Object getInput() {
-    	return input;
-    }
+		return input;
+	}
 
 	public void setInput(IChartObject[][] input) {
-    	this.input = input;
-    	refresh();
+		this.input = input;
+		refresh();
 	}
 
 	public void refresh() {
-    	ChartCanvas[] newCanvas = new ChartCanvas[input.length];
+		ChartCanvas[] newCanvas = new ChartCanvas[input.length];
 
-    	int length = Math.min(chartCanvas.length, newCanvas.length);
+		int length = Math.min(chartCanvas.length, newCanvas.length);
 		System.arraycopy(chartCanvas, 0, newCanvas, 0, length);
 		for (int i = length; i < chartCanvas.length; i++) {
 			chartCanvas[i].getCanvas().setMenu(null);
@@ -307,114 +307,114 @@ public class BaseChartViewer implements ISelectionProvider {
 		chartCanvas = newCanvas;
 		selectedChartCanvas = null;
 
-    	datesAxis.clear();
-    	for (int i = 0; i < input.length; i++) {
-    		for (int c = 0; c < input[i].length; c++) {
-    			input[i][c].accept(new IChartObjectVisitor() {
-                    public boolean visit(IChartObject object) {
-                    	if (object.getDataSeries() != null)
-                    		datesAxis.addValues(object.getDataSeries().getValues());
-        	            return true;
-                    }
-            	});
-    		}
-    	}
+		datesAxis.clear();
+		for (int i = 0; i < input.length; i++) {
+			for (int c = 0; c < input[i].length; c++) {
+				input[i][c].accept(new IChartObjectVisitor() {
+					public boolean visit(IChartObject object) {
+						if (object.getDataSeries() != null)
+							datesAxis.addValues(object.getDataSeries().getValues());
+						return true;
+					}
+				});
+			}
+		}
 
-    	for (int i = 0; i < input.length; i++) {
+		for (int i = 0; i < input.length; i++) {
 			if (chartCanvas[i] == null || chartCanvas[i].isDisposed()) {
 				chartCanvas[i] = new ChartCanvas(sashForm);
 				chartCanvas[i].getCanvas().setMenu(composite.getMenu());
 				chartCanvas[i].getCanvas().addMouseTrackListener(new MouseTrackAdapter() {
-                    @Override
-                    public void mouseExit(MouseEvent e) {
-		            	ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
-		            	if (activeEditor.isActive())
-		            		return;
-		            	chartCanvas.hideToolTip();
-                    	dateScaleCanvas.hideToolTip();
-                    }
+					@Override
+					public void mouseExit(MouseEvent e) {
+						ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
+						if (activeEditor.isActive())
+							return;
+						chartCanvas.hideToolTip();
+						dateScaleCanvas.hideToolTip();
+					}
 				});
 				chartCanvas[i].getCanvas().addMouseMoveListener(new MouseMoveListener() {
-                	private ChartObjectHitVisitor visitor = new ChartObjectHitVisitor();
+					private ChartObjectHitVisitor visitor = new ChartObjectHitVisitor();
 
-                	public void mouseMove(MouseEvent e) {
-		            	ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
+					public void mouseMove(MouseEvent e) {
+						ChartCanvas chartCanvas = (ChartCanvas) e.widget.getData();
 
-		            	if (showTooltips && !decorator.isVisible()) {
-	                    	String s = null;
-	                    	if (visitor.getChartObject() != null)
-                        		s = visitor.getChartObject().getToolTip();
+						if (showTooltips && !decorator.isVisible()) {
+							String s = null;
+							if (visitor.getChartObject() != null)
+								s = visitor.getChartObject().getToolTip();
 
-	                    	if ((s != null && !s.equals(chartCanvas.getCanvas().getToolTipText())) || (s == null && chartCanvas.getCanvas().getToolTipText() != null))
-	                    		chartCanvas.getCanvas().setToolTipText(s);
-		            	}
+							if ((s != null && !s.equals(chartCanvas.getCanvas().getToolTipText())) || (s == null && chartCanvas.getCanvas().getToolTipText() != null))
+								chartCanvas.getCanvas().setToolTipText(s);
+						}
 
-		            	if (showScaleTooltips) {
-			            	chartCanvas.showToolTip(e.x, e.y);
+						if (showScaleTooltips) {
+							chartCanvas.showToolTip(e.x, e.y);
 
-			            	int x = e.x + composite.getHorizontalBar().getSelection();
-			            	Date value = (Date) datesAxis.mapToValue(x);
-			            	if (value != null)
-			            		dateScaleCanvas.showToolTip(e.x, e.y, value);
-		            	}
+							int x = e.x + composite.getHorizontalBar().getSelection();
+							Date value = (Date) datesAxis.mapToValue(x);
+							if (value != null)
+								dateScaleCanvas.showToolTip(e.x, e.y, value);
+						}
 
-		            	if (activeEditor != null && !activeEditor.isActive()) {
-		            		visitor.setLocation(e.x, e.y);
-	                    	chartCanvas.accept(visitor);
+						if (activeEditor != null && !activeEditor.isActive()) {
+							visitor.setLocation(e.x, e.y);
+							chartCanvas.accept(visitor);
 
-	                    	if (visitor.getChartObject() instanceof IEditableChartObject) {
-	                    		IEditableChartObject editableObject = (IEditableChartObject) visitor.getChartObject();
-	                    		if (editableObject.isOnEditHandle(e.x, e.y)) {
-	                    			Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_CROSS);
-	        		            	if (chartCanvas.getCanvas().getCursor() != cursor)
-	        		            		chartCanvas.getCanvas().setCursor(cursor);
-	                    		}
-	                    		else if (editableObject.isOnDragHandle(e.x, e.y)) {
-	                    			Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND);
-	        		            	if (chartCanvas.getCanvas().getCursor() != cursor)
-	        		            		chartCanvas.getCanvas().setCursor(cursor);
-	                    		}
-	                    	}
-	                    	else {
-	    		            	if (visitor.getChartObject() != null && chartCanvas.getCanvas().getCursor() == null)
-	    		            		chartCanvas.getCanvas().setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
-	    		            	else if (visitor.getChartObject() == null && chartCanvas.getCanvas().getCursor() != null)
-	    		            		chartCanvas.getCanvas().setCursor(null);
-	                    	}
-		            	}
-		            }
+							if (visitor.getChartObject() instanceof IEditableChartObject) {
+								IEditableChartObject editableObject = (IEditableChartObject) visitor.getChartObject();
+								if (editableObject.isOnEditHandle(e.x, e.y)) {
+									Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_CROSS);
+									if (chartCanvas.getCanvas().getCursor() != cursor)
+										chartCanvas.getCanvas().setCursor(cursor);
+								}
+								else if (editableObject.isOnDragHandle(e.x, e.y)) {
+									Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND);
+									if (chartCanvas.getCanvas().getCursor() != cursor)
+										chartCanvas.getCanvas().setCursor(cursor);
+								}
+							}
+							else {
+								if (visitor.getChartObject() != null && chartCanvas.getCanvas().getCursor() == null)
+									chartCanvas.getCanvas().setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+								else if (visitor.getChartObject() == null && chartCanvas.getCanvas().getCursor() != null)
+									chartCanvas.getCanvas().setCursor(null);
+							}
+						}
+					}
 				});
 				chartCanvas[i].getCanvas().addMouseListener(new MouseAdapter() {
-                	private ChartObjectHitVisitor visitor = new ChartObjectHitVisitor();
+					private ChartObjectHitVisitor visitor = new ChartObjectHitVisitor();
 
-                	@Override
-                    public void mouseDown(MouseEvent e) {
-		            	ChartCanvas eventCanvas = (ChartCanvas) e.widget.getData();
+					@Override
+					public void mouseDown(MouseEvent e) {
+						ChartCanvas eventCanvas = (ChartCanvas) e.widget.getData();
 
-	            		visitor.setLocation(e.x, e.y);
-                    	eventCanvas.accept(visitor);
+						visitor.setLocation(e.x, e.y);
+						eventCanvas.accept(visitor);
 
-		            	if (selectedObject != visitor.getChartObject()) {
-		            		if (decorator.getMode() != CrosshairDecorator.MODE_MOUSE_HOVER)
-		            			decorator.deactivate();
+						if (selectedObject != visitor.getChartObject()) {
+							if (decorator.getMode() != CrosshairDecorator.MODE_MOUSE_HOVER)
+								decorator.deactivate();
 
-		            	}
-		            	else {
-		            		if (selectedObject == null)
-		            			decorator.activate();
-		            	}
+						}
+						else {
+							if (selectedObject == null)
+								decorator.activate();
+						}
 
-		            	handleSelectionChanged(eventCanvas, visitor.getChartObject());
+						handleSelectionChanged(eventCanvas, visitor.getChartObject());
 
-		            	if (visitor.getChartObject() instanceof IEditableChartObject && e.button == 1) {
-		            		eventCanvas.getCanvas().update();
-	            			decorator.setMode(CrosshairDecorator.MODE_OFF);
+						if (visitor.getChartObject() instanceof IEditableChartObject && e.button == 1) {
+							eventCanvas.getCanvas().update();
+							decorator.setMode(CrosshairDecorator.MODE_OFF);
 
-	            			IEditableChartObject object = (IEditableChartObject) visitor.getChartObject();
-	            			activeEditor.activate(BaseChartViewer.this, eventCanvas, object);
-		            		activeEditor.handleMouseDown(activeEditor.createEvent(e));
-		            	}
-                    }
+							IEditableChartObject object = (IEditableChartObject) visitor.getChartObject();
+							activeEditor.activate(BaseChartViewer.this, eventCanvas, object);
+							activeEditor.handleMouseDown(activeEditor.createEvent(e));
+						}
+					}
 				});
 				summaryDecorator.decorateCanvas(chartCanvas[i]);
 				decorator.decorateCanvas(chartCanvas[i]);
@@ -426,144 +426,144 @@ public class BaseChartViewer implements ISelectionProvider {
 			chartCanvas[i].setResolutionTimeSpan(getResolutionTimeSpan());
 			chartCanvas[i].setChartObject(input[i]);
 			chartCanvas[i].redraw();
-    	}
+		}
 
-    	int[] weights = new int[chartCanvas.length];
-    	if (weights.length != 0) {
-    		weights[0] = 100;
-    		for (int i = 1; i < weights.length; i++)
-        		weights[i] = 25;
-    		sashForm.setWeights(weights);
-    	}
-    	sashForm.layout();
+		int[] weights = new int[chartCanvas.length];
+		if (weights.length != 0) {
+			weights[0] = 100;
+			for (int i = 1; i < weights.length; i++)
+				weights[i] = 25;
+			sashForm.setWeights(weights);
+		}
+		sashForm.layout();
 
-    	if (chartCanvas.length != 0) {
-    		dateScaleCanvas.getControl().setVisible(true);
-    		((GridData) dateScaleCanvas.getControl().getLayoutData()).exclude = false;
-    		verticalScaleLabel.setVisible(true);
-    		((GridData) verticalScaleLabel.getLayoutData()).exclude = false;
-    	}
-    	else {
-    		dateScaleCanvas.getControl().setVisible(false);
-    		((GridData) dateScaleCanvas.getControl().getLayoutData()).exclude = true;
-    		verticalScaleLabel.setVisible(false);
-    		((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
-    	}
-    	composite.layout();
+		if (chartCanvas.length != 0) {
+			dateScaleCanvas.getControl().setVisible(true);
+			((GridData) dateScaleCanvas.getControl().getLayoutData()).exclude = false;
+			verticalScaleLabel.setVisible(true);
+			((GridData) verticalScaleLabel.getLayoutData()).exclude = false;
+		}
+		else {
+			dateScaleCanvas.getControl().setVisible(false);
+			((GridData) dateScaleCanvas.getControl().getLayoutData()).exclude = true;
+			verticalScaleLabel.setVisible(false);
+			((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
+		}
+		composite.layout();
 
-    	final Map<String, Object> set = new HashMap<String, Object>();
-    	for (int i = 0; i < chartCanvas.length; i++) {
-    		chartCanvas[i].accept(new IChartObjectVisitor() {
-                public boolean visit(IChartObject object) {
-                	if (object == selectedObject)
-                		set.put("selectedObject", object);
-	                return true;
-                }
-    		});
-    	}
+		final Map<String, Object> set = new HashMap<String, Object>();
+		for (int i = 0; i < chartCanvas.length; i++) {
+			chartCanvas[i].accept(new IChartObjectVisitor() {
+				public boolean visit(IChartObject object) {
+					if (object == selectedObject)
+						set.put("selectedObject", object);
+					return true;
+				}
+			});
+		}
 		handleSelectionChanged(selectedChartCanvas, (IChartObject) set.get("selectedObject"));
 
 		updateScrollbars();
 		revalidate();
 
-    	redraw();
-    }
+		redraw();
+	}
 
 	protected void handleSelectionChanged(ChartCanvas newChartCanvas, IChartObject newSelection) {
-    	if (selectedObject != newSelection) {
-    		ChartObjectFocusEvent event = new ChartObjectFocusEvent(selectedObject, newSelection);
-    		if (selectedObject != null)
-    			selectedObject.handleFocusLost(event);
+		if (selectedObject != newSelection) {
+			ChartObjectFocusEvent event = new ChartObjectFocusEvent(selectedObject, newSelection);
+			if (selectedObject != null)
+				selectedObject.handleFocusLost(event);
 
-    		selectedObject = newSelection;
-    		selectedChartCanvas = newChartCanvas;
+			selectedObject = newSelection;
+			selectedChartCanvas = newChartCanvas;
 
-    		if (selectedObject != null)
-    			selectedObject.handleFocusGained(event);
+			if (selectedObject != null)
+				selectedObject.handleFocusGained(event);
 
-    		fireSelectionChangedEvent(new SelectionChangedEvent(BaseChartViewer.this, getSelection()));
-    		for (int i = 0; i < chartCanvas.length; i++)
-    			chartCanvas[i].redraw();
-    	}
+			fireSelectionChangedEvent(new SelectionChangedEvent(BaseChartViewer.this, getSelection()));
+			for (int i = 0; i < chartCanvas.length; i++)
+				chartCanvas[i].redraw();
+		}
 	}
 
 	public void redraw() {
-    	for (int i = 0; i < chartCanvas.length; i++) {
-    		if (chartCanvas[i] != null && !chartCanvas[i].isDisposed())
-    			chartCanvas[i].redraw();
-    	}
+		for (int i = 0; i < chartCanvas.length; i++) {
+			if (chartCanvas[i] != null && !chartCanvas[i].isDisposed())
+				chartCanvas[i].redraw();
+		}
 
-    	dateScaleCanvas.redraw();
+		dateScaleCanvas.redraw();
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-     */
-    public void addSelectionChangedListener(ISelectionChangedListener listener) {
-    	selectionListeners.add(listener);
-    }
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+	 */
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		selectionListeners.add(listener);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-     */
-    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-    	selectionListeners.remove(listener);
-    }
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+	 */
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		selectionListeners.remove(listener);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
-     */
-    public ISelection getSelection() {
-	    return selectedObject != null ? new StructuredSelection(selectedObject) : StructuredSelection.EMPTY;
-    }
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
+	 */
+	public ISelection getSelection() {
+		return selectedObject != null ? new StructuredSelection(selectedObject) : StructuredSelection.EMPTY;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
-     */
-    public void setSelection(ISelection newSelection) {
-    	if (!newSelection.isEmpty() && newSelection instanceof IStructuredSelection) {
-    		final Object element = ((IStructuredSelection) newSelection).getFirstElement();
-    		if (element instanceof IChartObject) {
-    			for (int i = 0; i < chartCanvas.length; i++) {
-    				final ChartCanvas currentCanvas = chartCanvas[i];;
-    				currentCanvas.accept(new IChartObjectVisitor() {
-                        public boolean visit(IChartObject object) {
-                        	if (object == element)
-                        		handleSelectionChanged(currentCanvas, object);
-    	                    return true;
-                        }
-        			});
-    			}
-    		}
-    	}
-    	if (selectedObject != null && newSelection.isEmpty())
-    		handleSelectionChanged(selectedChartCanvas, null);
-    }
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
+	 */
+	public void setSelection(ISelection newSelection) {
+		if (!newSelection.isEmpty() && newSelection instanceof IStructuredSelection) {
+			final Object element = ((IStructuredSelection) newSelection).getFirstElement();
+			if (element instanceof IChartObject) {
+				for (int i = 0; i < chartCanvas.length; i++) {
+					final ChartCanvas currentCanvas = chartCanvas[i];;
+					currentCanvas.accept(new IChartObjectVisitor() {
+						public boolean visit(IChartObject object) {
+							if (object == element)
+								handleSelectionChanged(currentCanvas, object);
+							return true;
+						}
+					});
+				}
+			}
+		}
+		if (selectedObject != null && newSelection.isEmpty())
+			handleSelectionChanged(selectedChartCanvas, null);
+	}
 
-    protected void fireSelectionChangedEvent(SelectionChangedEvent event) {
-    	Object[] l = selectionListeners.getListeners();
-    	for (int i = 0; i < l.length; i++) {
-    		try {
-    			((ISelectionChangedListener) l[i]).selectionChanged(event);
-    		} catch(Throwable e) {
+	protected void fireSelectionChangedEvent(SelectionChangedEvent event) {
+		Object[] l = selectionListeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((ISelectionChangedListener) l[i]).selectionChanged(event);
+			} catch (Throwable e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Unexpected exception notifying selection listeners", e);
 				ChartsUIActivator.log(status);
-    		}
-    	}
-    }
+			}
+		}
+	}
 
 	public void setShowTooltips(boolean showTooltips) {
 		this.showTooltips = showTooltips;
-    }
+	}
 
 	public void setCrosshairMode(int mode) {
 		this.decoratorMode = mode;
-    	decorator.setMode(mode);
-    }
+		decorator.setMode(mode);
+	}
 
 	public void setShowScaleTooltips(boolean showScaleTooltips) {
-    	this.showScaleTooltips = showScaleTooltips;
-    }
+		this.showScaleTooltips = showScaleTooltips;
+	}
 
 	public void activateEditor(IEditableChartObject object) {
 		if (activeEditor.isActive())
@@ -588,19 +588,19 @@ public class BaseChartViewer implements ISelectionProvider {
 	}
 
 	public ChartToolEditor getEditor() {
-    	return activeEditor;
-    }
+		return activeEditor;
+	}
 
 	public void setEditor(ChartToolEditor activeEditor) {
 		if (this.activeEditor != null)
 			this.activeEditor.cancelEditing();
 
 		this.activeEditor = activeEditor;
-    }
+	}
 
 	public ChartCanvas getSelectedChartCanvas() {
-    	return selectedChartCanvas;
-    }
+		return selectedChartCanvas;
+	}
 
 	public int getSelectedChartCanvasIndex() {
 		for (int i = 0; i < chartCanvas.length; i++) {
@@ -608,7 +608,7 @@ public class BaseChartViewer implements ISelectionProvider {
 				return i;
 		}
 		return -1;
-    }
+	}
 
 	/**
 	 * Returns the canvas at the given point in the receiver or null if
@@ -636,19 +636,23 @@ public class BaseChartViewer implements ISelectionProvider {
 	}
 
 	public int getZoomFactor() {
-    	return datesAxis.getZoomFactor();
-    }
+		return datesAxis.getZoomFactor();
+	}
 
 	public void setZoomFactor(int zoomFactor) {
-    	datesAxis.setZoomFactor(zoomFactor);
+		datesAxis.setZoomFactor(zoomFactor);
+
+		updateScrollbars();
+		revalidate();
+
 		redraw();
-    }
+	}
 
 	public TimeSpan getResolutionTimeSpan() {
-    	return dateScaleCanvas.getResolutionTimeSpan();
-    }
+		return dateScaleCanvas.getResolutionTimeSpan();
+	}
 
 	public void setResolutionTimeSpan(TimeSpan resolutionTimeSpan) {
 		dateScaleCanvas.setResolutionTimeSpan(resolutionTimeSpan);
-    }
+	}
 }

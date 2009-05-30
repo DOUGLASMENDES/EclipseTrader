@@ -67,14 +67,14 @@ public class ChartCanvas {
 	DateValuesAxis datesAxis;
 
 	private Observer observer = new Observer() {
-        public void update(Observable o, Object arg) {
-        	canvas.getDisplay().asyncExec(new Runnable() {
-                public void run() {
-                	if (!canvas.isDisposed())
-                    	redraw();
-                }
-        	});
-        }
+		public void update(Observable o, Object arg) {
+			canvas.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if (!canvas.isDisposed())
+						redraw();
+				}
+			});
+		}
 	};
 
 	public ChartCanvas(Composite parent) {
@@ -98,29 +98,29 @@ public class ChartCanvas {
 		canvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		canvas.addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-            	if (image != null) {
-            		image.dispose();
-            		image = null;
-            	}
-            	redraw();
-            }
+			@Override
+			public void controlResized(ControlEvent e) {
+				if (image != null) {
+					image.dispose();
+					image = null;
+				}
+				redraw();
+			}
 		});
 		canvas.addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-        		removeObservers();
-            	if (image != null) {
-            		image.dispose();
-            		image = null;
-            	}
-            }
+			public void widgetDisposed(DisposeEvent e) {
+				removeObservers();
+				if (image != null) {
+					image.dispose();
+					image = null;
+				}
+			}
 		});
 		canvas.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent e) {
-            	if (chartObject != null)
-            		onPaint(e);
-            }
+			public void paintControl(PaintEvent e) {
+				if (chartObject != null)
+					onPaint(e);
+			}
 		});
 
 		verticalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
@@ -128,28 +128,28 @@ public class ChartCanvas {
 		verticalScaleCanvas.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, false));
 		((GridData) verticalScaleCanvas.getLayoutData()).widthHint = Dialog.convertWidthInCharsToPixels(fontMetrics, 12);
 		verticalScaleCanvas.addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-            	if (verticalScaleImage != null) {
-            		verticalScaleImage.dispose();
-            		verticalScaleImage = null;
-            	}
-            	redraw();
-            }
+			@Override
+			public void controlResized(ControlEvent e) {
+				if (verticalScaleImage != null) {
+					verticalScaleImage.dispose();
+					verticalScaleImage = null;
+				}
+				redraw();
+			}
 		});
 		verticalScaleCanvas.addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-            	if (verticalScaleImage != null) {
-            		verticalScaleImage.dispose();
-            		verticalScaleImage = null;
-            	}
-            }
+			public void widgetDisposed(DisposeEvent e) {
+				if (verticalScaleImage != null) {
+					verticalScaleImage.dispose();
+					verticalScaleImage = null;
+				}
+			}
 		});
 		verticalScaleCanvas.addPaintListener(new PaintListener() {
-            public void paintControl(PaintEvent e) {
-            	if (chartObject != null)
-            		onPaintVerticalScale(e);
-            }
+			public void paintControl(PaintEvent e) {
+				if (chartObject != null)
+					onPaintVerticalScale(e);
+			}
 		});
 
 		label = new Label(verticalScaleCanvas, SWT.NONE);
@@ -158,12 +158,12 @@ public class ChartCanvas {
 	}
 
 	public void setDatesAxis(DateValuesAxis datesAxis) {
-    	this.datesAxis = datesAxis;
-    }
+		this.datesAxis = datesAxis;
+	}
 
 	public void setLocation(Point location) {
-    	this.location = location;
-    }
+		this.location = location;
+	}
 
 	public void setDateRange(Date firstDate, Date lastDate) {
 		this.firstDate = firstDate;
@@ -171,8 +171,8 @@ public class ChartCanvas {
 	}
 
 	public void setVisibleDates(Date[] visibleDates) {
-    	this.visibleDates = visibleDates;
-    }
+		this.visibleDates = visibleDates;
+	}
 
 	public void dispose() {
 		composite.dispose();
@@ -187,16 +187,16 @@ public class ChartCanvas {
 	}
 
 	public Canvas getCanvas() {
-    	return canvas;
-    }
+		return canvas;
+	}
 
 	public Canvas getVerticalScaleCanvas() {
-    	return verticalScaleCanvas;
-    }
+		return verticalScaleCanvas;
+	}
 
 	public DoubleValuesAxis getVerticalAxis() {
-    	return verticalAxis;
-    }
+		return verticalAxis;
+	}
 
 	private void buildVerticalAxis() {
 		if (verticalAxis == null)
@@ -205,15 +205,17 @@ public class ChartCanvas {
 		if (Boolean.TRUE.equals(verticalScaleCanvas.getData(BaseChartViewer.K_NEEDS_REDRAW))) {
 			verticalAxis.clear();
 			accept(new IChartObjectVisitor() {
-	            public boolean visit(IChartObject object) {
-	            	if (object.getDataSeries() != null) {
-	            		IDataSeries series = object.getDataSeries().getSeries(new AdaptableWrapper(firstDate), new AdaptableWrapper(lastDate));
-	            		if (series != null)
-	            			verticalAxis.addValues(new Object[] { series.getLowest(), series.getHighest() });
-	            	}
-		            return true;
-	            }
-	    	});
+				public boolean visit(IChartObject object) {
+					if (object.getDataSeries() != null) {
+						IDataSeries series = object.getDataSeries().getSeries(new AdaptableWrapper(firstDate), new AdaptableWrapper(lastDate));
+						if (series != null)
+							verticalAxis.addValues(new Object[] {
+							    series.getLowest(), series.getHighest()
+							});
+					}
+					return true;
+				}
+			});
 		}
 	}
 
@@ -235,13 +237,15 @@ public class ChartCanvas {
 
 			verticalAxis.computeSize(clientArea.height);
 
-	    	Graphics graphics = new Graphics(image, location, datesAxis, verticalAxis);
+			Graphics graphics = new Graphics(image, location, datesAxis, verticalAxis);
 			try {
-		    	graphics.fillRectangle(clientArea);
+				graphics.fillRectangle(clientArea);
 
-		    	graphics.pushState();
+				graphics.pushState();
 
-		    	graphics.setLineDash(new int[] { 3, 3 });
+				graphics.setLineDash(new int[] {
+				    3, 3
+				});
 				graphics.setForegroundColor(Util.blend(graphics.getForegroundColor(), graphics.getBackgroundColor(), 15));
 
 				Calendar oldDate = null;
@@ -289,7 +293,7 @@ public class ChartCanvas {
 				Double lowestValue = (Double) verticalAxis.getFirstValue();
 				Double highestValue = (Double) verticalAxis.getLastValue();
 
-		    	DataBounds dataBounds = new DataBounds(visibleDates, lowestValue, highestValue, clientArea, (int) datesAxis.gridSize);
+				DataBounds dataBounds = new DataBounds(visibleDates, lowestValue, highestValue, clientArea, (int) datesAxis.gridSize);
 				for (int i = 0; i < chartObject.length; i++) {
 					graphics.pushState();
 					try {
@@ -299,7 +303,7 @@ public class ChartCanvas {
 						graphics.popState();
 					}
 				}
-			} catch(Error e) {
+			} catch (Error e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
 				ChartsUIActivator.log(status);
 			} finally {
@@ -329,9 +333,9 @@ public class ChartCanvas {
 
 			verticalAxis.computeSize(clientArea.height);
 
-	    	Graphics graphics = new Graphics(verticalScaleImage, location, datesAxis, verticalAxis);
+			Graphics graphics = new Graphics(verticalScaleImage, location, datesAxis, verticalAxis);
 			try {
-		    	graphics.fillRectangle(clientArea);
+				graphics.fillRectangle(clientArea);
 
 				Object[] scaleArray = verticalAxis.getValues();
 				for (int loop = 0; loop < scaleArray.length; loop++) {
@@ -358,7 +362,7 @@ public class ChartCanvas {
 						graphics.popState();
 					}
 				}
-			} catch(Error e) {
+			} catch (Error e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering vertical scale", e);
 				ChartsUIActivator.log(status);
 			} finally {
@@ -384,8 +388,8 @@ public class ChartCanvas {
 	}
 
 	public IChartObject[] getChartObject() {
-    	return chartObject;
-    }
+		return chartObject;
+	}
 
 	public void setChartObject(IChartObject[] chartObject) {
 		removeObservers();
@@ -394,7 +398,7 @@ public class ChartCanvas {
 
 		addObservers();
 		updateSummary();
-    }
+	}
 
 	public void redraw() {
 		canvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.TRUE);
@@ -412,34 +416,34 @@ public class ChartCanvas {
 		if (verticalAxis == null)
 			return;
 		Number value = (Number) verticalAxis.mapToValue(y);
-    	if (value != null) {
-    		label.setText(nf.format(value));
-    		label.pack();
-    		label.setLocation(0, y - label.getSize().y / 2);
-    	}
-    }
+		if (value != null) {
+			label.setText(nf.format(value));
+			label.pack();
+			label.setLocation(0, y - label.getSize().y / 2);
+		}
+	}
 
 	public Image getImage() {
-    	return image;
-    }
+		return image;
+	}
 
 	public Image getVerticalScaleImage() {
-    	return verticalScaleImage;
-    }
+		return verticalScaleImage;
+	}
 
 	protected void updateSummary() {
 		summary.removeAll();
 
 		accept(new IChartObjectVisitor() {
-	        public boolean visit(IChartObject object) {
-	        	ISummaryBarDecorator factory = null;
-	        	if (object instanceof IAdaptable) {
-	        		factory = (ISummaryBarDecorator) ((IAdaptable) object).getAdapter(ISummaryBarDecorator.class);
-	        		if (factory != null)
-	        			factory.createDecorator(summary.getCompositeControl());
-	        	}
-		        return true;
-	        }
+			public boolean visit(IChartObject object) {
+				ISummaryBarDecorator factory = null;
+				if (object instanceof IAdaptable) {
+					factory = (ISummaryBarDecorator) ((IAdaptable) object).getAdapter(ISummaryBarDecorator.class);
+					if (factory != null)
+						factory.createDecorator(summary.getCompositeControl());
+				}
+				return true;
+			}
 		});
 
 		summary.layout();
@@ -447,12 +451,12 @@ public class ChartCanvas {
 	}
 
 	public TimeSpan getResolutionTimeSpan() {
-    	return resolutionTimeSpan;
-    }
+		return resolutionTimeSpan;
+	}
 
 	public void setResolutionTimeSpan(TimeSpan resolutionTimeSpan) {
-    	this.resolutionTimeSpan = resolutionTimeSpan;
-    }
+		this.resolutionTimeSpan = resolutionTimeSpan;
+	}
 
 	public void accept(IChartObjectVisitor visitor) {
 		if (chartObject == null)
