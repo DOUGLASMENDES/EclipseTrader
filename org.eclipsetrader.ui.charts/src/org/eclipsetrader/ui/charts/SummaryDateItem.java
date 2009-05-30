@@ -20,8 +20,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 public class SummaryDateItem {
-    private Label label;
-    private DateFormat dateFormat;
+	Label label;
+	DateFormat dateFormat;
 
 	public SummaryDateItem(Composite parent, int style) {
 		label = new Label(parent, SWT.NONE);
@@ -32,12 +32,10 @@ public class SummaryDateItem {
 			dateFormat = SimpleDateFormat.getDateInstance();
 		else if ((style & SWT.TIME) == SWT.TIME)
 			dateFormat = SimpleDateFormat.getTimeInstance();
-
-		label.setText(dateFormat.format(new Date()));
 	}
 
 	public void setDate(Date date) {
-		label.setText(dateFormat.format(date));
+		label.setText(date != null ? dateFormat.format(date) : "");
 		label.getParent().layout();
 	}
 }
