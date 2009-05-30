@@ -14,6 +14,8 @@ package org.eclipsetrader.ui.charts;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
@@ -64,6 +66,17 @@ public class ChartCanvas {
 	Point location;
 	DateValuesAxis datesAxis;
 
+	private Observer observer = new Observer() {
+        public void update(Observable o, Object arg) {
+        	canvas.getDisplay().asyncExec(new Runnable() {
+                public void run() {
+                	if (!canvas.isDisposed())
+                    	redraw();
+                }
+        	});
+        }
+	};
+
 	public ChartCanvas(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -96,6 +109,7 @@ public class ChartCanvas {
 		});
 		canvas.addDisposeListener(new DisposeListener() {
             public void widgetDisposed(DisposeEvent e) {
+        		removeObservers();
             	if (image != null) {
             		image.dispose();
             		image = null;
@@ -277,8 +291,13 @@ public class ChartCanvas {
 
 		    	DataBounds dataBounds = new DataBounds(visibleDates, lowestValue, highestValue, clientArea, (int) datesAxis.gridSize);
 				for (int i = 0; i < chartObject.length; i++) {
-					chartObject[i].setDataBounds(dataBounds);
-					chartObject[i].paint(graphics);
+					graphics.pushState();
+					try {
+						chartObject[i].setDataBounds(dataBounds);
+						chartObject[i].paint(graphics);
+					} finally {
+						graphics.popState();
+					}
 				}
 			} catch(Error e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
@@ -330,6 +349,15 @@ public class ChartCanvas {
 					graphics.drawLine(0, y, 4, y);
 					graphics.drawString(s, 7, y - h);
 				}
+
+				for (int i = 0; i < chartObject.length; i++) {
+					graphics.pushState();
+					try {
+						chartObject[i].paintScale(graphics);
+					} finally {
+						graphics.popState();
+					}
+				}
 			} catch(Error e) {
 				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering vertical scale", e);
 				ChartsUIActivator.log(status);
@@ -360,7 +388,11 @@ public class ChartCanvas {
     }
 
 	public void setChartObject(IChartObject[] chartObject) {
-    	this.chartObject = chartObject;
+		removeObservers();
+
+		this.chartObject = chartObject;
+
+		addObservers();
 		updateSummary();
     }
 
@@ -428,5 +460,37 @@ public class ChartCanvas {
 
 		for (int i = 0; i < chartObject.length; i++)
 			chartObject[i].accept(visitor);
+	}
+
+	void addObservers() {
+		accept(new IChartObjectVisitor() {
+			public boolean visit(IChartObject object) {
+				if (!(object instanceof IAdaptable))
+					return true;
+
+				IAdaptable adaptable = (IAdaptable) object;
+				Observable observable = (Observable) adaptable.getAdapter(Observable.class);
+				if (observable != null)
+					observable.addObserver(observer);
+
+				return true;
+			}
+		});
+	}
+
+	void removeObservers() {
+		accept(new IChartObjectVisitor() {
+			public boolean visit(IChartObject object) {
+				if (!(object instanceof IAdaptable))
+					return true;
+
+				IAdaptable adaptable = (IAdaptable) object;
+				Observable observable = (Observable) adaptable.getAdapter(Observable.class);
+				if (observable != null)
+					observable.deleteObserver(observer);
+
+				return true;
+			}
+		});
 	}
 }

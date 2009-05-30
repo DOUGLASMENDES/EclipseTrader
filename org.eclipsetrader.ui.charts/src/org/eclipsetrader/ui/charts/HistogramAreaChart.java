@@ -124,6 +124,12 @@ public class HistogramAreaChart implements IChartObject, ISummaryBarDecorator, I
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
+     */
+    public void paintScale(Graphics graphics) {
+    }
+
+	/* (non-Javadoc)
 	 * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
 	 */
 	public boolean containsPoint(int x, int y) {

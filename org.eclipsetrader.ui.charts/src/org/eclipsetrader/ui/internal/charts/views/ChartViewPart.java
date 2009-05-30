@@ -70,6 +70,10 @@ import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
 import org.eclipsetrader.core.feed.IHistory;
+import org.eclipsetrader.core.feed.IPricingListener;
+import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.PricingDelta;
+import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
@@ -100,6 +104,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	public static final String K_RESOLUTION = "resolution";
 	public static final String K_SHOW_TOOLTIPS = "show-tooltips";
 	public static final String K_ZOOM_FACTOR = "zoom-factor";
+	public static final String K_CURRENT_PRICE = "show-current-price";
+	public static final String K_CURRENT_BOOK = "show-current-book";
 
 	private URI uri;
 	private ISecurity security;
@@ -123,6 +129,11 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	private Action updateAction;
 	private PeriodAction periodAllAction;
 	private PeriodAction[] periodAction;
+
+	private Action currentPriceLineAction;
+	private CurrentPriceLineFactory currentPriceLineFactory;
+	private Action currentBookAction;
+	private CurrentBookFactory currentBookFactory;
 
 	private IMemento memento;
 
@@ -226,6 +237,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     	menuManager.add(new Separator("periods.top"));
     	menuManager.add(new Separator("periods"));
     	menuManager.add(new Separator("periods.bottom"));
+    	menuManager.add(currentPriceLineAction);
+    	menuManager.add(currentBookAction);
 
     	menuManager.appendToGroup("periods.top", periodAllAction);
         for (int i = 0; i < periodAction.length; i++)
@@ -427,6 +440,22 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		propertiesAction.setId(ActionFactory.PROPERTIES.getId());
 		propertiesAction.setActionDefinitionId("org.eclipse.ui.file.properties");
 		propertiesAction.setEnabled(false);
+
+		currentPriceLineAction = new Action("Show current price", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+	            currentPriceLineFactory.setEnable(isChecked());
+	        	dialogSettings.put(K_CURRENT_PRICE, isChecked());
+            }
+		};
+
+		currentBookAction = new Action("Show book", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+	            currentBookFactory.setEnable(isChecked());
+	        	dialogSettings.put(K_CURRENT_BOOK, isChecked());
+            }
+		};
 	}
 
 	/* (non-Javadoc)
@@ -479,6 +508,16 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
         createContextMenu();
 
+        currentPriceLineFactory = new CurrentPriceLineFactory();
+		currentPriceLineFactory.setSecurity(security);
+		currentPriceLineFactory.setEnable(dialogSettings.getBoolean(K_CURRENT_PRICE));
+		currentPriceLineAction.setChecked(dialogSettings.getBoolean(K_CURRENT_PRICE));
+
+        currentBookFactory = new CurrentBookFactory();
+		currentBookFactory.setSecurity(security);
+		currentBookFactory.setEnable(dialogSettings.getBoolean(K_CURRENT_BOOK));
+		currentBookAction.setChecked(dialogSettings.getBoolean(K_CURRENT_BOOK));
+
 		if (security != null && template != null) {
 			setPartName(NLS.bind("{0} - {1}", new Object[] {
 					security.getName(),
@@ -486,6 +525,15 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 				}));
 
 			view = new ChartView(template);
+
+			ChartRowViewItem rowItem = (ChartRowViewItem) view.getItems()[0];
+
+			ChartViewItem viewItem = new ChartViewItem(rowItem, currentPriceLineFactory);
+			rowItem.addChildItem(0, viewItem);
+
+			viewItem = new ChartViewItem(rowItem, currentBookFactory);
+			rowItem.addChildItem(0, viewItem);
+
 			view.addViewChangeListener(viewChangeListener);
 
 			scheduleLoadJob();

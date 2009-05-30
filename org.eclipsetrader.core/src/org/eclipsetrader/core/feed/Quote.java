@@ -30,6 +30,11 @@ public class Quote implements IQuote {
 	    this.askSize = askSize;
     }
 
+	public Quote(Double bid, Double ask) {
+	    this.bid = bid;
+	    this.ask = ask;
+    }
+
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IQuote#getAsk()
 	 */

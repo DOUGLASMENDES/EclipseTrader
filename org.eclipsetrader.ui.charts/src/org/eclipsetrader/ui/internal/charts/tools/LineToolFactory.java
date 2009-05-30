@@ -25,6 +25,7 @@ import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.ui.charts.ChartObjectFocusEvent;
 import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.DataBounds;
+import org.eclipsetrader.ui.charts.Graphics;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartObjectVisitor;
@@ -196,6 +197,12 @@ public class LineToolFactory implements IChartObjectFactory, IExecutableExtensio
             	graphics.popState();
             	valid = true;
         	}
+        }
+
+    	/* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
+         */
+        public void paintScale(Graphics graphics) {
         }
 
     	/* (non-Javadoc)

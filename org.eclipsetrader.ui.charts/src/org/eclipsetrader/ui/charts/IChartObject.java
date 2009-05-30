@@ -37,6 +37,8 @@ public interface IChartObject {
 	 */
 	public void paint(IGraphics graphics);
 
+	public void paintScale(Graphics graphics);
+
 	/**
 	 * Gets the tooltip string which describes the receiver's content.
 	 *

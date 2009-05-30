@@ -32,6 +32,10 @@ public class Trade implements ITrade {
 	    this.volume = volume;
     }
 
+	public Trade(Double price) {
+	    this.price = price;
+    }
+
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.ITrade#getTime()
 	 */

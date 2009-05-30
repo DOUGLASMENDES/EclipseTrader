@@ -106,6 +106,14 @@ public class ChartRowViewItem implements IViewItem {
 			});
 	}
 
+	public void addChildItem(int index, ChartViewItem viewItem) {
+		items.add(index, viewItem);
+		parent.fireViewChangedEvent(new ViewItemDelta[] {
+				new ViewItemDelta(ViewItemDelta.CHANGED, this),
+				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
+			});
+	}
+
 	public void removeChildItem(ChartViewItem viewItem) {
 		items.remove(viewItem);
 		parent.fireViewChangedEvent(new ViewItemDelta[] {
@@ -208,6 +216,8 @@ public class ChartRowViewItem implements IViewItem {
 		ElementSection[] element = new ElementSection[items.size()];
 		for (int i = 0; i < element.length; i++) {
 			IChartObjectFactory factory = items.get(i).getFactory();
+			if (factory.getId() == null)
+				continue;
 			element[i] = new ElementSection(items.get(i).getId(), factory.getId());
 
 			IChartParameters parameters = factory.getParameters();

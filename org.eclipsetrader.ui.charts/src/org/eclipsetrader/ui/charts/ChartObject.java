@@ -58,6 +58,12 @@ public class ChartObject implements IChartObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
+     */
+    public void paintScale(Graphics graphics) {
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
      */
     public void invalidate() {

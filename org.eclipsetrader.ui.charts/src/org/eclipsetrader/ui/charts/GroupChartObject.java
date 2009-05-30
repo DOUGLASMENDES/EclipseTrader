@@ -73,6 +73,14 @@ public class GroupChartObject implements IChartObject {
     }
 
 	/* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
+     */
+    public void paintScale(Graphics graphics) {
+    	for (IChartObject o : objects)
+    		o.paintScale(graphics);
+    }
+
+	/* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
      */
     public void invalidate() {
