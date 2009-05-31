@@ -270,10 +270,17 @@
          point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
             class="org.eclipsetrader.ui.internal.charts.ChartViewItemPropertyTester"
-            id="org.eclipsetrader.ui.charts.propertyTester"
+            id="org.eclipsetrader.ui.charts.propertyTester1"
             namespace="org.eclipsetrader.ui"
             properties="id,chartObjectFactory,adapts"
             type="org.eclipsetrader.ui.charts.ChartViewItem">
+      </propertyTester>
+      <propertyTester
+            class="org.eclipsetrader.ui.internal.charts.ChartViewItemPropertyTester"
+            id="org.eclipsetrader.ui.charts.propertyTester2"
+            namespace="org.eclipsetrader.ui"
+            properties="id,chartObjectFactory,adapts"
+            type="org.eclipse.core.runtime.IAdaptable">
       </propertyTester>
    </extension>
    <extension
@@ -323,6 +330,12 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="NUMPAD_EQUAL">
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.eclipsetrader.ui.internal.charts.EarlyStartup">
+      </startup>
    </extension>
 
 </plugin>

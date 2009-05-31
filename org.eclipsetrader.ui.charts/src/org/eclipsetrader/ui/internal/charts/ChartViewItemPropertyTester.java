@@ -30,8 +30,11 @@ public class ChartViewItemPropertyTester extends PropertyTester {
 	 * @see org.eclipse.core.expressions.IPropertyTester#test(java.lang.Object, java.lang.String, java.lang.Object[], java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
-		if (!(receiver instanceof ChartViewItem))
+	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
+		if (receiver instanceof IAdaptable)
+			receiver = ((IAdaptable) receiver).getAdapter(ChartViewItem.class);
+
+		if (receiver == null || !(receiver instanceof ChartViewItem))
 			return false;
 
 		if ("id".equals(property)) {
@@ -51,7 +54,7 @@ public class ChartViewItemPropertyTester extends PropertyTester {
 				Object o = ((IAdaptable) receiver).getAdapter(clazz);
 				if (o != null && clazz.isAssignableFrom(o.getClass()))
 					return true;
-			} catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				// Do nothing
 			}

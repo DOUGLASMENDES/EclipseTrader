@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
@@ -30,18 +29,18 @@ import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.internal.dialogs.FilteredPreferenceDialog;
+import org.eclipse.ui.internal.dialogs.PropertyPageContributorManager;
+import org.eclipse.ui.internal.dialogs.PropertyPageManager;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.ui.PriorityPreferenceNode;
 import org.eclipsetrader.ui.internal.UIActivator;
-import org.eclipsetrader.ui.internal.securities.properties.ConnectorOverrideProperties;
 import org.eclipsetrader.ui.internal.securities.properties.CurrencyGeneralProperties;
 import org.eclipsetrader.ui.internal.securities.properties.GeneralProperties;
-import org.eclipsetrader.ui.internal.securities.properties.IdentifierProperties;
-import org.eclipsetrader.ui.internal.securities.properties.MarketsProperties;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -54,9 +53,9 @@ public class SecurityPropertiesHandler extends AbstractHandler {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-     */
-    public Object execute(ExecutionEvent event) throws ExecutionException {
+	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	 */
+	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
 		IWorkbenchSite site = HandlerUtil.getActiveSite(event);
 
@@ -69,19 +68,17 @@ public class SecurityPropertiesHandler extends AbstractHandler {
 		}
 
 		return null;
-    }
+	}
 
 	protected void openPropertiesDialog(Shell shell, final IAdaptable adaptableElement) {
-		PreferenceManager pageManager = new PreferenceManager();
+		PropertyPageManager pageManager = new PropertyPageManager();
 		if (adaptableElement.getAdapter(Security.class) != null) {
 			if (adaptableElement.getAdapter(CurrencyExchange.class) != null)
-				pageManager.addToRoot(new PreferenceNode("general", currencyGeneralProperties = new CurrencyGeneralProperties()));
+				pageManager.addToRoot(new PriorityPreferenceNode("org.eclipsetrader.ui.propertypages.general", currencyGeneralProperties = new CurrencyGeneralProperties(), -1));
 			else
-				pageManager.addToRoot(new PreferenceNode("general", generalProperties = new GeneralProperties()));
-    		pageManager.addToRoot(new PreferenceNode("identifier", new IdentifierProperties()));
-    		pageManager.addToRoot(new PreferenceNode("markets", new MarketsProperties()));
-    		pageManager.addToRoot(new PreferenceNode("override", new ConnectorOverrideProperties()));
+				pageManager.addToRoot(new PriorityPreferenceNode("org.eclipsetrader.ui.propertypages.general", generalProperties = new GeneralProperties(), -1));
 		}
+		PropertyPageContributorManager.getManager().contribute(pageManager, adaptableElement);
 
 		for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
 			IPreferenceNode node = (IPreferenceNode) nodeObj;
@@ -90,12 +87,12 @@ public class SecurityPropertiesHandler extends AbstractHandler {
 		}
 
 		FilteredPreferenceDialog dlg = new FilteredPreferenceDialog(shell, pageManager) {
-            @Override
-            protected void configureShell(Shell newShell) {
-                super.configureShell(newShell);
-    			Security security = (Security) adaptableElement.getAdapter(Security.class);
-                newShell.setText("Properties for " + security.getName());
-            }
+			@Override
+			protected void configureShell(Shell newShell) {
+				super.configureShell(newShell);
+				Security security = (Security) adaptableElement.getAdapter(Security.class);
+				newShell.setText("Properties for " + security.getName());
+			}
 		};
 		dlg.setHelpAvailable(false);
 		if (dlg.open() == PreferenceDialog.OK) {
@@ -104,41 +101,45 @@ public class SecurityPropertiesHandler extends AbstractHandler {
 			if (serviceReference != null) {
 				final IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
 				BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
-		            public void run() {
-		    			service.runInService(new IRepositoryRunnable() {
-		    	            public IStatus run(IProgressMonitor monitor) throws Exception {
-		    	        		IStoreObject storeObject = (IStoreObject) adaptableElement.getAdapter(IStoreObject.class);
-		    	        		IRepository repository = generalProperties != null ? generalProperties.getRepository() : currencyGeneralProperties.getRepository();
-		    	            	if (repository != storeObject.getStore().getRepository())
-		    	            		service.moveAdaptable(new IAdaptable[] { adaptableElement }, repository);
-		    	            	else
-		    	            		service.saveAdaptable(new IAdaptable[] { adaptableElement });
-		    	            	return Status.OK_STATUS;
-		    	            }
-		    			}, null);
-		            }
+					public void run() {
+						service.runInService(new IRepositoryRunnable() {
+							public IStatus run(IProgressMonitor monitor) throws Exception {
+								IStoreObject storeObject = (IStoreObject) adaptableElement.getAdapter(IStoreObject.class);
+								IRepository repository = generalProperties != null ? generalProperties.getRepository() : currencyGeneralProperties.getRepository();
+								if (repository != storeObject.getStore().getRepository())
+									service.moveAdaptable(new IAdaptable[] {
+										adaptableElement
+									}, repository);
+								else
+									service.saveAdaptable(new IAdaptable[] {
+										adaptableElement
+									});
+								return Status.OK_STATUS;
+							}
+						}, null);
+					}
 				});
 			}
 		}
 	}
 
-    /**
-     * Wraps the element object to an IAdaptable instance, if necessary.
-     *
-     * @param element the object to wrap
-     * @return an IAdaptable instance that wraps the object
-     */
-    protected IAdaptable getWrappedElement(final Object element) {
+	/**
+	 * Wraps the element object to an IAdaptable instance, if necessary.
+	 *
+	 * @param element the object to wrap
+	 * @return an IAdaptable instance that wraps the object
+	 */
+	protected IAdaptable getWrappedElement(final Object element) {
 		if (element instanceof IAdaptable)
 			return (IAdaptable) element;
 
 		return new IAdaptable() {
-            @SuppressWarnings("unchecked")
-            public Object getAdapter(Class adapter) {
-            	if (adapter.isAssignableFrom(element.getClass()))
-            		return element;
-                return null;
-            }
+			@SuppressWarnings("unchecked")
+			public Object getAdapter(Class adapter) {
+				if (adapter.isAssignableFrom(element.getClass()))
+					return element;
+				return null;
+			}
 		};
-    }
+	}
 }

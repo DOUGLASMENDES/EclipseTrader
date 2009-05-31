@@ -17,18 +17,17 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.internal.dialogs.FilteredPreferenceDialog;
+import org.eclipse.ui.internal.dialogs.PropertyPageContributorManager;
+import org.eclipse.ui.internal.dialogs.PropertyPageManager;
 import org.eclipsetrader.core.internal.markets.Market;
-import org.eclipsetrader.ui.internal.markets.ConnectorsPage;
+import org.eclipsetrader.ui.PriorityPreferenceNode;
 import org.eclipsetrader.ui.internal.markets.GeneralPage;
-import org.eclipsetrader.ui.internal.markets.HolidaysPage;
-import org.eclipsetrader.ui.internal.markets.MembersPage;
 
 @SuppressWarnings("restriction")
 public class MarketPropertiesHandler extends AbstractHandler {
@@ -37,9 +36,9 @@ public class MarketPropertiesHandler extends AbstractHandler {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-     */
-    public Object execute(ExecutionEvent event) throws ExecutionException {
+	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	 */
+	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
 		IWorkbenchSite site = HandlerUtil.getActiveSite(event);
 
@@ -52,51 +51,49 @@ public class MarketPropertiesHandler extends AbstractHandler {
 		}
 
 		return null;
-    }
+	}
 
 	protected void openPropertiesDialog(Shell shell, final IAdaptable adaptableElement) {
 		if (adaptableElement.getAdapter(Market.class) != null) {
-    		PreferenceManager pageManager = new PreferenceManager();
-    		pageManager.addToRoot(new PreferenceNode("general", new GeneralPage()));
-    		pageManager.addToRoot(new PreferenceNode("connectors", new ConnectorsPage()));
-    		pageManager.addToRoot(new PreferenceNode("holidays", new HolidaysPage()));
-    		pageManager.addToRoot(new PreferenceNode("members", new MembersPage()));
+			PropertyPageManager pageManager = new PropertyPageManager();
+			pageManager.addToRoot(new PriorityPreferenceNode("org.eclipsetrader.ui.propertypages.markets.general", new GeneralPage(), -1));
+			PropertyPageContributorManager.getManager().contribute(pageManager, adaptableElement);
 
-    		for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
-    			IPreferenceNode node = (IPreferenceNode) nodeObj;
-    			if (node.getPage() instanceof PropertyPage)
-    				((PropertyPage) node.getPage()).setElement(adaptableElement);
-    		}
+			for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
+				IPreferenceNode node = (IPreferenceNode) nodeObj;
+				if (node.getPage() instanceof PropertyPage)
+					((PropertyPage) node.getPage()).setElement(adaptableElement);
+			}
 
-    		FilteredPreferenceDialog dlg = new FilteredPreferenceDialog(shell, pageManager) {
-                @Override
-                protected void configureShell(Shell newShell) {
-                    super.configureShell(newShell);
-        			Market market = (Market) adaptableElement.getAdapter(Market.class);
-                    newShell.setText("Properties for " + market.getName());
-                }
-    		};
-    		dlg.open();
+			FilteredPreferenceDialog dlg = new FilteredPreferenceDialog(shell, pageManager) {
+				@Override
+				protected void configureShell(Shell newShell) {
+					super.configureShell(newShell);
+					Market market = (Market) adaptableElement.getAdapter(Market.class);
+					newShell.setText("Properties for " + market.getName());
+				}
+			};
+			dlg.open();
 		}
 	}
 
-    /**
-     * Wraps the element object to an IAdaptable instance, if necessary.
-     *
-     * @param element the object to wrap
-     * @return an IAdaptable instance that wraps the object
-     */
-    protected IAdaptable getWrappedElement(final Object element) {
+	/**
+	 * Wraps the element object to an IAdaptable instance, if necessary.
+	 *
+	 * @param element the object to wrap
+	 * @return an IAdaptable instance that wraps the object
+	 */
+	protected IAdaptable getWrappedElement(final Object element) {
 		if (element instanceof IAdaptable)
 			return (IAdaptable) element;
 
 		return new IAdaptable() {
-            @SuppressWarnings("unchecked")
-            public Object getAdapter(Class adapter) {
-            	if (adapter.isAssignableFrom(element.getClass()))
-            		return element;
-                return null;
-            }
+			@SuppressWarnings("unchecked")
+			public Object getAdapter(Class adapter) {
+				if (adapter.isAssignableFrom(element.getClass()))
+					return element;
+				return null;
+			}
 		};
-    }
+	}
 }

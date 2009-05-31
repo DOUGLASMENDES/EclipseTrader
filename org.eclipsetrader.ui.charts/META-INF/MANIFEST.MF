@@ -12,7 +12,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.nebula.widgets.pshelf,
  org.eclipse.core.expressions
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipsetrader.ui.charts,
  org.eclipsetrader.ui.internal.charts;x-internal:=true,
@@ -24,3 +23,4 @@ Import-Package: javax.xml.bind;version="[2.1.0,2.2.0)",
  javax.xml.bind.helpers;version="[2.1.0,2.2.0)",
  javax.xml.bind.util;version="[2.1.0,2.2.0)"
 Eclipse-BuddyPolicy: global
+Bundle-ActivationPolicy: lazy
