@@ -2,5 +2,6 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="org.eclipsetrader.core.trading.systems" name="Trading Systems" schema="schema/systems.exsd"/>
+   <extension-point id="org.eclipsetrader.core.trading.alerts" name="Alerts" schema="schema/alerts.exsd"/>
 
 </plugin>

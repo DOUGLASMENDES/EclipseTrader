@@ -11,8 +11,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.ats.ITradeSystem;
 import org.eclipsetrader.core.ats.ITradeSystemService;
 import org.eclipsetrader.core.internal.ats.TradeSystemService;
+import org.eclipsetrader.core.trading.IAlertService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -20,9 +22,13 @@ import org.osgi.framework.ServiceReference;
 public class Activator extends Plugin {
 	public static final String PLUGIN_ID = "org.eclipsetrader.core.trading";
 
+	public static final String ALERTS_EXTENSION_ID = "org.eclipsetrader.core.trading.alerts";
 	public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.trading.systems";
 
 	private static Activator plugin;
+
+	private AlertService alertService;
+	private ServiceRegistration alertServiceRegistration;
 
 	/**
 	 * The constructor
@@ -35,30 +41,45 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 
 		final TradeSystemService tradeSystemService = new TradeSystemService();
-		context.registerService(
-				new String[] {
-						ITradeSystemService.class.getName(),
-						TradeSystemService.class.getName()
-					},
-					tradeSystemService,
-				new Hashtable<Object,Object>()
-			);
+		context.registerService(new String[] {
+		    ITradeSystemService.class.getName(),
+		    TradeSystemService.class.getName()
+		}, tradeSystemService, new Hashtable<Object, Object>());
 
 		Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
 
 		Job job = new Job("Trade System Service Startup") {
-            @Override
-            public IStatus run(IProgressMonitor monitor) {
-        		tradeSystemService.startUp();
-	            return Status.OK_STATUS;
-            }
+			@Override
+			public IStatus run(IProgressMonitor monitor) {
+				tradeSystemService.startUp();
+				return Status.OK_STATUS;
+			}
 		};
 		job.schedule(1000);
+
+		alertService = new AlertService();
+		alertServiceRegistration = context.registerService(new String[] {
+		    IAlertService.class.getName(), AlertService.class.getName()
+		}, alertService, new Hashtable<Object, Object>());
+
+		job = new Job("Alerts Service Startup") {
+			@Override
+			public IStatus run(IProgressMonitor monitor) {
+				try {
+					alertService.startUp();
+				} catch (Exception e) {
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Starting alerts service", e); //$NON-NLS-1$
+					return status;
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule(100);
 	}
 
 	/*
@@ -66,7 +87,7 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		ServiceReference serviceReference = context.getServiceReference(TradeSystemService.class.getName());
 		if (serviceReference != null) {
 			TradeSystemService service = (TradeSystemService) context.getService(serviceReference);
@@ -74,6 +95,9 @@ public class Activator extends Plugin {
 				service.shutDown();
 			context.ungetService(serviceReference);
 		}
+
+		alertServiceRegistration.unregister();
+		alertService.shutDown();
 
 		plugin = null;
 		super.stop(context);
