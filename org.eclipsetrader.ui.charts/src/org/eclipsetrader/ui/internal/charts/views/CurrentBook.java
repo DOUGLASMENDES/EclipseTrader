@@ -46,23 +46,23 @@ public class CurrentBook extends Observable implements IChartObject, IAdaptable 
 	NumberFormat numberFormat = NumberFormat.getInstance();
 
 	public CurrentBook() {
-	    numberFormat.setGroupingUsed(true);
-	    numberFormat.setMinimumIntegerDigits(1);
-	    numberFormat.setMinimumFractionDigits(0);
-	    numberFormat.setMaximumFractionDigits(4);
+		numberFormat.setGroupingUsed(true);
+		numberFormat.setMinimumIntegerDigits(1);
+		numberFormat.setMinimumFractionDigits(0);
+		numberFormat.setMaximumFractionDigits(4);
 	}
 
 	public void setBook(IBook book) {
-    	this.book = book;
-    	setChanged();
-    	notifyObservers();
-    }
+		this.book = book;
+		setChanged();
+		notifyObservers();
+	}
 
 	public void setTrade(ITrade trade) {
-    	this.trade = trade;
-    	setChanged();
-    	notifyObservers();
-    }
+		this.trade = trade;
+		setChanged();
+		notifyObservers();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
@@ -182,10 +182,10 @@ public class CurrentBook extends Observable implements IChartObject, IAdaptable 
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
-     */
-    public void paintScale(Graphics graphics) {
-    }
+	 * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
+	 */
+	public void paintScale(Graphics graphics) {
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
@@ -196,14 +196,14 @@ public class CurrentBook extends Observable implements IChartObject, IAdaptable 
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-     */
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(getClass()))
-    		return this;
-	    return null;
-    }
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	@SuppressWarnings("unchecked")
+	public Object getAdapter(Class adapter) {
+		if (adapter.isAssignableFrom(getClass()))
+			return this;
+		return null;
+	}
 
 	void calculateBiggestQuantity() {
 		biggestQuantity = 0;
@@ -215,9 +215,9 @@ public class CurrentBook extends Observable implements IChartObject, IAdaptable 
 		entry = book.getAskProposals();
 		for (int i = 0; i < entry.length && i < 5; i++)
 			biggestQuantity = Math.max(biggestQuantity, entry[i].getQuantity());
-    }
+	}
 
 	int getBarWidth(IBookEntry entry) {
-	    return (int) (entry.getQuantity().doubleValue() / biggestQuantity * 100.0);
-    }
+		return (int) (entry.getQuantity().doubleValue() / biggestQuantity * 100.0);
+	}
 }

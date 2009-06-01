@@ -31,76 +31,78 @@ public class CurrentBookFactory implements IChartObjectFactory {
 	private CurrentBook object = new CurrentBook();
 
 	private IPricingListener pricingListener = new IPricingListener() {
-        public void pricingUpdate(PricingEvent event) {
-        	if (!event.getSecurity().equals(security))
-        		return;
-        	for (PricingDelta delta : event.getDelta()) {
-        		if (delta.getNewValue() instanceof IBook)
-        			object.setBook((IBook) delta.getNewValue());
-        	}
-        }
+		public void pricingUpdate(PricingEvent event) {
+			if (!event.getSecurity().equals(security))
+				return;
+			for (PricingDelta delta : event.getDelta()) {
+				if (delta.getNewValue() instanceof IBook)
+					object.setBook((IBook) delta.getNewValue());
+				if (delta.getNewValue() instanceof ITrade)
+					object.setTrade((ITrade) delta.getNewValue());
+			}
+		}
 	};
 
 	public CurrentBookFactory() {
 		IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
 
 		pricingEnvironment = new MarketPricingEnvironment(marketService);
-    	pricingEnvironment.addPricingListener(pricingListener);
+		pricingEnvironment.addPricingListener(pricingListener);
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getId()
-     */
-    public String getId() {
-	    return null;
-    }
+	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getId()
+	 */
+	public String getId() {
+		return null;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
-     */
-    public String getName() {
-	    return "Current Price";
-    }
+	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
+	 */
+	public String getName() {
+		return "Current Price";
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
-     */
-    public IChartObject createObject(IDataSeries source) {
-	    return object;
-    }
+	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
+	 */
+	public IChartObject createObject(IDataSeries source) {
+		return object;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
-     */
-    public IChartParameters getParameters() {
-	    return null;
-    }
+	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+	 */
+	public IChartParameters getParameters() {
+		return null;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
-     */
-    public void setParameters(IChartParameters parameters) {
-    }
+	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
+	 */
+	public void setParameters(IChartParameters parameters) {
+	}
 
 	public void setSecurity(ISecurity security) {
-    	this.security = security;
-    }
+		this.security = security;
+	}
 
 	public void setEnable(boolean enable) {
 		if (enable) {
-	    	pricingEnvironment.addSecurity(security);
-	    	pricingEnvironment.addLevel2Security(security);
+			pricingEnvironment.addSecurity(security);
+			pricingEnvironment.addLevel2Security(security);
 
-	    	ITrade trade = pricingEnvironment.getTrade(security);
-	    	IBook book = pricingEnvironment.getBook(security);
+			ITrade trade = pricingEnvironment.getTrade(security);
+			IBook book = pricingEnvironment.getBook(security);
 
-	    	object.setTrade(trade);
-	    	object.setBook(book);
+			object.setTrade(trade);
+			object.setBook(book);
 		}
 		else {
-	    	pricingEnvironment.removeLevel2Security(security);
-	    	pricingEnvironment.removeSecurity(security);
-	    	object.setBook(null);
+			pricingEnvironment.removeLevel2Security(security);
+			pricingEnvironment.removeSecurity(security);
+			object.setBook(null);
 		}
 	}
 
