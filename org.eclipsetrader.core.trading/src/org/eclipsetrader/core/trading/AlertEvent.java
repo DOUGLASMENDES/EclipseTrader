@@ -11,15 +11,28 @@
 
 package org.eclipsetrader.core.trading;
 
+import java.util.Date;
+
+import org.eclipsetrader.core.feed.IQuote;
+import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
 
 public class AlertEvent {
+	private Date time;
 	private ISecurity instrument;
+	private ITrade trade;
+	private IQuote quote;
 	private IAlert[] alerts;
 
-	public AlertEvent(ISecurity instrument, IAlert[] alerts) {
+	public AlertEvent(ISecurity instrument, ITrade trade, IQuote quote, IAlert[] alerts) {
 		this.instrument = instrument;
+		this.trade = trade;
+		this.quote = quote;
 		this.alerts = alerts;
+	}
+
+	public Date getTime() {
+		return time;
 	}
 
 	public ISecurity getInstrument() {
@@ -28,5 +41,13 @@ public class AlertEvent {
 
 	public IAlert[] getTriggeredAlerts() {
 		return alerts;
+	}
+
+	public ITrade getTrade() {
+		return trade;
+	}
+
+	public IQuote getQuote() {
+		return quote;
 	}
 }

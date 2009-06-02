@@ -11,7 +11,7 @@
 
 package org.eclipsetrader.ui.internal.navigator;
 
- import java.util.HashSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -120,8 +120,8 @@ public class Navigator extends ViewPart {
 					service.runInService(new IRepositoryRunnable() {
 						public IStatus run(IProgressMonitor monitor) throws Exception {
 							service.deleteAdaptable(objects);
-                            return Status.OK_STATUS;
-                        }
+							return Status.OK_STATUS;
+						}
 					}, null);
 				}
 			}
@@ -148,51 +148,51 @@ public class Navigator extends ViewPart {
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
 		viewer.setUseHashlookup(true);
-		viewer.setLabelProvider(new DecoratingLabelProvider(new NavigatorLabelProvider(), WorkbenchPlugin.getDefault().getDecoratorManager()));
+		viewer.setLabelProvider(new DecoratingLabelProvider(new NavigatorLabelProvider(), WorkbenchPlugin.getDefault().getDecoratorManager().getLabelDecorator()));
 		viewer.setContentProvider(new NavigatorContentProvider());
 		viewer.setSorter(new ViewerSorter() {
-            @Override
-            public int category(Object element) {
-            	if (element instanceof IAdaptable) {
-            		if (((IAdaptable) element).getAdapter(ISecurity.class) != null)
-            			return 1;
-            		if (((IAdaptable) element).getAdapter(IWatchList.class) != null)
-            			return 2;
-            		if (((IAdaptable) element).getAdapter(IRepository.class) != null)
-            			return 3;
-            	}
-	            return 0;
-            }
+			@Override
+			public int category(Object element) {
+				if (element instanceof IAdaptable) {
+					if (((IAdaptable) element).getAdapter(ISecurity.class) != null)
+						return 1;
+					if (((IAdaptable) element).getAdapter(IWatchList.class) != null)
+						return 2;
+					if (((IAdaptable) element).getAdapter(IRepository.class) != null)
+						return 3;
+				}
+				return 0;
+			}
 
 			/* (non-Javadoc)
-             * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-             */
-            @Override
-            public int compare(Viewer viewer, Object e1, Object e2) {
-            	if ((e1 instanceof IAdaptable) && (e2 instanceof IAdaptable)) {
-            		if (((IAdaptable) e1).getAdapter(String.class) != null && ((IAdaptable) e2).getAdapter(String.class) != null)
-            			return 0;
-            	}
-	            return super.compare(viewer, e1, e2);
-            }
+			 * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				if ((e1 instanceof IAdaptable) && (e2 instanceof IAdaptable)) {
+					if (((IAdaptable) e1).getAdapter(String.class) != null && ((IAdaptable) e2).getAdapter(String.class) != null)
+						return 0;
+				}
+				return super.compare(viewer, e1, e2);
+			}
 		});
 
 		DragSource dragSource = new DragSource(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE);
 		dragSource.setTransfer(new Transfer[] {
-				SecurityObjectTransfer.getInstance()
-			});
+			SecurityObjectTransfer.getInstance()
+		});
 		dragSource.addDragListener(new DragSourceListener() {
-            public void dragStart(DragSourceEvent event) {
-            	event.doit = getSelectedObject(viewer.getSelection()).length != 0;
-            }
+			public void dragStart(DragSourceEvent event) {
+				event.doit = getSelectedObject(viewer.getSelection()).length != 0;
+			}
 
-            public void dragSetData(DragSourceEvent event) {
+			public void dragSetData(DragSourceEvent event) {
 				if (SecurityObjectTransfer.getInstance().isSupportedType(event.dataType))
 					event.data = getSelectedObject(viewer.getSelection());
-            }
+			}
 
-            public void dragFinished(DragSourceEvent event) {
-            }
+			public void dragFinished(DragSourceEvent event) {
+			}
 		});
 
 		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -230,32 +230,30 @@ public class Navigator extends ViewPart {
 		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
 		viewer.addOpenListener(new IOpenListener() {
-            public void open(OpenEvent event) {
-            	try {
-	                IHandlerService service = (IHandlerService) getSite().getService(IHandlerService.class);
-	                service.executeCommand("org.eclipse.ui.file.open", null);
-                } catch (Exception e) {
-	                e.printStackTrace();
-                }
-            }
+			public void open(OpenEvent event) {
+				try {
+					IHandlerService service = (IHandlerService) getSite().getService(IHandlerService.class);
+					service.executeCommand("org.eclipse.ui.file.open", null);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		});
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
+			public void selectionChanged(SelectionChangedEvent event) {
 				IAdaptable[] objects = getSelectedObject(event.getSelection());
 				deleteAction.setEnabled(objects.length != 0);
 				getViewSite().getSelectionProvider().setSelection(event.getSelection());
-            }
+			}
 		});
 
 		NavigatorView view = new NavigatorView();
 		view.setContentProviders(new IStructuredContentProvider[] {
-				new SecuritiesContentProvider(),
-				new WatchListsContentProvider(),
-			});
+		    new SecuritiesContentProvider(), new WatchListsContentProvider(),
+		});
 		view.setGroups(new INavigatorContentGroup[] {
-				new InstrumentTypeGroup(),
-				new MarketGroup(),
-			});
+		    new InstrumentTypeGroup(), new MarketGroup(),
+		});
 		view.update();
 		viewer.setInput(view);
 
@@ -267,20 +265,20 @@ public class Navigator extends ViewPart {
 				for (int i = 0; i < sr.length; i++) {
 					try {
 						itemHash.add(Integer.parseInt(sr[i]));
-					} catch(Exception e) {
+					} catch (Exception e) {
 						// Do nothing
 					}
 				}
 				view.accept(new IViewVisitor() {
-                    public boolean visit(IView view) {
-	                    return true;
-                    }
+					public boolean visit(IView view) {
+						return true;
+					}
 
-                    public boolean visit(IViewItem viewItem) {
-                    	if (itemHash.contains(viewItem.hashCode()))
-                    		viewer.setExpandedState(viewItem, true);
-	                    return true;
-                    }
+					public boolean visit(IViewItem viewItem) {
+						if (itemHash.contains(viewItem.hashCode()))
+							viewer.setExpandedState(viewItem, true);
+						return true;
+					}
 				});
 			}
 		}
@@ -296,35 +294,35 @@ public class Navigator extends ViewPart {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void saveState(IMemento memento) {
-    	Object[] o = viewer.getExpandedElements();
-    	if (o != null && o.length != 0) {
-    	    StringBuffer s = new StringBuffer();
-    	    for (int i = 0; i < o.length; i++) {
-    	    	if (i != 0)
-    	    		s.append(";");
-    	    	s.append(o[i].hashCode());
-    	    }
-    	    memento.putString("expanded", s.toString());
-    	}
+	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		Object[] o = viewer.getExpandedElements();
+		if (o != null && o.length != 0) {
+			StringBuffer s = new StringBuffer();
+			for (int i = 0; i < o.length; i++) {
+				if (i != 0)
+					s.append(";");
+				s.append(o[i].hashCode());
+			}
+			memento.putString("expanded", s.toString());
+		}
 
-    	super.saveState(memento);
-    }
+		super.saveState(memento);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-     */
-    @Override
-    public void dispose() {
-    	NavigatorView view = (NavigatorView) viewer.getInput();
-    	if (view != null)
-    		view.dispose();
+	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 */
+	@Override
+	public void dispose() {
+		NavigatorView view = (NavigatorView) viewer.getInput();
+		if (view != null)
+			view.dispose();
 
-    	super.dispose();
-    }
+		super.dispose();
+	}
 
 	protected IAdaptable[] getSelectedObject(ISelection selection) {
 		final Set<ISecurity> list = new HashSet<ISecurity>();
@@ -333,12 +331,12 @@ public class Navigator extends ViewPart {
 			for (Object o : ((IStructuredSelection) selection).toArray()) {
 				if (o instanceof NavigatorViewItem) {
 					((NavigatorViewItem) o).accept(new IViewItemVisitor() {
-                        public boolean visit(IViewItem viewItem) {
-                        	ISecurity reference = (ISecurity) viewItem.getAdapter(ISecurity.class);
-                        	if (reference != null)
-                        		list.add(reference);
-	                        return true;
-                        }
+						public boolean visit(IViewItem viewItem) {
+							ISecurity reference = (ISecurity) viewItem.getAdapter(ISecurity.class);
+							if (reference != null)
+								list.add(reference);
+							return true;
+						}
 					});
 				}
 			}

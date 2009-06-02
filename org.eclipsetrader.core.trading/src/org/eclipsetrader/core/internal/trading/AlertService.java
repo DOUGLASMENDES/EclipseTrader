@@ -114,9 +114,10 @@ public class AlertService implements IAlertService {
 					parameters.put(param.getName(), ParameterElement.convert(param));
 
 				IAlert alert = alerts[ii].getAlert();
-				alert.setParameters(parameters);
-
-				list.add(alert);
+				if (alert != null) {
+					alert.setParameters(parameters);
+					list.add(alert);
+				}
 			}
 
 			map.put(instrument, list);
@@ -130,10 +131,13 @@ public class AlertService implements IAlertService {
 
 		List<IAlert> list = new ArrayList<IAlert>();
 
-		List<IAlert> triggeredList = triggeredMap.get(event.getSecurity());
-		if (triggeredList == null) {
-			triggeredList = new ArrayList<IAlert>();
-			triggeredMap.put(event.getSecurity(), triggeredList);
+		List<IAlert> triggeredList;
+		synchronized (triggeredMap) {
+			triggeredList = triggeredMap.get(event.getSecurity());
+			if (triggeredList == null) {
+				triggeredList = new ArrayList<IAlert>();
+				triggeredMap.put(event.getSecurity(), triggeredList);
+			}
 		}
 
 		for (IAlert alert : set) {
@@ -160,7 +164,9 @@ public class AlertService implements IAlertService {
 		}
 
 		if (list.size() != 0) {
-			AlertEvent alertEvent = new AlertEvent(event.getSecurity(), list.toArray(new IAlert[list.size()]));
+			ITrade trade = pricingEnvironment.getTrade(event.getSecurity());
+			IQuote quote = pricingEnvironment.getQuote(event.getSecurity());
+			AlertEvent alertEvent = new AlertEvent(event.getSecurity(), trade, quote, list.toArray(new IAlert[list.size()]));
 			fireAlertTriggeredEvent(alertEvent);
 		}
 	}
@@ -297,7 +303,16 @@ public class AlertService implements IAlertService {
 	 * @see org.eclipsetrader.core.trading.IAlertService#resetTriggers(org.eclipsetrader.core.instruments.ISecurity)
 	 */
 	public void resetTriggers(ISecurity instrument) {
-		triggeredMap.remove(instrument);
-		fireAlertTriggeredEvent(new AlertEvent(instrument, new IAlert[0]));
+		ITrade trade = pricingEnvironment.getTrade(instrument);
+		IQuote quote = pricingEnvironment.getQuote(instrument);
+
+		synchronized (triggeredMap) {
+			for (IAlert alert : triggeredMap.get(instrument))
+				alert.setInitialValues(trade, quote);
+
+			triggeredMap.remove(instrument);
+		}
+
+		fireAlertTriggeredEvent(new AlertEvent(instrument, trade, quote, new IAlert[0]));
 	}
 }

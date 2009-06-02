@@ -12,6 +12,8 @@
 package org.eclipsetrader.internal.ui.trading;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -19,11 +21,13 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-
-	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipsetrader.ui.trading";
 
-	// The shared instance
+	public static final String ALERT_NOTIFICATION_IMAGE = "alert_notification_image";
+	public static final String ALERT_ADD_IMAGE = "alert_add_image";
+	public static final String ALERT_DELETE_IMAGE = "alert_delete_image";
+	public static final String ALERT_WIZARD_IMAGE = "alert_wizard_image";
+
 	private static Activator plugin;
 
 	/**
@@ -37,7 +41,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 	}
@@ -47,16 +51,11 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
 	}
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
 	public static Activator getDefault() {
 		return plugin;
 	}
@@ -68,5 +67,28 @@ public class Activator extends AbstractUIPlugin {
 			return;
 		}
 		plugin.getLog().log(status);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
+	 */
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		reg.put(ALERT_NOTIFICATION_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/bell.png")));
+
+		reg.put(ALERT_WIZARD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/wizban/newfile_wiz.gif")));
+		reg.put(ALERT_ADD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/bell_add.png")));
+		reg.put(ALERT_DELETE_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/delete.gif")));
+	}
+
+	/**
+	 * Returns an image descriptor for the image file at the given
+	 * plug-in relative path.
+	 *
+	 * @param path the path
+	 * @return the image descriptor
+	 */
+	public static ImageDescriptor getImageDescriptor(String path) {
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 }
