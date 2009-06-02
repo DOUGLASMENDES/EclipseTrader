@@ -3,5 +3,13 @@
 <plugin>
    <extension-point id="org.eclipsetrader.core.trading.systems" name="Trading Systems" schema="schema/systems.exsd"/>
    <extension-point id="org.eclipsetrader.core.trading.alerts" name="Alerts" schema="schema/alerts.exsd"/>
+   <extension
+         point="org.eclipsetrader.core.trading.alerts">
+      <alert
+            class="org.eclipsetrader.core.internal.trading.TargetPrice"
+            id="org.eclipsetrader.core.trading.alerts.targetprice"
+            name="Target Price">
+      </alert>
+   </extension>
 
 </plugin>
