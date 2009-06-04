@@ -652,5 +652,62 @@
          </enabledWhen>
       </page>
    </extension>
+   <extension
+         point="org.eclipsetrader.ui.indicators">
+      <category
+            icon="icons/obj16/blank_obj.gif"
+            id="org.eclipsetrader.ui.charts.patterns"
+            name="Patterns">
+      </category>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.ClosingPriceReversal"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.closingpricereversal"
+            name="Closing Price Reversal">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.DoubleReversal"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.doublereversal"
+            name="Double Reversal">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.GAP"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.gap"
+            name="Gap">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.LindhalBuy"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.lindhalbuy"
+            name="Lindhal Buy">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.LindhalSell"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.lindhalsell"
+            name="Lindhal Sell">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.HighLowReversal"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.highlowreversal"
+            name="High/Low Reversal">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.KeyReversal"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.keyreversal"
+            name="Key Reversal">
+      </indicator>
+   </extension>
 
 </plugin>

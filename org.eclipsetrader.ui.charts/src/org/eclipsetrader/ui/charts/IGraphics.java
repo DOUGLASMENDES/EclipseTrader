@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.ui.charts;
 
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -54,6 +55,10 @@ public interface IGraphics {
 	public RGB getForegroundColor();
 
 	public void setForegroundColor(RGB rgb);
+
+	public Font getFont();
+
+	public void setFont(Font font);
 
 	public void drawString(String s, int x, int y);
 
