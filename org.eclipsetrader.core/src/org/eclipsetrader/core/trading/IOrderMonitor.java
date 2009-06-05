@@ -12,11 +12,11 @@
 package org.eclipsetrader.core.trading;
 
 public interface IOrderMonitor {
-
 	public static final String PROP_ID = "id";
 	public static final String PROP_STATUS = "status";
 	public static final String PROP_FILLED_QUANTITY = "filledQuantity";
 	public static final String PROP_AVERAGE_PRICE = "averagePrice";
+	public static final String PROP_MESSAGE = "message";
 
 	public IOrder getOrder();
 
@@ -46,4 +46,6 @@ public interface IOrderMonitor {
 	public Long getFilledQuantity();
 
 	public Double getAveragePrice();
+
+	public String getMessage();
 }

@@ -25,21 +25,22 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	private Long filledQuantity;
 	private Double averagePrice;
 	private IOrderStatus status = IOrderStatus.New;
+	private String message;
 
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	public OrderMonitor(IBroker brokerConnector, IOrder order) {
-	    this.brokerConnector = brokerConnector;
+		this.brokerConnector = brokerConnector;
 		this.order = order;
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IOrderMonitor#getBrokerConnector()
-     */
-    public IBroker getBrokerConnector() {
-	    return brokerConnector;
-    }
+	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getBrokerConnector()
+	 */
+	public IBroker getBrokerConnector() {
+		return brokerConnector;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getId()
@@ -49,8 +50,8 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	}
 
 	public void setId(String assignedId) {
-    	this.id = assignedId;
-    }
+		this.id = assignedId;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getOrder()
@@ -86,18 +87,18 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IOrderMonitor#addOrderMonitorListener(org.eclipsetrader.core.trading.IOrderMonitorListener)
-     */
-    public void addOrderMonitorListener(IOrderMonitorListener listener) {
-    	listeners.add(listener);
-    }
+	 * @see org.eclipsetrader.core.trading.IOrderMonitor#addOrderMonitorListener(org.eclipsetrader.core.trading.IOrderMonitorListener)
+	 */
+	public void addOrderMonitorListener(IOrderMonitorListener listener) {
+		listeners.add(listener);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IOrderMonitor#removeOrderMonitorListener(org.eclipsetrader.core.trading.IOrderMonitorListener)
-     */
-    public void removeOrderMonitorListener(IOrderMonitorListener listener) {
-    	listeners.remove(listener);
-    }
+	 * @see org.eclipsetrader.core.trading.IOrderMonitor#removeOrderMonitorListener(org.eclipsetrader.core.trading.IOrderMonitorListener)
+	 */
+	public void removeOrderMonitorListener(IOrderMonitorListener listener) {
+		listeners.remove(listener);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getStatus()
@@ -107,12 +108,12 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	}
 
 	public void setStatus(IOrderStatus status) {
-    	IOrderStatus oldValue = this.status;
-    	if (this.status != status) {
-    		this.status = status;
-    		propertyChangeSupport.firePropertyChange(PROP_STATUS, oldValue, this.status);
-    	}
-    }
+		IOrderStatus oldValue = this.status;
+		if (this.status != status) {
+			this.status = status;
+			propertyChangeSupport.firePropertyChange(PROP_STATUS, oldValue, this.status);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getFilledQuantity()
@@ -122,12 +123,12 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	}
 
 	public void setFilledQuantity(Long filledQuantity) {
-    	Long oldValue = this.filledQuantity;
-    	if (filledQuantity !=null && !filledQuantity.equals(this.filledQuantity)) {
-    		this.filledQuantity = filledQuantity;
-    		propertyChangeSupport.firePropertyChange(PROP_FILLED_QUANTITY, oldValue, this.filledQuantity);
-    	}
-    }
+		Long oldValue = this.filledQuantity;
+		if (filledQuantity != null && !filledQuantity.equals(this.filledQuantity)) {
+			this.filledQuantity = filledQuantity;
+			propertyChangeSupport.firePropertyChange(PROP_FILLED_QUANTITY, oldValue, this.filledQuantity);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getAveragePrice()
@@ -137,51 +138,58 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	}
 
 	public void setAveragePrice(Double averagePrice) {
-    	Double oldValue = this.averagePrice;
-    	if (averagePrice != null && !averagePrice.equals(this.averagePrice)) {
-    		this.averagePrice = averagePrice;
-    		propertyChangeSupport.firePropertyChange(PROP_AVERAGE_PRICE, oldValue, this.averagePrice);
-    	}
-    }
+		Double oldValue = this.averagePrice;
+		if (averagePrice != null && !averagePrice.equals(this.averagePrice)) {
+			this.averagePrice = averagePrice;
+			propertyChangeSupport.firePropertyChange(PROP_AVERAGE_PRICE, oldValue, this.averagePrice);
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-     */
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(propertyChangeSupport.getClass()))
-    		return propertyChangeSupport;
-    	if (adapter.isAssignableFrom(getClass()))
-    		return this;
-	    return null;
-    }
+	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getMessage()
+	 */
+	public String getMessage() {
+		return message;
+	}
 
-    protected void fireOrderCompletedEvent() {
-    	OrderMonitorEvent event = new OrderMonitorEvent(this, order);
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
-    	Object[] l = listeners.getListeners();
-    	for (int i = 0; i < l.length; i++) {
-    		try {
-    			((IOrderMonitorListener) l[i]).orderCompleted(event);
-    		} catch(Throwable e) {
-    			e.printStackTrace();
-    		}
-    	}
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	@SuppressWarnings("unchecked")
+	public Object getAdapter(Class adapter) {
+		if (adapter.isAssignableFrom(propertyChangeSupport.getClass()))
+			return propertyChangeSupport;
+		if (adapter.isAssignableFrom(getClass()))
+			return this;
+		return null;
+	}
+
+	protected void fireOrderCompletedEvent() {
+		OrderMonitorEvent event = new OrderMonitorEvent(this, order);
+
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((IOrderMonitorListener) l[i]).orderCompleted(event);
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public PropertyChangeSupport getPropertyChangeSupport() {
-    	return propertyChangeSupport;
-    }
+		return propertyChangeSupport;
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-    	return "OrderMonitor: id=" + getId()
-			+ ", status=" + getStatus()
-			+ ", filledQuantity=" + getFilledQuantity()
-			+ ", averagePrice=" + getAveragePrice()
-			+ " [" + order.toString() + "]";
-    }
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "OrderMonitor: id=" + getId() + ", status=" + getStatus() + ", filledQuantity=" + getFilledQuantity() + ", averagePrice=" + getAveragePrice() + " [" + order.toString() + "]";
+	}
 }
