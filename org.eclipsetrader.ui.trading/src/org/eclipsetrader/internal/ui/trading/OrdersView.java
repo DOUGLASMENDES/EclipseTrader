@@ -42,6 +42,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -51,6 +53,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IOrder;
@@ -147,6 +150,17 @@ public class OrdersView extends ViewPart {
 		}
 	};
 
+	private ControlAdapter columnControlListener = new ControlAdapter() {
+		@Override
+		public void controlResized(ControlEvent e) {
+			TableColumn tableColumn = (TableColumn) e.widget;
+			int index = tableColumn.getParent().indexOf(tableColumn);
+
+			String[] enabledId = dialogSettings.getArray(K_VISIBLE_COLUMNS);
+			memento.putInteger(enabledId[index], tableColumn.getWidth());
+		}
+	};
+
 	private Action cancelAction;
 	private Action columnsAction;
 
@@ -159,6 +173,9 @@ public class OrdersView extends ViewPart {
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
+
+		if (memento == null)
+			memento = XMLMemento.createWriteRoot("root");
 		this.memento = memento;
 
 		IDialogSettings pluginDialogSettings = Activator.getDefault().getDialogSettings();
@@ -225,11 +242,16 @@ public class OrdersView extends ViewPart {
 				dlg.setVisibleId(dialogSettings.getArray(K_VISIBLE_COLUMNS));
 				if (dlg.open() == Dialog.OK) {
 					dialogSettings.put(K_VISIBLE_COLUMNS, dlg.getVisibleId());
-					updateViewerColumns(all, false);
-					updateViewerColumns(pending, true);
-					updateViewerColumns(filled, true);
-					updateViewerColumns(canceled, true);
-					updateViewerColumns(rejected, true);
+					updateViewerColumns(all, true);
+					updateViewerColumns(pending, false);
+					updateViewerColumns(filled, false);
+					updateViewerColumns(canceled, false);
+					updateViewerColumns(rejected, false);
+					all.refresh();
+					pending.refresh();
+					filled.refresh();
+					canceled.refresh();
+					rejected.refresh();
 				}
 			}
 		};
@@ -406,6 +428,7 @@ public class OrdersView extends ViewPart {
 	 */
 	@Override
 	public void saveState(IMemento memento) {
+		memento.putMemento(this.memento);
 		super.saveState(memento);
 	}
 
@@ -472,6 +495,7 @@ public class OrdersView extends ViewPart {
 				TableViewerColumn viewerColumn = new TableViewerColumn(viewer, style);
 				viewerColumn.getColumn().setText(element.getAttribute("name"));
 				viewerColumn.getColumn().setWidth(memento != null && memento.getString(enabledId[i]) != null ? memento.getInteger(enabledId[i]) : 64);
+				viewerColumn.getColumn().addControlListener(columnControlListener);
 
 				try {
 					ColumnLabelProvider labelProvider = (ColumnLabelProvider) element.createExecutableExtension("class");
