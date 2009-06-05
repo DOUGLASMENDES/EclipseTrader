@@ -22,6 +22,6 @@ public class ErrorMessage {
 			return;
 		nTipeError = Util.getByte(packet[0]);
 		if (packet.length > 1)
-			sMessageError = new String(packet, 1, packet.length);
+			sMessageError = new String(packet, 1, packet.length - 1);
 	}
 }
