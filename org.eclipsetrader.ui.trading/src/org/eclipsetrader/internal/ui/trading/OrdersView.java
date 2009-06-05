@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,14 +16,20 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -40,6 +46,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -68,129 +75,191 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class OrdersView extends ViewPart {
-    public static final String VIEW_ID = "org.eclipsetrader.ui.views.orders";
+	public static final String VIEW_ID = "org.eclipsetrader.ui.views.orders";
+	public static final String K_VISIBLE_COLUMNS = "VISIBLE_COLUMNS";
 
-    private CTabFolder tabFolder;
+	private CTabFolder tabFolder;
 
-    private TableViewer all;
-    private TableViewer pending;
-    private TableViewer filled;
-    private TableViewer canceled;
-    private TableViewer rejected;
-    private ProxySelectionProvider selectionProvider;
+	private TableViewer all;
+	private TableViewer pending;
+	private TableViewer filled;
+	private TableViewer canceled;
+	private TableViewer rejected;
+	private ProxySelectionProvider selectionProvider;
 
-    private IMemento memento;
+	private IMemento memento;
+	private IDialogSettings dialogSettings;
 
-    private ServiceReference serviceReference;
-    private ITradingService service;
+	private ServiceReference serviceReference;
+	private ITradingService service;
 
-    private IOrderChangeListener orderChangedListener = new IOrderChangeListener() {
-        public void orderChanged(OrderChangeEvent event) {
-        	IAdapterManager adapterManager = Platform.getAdapterManager();
+	private IOrderChangeListener orderChangedListener = new IOrderChangeListener() {
+		public void orderChanged(OrderChangeEvent event) {
+			IAdapterManager adapterManager = Platform.getAdapterManager();
 
-        	for (OrderDelta delta : event.deltas) {
-        		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(delta.getOrder(), PropertyChangeSupport.class);
-        		if (propertyChangeSupport != null) {
-            		if (delta.getKind() == OrderDelta.KIND_ADDED) {
-            			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-            			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-            		}
-            		else if (delta.getKind() == OrderDelta.KIND_REMOVED)
-            			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-        		}
-        	}
+			for (OrderDelta delta : event.deltas) {
+				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(delta.getOrder(), PropertyChangeSupport.class);
+				if (propertyChangeSupport != null) {
+					if (delta.getKind() == OrderDelta.KIND_ADDED) {
+						propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+						propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+					}
+					else if (delta.getKind() == OrderDelta.KIND_REMOVED)
+						propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+				}
+			}
 
-        	try {
-    			tabFolder.getDisplay().asyncExec(new Runnable() {
-                    public void run() {
-                    	if (!tabFolder.isDisposed()) {
-                			all.refresh();
-                		    pending.refresh();
-                		    filled.refresh();
-                		    canceled.refresh();
-                		    rejected.refresh();
-                    	}
-                    }
-    			});
-    		} catch(SWTException e) {
-    			// Do nothing
-    		}
-        }
-    };
+			try {
+				tabFolder.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						if (!tabFolder.isDisposed()) {
+							all.refresh();
+							pending.refresh();
+							filled.refresh();
+							canceled.refresh();
+							rejected.refresh();
+						}
+					}
+				});
+			} catch (SWTException e) {
+				// Do nothing
+			}
+		}
+	};
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent evt) {
-    		try {
-    			tabFolder.getDisplay().asyncExec(new Runnable() {
-                    public void run() {
-                    	if (!tabFolder.isDisposed()) {
-                			all.refresh();
-                		    pending.refresh();
-                		    filled.refresh();
-                		    canceled.refresh();
-                		    rejected.refresh();
-                    	}
-                    }
-    			});
-    		} catch(SWTException e) {
-    			// Do nothing
-    		}
-        }
+		public void propertyChange(PropertyChangeEvent evt) {
+			try {
+				tabFolder.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						if (!tabFolder.isDisposed()) {
+							all.refresh();
+							pending.refresh();
+							filled.refresh();
+							canceled.refresh();
+							rejected.refresh();
+						}
+					}
+				});
+			} catch (SWTException e) {
+				// Do nothing
+			}
+		}
 	};
 
-	private Action cancelAction = new Action("Cancel") {
-        @Override
-        public void run() {
-	        IStructuredSelection selection = (IStructuredSelection) getSite().getSelectionProvider().getSelection();
-	        if (!selection.isEmpty()) {
-	        	for (Object o : selection.toList()) {
-	        		try {
-	                    ((IOrderMonitor) o).cancel();
-                    } catch (BrokerException e) {
-	                    e.printStackTrace();
-                    }
-	        	}
-	        }
-        }
-	};
+	private Action cancelAction;
+	private Action columnsAction;
 
 	public OrdersView() {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void init(IViewSite site, IMemento memento) throws PartInitException {
-	    super.init(site, memento);
-	    this.memento = memento;
-    }
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+		this.memento = memento;
+
+		IDialogSettings pluginDialogSettings = Activator.getDefault().getDialogSettings();
+		dialogSettings = pluginDialogSettings.getSection(VIEW_ID);
+		if (dialogSettings == null) {
+			dialogSettings = pluginDialogSettings.addNewSection(VIEW_ID);
+			dialogSettings.put("VISIBLE_COLUMNS", new String[] {
+			    OrderIdColumn.COLUMN_ID,
+			    DateTimeColumn.COLUMN_ID,
+			    SecurityNameColumn.COLUMN_ID,
+			    SideColumn.COLUMN_ID,
+			    TypeColumn.COLUMN_ID,
+			    QuantityColumn.COLUMN_ID,
+			    PriceColumn.COLUMN_ID,
+			    FilledQuantityColumn.COLUMN_ID,
+			    AveragePriceColumn.COLUMN_ID,
+			    StatusColumn.COLUMN_ID
+			});
+		}
+
+		initializeActions();
+
+		IMenuManager menuManager = site.getActionBars().getMenuManager();
+		menuManager.add(new Separator("group.new"));
+		menuManager.add(new GroupMarker("group.goto"));
+		menuManager.add(new Separator("group.open"));
+		menuManager.add(new GroupMarker("group.openWith"));
+		menuManager.add(new Separator("group.show"));
+		menuManager.add(new Separator("group.edit"));
+		menuManager.add(new GroupMarker("group.reorganize"));
+		menuManager.add(new GroupMarker("group.port"));
+		menuManager.add(new Separator("group.generate"));
+		menuManager.add(new Separator("group.search"));
+		menuManager.add(new Separator("group.build"));
+		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		menuManager.add(new Separator("group.properties"));
+
+		menuManager.appendToGroup("group.properties", columnsAction);
+
+		site.getActionBars().updateActionBars();
+	}
+
+	void initializeActions() {
+		cancelAction = new Action("Cancel") {
+			@Override
+			public void run() {
+				IStructuredSelection selection = (IStructuredSelection) getSite().getSelectionProvider().getSelection();
+				if (!selection.isEmpty()) {
+					for (Object o : selection.toList()) {
+						try {
+							((IOrderMonitor) o).cancel();
+						} catch (BrokerException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		};
+
+		columnsAction = new Action("Columns") {
+			@Override
+			public void run() {
+				OrdersColumnsDialog dlg = new OrdersColumnsDialog(getSite().getShell());
+				dlg.setVisibleId(dialogSettings.getArray(K_VISIBLE_COLUMNS));
+				if (dlg.open() == Dialog.OK) {
+					dialogSettings.put(K_VISIBLE_COLUMNS, dlg.getVisibleId());
+					updateViewerColumns(all, false);
+					updateViewerColumns(pending, true);
+					updateViewerColumns(filled, true);
+					updateViewerColumns(canceled, true);
+					updateViewerColumns(rejected, true);
+				}
+			}
+		};
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-	    createTabFolder(parent);
+		createTabFolder(parent);
 
-	    tabFolder.setSelection(tabFolder.getItem(0));
-	    tabFolder.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-	            TableViewer viewer = (TableViewer) ((CTabItem) e.item).getControl().getData("viewer");
-	            if (viewer != null)
-	        	    selectionProvider.setSelectionProvider(viewer);
-            }
-	    });
+		tabFolder.setSelection(tabFolder.getItem(0));
+		tabFolder.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableViewer viewer = (TableViewer) ((CTabItem) e.item).getControl().getData("viewer");
+				if (viewer != null)
+					selectionProvider.setSelectionProvider(viewer);
+			}
+		});
 
-	    selectionProvider = new ProxySelectionProvider();
-	    selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-            	cancelAction.setEnabled(!event.getSelection().isEmpty());
-            }
-	    });
-	    selectionProvider.setSelectionProvider(all);
-	    getSite().setSelectionProvider(selectionProvider);
+		selectionProvider = new ProxySelectionProvider();
+		selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				cancelAction.setEnabled(!event.getSelection().isEmpty());
+			}
+		});
+		selectionProvider.setSelectionProvider(all);
+		getSite().setSelectionProvider(selectionProvider);
 
 		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
 		menuMgr.setRemoveAllWhenShown(true);
@@ -222,41 +291,41 @@ public class OrdersView extends ViewPart {
 
 		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
-	    if (Activator.getDefault() != null) {
+		if (Activator.getDefault() != null) {
 			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 			serviceReference = context.getServiceReference(ITradingService.class.getName());
 			if (serviceReference != null) {
 				service = (ITradingService) context.getService(serviceReference);
 
 				all.setInput(service);
-			    pending.setInput(service);
-			    filled.setInput(service);
-			    canceled.setInput(service);
-			    rejected.setInput(service);
+				pending.setInput(service);
+				filled.setInput(service);
+				canceled.setInput(service);
+				rejected.setInput(service);
 
-			    hookListeners(service.getOrders());
-			    service.addOrderChangeListener(orderChangedListener);
+				hookListeners(service.getOrders());
+				service.addOrderChangeListener(orderChangedListener);
 			}
-	    }
+		}
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-     */
-    @Override
-    public void dispose() {
-    	if (service != null) {
-    		service.removeOrderChangeListener(orderChangedListener);
-    		unhookListeners(service.getOrders());
-    	}
+	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 */
+	@Override
+	public void dispose() {
+		if (service != null) {
+			service.removeOrderChangeListener(orderChangedListener);
+			unhookListeners(service.getOrders());
+		}
 
-    	if (serviceReference != null) {
+		if (serviceReference != null) {
 			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 			context.ungetService(serviceReference);
-    	}
+		}
 
-    	super.dispose();
-    }
+		super.dispose();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
@@ -267,169 +336,175 @@ public class OrdersView extends ViewPart {
 	}
 
 	protected void createTabFolder(Composite parent) {
-        tabFolder = new CTabFolder(parent, SWT.BOTTOM);
-        tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tabFolder = new CTabFolder(parent, SWT.BOTTOM);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
-        tabItem.setText("All");
+		CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
+		tabItem.setText("All");
 		all = createViewer(tabFolder, true);
-        tabItem.setControl(all.getControl());
+		tabItem.setControl(all.getControl());
 
-        tabItem = new CTabItem(tabFolder, SWT.NONE);
-        tabItem.setText("Pending");
+		tabItem = new CTabItem(tabFolder, SWT.NONE);
+		tabItem.setText("Pending");
 		pending = createViewer(tabFolder, false);
 		pending.setFilters(new ViewerFilter[] {
-				new ViewerFilter() {
-                    @Override
-                    public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == IOrderStatus.PendingCancel ||
-	                           order.getStatus() == IOrderStatus.PendingNew;
-                    }
+			new ViewerFilter() {
+				@Override
+				public boolean select(Viewer viewer, Object parentElement, Object element) {
+					IOrderMonitor order = (IOrderMonitor) element;
+					return order.getStatus() == IOrderStatus.PendingCancel || order.getStatus() == IOrderStatus.PendingNew;
 				}
-			});
-        tabItem.setControl(pending.getControl());
+			}
+		});
+		tabItem.setControl(pending.getControl());
 
-        tabItem = new CTabItem(tabFolder, SWT.NONE);
-        tabItem.setText("Filled");
+		tabItem = new CTabItem(tabFolder, SWT.NONE);
+		tabItem.setText("Filled");
 		filled = createViewer(tabFolder, false);
 		filled.setFilters(new ViewerFilter[] {
-				new ViewerFilter() {
-                    @Override
-                    public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == IOrderStatus.Filled;
-                    }
+			new ViewerFilter() {
+				@Override
+				public boolean select(Viewer viewer, Object parentElement, Object element) {
+					IOrderMonitor order = (IOrderMonitor) element;
+					return order.getStatus() == IOrderStatus.Filled;
 				}
-			});
-        tabItem.setControl(filled.getControl());
+			}
+		});
+		tabItem.setControl(filled.getControl());
 
-        tabItem = new CTabItem(tabFolder, SWT.NONE);
-        tabItem.setText("Canceled");
+		tabItem = new CTabItem(tabFolder, SWT.NONE);
+		tabItem.setText("Canceled");
 		canceled = createViewer(tabFolder, false);
 		canceled.setFilters(new ViewerFilter[] {
-				new ViewerFilter() {
-                    @Override
-                    public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == IOrderStatus.Canceled ||
-	                           order.getStatus() == IOrderStatus.Expired;
-                    }
+			new ViewerFilter() {
+				@Override
+				public boolean select(Viewer viewer, Object parentElement, Object element) {
+					IOrderMonitor order = (IOrderMonitor) element;
+					return order.getStatus() == IOrderStatus.Canceled || order.getStatus() == IOrderStatus.Expired;
 				}
-			});
-        tabItem.setControl(canceled.getControl());
+			}
+		});
+		tabItem.setControl(canceled.getControl());
 
-        tabItem = new CTabItem(tabFolder, SWT.NONE);
-        tabItem.setText("Rejected");
+		tabItem = new CTabItem(tabFolder, SWT.NONE);
+		tabItem.setText("Rejected");
 		rejected = createViewer(tabFolder, false);
 		rejected.setFilters(new ViewerFilter[] {
-				new ViewerFilter() {
-                    @Override
-                    public boolean select(Viewer viewer, Object parentElement, Object element) {
-                    	IOrderMonitor order = (IOrderMonitor) element;
-	                    return order.getStatus() == IOrderStatus.Rejected;
-                    }
+			new ViewerFilter() {
+				@Override
+				public boolean select(Viewer viewer, Object parentElement, Object element) {
+					IOrderMonitor order = (IOrderMonitor) element;
+					return order.getStatus() == IOrderStatus.Rejected;
 				}
-			});
-        tabItem.setControl(rejected.getControl());
+			}
+		});
+		tabItem.setControl(rejected.getControl());
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void saveState(IMemento memento) {
-	    super.saveState(memento);
-    }
+	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+	}
 
 	protected TableViewer createViewer(Composite parent, boolean wrapLabelProviders) {
 		TableViewer viewer = new TableViewer(parent, SWT.FULL_SELECTION | SWT.MULTI);
 		viewer.getTable().setHeaderVisible(true);
 		viewer.setContentProvider(new ArrayContentProvider() {
-            @Override
-            public Object[] getElements(Object inputElement) {
-	            return ((ITradingService) inputElement).getOrders();
-            }
+			@Override
+			public Object[] getElements(Object inputElement) {
+				return ((ITradingService) inputElement).getOrders();
+			}
 		});
 		viewer.setSorter(new ViewerSorter() {
-            @Override
-            public int compare(Viewer viewer, Object e1, Object e2) {
-            	IOrder o1 = ((IOrderMonitor) e1).getOrder();
-            	IOrder o2 = ((IOrderMonitor) e2).getOrder();
-	            return o2.getDate().compareTo(o1.getDate());
-            }
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				IOrder o1 = ((IOrderMonitor) e1).getOrder();
+				IOrder o2 = ((IOrderMonitor) e2).getOrder();
+				return o2.getDate().compareTo(o1.getDate());
+			}
 		});
 
-		TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
-		viewerColumn.getColumn().setText("Id");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("ID") != null ? memento.getInteger("ID") : 115);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new OrderIdColumn()) : new OrderIdColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
-		viewerColumn.getColumn().setText("Date");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("DATE") != null ? memento.getInteger("DATE") : 140);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new DateTimeColumn()) : new DateTimeColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
-		viewerColumn.getColumn().setText("Security");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("INSTRUMENT") != null ? memento.getInteger("INSTRUMENT") : 150);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new SecurityNameColumn()) : new SecurityNameColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
-		viewerColumn.getColumn().setText("Side");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("SIDE") != null ? memento.getInteger("SIDE") : 60);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new SideColumn()) : new SideColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
-		viewerColumn.getColumn().setText("Type");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("TYPE") != null ? memento.getInteger("TYPE") : 60);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new TypeColumn()) : new TypeColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
-		viewerColumn.getColumn().setText("Q.ty");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("QTY") != null ? memento.getInteger("QTY") : 70);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new QuantityColumn()) : new QuantityColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
-		viewerColumn.getColumn().setText("Price");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("PRICE") != null ? memento.getInteger("PRICE") : 70);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new PriceColumn()) : new PriceColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
-		viewerColumn.getColumn().setText("Filled Q.ty");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("F-QTY") != null ? memento.getInteger("F-QTY") : 70);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new FilledQuantityColumn()) : new FilledQuantityColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.RIGHT);
-		viewerColumn.getColumn().setText("Avg. Price");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("AVG-PRICE") != null ? memento.getInteger("AVG-PRICE") : 70);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new AveragePriceColumn()) : new AveragePriceColumn());
-
-		viewerColumn = new TableViewerColumn(viewer, SWT.LEFT);
-		viewerColumn.getColumn().setText("Status");
-		viewerColumn.getColumn().setWidth(memento != null && memento.getString("STATUS") != null ? memento.getInteger("STATUS") : 100);
-		viewerColumn.setLabelProvider(wrapLabelProviders ? new OrdersLabelProviderWrapper(new StatusColumn()) : new StatusColumn());
+		updateViewerColumns(viewer, wrapLabelProviders);
 
 		return viewer;
 	}
 
-    protected void hookListeners(IOrderMonitor[] order) {
-    	IAdapterManager adapterManager = Platform.getAdapterManager();
-    	for (int i = 0; i < order.length; i++) {
-    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(order[i], PropertyChangeSupport.class);
-    		if (propertyChangeSupport != null) {
-    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-    			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-    		}
-    	}
-    }
+	IConfigurationElement getConfigurationElement(String targetID) {
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipsetrader.ui.viewLabelProviders");
 
-    protected void unhookListeners(IOrderMonitor[] order) {
-    	IAdapterManager adapterManager = Platform.getAdapterManager();
-    	for (int i = 0; i < order.length; i++) {
-    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(order[i], PropertyChangeSupport.class);
-    		if (propertyChangeSupport != null)
-    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-    	}
-    }
+		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+		for (int i = 0; i < configElements.length; i++) {
+			if ("viewContribution".equals(configElements[i].getName())) {
+				configElements = configElements[i].getChildren();
+				for (int j = 0; j < configElements.length; j++) {
+					String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
+					if (targetID.equals(strID))
+						return configElements[j];
+				}
+				break;
+			}
+		}
+		return null;
+	}
+
+	protected void updateViewerColumns(TableViewer viewer, boolean wrapLabelProviders) {
+		viewer.getTable().setRedraw(false);
+		try {
+			TableColumn[] tableColumn = viewer.getTable().getColumns();
+			for (int i = 0; i < tableColumn.length; i++)
+				tableColumn[i].dispose();
+
+			String[] enabledId = dialogSettings.getArray(K_VISIBLE_COLUMNS);
+			for (int i = 0; i < enabledId.length; i++) {
+				IConfigurationElement element = getConfigurationElement(enabledId[i]);
+				if (element == null)
+					continue;
+
+				int style = SWT.LEFT;
+				if ("right".equals(element.getAttribute("orientation")))
+					style = SWT.RIGHT;
+				else if ("center".equals(element.getAttribute("orientation")))
+					style = SWT.CENTER;
+
+				TableViewerColumn viewerColumn = new TableViewerColumn(viewer, style);
+				viewerColumn.getColumn().setText(element.getAttribute("name"));
+				viewerColumn.getColumn().setWidth(memento != null && memento.getString(enabledId[i]) != null ? memento.getInteger(enabledId[i]) : 64);
+
+				try {
+					ColumnLabelProvider labelProvider = (ColumnLabelProvider) element.createExecutableExtension("class");
+					if (wrapLabelProviders)
+						labelProvider = new OrdersLabelProviderWrapper(labelProvider);
+					viewerColumn.setLabelProvider(labelProvider);
+				} catch (Exception e) {
+					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, "Error creating label provider with id " + enabledId[i], e);
+					Activator.log(status);
+				}
+			}
+		} finally {
+			viewer.getTable().setRedraw(true);
+		}
+	}
+
+	protected void hookListeners(IOrderMonitor[] order) {
+		IAdapterManager adapterManager = Platform.getAdapterManager();
+		for (int i = 0; i < order.length; i++) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(order[i], PropertyChangeSupport.class);
+			if (propertyChangeSupport != null) {
+				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+			}
+		}
+	}
+
+	protected void unhookListeners(IOrderMonitor[] order) {
+		IAdapterManager adapterManager = Platform.getAdapterManager();
+		for (int i = 0; i < order.length; i++) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) adapterManager.getAdapter(order[i], PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+		}
+	}
 }

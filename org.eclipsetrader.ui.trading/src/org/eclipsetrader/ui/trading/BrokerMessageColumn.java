@@ -14,10 +14,10 @@ package org.eclipsetrader.ui.trading;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
-public class OrderIdColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.orderid";
+public class BrokerMessageColumn extends ColumnLabelProvider {
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.message";
 
-	public OrderIdColumn() {
+	public BrokerMessageColumn() {
 	}
 
 	/* (non-Javadoc)
@@ -27,8 +27,17 @@ public class OrderIdColumn extends ColumnLabelProvider {
 	public String getText(Object element) {
 		if (element instanceof IOrderMonitor) {
 			IOrderMonitor order = (IOrderMonitor) element;
-			return order.getId();
+			if (order.getMessage() != null)
+				return order.getMessage();
 		}
 		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.BaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+	 */
+	@Override
+	public boolean isLabelProperty(Object element, String property) {
+		return IOrderMonitor.PROP_MESSAGE.equals(property);
 	}
 }

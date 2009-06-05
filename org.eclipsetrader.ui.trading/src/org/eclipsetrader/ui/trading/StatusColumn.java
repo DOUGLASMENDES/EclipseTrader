@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class StatusColumn extends ColumnLabelProvider {
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.status";
 
 	public StatusColumn() {
 	}
@@ -32,10 +33,10 @@ public class StatusColumn extends ColumnLabelProvider {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.BaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-     */
-    @Override
-    public boolean isLabelProperty(Object element, String property) {
-	    return IOrderMonitor.PROP_STATUS.equals(property);
-    }
+	 * @see org.eclipse.jface.viewers.BaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+	 */
+	@Override
+	public boolean isLabelProperty(Object element, String property) {
+		return IOrderMonitor.PROP_STATUS.equals(property);
+	}
 }

@@ -12,12 +12,13 @@
 package org.eclipsetrader.ui.trading;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
-public class OrderIdColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.orderid";
+public class ReferenceColumn extends ColumnLabelProvider {
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.reference";
 
-	public OrderIdColumn() {
+	public ReferenceColumn() {
 	}
 
 	/* (non-Javadoc)
@@ -25,10 +26,15 @@ public class OrderIdColumn extends ColumnLabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IOrderMonitor) {
-			IOrderMonitor order = (IOrderMonitor) element;
-			return order.getId();
-		}
-		return "";
+		IOrder order = null;
+		if (element instanceof IOrder)
+			order = (IOrder) element;
+		else if (element instanceof IOrderMonitor)
+			order = ((IOrderMonitor) element).getOrder();
+
+		if (order != null && order.getReference() != null)
+			return order.getReference();
+
+		return ""; //$NON-NLS-1$
 	}
 }

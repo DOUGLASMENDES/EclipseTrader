@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,11 +11,12 @@
 
 package org.eclipsetrader.ui.trading;
 
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
-public class RouteColumn extends LabelProvider {
+public class RouteColumn extends ColumnLabelProvider {
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.route";
 
 	public RouteColumn() {
 	}
