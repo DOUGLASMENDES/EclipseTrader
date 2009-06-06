@@ -65,6 +65,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.part.ViewPart;
@@ -273,6 +274,18 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	@Override
 	public void saveState(IMemento memento) {
 		memento.putInteger(K_ZOOM_FACTOR, viewer.getZoomFactor());
+
+		int[] weights = viewer.getWeights();
+		if (weights.length > 1) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < weights.length; i++) {
+				if (i != 0)
+					sb.append(";");
+				sb.append(weights[i]);
+			}
+			memento.putString("weights", sb.toString());
+		}
+
 		super.saveState(memento);
 	}
 
@@ -561,6 +574,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
 		}
 
+		if (memento == null)
+			memento = XMLMemento.createWriteRoot("root");
+		saveState(memento);
+
 		ChartLoadJob job = new ChartLoadJob(security, view);
 		job.addJobChangeListener(new JobChangeAdapter() {
 			@Override
@@ -753,6 +770,14 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 					for (int i = 0; i < input.length; i++)
 						input[i] = (IChartObject[]) rowViewItem[i].getAdapter(IChartObject[].class);
 					viewer.setInput(input);
+
+					if (memento != null && memento.getString("weights") != null) {
+						String[] s = memento.getString("weights").split(";");
+						int[] weights = viewer.getWeights();
+						for (int i = 0; i < weights.length && i < s.length; i++)
+							weights[i] = Integer.valueOf(s[i]);
+						viewer.setWeights(weights);
+					}
 				}
 			}
 		});

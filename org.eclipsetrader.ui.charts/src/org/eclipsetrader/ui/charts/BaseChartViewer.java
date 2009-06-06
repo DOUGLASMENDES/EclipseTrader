@@ -66,7 +66,7 @@ public class BaseChartViewer implements ISelectionProvider {
 	private IChartObject[][] input;
 	private ChartCanvas[] chartCanvas = new ChartCanvas[0];
 
-	DateValuesAxis datesAxis = new DateValuesAxis();
+	DateValuesAxis datesAxis;
 
 	private ChartCanvas selectedChartCanvas;
 	private IChartObject selectedObject;
@@ -93,6 +93,9 @@ public class BaseChartViewer implements ISelectionProvider {
 
 		sashForm = new SashForm(composite, SWT.VERTICAL | SWT.NO_FOCUS);
 		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+		datesAxis = new DateValuesAxis();
+		datesAxis.additionalSpace = 15;
 
 		dateScaleCanvas = new DateScaleCanvas(composite);
 		dateScaleCanvas.getControl().setVisible(false);
@@ -248,6 +251,9 @@ public class BaseChartViewer implements ISelectionProvider {
 
 	protected void updateScrollbars() {
 		Rectangle clientArea = dateScaleCanvas.getCanvas().getClientArea();
+		if (clientArea.width == 0)
+			return;
+
 		ScrollBar hScroll = composite.getHorizontalBar();
 		boolean wasVisible = hScroll.getVisible();
 
@@ -654,5 +660,14 @@ public class BaseChartViewer implements ISelectionProvider {
 
 	public void setResolutionTimeSpan(TimeSpan resolutionTimeSpan) {
 		dateScaleCanvas.setResolutionTimeSpan(resolutionTimeSpan);
+	}
+
+	public int[] getWeights() {
+		return sashForm.getWeights();
+	}
+
+	public void setWeights(int[] weights) {
+		sashForm.setWeights(weights);
+		sashForm.layout();
 	}
 }

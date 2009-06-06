@@ -35,30 +35,30 @@ public class DateValuesAxis implements IAxis {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.charts.ui.IAxis#addValues(java.lang.Object[])
-     */
-    public void addValues(Object[] values) {
-    	for (Object v : values) {
-    		Date value = null;
+	 * @see org.eclipsetrader.charts.ui.IAxis#addValues(java.lang.Object[])
+	 */
+	public void addValues(Object[] values) {
+		for (Object v : values) {
+			Date value = null;
 
-    		if (v instanceof Date)
-    			value = (Date) v;
-    		if (v instanceof IAdaptable)
-    			value = (Date) ((IAdaptable) v).getAdapter(Date.class);
+			if (v instanceof Date)
+				value = (Date) v;
+			if (v instanceof IAdaptable)
+				value = (Date) ((IAdaptable) v).getAdapter(Date.class);
 
-    		if (value != null && !sortedList.contains(value))
+			if (value != null && !sortedList.contains(value))
 				sortedList.add(value);
-    	}
+		}
 
-    	Collections.sort(sortedList);
-    }
+		Collections.sort(sortedList);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.charts.ui.IAxis#clear()
-     */
-    public void clear() {
-    	sortedList.clear();
-    }
+	 * @see org.eclipsetrader.charts.ui.IAxis#clear()
+	 */
+	public void clear() {
+		sortedList.clear();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.charts.ui.IAxis#computeSize(int)
@@ -69,7 +69,7 @@ public class DateValuesAxis implements IAxis {
 			return preferredSize;
 		}
 		else
-			return (int) (gridSize * sortedList.size() + additionalSpace);
+			return (int) (gridSize * sortedList.size() + (gridSize * additionalSpace));
 	}
 
 	/* (non-Javadoc)
@@ -100,32 +100,32 @@ public class DateValuesAxis implements IAxis {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.charts.ui.IAxis#getFirstValue()
-     */
-    public Object getFirstValue() {
-	    return sortedList.size() != 0 ? sortedList.get(0) : null;
-    }
+	 * @see org.eclipsetrader.charts.ui.IAxis#getFirstValue()
+	 */
+	public Object getFirstValue() {
+		return sortedList.size() != 0 ? sortedList.get(0) : null;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.charts.ui.IAxis#getLastValue()
-     */
-    public Object getLastValue() {
-	    return sortedList.size() != 0 ? sortedList.get(sortedList.size() - 1) : null;
-    }
+	 * @see org.eclipsetrader.charts.ui.IAxis#getLastValue()
+	 */
+	public Object getLastValue() {
+		return sortedList.size() != 0 ? sortedList.get(sortedList.size() - 1) : null;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.charts.ui.IAxis#getValues()
-     */
-    public Object[] getValues() {
-	    return sortedList.toArray(new Date[sortedList.size()]);
-    }
+	 * @see org.eclipsetrader.charts.ui.IAxis#getValues()
+	 */
+	public Object[] getValues() {
+		return sortedList.toArray(new Date[sortedList.size()]);
+	}
 
 	public int getZoomFactor() {
-    	return zoomFactor;
-    }
+		return zoomFactor;
+	}
 
 	public void setZoomFactor(int zoomFactor) {
-    	this.zoomFactor = zoomFactor;
-    	this.gridSize = zoomFactor != 0 ? 5.0 + 2.0 * zoomFactor : 5.0;
-    }
+		this.zoomFactor = zoomFactor;
+		this.gridSize = zoomFactor != 0 ? 5.0 + 2.0 * zoomFactor : 5.0;
+	}
 }
