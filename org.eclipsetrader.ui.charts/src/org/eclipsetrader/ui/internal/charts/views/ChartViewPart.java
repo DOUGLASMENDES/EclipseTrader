@@ -574,10 +574,6 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
 		}
 
-		if (memento == null)
-			memento = XMLMemento.createWriteRoot("root");
-		saveState(memento);
-
 		ChartLoadJob job = new ChartLoadJob(security, view);
 		job.addJobChangeListener(new JobChangeAdapter() {
 			@Override
@@ -587,6 +583,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 					public void run() {
 						if (viewer.getControl().isDisposed())
 							return;
+
+						if (memento == null)
+							memento = XMLMemento.createWriteRoot("root");
+						saveState(memento);
 
 						view = job.getView();
 
