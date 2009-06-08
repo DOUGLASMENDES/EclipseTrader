@@ -39,8 +39,8 @@
       <feature id="org.eclipse.rcp" version="0.0.0"/>
       <feature id="org.eclipse.rcp.extras" version="0.0.0"/>
       <feature id="org.jdom" version="0.0.0"/>
+      <feature id="com.sun.syndication" version="0.0.0"/>
       <feature id="com.tictactec.ta.lib" version="0.0.0"/>
-      <feature id="net.java.rome" version="0.0.0"/>
       <feature id="org.apache.commons" version="0.0.0"/>
       <feature id="org.apache.log4j" version="0.0.0"/>
       <feature id="org.htmlparser" version="0.0.0"/>

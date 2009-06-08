@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="net.java.rome"
+      id="com.sun.syndication"
       label="%featureName"
-      version="0.9.0.v200803041200"
+      version="1.0.0.v200807162045"
       provider-name="%providerName">
 
    <description>

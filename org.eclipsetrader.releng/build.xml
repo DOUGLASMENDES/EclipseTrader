@@ -40,9 +40,9 @@
 			<export srcurl="${tag}/com.tictactec.ta.lib" destpath="${buildDirectory}/plugins/com.tictactec.ta.lib" revision="HEAD"/>
 			<export srcurl="${tag}/com.tictactec.ta.lib-feature" destpath="${buildDirectory}/features/com.tictactec.ta.lib" revision="HEAD"/>
 
-			<export srcurl="${tag}/net.java.rome" destpath="${buildDirectory}/plugins/net.java.rome" revision="HEAD"/>
-			<export srcurl="${tag}/net.java.rome.fetcher" destpath="${buildDirectory}/plugins/net.java.rome.fetcher" revision="HEAD"/>
-			<export srcurl="${tag}/net.java.rome-feature" destpath="${buildDirectory}/features/net.java.rome" revision="HEAD"/>
+			<export srcurl="${tag}/com.sun.syndication" destpath="${buildDirectory}/plugins/com.sun.syndication" revision="HEAD"/>
+			<export srcurl="${tag}/com.sun.syndication.fetcher" destpath="${buildDirectory}/plugins/com.sun.syndication.fetcher" revision="HEAD"/>
+			<export srcurl="${tag}/com.sun.syndication-feature" destpath="${buildDirectory}/features/com.sun.syndication" revision="HEAD"/>
 
 			<export srcurl="${tag}/org.apache.commons" destpath="${buildDirectory}/plugins/org.apache.commons" revision="HEAD"/>
 			<export srcurl="${tag}/org.apache.commons.codec" destpath="${buildDirectory}/plugins/org.apache.commons.codec" revision="HEAD"/>

@@ -1,15 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ROME Fetcher Plugin
-Bundle-SymbolicName: net.java.rome.fetcher
+Bundle-Name: ROME: Fetcher Plugin
+Bundle-SymbolicName: com.sun.syndication.fetcher
 Bundle-Version: 0.9.0.v200703071050
-Bundle-Vendor: Sourceforge.net
+Bundle-Vendor: EclipseTrader.org
 Export-Package: com.sun.syndication.fetcher,
  com.sun.syndication.fetcher.impl,
  com.sun.syndication.fetcher.samples
-Bundle-ClassPath: rome-fetcher-0.9.jar
 Bundle-ActivationPolicy: lazy
-Require-Bundle: net.java.rome
+Require-Bundle: com.sun.syndication
 Import-Package: org.apache.commons.httpclient,
  org.apache.commons.httpclient.auth,
  org.apache.commons.httpclient.cookie,
