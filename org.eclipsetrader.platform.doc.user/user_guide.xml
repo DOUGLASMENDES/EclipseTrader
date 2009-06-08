@@ -8,7 +8,6 @@
         <topic label="Watchlists" href="guide/watchlist.html"/>
         <topic label="Charts" href="guide/charts.html"/>
         <topic label="News" href="guide/news.html"/>
-        <topic label="Patterns" href="guide/patterns.html"/>
         <topic label="Accounts" href="guide/accounts.html"/>
         <topic label="Portfolio" href="guide/portfolio.html"/>
         <topic label="Trading" href="guide/trading.html"/>
@@ -19,14 +18,11 @@
 		    <topic label="Creating a security" href="guide/security01.html" />
 		    <topic label="Editing securities" href="guide/security03.html" />
 		    <topic label="Deleting securities" href="guide/security04.html" />
-		    <topic label="Searching price patterns" href="guide/security05.html" />
 	    </topic>
 	    <topic label="Working with watchlists">
 		    <topic label="Creating a watchlist" href="guide/security02.html" />
 		    <topic label="Change the shown columns" href="guide/watchlist04.html" />
-		    <topic label="Reordering the securities" href="guide/watchlist05.html" />
 		    <topic label="Using the alerts" href="guide/watchlist02.html" />
-		    <topic label="Searching price patterns" href="guide/watchlist03.html" />
 	    </topic>
 	    <topic label="Working with charts" href="guide/chart00.html">
 		    <topic label="Overview" href="guide/chart01.html" />

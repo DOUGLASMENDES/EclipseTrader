@@ -12,50 +12,24 @@
 <p>To create a security:</p>
 
 <ol>
-  <li>On the main menu bar, click <b>File &gt; New &gt; Security</b>. The New Security 
+  <li>On the main menu bar, click <b>File &gt; New &gt; Stock</b>. The New Stock 
     wizard opens.</li>
-  <li>In the <b>Code</b> field, type the unique code for the security, 
-  In the <b>Description</b> field, type a description for your new
-    security (the company's name for example), and 
-  select the (optional) currency.</li>
+  <li>In the <b>Security name</b> field, type the name of the security (the company's name for example), and 
+  select the currency.</li>
 
-  <li>Click <b>Next</b> to setup the realtime quote feeds.</li>
-
-  <li>Select the source that provides the realtime quotes for the new security.</li>
-  <li>If available, select the <b>Exchange</b> name.
-  <li>In the <b>Symbol</b> fields, type the symbol used by the data provider to identify
-  the security. If these fields are left blank, the <b>Code</b> field from the first page
-  is used.</li>
-
-  <li>(Optional) Click <b>Next</b> to setup the level II quote feeds.</li>
-
-  <li>Select the source that provides the level II
-  view for the new security.</li>
-
-  <li>(Optional) Click <b>Next</b> to setup the historical chart feed.</li>
-
-  <li>Select the source that provides the historical chart data for the new security.</li>
-
-  <li>(Optional) Click <b>Next</b> to setup the intraday chart build options.</li>
+  <li>Click <b>Next</b> to setup the feed symbols.</li>
   
-  <li>Select <b>Enable automatic build</b> if you want that EclipseTrader builds the intradat
-  charts automatically while downloading the realtime quotes. If disabled, the intraday charts are 
-  provided by the historical charts data source, if available.</li>
+  <li>In the <b>Identifier name</b> field type the symbol with which the security is quoted on the market.
+  In the properties table you can set a connector-specific symbol. The symbol defined above is used as the default
+  symbol for all connectors.</li>
+
+  <li>Clic <b>Next</b> to select the market.</li>
   
-  <li>Set the begin and end time, and the days of the week to collect the data.</li>
-  
-  <li>Set how many days you want to keep in the intraday charts in the <b>Keep (days)</b> field.</li>
+  <li>In the markets table select the market on which the security is quoted. The market defines the default
+  settings for quote and historical backfill sources.</li>
 
   <li>Click <b>Finish</b>. The new security is listed in the securities view.</li>
 </ol>
-
-<p><em>Tip:</em> The data feed plugins can provide additional wizards with a list of the
-available securities that do not require to enter all data manually. These wizards
-appears in the <b>File &gt; New</b> menu on the main menu bar.</p>
-
-<br>
-<p><img src="cpy.gif"></p>
-<p></p>
 
 </BODY>
 </HTML>
