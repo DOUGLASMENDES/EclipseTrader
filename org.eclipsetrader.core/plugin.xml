@@ -14,11 +14,6 @@
             id="org.eclipsetrader.feed.launcher"
             name="Feed">
       </launcher>
-      <launcher
-            class="org.eclipsetrader.core.internal.trading.TradingServiceLauncher"
-            id="org.eclipsetrader.trading.launcher"
-            name="Trading Service">
-      </launcher>
    </extension>
 
 </plugin>

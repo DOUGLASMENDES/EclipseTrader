@@ -121,6 +121,9 @@ public class MarketBrokerAdapterFactory implements IAdapterFactory {
 	}
 
 	public void save(File file) throws JAXBException, IOException {
+		if (list == null)
+			return;
+
 		if (file.exists())
 			file.delete();
 

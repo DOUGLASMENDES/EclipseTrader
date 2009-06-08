@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.ILauncher;
-import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.osgi.framework.BundleContext;
@@ -31,12 +30,12 @@ public class TradingServiceLauncher implements ILauncher, IExecutableExtension {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
-    }
+	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+	 */
+	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+		id = config.getAttribute("id");
+		name = config.getAttribute("name");
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.ILauncher#getId()
@@ -70,17 +69,17 @@ public class TradingServiceLauncher implements ILauncher, IExecutableExtension {
 			brokerConnector[i].disconnect();
 	}
 
-    protected ITradingService getTradingService() {
-    	try {
-    		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-    		ITradingService service = (ITradingService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading trading service", e);
-    		CoreActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
-    }
+	protected ITradingService getTradingService() {
+		try {
+			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
+			ITradingService service = (ITradingService) context.getService(serviceReference);
+			context.ungetService(serviceReference);
+			return service;
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading trading service", e);
+			Activator.getDefault().getLog().log(status);
+		}
+		return null;
+	}
 }
