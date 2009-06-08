@@ -4,7 +4,8 @@ Bundle-Name: ROME: RSS and Atom Utilities
 Bundle-SymbolicName: com.sun.syndication
 Bundle-Version: 1.0.0.v200807162045
 Bundle-Vendor: EclipseTrader.org
-Export-Package: com.sun.syndication.feed;version="1.0.0",
+Export-Package: com.sun.syndication;version="1.0.0",
+ com.sun.syndication.feed;version="1.0.0",
  com.sun.syndication.feed.atom;version="1.0.0",
  com.sun.syndication.feed.impl;version="1.0.0",
  com.sun.syndication.feed.module;version="1.0.0",
@@ -14,7 +15,6 @@ Export-Package: com.sun.syndication.feed;version="1.0.0",
  com.sun.syndication.feed.synd.impl;version="1.0.0",
  com.sun.syndication.io;version="1.0.0",
  com.sun.syndication.io.impl;version="1.0.0"
-Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Import-Package: org.jdom;version="[1.0.0,2.0.0)",

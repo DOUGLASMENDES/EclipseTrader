@@ -4,6 +4,7 @@ Bundle-Name: Document Object Model
 Bundle-SymbolicName: org.jdom
 Bundle-Version: 1.0.0.v200805261200
 Bundle-Vendor: EclipseTrader.org
+Bundle-ClassPath: .
 Export-Package: org.jdom;version="1.0.0",
  org.jdom.adapters;version="1.0.0",
  org.jdom.filter;version="1.0.0",
