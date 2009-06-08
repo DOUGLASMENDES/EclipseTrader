@@ -26,16 +26,17 @@
    </requires>
 
    <plugin
-         id="net.java.rome"
+         id="com.sun.syndication"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="net.java.rome.fetcher"
+         id="com.sun.syndication.fetcher"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
