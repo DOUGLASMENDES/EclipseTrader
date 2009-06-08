@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class StatusColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.status";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.status"; //$NON-NLS-1$
 
 	public StatusColumn() {
 	}

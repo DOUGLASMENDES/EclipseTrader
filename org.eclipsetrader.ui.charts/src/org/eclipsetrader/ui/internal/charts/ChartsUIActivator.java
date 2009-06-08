@@ -34,15 +34,15 @@ import org.osgi.framework.ServiceReference;
 public class ChartsUIActivator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipsetrader.ui.charts";
+	public static final String PLUGIN_ID = "org.eclipsetrader.ui.charts"; //$NON-NLS-1$
 
 	// The extension points IDs
-	public static final String INDICATORS_EXTENSION_ID = "org.eclipsetrader.ui.indicators";
+	public static final String INDICATORS_EXTENSION_ID = "org.eclipsetrader.ui.indicators"; //$NON-NLS-1$
 
-	public static final String PREFS_SHOW_SCALE_TOOLTIPS = "SHOW_SCALE_TOOLTIPS";
-	public static final String PREFS_CROSSHAIR_ACTIVATION = "CROSSHAIR_ACTIVATION";
-	public static final String PREFS_CROSSHAIR_SUMMARY_TOOLTIP = "CROSSHAIR_SUMMARY_TOOLTIP";
-	public static final String PREFS_SHOW_TOOLTIPS = "SHOW_TOOLTIPS";
+	public static final String PREFS_SHOW_SCALE_TOOLTIPS = "SHOW_SCALE_TOOLTIPS"; //$NON-NLS-1$
+	public static final String PREFS_CROSSHAIR_ACTIVATION = "CROSSHAIR_ACTIVATION"; //$NON-NLS-1$
+	public static final String PREFS_CROSSHAIR_SUMMARY_TOOLTIP = "CROSSHAIR_SUMMARY_TOOLTIP"; //$NON-NLS-1$
+	public static final String PREFS_SHOW_TOOLTIPS = "SHOW_TOOLTIPS"; //$NON-NLS-1$
 
 	// The shared instance
 	private static ChartsUIActivator plugin;
@@ -129,9 +129,9 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 			return null;
 
 		try {
-			return (IChartObjectFactory) targetElement.createExecutableExtension("class");
+			return (IChartObjectFactory) targetElement.createExecutableExtension("class"); //$NON-NLS-1$
 		} catch (Exception e) {
-			Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Unable to create indicator with id " + targetID, e);
+			Status status = new Status(Status.WARNING, PLUGIN_ID, 0, Messages.ChartsUIActivator_IndicatorErrorMessage + targetID, e);
 			getLog().log(status);
 		}
 
@@ -156,20 +156,20 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	public IDialogSettings getDialogSettingsForView(URI uri) {
 		String uriString = uri.toString();
 
-		IDialogSettings rootSettings = getDialogSettings().getSection("Views");
+		IDialogSettings rootSettings = getDialogSettings().getSection("Views"); //$NON-NLS-1$
 		if (rootSettings == null)
-			rootSettings = getDialogSettings().addNewSection("Views");
+			rootSettings = getDialogSettings().addNewSection("Views"); //$NON-NLS-1$
 
 		IDialogSettings[] sections = rootSettings.getSections();
 		for (int i = 0; i < sections.length; i++) {
-			if (uriString.equals(sections[i].get("uri")))
+			if (uriString.equals(sections[i].get("uri"))) //$NON-NLS-1$
 				return sections[i];
 		}
 
 		String uuid = UUID.randomUUID().toString();
 		IDialogSettings dialogSettings = rootSettings.addNewSection(uuid);
-		dialogSettings.put("uri", uriString);
-		dialogSettings.put("template", "basic-template.xml");
+		dialogSettings.put("uri", uriString); //$NON-NLS-1$
+		dialogSettings.put("template", "basic-template.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return dialogSettings;
 	}

@@ -45,12 +45,12 @@ public class ConfigurationElementsViewer {
 	private TableViewer selected;
 	private Button up;
 	private Button down;
-	private Image rightImage = Activator.getImageDescriptor("icons/etool16/right.gif").createImage();
-	private Image allRightImage = Activator.getImageDescriptor("icons/etool16/all-right.gif").createImage();
-	private Image allLeftImage = Activator.getImageDescriptor("icons/etool16/all-left.gif").createImage();
-	private Image leftImage = Activator.getImageDescriptor("icons/etool16/left.gif").createImage();
-	private Image upImage = Activator.getImageDescriptor("icons/etool16/up.gif").createImage();
-	private Image downImage = Activator.getImageDescriptor("icons/etool16/down.gif").createImage();
+	private Image rightImage = Activator.getImageDescriptor("icons/etool16/right.gif").createImage(); //$NON-NLS-1$
+	private Image allRightImage = Activator.getImageDescriptor("icons/etool16/all-right.gif").createImage(); //$NON-NLS-1$
+	private Image allLeftImage = Activator.getImageDescriptor("icons/etool16/all-left.gif").createImage(); //$NON-NLS-1$
+	private Image leftImage = Activator.getImageDescriptor("icons/etool16/left.gif").createImage(); //$NON-NLS-1$
+	private Image upImage = Activator.getImageDescriptor("icons/etool16/up.gif").createImage(); //$NON-NLS-1$
+	private Image downImage = Activator.getImageDescriptor("icons/etool16/down.gif").createImage(); //$NON-NLS-1$
 
 	private List<IConfigurationElement> availableList = new ArrayList<IConfigurationElement>();
 	private List<IConfigurationElement> selectedList = new ArrayList<IConfigurationElement>();
@@ -92,11 +92,11 @@ public class ConfigurationElementsViewer {
 
 	protected void createLabels(Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
-		label.setText("Available columns");
+		label.setText(Messages.ConfigurationElementsViewer_AvailableColumnsLabel);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		label = new Label(parent, SWT.NONE);
-		label.setText("Shown columns");
+		label.setText(Messages.ConfigurationElementsViewer_ShownColumnsLabel);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
@@ -114,7 +114,7 @@ public class ConfigurationElementsViewer {
 		available.setLabelProvider(new LabelProvider() {
 			@Override
 			public String getText(Object element) {
-				return ((IConfigurationElement) element).getAttribute("name");
+				return ((IConfigurationElement) element).getAttribute("name"); //$NON-NLS-1$
 			}
 		});
 		available.setContentProvider(new ArrayContentProvider());
@@ -217,7 +217,7 @@ public class ConfigurationElementsViewer {
 		selected.setLabelProvider(new LabelProvider() {
 			@Override
 			public String getText(Object element) {
-				return ((IConfigurationElement) element).getAttribute("name");
+				return ((IConfigurationElement) element).getAttribute("name"); //$NON-NLS-1$
 			}
 		});
 		selected.setContentProvider(new ArrayContentProvider());

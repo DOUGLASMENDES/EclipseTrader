@@ -175,7 +175,7 @@ public class LineChart implements IChartObject, ISummaryBarDecorator, IAdaptable
 	 */
 	public String getToolTip() {
 		if (dataSeries.getLast() != null)
-			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class));
+			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class)); //$NON-NLS-1$
 		return dataSeries.getName();
 	}
 
@@ -187,13 +187,13 @@ public class LineChart implements IChartObject, ISummaryBarDecorator, IAdaptable
 			if (y == SWT.DEFAULT) {
 				for (int i = 0; i < pointArray.length; i++) {
 					if (x >= (pointArray[i].x - width / 2) && x <= (pointArray[i].x + width / 2))
-						return dataSeries.getName() + ": " + numberFormat.format(values[i].getAdapter(Number.class));
+						return dataSeries.getName() + ": " + numberFormat.format(values[i].getAdapter(Number.class)); //$NON-NLS-1$
 				}
 			}
 			else {
 				for (int i = 1; i < pointArray.length; i++) {
 					if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y))
-						return dataSeries.getName() + " " + numberFormat.format(values[i - 1].getAdapter(Number.class));
+						return dataSeries.getName() + " " + numberFormat.format(values[i - 1].getAdapter(Number.class)); //$NON-NLS-1$
 				}
 			}
 		}
@@ -226,7 +226,7 @@ public class LineChart implements IChartObject, ISummaryBarDecorator, IAdaptable
 		Number value = (Number) (values.length > 0 ? values[values.length - 1].getAdapter(Number.class) : null);
 
 		numberItem = new SummaryNumberItem(parent, SWT.NONE);
-		numberItem.setValue(dataSeries.getName() + ": ", value);
+		numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
 		if (color != null)
 			numberItem.setForeground(color);
     }
@@ -250,7 +250,7 @@ public class LineChart implements IChartObject, ISummaryBarDecorator, IAdaptable
 				}
 			}
 			if (value != null)
-				numberItem.setValue(dataSeries.getName() + ": ", value);
+				numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
 		}
     }
 }

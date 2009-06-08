@@ -171,7 +171,7 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
 		} catch (Error e) {
 			if (ChartsUIActivator.getDefault() == null)
 				throw e;
-			ChartsUIActivator.log(new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering element"));
+			ChartsUIActivator.log(new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartDocumentRenderer_RenderingErrorMessage));
 		}
     }
 
@@ -207,7 +207,7 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
 
 				boolean tick = false; // Draw a longer tick
 				boolean highlight = false; // Highlight the tick
-				String text = "";
+				String text = ""; //$NON-NLS-1$
 
 				currentDate.setTime(date);
 

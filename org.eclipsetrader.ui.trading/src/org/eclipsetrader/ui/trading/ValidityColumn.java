@@ -16,7 +16,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class ValidityColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.validity";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.validity"; //$NON-NLS-1$
 
 	public ValidityColumn() {
 	}

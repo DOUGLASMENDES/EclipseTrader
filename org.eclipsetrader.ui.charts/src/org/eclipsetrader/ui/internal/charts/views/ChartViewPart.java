@@ -90,19 +90,19 @@ import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 import org.eclipsetrader.ui.internal.charts.DataImportJob;
 
 public class ChartViewPart extends ViewPart implements ISaveablePart {
-	public static final String VIEW_ID = "org.eclipsetrader.ui.chart";
+	public static final String VIEW_ID = "org.eclipsetrader.ui.chart"; //$NON-NLS-1$
 
-	public static final String K_VIEWS = "Views";
-	public static final String K_URI = "uri";
-	public static final String K_TEMPLATE = "template";
-	public static final String K_PRIVATE_TEMPLATE = "private-template";
+	public static final String K_VIEWS = "Views"; //$NON-NLS-1$
+	public static final String K_URI = "uri"; //$NON-NLS-1$
+	public static final String K_TEMPLATE = "template"; //$NON-NLS-1$
+	public static final String K_PRIVATE_TEMPLATE = "private-template"; //$NON-NLS-1$
 
-	public static final String K_PERIOD = "period";
-	public static final String K_RESOLUTION = "resolution";
-	public static final String K_SHOW_TOOLTIPS = "show-tooltips";
-	public static final String K_ZOOM_FACTOR = "zoom-factor";
-	public static final String K_SHOW_CURRENT_PRICE = "show-current-price";
-	public static final String K_SHOW_CURRENT_BOOK = "show-current-book";
+	public static final String K_PERIOD = "period"; //$NON-NLS-1$
+	public static final String K_RESOLUTION = "resolution"; //$NON-NLS-1$
+	public static final String K_SHOW_TOOLTIPS = "show-tooltips"; //$NON-NLS-1$
+	public static final String K_ZOOM_FACTOR = "zoom-factor"; //$NON-NLS-1$
+	public static final String K_SHOW_CURRENT_PRICE = "show-current-price"; //$NON-NLS-1$
+	public static final String K_SHOW_CURRENT_BOOK = "show-current-book"; //$NON-NLS-1$
 
 	private URI uri;
 	private ISecurity security;
@@ -163,7 +163,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		}
 	};
 
-	private Action printAction = new Action("Print") {
+	private Action printAction = new Action(Messages.ChartViewPart_PrintAction) {
 		@Override
 		public void run() {
 			PrintDialog dialog = new PrintDialog(getViewSite().getShell(), SWT.NONE);
@@ -171,14 +171,14 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			if (data == null)
 				return;
 			if (data.printToFile) {
-				data.fileName = "print.out"; // TODO you probably want to ask the user for a filename
+				data.fileName = "print.out"; // TODO you probably want to ask the user for a filename //$NON-NLS-1$
 			}
 
 			Printer printer = new Printer(data);
 			try {
 				Rectangle printerBounds = printer.getClientArea();
 				Rectangle trimBounds = printer.computeTrim(printerBounds.x, printerBounds.y, printerBounds.width, printerBounds.height);
-				System.out.println(printerBounds + ", " + trimBounds);
+				System.out.println(printerBounds + ", " + trimBounds); //$NON-NLS-1$
 
 				if (printer.startJob(getPartName())) {
 					viewer.print(printer);
@@ -220,7 +220,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 				template = unmarshal(stream);
 			}
 		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
+			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewPart_LoadingErrorMessage + site.getSecondaryId(), e);
 			ChartsUIActivator.getDefault().getLog().log(status);
 		}
 
@@ -231,18 +231,18 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		IActionBars actionBars = site.getActionBars();
 
 		IMenuManager menuManager = actionBars.getMenuManager();
-		menuManager.add(new Separator("periods.top"));
-		menuManager.add(new Separator("periods"));
-		menuManager.add(new Separator("periods.bottom"));
+		menuManager.add(new Separator("periods.top")); //$NON-NLS-1$
+		menuManager.add(new Separator("periods")); //$NON-NLS-1$
+		menuManager.add(new Separator("periods.bottom")); //$NON-NLS-1$
 		menuManager.add(currentPriceLineAction);
 		menuManager.add(currentBookAction);
 
-		menuManager.appendToGroup("periods.top", periodAllAction);
+		menuManager.appendToGroup("periods.top", periodAllAction); //$NON-NLS-1$
 		for (int i = 0; i < periodAction.length; i++)
-			menuManager.appendToGroup("periods", periodAction[i]);
+			menuManager.appendToGroup("periods", periodAction[i]); //$NON-NLS-1$
 
 		IToolBarManager toolBarManager = actionBars.getToolBarManager();
-		toolBarManager.add(new Separator("additions"));
+		toolBarManager.add(new Separator("additions")); //$NON-NLS-1$
 		toolBarManager.add(updateAction);
 
 		actionBars.setGlobalActionHandler(cutAction.getId(), cutAction);
@@ -252,13 +252,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
 		actionBars.setGlobalActionHandler(ActionFactory.PRINT.getId(), printAction);
 
-		ToolAction toolAction = new ToolAction("Line", this, "org.eclipsetrader.ui.charts.tools.line");
+		ToolAction toolAction = new ToolAction(Messages.ChartViewPart_LineAction, this, "org.eclipsetrader.ui.charts.tools.line"); //$NON-NLS-2$
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
-		toolAction = new ToolAction("FiboLine", this, "org.eclipsetrader.ui.charts.tools.fiboline");
+		toolAction = new ToolAction(Messages.ChartViewPart_FiboLineAction, this, "org.eclipsetrader.ui.charts.tools.fiboline"); //$NON-NLS-2$
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
-		toolAction = new ToolAction("FanLine", this, "org.eclipsetrader.ui.charts.tools.fanline");
+		toolAction = new ToolAction(Messages.ChartViewPart_FanLineAction, this, "org.eclipsetrader.ui.charts.tools.fanline"); //$NON-NLS-2$
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
-		toolAction = new ToolAction("FiboArc", this, "org.eclipsetrader.ui.charts.tools.fiboarc");
+		toolAction = new ToolAction(Messages.ChartViewPart_FiboArcAction, this, "org.eclipsetrader.ui.charts.tools.fiboarc"); //$NON-NLS-2$
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
 
 		actionBars.setGlobalActionHandler(zoomInAction.getActionDefinitionId(), zoomInAction);
@@ -280,10 +280,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < weights.length; i++) {
 				if (i != 0)
-					sb.append(";");
+					sb.append(";"); //$NON-NLS-1$
 				sb.append(weights[i]);
 			}
-			memento.putString("weights", sb.toString());
+			memento.putString("weights", sb.toString()); //$NON-NLS-1$
 		}
 
 		super.saveState(memento);
@@ -292,7 +292,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	protected void createActions() {
 		ISharedImages sharedImages = getViewSite().getWorkbenchWindow().getWorkbench().getSharedImages();
 
-		zoomInAction = new Action("Zoom-In") {
+		zoomInAction = new Action(Messages.ChartViewPart_ZoomInAction) {
 			@Override
 			public void run() {
 				int factor = viewer.getZoomFactor();
@@ -301,10 +301,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 				zoomResetAction.setEnabled(true);
 			}
 		};
-		zoomInAction.setId("zoomIn");
-		zoomInAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomIn");
+		zoomInAction.setId("zoomIn"); //$NON-NLS-1$
+		zoomInAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomIn"); //$NON-NLS-1$
 
-		zoomOutAction = new Action("Zoom-Out") {
+		zoomOutAction = new Action(Messages.ChartViewPart_ZoomOutAction) {
 			@Override
 			public void run() {
 				int factor = viewer.getZoomFactor();
@@ -314,10 +314,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 				zoomResetAction.setEnabled(factor != 1);
 			}
 		};
-		zoomOutAction.setId("zoomOut");
-		zoomOutAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomOut");
+		zoomOutAction.setId("zoomOut"); //$NON-NLS-1$
+		zoomOutAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomOut"); //$NON-NLS-1$
 
-		zoomResetAction = new Action("Normal Size") {
+		zoomResetAction = new Action(Messages.ChartViewPart_NormalSizeAction) {
 			@Override
 			public void run() {
 				viewer.setZoomFactor(0);
@@ -325,13 +325,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 				zoomResetAction.setEnabled(false);
 			}
 		};
-		zoomResetAction.setId("zoomReset");
-		zoomResetAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomReset");
+		zoomResetAction.setId("zoomReset"); //$NON-NLS-1$
+		zoomResetAction.setActionDefinitionId("org.eclipsetrader.ui.charts.zoomReset"); //$NON-NLS-1$
 
 		zoomOutAction.setEnabled(false);
 		zoomResetAction.setEnabled(false);
 
-		periodAllAction = new PeriodAction(this, "All", null, null);
+		periodAllAction = new PeriodAction(this, Messages.ChartViewPart_AllPeriodAction, null, null);
 		periodAction = new PeriodAction[] {
 		    new PeriodAction(this, TimeSpan.years(2), null),
 		    new PeriodAction(this, TimeSpan.years(1), null),
@@ -347,45 +347,45 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		for (int i = 0; i < periodAction.length; i++)
 			periodAction[i].setChecked(periodAction[i].getPeriod().equals(timeSpan));
 
-		cutAction = new Action("Cut") {
+		cutAction = new Action(Messages.ChartViewPart_CutAction) {
 			@Override
 			public void run() {
 			}
 		};
 		cutAction.setId("cut"); //$NON-NLS-1$
-		cutAction.setActionDefinitionId("org.eclipse.ui.edit.cut");
+		cutAction.setActionDefinitionId("org.eclipse.ui.edit.cut"); //$NON-NLS-1$
 		cutAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
 		cutAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
 		cutAction.setEnabled(false);
 
-		copyAction = new Action("Copy") {
+		copyAction = new Action(Messages.ChartViewPart_CopyAction) {
 			@Override
 			public void run() {
 			}
 		};
 		copyAction.setId("copy"); //$NON-NLS-1$
-		copyAction.setActionDefinitionId("org.eclipse.ui.edit.copy");
+		copyAction.setActionDefinitionId("org.eclipse.ui.edit.copy"); //$NON-NLS-1$
 		copyAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 		copyAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
 		copyAction.setEnabled(false);
 
-		pasteAction = new Action("Paste") {
+		pasteAction = new Action(Messages.ChartViewPart_PasteAction) {
 			@Override
 			public void run() {
 			}
 		};
 		pasteAction.setId("copy"); //$NON-NLS-1$
-		pasteAction.setActionDefinitionId("org.eclipse.ui.edit.paste");
+		pasteAction.setActionDefinitionId("org.eclipse.ui.edit.paste"); //$NON-NLS-1$
 		pasteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 		pasteAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE_DISABLED));
 		pasteAction.setEnabled(false);
 
-		deleteAction = new Action("Delete") {
+		deleteAction = new Action(Messages.ChartViewPart_DeleteAction) {
 			@Override
 			public void run() {
 				IStructuredSelection selection = (IStructuredSelection) getViewSite().getSelectionProvider().getSelection();
 				if (!selection.isEmpty()) {
-					if (MessageDialog.openConfirm(getViewSite().getShell(), getPartName(), "Do you want to delete the selected indicator ?")) {
+					if (MessageDialog.openConfirm(getViewSite().getShell(), getPartName(), Messages.ChartViewPart_DeleteConfirmMessage)) {
 						ChartViewItem viewItem = (ChartViewItem) selection.getFirstElement();
 						ChartRowViewItem rowViewItem = (ChartRowViewItem) viewItem.getParent();
 						if (rowViewItem.getItemCount() == 1)
@@ -397,12 +397,12 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			}
 		};
 		deleteAction.setId("delete"); //$NON-NLS-1$
-		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete");
+		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
 		deleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		deleteAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
 		deleteAction.setEnabled(false);
 
-		updateAction = new Action("Update") {
+		updateAction = new Action(Messages.ChartViewPart_UpdateAction) {
 			@Override
 			public void run() {
 				DataImportJob job = new DataImportJob(security, DataImportJob.INCREMENTAL, null, null, new TimeSpan[] {
@@ -420,7 +420,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			}
 		};
 		updateAction.setId("update"); //$NON-NLS-1$
-		updateAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/refresh.gif"));
+		updateAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/refresh.gif")); //$NON-NLS-1$
 		updateAction.setEnabled(true);
 
 		propertiesAction = new PropertyDialogAction(new SameShellProvider(getViewSite().getShell()), getSite().getSelectionProvider()) {
@@ -441,10 +441,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			}
 		};
 		propertiesAction.setId(ActionFactory.PROPERTIES.getId());
-		propertiesAction.setActionDefinitionId("org.eclipse.ui.file.properties");
+		propertiesAction.setActionDefinitionId("org.eclipse.ui.file.properties"); //$NON-NLS-1$
 		propertiesAction.setEnabled(false);
 
-		currentPriceLineAction = new Action("Show current price", Action.AS_CHECK_BOX) {
+		currentPriceLineAction = new Action(Messages.ChartViewPart_ShowCurrentPriceAction, Action.AS_CHECK_BOX) {
 			@Override
 			public void run() {
 				currentPriceLineFactory.setEnable(isChecked());
@@ -452,7 +452,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 			}
 		};
 
-		currentBookAction = new Action("Show book", Action.AS_CHECK_BOX) {
+		currentBookAction = new Action(Messages.ChartViewPart_ShowBookAction, Action.AS_CHECK_BOX) {
 			@Override
 			public void run() {
 				currentBookFactory.setEnable(isChecked());
@@ -522,7 +522,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		currentBookAction.setChecked(dialogSettings.getBoolean(K_SHOW_CURRENT_BOOK));
 
 		if (security != null && template != null) {
-			setPartName(NLS.bind("{0} - {1}", new Object[] {
+			setPartName(NLS.bind("{0} - {1}", new Object[] { //$NON-NLS-1$
 			    security.getName(), template.getName(),
 			}));
 
@@ -551,7 +551,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager menuManager) {
-				menuManager.add(new Separator("top"));
+				menuManager.add(new Separator("top")); //$NON-NLS-1$
 				menuManager.add(cutAction);
 				menuManager.add(copyAction);
 				menuManager.add(pasteAction);
@@ -585,7 +585,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 							return;
 
 						if (memento == null)
-							memento = XMLMemento.createWriteRoot("root");
+							memento = XMLMemento.createWriteRoot("root"); //$NON-NLS-1$
 						saveState(memento);
 
 						view = job.getView();
@@ -609,7 +609,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		});
 		job.setTimeSpan(TimeSpan.fromString(dialogSettings.get(K_PERIOD)));
 		job.setResolutionTimeSpan(TimeSpan.fromString(dialogSettings.get(K_RESOLUTION)));
-		job.setName("Loading " + getPartName());
+		job.setName(Messages.ChartViewPart_LoadingText + getPartName());
 		job.setUser(true);
 		job.schedule();
 	}
@@ -744,7 +744,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		JAXBContext jaxbContext = JAXBContext.newInstance(ChartTemplate.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //$NON-NLS-1$
 		marshaller.marshal(object, string);
 		return string.toString();
 	}
@@ -771,8 +771,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 						input[i] = (IChartObject[]) rowViewItem[i].getAdapter(IChartObject[].class);
 					viewer.setInput(input);
 
-					if (memento != null && memento.getString("weights") != null) {
-						String[] s = memento.getString("weights").split(";");
+					if (memento != null && memento.getString("weights") != null) { //$NON-NLS-1$
+						String[] s = memento.getString("weights").split(";"); //$NON-NLS-1$ //$NON-NLS-2$
 						int[] weights = viewer.getWeights();
 						for (int i = 0; i < weights.length && i < s.length; i++)
 							weights[i] = Integer.valueOf(s[i]);

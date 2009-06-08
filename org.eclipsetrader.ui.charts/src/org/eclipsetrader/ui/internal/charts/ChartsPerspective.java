@@ -29,25 +29,25 @@ public class ChartsPerspective implements IPerspectiveFactory {
 
 		// Our editor area
         IFolderLayout editors = layout.createFolder("org.eclipsetrader.ui.editorss", IPageLayout.LEFT, (float) 100.0, layout.getEditorArea()); //$NON-NLS-1$
-        editors.addPlaceholder("org.eclipsetrader.ui.chart:*");
+        editors.addPlaceholder("org.eclipsetrader.ui.chart:*"); //$NON-NLS-1$
 
         // Left.
-        IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.20, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
+        IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.20, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$ //$NON-NLS-2$
         left.addView("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
         left.addPlaceholder("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
-        layout.addView("org.eclipsetrader.ui.charts.palette", IPageLayout.BOTTOM, (float) 0.50, "left");
+        layout.addView("org.eclipsetrader.ui.charts.palette", IPageLayout.BOTTOM, (float) 0.50, "left"); //$NON-NLS-1$ //$NON-NLS-2$
 
         // Bottom
-		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
+		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$ //$NON-NLS-2$
 		bottom.addPlaceholder("org.eclipse.ui.views.ProgressView"); //$NON-NLS-1$
 
         // Add "new wizards".
 		layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.security");//$NON-NLS-1$
 
         // Add "actionsets".
-        layout.addActionSet("org.eclipsetrader.ui.charts.trigger");
-        layout.addActionSet("org.eclipsetrader.ui.charts.tools");
-        layout.addActionSet("org.eclipsetrader.ui.charts.zoom");
+        layout.addActionSet("org.eclipsetrader.ui.charts.trigger"); //$NON-NLS-1$
+        layout.addActionSet("org.eclipsetrader.ui.charts.tools"); //$NON-NLS-1$
+        layout.addActionSet("org.eclipsetrader.ui.charts.zoom"); //$NON-NLS-1$
 
         // Add "show views".
         layout.addShowViewShortcut("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$

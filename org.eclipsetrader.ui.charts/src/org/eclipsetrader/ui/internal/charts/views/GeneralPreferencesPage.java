@@ -37,7 +37,7 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
 	private Button showSummaryTooltip;
 
 	public GeneralPreferencesPage() {
-		super("Charts");
+		super(Messages.GeneralPreferencesPage_Title);
 	}
 
 	/* (non-Javadoc)
@@ -58,15 +58,15 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
 		content.setLayout(gridLayout);
 
 		showTooltips = new Button(content, SWT.CHECK);
-		showTooltips.setText("Show indicator tooltips");
+		showTooltips.setText(Messages.GeneralPreferencesPage_ShowTooltipsLabel);
 		showTooltips.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
 		showScaleTooltips = new Button(content, SWT.CHECK);
-		showScaleTooltips.setText("Show scale tooltips");
+		showScaleTooltips.setText(Messages.GeneralPreferencesPage_ShowScaleTooltipsLabel);
 		showScaleTooltips.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
 		showCrosshair = new Button(content, SWT.CHECK);
-		showCrosshair.setText("Show crosshairs");
+		showCrosshair.setText(Messages.GeneralPreferencesPage_ShowCrosshairLabel);
 		showCrosshair.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		showCrosshair.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -76,22 +76,22 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
 		});
 
 		croshairActivationGroup = new Group(content, SWT.BORDER);
-		croshairActivationGroup.setText("Crosshair mode");
+		croshairActivationGroup.setText(Messages.GeneralPreferencesPage_CrosshairModeLabel);
 		croshairActivationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		gridLayout = new GridLayout(2, false);
 		gridLayout.verticalSpacing = convertVerticalDLUsToPixels(2);
 		croshairActivationGroup.setLayout(gridLayout);
 
 		onMouseDown = new Button(croshairActivationGroup, SWT.RADIO);
-		onMouseDown.setText("On mouse click and drag");
+		onMouseDown.setText(Messages.GeneralPreferencesPage_OneMouseClickLabel);
 		onMouseDown.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
 		onMouseHover = new Button(croshairActivationGroup, SWT.RADIO);
-		onMouseHover.setText("On mouse hover");
+		onMouseHover.setText(Messages.GeneralPreferencesPage_OnMouseHoverLabel);
 		onMouseHover.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
 		showSummaryTooltip = new Button(croshairActivationGroup, SWT.CHECK);
-		showSummaryTooltip.setText("Show summary tooltip");
+		showSummaryTooltip.setText(Messages.GeneralPreferencesPage_ShowSummaryTooltipLabel);
 		showSummaryTooltip.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
 		performDefaults();

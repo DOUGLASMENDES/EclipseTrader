@@ -16,7 +16,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class RouteColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.route";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.route"; //$NON-NLS-1$
 
 	public RouteColumn() {
 	}
@@ -35,6 +35,6 @@ public class RouteColumn extends ColumnLabelProvider {
 		if (order != null && order.getRoute() != null)
 			return order.getRoute().toString();
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

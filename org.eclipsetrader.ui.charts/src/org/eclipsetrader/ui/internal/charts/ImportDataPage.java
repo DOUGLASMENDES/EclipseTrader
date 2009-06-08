@@ -44,11 +44,11 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 
 public class ImportDataPage extends WizardPage {
-	private static final String K_SELECTION = "SELECTION";
-	private static final String K_SECURITIES = "SECURITIES";
-	private static final String K_MODE = "MODE";
-	private static final String K_FROM_DATE = "FROM_DATE";
-	private static final String K_AGGREGATION = "AGGREGATION";
+	private static final String K_SELECTION = "SELECTION"; //$NON-NLS-1$
+	private static final String K_SECURITIES = "SECURITIES"; //$NON-NLS-1$
+	private static final String K_MODE = "MODE"; //$NON-NLS-1$
+	private static final String K_FROM_DATE = "FROM_DATE"; //$NON-NLS-1$
+	private static final String K_AGGREGATION = "AGGREGATION"; //$NON-NLS-1$
 
 	private Combo type;
 	private CDateTime from;
@@ -58,8 +58,8 @@ public class ImportDataPage extends WizardPage {
 	private CheckboxTableViewer members;
 
 	public ImportDataPage() {
-		super("data", "Import", null);
-		setDescription("Select the securities to import.");
+		super("data", Messages.ImportDataPage_Title, null); //$NON-NLS-1$
+		setDescription(Messages.ImportDataPage_Description);
 	}
 
 	/* (non-Javadoc)
@@ -75,12 +75,12 @@ public class ImportDataPage extends WizardPage {
 		initializeDialogUnits(parent);
 
 		Label label = new Label(content, SWT.NONE);
-		label.setText("Type");
+		label.setText(Messages.ImportDataPage_TypeLabel);
 		type = new Combo(content, SWT.DROP_DOWN | SWT.READ_ONLY);
 		type.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		type.add("Full");
-		type.add("Incremental");
-		type.add("Full Incremental");
+		type.add(Messages.ImportDataPage_FullText);
+		type.add(Messages.ImportDataPage_IncrementalText);
+		type.add(Messages.ImportDataPage_FullIncrementalText);
 		type.select(1);
 		type.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -95,7 +95,7 @@ public class ImportDataPage extends WizardPage {
 		});
 
 		label = new Label(content, SWT.NONE);
-		label.setText("Period");
+		label.setText(Messages.ImportDataPage_PeriodLabel);
 		Composite group = new Composite(content, SWT.NONE);
 		gridLayout = new GridLayout(3, false);
 		gridLayout.marginWidth = gridLayout.marginHeight = 0;
@@ -103,7 +103,7 @@ public class ImportDataPage extends WizardPage {
 		group.setLayout(gridLayout);
 		from = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
 		label = new Label(group, SWT.NONE);
-		label.setText("to");
+		label.setText(Messages.ImportDataPage_ToLabel);
 		to = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
 
 		Calendar today = Calendar.getInstance();
@@ -112,7 +112,7 @@ public class ImportDataPage extends WizardPage {
 		from.setSelection(today.getTime());
 
 		label = new Label(content, SWT.NONE);
-		label.setText("Aggregation");
+		label.setText(Messages.ImportDataPage_AggregationLabel);
 		label.setLayoutData(new GridData(SWT.TOP, SWT.RIGHT, false, false));
 		((GridData) label.getLayoutData()).verticalIndent = convertVerticalDLUsToPixels(2);
 		aggregation = CheckboxTableViewer.newCheckList(content, SWT.BORDER);
@@ -123,9 +123,9 @@ public class ImportDataPage extends WizardPage {
             @Override
             public String getText(Object element) {
             	TimeSpan timeSpan = (TimeSpan) element;
-	            return NLS.bind("{0} {1}", new Object[] {
+	            return NLS.bind("{0} {1}", new Object[] { //$NON-NLS-1$
 	            		String.valueOf(timeSpan.getLength()),
-	            		timeSpan.getUnits() == Units.Minutes ? "Minute(s)" : "Day(s)",
+	            		timeSpan.getUnits() == Units.Minutes ? Messages.ImportDataPage_MinutesText : Messages.ImportDataPage_DaysText,
 	            	});
             }
 		});
@@ -143,11 +143,11 @@ public class ImportDataPage extends WizardPage {
 		aggregation.setChecked(((Object[]) aggregation.getInput())[0], true);
 
 		label = new Label(content, SWT.NONE);
-		label.setText("Import");
+		label.setText(Messages.ImportDataPage_ImportLabel);
 		combo = new Combo(content, SWT.DROP_DOWN | SWT.READ_ONLY);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		combo.add("All securities");
-		combo.add("Securities selected below");
+		combo.add(Messages.ImportDataPage_AllSecuritiesText);
+		combo.add(Messages.ImportDataPage_SelectedSecuritiesText);
 		combo.select(0);
 		combo.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -200,7 +200,7 @@ public class ImportDataPage extends WizardPage {
 
 			if (dialogSettings.get(K_FROM_DATE) != null) {
 				try {
-					from.setSelection(new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_FROM_DATE)));
+					from.setSelection(new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_FROM_DATE))); //$NON-NLS-1$
 				} catch(Exception e) {
 					// Do nothing
 				}
@@ -241,7 +241,7 @@ public class ImportDataPage extends WizardPage {
 
 		dialogSettings.put(K_MODE, type.getSelectionIndex());
 
-		dialogSettings.put(K_FROM_DATE, new SimpleDateFormat("yyyyMMdd").format(from.getSelection()));
+		dialogSettings.put(K_FROM_DATE, new SimpleDateFormat("yyyyMMdd").format(from.getSelection())); //$NON-NLS-1$
 
 		TimeSpan[] ts = getAggregation();
 		String[] s = new String[ts.length];

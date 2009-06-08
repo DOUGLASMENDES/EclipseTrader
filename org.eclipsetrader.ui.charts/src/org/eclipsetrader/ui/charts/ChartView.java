@@ -114,7 +114,7 @@ public class ChartView implements IView {
 			try {
 				((IViewChangeListener) l[i]).viewChanged(event);
 			} catch(Throwable e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Unexpected exception notifying chart view listeners", e);
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartView_NotificationErrorMessage, e);
 				ChartsUIActivator.log(status);
 			}
 		}

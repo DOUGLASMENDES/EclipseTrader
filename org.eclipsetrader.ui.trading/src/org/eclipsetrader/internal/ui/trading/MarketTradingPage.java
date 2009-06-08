@@ -45,7 +45,7 @@ public class MarketTradingPage extends PropertyPage implements IWorkbenchPropert
 	ComboViewer brokerCombo;
 
 	public MarketTradingPage() {
-		setTitle("Trading");
+		setTitle(Messages.MarketTradingPage_Title);
 		noDefaultAndApplyButton();
 	}
 
@@ -61,7 +61,7 @@ public class MarketTradingPage extends PropertyPage implements IWorkbenchPropert
 		initializeDialogUnits(content);
 
 		Label label = new Label(content, SWT.NONE);
-		label.setText("Broker");
+		label.setText(Messages.MarketTradingPage_BrokerLabel);
 		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
 		brokerCombo = new ComboViewer(content, SWT.READ_ONLY);
 		brokerCombo.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -70,7 +70,7 @@ public class MarketTradingPage extends PropertyPage implements IWorkbenchPropert
 			@Override
 			public String getText(Object element) {
 				if (!(element instanceof IBroker))
-					return "None";
+					return Messages.MarketTradingPage_None_Element;
 				return ((IBroker) element).getName();
 			}
 		});
@@ -145,7 +145,7 @@ public class MarketTradingPage extends PropertyPage implements IWorkbenchPropert
 			context.ungetService(serviceReference);
 			return service;
 		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading feed service", e);
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, Messages.MarketTradingPage_ErrorReadingFeedService, e);
 			Activator.getDefault().getLog().log(status);
 		}
 		return null;
@@ -161,7 +161,7 @@ public class MarketTradingPage extends PropertyPage implements IWorkbenchPropert
 			context.ungetService(serviceReference);
 			return service;
 		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading trading service", e);
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, Messages.MarketTradingPage_ErrorReadingTradingService, e);
 			Activator.getDefault().getLog().log(status);
 		}
 		return null;

@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class FilledQuantityColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.filledqty";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.filledqty"; //$NON-NLS-1$
 
 	private NumberFormat formatter = NumberFormat.getInstance();
 
@@ -38,7 +38,7 @@ public class FilledQuantityColumn extends ColumnLabelProvider {
 			if (order.getFilledQuantity() != null)
 				return formatter.format(order.getFilledQuantity());
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

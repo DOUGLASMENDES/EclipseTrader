@@ -25,7 +25,7 @@ public class NewAlertWizard extends Wizard {
 		this.selection = selection;
 
 		setForcePreviousAndNextButtons(true);
-		setWindowTitle("New Alert");
+		setWindowTitle(Messages.NewAlertWizard_WindowTitle);
 	}
 
 	/* (non-Javadoc)

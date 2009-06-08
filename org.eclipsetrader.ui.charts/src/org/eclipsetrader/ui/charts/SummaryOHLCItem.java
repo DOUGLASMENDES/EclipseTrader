@@ -73,7 +73,7 @@ public class SummaryOHLCItem {
 
 	public void setOHLC(IOHLC currentOHLC, IOHLC previousOHLC) {
 		if (currentOHLC != null) {
-			label.setText(NLS.bind("O={0} H={1} L={2} C={3}", new Object[] {
+			label.setText(NLS.bind("O={0} H={1} L={2} C={3}", new Object[] { //$NON-NLS-1$
 			    numberFormat.format(currentOHLC.getOpen()),
 			    numberFormat.format(currentOHLC.getHigh()),
 			    numberFormat.format(currentOHLC.getLow()),
@@ -82,8 +82,8 @@ public class SummaryOHLCItem {
 
 			if (previousOHLC != null) {
 				double change = (currentOHLC.getClose() - previousOHLC.getClose()) / previousOHLC.getClose() * 100.0;
-				changeLabel.setText(NLS.bind("{0}%", new Object[] {
-					(change > 0 ? "+" : "") + percentFormat.format(change),
+				changeLabel.setText(NLS.bind("{0}%", new Object[] { //$NON-NLS-1$
+					(change > 0 ? "+" : "") + percentFormat.format(change), //$NON-NLS-1$ //$NON-NLS-2$
 				}));
 				if (change > 0)
 					changeLabel.setForeground(positiveForeground);
@@ -94,8 +94,8 @@ public class SummaryOHLCItem {
 			}
 		}
 		else {
-			label.setText("");
-			changeLabel.setText("");
+			label.setText(""); //$NON-NLS-1$
+			changeLabel.setText(""); //$NON-NLS-1$
 			changeLabel.setForeground(null);
 		}
 		label.setForeground(foreground);

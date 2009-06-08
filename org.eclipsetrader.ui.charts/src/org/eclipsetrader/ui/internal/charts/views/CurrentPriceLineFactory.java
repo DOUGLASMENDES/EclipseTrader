@@ -58,7 +58,7 @@ public class CurrentPriceLineFactory implements IChartObjectFactory {
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
      */
     public String getName() {
-	    return "Current Price";
+	    return Messages.CurrentPriceLineFactory_Name;
     }
 
 	/* (non-Javadoc)

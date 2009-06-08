@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class OrderIdColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.orderid";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.orderid"; //$NON-NLS-1$
 
 	public OrderIdColumn() {
 	}
@@ -29,6 +29,6 @@ public class OrderIdColumn extends ColumnLabelProvider {
 			IOrderMonitor order = (IOrderMonitor) element;
 			return order.getId();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

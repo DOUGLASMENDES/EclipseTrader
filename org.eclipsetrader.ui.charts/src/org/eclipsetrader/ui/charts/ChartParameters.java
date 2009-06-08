@@ -30,7 +30,7 @@ import org.eclipsetrader.core.internal.charts.repository.Parameter;
 public class ChartParameters implements IChartParameters {
 	private Map<String, String> map = new HashMap<String, String>();
 	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
 	public ChartParameters() {
 		nf.setMinimumFractionDigits(0);
@@ -79,7 +79,7 @@ public class ChartParameters implements IChartParameters {
 	public RGB getColor(String name) {
 		String value = map.get(name);
 		if (value != null) {
-			String[] ar = value.split(",");
+			String[] ar = value.split(","); //$NON-NLS-1$
 			if (ar.length == 3)
 				return new RGB(Integer.parseInt(ar[0]), Integer.parseInt(ar[1]), Integer.parseInt(ar[2]));
 		}
@@ -118,7 +118,7 @@ public class ChartParameters implements IChartParameters {
      */
     public void setParameter(String name, RGB value) {
 		if (value != null)
-			map.put(name, value.red + "," + value.green + "," + value.blue);
+			map.put(name, value.red + "," + value.green + "," + value.blue); //$NON-NLS-1$ //$NON-NLS-2$
 		else
 			map.remove(name);
     }

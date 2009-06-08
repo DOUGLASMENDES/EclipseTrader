@@ -18,7 +18,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class QuantityColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.qty";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.qty"; //$NON-NLS-1$
 
 	private NumberFormat formatter = NumberFormat.getInstance();
 
@@ -43,6 +43,6 @@ public class QuantityColumn extends ColumnLabelProvider {
 		if (order != null && order.getQuantity() != null)
 			return formatter.format(order.getQuantity());
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

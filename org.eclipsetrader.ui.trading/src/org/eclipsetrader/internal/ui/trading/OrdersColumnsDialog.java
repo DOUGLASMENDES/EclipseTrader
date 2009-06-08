@@ -39,7 +39,7 @@ public class OrdersColumnsDialog extends Dialog {
 	 */
 	@Override
 	protected void configureShell(Shell newShell) {
-		newShell.setText("Columns");
+		newShell.setText(Messages.OrdersColumnsDialog_Text);
 		super.configureShell(newShell);
 	}
 
@@ -64,11 +64,11 @@ public class OrdersColumnsDialog extends Dialog {
 	}
 
 	IConfigurationElement[] getAvailableElements() {
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipsetrader.ui.viewLabelProviders");
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipsetrader.ui.viewLabelProviders"); //$NON-NLS-1$
 
 		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 		for (int i = 0; i < configElements.length; i++) {
-			if ("viewContribution".equals(configElements[i].getName())) {
+			if ("viewContribution".equals(configElements[i].getName())) { //$NON-NLS-1$
 				return configElements[i].getChildren();
 			}
 		}
@@ -77,11 +77,11 @@ public class OrdersColumnsDialog extends Dialog {
 	}
 
 	IConfigurationElement getConfigurationElement(String targetID) {
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipsetrader.ui.viewLabelProviders");
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipsetrader.ui.viewLabelProviders"); //$NON-NLS-1$
 
 		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 		for (int i = 0; i < configElements.length; i++) {
-			if ("viewContribution".equals(configElements[i].getName())) {
+			if ("viewContribution".equals(configElements[i].getName())) { //$NON-NLS-1$
 				configElements = configElements[i].getChildren();
 				for (int j = 0; j < configElements.length; j++) {
 					String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
@@ -103,7 +103,7 @@ public class OrdersColumnsDialog extends Dialog {
 
 		visibleId = new String[elements.length];
 		for (int i = 0; i < elements.length; i++)
-			visibleId[i] = elements[i].getAttribute("id");
+			visibleId[i] = elements[i].getAttribute("id"); //$NON-NLS-1$
 
 		super.okPressed();
 	}

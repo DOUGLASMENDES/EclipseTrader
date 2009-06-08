@@ -18,7 +18,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class StopPriceColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.stopprice";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.stopprice"; //$NON-NLS-1$
 
 	private NumberFormat formatter = NumberFormat.getInstance();
 
@@ -43,6 +43,6 @@ public class StopPriceColumn extends ColumnLabelProvider {
 		if (order != null && order.getStopPrice() != null)
 			return formatter.format(order.getStopPrice());
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

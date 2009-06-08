@@ -52,7 +52,7 @@ public class CustomPeriodDialog extends Dialog {
 	@Override
     protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Custom Period");
+		newShell.setText(Messages.CustomPeriodDialog_CustomPeriodTitle);
 	}
 
 	/* (non-Javadoc)
@@ -69,15 +69,15 @@ public class CustomPeriodDialog extends Dialog {
 		content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
 		Label label = new Label(content, SWT.NONE);
-		label.setText("Begin Date");
+		label.setText(Messages.CustomPeriodDialog_BeginDateLabel);
 		from = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
 
 		label = new Label(content, SWT.NONE);
-		label.setText("End Date");
+		label.setText(Messages.CustomPeriodDialog_EndDateLabel);
 		to = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
 
 		label = new Label(content, SWT.NONE);
-		label.setText("Resolution");
+		label.setText(Messages.CustomPeriodDialog_ResolutionLabel);
 		resolution = new ComboViewer(content, SWT.DROP_DOWN | SWT.READ_ONLY);
 		resolution.setLabelProvider(new LabelProvider());
 		resolution.setContentProvider(new ArrayContentProvider());

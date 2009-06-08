@@ -53,7 +53,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
     		String s = object.getToolTip(location.x, SWT.DEFAULT);
         	if (s != null) {
 	        	if (summary.length() != 0)
-	        		summary.append("\r\n");
+	        		summary.append("\r\n"); //$NON-NLS-1$
 	        	summary.append(s);
         	}
 	        return true;
@@ -268,7 +268,7 @@ public class CrosshairDecorator implements MouseListener, MouseMoveListener, Mou
     		tooltip.setText(summary.toString());
 
     		if (showSummaryTooltip) {
-        		if (!"".equals(tooltip.getText())) {
+        		if (!"".equals(tooltip.getText())) { //$NON-NLS-1$
         			Point p = new Point(location.x, location.y);
         			p = focusCanvas.getCanvas().toDisplay(p);
         			tooltip.show(p);

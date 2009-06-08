@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class AveragePriceColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.averageprice";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.averageprice"; //$NON-NLS-1$
 
 	private NumberFormat formatter = NumberFormat.getInstance();
 
@@ -38,7 +38,7 @@ public class AveragePriceColumn extends ColumnLabelProvider {
 			if (order.getAveragePrice() != null)
 				return formatter.format(order.getAveragePrice());
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

@@ -52,9 +52,9 @@ public class LinePropertiesPage extends PropertyPage {
         		Number number = numberFormat.parse(text.getText());
         		text.setText(numberFormat.format(number));
             } catch (ParseException e) {
-            	text.setData("valid", Boolean.FALSE);
+            	text.setData("valid", Boolean.FALSE); //$NON-NLS-1$
             }
-	        setValid(!Boolean.FALSE.equals(value1.getData("valid")) && !Boolean.FALSE.equals(value2.getData("valid")));
+	        setValid(!Boolean.FALSE.equals(value1.getData("valid")) && !Boolean.FALSE.equals(value2.getData("valid"))); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	};
 
@@ -77,16 +77,16 @@ public class LinePropertiesPage extends PropertyPage {
 	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        setTitle("Line");
+        setTitle(Messages.LinePropertiesPage_Title);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Label");
+        label.setText(Messages.LinePropertiesPage_LabelLabel);
         label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
         text = new Text(content, SWT.BORDER);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         label = new Label(content, SWT.NONE);
-        label.setText("Color");
+        label.setText(Messages.LinePropertiesPage_ColorLabel);
         color = new ColorSelector(content);
         color.setColorValue(new RGB(0, 0, 255));
         color.getButton().setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
@@ -96,7 +96,7 @@ public class LinePropertiesPage extends PropertyPage {
         ((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
 
         label = new Label(content, SWT.NONE);
-        label.setText("First Point");
+        label.setText(Messages.LinePropertiesPage_FirstPointLabel);
         date1 = new CDateTime(content, CDT.BORDER | CDT.DATE_MEDIUM | CDT.DROP_DOWN);
         date1.setLayoutData(new GridData(convertHorizontalDLUsToPixels(90), SWT.DEFAULT));
         value1 = new Text(content, SWT.BORDER);
@@ -105,11 +105,11 @@ public class LinePropertiesPage extends PropertyPage {
 
         label = new Label(content, SWT.NONE);
         extend1 = new Button(content, SWT.CHECK);
-        extend1.setText("Extend");
+        extend1.setText(Messages.LinePropertiesPage_ExtendLabel);
         extend1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         label = new Label(content, SWT.NONE);
-        label.setText("Second Point");
+        label.setText(Messages.LinePropertiesPage_SecondPointLabel);
         date2 = new CDateTime(content, CDT.BORDER | CDT.DATE_MEDIUM | CDT.DROP_DOWN);
         date2.setLayoutData(new GridData(convertHorizontalDLUsToPixels(90), SWT.DEFAULT));
         value2 = new Text(content, SWT.BORDER);
@@ -118,7 +118,7 @@ public class LinePropertiesPage extends PropertyPage {
 
         label = new Label(content, SWT.NONE);
         extend2 = new Button(content, SWT.CHECK);
-        extend2.setText("Extend");
+        extend2.setText(Messages.LinePropertiesPage_ExtendLabel);
         extend2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         performDefaults();

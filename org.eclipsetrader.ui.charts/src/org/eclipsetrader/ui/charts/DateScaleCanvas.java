@@ -146,7 +146,7 @@ public class DateScaleCanvas {
 					Date date = visibleDates[i];
 					boolean tick = false; // Draw a longer tick
 					boolean highlight = false; // Highlight the tick
-					String text = "";
+					String text = ""; //$NON-NLS-1$
 
 					currentDate.setTime(date);
 
@@ -189,7 +189,7 @@ public class DateScaleCanvas {
 						graphics.drawString(text, x - 1, 7);
 				}
 			} catch(Error e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering horizontal scale");
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.DateScaleCanvas_HorizontalScaleRenderingError);
 				ChartsUIActivator.log(status);
 			} finally {
 				horizontalScaleCanvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.FALSE);

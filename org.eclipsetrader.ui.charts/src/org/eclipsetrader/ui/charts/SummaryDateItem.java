@@ -35,7 +35,7 @@ public class SummaryDateItem {
 	}
 
 	public void setDate(Date date) {
-		label.setText(date != null ? dateFormat.format(date) : "");
+		label.setText(date != null ? dateFormat.format(date) : ""); //$NON-NLS-1$
 		label.getParent().layout();
 	}
 }

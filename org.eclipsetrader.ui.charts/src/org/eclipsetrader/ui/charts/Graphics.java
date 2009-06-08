@@ -279,11 +279,11 @@ public class Graphics implements IGraphics {
 			Map<String, Object> state = stack.get(0);
 			stack.remove(0);
 
-			setForegroundColor((RGB) state.get("foreground-color"));
-			setBackgroundColor((RGB) state.get("background-color"));
-			gc.setLineStyle((Integer) state.get("line-style"));
-			gc.setLineDash((int[]) state.get("line-dash"));
-			gc.setLineWidth(((Integer) state.get("line-width")).intValue());
+			setForegroundColor((RGB) state.get("foreground-color")); //$NON-NLS-1$
+			setBackgroundColor((RGB) state.get("background-color")); //$NON-NLS-1$
+			gc.setLineStyle((Integer) state.get("line-style")); //$NON-NLS-1$
+			gc.setLineDash((int[]) state.get("line-dash")); //$NON-NLS-1$
+			gc.setLineWidth(((Integer) state.get("line-width")).intValue()); //$NON-NLS-1$
 		}
 	}
 
@@ -292,11 +292,11 @@ public class Graphics implements IGraphics {
 	 */
 	public void pushState() {
 		Map<String, Object> state = new HashMap<String, Object>();
-		state.put("foreground-color", getForegroundColor());
-		state.put("background-color", getBackgroundColor());
-		state.put("line-style", gc.getLineStyle());
-		state.put("line-dash", gc.getLineDash());
-		state.put("line-width", new Integer(gc.getLineWidth()));
+		state.put("foreground-color", getForegroundColor()); //$NON-NLS-1$
+		state.put("background-color", getBackgroundColor()); //$NON-NLS-1$
+		state.put("line-style", gc.getLineStyle()); //$NON-NLS-1$
+		state.put("line-dash", gc.getLineDash()); //$NON-NLS-1$
+		state.put("line-width", new Integer(gc.getLineWidth())); //$NON-NLS-1$
 		stack.add(0, state);
 	}
 

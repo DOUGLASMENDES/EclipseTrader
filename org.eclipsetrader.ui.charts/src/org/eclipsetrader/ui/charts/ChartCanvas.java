@@ -244,7 +244,7 @@ public class ChartCanvas {
 					paintBackground(graphics, clientArea);
 				paintObjects(graphics, clientArea);
 			} catch (Throwable e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartCanvas_RenderingChartError);
 				ChartsUIActivator.log(status);
 			} finally {
 				canvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.FALSE);
@@ -352,7 +352,7 @@ public class ChartCanvas {
 					String s;
 					if (((Double) scaleArray[loop]).doubleValue() > 1000000) {
 						Double value = (Double) scaleArray[loop];
-						s = nf.format(value / 1000000.0) + "M";
+						s = nf.format(value / 1000000.0) + "M"; //$NON-NLS-1$
 					}
 					else
 						s = nf.format(scaleArray[loop]);
@@ -371,7 +371,7 @@ public class ChartCanvas {
 					}
 				}
 			} catch (Error e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering vertical scale", e);
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartCanvas_VerticalScaleRenderingError, e);
 				ChartsUIActivator.log(status);
 			} finally {
 				verticalScaleCanvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.FALSE);

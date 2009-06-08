@@ -16,7 +16,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class ReferenceColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.reference";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.reference"; //$NON-NLS-1$
 
 	public ReferenceColumn() {
 	}

@@ -64,7 +64,7 @@ public class SelectionProvider implements ISelectionProvider {
     		try {
     			((ISelectionChangedListener) l[i]).selectionChanged(event);
     		} catch(Throwable e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Unexpected exception notifying selection listeners", e);
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.SelectionProvider_ExceptionMessage, e);
 				ChartsUIActivator.log(status);
     		}
     	}

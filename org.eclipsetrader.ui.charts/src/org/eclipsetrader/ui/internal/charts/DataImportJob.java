@@ -62,7 +62,7 @@ public class DataImportJob extends Job {
 	private List<IStatus> results = new ArrayList<IStatus>();
 
 	public DataImportJob(ISecurity security, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
-		super("Historical Data Update");
+		super(Messages.DataImportJob_Name);
 		this.securities = new ISecurity[] { security };
 		this.mode = mode;
 		this.fromDate = fromDate;
@@ -71,7 +71,7 @@ public class DataImportJob extends Job {
 	}
 
 	public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
-		super("Historical Data Update");
+		super(Messages.DataImportJob_Name);
 		this.securities = securities;
 		this.mode = mode;
 		this.fromDate = fromDate;
@@ -97,11 +97,11 @@ public class DataImportJob extends Job {
 			for (ISecurity security : filteredList) {
 				if (monitor.isCanceled()) {
 					if (results.size() != 0)
-						return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), "Download wasn't completed correctly.", null);
+						return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
 					return Status.CANCEL_STATUS;
 				}
 
-				monitor.subTask(security.getName().replace("&", "&&"));
+				monitor.subTask(security.getName().replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
 
 				try {
 					IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
@@ -149,19 +149,19 @@ public class DataImportJob extends Job {
 					for (TimeSpan currentTimeSpan : timeSpan) {
 						if (monitor.isCanceled()) {
 							if (results.size() != 0)
-								return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), "Download wasn't completed correctly.", null);
+								return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
 							return Status.CANCEL_STATUS;
 						}
 
 						if (currentTimeSpan.equals(TimeSpan.days(1))) {
-							monitor.subTask(security.getName().replace("&", "&&"));
+							monitor.subTask(security.getName().replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
 
 							IOHLC[] ohlc = backfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
 							if (ohlc != null && ohlc.length != 0)
 								dataMap.put(currentTimeSpan, ohlc);
 						}
 						else if (intradayBackfillConnector.canBackfill(identifier, currentTimeSpan)) {
-							monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
+							monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 							IOHLC[] ohlc = intradayBackfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
 							if (ohlc != null && ohlc.length != 0)
@@ -171,7 +171,7 @@ public class DataImportJob extends Job {
 							dataMap.put(currentTimeSpan, null);
 
 						if (!dataMap.containsKey(currentTimeSpan)) {
-							String message = NLS.bind("Can't download {0} data for {1}", new Object[] {
+							String message = NLS.bind(Messages.DataImportJob_DownloadDataErrorMessage, new Object[] {
 									currentTimeSpan.toString(),
 									security.getName()
 								});
@@ -255,21 +255,21 @@ public class DataImportJob extends Job {
 						}
 					}
 				} catch (Exception e) {
-					Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error downloading data for " + security.getName(), e);
+					Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, Messages.DataImportJob_SecurityDownloadErrorMessage + security.getName(), e);
 					results.add(status);
 				}
 
 				monitor.worked(1);
 			}
 		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error downloading data", e);
+			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, Messages.DataImportJob_DataErrorMessage, e);
 			results.add(status);
 		} finally {
 			monitor.done();
 		}
 
 		if (results.size() != 0)
-			return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), "Download wasn't completed correctly.", null);
+			return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
 		return Status.OK_STATUS;
 	}
 

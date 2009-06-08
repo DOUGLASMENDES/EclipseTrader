@@ -12,12 +12,12 @@
 package org.eclipsetrader.ui.charts;
 
 public enum RenderStyle {
-	Line("line", "Line"),
-	Dot("dot", "Dot"),
-	Dash("dash", "Dash"),
-	Histogram("histogram", "Histogram"),
-	HistogramBars("histogram-bars", "Histogram Bars"),
-	Invisible("invisible", "Invisible");
+	Line("line", Messages.RenderStyle_LineText), //$NON-NLS-1$
+	Dot("dot", Messages.RenderStyle_DotText), //$NON-NLS-1$
+	Dash("dash", Messages.RenderStyle_DashText), //$NON-NLS-1$
+	Histogram("histogram", Messages.RenderStyle_HistogramText), //$NON-NLS-1$
+	HistogramBars("histogram-bars", Messages.RenderStyle_HistogramBarsText), //$NON-NLS-1$
+	Invisible("invisible", Messages.RenderStyle_Invisible); //$NON-NLS-1$
 
 	private String name;
 	private String description;

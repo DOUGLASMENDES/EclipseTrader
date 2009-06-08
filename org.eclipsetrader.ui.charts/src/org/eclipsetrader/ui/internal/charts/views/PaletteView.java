@@ -53,11 +53,11 @@ import org.eclipsetrader.ui.charts.ChartObjectFactoryTransfer;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class PaletteView extends ViewPart {
-	public static final String K_ID = "id";
-	public static final String K_NAME = "name";
-	public static final String K_DESCRIPTION = "description";
-	public static final String K_ICON = "icon";
-	public static final String K_CATEGORY = "category";
+	public static final String K_ID = "id"; //$NON-NLS-1$
+	public static final String K_NAME = "name"; //$NON-NLS-1$
+	public static final String K_DESCRIPTION = "description"; //$NON-NLS-1$
+	public static final String K_ICON = "icon"; //$NON-NLS-1$
+	public static final String K_CATEGORY = "category"; //$NON-NLS-1$
 
 	private PShelf shelf;
 
@@ -137,8 +137,8 @@ public class PaletteView extends ViewPart {
 		}
 
 		PShelfItem shelfItem = new PShelfItem(shelf, SWT.NONE);
-		shelfItem.setText("Others");
-		ImageDescriptor imageDescriptor = ChartsUIActivator.imageDescriptorFromPlugin("icons/obj16/blank_obj.gif");
+		shelfItem.setText(Messages.PaletteView_OtherTitle);
+		ImageDescriptor imageDescriptor = ChartsUIActivator.imageDescriptorFromPlugin("icons/obj16/blank_obj.gif"); //$NON-NLS-1$
 		final Image image = imageDescriptor != null ? imageDescriptor.createImage() : null;
 		if (image != null) {
 			shelfItem.setImage(image);
@@ -184,7 +184,7 @@ public class PaletteView extends ViewPart {
 			@Override
             public String getText(Object element) {
             	IConfigurationElement configurationElement = (IConfigurationElement) element;
-            	String template = configurationElement.getAttribute(K_DESCRIPTION) != null ? "{0} - {1}" : "{0}";
+            	String template = configurationElement.getAttribute(K_DESCRIPTION) != null ? "{0} - {1}" : "{0}"; //$NON-NLS-1$ //$NON-NLS-2$
 	            return NLS.bind(template, new Object[] {
 	            		configurationElement.getAttribute(K_NAME),
 	            		configurationElement.getAttribute(K_DESCRIPTION)
@@ -215,7 +215,7 @@ public class PaletteView extends ViewPart {
 	            Object[] selection = ((IStructuredSelection) viewer.getSelection()).toArray();
 	            String[] elements = new String[selection.length];
 	            for (int i = 0; i < elements.length; i++)
-	            	elements[i] = ((IConfigurationElement) selection[i]).getAttribute("id");
+	            	elements[i] = ((IConfigurationElement) selection[i]).getAttribute("id"); //$NON-NLS-1$
 	            event.data = elements;
             }
 		});
@@ -236,7 +236,7 @@ public class PaletteView extends ViewPart {
         	Object[] o = new Object[ar.length];
         	for (int i = 0; i < o.length; i++) {
         		try {
-        			o[i] = ((IConfigurationElement) ar[i]).createExecutableExtension("class");
+        			o[i] = ((IConfigurationElement) ar[i]).createExecutableExtension("class"); //$NON-NLS-1$
         		} catch(Exception e) {
         			// Do nothing
         		}

@@ -16,7 +16,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class SideColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.side";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.side"; //$NON-NLS-1$
 
 	public SideColumn() {
 	}

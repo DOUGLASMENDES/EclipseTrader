@@ -99,7 +99,7 @@ public class ChartViewDropTarget extends DropTargetAdapter {
             	else {
             		boolean addToNewRow = false;
 	            	IConfigurationElement configurationElement = ChartsUIActivator.getDefault().getChartObjectConfiguration(factories[i]);
-	            	if (!"false".equals(configurationElement.getAttribute("exclusive")))
+	            	if (!"false".equals(configurationElement.getAttribute("exclusive"))) //$NON-NLS-1$ //$NON-NLS-2$
 	            		addToNewRow = true;
 
 	            	PropertyPageManager pageManager = new PropertyPageManager();

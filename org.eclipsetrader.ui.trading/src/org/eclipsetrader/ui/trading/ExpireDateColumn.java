@@ -19,7 +19,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class ExpireDateColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.expire";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.expire"; //$NON-NLS-1$
 
 	protected DateFormat formatter = DateFormat.getDateInstance(SimpleDateFormat.MEDIUM);
 
@@ -40,6 +40,6 @@ public class ExpireDateColumn extends ColumnLabelProvider {
 		if (order != null && order.getExpire() != null)
 			return formatter.format(order.getDate());
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

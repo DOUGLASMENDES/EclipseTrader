@@ -78,8 +78,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class OrdersView extends ViewPart {
-	public static final String VIEW_ID = "org.eclipsetrader.ui.views.orders";
-	public static final String K_VISIBLE_COLUMNS = "VISIBLE_COLUMNS";
+	public static final String VIEW_ID = "org.eclipsetrader.ui.views.orders"; //$NON-NLS-1$
+	public static final String K_VISIBLE_COLUMNS = "VISIBLE_COLUMNS"; //$NON-NLS-1$
 
 	private CTabFolder tabFolder;
 
@@ -175,14 +175,14 @@ public class OrdersView extends ViewPart {
 		super.init(site, memento);
 
 		if (memento == null)
-			memento = XMLMemento.createWriteRoot("root");
+			memento = XMLMemento.createWriteRoot("root"); //$NON-NLS-1$
 		this.memento = memento;
 
 		IDialogSettings pluginDialogSettings = Activator.getDefault().getDialogSettings();
 		dialogSettings = pluginDialogSettings.getSection(VIEW_ID);
 		if (dialogSettings == null) {
 			dialogSettings = pluginDialogSettings.addNewSection(VIEW_ID);
-			dialogSettings.put("VISIBLE_COLUMNS", new String[] {
+			dialogSettings.put("VISIBLE_COLUMNS", new String[] { //$NON-NLS-1$
 			    OrderIdColumn.COLUMN_ID,
 			    DateTimeColumn.COLUMN_ID,
 			    SecurityNameColumn.COLUMN_ID,
@@ -199,27 +199,27 @@ public class OrdersView extends ViewPart {
 		initializeActions();
 
 		IMenuManager menuManager = site.getActionBars().getMenuManager();
-		menuManager.add(new Separator("group.new"));
-		menuManager.add(new GroupMarker("group.goto"));
-		menuManager.add(new Separator("group.open"));
-		menuManager.add(new GroupMarker("group.openWith"));
-		menuManager.add(new Separator("group.show"));
-		menuManager.add(new Separator("group.edit"));
-		menuManager.add(new GroupMarker("group.reorganize"));
-		menuManager.add(new GroupMarker("group.port"));
-		menuManager.add(new Separator("group.generate"));
-		menuManager.add(new Separator("group.search"));
-		menuManager.add(new Separator("group.build"));
+		menuManager.add(new Separator("group.new")); //$NON-NLS-1$
+		menuManager.add(new GroupMarker("group.goto")); //$NON-NLS-1$
+		menuManager.add(new Separator("group.open")); //$NON-NLS-1$
+		menuManager.add(new GroupMarker("group.openWith")); //$NON-NLS-1$
+		menuManager.add(new Separator("group.show")); //$NON-NLS-1$
+		menuManager.add(new Separator("group.edit")); //$NON-NLS-1$
+		menuManager.add(new GroupMarker("group.reorganize")); //$NON-NLS-1$
+		menuManager.add(new GroupMarker("group.port")); //$NON-NLS-1$
+		menuManager.add(new Separator("group.generate")); //$NON-NLS-1$
+		menuManager.add(new Separator("group.search")); //$NON-NLS-1$
+		menuManager.add(new Separator("group.build")); //$NON-NLS-1$
 		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		menuManager.add(new Separator("group.properties"));
+		menuManager.add(new Separator("group.properties")); //$NON-NLS-1$
 
-		menuManager.appendToGroup("group.properties", columnsAction);
+		menuManager.appendToGroup("group.properties", columnsAction); //$NON-NLS-1$
 
 		site.getActionBars().updateActionBars();
 	}
 
 	void initializeActions() {
-		cancelAction = new Action("Cancel") {
+		cancelAction = new Action(Messages.OrdersView_CancelAction) {
 			@Override
 			public void run() {
 				IStructuredSelection selection = (IStructuredSelection) getSite().getSelectionProvider().getSelection();
@@ -235,7 +235,7 @@ public class OrdersView extends ViewPart {
 			}
 		};
 
-		columnsAction = new Action("Columns") {
+		columnsAction = new Action(Messages.OrdersView_ColumnsAction) {
 			@Override
 			public void run() {
 				OrdersColumnsDialog dlg = new OrdersColumnsDialog(getSite().getShell());
@@ -268,7 +268,7 @@ public class OrdersView extends ViewPart {
 		tabFolder.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TableViewer viewer = (TableViewer) ((CTabItem) e.item).getControl().getData("viewer");
+				TableViewer viewer = (TableViewer) ((CTabItem) e.item).getControl().getData("viewer"); //$NON-NLS-1$
 				if (viewer != null)
 					selectionProvider.setSelectionProvider(viewer);
 			}
@@ -287,21 +287,21 @@ public class OrdersView extends ViewPart {
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager menuManager) {
-				menuManager.add(new Separator("group.new"));
-				menuManager.add(new GroupMarker("group.goto"));
-				menuManager.add(new Separator("group.open"));
-				menuManager.add(new GroupMarker("group.openWith"));
-				menuManager.add(new Separator("group.show"));
-				menuManager.add(new Separator("group.edit"));
-				menuManager.add(new GroupMarker("group.reorganize"));
-				menuManager.add(new GroupMarker("group.port"));
-				menuManager.add(new Separator("group.generate"));
-				menuManager.add(new Separator("group.search"));
-				menuManager.add(new Separator("group.build"));
+				menuManager.add(new Separator("group.new")); //$NON-NLS-1$
+				menuManager.add(new GroupMarker("group.goto")); //$NON-NLS-1$
+				menuManager.add(new Separator("group.open")); //$NON-NLS-1$
+				menuManager.add(new GroupMarker("group.openWith")); //$NON-NLS-1$
+				menuManager.add(new Separator("group.show")); //$NON-NLS-1$
+				menuManager.add(new Separator("group.edit")); //$NON-NLS-1$
+				menuManager.add(new GroupMarker("group.reorganize")); //$NON-NLS-1$
+				menuManager.add(new GroupMarker("group.port")); //$NON-NLS-1$
+				menuManager.add(new Separator("group.generate")); //$NON-NLS-1$
+				menuManager.add(new Separator("group.search")); //$NON-NLS-1$
+				menuManager.add(new Separator("group.build")); //$NON-NLS-1$
 				menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-				menuManager.add(new Separator("group.properties"));
+				menuManager.add(new Separator("group.properties")); //$NON-NLS-1$
 
-				menuManager.appendToGroup("group.build", cancelAction);
+				menuManager.appendToGroup("group.build", cancelAction); //$NON-NLS-1$
 			}
 		});
 
@@ -362,12 +362,12 @@ public class OrdersView extends ViewPart {
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
-		tabItem.setText("All");
+		tabItem.setText(Messages.OrdersView_AllTab);
 		all = createViewer(tabFolder, true);
 		tabItem.setControl(all.getControl());
 
 		tabItem = new CTabItem(tabFolder, SWT.NONE);
-		tabItem.setText("Pending");
+		tabItem.setText(Messages.OrdersView_PendingTab);
 		pending = createViewer(tabFolder, false);
 		pending.setFilters(new ViewerFilter[] {
 			new ViewerFilter() {
@@ -381,7 +381,7 @@ public class OrdersView extends ViewPart {
 		tabItem.setControl(pending.getControl());
 
 		tabItem = new CTabItem(tabFolder, SWT.NONE);
-		tabItem.setText("Filled");
+		tabItem.setText(Messages.OrdersView_FilledTab);
 		filled = createViewer(tabFolder, false);
 		filled.setFilters(new ViewerFilter[] {
 			new ViewerFilter() {
@@ -395,7 +395,7 @@ public class OrdersView extends ViewPart {
 		tabItem.setControl(filled.getControl());
 
 		tabItem = new CTabItem(tabFolder, SWT.NONE);
-		tabItem.setText("Canceled");
+		tabItem.setText(Messages.OrdersView_CanceledTab);
 		canceled = createViewer(tabFolder, false);
 		canceled.setFilters(new ViewerFilter[] {
 			new ViewerFilter() {
@@ -409,7 +409,7 @@ public class OrdersView extends ViewPart {
 		tabItem.setControl(canceled.getControl());
 
 		tabItem = new CTabItem(tabFolder, SWT.NONE);
-		tabItem.setText("Rejected");
+		tabItem.setText(Messages.OrdersView_RejectedTab);
 		rejected = createViewer(tabFolder, false);
 		rejected.setFilters(new ViewerFilter[] {
 			new ViewerFilter() {
@@ -456,11 +456,11 @@ public class OrdersView extends ViewPart {
 	}
 
 	IConfigurationElement getConfigurationElement(String targetID) {
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipsetrader.ui.viewLabelProviders");
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipsetrader.ui.viewLabelProviders"); //$NON-NLS-1$
 
 		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 		for (int i = 0; i < configElements.length; i++) {
-			if ("viewContribution".equals(configElements[i].getName())) {
+			if ("viewContribution".equals(configElements[i].getName())) { //$NON-NLS-1$
 				configElements = configElements[i].getChildren();
 				for (int j = 0; j < configElements.length; j++) {
 					String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
@@ -487,23 +487,23 @@ public class OrdersView extends ViewPart {
 					continue;
 
 				int style = SWT.LEFT;
-				if ("right".equals(element.getAttribute("orientation")))
+				if ("right".equals(element.getAttribute("orientation"))) //$NON-NLS-1$ //$NON-NLS-2$
 					style = SWT.RIGHT;
-				else if ("center".equals(element.getAttribute("orientation")))
+				else if ("center".equals(element.getAttribute("orientation"))) //$NON-NLS-1$ //$NON-NLS-2$
 					style = SWT.CENTER;
 
 				TableViewerColumn viewerColumn = new TableViewerColumn(viewer, style);
-				viewerColumn.getColumn().setText(element.getAttribute("name"));
+				viewerColumn.getColumn().setText(element.getAttribute("name")); //$NON-NLS-1$
 				viewerColumn.getColumn().setWidth(memento != null && memento.getString(enabledId[i]) != null ? memento.getInteger(enabledId[i]) : 64);
 				viewerColumn.getColumn().addControlListener(columnControlListener);
 
 				try {
-					ColumnLabelProvider labelProvider = (ColumnLabelProvider) element.createExecutableExtension("class");
+					ColumnLabelProvider labelProvider = (ColumnLabelProvider) element.createExecutableExtension("class"); //$NON-NLS-1$
 					if (wrapLabelProviders)
 						labelProvider = new OrdersLabelProviderWrapper(labelProvider);
 					viewerColumn.setLabelProvider(labelProvider);
 				} catch (Exception e) {
-					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, "Error creating label provider with id " + enabledId[i], e);
+					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, Messages.OrdersView_ErrorCreatingLabelProvider + enabledId[i], e);
 					Activator.log(status);
 				}
 			}

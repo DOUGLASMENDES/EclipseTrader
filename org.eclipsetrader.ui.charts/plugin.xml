@@ -8,7 +8,7 @@
             class="org.eclipsetrader.ui.internal.charts.ChartsPerspective"
             icon="icons/view16/chart_persp.png"
             id="org.eclipsetrader.ui.charts"
-            name="Charts">
+            name="%charts.perspective.name">
       </perspective>
    </extension>
    <extension
@@ -19,14 +19,14 @@
             class="org.eclipsetrader.ui.internal.charts.views.ChartViewPart"
             icon="icons/view16/chart.png"
             id="org.eclipsetrader.ui.chart"
-            name="Chart">
+            name="%charts.view.name">
       </view>
       <view
             category="org.eclipsetrader.ui"
             class="org.eclipsetrader.ui.internal.charts.views.PaletteView"
             icon="icons/view16/palette.png"
             id="org.eclipsetrader.ui.charts.palette"
-            name="Palette">
+            name="%charts.palette.name">
       </view>
    </extension>
    <extension
@@ -40,21 +40,21 @@
          point="org.eclipse.ui.commands">
       <command
             categoryId="org.eclipse.ui.category.navigate"
-            description="Open a chart for the selected object."
+            description="%openchart.command.description"
             id="org.eclipsetrader.ui.file.open.chart"
-            name="Open Chart">
+            name="%openchart.command.name">
       </command>
       <command
             id="org.eclipsetrader.ui.charts.zoomIn"
-            name="Zoom-In">
+            name="%zoomin.command.name">
       </command>
       <command
             id="org.eclipsetrader.ui.charts.zoomOut"
-            name="Zoom-Out">
+            name="%zoomout.command.name">
       </command>
       <command
             id="org.eclipsetrader.ui.charts.zoomReset"
-            name="Normal Size">
+            name="%normalsize.command.name">
       </command>
    </extension>
    <extension
@@ -134,13 +134,13 @@
             label="Trigger Action Set">
       </actionSet>
       <actionSet
-            description="Chart drawing tools"
+            description="%drawingtools.actionset.description"
             id="org.eclipsetrader.ui.charts.tools"
-            label="Chart Tools">
+            label="%tools.actionset.label">
          <action
                icon="icons/etool16/fiboarc.gif"
                id="org.eclipsetrader.ui.charts.tools.fiboarc"
-               label="FiboArc"
+               label="%fiboarc.action.label"
                retarget="true"
                style="toggle"
                toolbarPath="additions">
@@ -148,7 +148,7 @@
          <action
                icon="icons/etool16/fanline.gif"
                id="org.eclipsetrader.ui.charts.tools.fanline"
-               label="FanLine"
+               label="%fanline.action.label"
                retarget="true"
                style="toggle"
                toolbarPath="additions">
@@ -156,7 +156,7 @@
          <action
                icon="icons/etool16/fiboline.gif"
                id="org.eclipsetrader.ui.charts.tools.fiboline"
-               label="FiboLine"
+               label="%fiboline.action.label"
                retarget="true"
                style="toggle"
                toolbarPath="additions">
@@ -164,20 +164,20 @@
          <action
                icon="icons/etool16/line.gif"
                id="org.eclipsetrader.ui.charts.tools.line"
-               label="Line"
+               label="%linea.action.label"
                retarget="true"
                style="toggle"
                toolbarPath="additions">
          </action>
       </actionSet>
       <actionSet
-            description="Chart zoom tools"
+            description="%zoomtools.actionset.description"
             id="org.eclipsetrader.ui.charts.zoom"
-            label="Chart Zoom">
+            label="%zoomtools.actionset.label">
          <action
                icon="icons/etool16/zoom_out.gif"
                id="org.eclipsetrader.ui.charts.zoomOut"
-               label="Zoom-Out"
+               label="%zoomout.action.label"
                retarget="true"
                style="push"
                toolbarPath="additions">
@@ -185,7 +185,7 @@
          <action
                icon="icons/etool16/zoom_reset.gif"
                id="org.eclipsetrader.ui.charts.zoomReset"
-               label="Normal Size"
+               label="%normalsize.action.label"
                retarget="true"
                style="push"
                toolbarPath="additions">
@@ -193,7 +193,7 @@
          <action
                icon="icons/etool16/zoom_in.gif"
                id="org.eclipsetrader.ui.charts.zoomIn"
-               label="Zoom-In"
+               label="%zoomin.action.label"
                retarget="true"
                style="push"
                toolbarPath="additions">
@@ -214,17 +214,17 @@
       <category
             icon="icons/obj16/linecharticon.gif"
             id="org.eclipsetrader.ui.charts.indicators.top"
-            name="Top Indicators">
+            name="%topindicators.category.name">
       </category>
       <category
             icon="icons/obj16/linecharticon.gif"
             id="org.eclipsetrader.ui.charts.indicators.bottom"
-            name="Bottom Indicators">
+            name="%bottomindicators.category.name">
       </category>
       <category
             icon="icons/obj16/build_exec.png"
             id="org.eclipsetrader.ui.charts.tools"
-            name="Tools">
+            name="%tools.category.name">
       </category>
    </extension>
    <extension
@@ -234,28 +234,28 @@
             class="org.eclipsetrader.ui.internal.charts.tools.LineToolFactory"
             icon="icons/etool16/line.gif"
             id="org.eclipsetrader.ui.charts.tools.line"
-            name="Line">
+            name="%line.indicator.name">
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.tools"
             class="org.eclipsetrader.ui.internal.charts.tools.FibolineToolFactory"
             icon="icons/etool16/fiboline.gif"
             id="org.eclipsetrader.ui.charts.tools.fiboline"
-            name="FiboLine">
+            name="%fiboline.indicator.name">
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.tools"
             class="org.eclipsetrader.ui.internal.charts.tools.FanlineToolFactory"
             icon="icons/etool16/fanline.gif"
             id="org.eclipsetrader.ui.charts.tools.fanline"
-            name="FanLine">
+            name="%fanline.indicator.name">
       </indicator>
       <indicator
             category="org.eclipsetrader.ui.charts.tools"
             class="org.eclipsetrader.ui.internal.charts.tools.FiboarcToolFactory"
             icon="icons/etool16/fiboarc.gif"
             id="org.eclipsetrader.ui.charts.tools.fiboarc"
-            name="FiboArc">
+            name="%fiboarc.indicator.name">
       </indicator>
    </extension>
    <extension
@@ -263,7 +263,7 @@
       <page
             class="org.eclipsetrader.ui.internal.charts.views.GeneralPreferencesPage"
             id="org.eclipsetrader.ui.charts.general"
-            name="Charts">
+            name="%charts.preferencepage.name">
       </page>
    </extension>
    <extension
@@ -288,7 +288,7 @@
       <page
             class="org.eclipsetrader.ui.internal.charts.tools.LinePropertiesPage"
             id="org.eclipsetrader.ui.charts.tools.line"
-            name="Tool">
+            name="%line.propertypage.name">
          <enabledWhen>
                <test
                      property="org.eclipsetrader.ui.adapts"
@@ -304,9 +304,9 @@
             class="org.eclipsetrader.ui.internal.charts.DataUpdateWizard"
             icon="icons/view16/linecharticon.gif"
             id="org.eclipsetrader.ui.charts.update"
-            name="Historical Data">
+            name="%importdata.wizard.name">
          <description>
-            Import / Update historical prices data.
+            %importdata.wizard.description
          </description>
       </wizard>
    </extension>

@@ -51,7 +51,7 @@ public class TradeHandler extends AbstractHandler {
 						ISecurity security = (ISecurity) ((IAdaptable) target).getAdapter(ISecurity.class);
 						dlg.setBroker(service.getBrokerForSecurity(security));
 
-						String brokerId = event.getParameter("broker");
+						String brokerId = event.getParameter("broker"); //$NON-NLS-1$
 						if (brokerId != null)
 							dlg.setBroker(service.getBroker(brokerId));
 

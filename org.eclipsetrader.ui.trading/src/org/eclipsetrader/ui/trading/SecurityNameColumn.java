@@ -16,7 +16,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class SecurityNameColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.security";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.security"; //$NON-NLS-1$
 
 	public SecurityNameColumn() {
 	}
@@ -35,6 +35,6 @@ public class SecurityNameColumn extends ColumnLabelProvider {
 		if (order != null && order.getSecurity() != null)
 			return order.getSecurity().getName();
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

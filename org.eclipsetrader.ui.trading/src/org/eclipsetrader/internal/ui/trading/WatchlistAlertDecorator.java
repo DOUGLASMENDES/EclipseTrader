@@ -55,7 +55,7 @@ public class WatchlistAlertDecorator implements ILightweightLabelDecorator, IAle
 		if (element == null || !(element instanceof ISecurity))
 			return;
 
-		decoration.addPrefix("*");
+		decoration.addPrefix("*"); //$NON-NLS-1$
 		if (alertService.hasTriggeredAlerts((ISecurity) element)) {
 			if (foreground == null)
 				foreground = new Color(Display.getDefault(), 255, 0, 0);

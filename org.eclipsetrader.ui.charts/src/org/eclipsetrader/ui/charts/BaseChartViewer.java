@@ -56,7 +56,7 @@ import org.eclipsetrader.ui.internal.charts.ChartObjectHitVisitor;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class BaseChartViewer implements ISelectionProvider {
-	static final String K_NEEDS_REDRAW = "needs_redraw";
+	static final String K_NEEDS_REDRAW = "needs_redraw"; //$NON-NLS-1$
 
 	private Composite composite;
 	private SashForm sashForm;
@@ -462,12 +462,12 @@ public class BaseChartViewer implements ISelectionProvider {
 			chartCanvas[i].accept(new IChartObjectVisitor() {
 				public boolean visit(IChartObject object) {
 					if (object == selectedObject)
-						set.put("selectedObject", object);
+						set.put("selectedObject", object); //$NON-NLS-1$
 					return true;
 				}
 			});
 		}
-		handleSelectionChanged(selectedChartCanvas, (IChartObject) set.get("selectedObject"));
+		handleSelectionChanged(selectedChartCanvas, (IChartObject) set.get("selectedObject")); //$NON-NLS-1$
 
 		updateScrollbars();
 		revalidate();
@@ -552,7 +552,7 @@ public class BaseChartViewer implements ISelectionProvider {
 			try {
 				((ISelectionChangedListener) l[i]).selectionChanged(event);
 			} catch (Throwable e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Unexpected exception notifying selection listeners", e);
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.BaseChartViewer_ExceptionErrorMessage, e);
 				ChartsUIActivator.log(status);
 			}
 		}

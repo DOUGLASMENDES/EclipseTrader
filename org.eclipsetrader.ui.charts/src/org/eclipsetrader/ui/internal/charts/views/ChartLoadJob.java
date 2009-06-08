@@ -37,7 +37,7 @@ public class ChartLoadJob extends Job {
 	IHistory history;
 
 	public ChartLoadJob(ISecurity security, ChartView view) {
-		super("");
+		super(""); //$NON-NLS-1$
 
 		this.security = security;
 		this.view = view;
@@ -63,7 +63,7 @@ public class ChartLoadJob extends Job {
 			IOHLC[] values = history.getAdjustedOHLC();
 			view.setRootDataSeries(new OHLCDataSeries(security.getName(), values, resolutionTimeSpan));
 		} catch(Exception e) {
-			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Exception while loading chart " + security.getName(), e);
+			Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, Messages.ChartLoadJob_ExceptionMessage + security.getName(), e);
 			ChartsUIActivator.log(status);
 		} finally {
 			monitor.done();

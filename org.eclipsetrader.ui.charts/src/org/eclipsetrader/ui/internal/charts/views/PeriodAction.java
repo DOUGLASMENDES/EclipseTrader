@@ -29,25 +29,25 @@ public class PeriodAction extends Action {
 	}
 
 	public PeriodAction(ChartViewPart view, TimeSpan period, TimeSpan resolution) {
-		super("", Action.AS_RADIO_BUTTON);
+		super("", Action.AS_RADIO_BUTTON); //$NON-NLS-1$
 
 		this.view = view;
 		this.period = period;
 		this.resolution = resolution;
 
-		String unit = "";
+		String unit = ""; //$NON-NLS-1$
 		switch (period.getUnits()) {
 			case Days:
-				unit = "Day(s)";
+				unit = Messages.PeriodAction_DaysText;
 				break;
 			case Months:
-				unit = "Month(s)";
+				unit = Messages.PeriodAction_MonthsText;
 				break;
 			case Years:
-				unit = "Year(s)";
+				unit = Messages.PeriodAction_Yearstext;
 				break;
 		}
-		setText(NLS.bind("{0} {1}", new Object[] { String.valueOf(period.getLength()), unit }));
+		setText(NLS.bind("{0} {1}", new Object[] { String.valueOf(period.getLength()), unit })); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

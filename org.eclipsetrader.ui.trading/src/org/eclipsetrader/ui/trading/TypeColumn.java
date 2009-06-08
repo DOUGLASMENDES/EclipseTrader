@@ -16,7 +16,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class TypeColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.type";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.type"; //$NON-NLS-1$
 
 	public TypeColumn() {
 	}

@@ -43,9 +43,9 @@ public class SummaryNumberItem {
 	}
 
 	public void setValue(String text, Number number) {
-		label.setText(NLS.bind("{0}{1}", new Object[] {
+		label.setText(NLS.bind(Messages.SummaryNumberItem_Label, new Object[] {
 				text,
-				number != null ? numberFormat.format(number) : "",
+				number != null ? numberFormat.format(number) : "", //$NON-NLS-1$
 		}));
 		label.getParent().layout();
 	}

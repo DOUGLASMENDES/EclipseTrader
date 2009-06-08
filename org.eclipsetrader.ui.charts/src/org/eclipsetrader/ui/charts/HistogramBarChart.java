@@ -151,7 +151,7 @@ public class HistogramBarChart implements IChartObject, ISummaryBarDecorator, IA
 	 */
 	public String getToolTip() {
 		if (dataSeries.getLast() != null)
-			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class));
+			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class)); //$NON-NLS-1$
 		return dataSeries.getName();
 	}
 
@@ -221,7 +221,7 @@ public class HistogramBarChart implements IChartObject, ISummaryBarDecorator, IA
 		Number value = (Number) (values.length > 0 ? values[values.length - 1].getAdapter(Number.class) : null);
 
 		numberItem = new SummaryNumberItem(parent, SWT.NONE);
-		numberItem.setValue(dataSeries.getName() + ": ", value);
+		numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
     }
 
 	/* (non-Javadoc)
@@ -233,7 +233,7 @@ public class HistogramBarChart implements IChartObject, ISummaryBarDecorator, IA
 				if (pointArray.get(i).containsPoint(x, y)) {
 	    			Number value = (Number) values[i].getAdapter(Number.class);
 	    			if (value != null)
-	    				numberItem.setValue(dataSeries.getName() + ": ", value);
+	    				numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
 				}
 			}
 		}
@@ -289,7 +289,7 @@ public class HistogramBarChart implements IChartObject, ISummaryBarDecorator, IA
 		}
 
 		public String getToolTip() {
-			return dataSeries.getName() + ": " + numberFormat.format(value);
+			return dataSeries.getName() + ": " + numberFormat.format(value); //$NON-NLS-1$
 		}
     }
 }

@@ -61,7 +61,7 @@ public class CurrentBookFactory implements IChartObjectFactory {
 	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
 	 */
 	public String getName() {
-		return "Current Price";
+		return Messages.CurrentBookFactory_Name;
 	}
 
 	/* (non-Javadoc)

@@ -41,14 +41,14 @@ public class TargetPriceWizard extends Wizard implements INewWizard {
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		if (selection.isEmpty())
-			throw new IllegalStateException("Nothing selected");
+			throw new IllegalStateException("Nothing selected"); //$NON-NLS-1$
 
 		Object o = selection.getFirstElement();
 		if (o instanceof IAdaptable)
 			o = ((IAdaptable) o).getAdapter(ISecurity.class);
 
 		if (o == null || !(o instanceof ISecurity))
-			throw new IllegalStateException("Not a security");
+			throw new IllegalStateException("Not a security"); //$NON-NLS-1$
 
 		security = (ISecurity) o;
 	}
@@ -58,7 +58,7 @@ public class TargetPriceWizard extends Wizard implements INewWizard {
 	 */
 	@Override
 	public String getWindowTitle() {
-		return "New Target Price";
+		return Messages.TargetPriceWizard_WindowTitle;
 	}
 
 	/* (non-Javadoc)

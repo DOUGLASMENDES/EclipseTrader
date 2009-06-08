@@ -17,7 +17,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.ui.INotification;
 
 public class AlertNotification implements INotification, Comparable<INotification> {
-	private static final String LABEL_TEXT = "{0}";
+	private static final String LABEL_TEXT = Messages.AlertNotification_Label;
 
 	private ISecurity security;
 	private String description;

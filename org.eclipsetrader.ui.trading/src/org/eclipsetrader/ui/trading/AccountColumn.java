@@ -16,7 +16,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class AccountColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.account";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.account"; //$NON-NLS-1$
 
 	public AccountColumn() {
 	}
@@ -35,6 +35,6 @@ public class AccountColumn extends ColumnLabelProvider {
 		if (order != null && order.getAccount() != null)
 			return order.getAccount().getDescription();
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

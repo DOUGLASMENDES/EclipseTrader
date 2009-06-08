@@ -37,12 +37,12 @@ public class AlertSelectionPage extends WizardSelectionPage {
 	private TableViewer viewer;
 
 	public AlertSelectionPage(IWorkbench workbench, IStructuredSelection selection) {
-		super("selection");
+		super("selection"); //$NON-NLS-1$
 
 		this.workbench = workbench;
 		this.selection = selection;
 
-		setTitle("Select an alert");
+		setTitle(Messages.AlertSelectionPage_Title);
 	}
 
 	/* (non-Javadoc)
@@ -67,11 +67,11 @@ public class AlertSelectionPage extends WizardSelectionPage {
 	AlertWizardNode[] getContributionItems() {
 		List<AlertWizardNode> list = new ArrayList<AlertWizardNode>();
 
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipse.ui.newWizards");
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipse.ui.newWizards"); //$NON-NLS-1$
 		IConfigurationElement[] element = extensionPoint.getConfigurationElements();
 		for (int i = 0; i < element.length; i++) {
-			String category = element[i].getAttribute("category");
-			if ("org.eclipsetrader.ui.trading.alerts".equals(category))
+			String category = element[i].getAttribute("category"); //$NON-NLS-1$
+			if ("org.eclipsetrader.ui.trading.alerts".equals(category)) //$NON-NLS-1$
 				list.add(new AlertWizardNode(element[i], workbench, selection));
 		}
 

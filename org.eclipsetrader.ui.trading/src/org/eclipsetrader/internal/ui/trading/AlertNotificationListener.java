@@ -38,7 +38,7 @@ public class AlertNotificationListener implements IAlertListener {
 
 		String description = alerts[0].getDescription();
 		if (alerts.length > 1)
-			description += NLS.bind("\r\nAnd {0} more alert(s)", new Object[] {
+			description += NLS.bind(Messages.AlertNotificationListener_MoreAlerts, new Object[] {
 				String.valueOf(alerts.length - 1)
 			});
 		notification.setDescription(description);

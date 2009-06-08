@@ -19,7 +19,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class DateTimeColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.datetime";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.datetime"; //$NON-NLS-1$
 
 	protected DateFormat formatter = DateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.MEDIUM);
 
@@ -40,6 +40,6 @@ public class DateTimeColumn extends ColumnLabelProvider {
 		if (order != null && order.getDate() != null)
 			return formatter.format(order.getDate());
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

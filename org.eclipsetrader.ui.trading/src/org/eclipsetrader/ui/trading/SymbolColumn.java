@@ -17,7 +17,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class SymbolColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.symbol";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.symbol"; //$NON-NLS-1$
 
 	public SymbolColumn() {
 	}
@@ -39,6 +39,6 @@ public class SymbolColumn extends ColumnLabelProvider {
 				return properties.getSymbol();
 		}
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

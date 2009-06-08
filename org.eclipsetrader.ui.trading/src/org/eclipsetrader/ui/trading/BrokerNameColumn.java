@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class BrokerNameColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.broker";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.broker"; //$NON-NLS-1$
 
 	public BrokerNameColumn() {
 	}
@@ -30,6 +30,6 @@ public class BrokerNameColumn extends ColumnLabelProvider {
 			if (order.getBrokerConnector() != null)
 				return order.getBrokerConnector().getName();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

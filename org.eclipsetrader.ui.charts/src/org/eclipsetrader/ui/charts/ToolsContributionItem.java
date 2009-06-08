@@ -21,12 +21,12 @@ public class ToolsContributionItem extends CompoundContributionItem {
 	private Action lineAction;
 
 	public ToolsContributionItem() {
-    	lineAction = new Action("Line", Action.AS_CHECK_BOX) {
+    	lineAction = new Action(Messages.ToolsContributionItem_Action, Action.AS_CHECK_BOX) {
             @Override
             public void run() {
             }
     	};
-    	lineAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/line.gif"));
+    	lineAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/line.gif")); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

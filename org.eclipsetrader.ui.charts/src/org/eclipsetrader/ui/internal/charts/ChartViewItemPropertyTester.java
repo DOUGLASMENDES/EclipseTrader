@@ -37,16 +37,16 @@ public class ChartViewItemPropertyTester extends PropertyTester {
 		if (receiver == null || !(receiver instanceof ChartViewItem))
 			return false;
 
-		if ("id".equals(property)) {
+		if ("id".equals(property)) { //$NON-NLS-1$
 			String id = ((ChartViewItem) receiver).getId();
 			return id.equals(expectedValue);
 		}
-		else if ("chartObjectFactory".equals(property)) {
+		else if ("chartObjectFactory".equals(property)) { //$NON-NLS-1$
 			IChartObjectFactory factory = ((ChartViewItem) receiver).getFactory();
 			if (factory != null)
 				return factory.getId().equals(expectedValue);
 		}
-		else if ("adapts".equals(property)) {
+		else if ("adapts".equals(property)) { //$NON-NLS-1$
 			if (!(receiver instanceof IAdaptable))
 				return false;
 			try {

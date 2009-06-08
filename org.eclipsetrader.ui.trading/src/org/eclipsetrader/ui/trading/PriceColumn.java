@@ -18,7 +18,7 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class PriceColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.price";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.price"; //$NON-NLS-1$
 
 	private NumberFormat formatter = NumberFormat.getInstance();
 
@@ -43,6 +43,6 @@ public class PriceColumn extends ColumnLabelProvider {
 		if (order != null && order.getPrice() != null)
 			return formatter.format(order.getPrice());
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

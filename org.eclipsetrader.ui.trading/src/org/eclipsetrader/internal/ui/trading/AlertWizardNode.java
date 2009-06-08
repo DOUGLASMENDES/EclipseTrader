@@ -55,12 +55,12 @@ public class AlertWizardNode implements IWizardNode {
 	public IWizard getWizard() {
 		try {
 			if (wizard == null) {
-				wizard = (IWizard) element.createExecutableExtension("class");
+				wizard = (IWizard) element.createExecutableExtension("class"); //$NON-NLS-1$
 				if (wizard instanceof INewWizard)
 					((INewWizard) wizard).init(workbench, selection);
 			}
 		} catch (CoreException e) {
-			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error creating wizard", e);
+			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, Messages.AlertWizardNode_CreateErrorMessage, e);
 			Activator.log(status);
 		}
 		return wizard;
@@ -78,6 +78,6 @@ public class AlertWizardNode implements IWizardNode {
 	 */
 	@Override
 	public String toString() {
-		return element.getAttribute("name");
+		return element.getAttribute("name"); //$NON-NLS-1$
 	}
 }

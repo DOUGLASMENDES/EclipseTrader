@@ -21,12 +21,12 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-	public static final String PLUGIN_ID = "org.eclipsetrader.ui.trading";
+	public static final String PLUGIN_ID = "org.eclipsetrader.ui.trading"; //$NON-NLS-1$
 
-	public static final String ALERT_NOTIFICATION_IMAGE = "alert_notification_image";
-	public static final String ALERT_ADD_IMAGE = "alert_add_image";
-	public static final String ALERT_DELETE_IMAGE = "alert_delete_image";
-	public static final String ALERT_WIZARD_IMAGE = "alert_wizard_image";
+	public static final String ALERT_NOTIFICATION_IMAGE = "alert_notification_image"; //$NON-NLS-1$
+	public static final String ALERT_ADD_IMAGE = "alert_add_image"; //$NON-NLS-1$
+	public static final String ALERT_DELETE_IMAGE = "alert_delete_image"; //$NON-NLS-1$
+	public static final String ALERT_WIZARD_IMAGE = "alert_wizard_image"; //$NON-NLS-1$
 
 	private static Activator plugin;
 
@@ -74,11 +74,11 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
-		reg.put(ALERT_NOTIFICATION_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/bell.png")));
+		reg.put(ALERT_NOTIFICATION_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/bell.png"))); //$NON-NLS-1$
 
-		reg.put(ALERT_WIZARD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/wizban/newfile_wiz.gif")));
-		reg.put(ALERT_ADD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/bell_add.png")));
-		reg.put(ALERT_DELETE_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/delete.gif")));
+		reg.put(ALERT_WIZARD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/wizban/newfile_wiz.gif"))); //$NON-NLS-1$
+		reg.put(ALERT_ADD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/bell_add.png"))); //$NON-NLS-1$
+		reg.put(ALERT_DELETE_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/delete.gif"))); //$NON-NLS-1$
 	}
 
 	/**

@@ -159,10 +159,10 @@ public class CandleStickChart implements IChartObject, ISummaryBarDecorator, IAd
 		if (dataSeries.getLast() != null) {
 			IOHLC ohlc = (IOHLC) dataSeries.getLast().getAdapter(IOHLC.class);
 			return dateFormat.format(ohlc.getDate()) +
-			   " O:" + numberFormat.format(ohlc.getOpen()) +
-			   " H:" + numberFormat.format(ohlc.getHigh()) +
-			   " L:" + numberFormat.format(ohlc.getLow()) +
-			   " C:" + numberFormat.format(ohlc.getHigh());
+			   " O:" + numberFormat.format(ohlc.getOpen()) + //$NON-NLS-1$
+			   " H:" + numberFormat.format(ohlc.getHigh()) + //$NON-NLS-1$
+			   " L:" + numberFormat.format(ohlc.getLow()) + //$NON-NLS-1$
+			   " C:" + numberFormat.format(ohlc.getHigh()); //$NON-NLS-1$
 		}
 		return dataSeries.getName();
 	}
@@ -309,11 +309,11 @@ public class CandleStickChart implements IChartObject, ISummaryBarDecorator, IAd
 
 		public String getToolTip() {
 			return dataSeries.getName() +
-			   "\r\nD:" + dateFormat.format(ohlc.getDate()) +
-			   "\r\nO:" + numberFormat.format(ohlc.getOpen()) +
-			   "\r\nH:" + numberFormat.format(ohlc.getHigh()) +
-			   "\r\nL:" + numberFormat.format(ohlc.getLow()) +
-			   "\r\nC:" + numberFormat.format(ohlc.getHigh());
+			   "\r\nD:" + dateFormat.format(ohlc.getDate()) + //$NON-NLS-1$
+			   "\r\nO:" + numberFormat.format(ohlc.getOpen()) + //$NON-NLS-1$
+			   "\r\nH:" + numberFormat.format(ohlc.getHigh()) + //$NON-NLS-1$
+			   "\r\nL:" + numberFormat.format(ohlc.getLow()) + //$NON-NLS-1$
+			   "\r\nC:" + numberFormat.format(ohlc.getHigh()); //$NON-NLS-1$
 		}
     }
 }

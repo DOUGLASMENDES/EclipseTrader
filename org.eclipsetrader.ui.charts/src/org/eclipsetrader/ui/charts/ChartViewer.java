@@ -42,7 +42,7 @@ import org.eclipsetrader.core.charts.IDataSeriesVisitor;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ChartViewer {
-	private static final String K_NEEDS_REDRAW = "needs_redraw";
+	private static final String K_NEEDS_REDRAW = "needs_redraw"; //$NON-NLS-1$
 
 	private Composite composite;
 	private SashForm sashForm;
@@ -371,7 +371,7 @@ public class ChartViewer {
 
    					((IScaleRenderer) renderer).renderHorizontalScale(graphics);
     			} catch(Error e) {
-    				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering horizontal scale");
+    				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_HorizontalScaleRenderingError);
     				ChartsUIActivator.log(status);
     			} finally {
     				if (graphics.gc != null)
@@ -482,7 +482,7 @@ public class ChartViewer {
 					}
 				}
 			} catch(Error e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
 				ChartsUIActivator.log(status);
 			} finally {
 				if (target.gc != null)
@@ -552,7 +552,7 @@ public class ChartViewer {
 				IScaleRenderer renderer = (IScaleRenderer) getRenderer();
 				renderer.renderVerticalScale(target);
 			} catch(Error e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, "Error rendering chart");
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
 				ChartsUIActivator.log(status);
 			} finally {
 				if (target.gc != null)

@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class BrokerMessageColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.message";
+	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.message"; //$NON-NLS-1$
 
 	public BrokerMessageColumn() {
 	}
@@ -30,7 +30,7 @@ public class BrokerMessageColumn extends ColumnLabelProvider {
 			if (order.getMessage() != null)
 				return order.getMessage();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

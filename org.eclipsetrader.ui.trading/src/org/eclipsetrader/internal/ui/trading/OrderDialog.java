@@ -118,7 +118,7 @@ public class OrderDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
 	    super.configureShell(newShell);
-	    newShell.setText("Trade Order");
+	    newShell.setText(Messages.OrderDialog_Text);
     }
 
 	/* (non-Javadoc)
@@ -205,8 +205,8 @@ public class OrderDialog extends TitleAreaDialog {
     protected Control createContents(Composite parent) {
 	    Control control = super.createContents(parent);
 
-		setTitle("Trade Order");
-		setMessage("Fill the form to send a trade order.");
+		setTitle(Messages.OrderDialog_Title);
+		setMessage(Messages.OrderDialog_Message);
 	    getButton(OK).setEnabled(isValid());
 
 	    return control;
@@ -220,7 +220,7 @@ public class OrderDialog extends TitleAreaDialog {
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 
     	Label label = new Label(composite, SWT.NONE);
-    	label.setText("Symbol");
+    	label.setText(Messages.OrderDialog_SymbolLabel);
     	symbol = new Text(composite, SWT.BORDER);
     	symbol.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
     	symbolDescription = new Label(composite, SWT.NONE);
@@ -229,19 +229,19 @@ public class OrderDialog extends TitleAreaDialog {
 
 	protected void createOrderDescriptionGroup(Composite parent) {
 		Group content = new Group(parent, SWT.NONE);
-		content.setText("Order Description");
+		content.setText(Messages.OrderDialog_OrderDescriptionGroup);
     	content.setLayout(new GridLayout(2, false));
     	content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
     	Label label = new Label(content, SWT.NONE);
-    	label.setText("Action");
+    	label.setText(Messages.OrderDialog_ActionLabel);
     	sideCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
     	sideCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
     	sideCombo.setContentProvider(new ArrayContentProvider());
     	sideCombo.setLabelProvider(new LabelProvider());
 
     	label = new Label(content, SWT.NONE);
-    	label.setText("Quantity");
+    	label.setText(Messages.OrderDialog_QuantityLabel);
     	quantity = new Text(content, SWT.BORDER);
     	quantity.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
     	((GridData) quantity.getLayoutData()).horizontalAlignment = SWT.FILL;
@@ -263,14 +263,14 @@ public class OrderDialog extends TitleAreaDialog {
     	});
 
     	label = new Label(content, SWT.NONE);
-    	label.setText("Order Type");
+    	label.setText(Messages.OrderDialog_OrderTypeLabel);
     	typeCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
     	typeCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
     	typeCombo.setContentProvider(new ArrayContentProvider());
     	typeCombo.setLabelProvider(new LabelProvider());
 
     	label = new Label(content, SWT.NONE);
-    	label.setText("Limit Price");
+    	label.setText(Messages.OrderDialog_LimitPriceLabel);
     	price = new Text(content, SWT.BORDER);
     	price.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
     	((GridData) price.getLayoutData()).horizontalAlignment = SWT.FILL;
@@ -286,7 +286,7 @@ public class OrderDialog extends TitleAreaDialog {
     	});
 
     	label = new Label(content, SWT.NONE);
-    	label.setText("Broker");
+    	label.setText(Messages.OrderDialog_BrokerLabel);
     	brokerCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
     	brokerCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
     	brokerCombo.setContentProvider(new ArrayContentProvider());
@@ -299,7 +299,7 @@ public class OrderDialog extends TitleAreaDialog {
     	brokerCombo.setSorter(new ViewerSorter());
 
     	label = new Label(content, SWT.NONE);
-    	label.setText("Route");
+    	label.setText(Messages.OrderDialog_RouteLabel);
     	routeCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
     	routeCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
     	routeCombo.setContentProvider(new ArrayContentProvider());
@@ -309,31 +309,31 @@ public class OrderDialog extends TitleAreaDialog {
 
 	protected void createMiscellaneousGroup(Composite parent) {
 		Group content = new Group(parent, SWT.NONE);
-		content.setText("Miscellaneous");
+		content.setText(Messages.OrderDialog_MiscLabel);
     	content.setLayout(new GridLayout(2, false));
     	content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
     	Label label = new Label(content, SWT.NONE);
-    	label.setText("Time in Force");
+    	label.setText(Messages.OrderDialog_TimeInForceLabel);
     	validityCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
     	validityCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
     	validityCombo.setContentProvider(new ArrayContentProvider());
     	validityCombo.setLabelProvider(new LabelProvider());
 
     	label = new Label(content, SWT.NONE);
-    	label.setText("Expire");
+    	label.setText(Messages.OrderDialog_ExpireLabel);
     	expireDate = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
     	expireDate.setSelection(new Date());
     	expireDate.setEnabled(false);
 
     	label = new Label(content, SWT.NONE);
-    	label.setText("Order Ref.");
+    	label.setText(Messages.OrderDialog_ReferenceLabel);
     	orderReference = new Text(content, SWT.BORDER);
     	orderReference.setLayoutData(new GridData(convertWidthInCharsToPixels(40), SWT.DEFAULT));
 	}
 
 	protected boolean isValid() {
-		if (symbol.getText().equals(""))
+		if (symbol.getText().equals("")) //$NON-NLS-1$
 			return false;
 
 		try {
@@ -397,7 +397,7 @@ public class OrderDialog extends TitleAreaDialog {
 	    			order.setExpire(expireDate.getSelection());
 	    	}
 
-	    	if (!orderReference.getText().equals(""))
+	    	if (!orderReference.getText().equals("")) //$NON-NLS-1$
 	    		order.setReference(orderReference.getText());
 
 			IBroker connector = (IBroker) ((IStructuredSelection) brokerCombo.getSelection()).getFirstElement();
@@ -406,7 +406,7 @@ public class OrderDialog extends TitleAreaDialog {
 
 	    	super.okPressed();
 		} catch(Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error submitting order", e);
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, Messages.OrderDialog_SubmitErrorMessage, e);
 			Activator.log(status);
 			ErrorDialog.openError(getShell(), getShell().getText(), null, status);
 		}
@@ -446,7 +446,7 @@ public class OrderDialog extends TitleAreaDialog {
 
 		if (security != null) {
 			symbol.setText(connector.getSymbolFromSecurity(security));
-    		symbolDescription.setText(security.getName().replaceAll("&", "&&"));
+    		symbolDescription.setText(security.getName().replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		IOrderSide[] sides =  connector.getAllowedSides();
@@ -474,7 +474,7 @@ public class OrderDialog extends TitleAreaDialog {
 
 	protected void createSummaryGroup(Composite parent) {
 		Group content = new Group(parent, SWT.NONE);
-		content.setText("Summary");
+		content.setText(Messages.OrderDialog_SummaryGroup);
     	content.setLayout(new GridLayout(1, false));
     	content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
 
@@ -497,14 +497,14 @@ public class OrderDialog extends TitleAreaDialog {
 			}
 
 			if (quantity != 0 && price != 0.0) {
-				summaryLabel.setText(NLS.bind("Total: {0}", new Object[] {
+				summaryLabel.setText(NLS.bind(Messages.OrderDialog_TotalLabel, new Object[] {
 						totalPriceFormat.format(quantity * price)
 					}));
 			}
 			else
-				summaryLabel.setText("");
+				summaryLabel.setText(""); //$NON-NLS-1$
 		} catch(Exception e) {
-			summaryLabel.setText("");
+			summaryLabel.setText(""); //$NON-NLS-1$
 		}
 	}
 }

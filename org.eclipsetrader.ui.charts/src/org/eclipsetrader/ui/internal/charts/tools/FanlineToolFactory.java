@@ -151,7 +151,7 @@ public class FanlineToolFactory implements IChartObjectFactory, IExecutableExten
          * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
          */
         public String getToolTip() {
-    	    return "Line";
+    	    return Messages.FanlineToolFactory_Tooltip;
         }
 
     	/* (non-Javadoc)
@@ -316,7 +316,7 @@ public class FanlineToolFactory implements IChartObjectFactory, IExecutableExten
                     factorLine[i] = graphics.mapToVerticalAxis(value);
                     drawExtendedLine(graphics, p1.x, p1.y, p2.x, factorLine[i]);
 
-                    String s = NLS.bind("{0} - {1}", new Object[] {
+                    String s = NLS.bind("{0} - {1}", new Object[] { //$NON-NLS-1$
                     		numberFormat.format(value),
                     		percentageFormat.format(factors[i]),
                     	});
@@ -367,9 +367,9 @@ public class FanlineToolFactory implements IChartObjectFactory, IExecutableExten
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
      */
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	factoryName = config.getAttribute("name");
-    	name = config.getAttribute("name");
+    	id = config.getAttribute("id"); //$NON-NLS-1$
+    	factoryName = config.getAttribute("name"); //$NON-NLS-1$
+    	name = config.getAttribute("name"); //$NON-NLS-1$
     }
 
 	/* (non-Javadoc)
@@ -400,19 +400,19 @@ public class FanlineToolFactory implements IChartObjectFactory, IExecutableExten
     	ChartParameters parameters = new ChartParameters();
 
     	if (!factoryName.equals(name))
-    		parameters.setParameter("name", name);
+    		parameters.setParameter("name", name); //$NON-NLS-1$
 
     	if (value1 != null) {
-        	parameters.setParameter("d1", value1.getDate());
-        	parameters.setParameter("v1", value1.getValue());
+        	parameters.setParameter("d1", value1.getDate()); //$NON-NLS-1$
+        	parameters.setParameter("v1", value1.getValue()); //$NON-NLS-1$
     	}
     	if (value2 != null) {
-        	parameters.setParameter("d2", value2.getDate());
-        	parameters.setParameter("v2", value2.getValue());
+        	parameters.setParameter("d2", value2.getDate()); //$NON-NLS-1$
+        	parameters.setParameter("v2", value2.getValue()); //$NON-NLS-1$
     	}
 
     	if (color != null)
-        	parameters.setParameter("color", color);
+        	parameters.setParameter("color", color); //$NON-NLS-1$
 
 	    return parameters;
     }
@@ -421,19 +421,19 @@ public class FanlineToolFactory implements IChartObjectFactory, IExecutableExten
 	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
 	 */
 	public void setParameters(IChartParameters parameters) {
-	    name = parameters.hasParameter("name") ? parameters.getString("name") : name;
+	    name = parameters.hasParameter("name") ? parameters.getString("name") : name; //$NON-NLS-1$ //$NON-NLS-2$
 
-	    Date d1 = parameters.hasParameter("d1") ? parameters.getDate("d1") : null;
-	    Number v1 = parameters.hasParameter("v1") ? parameters.getDouble("v1") : null;
+	    Date d1 = parameters.hasParameter("d1") ? parameters.getDate("d1") : null; //$NON-NLS-1$ //$NON-NLS-2$
+	    Number v1 = parameters.hasParameter("v1") ? parameters.getDouble("v1") : null; //$NON-NLS-1$ //$NON-NLS-2$
 	    if (d1 != null && v1 != null)
 	    	value1 = new Value(d1, v1);
 
-	    Date d2 = parameters.hasParameter("d2") ? parameters.getDate("d2") : null;
-	    Number v2 = parameters.hasParameter("v2") ? parameters.getDouble("v2") : null;
+	    Date d2 = parameters.hasParameter("d2") ? parameters.getDate("d2") : null; //$NON-NLS-1$ //$NON-NLS-2$
+	    Number v2 = parameters.hasParameter("v2") ? parameters.getDouble("v2") : null; //$NON-NLS-1$ //$NON-NLS-2$
 	    if (d2 != null && v2 != null)
 	    	value2 = new Value(d2, v2);
 
-    	color = parameters.hasParameter("color") ? parameters.getColor("color") : null;
+    	color = parameters.hasParameter("color") ? parameters.getColor("color") : null; //$NON-NLS-1$ //$NON-NLS-2$
 
 	    object.invalidate();
 	}

@@ -43,7 +43,7 @@ public class TargetPricePropertyPage extends PropertyPage implements IWorkbenchP
 	};
 
 	public TargetPricePropertyPage() {
-		setTitle("Spread");
+		setTitle(Messages.TargetPricePropertyPage_Title);
 		noDefaultAndApplyButton();
 	}
 
@@ -60,17 +60,17 @@ public class TargetPricePropertyPage extends PropertyPage implements IWorkbenchP
 		initializeDialogUnits(content);
 
 		Label label = new Label(content, SWT.NONE);
-		label.setText("Price Field");
+		label.setText(Messages.TargetPricePropertyPage_PriceField);
 		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
 		field = new Combo(content, SWT.READ_ONLY | SWT.DROP_DOWN);
 		field.setItems(new String[] {
-		    "Last", "Bid", "Ask"
+		    Messages.TargetPricePropertyPage_LastFieldText, Messages.TargetPricePropertyPage_BidFieldText, Messages.TargetPricePropertyPage_AskFieldText
 		});
 		field.select(0);
 		field.addSelectionListener(selectionListener);
 
 		label = new Label(content, SWT.NONE);
-		label.setText("Value");
+		label.setText(Messages.TargetPricePropertyPage_ValueLabel);
 		value = new Spinner(content, SWT.BORDER);
 		value.setDigits(4);
 		value.setMinimum(0);
@@ -79,7 +79,7 @@ public class TargetPricePropertyPage extends PropertyPage implements IWorkbenchP
 
 		label = new Label(content, SWT.NONE);
 		cross = new Button(content, SWT.CHECK);
-		cross.setText("Trigger if crossed");
+		cross.setText(Messages.TargetPricePropertyPage_TriggerIfCrossedLabel);
 		cross.addSelectionListener(selectionListener);
 
 		label = new Label(content, SWT.NONE);

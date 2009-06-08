@@ -71,7 +71,7 @@ public class AlertPropertyPage extends PropertyPage implements IWorkbenchPropert
 	}
 
 	protected AlertPropertyPage(BundleContext context) {
-		setTitle("Alerts");
+		setTitle(Messages.AlertPropertyPage_Title);
 
 		ServiceReference serviceReference = context.getServiceReference(IAlertService.class.getName());
 		if (serviceReference != null) {

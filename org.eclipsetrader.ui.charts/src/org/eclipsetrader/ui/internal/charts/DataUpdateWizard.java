@@ -20,8 +20,8 @@ public class DataUpdateWizard extends Wizard implements IImportWizard {
 	private ImportDataPage dataPage;
 
 	public DataUpdateWizard() {
-    	setWindowTitle("Update Historical Data");
-    	setDefaultPageImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin(ChartsUIActivator.PLUGIN_ID, "icons/wizban/import_wiz.png"));
+    	setWindowTitle(Messages.DataUpdateWizard_WindowTitle);
+    	setDefaultPageImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin(ChartsUIActivator.PLUGIN_ID, "icons/wizban/import_wiz.png")); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

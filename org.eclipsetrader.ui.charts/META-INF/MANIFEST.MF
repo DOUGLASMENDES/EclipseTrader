@@ -24,3 +24,4 @@ Import-Package: javax.xml.bind;version="[2.1.0,2.2.0)",
  javax.xml.bind.util;version="[2.1.0,2.2.0)"
 Eclipse-BuddyPolicy: global
 Bundle-ActivationPolicy: lazy
+Bundle-Localization: plugin

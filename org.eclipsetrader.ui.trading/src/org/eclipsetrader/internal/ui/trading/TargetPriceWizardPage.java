@@ -41,8 +41,8 @@ public class TargetPriceWizardPage extends WizardPage {
 	};
 
 	public TargetPriceWizardPage() {
-		super("general", "Target Price", null);
-		setDescription("Create a new Target Price alert");
+		super("general", Messages.TargetPriceWizardPage_Title, null); //$NON-NLS-1$
+		setDescription(Messages.TargetPriceWizardPage_Description);
 	}
 
 	/* (non-Javadoc)
@@ -58,17 +58,17 @@ public class TargetPriceWizardPage extends WizardPage {
 		setControl(content);
 
 		Label label = new Label(content, SWT.NONE);
-		label.setText("Price Field");
+		label.setText(Messages.TargetPriceWizardPage_PriceFieldLabel);
 		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(90), SWT.DEFAULT));
 		field = new Combo(content, SWT.READ_ONLY | SWT.DROP_DOWN);
 		field.setItems(new String[] {
-		    "Last", "Bid", "Ask"
+		    Messages.TargetPriceWizardPage_LastFieldText, Messages.TargetPriceWizardPage_BidFieldText, Messages.TargetPriceWizardPage_AskFieldText
 		});
 		field.select(0);
 		field.addSelectionListener(selectionListener);
 
 		label = new Label(content, SWT.NONE);
-		label.setText("Value");
+		label.setText(Messages.TargetPriceWizardPage_ValueLabel);
 		value = new Spinner(content, SWT.BORDER);
 		value.setDigits(4);
 		value.setMinimum(0);
@@ -77,7 +77,7 @@ public class TargetPriceWizardPage extends WizardPage {
 
 		label = new Label(content, SWT.NONE);
 		cross = new Button(content, SWT.CHECK);
-		cross.setText("Trigger if crossed");
+		cross.setText(Messages.TargetPriceWizardPage_TriggerIfCrossedLabel);
 		cross.addSelectionListener(selectionListener);
 
 		label = new Label(content, SWT.NONE);
