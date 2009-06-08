@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.trading.IBroker;
@@ -44,41 +43,41 @@ public class TradingService implements ITradingService {
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private IOrderChangeListener orderChangeListener = new IOrderChangeListener() {
-        public void orderChanged(OrderChangeEvent event) {
-        	processOrderChangedEvent(event);
-        	fireUpdateNotifications(event.broker, event.deltas);
-        }
+		public void orderChanged(OrderChangeEvent event) {
+			processOrderChangedEvent(event);
+			fireUpdateNotifications(event.broker, event.deltas);
+		}
 	};
 
 	public TradingService() {
 	}
 
 	public void startUp() {
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(CoreActivator.BROKERS_EXTENSION_ID);
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.BROKERS_EXTENSION_ID);
 		if (extensionPoint != null) {
 			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 			for (int j = 0; j < configElements.length; j++) {
 				try {
-	                IBroker connector = (IBroker) configElements[j].createExecutableExtension("class");
-	                brokers.put(connector.getId(), connector);
-                } catch (CoreException e) {
-    				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
-    				CoreActivator.log(status);
-                }
+					IBroker connector = (IBroker) configElements[j].createExecutableExtension("class");
+					brokers.put(connector.getId(), connector);
+				} catch (CoreException e) {
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
+					Activator.log(status);
+				}
 			}
 		}
 
 		for (IBroker connector : brokers.values()) {
 			IOrderMonitor[] o = connector.getOrders();
-            if (o != null)
-            	orders.addAll(Arrays.asList(o));
-            connector.addOrderChangeListener(orderChangeListener);
+			if (o != null)
+				orders.addAll(Arrays.asList(o));
+			connector.addOrderChangeListener(orderChangeListener);
 		}
 	}
 
 	public void shutDown() {
 		for (IBroker connector : brokers.values()) {
-            connector.removeOrderChangeListener(orderChangeListener);
+			connector.removeOrderChangeListener(orderChangeListener);
 			connector.disconnect();
 		}
 	}
@@ -99,37 +98,37 @@ public class TradingService implements ITradingService {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.ITradingService#getBrokerForSecurity(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public IBroker getBrokerForSecurity(ISecurity security) {
-    	IBroker broker = null;
+	 * @see org.eclipsetrader.core.trading.ITradingService#getBrokerForSecurity(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public IBroker getBrokerForSecurity(ISecurity security) {
+		IBroker broker = null;
 
-    	try {
-    		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-    		if (serviceReference != null) {
-        		IMarketService service = (IMarketService) context.getService(serviceReference);
+		try {
+			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+			if (serviceReference != null) {
+				IMarketService service = (IMarketService) context.getService(serviceReference);
 
-        		IMarket market = service.getMarketForSecurity(security);
-        		if (market != null)
-        			broker = market.getBroker();
+				IMarket market = service.getMarketForSecurity(security);
+				if (market != null)
+					broker = (IBroker) market.getAdapter(IBroker.class);
 
-        		context.ungetService(serviceReference);
-    		}
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading market service", e);
-    		CoreActivator.getDefault().getLog().log(status);
-    	}
+				context.ungetService(serviceReference);
+			}
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading market service", e);
+			Activator.getDefault().getLog().log(status);
+		}
 
-    	if (broker == null) {
-        	for (IBroker connector : brokers.values()) {
-        		if (connector.canTrade(security))
-        			return connector;
-        	}
-    	}
+		if (broker == null) {
+			for (IBroker connector : brokers.values()) {
+				if (connector.canTrade(security))
+					return connector;
+			}
+		}
 
-    	return broker;
-    }
+		return broker;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.ITradingService#getOrders()
@@ -152,31 +151,31 @@ public class TradingService implements ITradingService {
 		listeners.remove(listener);
 	}
 
-    protected void processOrderChangedEvent(OrderChangeEvent event) {
-    	for (OrderDelta delta : event.deltas) {
-    		if (delta.getKind() == OrderDelta.KIND_ADDED)
-    			orders.add(delta.getOrder());
-    		else if (delta.getKind() == OrderDelta.KIND_REMOVED)
-    			orders.remove(delta.getOrder());
-    		else {
-    			if (!orders.contains(delta.getOrder()))
-        			orders.add(delta.getOrder());
-    		}
-    	}
-    }
+	protected void processOrderChangedEvent(OrderChangeEvent event) {
+		for (OrderDelta delta : event.deltas) {
+			if (delta.getKind() == OrderDelta.KIND_ADDED)
+				orders.add(delta.getOrder());
+			else if (delta.getKind() == OrderDelta.KIND_REMOVED)
+				orders.remove(delta.getOrder());
+			else {
+				if (!orders.contains(delta.getOrder()))
+					orders.add(delta.getOrder());
+			}
+		}
+	}
 
-    protected void fireUpdateNotifications(IBroker broker, OrderDelta[] deltas) {
-    	if (deltas.length != 0) {
-    		OrderChangeEvent event = new OrderChangeEvent(broker, deltas);
-        	Object[] l = listeners.getListeners();
-    		for (int i = 0; i < l.length; i++) {
-    			try {
-    				((IOrderChangeListener) l[i]).orderChanged(event);
-    			} catch(Throwable e) {
-        			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
-        			CoreActivator.log(status);
-    			}
-    		}
-    	}
-    }
+	protected void fireUpdateNotifications(IBroker broker, OrderDelta[] deltas) {
+		if (deltas.length != 0) {
+			OrderChangeEvent event = new OrderChangeEvent(broker, deltas);
+			Object[] l = listeners.getListeners();
+			for (int i = 0; i < l.length; i++) {
+				try {
+					((IOrderChangeListener) l[i]).orderChanged(event);
+				} catch (Throwable e) {
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+					Activator.log(status);
+				}
+			}
+		}
+	}
 }

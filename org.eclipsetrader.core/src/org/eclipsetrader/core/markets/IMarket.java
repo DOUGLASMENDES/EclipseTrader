@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.trading.IBroker;
 
 /**
  * @since 1.0
@@ -134,6 +133,4 @@ public interface IMarket extends IAdaptable {
 	public IBackfillConnector getBackfillConnector();
 
 	public IBackfillConnector getIntradayBackfillConnector();
-
-	public IBroker getBroker();
 }

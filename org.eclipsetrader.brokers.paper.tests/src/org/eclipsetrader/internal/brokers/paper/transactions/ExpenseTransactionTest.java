@@ -21,7 +21,7 @@ import javax.xml.bind.Unmarshaller;
 
 import junit.framework.TestCase;
 
-import org.eclipsetrader.core.trading.Cash;
+import org.eclipsetrader.core.Cash;
 
 public class ExpenseTransactionTest extends TestCase {
 	private String prefix = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";

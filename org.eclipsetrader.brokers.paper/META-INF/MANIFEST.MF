@@ -7,7 +7,8 @@ Bundle-Activator: org.eclipsetrader.internal.brokers.paper.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipsetrader.core;bundle-version="1.0.0"
+ org.eclipsetrader.core,
+ org.eclipsetrader.core.trading
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.xml.bind;version="[2.0.0,3.0.0)",

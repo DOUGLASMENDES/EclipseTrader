@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.trading;
+package org.eclipsetrader.core;
 
 import java.util.Currency;
 

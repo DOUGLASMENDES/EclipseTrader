@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,17 +37,15 @@ import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.internal.markets.Market;
-import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class ConnectorsPage extends PropertyPage {
-    ComboViewer liveFeed;
-    ComboViewer backfillFeed;
-    ComboViewer intradayBackfillFeed;
-    ComboViewer brokerCombo;
+	ComboViewer liveFeed;
+	ComboViewer backfillFeed;
+	ComboViewer intradayBackfillFeed;
 
 	public ConnectorsPage() {
 		setTitle("Connectors");
@@ -72,24 +70,24 @@ public class ConnectorsPage extends PropertyPage {
 		liveFeed.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		liveFeed.getCombo().setVisibleItemCount(15);
 		liveFeed.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-            	if (!(element instanceof IFeedConnector)) {
-            		IFeedConnector defaultConnector = CoreActivator.getDefault() != null ? CoreActivator.getDefault().getDefaultConnector() : null;
-            		return NLS.bind("Default ({0})", new Object[] {
-            				defaultConnector != null ? defaultConnector.getName() :  "None",
-            			});
-            	}
-	            return ((IFeedConnector) element).getName();
-            }
+			@Override
+			public String getText(Object element) {
+				if (!(element instanceof IFeedConnector)) {
+					IFeedConnector defaultConnector = CoreActivator.getDefault() != null ? CoreActivator.getDefault().getDefaultConnector() : null;
+					return NLS.bind("Default ({0})", new Object[] {
+						defaultConnector != null ? defaultConnector.getName() : "None",
+					});
+				}
+				return ((IFeedConnector) element).getName();
+			}
 		});
 		liveFeed.setSorter(new ViewerSorter() {
-            @Override
-            public int category(Object element) {
-            	if (element instanceof IFeedConnector)
-            		return 1;
-	            return 0;
-            }
+			@Override
+			public int category(Object element) {
+				if (element instanceof IFeedConnector)
+					return 1;
+				return 0;
+			}
 		});
 		liveFeed.setContentProvider(new ArrayContentProvider());
 
@@ -100,20 +98,20 @@ public class ConnectorsPage extends PropertyPage {
 		backfillFeed.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		backfillFeed.getCombo().setVisibleItemCount(15);
 		backfillFeed.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-            	if (!(element instanceof IBackfillConnector))
-            		return "None";
-	            return ((IBackfillConnector) element).getName();
-            }
+			@Override
+			public String getText(Object element) {
+				if (!(element instanceof IBackfillConnector))
+					return "None";
+				return ((IBackfillConnector) element).getName();
+			}
 		});
 		backfillFeed.setSorter(new ViewerSorter() {
-            @Override
-            public int category(Object element) {
-            	if (element instanceof IBackfillConnector)
-            		return 1;
-	            return 0;
-            }
+			@Override
+			public int category(Object element) {
+				if (element instanceof IBackfillConnector)
+					return 1;
+				return 0;
+			}
 		});
 		backfillFeed.setContentProvider(new ArrayContentProvider());
 
@@ -124,52 +122,28 @@ public class ConnectorsPage extends PropertyPage {
 		intradayBackfillFeed.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		intradayBackfillFeed.getCombo().setVisibleItemCount(15);
 		intradayBackfillFeed.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-            	if (!(element instanceof IBackfillConnector)) {
-            		Object o = ((IStructuredSelection) backfillFeed.getSelection()).getFirstElement();
-            		return NLS.bind("Default ({0})", new Object[] {
-            				o instanceof IBackfillConnector ? ((IBackfillConnector) o).getName() :  "None",
-            			});
-            	}
-	            return ((IBackfillConnector) element).getName();
-            }
+			@Override
+			public String getText(Object element) {
+				if (!(element instanceof IBackfillConnector)) {
+					Object o = ((IStructuredSelection) backfillFeed.getSelection()).getFirstElement();
+					return NLS.bind("Default ({0})", new Object[] {
+						o instanceof IBackfillConnector ? ((IBackfillConnector) o).getName() : "None",
+					});
+				}
+				return ((IBackfillConnector) element).getName();
+			}
 		});
 		intradayBackfillFeed.setSorter(new ViewerSorter() {
-            @Override
-            public int category(Object element) {
-            	if (element instanceof IBackfillConnector)
-            		return 1;
-	            return 0;
-            }
+			@Override
+			public int category(Object element) {
+				if (element instanceof IBackfillConnector)
+					return 1;
+				return 0;
+			}
 		});
 		intradayBackfillFeed.setContentProvider(new ArrayContentProvider());
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Broker");
-		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
-		brokerCombo = new ComboViewer(content, SWT.READ_ONLY);
-		brokerCombo.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		brokerCombo.getCombo().setVisibleItemCount(15);
-		brokerCombo.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-            	if (!(element instanceof IBroker))
-            		return "None";
-	            return ((IBroker) element).getName();
-            }
-		});
-		brokerCombo.setSorter(new ViewerSorter() {
-            @Override
-            public int category(Object element) {
-            	if (element instanceof IBroker)
-            		return 1;
-	            return 0;
-            }
-		});
-		brokerCombo.setContentProvider(new ArrayContentProvider());
-
-	    List<Object> feedConnectors = new ArrayList<Object>();
+		List<Object> feedConnectors = new ArrayList<Object>();
 		feedConnectors.add(new Object());
 		if (getFeedService() != null)
 			feedConnectors.addAll(Arrays.asList(getFeedService().getConnectors()));
@@ -177,87 +151,70 @@ public class ConnectorsPage extends PropertyPage {
 		liveFeed.setSelection(new StructuredSelection(feedConnectors.get(0)));
 
 		final Object defaultBackfillElement = new Object();
-	    List<Object> backfillConnectors = new ArrayList<Object>();
-	    backfillConnectors.add(defaultBackfillElement);
-	    if (getFeedService() != null)
-	    	backfillConnectors.addAll(Arrays.asList(getFeedService().getBackfillConnectors()));
+		List<Object> backfillConnectors = new ArrayList<Object>();
+		backfillConnectors.add(defaultBackfillElement);
+		if (getFeedService() != null)
+			backfillConnectors.addAll(Arrays.asList(getFeedService().getBackfillConnectors()));
 
-	    backfillFeed.setInput(backfillConnectors.toArray());
-	    backfillFeed.setSelection(new StructuredSelection(defaultBackfillElement));
+		backfillFeed.setInput(backfillConnectors.toArray());
+		backfillFeed.setSelection(new StructuredSelection(defaultBackfillElement));
 		backfillFeed.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
+			public void selectionChanged(SelectionChangedEvent event) {
 				intradayBackfillFeed.update(defaultBackfillElement, null);
-            }
-	    });
-
-	    intradayBackfillFeed.setInput(backfillConnectors.toArray());
-	    intradayBackfillFeed.setSelection(new StructuredSelection(defaultBackfillElement));
-
-	    List<Object> brokers = new ArrayList<Object>();
-	    brokers.add(new Object());
-	    if (getTradingService() != null)
-	    	brokers.addAll(Arrays.asList(getTradingService().getBrokers()));
-	    brokerCombo.setInput(brokers.toArray());
-	    brokerCombo.setSelection(new StructuredSelection(brokers.get(0)));
-
-		if (getElement() != null) {
-			Market market = (Market) getElement().getAdapter(Market.class);
-			if (market != null) {
-				IFeedConnector liveConnector = market.getLiveFeedConnector();
-				if (liveConnector != null) {
-					if (!feedConnectors.contains(liveConnector)) {
-						feedConnectors.add(liveConnector);
-						liveFeed.setInput(feedConnectors.toArray());
-					}
-					liveFeed.setSelection(new StructuredSelection(liveConnector));
-				}
-				IBackfillConnector backfillConnector = market.getBackfillConnector();
-				if (backfillConnector != null) {
-					if (!backfillConnectors.contains(backfillConnector)) {
-						backfillConnectors.add(backfillConnector);
-					    backfillFeed.setInput(backfillConnectors.toArray());
-					    intradayBackfillFeed.setInput(backfillConnectors.toArray());
-					}
-					backfillFeed.setSelection(new StructuredSelection(backfillConnector));
-				}
-				backfillConnector = market.getIntradayBackfillConnector();
-				if (backfillConnector != null) {
-					if (!backfillConnectors.contains(backfillConnector)) {
-						backfillConnectors.add(backfillConnector);
-					    backfillFeed.setInput(backfillConnectors.toArray());
-					    intradayBackfillFeed.setInput(backfillConnectors.toArray());
-					}
-					intradayBackfillFeed.setSelection(new StructuredSelection(backfillConnector));
-				}
-				else
-				    intradayBackfillFeed.setSelection(new StructuredSelection(defaultBackfillElement));
-				IBroker broker = market.getBroker();
-				if (broker != null) {
-					if (!brokers.contains(broker)) {
-						brokers.add(broker);
-					    brokerCombo.setInput(brokers.toArray());
-					}
-					brokerCombo.setSelection(new StructuredSelection(broker));
-				}
 			}
+		});
+
+		intradayBackfillFeed.setInput(backfillConnectors.toArray());
+		intradayBackfillFeed.setSelection(new StructuredSelection(defaultBackfillElement));
+
+		Market market = (Market) getElement().getAdapter(Market.class);
+		if (market != null) {
+			IFeedConnector liveConnector = market.getLiveFeedConnector();
+			if (liveConnector != null) {
+				if (!feedConnectors.contains(liveConnector)) {
+					feedConnectors.add(liveConnector);
+					liveFeed.setInput(feedConnectors.toArray());
+				}
+				liveFeed.setSelection(new StructuredSelection(liveConnector));
+			}
+			IBackfillConnector backfillConnector = market.getBackfillConnector();
+			if (backfillConnector != null) {
+				if (!backfillConnectors.contains(backfillConnector)) {
+					backfillConnectors.add(backfillConnector);
+					backfillFeed.setInput(backfillConnectors.toArray());
+					intradayBackfillFeed.setInput(backfillConnectors.toArray());
+				}
+				backfillFeed.setSelection(new StructuredSelection(backfillConnector));
+			}
+			backfillConnector = market.getIntradayBackfillConnector();
+			if (backfillConnector != null) {
+				if (!backfillConnectors.contains(backfillConnector)) {
+					backfillConnectors.add(backfillConnector);
+					backfillFeed.setInput(backfillConnectors.toArray());
+					intradayBackfillFeed.setInput(backfillConnectors.toArray());
+				}
+				intradayBackfillFeed.setSelection(new StructuredSelection(backfillConnector));
+			}
+			else
+				intradayBackfillFeed.setSelection(new StructuredSelection(defaultBackfillElement));
 		}
 
 		return content;
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.preference.PreferencePage#isValid()
-     */
-    @Override
-    public boolean isValid() {
-	    return true;
-    }
+	 * @see org.eclipse.jface.preference.PreferencePage#isValid()
+	 */
+	@Override
+	public boolean isValid() {
+		return true;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.preference.PreferencePage#performOk()
-     */
-    @Override
-    public boolean performOk() {
+	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
+	 */
+	@Override
+	public boolean performOk() {
 		if (isControlCreated() && getElement() != null) {
 			Market market = (Market) getElement().getAdapter(Market.class);
 			if (market != null) {
@@ -267,42 +224,40 @@ public class ConnectorsPage extends PropertyPage {
 				market.setBackfillConnector(s instanceof IBackfillConnector ? (IBackfillConnector) s : null);
 				s = ((IStructuredSelection) intradayBackfillFeed.getSelection()).getFirstElement();
 				market.setIntradayBackfillConnector(s instanceof IBackfillConnector ? (IBackfillConnector) s : null);
-				s = ((IStructuredSelection) brokerCombo.getSelection()).getFirstElement();
-				market.setBroker(s instanceof IBroker ? (IBroker) s : null);
 			}
 		}
-	    return super.performOk();
-    }
+		return super.performOk();
+	}
 
-    protected IFeedService getFeedService() {
-    	if (UIActivator.getDefault() == null)
-    		return null;
-    	try {
-    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
-    		IFeedService service = (IFeedService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-    		UIActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
-    }
+	protected IFeedService getFeedService() {
+		if (UIActivator.getDefault() == null)
+			return null;
+		try {
+			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+			IFeedService service = (IFeedService) context.getService(serviceReference);
+			context.ungetService(serviceReference);
+			return service;
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+			UIActivator.getDefault().getLog().log(status);
+		}
+		return null;
+	}
 
-    protected ITradingService getTradingService() {
-    	if (UIActivator.getDefault() == null)
-    		return null;
-    	try {
-    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-    		ITradingService service = (ITradingService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading trading service", e);
-    		UIActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
-    }
+	protected ITradingService getTradingService() {
+		if (UIActivator.getDefault() == null)
+			return null;
+		try {
+			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
+			ITradingService service = (ITradingService) context.getService(serviceReference);
+			context.ungetService(serviceReference);
+			return service;
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading trading service", e);
+			UIActivator.getDefault().getLog().log(status);
+		}
+		return null;
+	}
 }

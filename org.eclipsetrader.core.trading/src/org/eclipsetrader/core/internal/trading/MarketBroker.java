@@ -9,30 +9,44 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.markets;
+package org.eclipsetrader.core.internal.trading;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.trading.IBroker;
 
 @XmlRootElement(name = "broker")
 public class MarketBroker {
-    @XmlAttribute(name = "id")
+	@XmlAttribute(name = "market")
+	@XmlJavaTypeAdapter(MarketAdapter.class)
+	private IMarket market;
+
+	@XmlAttribute(name = "connector")
 	@XmlJavaTypeAdapter(BrokerAdapter.class)
 	private IBroker connector;
 
 	public MarketBroker() {
 	}
 
-	public MarketBroker(IBroker connector) {
-	    this.connector = connector;
-    }
+	public MarketBroker(IMarket market) {
+		this.market = market;
+	}
+
+	@XmlTransient
+	public IMarket getMarket() {
+		return market;
+	}
 
 	@XmlTransient
 	public IBroker getConnector() {
-    	return connector;
-    }
+		return connector;
+	}
+
+	public void setConnector(IBroker connector) {
+		this.connector = connector;
+	}
 }

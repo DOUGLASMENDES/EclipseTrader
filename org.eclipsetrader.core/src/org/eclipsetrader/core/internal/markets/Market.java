@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,17 +33,16 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.PlatformObject;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketDay;
-import org.eclipsetrader.core.trading.IBroker;
 
 @XmlRootElement(name = "market")
 @XmlType(name = "org.eclipsetrader.core.markets.Market")
-public class Market implements IMarket, IAdaptable {
+public class Market extends PlatformObject implements IMarket {
 	@XmlAttribute(name = "name")
 	private String name;
 
@@ -64,19 +63,16 @@ public class Market implements IMarket, IAdaptable {
 	@XmlElement(name = "intraday-backfill")
 	private MarketBackfillConnector intradayBackfillConnector;
 
-	@XmlElement(name = "broker")
-	private MarketBroker broker;
-
 	@XmlElementWrapper(name = "schedule")
-    @XmlElementRef
+	@XmlElementRef
 	private SortedSet<MarketTime> schedule;
 
 	@XmlElementWrapper(name = "holidays")
-    @XmlElementRef
+	@XmlElementRef
 	private SortedSet<MarketHoliday> holidays;
 
 	@XmlElementWrapper(name = "members")
-    @XmlElement(name = "security")
+	@XmlElement(name = "security")
 	@XmlJavaTypeAdapter(SecurityAdapter.class)
 	private List<ISecurity> members;
 
@@ -96,10 +92,10 @@ public class Market implements IMarket, IAdaptable {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getName()
-     */
+	 * @see org.eclipsetrader.core.markets.IMarket#getName()
+	 */
 	@XmlTransient
-    public String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -111,14 +107,14 @@ public class Market implements IMarket, IAdaptable {
 
 	@XmlTransient
 	public MarketTime[] getSchedule() {
-    	return schedule.toArray(new MarketTime[schedule.size()]);
-    }
+		return schedule.toArray(new MarketTime[schedule.size()]);
+	}
 
 	public void setSchedule(MarketTime[] schedule) {
 		Object oldValue = this.schedule.toArray(new MarketTime[this.schedule.size()]);
 		this.schedule = schedule != null ? new TreeSet<MarketTime>(Arrays.asList(schedule)) : null;
 		propertyChangeSupport.firePropertyChange(PROP_SCHEDULE, oldValue, this.schedule.toArray(new MarketTime[this.schedule.size()]));
-    }
+	}
 
 	@XmlTransient
 	public Integer[] getWeekDays() {
@@ -185,7 +181,7 @@ public class Market implements IMarket, IAdaptable {
 		normalized.set(Calendar.MINUTE, refTime.get(Calendar.MINUTE));
 		normalized.set(Calendar.SECOND, 0);
 		normalized.set(Calendar.MILLISECOND, 0);
-    	return normalized.getTime();
+		return normalized.getTime();
 	}
 
 	protected String getHolidayDescriptionFor(Date time) {
@@ -253,11 +249,11 @@ public class Market implements IMarket, IAdaptable {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getNextDay()
-     */
-    public IMarketDay getNextDay() {
+	 * @see org.eclipsetrader.core.markets.IMarket#getNextDay()
+	 */
+	public IMarketDay getNextDay() {
 		return getNextMarketDayFor(Calendar.getInstance().getTime());
-    }
+	}
 
 	protected MarketDay getNextMarketDayFor(Date time) {
 		Calendar calendar = Calendar.getInstance(timeZone != null ? timeZone : TimeZone.getDefault());
@@ -288,125 +284,114 @@ public class Market implements IMarket, IAdaptable {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#addMember(org.eclipsetrader.core.instruments.ISecurity[])
-     */
-    public void addMembers(ISecurity[] securities) {
-    	if (members == null)
-    		members = new ArrayList<ISecurity>();
+	 * @see org.eclipsetrader.core.markets.IMarket#addMember(org.eclipsetrader.core.instruments.ISecurity[])
+	 */
+	public void addMembers(ISecurity[] securities) {
+		if (members == null)
+			members = new ArrayList<ISecurity>();
 
-    	Object oldValue = getMembers();
+		Object oldValue = getMembers();
 
-    	for (ISecurity security : securities) {
-    		if (!members.contains(security))
-    			members.add(security);
-    	}
+		for (ISecurity security : securities) {
+			if (!members.contains(security))
+				members.add(security);
+		}
 
-    	propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#removeMember(org.eclipsetrader.core.instruments.ISecurity[])
-     */
-    public void removeMembers(ISecurity[] securities) {
-    	if (members != null) {
-        	Object oldValue = getMembers();
-    		members.removeAll(Arrays.asList(securities));
-        	propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
-    	}
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getMembers()
-     */
-	@XmlTransient
-    public ISecurity[] getMembers() {
-    	if (members == null)
-    		return new ISecurity[0];
-	    return members.toArray(new ISecurity[members.size()]);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#hasMember(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public boolean hasMember(ISecurity security) {
-	    return members != null && members.contains(security);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getLiveFeedConnector()
-     */
-	@XmlTransient
-    public IFeedConnector getLiveFeedConnector() {
-	    return liveFeedConnector != null ? liveFeedConnector.getConnector() : null;
-    }
-
-	public void setLiveFeedConnector(IFeedConnector liveFeedConnector) {
-		Object oldValue = this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null;
-    	this.liveFeedConnector = liveFeedConnector != null ? new MarketConnector(liveFeedConnector) : null;
-		propertyChangeSupport.firePropertyChange(PROP_LIVE_FEED_CONNECTOR, oldValue, this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
-     */
-	@XmlTransient
-    public IBackfillConnector getBackfillConnector() {
-	    return backfillConnector != null ? backfillConnector.getConnector() : null;
-    }
-
-	public void setBackfillConnector(IBackfillConnector backfillConnector) {
-    	this.backfillConnector = backfillConnector != null ? new MarketBackfillConnector(backfillConnector) : null;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
-     */
-	@XmlTransient
-    public IBackfillConnector getIntradayBackfillConnector() {
-	    return intradayBackfillConnector != null ? intradayBackfillConnector.getConnector() : null;
-    }
-
-	public void setIntradayBackfillConnector(IBackfillConnector intradayBackfillConnector) {
-    	this.intradayBackfillConnector = intradayBackfillConnector != null ? new MarketBackfillConnector(intradayBackfillConnector) : null;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getBroker()
-     */
-	@XmlTransient
-    public IBroker getBroker() {
-	    return broker != null ? broker.getConnector() : null;
-    }
-
-	public void setBroker(IBroker broker) {
-		this.broker = broker != null ? new MarketBroker(broker) : null;
+		propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
 	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-	    return 7 * name.hashCode();
-    }
+	 * @see org.eclipsetrader.core.markets.IMarket#removeMember(org.eclipsetrader.core.instruments.ISecurity[])
+	 */
+	public void removeMembers(ISecurity[] securities) {
+		if (members != null) {
+			Object oldValue = getMembers();
+			members.removeAll(Arrays.asList(securities));
+			propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return name;
-    }
+	 * @see org.eclipsetrader.core.markets.IMarket#getMembers()
+	 */
+	@XmlTransient
+	public ISecurity[] getMembers() {
+		if (members == null)
+			return new ISecurity[0];
+		return members.toArray(new ISecurity[members.size()]);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-     */
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(PropertyChangeSupport.class))
-    		return propertyChangeSupport;
-    	if (adapter.isAssignableFrom(getClass()))
-    		return this;
-	    return null;
-    }
+	 * @see org.eclipsetrader.core.markets.IMarket#hasMember(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public boolean hasMember(ISecurity security) {
+		return members != null && members.contains(security);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.markets.IMarket#getLiveFeedConnector()
+	 */
+	@XmlTransient
+	public IFeedConnector getLiveFeedConnector() {
+		return liveFeedConnector != null ? liveFeedConnector.getConnector() : null;
+	}
+
+	public void setLiveFeedConnector(IFeedConnector liveFeedConnector) {
+		Object oldValue = this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null;
+		this.liveFeedConnector = liveFeedConnector != null ? new MarketConnector(liveFeedConnector) : null;
+		propertyChangeSupport.firePropertyChange(PROP_LIVE_FEED_CONNECTOR, oldValue, this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
+	 */
+	@XmlTransient
+	public IBackfillConnector getBackfillConnector() {
+		return backfillConnector != null ? backfillConnector.getConnector() : null;
+	}
+
+	public void setBackfillConnector(IBackfillConnector backfillConnector) {
+		this.backfillConnector = backfillConnector != null ? new MarketBackfillConnector(backfillConnector) : null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
+	 */
+	@XmlTransient
+	public IBackfillConnector getIntradayBackfillConnector() {
+		return intradayBackfillConnector != null ? intradayBackfillConnector.getConnector() : null;
+	}
+
+	public void setIntradayBackfillConnector(IBackfillConnector intradayBackfillConnector) {
+		this.intradayBackfillConnector = intradayBackfillConnector != null ? new MarketBackfillConnector(intradayBackfillConnector) : null;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return 7 * name.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object getAdapter(Class adapter) {
+		if (adapter.isAssignableFrom(PropertyChangeSupport.class))
+			return propertyChangeSupport;
+		if (adapter.isAssignableFrom(getClass()))
+			return this;
+		return super.getAdapter(adapter);
+	}
 }

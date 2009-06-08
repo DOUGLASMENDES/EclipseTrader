@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.ICurrencyService;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
@@ -33,15 +34,9 @@ import org.eclipsetrader.core.internal.feed.FeedServiceFactory;
 import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.internal.markets.MarketServiceFactory;
 import org.eclipsetrader.core.internal.repositories.RepositoryService;
-import org.eclipsetrader.core.internal.trading.CurrencyService;
-import org.eclipsetrader.core.internal.trading.CurrencyServiceFactory;
-import org.eclipsetrader.core.internal.trading.TradingService;
-import org.eclipsetrader.core.internal.trading.TradingServiceFactory;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.core.trading.ICurrencyService;
-import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -60,7 +55,6 @@ public class CoreActivator extends Plugin {
 	public static final String ELEMENT_FACTORY_ID = "org.eclipsetrader.core.elementFactories";
 	public static final String REPOSITORY_ID = "org.eclipsetrader.core.repositories";
 	public static final String PROVIDERS_FACTORY_ID = "org.eclipsetrader.core.providers";
-	public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.brokers";
 
 	// Preferences IDs
 	public static final String DEFAULT_CONNECTOR_ID = "DEFAULT_CONNECTOR";
@@ -74,8 +68,6 @@ public class CoreActivator extends Plugin {
 
 	private FeedServiceFactory feedServiceFactory;
 	private ServiceRegistration feedServiceRegistration;
-	private TradingServiceFactory tradingServiceFactory;
-	private ServiceRegistration tradingServiceRegistration;
 	private MarketServiceFactory marketServiceFactory;
 	private ServiceRegistration marketServiceRegistration;
 	private CurrencyServiceFactory currencyServiceFactory;
@@ -96,58 +88,32 @@ public class CoreActivator extends Plugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-    @Override
-    public void start(BundleContext context) throws Exception {
+	@Override
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 
 		repositoryService = new RepositoryService();
-		repositoryServiceRegistration = context.registerService(
-				new String[] {
-						IRepositoryService.class.getName(),
-						RepositoryService.class.getName()
-					},
-				repositoryService,
-				new Hashtable<Object,Object>());
+		repositoryServiceRegistration = context.registerService(new String[] {
+		    IRepositoryService.class.getName(),
+		    RepositoryService.class.getName()
+		}, repositoryService, new Hashtable<Object, Object>());
 		repositoryService.startUp();
 
 		feedServiceFactory = new FeedServiceFactory();
-		feedServiceRegistration = context.registerService(
-				new String[] {
-						IFeedService.class.getName(),
-						FeedService.class.getName()
-					},
-					feedServiceFactory,
-				new Hashtable<Object,Object>());
-
-		tradingServiceFactory = new TradingServiceFactory();
-		tradingServiceRegistration = context.registerService(
-				new String[] {
-						ITradingService.class.getName(),
-						TradingService.class.getName()
-					},
-				tradingServiceFactory,
-				new Hashtable<Object,Object>()
-			);
+		feedServiceRegistration = context.registerService(new String[] {
+		    IFeedService.class.getName(), FeedService.class.getName()
+		}, feedServiceFactory, new Hashtable<Object, Object>());
 
 		marketServiceFactory = new MarketServiceFactory();
-		marketServiceRegistration = context.registerService(
-			new String[] {
-					IMarketService.class.getName(),
-					MarketService.class.getName()
-				},
-			marketServiceFactory,
-			new Hashtable<Object,Object>());
+		marketServiceRegistration = context.registerService(new String[] {
+		    IMarketService.class.getName(), MarketService.class.getName()
+		}, marketServiceFactory, new Hashtable<Object, Object>());
 
 		currencyServiceFactory = new CurrencyServiceFactory();
-		currencyServiceRegistration = context.registerService(
-				new String[] {
-						ICurrencyService.class.getName(),
-						CurrencyService.class.getName()
-					},
-				currencyServiceFactory,
-				new Hashtable<Object,Object>()
-			);
+		currencyServiceRegistration = context.registerService(new String[] {
+		    ICurrencyService.class.getName(), CurrencyService.class.getName()
+		}, currencyServiceFactory, new Hashtable<Object, Object>());
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
 		if (extensionPoint != null) {
@@ -167,9 +133,9 @@ public class CoreActivator extends Plugin {
 		try {
 			overrideAdapter = new ConnectorOverrideAdapter(getStateLocation().append("overrides.xml").toFile());
 			AdapterManager.getDefault().registerAdapters(overrideAdapter, ISecurity.class);
-		} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error reading override settings", e); //$NON-NLS-1$
-   			getLog().log(status);
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error reading override settings", e); //$NON-NLS-1$
+			getLog().log(status);
 		}
 	}
 
@@ -178,19 +144,14 @@ public class CoreActivator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		try {
 			if (overrideAdapter != null)
 				overrideAdapter.save(getStateLocation().append("overrides.xml").toFile());
-		} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error saving override settings", e); //$NON-NLS-1$
-    		getLog().log(status);
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error saving override settings", e); //$NON-NLS-1$
+			getLog().log(status);
 		}
-
-		if (tradingServiceRegistration != null)
-			tradingServiceRegistration.unregister();
-		if (tradingServiceFactory != null)
-			tradingServiceFactory.dispose();
 
 		if (currencyServiceRegistration != null)
 			currencyServiceRegistration.unregister();
@@ -245,7 +206,7 @@ public class CoreActivator extends Plugin {
 		if (extensionPoint == null)
 			return null;
 
-		synchronized(elementFactoryMap) {
+		synchronized (elementFactoryMap) {
 			IRepositoryElementFactory factory = elementFactoryMap.get(targetID);
 
 			if (factory == null) {
@@ -279,7 +240,7 @@ public class CoreActivator extends Plugin {
 		if (extensionPoint == null)
 			return null;
 
-		synchronized(providersFactoryMap) {
+		synchronized (providersFactoryMap) {
 			IDataProviderFactory factory = providersFactoryMap.get(targetID);
 
 			if (factory == null) {
@@ -309,7 +270,7 @@ public class CoreActivator extends Plugin {
 	}
 
 	public IDataProviderFactory[] getDataProviderFactories() {
-		synchronized(providersFactoryMap) {
+		synchronized (providersFactoryMap) {
 			Collection<IDataProviderFactory> c = providersFactoryMap.values();
 			return c.toArray(new IDataProviderFactory[c.size()]);
 		}

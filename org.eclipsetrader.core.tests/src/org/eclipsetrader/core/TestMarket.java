@@ -21,7 +21,6 @@ import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketDay;
-import org.eclipsetrader.core.trading.IBroker;
 
 public class TestMarket implements IMarket {
 	private String name;
@@ -48,22 +47,22 @@ public class TestMarket implements IMarket {
 	}
 
 	public void setLiveFeedConnector(IFeedConnector liveFeedConnector) {
-    	this.liveFeedConnector = liveFeedConnector;
-    }
+		this.liveFeedConnector = liveFeedConnector;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
-     */
-    public IBackfillConnector getBackfillConnector() {
-	    return backfillConnector;
-    }
+	 * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
+	 */
+	public IBackfillConnector getBackfillConnector() {
+		return backfillConnector;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
-     */
-    public IBackfillConnector getIntradayBackfillConnector() {
-	    return null;
-    }
+	 * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
+	 */
+	public IBackfillConnector getIntradayBackfillConnector() {
+		return null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.markets.IMarket#getMembers()
@@ -122,16 +121,9 @@ public class TestMarket implements IMarket {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-     */
-    public Object getAdapter(Class adapter) {
-	    return null;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.markets.IMarket#getBroker()
-     */
-    public IBroker getBroker() {
-	    return null;
-    }
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
 }

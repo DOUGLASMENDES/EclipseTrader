@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.eclipsetrader.core.trading.Cash;
+import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.ITransaction;
 import org.eclipsetrader.internal.brokers.paper.types.CurrencyAdapter;

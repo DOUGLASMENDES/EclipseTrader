@@ -111,6 +111,16 @@
             </adapt>
          </enabledWhen>
       </page>
+      <page
+            class="org.eclipsetrader.internal.ui.trading.MarketTradingPage"
+            id="org.eclipsetrader.ui.trading.market"
+            name="Trading">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipsetrader.core.markets.IMarket">
+            </adapt>
+         </enabledWhen>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">

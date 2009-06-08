@@ -9,9 +9,8 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.trading;
+package org.eclipsetrader.core.internal;
 
-import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.osgi.framework.Bundle;

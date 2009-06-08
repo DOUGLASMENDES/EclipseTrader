@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.trading;
+package org.eclipsetrader.core.internal;
 
 import java.util.ArrayList;
 import java.util.Currency;
@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipsetrader.core.Cash;
+import org.eclipsetrader.core.ICurrencyService;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IOHLC;
@@ -31,8 +33,6 @@ import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
-import org.eclipsetrader.core.trading.Cash;
-import org.eclipsetrader.core.trading.ICurrencyService;
 
 public class CurrencyService implements ICurrencyService {
 	private IRepositoryService repositoryService;

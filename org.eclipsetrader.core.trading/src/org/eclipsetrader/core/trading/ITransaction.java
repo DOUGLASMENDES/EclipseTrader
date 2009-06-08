@@ -13,6 +13,8 @@ package org.eclipsetrader.core.trading;
 
 import java.util.Date;
 
+import org.eclipsetrader.core.Cash;
+
 public interface ITransaction {
 
 	/**

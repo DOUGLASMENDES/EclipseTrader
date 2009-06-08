@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.internal.trading;
+package org.eclipsetrader.core.internal;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IHistory;
@@ -33,12 +34,12 @@ import org.eclipsetrader.core.feed.OHLC;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.CurrencyService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.core.trading.Cash;
 import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 
