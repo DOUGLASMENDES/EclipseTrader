@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
@@ -54,47 +53,50 @@ import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IOrderValidity;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.Order;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class OrderDialog extends TitleAreaDialog {
-	private Text symbol;
-	private Label symbolDescription;
+	Text symbol;
+	Label symbolDescription;
 
-	private ComboViewer sideCombo;
-	private Text quantity;
-	private ComboViewer typeCombo;
-	private Text price;
-	private ComboViewer brokerCombo;
-	private ComboViewer routeCombo;
+	ComboViewer sideCombo;
+	Text quantity;
+	ComboViewer typeCombo;
+	Text price;
+	ComboViewer brokerCombo;
+	ComboViewer routeCombo;
 
-	private ComboViewer validityCombo;
-	private CDateTime expireDate;
-	private Text orderReference;
+	ComboViewer validityCombo;
+	CDateTime expireDate;
+	Text orderReference;
 
-	private Label summaryLabel;
+	Label summaryLabel;
 
-	private IAdaptable target;
-	private ISecurity security;
-	private IBroker broker;
+	IAdaptable target;
+	ISecurity security;
+	IBroker broker;
+	Double limitPrice;
+	IOrderSide orderSide;
+	ITradingService tradingService;
 
-	private NumberFormat numberFormat;
-	private NumberFormat priceFormat;
-	private NumberFormat totalPriceFormat;
+	NumberFormat numberFormat;
+	NumberFormat priceFormat;
+	NumberFormat totalPriceFormat;
 
 	private ISelectionChangedListener orderTypeSelectionListener = new ISelectionChangedListener() {
-        public void selectionChanged(SelectionChangedEvent event) {
-        	IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-        	price.setEnabled(selection.getFirstElement() == IOrderType.Limit);
+		public void selectionChanged(SelectionChangedEvent event) {
+			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+			price.setEnabled(selection.getFirstElement() == IOrderType.Limit);
 
-        	updateSummary();
+			updateSummary();
 
-        	getButton(OK).setEnabled(isValid());
-        }
+			getButton(OK).setEnabled(isValid());
+		}
 	};
 
-	public OrderDialog(Shell parentShell) {
+	public OrderDialog(Shell parentShell, ITradingService tradingService) {
 		super(parentShell);
+
+		this.tradingService = tradingService;
 
 		numberFormat = NumberFormat.getInstance();
 		numberFormat.setMinimumFractionDigits(0);
@@ -112,105 +114,92 @@ public class OrderDialog extends TitleAreaDialog {
 		totalPriceFormat.setGroupingUsed(true);
 	}
 
-	/* (non-Javadoc)
-     * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
-     */
-    @Override
-    protected void configureShell(Shell newShell) {
-	    super.configureShell(newShell);
-	    newShell.setText(Messages.OrderDialog_Text);
-    }
+	public void setTarget(IAdaptable target) {
+		this.target = target;
+	}
+
+	public void setBroker(IBroker broker) {
+		this.broker = broker;
+	}
+
+	public void setLimitPrice(Double limitPrice) {
+		this.limitPrice = limitPrice;
+	}
+
+	public void setOrderSide(IOrderSide orderSide) {
+		this.orderSide = orderSide;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
-    protected Control createDialogArea(Composite parent) {
+	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+	 */
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		newShell.setText(Messages.OrderDialog_Text);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.TitleAreaDialog#createContents(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	protected Control createContents(Composite parent) {
+		Control control = super.createContents(parent);
+
+		setTitle(Messages.OrderDialog_Title);
+		setMessage(Messages.OrderDialog_Message);
+		getButton(OK).setEnabled(isValid());
+
+		return control;
+	}
+
+	protected boolean isValid() {
+		if (symbol.getText().equals("")) //$NON-NLS-1$
+			return false;
+
+		try {
+			long quantity = numberFormat.parse(this.quantity.getText()).longValue();
+			if (quantity <= 0)
+				return false;
+		} catch (Exception e) {
+			return false;
+		}
+
+		IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
+		if (orderType == IOrderType.Limit) {
+			try {
+				double price = priceFormat.parse(this.price.getText()).doubleValue();
+				if (price <= 0)
+					return false;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	protected Control createDialogArea(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-    	createContractDescriptionGroup(composite);
-    	createOrderDescriptionGroup(composite);
-    	createMiscellaneousGroup(composite);
-    	createSummaryGroup(composite);
+		createContractDescriptionGroup(composite);
+		createOrderDescriptionGroup(composite);
+		createMiscellaneousGroup(composite);
+		createSummaryGroup(composite);
 
-    	ITradingService tradingService = getTradingService();
-    	brokerCombo.setInput(tradingService.getBrokers());
+		setInitialParameters();
+		addListeners();
 
-    	if (getTarget() != null) {
-    		security = (ISecurity) getTarget().getAdapter(ISecurity.class);
+		quantity.setFocus();
 
-    		ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
-    		if (trade != null && trade.getPrice() != null)
-    			price.setText(priceFormat.format(trade.getPrice()));
-    	}
-
-    	if (broker != null) {
-        	IStructuredSelection selection = new StructuredSelection(broker);
-        	brokerCombo.setSelection(selection);
-        	handleBrokerSelection(selection);
-    	}
-    	else if (security != null) {
-    		symbol.setText(getSecuritySymbol(security));
-    		symbolDescription.setText(security.getName());
-    	}
-
-    	symbol.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-            	if (!brokerCombo.getSelection().isEmpty()) {
-        			IBroker connector = (IBroker) ((IStructuredSelection) brokerCombo.getSelection()).getFirstElement();
-        			security = connector.getSecurityFromSymbol(symbol.getText());
-            		symbolDescription.setText(security.getName());
-            	}
-            	getButton(OK).setEnabled(isValid());
-            }
-    	});
-
-    	price.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-            	updateSummary();
-            	getButton(OK).setEnabled(isValid());
-            }
-    	});
-
-    	typeCombo.addSelectionChangedListener(orderTypeSelectionListener);
-    	brokerCombo.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-            	IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-            	handleBrokerSelection(selection);
-            	getButton(OK).setEnabled(isValid());
-            }
-    	});
-    	validityCombo.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-            	IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-
-            	IOrderValidity validity = selection.isEmpty() ? null : (IOrderValidity) (selection).getFirstElement();
-            	expireDate.setEnabled(validity == IOrderValidity.GoodTillDate);
-
-            	getButton(OK).setEnabled(isValid());
-            }
-    	});
-
-    	quantity.setFocus();
-
-    	return composite;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.TitleAreaDialog#createContents(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
-    protected Control createContents(Composite parent) {
-	    Control control = super.createContents(parent);
-
-		setTitle(Messages.OrderDialog_Title);
-		setMessage(Messages.OrderDialog_Message);
-	    getButton(OK).setEnabled(isValid());
-
-	    return control;
-    }
+		return composite;
+	}
 
 	protected void createContractDescriptionGroup(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -219,219 +208,174 @@ public class OrderDialog extends TitleAreaDialog {
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 
-    	Label label = new Label(composite, SWT.NONE);
-    	label.setText(Messages.OrderDialog_SymbolLabel);
-    	symbol = new Text(composite, SWT.BORDER);
-    	symbol.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
-    	symbolDescription = new Label(composite, SWT.NONE);
-    	symbolDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		Label label = new Label(composite, SWT.NONE);
+		label.setText(Messages.OrderDialog_SymbolLabel);
+		symbol = new Text(composite, SWT.BORDER);
+		symbol.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
+		symbolDescription = new Label(composite, SWT.NONE);
+		symbolDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	}
 
 	protected void createOrderDescriptionGroup(Composite parent) {
 		Group content = new Group(parent, SWT.NONE);
 		content.setText(Messages.OrderDialog_OrderDescriptionGroup);
-    	content.setLayout(new GridLayout(2, false));
-    	content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		content.setLayout(new GridLayout(2, false));
+		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
-    	Label label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_ActionLabel);
-    	sideCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-    	sideCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-    	sideCombo.setContentProvider(new ArrayContentProvider());
-    	sideCombo.setLabelProvider(new LabelProvider());
+		Label label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_ActionLabel);
+		sideCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+		sideCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		sideCombo.setContentProvider(new ArrayContentProvider());
+		sideCombo.setLabelProvider(new LabelProvider());
 
-    	label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_QuantityLabel);
-    	quantity = new Text(content, SWT.BORDER);
-    	quantity.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
-    	((GridData) quantity.getLayoutData()).horizontalAlignment = SWT.FILL;
-    	quantity.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-            	updateSummary();
-            	getButton(OK).setEnabled(isValid());
-            }
-    	});
-    	quantity.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent event) {
-            	try {
-        	    	long n = numberFormat.parse(((Text) event.widget).getText()).longValue();
-        	    	((Text) event.widget).setText(numberFormat.format(n));
-            	} catch(Exception e) {
-            	}
-            }
-    	});
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_QuantityLabel);
+		quantity = new Text(content, SWT.BORDER);
+		quantity.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
+		((GridData) quantity.getLayoutData()).horizontalAlignment = SWT.FILL;
 
-    	label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_OrderTypeLabel);
-    	typeCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-    	typeCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-    	typeCombo.setContentProvider(new ArrayContentProvider());
-    	typeCombo.setLabelProvider(new LabelProvider());
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_OrderTypeLabel);
+		typeCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+		typeCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		typeCombo.setContentProvider(new ArrayContentProvider());
+		typeCombo.setLabelProvider(new LabelProvider());
 
-    	label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_LimitPriceLabel);
-    	price = new Text(content, SWT.BORDER);
-    	price.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
-    	((GridData) price.getLayoutData()).horizontalAlignment = SWT.FILL;
-    	price.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent event) {
-            	try {
-        	    	double n = priceFormat.parse(((Text) event.widget).getText()).doubleValue();
-        	    	((Text) event.widget).setText(priceFormat.format(n));
-            	} catch(Exception e) {
-            	}
-            }
-    	});
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_LimitPriceLabel);
+		price = new Text(content, SWT.BORDER);
+		price.setLayoutData(new GridData(convertWidthInCharsToPixels(18), SWT.DEFAULT));
+		((GridData) price.getLayoutData()).horizontalAlignment = SWT.FILL;
+		price.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				try {
+					double n = priceFormat.parse(((Text) event.widget).getText()).doubleValue();
+					((Text) event.widget).setText(priceFormat.format(n));
+				} catch (Exception e) {
+				}
+			}
+		});
 
-    	label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_BrokerLabel);
-    	brokerCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-    	brokerCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-    	brokerCombo.setContentProvider(new ArrayContentProvider());
-    	brokerCombo.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-	            return ((IBroker) element).getName();
-            }
-    	});
-    	brokerCombo.setSorter(new ViewerSorter());
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_BrokerLabel);
+		brokerCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+		brokerCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		brokerCombo.setContentProvider(new ArrayContentProvider());
+		brokerCombo.setLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return ((IBroker) element).getName();
+			}
+		});
+		brokerCombo.setSorter(new ViewerSorter());
+		brokerCombo.setInput(tradingService.getBrokers());
 
-    	label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_RouteLabel);
-    	routeCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-    	routeCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-    	routeCombo.setContentProvider(new ArrayContentProvider());
-    	routeCombo.setLabelProvider(new LabelProvider());
-    	routeCombo.setSorter(new ViewerSorter());
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_RouteLabel);
+		routeCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+		routeCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		routeCombo.setContentProvider(new ArrayContentProvider());
+		routeCombo.setLabelProvider(new LabelProvider());
+		routeCombo.setSorter(new ViewerSorter());
 	}
 
 	protected void createMiscellaneousGroup(Composite parent) {
 		Group content = new Group(parent, SWT.NONE);
 		content.setText(Messages.OrderDialog_MiscLabel);
-    	content.setLayout(new GridLayout(2, false));
-    	content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		content.setLayout(new GridLayout(2, false));
+		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
-    	Label label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_TimeInForceLabel);
-    	validityCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-    	validityCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-    	validityCombo.setContentProvider(new ArrayContentProvider());
-    	validityCombo.setLabelProvider(new LabelProvider());
+		Label label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_TimeInForceLabel);
+		validityCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+		validityCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		validityCombo.setContentProvider(new ArrayContentProvider());
+		validityCombo.setLabelProvider(new LabelProvider());
 
-    	label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_ExpireLabel);
-    	expireDate = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
-    	expireDate.setSelection(new Date());
-    	expireDate.setEnabled(false);
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_ExpireLabel);
+		expireDate = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+		expireDate.setSelection(new Date());
+		expireDate.setEnabled(false);
 
-    	label = new Label(content, SWT.NONE);
-    	label.setText(Messages.OrderDialog_ReferenceLabel);
-    	orderReference = new Text(content, SWT.BORDER);
-    	orderReference.setLayoutData(new GridData(convertWidthInCharsToPixels(40), SWT.DEFAULT));
+		label = new Label(content, SWT.NONE);
+		label.setText(Messages.OrderDialog_ReferenceLabel);
+		orderReference = new Text(content, SWT.BORDER);
+		orderReference.setLayoutData(new GridData(convertWidthInCharsToPixels(40), SWT.DEFAULT));
 	}
 
-	protected boolean isValid() {
-		if (symbol.getText().equals("")) //$NON-NLS-1$
-			return false;
+	protected void createSummaryGroup(Composite parent) {
+		Group content = new Group(parent, SWT.NONE);
+		content.setText(Messages.OrderDialog_SummaryGroup);
+		content.setLayout(new GridLayout(1, false));
+		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
 
-		try {
-	    	long quantity = numberFormat.parse(this.quantity.getText()).longValue();
-	    	if (quantity <= 0)
-	    		return false;
-		} catch(Exception e) {
-			return false;
+		summaryLabel = new Label(content, SWT.NONE);
+		summaryLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	}
+
+	void setInitialParameters() {
+		if (getTarget() != null) {
+			security = (ISecurity) getTarget().getAdapter(ISecurity.class);
+			symbol.setText(getSecuritySymbol(security));
+			symbolDescription.setText(security.getName());
+
+			ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
+			if (trade != null && trade.getPrice() != null)
+				price.setText(priceFormat.format(trade.getPrice()));
 		}
 
-		IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
-		if (orderType == IOrderType.Limit) {
-			try {
-		    	double price = priceFormat.parse(this.price.getText()).doubleValue();
-		    	if (price <= 0)
-		    		return false;
-			} catch(Exception e) {
-				return false;
-			}
+		if (limitPrice != null)
+			price.setText(priceFormat.format(limitPrice));
+
+		if (broker != null) {
+			IStructuredSelection selection = new StructuredSelection(broker);
+			brokerCombo.setSelection(selection);
 		}
+		else {
+			IBroker[] brokers = tradingService.getBrokers();
+			if (brokers.length != 0)
+				brokerCombo.setSelection(new StructuredSelection(brokers[0]));
+		}
+		handleBrokerSelection((IStructuredSelection) brokerCombo.getSelection());
 
-		return true;
-    }
-
-	public void setTarget(IAdaptable target) {
-    	this.target = target;
-    }
+		if (orderSide != null)
+			sideCombo.setSelection(new StructuredSelection(orderSide));
+	}
 
 	protected IAdaptable getTarget() {
-    	return target;
-    }
-
-	public void setBroker(IBroker broker) {
-    	this.broker = broker;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-     */
-    @Override
-    protected void okPressed() {
-		try {
-			IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
-			Double limitPrice = orderType == IOrderType.Market ? null : priceFormat.parse(price.getText()).doubleValue();
-	    	Order order = new Order(
-	    			null,
-	    			orderType,
-	    			(IOrderSide) ((IStructuredSelection) sideCombo.getSelection()).getFirstElement(),
-	    			security,
-	    			numberFormat.parse(quantity.getText()).longValue(),
-	    			limitPrice
-	    		);
-
-	    	if (!routeCombo.getSelection().isEmpty())
-	    		order.setRoute((IOrderRoute) ((IStructuredSelection) routeCombo.getSelection()).getFirstElement());
-
-	    	if (!validityCombo.getSelection().isEmpty()) {
-	    		IOrderValidity validity = (IOrderValidity) ((IStructuredSelection) validityCombo.getSelection()).getFirstElement();
-	    		order.setValidity(validity);
-	    		if (expireDate.getEnabled())
-	    			order.setExpire(expireDate.getSelection());
-	    	}
-
-	    	if (!orderReference.getText().equals("")) //$NON-NLS-1$
-	    		order.setReference(orderReference.getText());
-
-			IBroker connector = (IBroker) ((IStructuredSelection) brokerCombo.getSelection()).getFirstElement();
-	    	IOrderMonitor tracker = connector.prepareOrder(order);
-	    	tracker.submit();
-
-	    	super.okPressed();
-		} catch(Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, Messages.OrderDialog_SubmitErrorMessage, e);
-			Activator.log(status);
-			ErrorDialog.openError(getShell(), getShell().getText(), null, status);
-		}
-    }
-
-	protected IRepositoryService getRepositoryService() {
-		IRepositoryService service = null;
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-		if (serviceReference != null) {
-			service = (IRepositoryService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-		}
-		return service;
+		return target;
 	}
 
-	protected ITradingService getTradingService() {
-		ITradingService service = null;
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-		if (serviceReference != null) {
-			service = (ITradingService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
+	protected void handleBrokerSelection(IStructuredSelection selection) {
+		IBroker connector = (IBroker) selection.getFirstElement();
+
+		if (security != null) {
+			symbol.setText(connector.getSymbolFromSecurity(security));
+			symbolDescription.setText(security.getName().replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		return service;
+
+		IOrderSide[] sides = connector.getAllowedSides();
+		sideCombo.setInput(sides);
+		if (sideCombo.getSelection().isEmpty())
+			sideCombo.setSelection(new StructuredSelection(sides[0]));
+
+		IOrderType[] types = connector.getAllowedTypes();
+		typeCombo.setInput(types);
+		if (typeCombo.getSelection().isEmpty() && types.length != 0)
+			typeCombo.setSelection(new StructuredSelection(types[0]));
+
+		IOrderValidity[] validities = connector.getAllowedValidity();
+		validityCombo.setInput(validities);
+		if (validityCombo.getSelection().isEmpty() && validities.length != 0)
+			validityCombo.setSelection(new StructuredSelection(validities[0]));
+
+		IOrderRoute[] routes = connector.getAllowedRoutes();
+		routeCombo.setInput(routes);
+		if (routeCombo.getSelection().isEmpty() && routes.length != 0)
+			routeCombo.setSelection(new StructuredSelection(routes[0]));
 	}
 
 	protected String getSecuritySymbol(ISecurity security) {
@@ -441,70 +385,122 @@ public class OrderDialog extends TitleAreaDialog {
 		return identifier.getSymbol();
 	}
 
-	protected void handleBrokerSelection(IStructuredSelection selection) {
-		IBroker connector = (IBroker) selection.getFirstElement();
+	void addListeners() {
+		symbol.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				if (!brokerCombo.getSelection().isEmpty()) {
+					IBroker connector = (IBroker) ((IStructuredSelection) brokerCombo.getSelection()).getFirstElement();
+					security = connector.getSecurityFromSymbol(symbol.getText());
+					symbolDescription.setText(security.getName());
+				}
+				getButton(OK).setEnabled(isValid());
+			}
+		});
 
-		if (security != null) {
-			symbol.setText(connector.getSymbolFromSecurity(security));
-    		symbolDescription.setText(security.getName().replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		quantity.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				updateSummary();
+				getButton(OK).setEnabled(isValid());
+			}
+		});
+		quantity.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				try {
+					long n = numberFormat.parse(((Text) event.widget).getText()).longValue();
+					((Text) event.widget).setText(numberFormat.format(n));
+				} catch (Exception e) {
+				}
+			}
+		});
 
-		IOrderSide[] sides =  connector.getAllowedSides();
-		sideCombo.setInput(sides);
-		if (sideCombo.getSelection().isEmpty())
-			sideCombo.setSelection(new StructuredSelection(sides[0]));
+		price.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				updateSummary();
+				getButton(OK).setEnabled(isValid());
+			}
+		});
 
-    	IOrderType[] types =  connector.getAllowedTypes();
-    	typeCombo.setInput(types);
-		if (typeCombo.getSelection().isEmpty())
-			typeCombo.setSelection(new StructuredSelection(types[0]));
+		typeCombo.addSelectionChangedListener(orderTypeSelectionListener);
 
-    	IOrderValidity[] validities = connector.getAllowedValidity();
-    	validityCombo.setInput(validities);
-		if (validityCombo.getSelection().isEmpty())
-			validityCombo.setSelection(new StructuredSelection(validities[0]));
+		brokerCombo.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				handleBrokerSelection(selection);
+				getButton(OK).setEnabled(isValid());
+			}
+		});
 
-		IOrderRoute[] routes = connector.getAllowedRoutes();
-		if (routes == null)
-			routes = new IOrderRoute[0];
-		routeCombo.setInput(routes);
-		if (routes.length != 0 && routeCombo.getSelection().isEmpty())
-			routeCombo.setSelection(new StructuredSelection(routes[0]));
-	}
+		validityCombo.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 
-	protected void createSummaryGroup(Composite parent) {
-		Group content = new Group(parent, SWT.NONE);
-		content.setText(Messages.OrderDialog_SummaryGroup);
-    	content.setLayout(new GridLayout(1, false));
-    	content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
+				IOrderValidity validity = selection.isEmpty() ? null : (IOrderValidity) (selection).getFirstElement();
+				expireDate.setEnabled(validity == IOrderValidity.GoodTillDate);
 
-    	summaryLabel = new Label(content, SWT.NONE);
-    	summaryLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+				getButton(OK).setEnabled(isValid());
+			}
+		});
 	}
 
 	protected void updateSummary() {
 		try {
-	    	long quantity = numberFormat.parse(this.quantity.getText()).longValue();
+			long quantity = numberFormat.parse(this.quantity.getText()).longValue();
 
 			double price = 0.0;
 			IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
 			if (orderType == IOrderType.Limit)
-		    	price = priceFormat.parse(this.price.getText()).doubleValue();
+				price = priceFormat.parse(this.price.getText()).doubleValue();
 			else {
-	    		ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
-	    		if (trade != null && trade.getPrice() != null)
-	    			price = trade.getPrice();
+				ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
+				if (trade != null && trade.getPrice() != null)
+					price = trade.getPrice();
 			}
 
 			if (quantity != 0 && price != 0.0) {
 				summaryLabel.setText(NLS.bind(Messages.OrderDialog_TotalLabel, new Object[] {
-						totalPriceFormat.format(quantity * price)
-					}));
+					totalPriceFormat.format(quantity * price)
+				}));
 			}
 			else
 				summaryLabel.setText(""); //$NON-NLS-1$
-		} catch(Exception e) {
+		} catch (Exception e) {
 			summaryLabel.setText(""); //$NON-NLS-1$
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+	 */
+	@Override
+	protected void okPressed() {
+		try {
+			IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
+			Double limitPrice = orderType == IOrderType.Market ? null : priceFormat.parse(price.getText()).doubleValue();
+			Order order = new Order(null, orderType, (IOrderSide) ((IStructuredSelection) sideCombo.getSelection()).getFirstElement(), security, numberFormat.parse(quantity.getText()).longValue(), limitPrice);
+
+			if (!routeCombo.getSelection().isEmpty())
+				order.setRoute((IOrderRoute) ((IStructuredSelection) routeCombo.getSelection()).getFirstElement());
+
+			if (!validityCombo.getSelection().isEmpty()) {
+				IOrderValidity validity = (IOrderValidity) ((IStructuredSelection) validityCombo.getSelection()).getFirstElement();
+				order.setValidity(validity);
+				if (expireDate.getEnabled())
+					order.setExpire(expireDate.getSelection());
+			}
+
+			if (!orderReference.getText().equals("")) //$NON-NLS-1$
+				order.setReference(orderReference.getText());
+
+			IBroker connector = (IBroker) ((IStructuredSelection) brokerCombo.getSelection()).getFirstElement();
+			IOrderMonitor tracker = connector.prepareOrder(order);
+			tracker.submit();
+
+			super.okPressed();
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, Messages.OrderDialog_SubmitErrorMessage, e);
+			Activator.log(status);
+			ErrorDialog.openError(getShell(), getShell().getText(), null, status);
 		}
 	}
 }

@@ -28,6 +28,16 @@
                name="%trade.command.broker.parameter.name"
                optional="true">
          </commandParameter>
+         <commandParameter
+               id="limitPrice"
+               name="Limit Price"
+               optional="true">
+         </commandParameter>
+         <commandParameter
+               id="side"
+               name="Side"
+               optional="true">
+         </commandParameter>
       </command>
       <command
             defaultHandler="org.eclipsetrader.internal.ui.trading.ResetTriggeredAlerts"

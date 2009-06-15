@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,41 +21,64 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class TradeHandler extends AbstractHandler {
+	public static final String PARAM_BROKER = "broker"; //$NON-NLS-1$
+	public static final String PARAM_LIMIT_PRICE = "limitPrice"; //$NON-NLS-1$
+	public static final String PARAM_SIDE = "side"; //$NON-NLS-1$
 
 	public TradeHandler() {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-     */
-    public Object execute(ExecutionEvent event) throws ExecutionException {
+	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	 */
+	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
 		IWorkbenchSite site = HandlerUtil.getActiveSite(event);
 
+		ITradingService tradingService = null;
+		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+		ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
+		if (serviceReference != null) {
+			tradingService = (ITradingService) context.getService(serviceReference);
+			context.ungetService(serviceReference);
+		}
+		if (tradingService == null)
+			return null;
+
 		if (selection != null && !selection.isEmpty()) {
-			for (Iterator<?> iter = selection.iterator(); iter.hasNext(); ) {
+			for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
 				Object target = iter.next();
 				if (target instanceof IAdaptable) {
-					OrderDialog dlg = new OrderDialog(site.getShell());
+					OrderDialog dlg = new OrderDialog(site.getShell(), tradingService);
 					dlg.setTarget((IAdaptable) target);
 
-					BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-					ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-					if (serviceReference != null) {
-						ITradingService service = (ITradingService) context.getService(serviceReference);
-						ISecurity security = (ISecurity) ((IAdaptable) target).getAdapter(ISecurity.class);
-						dlg.setBroker(service.getBrokerForSecurity(security));
+					ISecurity security = (ISecurity) ((IAdaptable) target).getAdapter(ISecurity.class);
+					dlg.setBroker(tradingService.getBrokerForSecurity(security));
 
-						String brokerId = event.getParameter("broker"); //$NON-NLS-1$
-						if (brokerId != null)
-							dlg.setBroker(service.getBroker(brokerId));
+					String brokerId = event.getParameter(PARAM_BROKER);
+					if (brokerId != null)
+						dlg.setBroker(tradingService.getBroker(brokerId));
 
-						context.ungetService(serviceReference);
+					String limitPrice = event.getParameter(PARAM_LIMIT_PRICE);
+					if (limitPrice != null)
+						dlg.setLimitPrice(Double.parseDouble(limitPrice));
+
+					String side = event.getParameter(PARAM_SIDE);
+					if (side != null) {
+						if (IOrderSide.Buy.getId().equals(side))
+							dlg.setOrderSide(IOrderSide.Buy);
+						else if (IOrderSide.Sell.getId().equals(side))
+							dlg.setOrderSide(IOrderSide.Sell);
+						else if (IOrderSide.BuyCover.getId().equals(side))
+							dlg.setOrderSide(IOrderSide.BuyCover);
+						else if (IOrderSide.SellShort.getId().equals(side))
+							dlg.setOrderSide(IOrderSide.SellShort);
 					}
 
 					dlg.open();
@@ -64,5 +87,5 @@ public class TradeHandler extends AbstractHandler {
 		}
 
 		return null;
-    }
+	}
 }
