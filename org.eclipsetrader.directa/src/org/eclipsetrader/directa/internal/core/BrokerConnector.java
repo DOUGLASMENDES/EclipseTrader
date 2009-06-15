@@ -11,7 +11,7 @@
 
 package org.eclipsetrader.directa.internal.core;
 
- import java.io.IOException;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -38,11 +38,9 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.widgets.Display;
-import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
@@ -101,21 +99,21 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
-    }
+	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+	 */
+	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+		id = config.getAttribute("id");
+		name = config.getAttribute("name");
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
-     */
-    public Object create() throws CoreException {
+	 * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
+	 */
+	public Object create() throws CoreException {
 		if (instance == null)
 			instance = this;
-	    return instance;
-    }
+		return instance;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBroker#getId()
@@ -132,45 +130,45 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#connect()
-     */
-    public void connect() {
-    	if ("".equals(WebConnector.getInstance().getUser()))
-    		WebConnector.getInstance().login();
+	 * @see org.eclipsetrader.core.trading.IBroker#connect()
+	 */
+	public void connect() {
+		if ("".equals(WebConnector.getInstance().getUser()))
+			WebConnector.getInstance().login();
 
-    	if (thread == null || !thread.isAlive()) {
-    		thread = new Thread(this, getName() + " - Orders Monitor");
-        	logger.info("Starting " + thread.getName());
-        	thread.start();
-    	}
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#disconnect()
-     */
-    public void disconnect() {
-    	if (thread != null) {
-    		try {
-    			if (socketChannel != null)
-    				socketChannel.close();
-            } catch (IOException e) {
-	            // Do nothing
-            }
-    		try {
-    			thread.interrupt();
-	            thread.join(30 * 1000);
-            } catch (InterruptedException e) {
-	            // Do nothing
-            }
-        	logger.info("Stopped " + thread.getName());
-    		thread = null;
-    	}
-    }
+		if (thread == null || !thread.isAlive()) {
+			thread = new Thread(this, getName() + " - Orders Monitor");
+			logger.info("Starting " + thread.getName());
+			thread.start();
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#canTrade(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public boolean canTrade(ISecurity security) {
+	 * @see org.eclipsetrader.core.trading.IBroker#disconnect()
+	 */
+	public void disconnect() {
+		if (thread != null) {
+			try {
+				if (socketChannel != null)
+					socketChannel.close();
+			} catch (IOException e) {
+				// Do nothing
+			}
+			try {
+				thread.interrupt();
+				thread.join(30 * 1000);
+			} catch (InterruptedException e) {
+				// Do nothing
+			}
+			logger.info("Stopped " + thread.getName());
+			thread = null;
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.IBroker#canTrade(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public boolean canTrade(ISecurity security) {
 		IFeedIdentifier identifier = security.getIdentifier();
 		if (identifier == null)
 			return false;
@@ -183,13 +181,13 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			}
 		}
 
-	    return false;
-    }
+		return false;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public String getSymbolFromSecurity(ISecurity security) {
+	 * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public String getSymbolFromSecurity(ISecurity security) {
 		IFeedIdentifier identifier = security.getIdentifier();
 		if (identifier == null)
 			return null;
@@ -206,9 +204,9 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#getSecurityFromSymbol(java.lang.String)
-     */
-    public ISecurity getSecurityFromSymbol(String symbol) {
+	 * @see org.eclipsetrader.core.trading.IBroker#getSecurityFromSymbol(java.lang.String)
+	 */
+	public ISecurity getSecurityFromSymbol(String symbol) {
 		ISecurity security = null;
 
 		if (Activator.getDefault() != null) {
@@ -230,16 +228,13 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			}
 		}
 
-		if (security == null)
-			security = new Security("Unknown", new FeedIdentifier(symbol, null));
-
 		return security;
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#prepareOrder(org.eclipsetrader.core.trading.IOrder)
-     */
-    public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
+	 * @see org.eclipsetrader.core.trading.IBroker#prepareOrder(org.eclipsetrader.core.trading.IOrder)
+	 */
+	public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
 		if (order.getType() != IOrderType.Limit && order.getType() != IOrderType.Market)
 			throw new BrokerException("Invalid order type, must be Limit or Market");
 		if (order.getSide() != IOrderSide.Buy && order.getSide() != IOrderSide.Sell)
@@ -255,9 +250,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	 */
 	public IOrderSide[] getAllowedSides() {
 		return new IOrderSide[] {
-				IOrderSide.Buy,
-				IOrderSide.Sell,
-			};
+		    IOrderSide.Buy, IOrderSide.Sell,
+		};
 	}
 
 	/* (non-Javadoc)
@@ -265,9 +259,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	 */
 	public IOrderType[] getAllowedTypes() {
 		return new IOrderType[] {
-				IOrderType.Limit,
-				IOrderType.Market,
-			};
+		    IOrderType.Limit, IOrderType.Market,
+		};
 	}
 
 	/* (non-Javadoc)
@@ -275,29 +268,28 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	 */
 	public IOrderValidity[] getAllowedValidity() {
 		return new IOrderValidity[] {
-				IOrderValidity.Day,
-				Valid30Days,
-			};
+		    IOrderValidity.Day, Valid30Days,
+		};
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#getAllowedRoutes()
-     */
-    public IOrderRoute[] getAllowedRoutes() {
-	    return new IOrderRoute[] {
-    			BrokerConnector.Immediate,
-    			BrokerConnector.MTA,
-    			BrokerConnector.CloseMTA,
-    			BrokerConnector.Open,
-    			BrokerConnector.AfterHours,
-    		};
-    }
+	 * @see org.eclipsetrader.core.trading.IBroker#getAllowedRoutes()
+	 */
+	public IOrderRoute[] getAllowedRoutes() {
+		return new IOrderRoute[] {
+		    BrokerConnector.Immediate,
+		    BrokerConnector.MTA,
+		    BrokerConnector.CloseMTA,
+		    BrokerConnector.Open,
+		    BrokerConnector.AfterHours,
+		};
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBroker#getOrders()
 	 */
 	public IOrderMonitor[] getOrders() {
-		synchronized(orders) {
+		synchronized (orders) {
 			return orders.toArray(new IOrderMonitor[orders.size()]);
 		}
 	}
@@ -308,46 +300,46 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	private static final String HEARTBEAT = "40";
 
 	/* (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    public void run() {
-    	Selector socketSelector;
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		Selector socketSelector;
 		ByteBuffer dst = ByteBuffer.wrap(new byte[2048]);
 
 		try {
-	    	// Create a non-blocking socket channel
-	        socketChannel = SocketChannel.open();
-	        socketChannel.configureBlocking(false);
+			// Create a non-blocking socket channel
+			socketChannel = SocketChannel.open();
+			socketChannel.configureBlocking(false);
 
-	        socketChannel.socket().setReceiveBufferSize(32768);
-	        socketChannel.socket().setSoLinger(true, 1);
-	        socketChannel.socket().setSoTimeout(0x15f90);
-	        socketChannel.socket().setReuseAddress(true);
+			socketChannel.socket().setReceiveBufferSize(32768);
+			socketChannel.socket().setSoLinger(true, 1);
+			socketChannel.socket().setSoTimeout(0x15f90);
+			socketChannel.socket().setReuseAddress(true);
 
-	        // Kick off connection establishment
-	        socketChannel.connect(new InetSocketAddress(server, port));
+			// Kick off connection establishment
+			socketChannel.connect(new InetSocketAddress(server, port));
 
-	        // Create a new selector
-	        socketSelector = SelectorProvider.provider().openSelector();
+			// Create a new selector
+			socketSelector = SelectorProvider.provider().openSelector();
 
-	        // Register the server socket channel, indicating an interest in
-	        // accepting new connections
-	        socketChannel.register(socketSelector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
-        } catch (Exception e) {
+			// Register the server socket channel, indicating an interest in
+			// accepting new connections
+			socketChannel.register(socketSelector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
+		} catch (Exception e) {
 			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to orders monitor", e); //$NON-NLS-1$
 			Activator.log(status);
 			return;
-        }
+		}
 
-        for (;;) {
-    		try {
-            	if (socketSelector.select(30 * 1000) == 0) {
-                   	logger.trace(">" + HEARTBEAT);
-    				socketChannel.write(ByteBuffer.wrap(new String(HEARTBEAT + "\r\n").getBytes()));
-            	}
-            } catch (Exception e) {
-            	break;
-            }
+		for (;;) {
+			try {
+				if (socketSelector.select(30 * 1000) == 0) {
+					logger.trace(">" + HEARTBEAT);
+					socketChannel.write(ByteBuffer.wrap(new String(HEARTBEAT + "\r\n").getBytes()));
+				}
+			} catch (Exception e) {
+				break;
+			}
 
 			// Iterate over the set of keys for which events are available
 			Iterator<SelectionKey> selectedKeys = socketSelector.selectedKeys().iterator();
@@ -376,7 +368,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 						key.interestOps(SelectionKey.OP_WRITE);
 					}
 					if (key.isWritable()) {
-			        	logger.info(">" + LOGIN + WebConnector.getInstance().getUser());
+						logger.info(">" + LOGIN + WebConnector.getInstance().getUser());
 						socketChannel.write(ByteBuffer.wrap(new String(LOGIN + WebConnector.getInstance().getUser() + "\r\n").getBytes()));
 
 						// Register an interest in reading on this channel
@@ -393,42 +385,46 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 								if (s[i].endsWith(";" + WebConnector.getInstance().getUser() + ";")) {
 									logger.info(">" + UNKNOWN70);
 									socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN70 + "\r\n").getBytes()));
-						        	logger.info(">" + UNKNOWN55);
+									logger.info(">" + UNKNOWN55);
 									socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN55 + "\r\n").getBytes()));
 								}
 
 								if (s[i].indexOf(";6;5;") != -1 || s[i].indexOf(";8;0;") != -1) {
-		        		        	try {
-		        	                    OrderMonitor monitor = parseOrderLine(s[i]);
+									try {
+										OrderMonitor monitor = parseOrderLine(s[i]);
 
-		        	                    OrderDelta[] delta;
-		        	                    synchronized(orders) {
-			        	    	        	if (!orders.contains(monitor)) {
-			        	    	        		orders.add(monitor);
-			        	    	    			delta = new OrderDelta[] { new OrderDelta(OrderDelta.KIND_ADDED, monitor) };
-			        	    	        	}
-			        	    	        	else
-			        	    	    			delta = new OrderDelta[] { new OrderDelta(OrderDelta.KIND_UPDATED, monitor) };
-		        	                    }
-	        	    	    			fireUpdateNotifications(delta);
-		        		        	} catch (ParseException e) {
-		        		    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + s[i], e); //$NON-NLS-1$
-		        		    			Activator.log(status);
-		                            }
-		        		        }
+										OrderDelta[] delta;
+										synchronized (orders) {
+											if (!orders.contains(monitor)) {
+												orders.add(monitor);
+												delta = new OrderDelta[] {
+													new OrderDelta(OrderDelta.KIND_ADDED, monitor)
+												};
+											}
+											else
+												delta = new OrderDelta[] {
+													new OrderDelta(OrderDelta.KIND_UPDATED, monitor)
+												};
+										}
+										fireUpdateNotifications(delta);
+									} catch (ParseException e) {
+										Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + s[i], e); //$NON-NLS-1$
+										Activator.log(status);
+									}
+								}
 								if (s[i].indexOf(";6;0;") != -1) {
 									updateStatusLine(s[i]);
 								}
 							}
 						}
 					}
-	            } catch (Exception e) {
-	    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Connection error", e); //$NON-NLS-1$
-	    			Activator.log(status);
-	            }
+				} catch (Exception e) {
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Connection error", e); //$NON-NLS-1$
+					Activator.log(status);
+				}
 			}
-        }
-    }
+		}
+	}
 
 	private static final int IDX_ID = 3;
 	private static final int IDX_STATUS = 4;
@@ -448,7 +444,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 		String[] item = line.split(";");
 
 		OrderMonitor tracker = null;
-		synchronized(orders) {
+		synchronized (orders) {
 			for (OrderMonitor m : orders) {
 				if (item[IDX_ID].equals(m.getId())) {
 					tracker = m;
@@ -470,17 +466,10 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			if (quantity == null && item.length > IDX_FILLED_QUANTITY && !item[IDX_FILLED_QUANTITY].equals("")) {
 				try {
 					quantity = numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue();
-				} catch(Exception e) {
+				} catch (Exception e) {
 				}
 			}
-			Order order = new Order(
-					null,
-					!item[IDX_PRICE].equals("") ? IOrderType.Limit : IOrderType.Market,
-					item[IDX_SIDE].equalsIgnoreCase("V") ? IOrderSide.Sell : IOrderSide.Buy,
-					getSecurityFromSymbol(item[IDX_SYMBOL]),
-					quantity,
-					!item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null
-				);
+			Order order = new Order(null, !item[IDX_PRICE].equals("") ? IOrderType.Limit : IOrderType.Market, item[IDX_SIDE].equalsIgnoreCase("V") ? IOrderSide.Sell : IOrderSide.Buy, getSecurityFromSymbol(item[IDX_SYMBOL]), quantity, !item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null);
 			tracker = new OrderMonitor(WebConnector.getInstance(), BrokerConnector.getInstance(), order);
 			tracker.setId(item[IDX_ID]);
 		}
@@ -494,14 +483,14 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 					item[IDX_TIME] = "0" + item[IDX_TIME];
 				classMethod.invoke(order, dateFormatter.parse(item[IDX_DATE] + " " + item[IDX_TIME]));
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 		}
 
 		if (item[IDX_STATUS].equals("e") || item[IDX_STATUS].equals("e ")) {
 			if (!item[IDX_AVERAGE_PRICE].equals("")) {
 				try {
 					tracker.setAveragePrice(numberFormatter.parse(item[IDX_AVERAGE_PRICE]).doubleValue());
-				} catch(Exception e) {
+				} catch (Exception e) {
 				}
 			}
 			else
@@ -510,7 +499,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			if (!item[IDX_FILLED_QUANTITY].equals("")) {
 				try {
 					tracker.setFilledQuantity(numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue());
-				} catch(Exception e) {
+				} catch (Exception e) {
 				}
 			}
 		}
@@ -556,7 +545,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 						contributionItem.setText("Liq: " + amountFormatter.format(liquidity));
 					}
 				});
-			} catch(Exception e) {
+			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + line, e); //$NON-NLS-1$
 				Activator.log(status);
 			}
@@ -565,41 +554,41 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-     */
-    public void addOrderChangeListener(IOrderChangeListener listener) {
+	 * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+	 */
+	public void addOrderChangeListener(IOrderChangeListener listener) {
 		listeners.add(listener);
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-     */
-    public void removeOrderChangeListener(IOrderChangeListener listener) {
+	 * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+	 */
+	public void removeOrderChangeListener(IOrderChangeListener listener) {
 		listeners.remove(listener);
-    }
+	}
 
-    protected void fireUpdateNotifications(OrderDelta[] deltas) {
-    	if (deltas.length != 0) {
-    		OrderChangeEvent event = new OrderChangeEvent(this, deltas);
-        	Object[] l = listeners.getListeners();
-    		for (int i = 0; i < l.length; i++) {
-    			try {
-    				((IOrderChangeListener) l[i]).orderChanged(event);
-    			} catch(Throwable e) {
-        			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
-        			Activator.log(status);
-    			}
-    		}
-    	}
-    }
+	protected void fireUpdateNotifications(OrderDelta[] deltas) {
+		if (deltas.length != 0) {
+			OrderChangeEvent event = new OrderChangeEvent(this, deltas);
+			Object[] l = listeners.getListeners();
+			for (int i = 0; i < l.length; i++) {
+				try {
+					((IOrderChangeListener) l[i]).orderChanged(event);
+				} catch (Throwable e) {
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+					Activator.log(status);
+				}
+			}
+		}
+	}
 
 	public void addWithNotification(OrderMonitor orderMonitor) {
-		synchronized(orders) {
+		synchronized (orders) {
 			if (!orders.contains(orderMonitor))
 				orders.add(orderMonitor);
 		}
 		fireUpdateNotifications(new OrderDelta[] {
-				new OrderDelta(OrderDelta.KIND_ADDED, orderMonitor),
-			});
-    }
+			new OrderDelta(OrderDelta.KIND_ADDED, orderMonitor),
+		});
+	}
 }

@@ -26,6 +26,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -52,9 +53,11 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IBookEntry;
@@ -73,7 +76,10 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.trading.IBroker;
+import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.ui.UIConstants;
+import org.eclipsetrader.ui.internal.SelectionProvider;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -113,42 +119,42 @@ public class Level2View extends ViewPart {
 	private Action hideSummaryAction;
 
 	private ISubscriptionListener subscriptionListener = new ISubscriptionListener() {
-        public void quoteUpdate(QuoteEvent event) {
-        	onQuoteUpdate(event);
-        }
+		public void quoteUpdate(QuoteEvent event) {
+			onQuoteUpdate(event);
+		}
 	};
 
 	private SelectionAdapter connectionSelectionListener = new SelectionAdapter() {
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-        	if (e.widget.getData() instanceof IFeedConnector2) {
-    	        IFeedConnector2 newConnector = (IFeedConnector2) e.widget.getData();
-        		onChangeConnector(newConnector);
-        	}
-        }
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (e.widget.getData() instanceof IFeedConnector2) {
+				IFeedConnector2 newConnector = (IFeedConnector2) e.widget.getData();
+				onChangeConnector(newConnector);
+			}
+		}
 	};
 
 	private Runnable fadeUpdateRunnable = new Runnable() {
 		public void run() {
-        	if (!table.isDisposed()) {
-        		table.setRedraw(false);
-            	try {
-        			for (TableItem tableItem : table.getItems()) {
-        				int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
-        				if (timers != null) {
-        					for (int i = 0; i < timers.length; i++) {
-        						if (timers[i] > 0) {
-        							timers[i]--;
-        							updateBackground(tableItem, i);
-        						}
-        					}
-        				}
-        			}
-            	} finally {
-                	table.setRedraw(true);
-            	}
-            	table.getDisplay().timerExec(FADE_TIMER, fadeUpdateRunnable);
-        	}
+			if (!table.isDisposed()) {
+				table.setRedraw(false);
+				try {
+					for (TableItem tableItem : table.getItems()) {
+						int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
+						if (timers != null) {
+							for (int i = 0; i < timers.length; i++) {
+								if (timers[i] > 0) {
+									timers[i]--;
+									updateBackground(tableItem, i);
+								}
+							}
+						}
+					}
+				} finally {
+					table.setRedraw(true);
+				}
+				table.getDisplay().timerExec(FADE_TIMER, fadeUpdateRunnable);
+			}
 		}
 	};
 
@@ -170,44 +176,46 @@ public class Level2View extends ViewPart {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void init(IViewSite site, IMemento memento) throws PartInitException {
-	    super.init(site, memento);
-	    this.memento = memento;
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+		this.memento = memento;
 
-	    showMarketMakerAction = new Action("Show Market Maker", Action.AS_CHECK_BOX) {
-            @Override
-            public void run() {
-	            updateViewer();
-	            if (book != null)
-	            	onBookUpdate(book);
-            }
-	    };
+		showMarketMakerAction = new Action("Show Market Maker", Action.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				updateViewer();
+				if (book != null)
+					onBookUpdate(book);
+			}
+		};
 
-	    hideSummaryAction = new Action("Hide Summary", Action.AS_CHECK_BOX) {
-            @Override
-            public void run() {
-            	summaryGroup.setVisible(!isChecked());
-            	((GridData) summaryGroup.getLayoutData()).exclude = isChecked();
-            	summaryGroup.getParent().layout();
-            }
-	    };
+		hideSummaryAction = new Action("Hide Summary", Action.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				summaryGroup.setVisible(!isChecked());
+				((GridData) summaryGroup.getLayoutData()).exclude = isChecked();
+				summaryGroup.getParent().layout();
+			}
+		};
 
-	    if (memento != null) {
-	    	hideSummaryAction.setChecked("true".equals(memento.getString("hide-summary")));
-	    }
+		if (memento != null) {
+			hideSummaryAction.setChecked("true".equals(memento.getString("hide-summary")));
+		}
 
-	    IActionBars actionBars = site.getActionBars();
+		IActionBars actionBars = site.getActionBars();
 
-	    IMenuManager menuManager = actionBars.getMenuManager();
-	    menuManager.add(showMarketMakerAction);
-	    menuManager.add(new Separator());
-	    menuManager.add(hideSummaryAction);
+		IMenuManager menuManager = actionBars.getMenuManager();
+		menuManager.add(showMarketMakerAction);
+		menuManager.add(new Separator());
+		menuManager.add(hideSummaryAction);
 
-	    actionBars.updateActionBars();
-    }
+		actionBars.updateActionBars();
+
+		site.setSelectionProvider(new SelectionProvider());
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -234,16 +242,16 @@ public class Level2View extends ViewPart {
 		symbol = new Text(group, SWT.BORDER);
 		symbol.setLayoutData(new GridData(Dialog.convertWidthInCharsToPixels(fontMetrics, 15), SWT.DEFAULT));
 		symbol.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-	            onSetSymbol();
-            }
+			@Override
+			public void focusLost(FocusEvent e) {
+				onSetSymbol();
+			}
 		});
 		symbol.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-	            onSetSymbol();
-            }
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				onSetSymbol();
+			}
 		});
 
 		final ImageHyperlink connectorButton = new ImageHyperlink(group, SWT.NONE);
@@ -260,9 +268,9 @@ public class Level2View extends ViewPart {
 				dropDownMenu = new Menu(connectorButton);
 				List<IFeedConnector> c = Arrays.asList(getFeedService().getConnectors());
 				Collections.sort(c, new Comparator<IFeedConnector>() {
-                    public int compare(IFeedConnector o1, IFeedConnector o2) {
-	                    return o1.getName().compareTo(o2.getName());
-                    }
+					public int compare(IFeedConnector o1, IFeedConnector o2) {
+						return o1.getName().compareTo(o2.getName());
+					}
 				});
 				for (IFeedConnector connector : c) {
 					if (connector instanceof IFeedConnector2) {
@@ -274,13 +282,13 @@ public class Level2View extends ViewPart {
 					}
 				}
 				dropDownMenu.setVisible(true);
-            }
+			}
 
-            public void linkEntered(HyperlinkEvent e) {
-            }
+			public void linkEntered(HyperlinkEvent e) {
+			}
 
-            public void linkExited(HyperlinkEvent e) {
-            }
+			public void linkExited(HyperlinkEvent e) {
+			}
 		});
 
 		activeConnector = new Label(group, SWT.NONE);
@@ -288,8 +296,8 @@ public class Level2View extends ViewPart {
 
 		summaryGroup = createSummary(content);
 		if (hideSummaryAction != null) {
-        	summaryGroup.setVisible(!hideSummaryAction.isChecked());
-        	((GridData) summaryGroup.getLayoutData()).exclude = hideSummaryAction.isChecked();
+			summaryGroup.setVisible(!hideSummaryAction.isChecked());
+			((GridData) summaryGroup.getLayoutData()).exclude = hideSummaryAction.isChecked();
 		}
 
 		pressureBar = new PressureBar(content, SWT.NONE);
@@ -300,12 +308,16 @@ public class Level2View extends ViewPart {
 		createBookViewer(content);
 
 		setTickBackground(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND).getRGB());
-    	table.getDisplay().timerExec(FADE_TIMER, fadeUpdateRunnable);
+		table.getDisplay().timerExec(FADE_TIMER, fadeUpdateRunnable);
 
 		if (memento != null) {
 			String s = memento.getString("symbol");
-			if (s != null)
+			if (s != null) {
 				symbol.setText(s);
+				ISecurity security = getSecurityFromSymbol(s);
+				if (security != null)
+					getSite().getSelectionProvider().setSelection(new StructuredSelection(security));
+			}
 
 			String id = memento.getString("connector");
 			if (id != null) {
@@ -314,34 +326,34 @@ public class Level2View extends ViewPart {
 					connector = CoreActivator.getDefault().getDefaultConnector();
 				if (connector instanceof IFeedConnector2) {
 					this.connector = (IFeedConnector2) connector;
-		    		activeConnector.setText(this.connector.getName());
+					activeConnector.setText(this.connector.getName());
 				}
 			}
 
 			if (s != null && connector != null) {
-    			subscription = this.connector.subscribeLevel2(s);
+				subscription = this.connector.subscribeLevel2(s);
 
-    			subscription.addSubscriptionListener(subscriptionListener);
+				subscription.addSubscriptionListener(subscriptionListener);
 
-    			lastClose = subscription.getLastClose();
-    			update(subscription.getTrade());
-    			update(subscription.getTodayOHL());
+				lastClose = subscription.getLastClose();
+				update(subscription.getTrade());
+				update(subscription.getTodayOHL());
 			}
 		}
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void saveState(IMemento memento) {
-    	memento.putString("symbol", symbol.getText());
-    	if (connector != null)
-    		memento.putString("connector", connector.getId());
-    	if (hideSummaryAction.isChecked())
-    		memento.putString("hide-summary", "true");
-	    super.saveState(memento);
-    }
+	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		memento.putString("symbol", symbol.getText());
+		if (connector != null)
+			memento.putString("connector", connector.getId());
+		if (hideSummaryAction.isChecked())
+			memento.putString("hide-summary", "true");
+		super.saveState(memento);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
@@ -352,18 +364,18 @@ public class Level2View extends ViewPart {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-     */
-    @Override
-    public void dispose() {
+	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 */
+	@Override
+	public void dispose() {
 		if (subscription != null) {
 			subscription.removeSubscriptionListener(subscriptionListener);
 			subscription.dispose();
 		}
 		for (int i = 0; i < tickFade.length; i++)
 			tickFade[i].dispose();
-	    super.dispose();
-    }
+		super.dispose();
+	}
 
 	protected void createBookViewer(Composite parent) {
 		Composite content = new Composite(parent, SWT.NONE);
@@ -376,11 +388,15 @@ public class Level2View extends ViewPart {
 		table.setLinesVisible(false);
 
 		table.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-	            table.deselectAll();
-            }
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				table.deselectAll();
+			}
 		});
+
+		ICommandService commandService = (ICommandService) getSite().getService(ICommandService.class);
+		IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
+		new Level2QuickTradeDecorator(table, commandService, handlerService);
 
 		updateViewer();
 	}
@@ -489,7 +505,7 @@ public class Level2View extends ViewPart {
 
 		int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
 		if (timers[columnIndex] > 0) {
-			switch(timers[columnIndex]) {
+			switch (timers[columnIndex]) {
 				case 4:
 					tableItem.setBackground(columnIndex, tickFade[0]);
 					break;
@@ -558,6 +574,8 @@ public class Level2View extends ViewPart {
 			timers[columnIndex] = 0;
 			tableItem.setBackground(columnIndex++, null);
 		}
+
+		tableItem.setData("bid", entry);
 	}
 
 	protected void updateAsk(TableItem tableItem, IBookEntry entry) {
@@ -610,6 +628,8 @@ public class Level2View extends ViewPart {
 			timers[columnIndex] = 0;
 			tableItem.setBackground(columnIndex--, null);
 		}
+
+		tableItem.setData("ask", entry);
 	}
 
 	protected void onBookUpdate(IBook book) {
@@ -660,31 +680,31 @@ public class Level2View extends ViewPart {
 		pressureBar.setWeights(leftWeights, rightWeights);
 	}
 
-    protected IMarketService getMarketService() {
+	protected IMarketService getMarketService() {
 		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
 		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
 		IMarketService service = (IMarketService) context.getService(serviceReference);
 		context.ungetService(serviceReference);
 		return service;
-    }
+	}
 
-    protected IFeedService getFeedService() {
+	protected IFeedService getFeedService() {
 		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
 		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
 		IFeedService service = (IFeedService) context.getService(serviceReference);
 		context.ungetService(serviceReference);
 		return service;
-    }
+	}
 
-    protected void onSetSymbol() {
-    	if (subscription != null && subscription.getSymbol().equals(symbol.getText()))
-    		return;
+	protected void onSetSymbol() {
+		if (subscription != null && subscription.getSymbol().equals(symbol.getText()))
+			return;
 
-    	if (connector != null) {
-    		if (subscription != null) {
-    			subscription.removeSubscriptionListener(subscriptionListener);
-    			subscription.dispose();
-    		}
+		if (connector != null) {
+			if (subscription != null) {
+				subscription.removeSubscriptionListener(subscriptionListener);
+				subscription.dispose();
+			}
 
 			subscription = this.connector.subscribeLevel2(symbol.getText());
 			subscription.addSubscriptionListener(subscriptionListener);
@@ -696,105 +716,107 @@ public class Level2View extends ViewPart {
 			IBook book = subscription.getBook();
 			if (book != null)
 				onBookUpdate(book);
-    	}
-    }
+		}
+	}
 
-    protected void onChangeConnector(IFeedConnector2 newConnector) {
-    	if (newConnector != connector) {
-        	if (connector != null && subscription != null) {
-    			subscription.removeSubscriptionListener(subscriptionListener);
-    			subscription.dispose();
-    			subscription = null;
-        	}
+	protected void onChangeConnector(IFeedConnector2 newConnector) {
+		if (newConnector != connector) {
+			if (connector != null && subscription != null) {
+				subscription.removeSubscriptionListener(subscriptionListener);
+				subscription.dispose();
+				subscription = null;
+			}
 
-        	connector = newConnector;
-        	activeConnector.setText(connector != null ? connector.getName() : "");
+			connector = newConnector;
+			activeConnector.setText(connector != null ? connector.getName() : "");
 
-        	if (connector != null && !symbol.getText().equals("")) {
-    			subscription = connector.subscribeLevel2(symbol.getText());
-    			subscription.addSubscriptionListener(subscriptionListener);
+			if (connector != null && !symbol.getText().equals("")) {
+				subscription = connector.subscribeLevel2(symbol.getText());
+				subscription.addSubscriptionListener(subscriptionListener);
 
-    			lastClose = subscription.getLastClose();
-    			update(subscription.getTrade());
-    			update(subscription.getTodayOHL());
+				lastClose = subscription.getLastClose();
+				update(subscription.getTrade());
+				update(subscription.getTodayOHL());
 
-    			IBook book = subscription.getBook();
-    			if (book != null)
-    				onBookUpdate(book);
-        	}
-    	}
-    }
+				IBook book = subscription.getBook();
+				if (book != null)
+					onBookUpdate(book);
+			}
+		}
+	}
 
-    public void setSecurity(ISecurity security) {
-    	IFeedConnector connector = null;
+	public void setSecurity(ISecurity security) {
+		IFeedConnector connector = null;
 
-    	IMarket[] market = getMarketService().getMarkets();
-    	for (int i = 0; i < market.length; i++) {
-    		if (market[i].hasMember(security)) {
-    			connector = market[i].getLiveFeedConnector();
-    			break;
-    		}
-    	}
+		IMarket[] market = getMarketService().getMarkets();
+		for (int i = 0; i < market.length; i++) {
+			if (market[i].hasMember(security)) {
+				connector = market[i].getLiveFeedConnector();
+				break;
+			}
+		}
 
-    	if (connector == null)
-    		connector = CoreActivator.getDefault().getDefaultConnector();
+		if (connector == null)
+			connector = CoreActivator.getDefault().getDefaultConnector();
 
-    	if (connector instanceof IFeedConnector2)
-    		this.connector = (IFeedConnector2) connector;
+		if (connector instanceof IFeedConnector2)
+			this.connector = (IFeedConnector2) connector;
 
-    	if (this.connector != null) {
-    		activeConnector.setText(this.connector.getName());
+		if (this.connector != null) {
+			activeConnector.setText(this.connector.getName());
 
-    		if (subscription != null) {
-    			subscription.removeSubscriptionListener(subscriptionListener);
-    			subscription.dispose();
-    		}
+			if (subscription != null) {
+				subscription.removeSubscriptionListener(subscriptionListener);
+				subscription.dispose();
+			}
 
-    		IFeedIdentifier feedIdentifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-    		if (feedIdentifier != null) {
-    			subscription = this.connector.subscribeLevel2(feedIdentifier);
+			IFeedIdentifier feedIdentifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+			if (feedIdentifier != null) {
+				subscription = this.connector.subscribeLevel2(feedIdentifier);
 
-    			subscription.addSubscriptionListener(subscriptionListener);
+				subscription.addSubscriptionListener(subscriptionListener);
 
-    			symbol.setText(subscription.getSymbol());
+				symbol.setText(subscription.getSymbol());
 
-    			lastClose = subscription.getLastClose();
-    			update(subscription.getTrade());
-    			update(subscription.getTodayOHL());
+				lastClose = subscription.getLastClose();
+				update(subscription.getTrade());
+				update(subscription.getTodayOHL());
 
-    			IBook book = subscription.getBook();
-    			if (book != null)
-    				onBookUpdate(book);
-    		}
-    	}
-    }
+				IBook book = subscription.getBook();
+				if (book != null)
+					onBookUpdate(book);
+			}
+		}
 
-    protected void onQuoteUpdate(final QuoteEvent event) {
-    	try {
-    		table.getDisplay().asyncExec(new Runnable() {
-                public void run() {
-                	if (!table.isDisposed()) {
-                    	for (QuoteDelta delta : event.getDelta()) {
-                    		if (delta.getNewValue() instanceof IBook)
-                    			onBookUpdate((IBook) delta.getNewValue());
-                    		if (delta.getNewValue() instanceof ITrade) {
-                    			ITrade trade = (ITrade) delta.getNewValue();
-                    			update(trade);
-                    		}
-                    		if (delta.getNewValue() instanceof ITodayOHL) {
-                    			ITodayOHL todayOHL = (ITodayOHL) delta.getNewValue();
-                    			update(todayOHL);
-                    		}
-                    		if (delta.getNewValue() instanceof ILastClose)
-                    			lastClose = (ILastClose) delta.getNewValue();
-                    	}
-                	}
-                }
-    		});
-    	} catch(SWTException e) {
-    		// Ignore
-    	}
-    }
+		getSite().getSelectionProvider().setSelection(new StructuredSelection(security));
+	}
+
+	protected void onQuoteUpdate(final QuoteEvent event) {
+		try {
+			table.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if (!table.isDisposed()) {
+						for (QuoteDelta delta : event.getDelta()) {
+							if (delta.getNewValue() instanceof IBook)
+								onBookUpdate((IBook) delta.getNewValue());
+							if (delta.getNewValue() instanceof ITrade) {
+								ITrade trade = (ITrade) delta.getNewValue();
+								update(trade);
+							}
+							if (delta.getNewValue() instanceof ITodayOHL) {
+								ITodayOHL todayOHL = (ITodayOHL) delta.getNewValue();
+								update(todayOHL);
+							}
+							if (delta.getNewValue() instanceof ILastClose)
+								lastClose = (ILastClose) delta.getNewValue();
+						}
+					}
+				}
+			});
+		} catch (SWTException e) {
+			// Ignore
+		}
+	}
 
 	protected void update(ITrade trade) {
 		time.setText(trade != null && trade.getTime() != null ? timeFormatter.format(trade.getTime()) : "");
@@ -804,9 +826,9 @@ public class Level2View extends ViewPart {
 		if (trade != null && lastClose != null && lastClose.getPrice() != null && trade.getPrice() != null) {
 			double changePercent = (trade.getPrice() - lastClose.getPrice()) / lastClose.getPrice() * 100.0;
 			change.setText(NLS.bind("{0}{1}%", new Object[] {
-					changePercent < 0 ? "-" : (changePercent > 0 ? "+" : ""),
-					percentageFormatter.format(Math.abs(changePercent)),
-				}));
+			    changePercent < 0 ? "-" : (changePercent > 0 ? "+" : ""),
+			    percentageFormatter.format(Math.abs(changePercent)),
+			}));
 		}
 		else
 			change.setText("");
@@ -832,7 +854,27 @@ public class Level2View extends ViewPart {
 		return new RGB(r, g, b);
 	}
 
-    private int blend(int v1, int v2, int ratio) {
+	private int blend(int v1, int v2, int ratio) {
 		return (ratio * v1 + (100 - ratio) * v2) / 100;
+	}
+
+	protected ISecurity getSecurityFromSymbol(String symbol) {
+		ISecurity security = null;
+
+		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+		ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
+		if (serviceReference != null) {
+			ITradingService service = (ITradingService) context.getService(serviceReference);
+			IBroker[] broker = service.getBrokers();
+			for (int i = 0; i < broker.length; i++) {
+				security = broker[i].getSecurityFromSymbol(symbol);
+				if (security != null)
+					break;
+			}
+
+			context.ungetService(serviceReference);
+		}
+
+		return security;
 	}
 }

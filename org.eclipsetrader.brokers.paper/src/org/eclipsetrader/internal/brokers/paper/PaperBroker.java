@@ -21,14 +21,12 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
-import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IPricingListener;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryService;
@@ -59,26 +57,26 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private IPricingListener pricingListener = new IPricingListener() {
-        public void pricingUpdate(PricingEvent event) {
-        	for (PricingDelta delta : event.getDelta()) {
-        		if (delta.getNewValue() instanceof ITrade)
-        			processTrade(event.getSecurity(), (ITrade) delta.getNewValue());
-        	}
-        }
+		public void pricingUpdate(PricingEvent event) {
+			for (PricingDelta delta : event.getDelta()) {
+				if (delta.getNewValue() instanceof ITrade)
+					processTrade(event.getSecurity(), (ITrade) delta.getNewValue());
+			}
+		}
 	};
 
 	public PaperBroker() {
 	}
 
 	public PaperBroker(MarketPricingEnvironment pricingEnvironment) {
-	    this.pricingEnvironment = pricingEnvironment;
-    }
+		this.pricingEnvironment = pricingEnvironment;
+	}
 
 	public static PaperBroker getInstance() {
 		if (instance == null)
 			instance = new PaperBroker();
-    	return instance;
-    }
+		return instance;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getId()
@@ -95,21 +93,21 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
-    }
+	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+	 */
+	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+		id = config.getAttribute("id");
+		name = config.getAttribute("name");
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
-     */
-    public Object create() throws CoreException {
+	 * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
+	 */
+	public Object create() throws CoreException {
 		if (instance == null)
 			instance = this;
-    	return instance;
-    }
+		return instance;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#connect()
@@ -144,9 +142,9 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBrokerConnector#getSecurityFromSymbol(java.lang.String)
-     */
-    public ISecurity getSecurityFromSymbol(String symbol) {
+	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getSecurityFromSymbol(java.lang.String)
+	 */
+	public ISecurity getSecurityFromSymbol(String symbol) {
 		ISecurity security = null;
 
 		if (Activator.getDefault() != null) {
@@ -168,27 +166,23 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 			}
 		}
 
-		if (security == null)
-			security = new Security("Unknown", new FeedIdentifier(symbol, null));
-
 		return security;
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public String getSymbolFromSecurity(ISecurity security) {
-	    return security.getIdentifier() != null ? security.getIdentifier().getSymbol() : null;
-    }
+	 * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public String getSymbolFromSecurity(ISecurity security) {
+		return security.getIdentifier() != null ? security.getIdentifier().getSymbol() : null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedSides()
 	 */
 	public IOrderSide[] getAllowedSides() {
 		return new IOrderSide[] {
-				IOrderSide.Buy,
-				IOrderSide.Sell,
-			};
+		    IOrderSide.Buy, IOrderSide.Sell,
+		};
 	}
 
 	/* (non-Javadoc)
@@ -196,9 +190,8 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	 */
 	public IOrderType[] getAllowedTypes() {
 		return new IOrderType[] {
-				IOrderType.Limit,
-				IOrderType.Market,
-			};
+		    IOrderType.Limit, IOrderType.Market,
+		};
 	}
 
 	/* (non-Javadoc)
@@ -206,22 +199,22 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	 */
 	public IOrderValidity[] getAllowedValidity() {
 		return new IOrderValidity[] {
-				IOrderValidity.Day,
-			};
+			IOrderValidity.Day,
+		};
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedRoutes()
-     */
-    public IOrderRoute[] getAllowedRoutes() {
-	    return new IOrderRoute[0];
-    }
+	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedRoutes()
+	 */
+	public IOrderRoute[] getAllowedRoutes() {
+		return new IOrderRoute[0];
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getOrders()
 	 */
 	public IOrderMonitor[] getOrders() {
-		synchronized(pendingOrders) {
+		synchronized (pendingOrders) {
 			return pendingOrders.toArray(new IOrderMonitor[pendingOrders.size()]);
 		}
 	}
@@ -234,36 +227,36 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 			throw new BrokerException("Invalid account");
 
 		OrderMonitor monitor = new OrderMonitor(this, order) {
-            @Override
-            public void cancel() throws BrokerException {
-				synchronized(pendingOrders) {
+			@Override
+			public void cancel() throws BrokerException {
+				synchronized (pendingOrders) {
 					pendingOrders.remove(this);
 				}
-            	setStatus(IOrderStatus.Canceled);
+				setStatus(IOrderStatus.Canceled);
 				fireUpdateNotifications(new OrderDelta[] {
-						new OrderDelta(OrderDelta.KIND_UPDATED, this),
-					});
-            }
+					new OrderDelta(OrderDelta.KIND_UPDATED, this),
+				});
+			}
 
-            @Override
-            public void submit() throws BrokerException {
-        		synchronized(pendingOrders) {
-        			pendingOrders.add(this);
-        		}
+			@Override
+			public void submit() throws BrokerException {
+				synchronized (pendingOrders) {
+					pendingOrders.add(this);
+				}
 				setId(Long.toHexString(UUID.randomUUID().getLeastSignificantBits()));
-            	setStatus(IOrderStatus.PendingNew);
+				setStatus(IOrderStatus.PendingNew);
 				fireUpdateNotifications(new OrderDelta[] {
-						new OrderDelta(OrderDelta.KIND_UPDATED, this),
-					});
-            }
+					new OrderDelta(OrderDelta.KIND_UPDATED, this),
+				});
+			}
 		};
 
 		if (pricingEnvironment != null)
 			pricingEnvironment.addSecurity(order.getSecurity());
 
 		fireUpdateNotifications(new OrderDelta[] {
-				new OrderDelta(OrderDelta.KIND_ADDED, monitor),
-			});
+			new OrderDelta(OrderDelta.KIND_ADDED, monitor),
+		});
 
 		return monitor;
 	}
@@ -272,16 +265,13 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
 
 		OrderMonitor[] monitors;
-		synchronized(pendingOrders) {
+		synchronized (pendingOrders) {
 			monitors = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
 		}
 		for (int i = 0; i < monitors.length; i++) {
 			IOrder order = monitors[i].getOrder();
 			if (order.getSecurity() == security) {
-				if (order.getType() == IOrderType.Market ||
-				   (order.getType() == IOrderType.Limit &&
-						   ((order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) ||
-							(order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice())))) {
+				if (order.getType() == IOrderType.Market || (order.getType() == IOrderType.Limit && ((order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) || (order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice())))) {
 
 					double totalPrice = monitors[i].getFilledQuantity() != null ? monitors[i].getFilledQuantity() * monitors[i].getAveragePrice() : 0.0;
 					long filledQuantity = monitors[i].getFilledQuantity() != null ? monitors[i].getFilledQuantity() : 0L;
@@ -300,7 +290,7 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 					if (monitors[i].getFilledQuantity() == order.getQuantity()) {
 						monitors[i].setStatus(IOrderStatus.Filled);
 						monitors[i].fireOrderCompletedEvent();
-						synchronized(pendingOrders) {
+						synchronized (pendingOrders) {
 							pendingOrders.remove(monitors[i]);
 						}
 
@@ -318,34 +308,34 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 
 		if (deltas.size() != 0)
 			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-     */
-    public void addOrderChangeListener(IOrderChangeListener listener) {
+	 * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+	 */
+	public void addOrderChangeListener(IOrderChangeListener listener) {
 		listeners.add(listener);
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-     */
-    public void removeOrderChangeListener(IOrderChangeListener listener) {
+	 * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+	 */
+	public void removeOrderChangeListener(IOrderChangeListener listener) {
 		listeners.remove(listener);
-    }
+	}
 
-    protected void fireUpdateNotifications(OrderDelta[] deltas) {
-    	if (deltas.length != 0) {
-    		OrderChangeEvent event = new OrderChangeEvent(this, deltas);
-        	Object[] l = listeners.getListeners();
-    		for (int i = 0; i < l.length; i++) {
-    			try {
-    				((IOrderChangeListener) l[i]).orderChanged(event);
-    			} catch(Throwable e) {
-        			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
-        			Activator.log(status);
-    			}
-    		}
-    	}
-    }
+	protected void fireUpdateNotifications(OrderDelta[] deltas) {
+		if (deltas.length != 0) {
+			OrderChangeEvent event = new OrderChangeEvent(this, deltas);
+			Object[] l = listeners.getListeners();
+			for (int i = 0; i < l.length; i++) {
+				try {
+					((IOrderChangeListener) l[i]).orderChanged(event);
+				} catch (Throwable e) {
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+					Activator.log(status);
+				}
+			}
+		}
+	}
 }
