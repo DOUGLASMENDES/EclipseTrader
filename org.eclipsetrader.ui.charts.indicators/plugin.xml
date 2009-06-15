@@ -703,5 +703,78 @@
             name="Key Reversal">
       </indicator>
    </extension>
+   <extension
+         point="org.eclipsetrader.ui.indicators">
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.TwoCrows"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdl2crows"
+            name="2 Crows">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.ThreeBlackCrows"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdl3blackcrows"
+            name="3 Black Crows">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.ThreeInside"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdl3inside"
+            name="3 Inside Up/Down">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.ThreeLineStrike"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdl3linestrike"
+            name="3 Line Strike">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.ThreeOutside"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdl3outside"
+            name="3 Outside Up/Down">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.ThreeStarsInTheSouth"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdl3starsinthesouth"
+            name="3 Stars In The South">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.Doji"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdldoji"
+            name="Doji">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.Harami"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdlharami"
+            name="Harami">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.Tristar"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdltristar"
+            name="Tristar">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.patterns"
+            class="org.eclipsetrader.ui.charts.patterns.TasukiGap"
+            exclusive="false"
+            id="org.eclipsetrader.ui.charts.patterns.cdltasukigap"
+            name="Tasuki Gap">
+      </indicator>
+   </extension>
 
 </plugin>
