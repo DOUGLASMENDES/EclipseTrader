@@ -22,10 +22,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.browser.TitleEvent;
 import org.eclipse.swt.browser.TitleListener;
+import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -48,53 +50,53 @@ public class WebBrowserView extends ViewPart {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void init(IViewSite site, IMemento memento) throws PartInitException {
-	    super.init(site, memento);
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
 
-	    if (memento != null)
-	    	url = memento.getString("url");
+		if (memento != null)
+			url = memento.getString("url");
 
-	    stopAction = new Action("Stop") {
-            @Override
-            public void run() {
-        		browser.stop();
-            }
-	    };
-	    stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_STOP));
-	    stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
-    	stopAction.setEnabled(false);
+		stopAction = new Action("Stop") {
+			@Override
+			public void run() {
+				browser.stop();
+			}
+		};
+		stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_STOP));
+		stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
+		stopAction.setEnabled(false);
 
-	    refreshAction = new Action("Refresh") {
-            @Override
-            public void run() {
-            	stopAction.setEnabled(true);
-        	    refreshAction.setEnabled(false);
-        	    browser.refresh();
-            }
-	    };
-	    refreshAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_REFRESH));
-	    refreshAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_REFRESH));
-	    refreshAction.setEnabled(false);
+		refreshAction = new Action("Refresh") {
+			@Override
+			public void run() {
+				stopAction.setEnabled(true);
+				refreshAction.setEnabled(false);
+				browser.refresh();
+			}
+		};
+		refreshAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_REFRESH));
+		refreshAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_REFRESH));
+		refreshAction.setEnabled(false);
 
-	    IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
-	    toolbarManager.add(refreshAction);
-	    toolbarManager.add(stopAction);
-	    toolbarManager.add(new Separator("additions"));
+		IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
+		toolbarManager.add(refreshAction);
+		toolbarManager.add(stopAction);
+		toolbarManager.add(new Separator("additions"));
 
-	    site.getActionBars().updateActionBars();
-    }
+		site.getActionBars().updateActionBars();
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void saveState(IMemento memento) {
-    	memento.putString("url", url);
-	    super.saveState(memento);
-    }
+	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		memento.putString("url", url);
+		super.saveState(memento);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -111,37 +113,42 @@ public class WebBrowserView extends ViewPart {
 		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		browser.addTitleListener(new TitleListener() {
 			public void changed(TitleEvent event) {
-		    	setPartName(event.title);
-		    	setTitleToolTip(event.title);
+				setPartName(event.title);
+				setTitleToolTip(event.title);
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {
-            public void changed(ProgressEvent event) {
-            }
+			public void changed(ProgressEvent event) {
+			}
 
-            public void completed(ProgressEvent event) {
-            	stopAction.setEnabled(false);
-        	    refreshAction.setEnabled(true);
-            }
+			public void completed(ProgressEvent event) {
+				stopAction.setEnabled(false);
+				refreshAction.setEnabled(true);
+			}
 		});
 		browser.addLocationListener(new LocationListener() {
-            public void changed(LocationEvent event) {
-            }
+			public void changed(LocationEvent event) {
+			}
 
-            public void changing(LocationEvent event) {
-            	stopAction.setEnabled(true);
-        	    refreshAction.setEnabled(false);
-            }
+			public void changing(LocationEvent event) {
+				stopAction.setEnabled(true);
+				refreshAction.setEnabled(false);
+			}
+		});
+		browser.addOpenWindowListener(new OpenWindowListener() {
+			public void open(WindowEvent event) {
+				event.browser = browser;
+			}
 		});
 
 		setTitleToolTip(getPartName());
 
 		if (url != null) {
 			parent.getDisplay().asyncExec(new Runnable() {
-                public void run() {
-                	if (!browser.isDisposed())
-                		setUrl(url);
-                }
+				public void run() {
+					if (!browser.isDisposed())
+						setUrl(url);
+				}
 			});
 		}
 	}
@@ -162,9 +169,9 @@ public class WebBrowserView extends ViewPart {
 		this.url = url;
 
 		String currentUrl = NLS.bind(url, new Object[] {
-				new SimpleDateFormat("ddMMyyyy").format(Calendar.getInstance().getTime()),
-				connector.getUser(),
-			});
+		    new SimpleDateFormat("ddMMyyyy").format(Calendar.getInstance().getTime()),
+		    connector.getUser(),
+		});
 
 		browser.setUrl(currentUrl);
 	}
