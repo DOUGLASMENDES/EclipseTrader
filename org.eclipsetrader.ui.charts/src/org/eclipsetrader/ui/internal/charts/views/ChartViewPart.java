@@ -77,6 +77,7 @@ import org.eclipsetrader.core.internal.charts.repository.ChartTemplate;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IViewChangeListener;
+import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.ViewEvent;
 import org.eclipsetrader.ui.charts.BaseChartViewer;
 import org.eclipsetrader.ui.charts.ChartCanvas;
@@ -132,7 +133,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	private Action currentBookAction;
 	private CurrentBookFactory currentBookFactory;
 
-	private IMemento memento;
+	IMemento memento;
+	IPreferenceStore preferenceStore;
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
 		public void propertyChange(PropertyChangeEvent evt) {
@@ -201,7 +203,9 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
+
 		this.memento = memento;
+		this.preferenceStore = ChartsUIActivator.getDefault().getPreferenceStore();
 
 		try {
 			dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
@@ -252,13 +256,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
 		actionBars.setGlobalActionHandler(ActionFactory.PRINT.getId(), printAction);
 
-		ToolAction toolAction = new ToolAction(Messages.ChartViewPart_LineAction, this, "org.eclipsetrader.ui.charts.tools.line"); //$NON-NLS-2$
+		ToolAction toolAction = new ToolAction(Messages.ChartViewPart_LineAction, this, "org.eclipsetrader.ui.charts.tools.line");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
-		toolAction = new ToolAction(Messages.ChartViewPart_FiboLineAction, this, "org.eclipsetrader.ui.charts.tools.fiboline"); //$NON-NLS-2$
+		toolAction = new ToolAction(Messages.ChartViewPart_FiboLineAction, this, "org.eclipsetrader.ui.charts.tools.fiboline");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
-		toolAction = new ToolAction(Messages.ChartViewPart_FanLineAction, this, "org.eclipsetrader.ui.charts.tools.fanline"); //$NON-NLS-2$
+		toolAction = new ToolAction(Messages.ChartViewPart_FanLineAction, this, "org.eclipsetrader.ui.charts.tools.fanline");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
-		toolAction = new ToolAction(Messages.ChartViewPart_FiboArcAction, this, "org.eclipsetrader.ui.charts.tools.fiboarc"); //$NON-NLS-2$
+		toolAction = new ToolAction(Messages.ChartViewPart_FiboArcAction, this, "org.eclipsetrader.ui.charts.tools.fiboarc");
 		actionBars.setGlobalActionHandler(toolAction.getId(), toolAction);
 
 		actionBars.setGlobalActionHandler(zoomInAction.getActionDefinitionId(), zoomInAction);
@@ -493,12 +497,11 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 		dropTarget.setTransfer(transferTypes);
 		dropTarget.addDropListener(dropListener = new ChartViewDropTarget(viewer));
 
-		IPreferenceStore preferences = getPreferenceStore();
-		viewer.setShowTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_TOOLTIPS));
-		viewer.setShowScaleTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
-		viewer.setCrosshairMode(preferences.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION));
-		viewer.setDecoratorSummaryTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
-		preferences.addPropertyChangeListener(preferenceChangeListener);
+		viewer.setShowTooltips(preferenceStore.getBoolean(ChartsUIActivator.PREFS_SHOW_TOOLTIPS));
+		viewer.setShowScaleTooltips(preferenceStore.getBoolean(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
+		viewer.setCrosshairMode(preferenceStore.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION));
+		viewer.setDecoratorSummaryTooltips(preferenceStore.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
+		preferenceStore.addPropertyChangeListener(preferenceChangeListener);
 
 		if (memento != null) {
 			if (memento.getString(K_ZOOM_FACTOR) != null) {
@@ -540,10 +543,6 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
 			scheduleLoadJob();
 		}
-	}
-
-	IPreferenceStore getPreferenceStore() {
-		return ChartsUIActivator.getDefault().getPreferenceStore();
 	}
 
 	void createContextMenu() {
@@ -658,9 +657,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
 	protected void handleActionsEnablement() {
 		IStructuredSelection selection = (IStructuredSelection) getViewSite().getSelectionProvider().getSelection();
-		cutAction.setEnabled(!selection.isEmpty());
-		copyAction.setEnabled(!selection.isEmpty());
-		deleteAction.setEnabled(!selection.isEmpty());
+		IViewItem viewItem = (IViewItem) selection.getFirstElement();
+
+		cutAction.setEnabled(!selection.isEmpty() && (viewItem != null && viewItem.getAdapter(MainChartFactory.class) == null));
+		copyAction.setEnabled(!selection.isEmpty() && (viewItem != null && viewItem.getAdapter(MainChartFactory.class) == null));
+
+		deleteAction.setEnabled(!selection.isEmpty() && (viewItem != null && viewItem.getAdapter(MainChartFactory.class) == null));
+
 		propertiesAction.setEnabled(!selection.isEmpty());
 	}
 

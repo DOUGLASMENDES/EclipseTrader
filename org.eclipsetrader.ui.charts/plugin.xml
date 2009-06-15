@@ -337,5 +337,18 @@
             class="org.eclipsetrader.ui.internal.charts.EarlyStartup">
       </startup>
    </extension>
-
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.eclipsetrader.ui.internal.charts.views.MainPropertiesPage"
+            id="org.eclipsetrader.ui.charts.default.general"
+            name="General">
+         <enabledWhen>
+               <test
+                     property="org.eclipsetrader.ui.adapts"
+                     value="org.eclipsetrader.ui.internal.charts.views.MainChartFactory">
+               </test>
+         </enabledWhen>
+      </page>
+    </extension>
 </plugin>

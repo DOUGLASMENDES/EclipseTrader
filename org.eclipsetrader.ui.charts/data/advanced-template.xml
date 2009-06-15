@@ -2,7 +2,7 @@
 <chart>
 	<name>Advanced</name>
 	<section id="09c7e9fa-db1b-43e1-926c-fe2bb99fa910" name="Top">
-		<element id="ad95a58b-fc03-4805-a504-daa0addd37fa" plugin-id="org.eclipsetrader.indicators.bars">
+		<element id="ad95a58b-fc03-4805-a504-daa0addd37fa" plugin-id="org.eclipsetrader.ui.charts.main">
 			<param name="style" value="bars"/>
 		</element>
 		<element id="eaaa1a82-973c-43a0-93f8-cf596ed9b3c2" plugin-id="org.eclipsetrader.indicators.ma">

@@ -43,7 +43,7 @@ public class ChartViewItemPropertyTester extends PropertyTester {
 		}
 		else if ("chartObjectFactory".equals(property)) { //$NON-NLS-1$
 			IChartObjectFactory factory = ((ChartViewItem) receiver).getFactory();
-			if (factory != null)
+			if (factory != null && factory.getId() != null)
 				return factory.getId().equals(expectedValue);
 		}
 		else if ("adapts".equals(property)) { //$NON-NLS-1$

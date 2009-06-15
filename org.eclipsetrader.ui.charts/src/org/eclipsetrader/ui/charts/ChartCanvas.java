@@ -244,7 +244,7 @@ public class ChartCanvas {
 					paintBackground(graphics, clientArea);
 				paintObjects(graphics, clientArea);
 			} catch (Throwable e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartCanvas_RenderingChartError);
+				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartCanvas_RenderingChartError, e);
 				ChartsUIActivator.log(status);
 			} finally {
 				canvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.FALSE);

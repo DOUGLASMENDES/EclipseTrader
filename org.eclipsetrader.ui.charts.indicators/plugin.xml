@@ -67,12 +67,6 @@
             name="ATR">
       </indicator>
       <indicator
-            class="org.eclipsetrader.ui.charts.indicators.BARS"
-            description="Bars"
-            id="org.eclipsetrader.indicators.bars"
-            name="BAR">
-      </indicator>
-      <indicator
             category="org.eclipsetrader.ui.charts.indicators.top"
             class="org.eclipsetrader.ui.charts.indicators.BBANDS"
             description="Bollinger Bands"
