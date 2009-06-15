@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.net,
  org.eclipse.ui,
  org.eclipsetrader.core,
  org.eclipsetrader.core.trading,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.eclipse.equinox.security
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: javax.xml.bind;version="[2.0.0,2.2.0)",

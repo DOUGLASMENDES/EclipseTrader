@@ -29,10 +29,11 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
@@ -66,9 +67,9 @@ public class WebConnector {
 	private static final String HOST = "www1.directatrading.com";
 
 	public static final String[] PROPERTIES = new String[] {
-		"org.eclipsetrader.directa.symbol",
-		"org.eclipsetrader.directaworld.symbol",
-		"org.eclipsetrader.borsaitalia.code",
+	    "org.eclipsetrader.directa.symbol",
+	    "org.eclipsetrader.directaworld.symbol",
+	    "org.eclipsetrader.borsaitalia.code",
 	};
 
 	private HttpClient client;
@@ -98,11 +99,17 @@ public class WebConnector {
 	}
 
 	public synchronized void login() {
-		final IPreferenceStore preferences = getPreferenceStore();
-		if (userName == null)
-			userName = preferences.getString(Activator.PREFS_USERNAME);
-		if (password == null)
-			password = preferences.getString(Activator.PREFS_PASSWORD);
+		final ISecurePreferences preferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
+		try {
+			if (userName == null)
+				userName = preferences.get(Activator.PREFS_USERNAME, "");
+			if (password == null)
+				password = preferences.get(Activator.PREFS_PASSWORD, "");
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+			Activator.log(status);
+			ErrorDialog.openError(null, null, null, status);
+		}
 
 		prt = "";
 		urt = "";
@@ -112,14 +119,19 @@ public class WebConnector {
 			if (userName.length() == 0 || password.length() == 0) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						Shell shell = PlatformUI.isWorkbenchRunning() ? PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell() : null;
-						LoginDialog dlg = new LoginDialog(shell, userName, password);
+						LoginDialog dlg = new LoginDialog(null, userName, password);
 						if (dlg.open() == LoginDialog.OK) {
 							userName = dlg.getUserName();
 							password = dlg.getPassword();
 							if (dlg.isSavePassword()) {
-								preferences.setValue(Activator.PREFS_USERNAME, userName);
-								preferences.setValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
+								try {
+									preferences.put(Activator.PREFS_USERNAME, userName, true);
+									preferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true);
+								} catch (Exception e) {
+									Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+									Activator.log(status);
+									ErrorDialog.openError(null, null, null, status);
+								}
 							}
 						}
 						else {
@@ -139,16 +151,15 @@ public class WebConnector {
 			}
 
 			try {
-				HttpMethod method = new GetMethod("http://" + HOST + "/trading/collegc_3");
+				HttpMethod method = new GetMethod("https://" + HOST + "/trading/collegc_3");
 				method.setFollowRedirects(true);
 				method.setQueryString(new NameValuePair[] {
-						new NameValuePair("USER", userName),
-						new NameValuePair("PASSW", password),
-						new NameValuePair("PAG", "VT4.4.0.6"),
-						new NameValuePair("TAPPO", "X"),
-					});
+				    new NameValuePair("USER", userName),
+				    new NameValuePair("PASSW", password),
+				    new NameValuePair("PAG", "VT4.4.0.6"),
+				    new NameValuePair("TAPPO", "X"),
+				});
 
-				logger.info(method.getURI().toString());
 				client.executeMethod(method);
 
 				Parser parser = Parser.createParser(method.getResponseBodyAsString(), "");
@@ -278,7 +289,7 @@ public class WebConnector {
 
 		// Inserisce l'ordine di acquisto
 		try {
-			GetMethod method = new GetMethod("http://" + HOST + "/trading/ordimm5c");
+			GetMethod method = new GetMethod("https://" + HOST + "/trading/ordimm5c");
 			method.setFollowRedirects(true);
 			query.add(new NameValuePair("MODO", "C"));
 			method.setQueryString(query.toArray(new NameValuePair[query.size()]));
@@ -320,7 +331,7 @@ public class WebConnector {
 			ok = false;
 
 			try {
-				GetMethod method = new GetMethod("http://" + HOST + "/trading/ordimm5c");
+				GetMethod method = new GetMethod("https://" + HOST + "/trading/ordimm5c");
 				method.setFollowRedirects(true);
 				query.remove(new NameValuePair("MODO", "C"));
 				query.add(new NameValuePair("MODO", "V"));
@@ -364,16 +375,16 @@ public class WebConnector {
 		String inputLine;
 
 		try {
-			GetMethod method = new GetMethod("http://" + HOST + "/trading/ordmod5c");
+			GetMethod method = new GetMethod("https://" + HOST + "/trading/ordmod5c");
 			method.setQueryString(new NameValuePair[] {
-					new NameValuePair("TAST", "REVOCA"),
-					new NameValuePair("USER", user),
-					new NameValuePair("RIF", tracker.getId()),
-					new NameValuePair("TIPO", "I"),
-					new NameValuePair("PRZO", ""),
-					new NameValuePair("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity())),
-					new NameValuePair("FILL", "REVOCA"),
-				});
+			    new NameValuePair("TAST", "REVOCA"),
+			    new NameValuePair("USER", user),
+			    new NameValuePair("RIF", tracker.getId()),
+			    new NameValuePair("TIPO", "I"),
+			    new NameValuePair("PRZO", ""),
+			    new NameValuePair("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity())),
+			    new NameValuePair("FILL", "REVOCA"),
+			});
 
 			logger.info(method.getURI().toString());
 			client.executeMethod(method);
@@ -397,12 +408,12 @@ public class WebConnector {
 
 	public void importWatchlists() {
 		try {
-			GetMethod method = new GetMethod("http://" + HOST + "/trading/select");
+			GetMethod method = new GetMethod("https://" + HOST + "/trading/select");
 			method.setFollowRedirects(true);
 			method.setQueryString(new NameValuePair[] {
-					new NameValuePair("USER", user),
-					new NameValuePair("INCR", "N"),
-				});
+			    new NameValuePair("USER", user),
+			    new NameValuePair("INCR", "N"),
+			});
 
 			logger.info(method.getURI().toString());
 			client.executeMethod(method);
@@ -428,12 +439,12 @@ public class WebConnector {
 
 	protected void getWatchlist(String id, String title) {
 		try {
-			HttpMethod method = new GetMethod("http://" + HOST + "/trading/tabelc_4");
+			HttpMethod method = new GetMethod("https://" + HOST + "/trading/tabelc_4");
 			method.setFollowRedirects(true);
 			method.setQueryString(new NameValuePair[] {
-					new NameValuePair("USER", user),
-					new NameValuePair("DEVAR", id),
-				});
+			    new NameValuePair("USER", user),
+			    new NameValuePair("DEVAR", id),
+			});
 
 			logger.info(method.getURI().toString());
 			client.executeMethod(method);

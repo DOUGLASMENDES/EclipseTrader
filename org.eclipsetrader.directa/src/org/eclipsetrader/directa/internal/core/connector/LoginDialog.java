@@ -37,10 +37,10 @@ public class LoginDialog extends TitleAreaDialog {
 	private Image image;
 
 	private DisposeListener disposeListener = new DisposeListener() {
-        public void widgetDisposed(DisposeEvent e) {
-        	if (image != null)
-        		image.dispose();
-        }
+		public void widgetDisposed(DisposeEvent e) {
+			if (image != null)
+				image.dispose();
+		}
 	};
 
 	public LoginDialog(Shell parentShell, String userName, String password) {
@@ -49,7 +49,7 @@ public class LoginDialog extends TitleAreaDialog {
 		this.password = password;
 		try {
 			this.image = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/key.gif").createImage(); //$NON-NLS-1$
-		} catch(Exception e) {
+		} catch (Exception e) {
 		}
 	}
 
@@ -57,7 +57,7 @@ public class LoginDialog extends TitleAreaDialog {
 	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
 	 */
 	@Override
-    protected void configureShell(Shell newShell) {
+	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText("Login");
 		newShell.addDisposeListener(disposeListener);
@@ -67,7 +67,7 @@ public class LoginDialog extends TitleAreaDialog {
 	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
-    protected Control createDialogArea(Composite parent) {
+	protected Control createDialogArea(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
 		composite.setLayout(new GridLayout(2, false));
@@ -99,10 +99,10 @@ public class LoginDialog extends TitleAreaDialog {
 	 * @see org.eclipse.jface.window.Window#open()
 	 */
 	@Override
-    public int open() {
+	public int open() {
 		create();
 
-		setTitle("DirectaWorld Login");
+		setTitle("Directa Login");
 		setMessage("Please enter your user code and password");
 		setTitleImage(image);
 
@@ -113,7 +113,7 @@ public class LoginDialog extends TitleAreaDialog {
 	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
 	 */
 	@Override
-    protected void okPressed() {
+	protected void okPressed() {
 		userName = text1.getText();
 		password = text2.getText();
 		savePassword = button.getSelection();
@@ -129,6 +129,6 @@ public class LoginDialog extends TitleAreaDialog {
 	}
 
 	public boolean isSavePassword() {
-    	return savePassword;
-    }
+		return savePassword;
+	}
 }

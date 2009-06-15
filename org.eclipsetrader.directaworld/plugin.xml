@@ -22,14 +22,5 @@
             name="Code">
       </property>
    </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="org.eclipsetrader.ui.preferences.plugins"
-            class="org.eclipsetrader.directaworld.internal.ui.preferences.AuthenticationPage"
-            id="org.eclipsetrader.directaworld.authentication"
-            name="DirectaWorld">
-      </page>
-   </extension>
 
 </plugin>

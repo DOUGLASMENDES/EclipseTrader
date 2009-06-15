@@ -34,6 +34,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -75,12 +78,12 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	private static final int I_LOW = 14;
 	private static final int I_HIGH = 15;
 
-    private static final String HOST = "registrazioni.directaworld.it";
+	private static final String HOST = "registrazioni.directaworld.it";
 
-    private String id;
-    private String name;
+	private String id;
+	private String name;
 
-	protected Map<String,FeedSubscription> symbolSubscriptions;
+	protected Map<String, FeedSubscription> symbolSubscriptions;
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	protected TimeZone timeZone;
@@ -98,122 +101,122 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	private int requiredDelay = 15;
 
 	public SnapshotConnector() {
-		symbolSubscriptions = new HashMap<String,FeedSubscription>();
+		symbolSubscriptions = new HashMap<String, FeedSubscription>();
 
 		timeZone = TimeZone.getTimeZone("Europe/Rome");
 
 		dateTimeParser = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
-        dateTimeParser.setTimeZone(timeZone);
+		dateTimeParser.setTimeZone(timeZone);
 		timeParser = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
-        timeParser.setTimeZone(timeZone);
+		timeParser.setTimeZone(timeZone);
 
 		numberFormat = NumberFormat.getInstance(Locale.ITALY);
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
-    }
+	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+	 */
+	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+		id = config.getAttribute("id");
+		name = config.getAttribute("name");
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
-     */
-    public String getId() {
-	    return id;
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
+	 */
+	public String getId() {
+		return id;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
-     */
-    public String getName() {
-	    return name;
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
+	 */
+	public String getName() {
+		return name;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
-     */
-    public IFeedSubscription subscribe(IFeedIdentifier identifier) {
-		synchronized(symbolSubscriptions) {
-	    	IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
-	    	FeedSubscription subscription = symbolSubscriptions.get(identifierType.getSymbol());
-	    	if (subscription == null) {
-	    		subscription = new FeedSubscription(this, identifierType);
-	    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
-	    		if (connected)
-	    			startThread();
-	    	}
-	    	subscription.incrementInstanceCount();
-		    return subscription;
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
+	 */
+	public IFeedSubscription subscribe(IFeedIdentifier identifier) {
+		synchronized (symbolSubscriptions) {
+			IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
+			FeedSubscription subscription = symbolSubscriptions.get(identifierType.getSymbol());
+			if (subscription == null) {
+				subscription = new FeedSubscription(this, identifierType);
+				symbolSubscriptions.put(identifierType.getSymbol(), subscription);
+				if (connected)
+					startThread();
+			}
+			subscription.incrementInstanceCount();
+			return subscription;
 		}
-    }
+	}
 
-    protected void disposeSubscription(FeedSubscription subscription) {
-		synchronized(symbolSubscriptions) {
+	protected void disposeSubscription(FeedSubscription subscription) {
+		synchronized (symbolSubscriptions) {
 			if (subscription.decrementInstanceCount() <= 0) {
 				IdentifierType identifierType = subscription.getIdentifierType();
 				symbolSubscriptions.remove(identifierType.getSymbol());
 				if (symbolSubscriptions.size() == 0 && connected)
-			        stopThread();
+					stopThread();
 			}
 		}
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
-     */
-    public synchronized void connect() {
-    	connected = true;
-		synchronized(symbolSubscriptions) {
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
+	 */
+	public synchronized void connect() {
+		connected = true;
+		synchronized (symbolSubscriptions) {
 			if (symbolSubscriptions.size() != 0)
 				startThread();
 		}
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
-     */
-    public synchronized void disconnect() {
-        stopThread();
-    	connected = false;
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
+	 */
+	public synchronized void disconnect() {
+		stopThread();
+		connected = false;
+	}
 
-    protected void startThread() {
+	protected void startThread() {
 		if (thread == null) {
 			stopping = false;
 			thread = new Thread(this, name + " - Data Reader");
 			thread.start();
 		}
-    }
+	}
 
-    protected void stopThread() {
-        stopping = true;
-        if (thread != null) {
+	protected void stopThread() {
+		stopping = true;
+		if (thread != null) {
 			try {
-				synchronized(thread) {
+				synchronized (thread) {
 					thread.notify();
 				}
-		        if (thread != null)
-		        	thread.join(30 * 1000);
+				if (thread != null)
+					thread.join(30 * 1000);
 			} catch (InterruptedException e) {
 				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error stopping thread", e);
 				Activator.log(status);
 			}
 			thread = null;
 		}
-    }
+	}
 
-    public boolean isRunning() {
-    	return thread != null;
-    }
+	public boolean isRunning() {
+		return thread != null;
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    public void run() {
-    	client = new HttpClient();
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		client = new HttpClient();
 		client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
 		if (Activator.getDefault() != null) {
@@ -232,11 +235,17 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			}
 		}
 
-    	final IPreferenceStore preferences = getPreferenceStore();
-		if (userName == null)
-			userName = preferences.getString(Activator.PREFS_USERNAME);
-		if (password == null)
-			password = preferences.getString(Activator.PREFS_PASSWORD);
+		final ISecurePreferences preferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
+		try {
+			if (userName == null)
+				userName = preferences.get(Activator.PREFS_USERNAME, "");
+			if (password == null)
+				password = preferences.get(Activator.PREFS_PASSWORD, "");
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+			Activator.log(status);
+			ErrorDialog.openError(null, null, null, status);
+		}
 
 		do {
 			if ("".equals(userName) || "".equals(password)) {
@@ -248,8 +257,14 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 							userName = dlg.getUserName();
 							password = dlg.getPassword();
 							if (dlg.isSavePassword()) {
-								preferences.setValue(Activator.PREFS_USERNAME, userName);
-								preferences.setValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "");
+								try {
+									preferences.put(Activator.PREFS_USERNAME, userName, true);
+									preferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true);
+								} catch (Exception e) {
+									Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+									Activator.log(status);
+									ErrorDialog.openError(null, null, null, status);
+								}
 							}
 						}
 						else {
@@ -266,7 +281,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			}
 		} while (!checkLogin());
 
-		synchronized(thread) {
+		synchronized (thread) {
 			while (!stopping) {
 				if (symbolSubscriptions.size() != 0)
 					fetchLatestSnapshot();
@@ -280,7 +295,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 
 		client = null;
 		thread = null;
-    }
+	}
 
 	protected IPreferenceStore getPreferenceStore() {
 		return Activator.getDefault().getPreferenceStore();
@@ -290,7 +305,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 		BufferedReader in = null;
 		try {
 			String[] symbols;
-			synchronized(symbolSubscriptions) {
+			synchronized (symbolSubscriptions) {
 				symbols = symbolSubscriptions.keySet().toArray(new String[symbolSubscriptions.size()]);
 			}
 
@@ -349,11 +364,11 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			Activator.log(status);
 		} finally {
 			try {
-	            if (in != null)
-	            	in.close();
-            } catch (Exception e) {
-            	// We can't do anything at this time, ignore
-            }
+				if (in != null)
+					in.close();
+			} catch (Exception e) {
+				// We can't do anything at this time, ignore
+			}
 		}
 	}
 
@@ -417,18 +432,18 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-     */
-    public void addConnectorListener(IConnectorListener listener) {
-    	listeners.add(listener);
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+	 */
+	public void addConnectorListener(IConnectorListener listener) {
+		listeners.add(listener);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-     */
-    public void removeConnectorListener(IConnectorListener listener) {
-    	listeners.remove(listener);
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+	 */
+	public void removeConnectorListener(IConnectorListener listener) {
+		listeners.remove(listener);
+	}
 
 	protected boolean checkLogin() {
 		boolean result = false;
@@ -459,11 +474,11 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			Activator.log(status);
 		} finally {
 			try {
-	            if (in != null)
-	            	in.close();
-            } catch (Exception e) {
-            	// We can't do anything at this time, ignore
-            }
+				if (in != null)
+					in.close();
+			} catch (Exception e) {
+				// We can't do anything at this time, ignore
+			}
 		}
 
 		return result;

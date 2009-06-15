@@ -5,7 +5,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipsetrader.ui.preferences.plugins"
-            class="org.eclipsetrader.directa.internal.ui.preferences.AuthenticationPage"
+            class="org.eclipsetrader.directa.internal.ui.preferences.GeneralPage"
             id="org.eclipsetrader.directa.authentication"
             name="Directa">
       </page>
@@ -49,7 +49,7 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             label="Directa"
-            visible="false"
+            visible="true"
             id="org.eclipsetrader.directa.actionSet">
          <menu
                label="Directa"
