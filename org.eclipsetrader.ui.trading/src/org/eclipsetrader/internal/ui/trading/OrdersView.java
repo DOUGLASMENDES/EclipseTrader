@@ -24,6 +24,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
@@ -50,6 +51,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
@@ -198,6 +200,10 @@ public class OrdersView extends ViewPart {
 
 		initializeActions();
 
+		IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
+		toolbarManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		toolbarManager.add(cancelAction);
+
 		IMenuManager menuManager = site.getActionBars().getMenuManager();
 		menuManager.add(new Separator("group.new")); //$NON-NLS-1$
 		menuManager.add(new GroupMarker("group.goto")); //$NON-NLS-1$
@@ -219,6 +225,8 @@ public class OrdersView extends ViewPart {
 	}
 
 	void initializeActions() {
+		ISharedImages sharedImages = getViewSite().getWorkbenchWindow().getWorkbench().getSharedImages();
+
 		cancelAction = new Action(Messages.OrdersView_CancelAction) {
 			@Override
 			public void run() {
@@ -234,6 +242,9 @@ public class OrdersView extends ViewPart {
 				}
 			}
 		};
+		cancelAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+		cancelAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE_DISABLED));
+		cancelAction.setEnabled(false);
 
 		columnsAction = new Action(Messages.OrdersView_ColumnsAction) {
 			@Override
@@ -277,7 +288,15 @@ public class OrdersView extends ViewPart {
 		selectionProvider = new ProxySelectionProvider();
 		selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				cancelAction.setEnabled(!event.getSelection().isEmpty());
+				boolean enabled = false;
+				IStructuredSelection selection = (IStructuredSelection) getSite().getSelectionProvider().getSelection();
+				if (!selection.isEmpty()) {
+					for (Object o : selection.toList()) {
+						if (((IOrderMonitor) o).getStatus() != IOrderStatus.Canceled)
+							enabled = true;
+					}
+				}
+				cancelAction.setEnabled(enabled);
 			}
 		});
 		selectionProvider.setSelectionProvider(all);
