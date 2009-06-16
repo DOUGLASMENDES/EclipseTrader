@@ -264,7 +264,7 @@ public class Market extends PlatformObject implements IMarket {
 		if (day.getOpenTime() != null && time.before(day.getOpenTime()))
 			return day;
 
-		if (schedule != null) {
+		if (schedule != null && schedule.size() != 0) {
 			Calendar refTime = Calendar.getInstance();
 			refTime.setTime(schedule.first().getOpenTime());
 			calendar.set(Calendar.HOUR_OF_DAY, refTime.get(Calendar.HOUR_OF_DAY));

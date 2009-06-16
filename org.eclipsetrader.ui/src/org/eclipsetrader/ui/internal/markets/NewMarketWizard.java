@@ -11,37 +11,38 @@
 
 package org.eclipsetrader.ui.internal.markets;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.INewWizard;
+import org.eclipse.ui.IWorkbench;
 import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class NewMarketAction extends Action {
-	private Shell shell;
+public class NewMarketWizard extends MarketWizard implements INewWizard {
 
-	public NewMarketAction(Shell shell) {
-		super("Market");
-		this.shell = shell;
+	public NewMarketWizard() {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.Action#run()
+	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
 	 */
-	@Override
-	public void run() {
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
 		ServiceReference serviceReference = context.getServiceReference(MarketService.class.getName());
-		MarketService marketService = (MarketService) context.getService(serviceReference);
-
-		MarketWizard wizard = new MarketWizard(marketService);
-		WizardDialog dlg = new WizardDialog(shell, wizard);
-		dlg.setMinimumPageSize(450, 300);
-		if (dlg.open() == WizardDialog.OK)
-			marketService.addMarket(wizard.getMarket());
-
+		marketService = (MarketService) context.getService(serviceReference);
 		context.ungetService(serviceReference);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.ui.internal.markets.MarketWizard#performFinish()
+	 */
+	@Override
+	public boolean performFinish() {
+		boolean result = super.performFinish();
+
+		getMarketService().addMarket(getMarket());
+
+		return result;
 	}
 }

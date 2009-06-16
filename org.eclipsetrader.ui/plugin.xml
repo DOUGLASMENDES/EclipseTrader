@@ -251,7 +251,7 @@
       </wizard>
       <wizard
             category="org.eclipsetrader.ui.wizards.general"
-            class="org.eclipsetrader.ui.internal.markets.MarketWizard"
+            class="org.eclipsetrader.ui.internal.markets.NewMarketWizard"
             hasPages="true"
             icon="icons/etool16/market_new.png"
             id="org.eclipsetrader.ui.wizards.new.market"

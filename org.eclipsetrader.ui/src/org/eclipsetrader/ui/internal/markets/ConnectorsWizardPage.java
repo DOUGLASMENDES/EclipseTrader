@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,8 +37,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class ConnectorsWizardPage extends WizardPage {
-    ComboViewer liveFeed;
-    private List<Object> connectors = new ArrayList<Object>();
+	ComboViewer liveFeed;
+	private List<Object> connectors = new ArrayList<Object>();
 
 	public ConnectorsWizardPage() {
 		super("connectors", "Connectors", null);
@@ -50,9 +50,7 @@ public class ConnectorsWizardPage extends WizardPage {
 	 */
 	public void createControl(Composite parent) {
 		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
+		content.setLayout(new GridLayout(2, false));
 		setControl(content);
 
 		initializeDialogUnits(parent);
@@ -64,16 +62,16 @@ public class ConnectorsWizardPage extends WizardPage {
 		liveFeed.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		liveFeed.getCombo().setVisibleItemCount(15);
 		liveFeed.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-            	if (!(element instanceof IFeedConnector)) {
-            		IFeedConnector defaultConnector = CoreActivator.getDefault().getDefaultConnector();
-            		return NLS.bind("- Default ({0}) -", new Object[] {
-            				defaultConnector != null ? defaultConnector.getName() :  "None",
-            		});
-            	}
-	            return ((IFeedConnector) element).getName();
-            }
+			@Override
+			public String getText(Object element) {
+				if (!(element instanceof IFeedConnector)) {
+					IFeedConnector defaultConnector = CoreActivator.getDefault().getDefaultConnector();
+					return NLS.bind("- Default ({0}) -", new Object[] {
+						defaultConnector != null ? defaultConnector.getName() : "None",
+					});
+				}
+				return ((IFeedConnector) element).getName();
+			}
 		});
 		liveFeed.setSorter(new ViewerSorter());
 		liveFeed.setContentProvider(new ArrayContentProvider());
@@ -87,29 +85,29 @@ public class ConnectorsWizardPage extends WizardPage {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
-     */
-    @Override
-    public boolean isPageComplete() {
-    	return true;
-    }
+	 * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
+	 */
+	@Override
+	public boolean isPageComplete() {
+		return true;
+	}
 
-    public IFeedConnector getLiveFeedConnector() {
+	public IFeedConnector getLiveFeedConnector() {
 		Object s = ((IStructuredSelection) liveFeed.getSelection()).getFirstElement();
 		return s instanceof IFeedConnector ? (IFeedConnector) s : null;
-    }
+	}
 
 	protected IFeedService getFeedService() {
-    	try {
-    		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
-    		IFeedService service = (IFeedService) context.getService(serviceReference);
-    		context.ungetService(serviceReference);
-    		return service;
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-    		UIActivator.getDefault().getLog().log(status);
-    	}
-    	return null;
-    }
+		try {
+			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+			IFeedService service = (IFeedService) context.getService(serviceReference);
+			context.ungetService(serviceReference);
+			return service;
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+			UIActivator.getDefault().getLog().log(status);
+		}
+		return null;
+	}
 }
