@@ -6,4 +6,22 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.junit
-Export-Package: org.eclipsetrader.tests.core
+Export-Package: org.easymock,
+ org.easymock.classextension,
+ org.easymock.classextension.internal,
+ org.easymock.classextension.internal.objenesis,
+ org.easymock.classextension.internal.objenesis.instantiator,
+ org.easymock.classextension.internal.objenesis.instantiator.basic,
+ org.easymock.classextension.internal.objenesis.instantiator.gcj,
+ org.easymock.classextension.internal.objenesis.instantiator.jrockit,
+ org.easymock.classextension.internal.objenesis.instantiator.perc,
+ org.easymock.classextension.internal.objenesis.instantiator.sun,
+ org.easymock.classextension.internal.objenesis.strategy,
+ org.easymock.internal,
+ org.easymock.internal.matchers,
+ org.eclipsetrader.tests.core
+Bundle-ClassPath: plugin.jar,
+ easymock.jar,
+ easymockclassextension.jar,
+ cglib-2.1.3.jar,
+ asm.jar

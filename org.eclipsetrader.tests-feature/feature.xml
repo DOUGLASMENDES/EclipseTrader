@@ -23,57 +23,99 @@
    </url>
 
    <plugin
-         id="org.eclipsetrader.core.charts.tests"
+         id="org.junit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipsetrader.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipsetrader.brokers.paper.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
 
    <plugin
          id="org.eclipsetrader.core.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
+
+   <plugin
+         id="org.eclipsetrader.core.charts.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.eclipsetrader.core.trading.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.eclipsetrader.directa.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
 
    <plugin
          id="org.eclipsetrader.news.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
+
+   <plugin
+         id="org.eclipsetrader.repository.hibernate.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
 
    <plugin
          id="org.eclipsetrader.repository.local.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipsetrader.ui.charts.tests"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
 
    <plugin
          id="org.eclipsetrader.ui.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
 
    <plugin
-         id="org.junit"
+         id="org.eclipsetrader.ui.charts.tests"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.eclipsetrader.ui.trading.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="org.eclipsetrader.yahoo.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
 
 </feature>

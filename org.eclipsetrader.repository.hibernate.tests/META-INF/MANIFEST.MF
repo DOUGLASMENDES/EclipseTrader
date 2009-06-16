@@ -7,7 +7,7 @@ Bundle-Vendor: EclipseTrader.org
 Fragment-Host: org.eclipsetrader.repository.hibernate;bundle-version="1.0.0"
 Require-Bundle: org.junit
 Bundle-ClassPath: fragment.jar,
- hsqldb.jar,
- easymock.jar,
- easymockclassextension.jar
+ hsqldb.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.easymock,
+ org.easymock.classextension
