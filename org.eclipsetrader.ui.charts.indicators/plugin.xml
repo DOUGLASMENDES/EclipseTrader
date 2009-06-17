@@ -251,6 +251,14 @@
             id="org.eclipsetrader.indicators.var"
             name="VAR">
       </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.indicators.top"
+            class="org.eclipsetrader.ui.charts.indicators.TREND"
+            description="Trend Channel"
+            exclusive="false"
+            id="org.eclipsetrader.indicators.trend"
+            name="TREND">
+      </indicator>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">
@@ -642,6 +650,28 @@
             <test
                   property="org.eclipsetrader.ui.chartObjectFactory"
                   value="org.eclipsetrader.indicators.var">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.TRENDGeneralPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.trend.general"
+            name="General">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.trend">
+            </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.indicators.TRENDPropertiesPage"
+            id="org.eclipsetrader.ui.charts.indicators.trend.indicator"
+            name="Indicator">
+         <enabledWhen>
+            <test
+                  property="org.eclipsetrader.ui.chartObjectFactory"
+                  value="org.eclipsetrader.indicators.trend">
             </test>
          </enabledWhen>
       </page>
