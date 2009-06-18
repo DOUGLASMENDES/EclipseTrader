@@ -22,6 +22,10 @@
       <discovery label="Sourceforge.net" url="http://eclipsetrader.sourceforge.net/updates"/>
    </url>
 
+   <requires>
+      <import feature="org.eclipsetrader.repository.hibernate" version="1.0.0" match="compatible"/>
+   </requires>
+
    <plugin
          id="org.eclipsetrader.repository.hibernate.postgresql"
          download-size="0"

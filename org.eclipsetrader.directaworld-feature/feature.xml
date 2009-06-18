@@ -24,6 +24,7 @@
 
    <requires>
       <import feature="org.eclipsetrader.platform" version="1.0.0" match="compatible"/>
+      <import feature="org.apache.commons" version="1.0.0" match="compatible"/>
    </requires>
 
    <plugin
