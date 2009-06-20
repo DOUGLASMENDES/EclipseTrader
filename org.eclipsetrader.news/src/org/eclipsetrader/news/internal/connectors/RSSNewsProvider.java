@@ -63,7 +63,7 @@ public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 	public static final String HEADLINES_FILE = "rss.xml"; //$NON-NLS-1$
 
 	private String id;
-    private String name;
+	private String name;
 
 	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
 	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
@@ -74,87 +74,87 @@ public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 	static private List<HeadLine> oldItems = new ArrayList<HeadLine>();
 
 	private JobChangeAdapter jobChangeListener = new JobChangeAdapter() {
-        @Override
-        public void done(IJobChangeEvent event) {
-    		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-        	int interval = store.getInt(Activator.PREFS_UPDATE_INTERVAL);
-        	job.schedule(interval * 60 * 1000);
-        }
+		@Override
+		public void done(IJobChangeEvent event) {
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+			int interval = store.getInt(Activator.PREFS_UPDATE_INTERVAL);
+			job.schedule(interval * 60 * 1000);
+		}
 	};
 
 	private Job job = new Job("RSS Subscriptions") {
-        @Override
-        protected IStatus run(IProgressMonitor monitor) {
-	        return jobRunner(monitor);
-        }
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			return jobRunner(monitor);
+		}
 	};
 
 	public RSSNewsProvider() {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
-    }
+	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+	 */
+	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+		id = config.getAttribute("id");
+		name = config.getAttribute("name");
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.news.core.INewsProvider#getId()
-     */
-    public String getId() {
-	    return id;
-    }
+	 * @see org.eclipsetrader.news.core.INewsProvider#getId()
+	 */
+	public String getId() {
+		return id;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.news.core.INewsProvider#getName()
-     */
-    public String getName() {
-	    return name;
-    }
+	 * @see org.eclipsetrader.news.core.INewsProvider#getName()
+	 */
+	public String getName() {
+		return name;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
-     */
-    public IHeadLine[] getHeadLines() {
-	    return new IHeadLine[0];
-    }
+	 * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
+	 */
+	public IHeadLine[] getHeadLines() {
+		return new IHeadLine[0];
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.news.core.INewsProvider#start()
-     */
-    public void start() {
-    	if (!started) {
-    		job.schedule(5 * 1000);
-    		job.addJobChangeListener(jobChangeListener);
-    		started = true;
-    	}
-    }
+	 * @see org.eclipsetrader.news.core.INewsProvider#start()
+	 */
+	public void start() {
+		if (!started) {
+			job.schedule(5 * 1000);
+			job.addJobChangeListener(jobChangeListener);
+			started = true;
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.news.core.INewsProvider#stop()
-     */
-    public void stop() {
-    	if (started) {
-        	job.removeJobChangeListener(jobChangeListener);
-        	job.cancel();
-        	started = false;
-    	}
-    }
+	 * @see org.eclipsetrader.news.core.INewsProvider#stop()
+	 */
+	public void stop() {
+		if (started) {
+			job.removeJobChangeListener(jobChangeListener);
+			job.cancel();
+			started = false;
+		}
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.news.core.INewsProvider#refresh()
-     */
-    public void refresh() {
-    	job.removeJobChangeListener(jobChangeListener);
-    	job.cancel();
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.news.core.INewsProvider#refresh()
+	 */
+	public void refresh() {
+		job.removeJobChangeListener(jobChangeListener);
+		job.cancel();
 
-    	if (started)
-    		job.addJobChangeListener(jobChangeListener);
+		if (started)
+			job.addJobChangeListener(jobChangeListener);
 
-    	job.schedule(0);
-    }
+		job.schedule(0);
+	}
 
 	protected IStatus jobRunner(IProgressMonitor monitor) {
 		final List<IHeadLine> list = new ArrayList<IHeadLine>();
@@ -166,16 +166,16 @@ public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 			for (int i = 0; i < sources.length; i++) {
 				try {
 					HeadLine[] headLines = update(new URL(sources[i].getUrl()), sources[i].getName());
-					for (HeadLine h : headLines) {
-						if (!oldItems.contains(h)) {
-							h.setRecent(true);
-							oldItems.add(h);
-							list.add(h);
+					for (HeadLine headLine : headLines) {
+						if (!oldItems.contains(headLine)) {
+							headLine.setRecent(true);
+							oldItems.add(headLine);
+							list.add(headLine);
 						}
 					}
-				} catch(Exception e) {
-		    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error updating headlines from " + sources[i].getUrl(), null); //$NON-NLS-1$
-		    		Activator.getDefault().getLog().log(status);
+				} catch (Exception e) {
+					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error updating headlines from " + sources[i].getUrl(), null); //$NON-NLS-1$
+					Activator.getDefault().getLog().log(status);
 				} finally {
 					monitor.worked(1);
 				}
@@ -183,20 +183,20 @@ public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 
 			final INewsService service = getNewsService();
 			service.runInService(new INewsServiceRunnable() {
-	            public IStatus run(IProgressMonitor monitor) throws Exception {
-	            	service.updateHeadLines(list.toArray(new IHeadLine[list.size()]));
-	                return Status.OK_STATUS;
-	            }
+				public IStatus run(IProgressMonitor monitor) throws Exception {
+					service.addHeadLines(list.toArray(new IHeadLine[list.size()]));
+					return Status.OK_STATUS;
+				}
 			}, null);
 		} finally {
 			monitor.done();
 		}
 
 		return Status.OK_STATUS;
-    }
+	}
 
-    protected void resetRecentFlag() {
-    	final List<HeadLine> updated = new ArrayList<HeadLine>();
+	protected void resetRecentFlag() {
+		final List<HeadLine> updated = new ArrayList<HeadLine>();
 		for (HeadLine headLine : oldItems) {
 			if (headLine.isRecent()) {
 				headLine.setRecent(false);
@@ -206,12 +206,12 @@ public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 
 		final INewsService service = getNewsService();
 		service.runInService(new INewsServiceRunnable() {
-            public IStatus run(IProgressMonitor monitor) throws Exception {
-            	service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
-                return Status.OK_STATUS;
-            }
+			public IStatus run(IProgressMonitor monitor) throws Exception {
+				service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
+				return Status.OK_STATUS;
+			}
 		}, null);
-    }
+	}
 
 	protected FeedSource[] getActiveSubscriptions() {
 		List<FeedSource> list = new ArrayList<FeedSource>();
@@ -220,23 +220,23 @@ public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 			File file = Activator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
 			if (file.exists()) {
 				JAXBContext jaxbContext = JAXBContext.newInstance(FeedSource[].class);
-		        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-	            unmarshaller.setEventHandler(new ValidationEventHandler() {
-	            	public boolean handleEvent(ValidationEvent event) {
-	            		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-	            		Activator.getDefault().getLog().log(status);
-	            		return true;
-	            	}
-	            });
-		        JAXBElement<FeedSource[]> element = unmarshaller.unmarshal(new StreamSource(file), FeedSource[].class);
-		        for (FeedSource source : element.getValue()) {
-		        	if (source.isEnabled())
-		        		list.add(source);
-		        }
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				unmarshaller.setEventHandler(new ValidationEventHandler() {
+					public boolean handleEvent(ValidationEvent event) {
+						Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+						Activator.getDefault().getLog().log(status);
+						return true;
+					}
+				});
+				JAXBElement<FeedSource[]> element = unmarshaller.unmarshal(new StreamSource(file), FeedSource[].class);
+				for (FeedSource source : element.getValue()) {
+					if (source.isEnabled())
+						list.add(source);
+				}
 			}
-		} catch(Exception e) {
-    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscriptions", null); //$NON-NLS-1$
-    		Activator.getDefault().getLog().log(status);
+		} catch (Exception e) {
+			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscriptions", null); //$NON-NLS-1$
+			Activator.getDefault().getLog().log(status);
 		}
 
 		return list.toArray(new FeedSource[list.size()]);
@@ -302,14 +302,11 @@ public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
 				}
 
 				HeadLine headLine = new HeadLine(entry.getPublishedDate(), source, title, set.toArray(new ISecurity[set.size()]), url);
-				if (!oldItems.contains(headLine)) {
-					oldItems.add(headLine);
-					headLines.add(headLine);
-				}
+				headLines.add(headLine);
 			}
 		} catch (Exception e) {
-    		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscription " + feedUrl.toString(), e); //$NON-NLS-1$
-    		Activator.getDefault().getLog().log(status);
+			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscription " + feedUrl.toString(), e); //$NON-NLS-1$
+			Activator.getDefault().getLog().log(status);
 		}
 		return headLines.toArray(new HeadLine[headLines.size()]);
 	}

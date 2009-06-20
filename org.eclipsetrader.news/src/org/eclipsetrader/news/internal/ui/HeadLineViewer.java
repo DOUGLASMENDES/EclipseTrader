@@ -26,6 +26,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -92,102 +93,108 @@ public class HeadLineViewer extends ViewPart {
 
 	private ControlAdapter controlListener = new ControlAdapter() {
 		@Override
-        public void controlResized(ControlEvent e) {
+		public void controlResized(ControlEvent e) {
 			TableColumn tableColumn = (TableColumn) e.widget;
 			int index = viewer.getTable().indexOf(tableColumn);
 
-        	if (dialogSettings != null) {
-        		IDialogSettings columnsSection = dialogSettings.getSection(K_COLUMNS);
-        		if (columnsSection == null)
-        			columnsSection = dialogSettings.addNewSection(K_COLUMNS);
-        		columnsSection.put(String.valueOf(index), tableColumn.getWidth());
-        	}
+			if (dialogSettings != null) {
+				IDialogSettings columnsSection = dialogSettings.getSection(K_COLUMNS);
+				if (columnsSection == null)
+					columnsSection = dialogSettings.addNewSection(K_COLUMNS);
+				columnsSection.put(String.valueOf(index), tableColumn.getWidth());
+			}
 		}
 	};
 
 	private INewsServiceListener newsListener = new INewsServiceListener() {
-        public void newsServiceUpdate(NewsEvent event) {
-        	for (HeadLineStatus status : event.getStatus()) {
-        		if (security != null && !status.getHeadLine().contains(security))
-        			continue;
-        		if (status.getKind() == HeadLineStatus.ADDED)
-        			input.add(status.getHeadLine());
-        		else if (status.getKind() == HeadLineStatus.REMOVED)
-        			input.remove(status.getHeadLine());
-        	}
-        	if (!viewer.getControl().isDisposed()) {
-        		try {
-        			viewer.getControl().getDisplay().asyncExec(new Runnable() {
-                        public void run() {
-                        	if (!viewer.getControl().isDisposed()) {
-                        		viewer.refresh();
-                        		if (hasUnreadedHeadlines())
-                        			setTitleImage(Activator.getDefault().getImageRegistry().get("new_headlines_icon"));
-                        		else
-                        			setTitleImage(Activator.getDefault().getImageRegistry().get("normal_icon"));
-                        	}
-                        }
-        			});
-        		} catch(SWTException e) {
-        			if (e.code != SWT.ERROR_WIDGET_DISPOSED)
-        				throw e;
-        		}
-        	}
-        }
+		public void newsServiceUpdate(NewsEvent event) {
+			for (HeadLineStatus status : event.getStatus()) {
+				if (security != null && !status.getHeadLine().contains(security))
+					continue;
+				if (status.getKind() == HeadLineStatus.ADDED)
+					input.add(status.getHeadLine());
+				else if (status.getKind() == HeadLineStatus.REMOVED)
+					input.remove(status.getHeadLine());
+			}
+			if (!viewer.getControl().isDisposed()) {
+				try {
+					viewer.getControl().getDisplay().asyncExec(new Runnable() {
+						public void run() {
+							if (!viewer.getControl().isDisposed()) {
+								viewer.refresh();
+								if (hasUnreadedHeadlines())
+									setTitleImage(Activator.getDefault().getImageRegistry().get("new_headlines_icon"));
+								else
+									setTitleImage(Activator.getDefault().getImageRegistry().get("normal_icon"));
+							}
+						}
+					});
+				} catch (SWTException e) {
+					if (e.code != SWT.ERROR_WIDGET_DISPOSED)
+						throw e;
+				}
+			}
+		}
 	};
 
 	private ISelectionListener selectionListener = new ISelectionListener() {
-        public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-        	viewer.setSelection(selection, true);
-        }
+		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+			viewer.setSelection(selection, true);
+		}
 	};
 
 	public HeadLineViewer() {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void init(IViewSite site, IMemento memento) throws PartInitException {
-	    super.init(site, memento);
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
 
-	    IDialogSettings bundleDialogSettings = Activator.getDefault().getDialogSettings();
-	    if (site.getSecondaryId() != null) {
-	        try {
-	    		dialogSettings = bundleDialogSettings.getSection(K_VIEWS).getSection(site.getSecondaryId());
-	        	URI uri = new URI(dialogSettings.get(K_URI));
+		IDialogSettings bundleDialogSettings = Activator.getDefault().getDialogSettings();
+		if (site.getSecondaryId() != null) {
+			try {
+				dialogSettings = bundleDialogSettings.getSection(K_VIEWS).getSection(site.getSecondaryId());
+				URI uri = new URI(dialogSettings.get(K_URI));
 
-	        	IRepositoryService repositoryService = Activator.getDefault().getRepositoryService();
-	        	security = repositoryService.getSecurityFromURI(uri);
-                if (security != null)
-                	setPartName(NLS.bind("{0} - {1}", new Object[] { security.getName(), getPartName() }));
-	        } catch (Exception e) {
-	        	Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
-	        	Activator.getDefault().getLog().log(status);
-	        }
+				IRepositoryService repositoryService = Activator.getDefault().getRepositoryService();
+				security = repositoryService.getSecurityFromURI(uri);
+				if (security != null)
+					setPartName(NLS.bind("{0} - {1}", new Object[] {
+					    security.getName(), getPartName()
+					}));
+			} catch (Exception e) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
+				Activator.getDefault().getLog().log(status);
+			}
 		}
 
-	    if (dialogSettings == null) {
-		    dialogSettings = bundleDialogSettings.getSection(getClass().getName());
-		    if (dialogSettings == null)
-		    	dialogSettings = bundleDialogSettings.addNewSection(getClass().getName());
-	    }
+		if (dialogSettings == null) {
+			dialogSettings = bundleDialogSettings.getSection(getClass().getName());
+			if (dialogSettings == null)
+				dialogSettings = bundleDialogSettings.addNewSection(getClass().getName());
+		}
 
-        refreshAction = new Action("Refresh") {
+		refreshAction = new Action("Refresh") {
 			@Override
-            public void run() {
+			public void run() {
+				IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+
 				INewsProvider[] providers = service.getProviders();
-				for (int i = 0; i < providers.length; i++)
-					providers[i].refresh();
+				for (int i = 0; i < providers.length; i++) {
+					if (store.getBoolean(providers[i].getId()))
+						providers[i].refresh();
+				}
 			}
 		};
-        refreshAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/refresh.gif")); //$NON-NLS-1$
-        refreshAction.setDisabledImageDescriptor(Activator.getImageDescriptor("icons/dlcl16/refresh.gif")); //$NON-NLS-1$
+		refreshAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/refresh.gif")); //$NON-NLS-1$
+		refreshAction.setDisabledImageDescriptor(Activator.getImageDescriptor("icons/dlcl16/refresh.gif")); //$NON-NLS-1$
 
 		showPreviousAction = new Action("Previous") {
 			@Override
-            public void run() {
+			public void run() {
 				IHeadLine headLine = getPreviousHeadLine();
 				if (headLine != null) {
 					viewer.setSelection(new StructuredSelection(headLine), true);
@@ -195,12 +202,12 @@ public class HeadLineViewer extends ViewPart {
 				}
 			}
 		};
-        showPreviousAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/prev_nav.gif")); //$NON-NLS-1$
-        showPreviousAction.setDisabledImageDescriptor(Activator.getImageDescriptor("icons/dlcl16/prev_nav.gif")); //$NON-NLS-1$
+		showPreviousAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/prev_nav.gif")); //$NON-NLS-1$
+		showPreviousAction.setDisabledImageDescriptor(Activator.getImageDescriptor("icons/dlcl16/prev_nav.gif")); //$NON-NLS-1$
 
 		showNextAction = new Action("Next") {
 			@Override
-            public void run() {
+			public void run() {
 				IHeadLine headLine = getNextHeadLine();
 				if (headLine != null) {
 					viewer.setSelection(new StructuredSelection(headLine), true);
@@ -208,58 +215,58 @@ public class HeadLineViewer extends ViewPart {
 				}
 			}
 		};
-        showNextAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/next_nav.gif")); //$NON-NLS-1$
-        showNextAction.setDisabledImageDescriptor(Activator.getImageDescriptor("icons/dlcl16/next_nav.gif")); //$NON-NLS-1$
+		showNextAction.setImageDescriptor(Activator.getImageDescriptor("icons/elcl16/next_nav.gif")); //$NON-NLS-1$
+		showNextAction.setDisabledImageDescriptor(Activator.getImageDescriptor("icons/dlcl16/next_nav.gif")); //$NON-NLS-1$
 
-        openAction = new Action("Open") {
+		openAction = new Action("Open") {
 			@Override
-        	public void run() {
+			public void run() {
 				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-            	if (!selection.isEmpty()) {
-            		IHeadLine headLine = (IHeadLine) selection.getFirstElement();
-            		doOpenHeadLine(headLine, false);
-            	}
-        	}
-        };
-        openNewWindowAction = new Action("Open in New Browser") {
+				if (!selection.isEmpty()) {
+					IHeadLine headLine = (IHeadLine) selection.getFirstElement();
+					doOpenHeadLine(headLine, false);
+				}
+			}
+		};
+		openNewWindowAction = new Action("Open in New Browser") {
 			@Override
-        	public void run() {
+			public void run() {
 				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-            	if (!selection.isEmpty()) {
-            		IHeadLine headLine = (IHeadLine) selection.getFirstElement();
-            		doOpenHeadLine(headLine, true);
-            	}
-        	}
-        };
-    	markAsReadAction = new Action("Mark as Read") {
+				if (!selection.isEmpty()) {
+					IHeadLine headLine = (IHeadLine) selection.getFirstElement();
+					doOpenHeadLine(headLine, true);
+				}
+			}
+		};
+		markAsReadAction = new Action("Mark as Read") {
 			@Override
-        	public void run() {
+			public void run() {
 				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
 				List<?> list = selection.toList();
 				final IHeadLine[] headLines = list.toArray(new IHeadLine[list.size()]);
 				for (int i = 0; i < headLines.length; i++)
 					headLines[i].setReaded(true);
 				service.updateHeadLines(headLines);
-        	}
-        };
-    	markAllAsReadAction = new Action("Mark All as Read") {
+			}
+		};
+		markAllAsReadAction = new Action("Mark All as Read") {
 			@Override
-        	public void run() {
+			public void run() {
 				final IHeadLine[] headLines = input.toArray(new IHeadLine[input.size()]);
 				for (int i = 0; i < headLines.length; i++)
 					headLines[i].setReaded(true);
 				service.updateHeadLines(headLines);
-        	}
-        };
+			}
+		};
 
 		IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
-        toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
-        toolBarManager.add(showPreviousAction);
-        toolBarManager.add(showNextAction);
-        toolBarManager.add(new Separator("additions")); //$NON-NLS-1$
-        toolBarManager.add(refreshAction);
-        toolBarManager.add(new Separator("end")); //$NON-NLS-1$
-    }
+		toolBarManager.add(new Separator("begin")); //$NON-NLS-1$
+		toolBarManager.add(showPreviousAction);
+		toolBarManager.add(showNextAction);
+		toolBarManager.add(new Separator("additions")); //$NON-NLS-1$
+		toolBarManager.add(refreshAction);
+		toolBarManager.add(new Separator("end")); //$NON-NLS-1$
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -301,7 +308,7 @@ public class HeadLineViewer extends ViewPart {
 			getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
 			getSite().getPage().addSelectionListener(selectionListener);
-	       	viewer.setSelection(getSite().getPage().getSelection(), true);
+			viewer.setSelection(getSite().getPage().getSelection(), true);
 		}
 
 		if (hasUnreadedHeadlines())
@@ -319,17 +326,17 @@ public class HeadLineViewer extends ViewPart {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-     */
-    @Override
-    public void dispose() {
+	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 */
+	@Override
+	public void dispose() {
 		if (service != null)
 			service.removeNewsServiceListener(newsListener);
 
 		getSite().getPage().removeSelectionListener(selectionListener);
 
-	    super.dispose();
-    }
+		super.dispose();
+	}
 
 	protected void createViewer(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
@@ -361,36 +368,36 @@ public class HeadLineViewer extends ViewPart {
 		viewer.setLabelProvider(new HeadLineLabelProvider());
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setSorter(new ViewerSorter() {
-            @Override
-            public int compare(Viewer viewer, Object e1, Object e2) {
-                int cat1 = category(e1);
-                int cat2 = category(e2);
-                if (cat1 != cat2)
-        			return cat1 - cat2;
-	            return ((IHeadLine) e2).getDate().compareTo(((IHeadLine) e1).getDate());
-            }
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				int cat1 = category(e1);
+				int cat2 = category(e2);
+				if (cat1 != cat2)
+					return cat1 - cat2;
+				return ((IHeadLine) e2).getDate().compareTo(((IHeadLine) e1).getDate());
+			}
 
-            @Override
-            public int category(Object element) {
-            	IHeadLine headLine = (IHeadLine) element;
-	            return headLine.isRecent() ? 0 : 1;
-            }
+			@Override
+			public int category(Object element) {
+				IHeadLine headLine = (IHeadLine) element;
+				return headLine.isRecent() ? 0 : 1;
+			}
 		});
 
 		viewer.addOpenListener(new IOpenListener() {
-            public void open(OpenEvent event) {
-            	if (!event.getSelection().isEmpty()) {
-            		IHeadLine headLine = (IHeadLine) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            		doOpenHeadLine(headLine, false);
-            	}
-            }
+			public void open(OpenEvent event) {
+				if (!event.getSelection().isEmpty()) {
+					IHeadLine headLine = (IHeadLine) ((IStructuredSelection) event.getSelection()).getFirstElement();
+					doOpenHeadLine(headLine, false);
+				}
+			}
 		});
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-            	openAction.setEnabled(!event.getSelection().isEmpty());
-            	markAsReadAction.setEnabled(!event.getSelection().isEmpty());
-            	markAllAsReadAction.setEnabled(input.size() != 0);
-            }
+			public void selectionChanged(SelectionChangedEvent event) {
+				openAction.setEnabled(!event.getSelection().isEmpty());
+				markAsReadAction.setEnabled(!event.getSelection().isEmpty());
+				markAllAsReadAction.setEnabled(input.size() != 0);
+			}
 		});
 	}
 
@@ -414,7 +421,9 @@ public class HeadLineViewer extends ViewPart {
 			((NewsViewer) viewPart).setHeadLine(headLine);
 			headLine.setReaded(true);
 			if (service != null)
-				service.updateHeadLines(new IHeadLine[] { headLine });
+				service.updateHeadLines(new IHeadLine[] {
+					headLine
+				});
 		} catch (PartInitException e) {
 			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Unexpected error activating browser", null);
 			Activator.log(status);
@@ -471,8 +480,8 @@ public class HeadLineViewer extends ViewPart {
 	}
 
 	TableViewer getViewer() {
-    	return viewer;
-    }
+		return viewer;
+	}
 
 	protected IHeadLine[] getHeadLines() {
 		IHeadLine[] result = new IHeadLine[0];
@@ -482,8 +491,8 @@ public class HeadLineViewer extends ViewPart {
 		if (serviceReference != null) {
 			service = (INewsService) context.getService(serviceReference);
 			if (service != null) {
-                if (security != null)
-                	result = service.getHeadLinesFor(security);
+				if (security != null)
+					result = service.getHeadLinesFor(security);
 				else
 					result = service.getHeadLines();
 				service.addNewsServiceListener(newsListener);

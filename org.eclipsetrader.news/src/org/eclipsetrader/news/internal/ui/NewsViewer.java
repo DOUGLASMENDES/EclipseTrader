@@ -19,10 +19,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.browser.TitleEvent;
 import org.eclipse.swt.browser.TitleListener;
+import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -46,63 +48,63 @@ public class NewsViewer extends ViewPart {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void init(IViewSite site, IMemento memento) throws PartInitException {
-	    super.init(site, memento);
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
 
-	    if (memento != null) {
-	    	String title = memento.getString("title");
-	    	String url = memento.getString("url");
-	    	if (url != null)
-	    		headLine = new HeadLine(null, null, title != null ? title : "", null, url);
-	    }
+		if (memento != null) {
+			String title = memento.getString("title");
+			String url = memento.getString("url");
+			if (url != null)
+				headLine = new HeadLine(null, null, title != null ? title : "", null, url);
+		}
 
-	    stopAction = new Action("Stop") {
-            @Override
-            public void run() {
-        		browser.stop();
-            }
-	    };
-	    stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_STOP));
-	    stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
-    	stopAction.setEnabled(false);
+		stopAction = new Action("Stop") {
+			@Override
+			public void run() {
+				browser.stop();
+			}
+		};
+		stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_STOP));
+		stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
+		stopAction.setEnabled(false);
 
-	    refreshAction = new Action("Refresh") {
-            @Override
-            public void run() {
-            	stopAction.setEnabled(true);
-        	    refreshAction.setEnabled(false);
-        	    browser.refresh();
-            }
-	    };
-	    refreshAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_REFRESH));
-	    refreshAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_REFRESH));
-	    refreshAction.setEnabled(false);
+		refreshAction = new Action("Refresh") {
+			@Override
+			public void run() {
+				stopAction.setEnabled(true);
+				refreshAction.setEnabled(false);
+				browser.refresh();
+			}
+		};
+		refreshAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_REFRESH));
+		refreshAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_REFRESH));
+		refreshAction.setEnabled(false);
 
-	    IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
-	    toolbarManager.add(refreshAction);
-	    toolbarManager.add(stopAction);
-	    toolbarManager.add(new Separator("additions"));
+		IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
+		toolbarManager.add(refreshAction);
+		toolbarManager.add(stopAction);
+		toolbarManager.add(new Separator("additions"));
 
-	    site.getActionBars().updateActionBars();
+		site.getActionBars().updateActionBars();
 
-	    site.setSelectionProvider(new SelectionProvider());
-    }
+		site.setSelectionProvider(new SelectionProvider());
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
-     */
-    @Override
-    public void saveState(IMemento memento) {
-	    super.saveState(memento);
+	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
 
-	    if (headLine != null) {
-		    memento.putString("title", headLine.getText());
-		    memento.putString("url", headLine.getLink());
-	    }
-    }
+		if (headLine != null) {
+			memento.putString("title", headLine.getText());
+			memento.putString("url", headLine.getLink());
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -119,26 +121,31 @@ public class NewsViewer extends ViewPart {
 		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		browser.addTitleListener(new TitleListener() {
 			public void changed(TitleEvent event) {
-		    	setTitleToolTip(event.title);
+				setTitleToolTip(event.title);
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {
-            public void changed(ProgressEvent event) {
-            }
+			public void changed(ProgressEvent event) {
+			}
 
-            public void completed(ProgressEvent event) {
-            	stopAction.setEnabled(false);
-        	    refreshAction.setEnabled(true);
-            }
+			public void completed(ProgressEvent event) {
+				stopAction.setEnabled(false);
+				refreshAction.setEnabled(true);
+			}
 		});
 		browser.addLocationListener(new LocationListener() {
-            public void changed(LocationEvent event) {
-            }
+			public void changed(LocationEvent event) {
+			}
 
-            public void changing(LocationEvent event) {
-            	stopAction.setEnabled(true);
-        	    refreshAction.setEnabled(false);
-            }
+			public void changing(LocationEvent event) {
+				stopAction.setEnabled(true);
+				refreshAction.setEnabled(false);
+			}
+		});
+		browser.addOpenWindowListener(new OpenWindowListener() {
+			public void open(WindowEvent event) {
+				event.browser = browser;
+			}
 		});
 
 		setTitleToolTip(getPartName());
@@ -156,13 +163,13 @@ public class NewsViewer extends ViewPart {
 	}
 
 	public IHeadLine getHeadLine() {
-    	return headLine;
-    }
+		return headLine;
+	}
 
 	public void setHeadLine(IHeadLine headLine) {
-    	this.headLine = headLine;
-    	browser.setUrl(headLine.getLink());
+		this.headLine = headLine;
+		browser.setUrl(headLine.getLink());
 		setPartName(headLine.getText());
 		getSite().getSelectionProvider().setSelection(new StructuredSelection(headLine));
-    }
+	}
 }

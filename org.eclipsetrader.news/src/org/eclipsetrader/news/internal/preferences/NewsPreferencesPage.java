@@ -77,9 +77,7 @@ public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPre
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
 		providers = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		gridData.heightHint = providers.getTable().getItemHeight() * 15 + providers.getTable().getBorderWidth() * 2;
-		providers.getControl().setLayoutData(gridData);
+		providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		providers.setContentProvider(new ArrayContentProvider());
 		providers.setLabelProvider(new LabelProvider() {
 			@Override
