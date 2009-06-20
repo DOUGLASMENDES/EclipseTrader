@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.ui.internal.charts;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -27,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.HistoryDay;
@@ -60,10 +63,13 @@ public class DataImportJob extends Job {
 	private Date toDate;
 
 	private List<IStatus> results = new ArrayList<IStatus>();
+	IPreferenceStore preferences;
 
 	public DataImportJob(ISecurity security, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
 		super(Messages.DataImportJob_Name);
-		this.securities = new ISecurity[] { security };
+		this.securities = new ISecurity[] {
+			security
+		};
 		this.mode = mode;
 		this.fromDate = fromDate;
 		this.toDate = toDate;
@@ -82,10 +88,12 @@ public class DataImportJob extends Job {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-    @Override
+	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		ISecurity[] filteredList = getFilteredSecurities(securities);
 		monitor.beginTask(getName(), filteredList.length);
+
+		preferences = ChartsUIActivator.getDefault().getPreferenceStore();
 
 		IBackfillConnector defaultBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
 		IBackfillConnector defaultIntradayBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
@@ -131,6 +139,12 @@ public class DataImportJob extends Job {
 					Date beginDate = fromDate;
 					Date endDate = toDate;
 
+					if (beginDate == null) {
+						beginDate = getDefaultStartDate();
+					}
+					if (endDate == null)
+						endDate = new Date();
+
 					IHistory history = repositoryService.getHistoryFor(security);
 					Map<Date, IOHLC> dailyDataMap = new HashMap<Date, IOHLC>(2048);
 
@@ -161,7 +175,7 @@ public class DataImportJob extends Job {
 								dataMap.put(currentTimeSpan, ohlc);
 						}
 						else if (intradayBackfillConnector.canBackfill(identifier, currentTimeSpan)) {
-							monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString()})); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 							IOHLC[] ohlc = intradayBackfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
 							if (ohlc != null && ohlc.length != 0)
@@ -172,9 +186,8 @@ public class DataImportJob extends Job {
 
 						if (!dataMap.containsKey(currentTimeSpan)) {
 							String message = NLS.bind(Messages.DataImportJob_DownloadDataErrorMessage, new Object[] {
-									currentTimeSpan.toString(),
-									security.getName()
-								});
+							    currentTimeSpan.toString(), security.getName()
+							});
 							Status status = new Status(Status.ERROR, ChartsUIActivator.PLUGIN_ID, 0, message, null);
 							results.add(status);
 						}
@@ -214,7 +227,9 @@ public class DataImportJob extends Job {
 									}
 								}
 
-								repositoryService.saveAdaptable(new IHistory[] { history }, defaultRepository);
+								repositoryService.saveAdaptable(new IHistory[] {
+									history
+								}, defaultRepository);
 							}
 							else {
 								if (history == null) {
@@ -222,13 +237,17 @@ public class DataImportJob extends Job {
 									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
 									if (intradayHistory instanceof HistoryDay)
 										((HistoryDay) intradayHistory).setOHLC(ohlc);
-									repositoryService.saveAdaptable(new IHistory[] { history, intradayHistory }, defaultRepository);
+									repositoryService.saveAdaptable(new IHistory[] {
+									    history, intradayHistory
+									}, defaultRepository);
 								}
 								else {
 									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
 									if (intradayHistory instanceof HistoryDay)
 										((HistoryDay) intradayHistory).setOHLC(ohlc);
-									repositoryService.saveAdaptable(new IHistory[] { intradayHistory }, defaultRepository);
+									repositoryService.saveAdaptable(new IHistory[] {
+										intradayHistory
+									}, defaultRepository);
 								}
 							}
 						}
@@ -249,7 +268,9 @@ public class DataImportJob extends Job {
 
 								if (dividendsMap.size() != 0) {
 									((Stock) security).setDividends(dividendsMap.values().toArray(new IDividend[dividendsMap.values().size()]));
-									repositoryService.saveAdaptable(new ISecurity[] { security });
+									repositoryService.saveAdaptable(new ISecurity[] {
+										security
+									});
 								}
 							}
 						}
@@ -273,6 +294,23 @@ public class DataImportJob extends Job {
 		return Status.OK_STATUS;
 	}
 
+	Date getDefaultStartDate() throws ParseException {
+		int method = preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD);
+
+		if (method == 0) {
+			String s = preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE);
+			return new SimpleDateFormat("yyyyMMdd").parse(s);
+		}
+		else if (method == 1) {
+			Calendar c = Calendar.getInstance();
+			c.set(Calendar.MILLISECOND, 0);
+			c.add(Calendar.YEAR, -preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS));
+			return c.getTime();
+		}
+
+		throw new IllegalArgumentException("Invalid initial backfill method " + method);
+	}
+
 	protected ISecurity[] getFilteredSecurities(ISecurity[] list) {
 		List<ISecurity> l = new ArrayList<ISecurity>();
 
@@ -283,9 +321,9 @@ public class DataImportJob extends Job {
 		}
 
 		Collections.sort(l, new Comparator<ISecurity>() {
-            public int compare(ISecurity o1, ISecurity o2) {
-	            return o1.getName().compareToIgnoreCase(o2.getName());
-            }
+			public int compare(ISecurity o1, ISecurity o2) {
+				return o1.getName().compareToIgnoreCase(o2.getName());
+			}
 		});
 
 		return l.toArray(new ISecurity[l.size()]);

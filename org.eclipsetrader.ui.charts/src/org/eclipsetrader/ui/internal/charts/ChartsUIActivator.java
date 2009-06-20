@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,6 +43,9 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	public static final String PREFS_CROSSHAIR_ACTIVATION = "CROSSHAIR_ACTIVATION"; //$NON-NLS-1$
 	public static final String PREFS_CROSSHAIR_SUMMARY_TOOLTIP = "CROSSHAIR_SUMMARY_TOOLTIP"; //$NON-NLS-1$
 	public static final String PREFS_SHOW_TOOLTIPS = "SHOW_TOOLTIPS"; //$NON-NLS-1$
+	public static final String PREFS_INITIAL_BACKFILL_METHOD = "INITIAL_BACKFILL_METHOD"; //$NON-NLS-1$
+	public static final String PREFS_INITIAL_BACKFILL_START_DATE = "INITIAL_BACKFILL_START_DATE"; //$NON-NLS-1$
+	public static final String PREFS_INITIAL_BACKFILL_YEARS = "INITIAL_BACKFILL_YEARS"; //$NON-NLS-1$
 
 	// The shared instance
 	private static ChartsUIActivator plugin;
@@ -64,7 +67,7 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 
@@ -82,7 +85,7 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		if (marketServiceReference != null) {
 			context.ungetService(marketServiceReference);
 			marketService = null;
@@ -183,6 +186,6 @@ public class ChartsUIActivator extends AbstractUIPlugin {
 	}
 
 	public IMarketService getMarketService() {
-    	return marketService;
-    }
+		return marketService;
+	}
 }

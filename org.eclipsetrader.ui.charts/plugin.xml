@@ -265,6 +265,12 @@
             id="org.eclipsetrader.ui.charts.general"
             name="%charts.preferencepage.name">
       </page>
+      <page
+            category="org.eclipsetrader.ui.charts.general"
+            class="org.eclipsetrader.ui.internal.charts.DefaultsPage"
+            id="org.eclipsetrader.ui.charts.defaults"
+            name="Default Values">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
