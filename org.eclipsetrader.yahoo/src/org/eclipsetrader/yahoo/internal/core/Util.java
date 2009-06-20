@@ -31,6 +31,18 @@ public class Util {
 	private Util() {
 	}
 
+	public static String getSymbol(IFeedIdentifier identifier) {
+		String symbol = identifier.getSymbol();
+
+		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+		if (properties != null) {
+			if (properties.getProperty("org.eclipsetrader.yahoo.symbol") != null)
+				symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
+		}
+
+		return symbol;
+	}
+
 	/**
 	 * Builds the http method for live prices snapshot download.
 	 *
@@ -45,9 +57,9 @@ public class Util {
 			s.append(symbols[i]);
 		}
 		method.setQueryString(new NameValuePair[] {
-				new NameValuePair("symbols", s.toString()),
-				new NameValuePair("format", "sl1d1t1c1ohgvbapb6a5"),
-			});
+		    new NameValuePair("symbols", s.toString()),
+		    new NameValuePair("format", "sl1d1t1c1ohgvbapb6a5"),
+		});
 		return method;
 	}
 
@@ -67,15 +79,15 @@ public class Util {
 		}
 
 		method.setQueryString(new NameValuePair[] {
-				new NameValuePair("s", s.toString()),
-				new NameValuePair("k", "a00,a50,b00,b60,g00,h00,j10,l10,t10,v00"),
-				new NameValuePair("j", "c10,l10,p20,t10"),
-				new NameValuePair("r", "0"),
-				new NameValuePair("marketid", "us_market"),
-				new NameValuePair("callback", "parent.yfs_u1f"),
-				new NameValuePair("mktmcb", "parent.yfs_mktmcb"),
-				new NameValuePair("gencallback", "parent.yfs_gencb"),
-			});
+		    new NameValuePair("s", s.toString()),
+		    new NameValuePair("k", "a00,a50,b00,b60,g00,h00,j10,l10,t10,v00"),
+		    new NameValuePair("j", "c10,l10,p20,t10"),
+		    new NameValuePair("r", "0"),
+		    new NameValuePair("marketid", "us_market"),
+		    new NameValuePair("callback", "parent.yfs_u1f"),
+		    new NameValuePair("mktmcb", "parent.yfs_mktmcb"),
+		    new NameValuePair("gencallback", "parent.yfs_gencb"),
+		});
 		method.setFollowRedirects(true);
 
 		return method;
@@ -87,13 +99,7 @@ public class Util {
 	 * @return the method.
 	 */
 	public static HttpMethod getHistoryFeedMethod(IFeedIdentifier identifier, Date from, Date to) {
-		String symbol = identifier.getSymbol();
-
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			if (properties.getProperty("org.eclipsetrader.yahoo.symbol") != null)
-				symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
-		}
+		String symbol = getSymbol(identifier);
 
 		Calendar fromDate = Calendar.getInstance();
 		fromDate.setTime(from);
@@ -102,30 +108,42 @@ public class Util {
 		toDate.setTime(to);
 
 		GetMethod method = new GetMethod("http://" + historyFeedHost + "/table.csv");
-        method.setQueryString(new NameValuePair[] {
-        		new NameValuePair("s", symbol),
-        		new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
-        		new NameValuePair("e", String.valueOf(toDate.get(Calendar.DAY_OF_MONTH))),
-        		new NameValuePair("f", String.valueOf(toDate.get(Calendar.YEAR))),
-        		new NameValuePair("g", "d"),
-        		new NameValuePair("a", String.valueOf(fromDate.get(Calendar.MONTH))),
-        		new NameValuePair("b", String.valueOf(fromDate.get(Calendar.DAY_OF_MONTH))),
-        		new NameValuePair("c", String.valueOf(fromDate.get(Calendar.YEAR))),
-        		new NameValuePair("ignore", ".csv"),
-        	});
+		method.setQueryString(new NameValuePair[] {
+		    new NameValuePair("s", symbol),
+		    new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
+		    new NameValuePair("e", String.valueOf(toDate.get(Calendar.DAY_OF_MONTH))),
+		    new NameValuePair("f", String.valueOf(toDate.get(Calendar.YEAR))),
+		    new NameValuePair("g", "d"),
+		    new NameValuePair("a", String.valueOf(fromDate.get(Calendar.MONTH))),
+		    new NameValuePair("b", String.valueOf(fromDate.get(Calendar.DAY_OF_MONTH))),
+		    new NameValuePair("c", String.valueOf(fromDate.get(Calendar.YEAR))),
+		    new NameValuePair("ignore", ".csv"),
+		});
+		method.setFollowRedirects(true);
+
+		return method;
+	}
+
+	public static HttpMethod get1DayHistoryFeedMethod(IFeedIdentifier identifier) {
+		String symbol = getSymbol(identifier);
+
+		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() + "/chartdata;type=quote;range=1d/csv/");
+		method.setFollowRedirects(true);
+
+		return method;
+	}
+
+	public static HttpMethod get5DayHistoryFeedMethod(IFeedIdentifier identifier) {
+		String symbol = getSymbol(identifier);
+
+		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() + "/chartdata;type=quote;range=5d/csv/");
 		method.setFollowRedirects(true);
 
 		return method;
 	}
 
 	public static HttpMethod getDividendsHistoryMethod(IFeedIdentifier identifier, Date from, Date to) {
-		String symbol = identifier.getSymbol();
-
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			if (properties.getProperty("org.eclipsetrader.yahoo.symbol") != null)
-				symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
-		}
+		String symbol = getSymbol(identifier);
 
 		Calendar fromDate = Calendar.getInstance();
 		fromDate.setTime(from);
@@ -134,17 +152,17 @@ public class Util {
 		toDate.setTime(to);
 
 		GetMethod method = new GetMethod("http://" + historyFeedHost + "/table.csv");
-        method.setQueryString(new NameValuePair[] {
-        		new NameValuePair("s", symbol),
-        		new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
-        		new NameValuePair("e", String.valueOf(toDate.get(Calendar.DAY_OF_MONTH))),
-        		new NameValuePair("f", String.valueOf(toDate.get(Calendar.YEAR))),
-        		new NameValuePair("g", "v"),
-        		new NameValuePair("a", String.valueOf(fromDate.get(Calendar.MONTH))),
-        		new NameValuePair("b", String.valueOf(fromDate.get(Calendar.DAY_OF_MONTH))),
-        		new NameValuePair("c", String.valueOf(fromDate.get(Calendar.YEAR))),
-        		new NameValuePair("ignore", ".csv"),
-        	});
+		method.setQueryString(new NameValuePair[] {
+		    new NameValuePair("s", symbol),
+		    new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
+		    new NameValuePair("e", String.valueOf(toDate.get(Calendar.DAY_OF_MONTH))),
+		    new NameValuePair("f", String.valueOf(toDate.get(Calendar.YEAR))),
+		    new NameValuePair("g", "v"),
+		    new NameValuePair("a", String.valueOf(fromDate.get(Calendar.MONTH))),
+		    new NameValuePair("b", String.valueOf(fromDate.get(Calendar.DAY_OF_MONTH))),
+		    new NameValuePair("c", String.valueOf(fromDate.get(Calendar.YEAR))),
+		    new NameValuePair("ignore", ".csv"),
+		});
 		method.setFollowRedirects(true);
 
 		return method;
@@ -155,13 +173,7 @@ public class Util {
 		if (identifier == null)
 			return null;
 
-		String symbol = identifier.getSymbol();
-
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			if (properties.getProperty("org.eclipsetrader.yahoo.symbol") != null)
-				symbol = properties.getProperty("org.eclipsetrader.yahoo.symbol");
-		}
+		String symbol = getSymbol(identifier);
 
 		URL feedUrl = new URL("http://finance.yahoo.com/rss/headline?s=" + symbol);
 		if (symbol.toLowerCase().endsWith(".mi"))
