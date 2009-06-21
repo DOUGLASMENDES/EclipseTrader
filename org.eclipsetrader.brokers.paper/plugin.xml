@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.eclipsetrader.core.brokers">
+         point="org.eclipsetrader.core.trading.brokers">
       <broker
             class="org.eclipsetrader.internal.brokers.paper.PaperBroker"
             id="org.eclipsetrader.brokers.paper"

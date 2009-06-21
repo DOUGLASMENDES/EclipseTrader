@@ -37,7 +37,7 @@ import org.osgi.framework.ServiceRegistration;
 public class Activator extends Plugin {
 	public static final String PLUGIN_ID = "org.eclipsetrader.core.trading";
 
-	public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.brokers";
+	public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.trading.brokers";
 	public static final String ALERTS_EXTENSION_ID = "org.eclipsetrader.core.trading.alerts";
 	public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.trading.systems";
 

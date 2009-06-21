@@ -222,7 +222,7 @@
       </actionSet>
    </extension>
    <extension
-         point="org.eclipsetrader.core.brokers">
+         point="org.eclipsetrader.core.trading.brokers">
       <broker
             class="org.eclipsetrader.directa.internal.core.BrokerConnector"
             id="org.eclipsetrader.brokers.directa"
@@ -265,14 +265,6 @@
             properties="canTrade"
             type="java.lang.Object">
       </propertyTester>
-   </extension>
-   <extension
-         point="org.eclipsetrader.core.brokers">
-      <broker
-            class="org.eclipsetrader.directa.internal.core.BrokerConnector"
-            id="org.eclipsetrader.directa.broker"
-            name="Directa">
-      </broker>
    </extension>
 
 </plugin>
