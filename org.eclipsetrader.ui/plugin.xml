@@ -201,6 +201,21 @@
             id="org.eclipsetrader.ui.providers.gain"
             name="Gain">
       </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.LastTradeDateFactory"
+            id="org.eclipsetrader.ui.providers.LastTradeDate"
+            name="Last Trade Date">
+      </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.LastTradeDateTimeFactory"
+            id="org.eclipsetrader.ui.providers.LastTradeDateTime"
+            name="Last Trade Date / Time">
+      </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.BidAskSpreadFactory"
+            id="org.eclipsetrader.ui.providers.BidAskSpread"
+            name="Bid/Ask Spread">
+      </provider>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
