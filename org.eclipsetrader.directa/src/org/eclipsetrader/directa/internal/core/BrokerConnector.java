@@ -43,6 +43,7 @@ import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.BrokerException;
+import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
@@ -590,5 +591,14 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 		fireUpdateNotifications(new OrderDelta[] {
 			new OrderDelta(OrderDelta.KIND_ADDED, orderMonitor),
 		});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.IBroker#getAccounts()
+	 */
+	public IAccount[] getAccounts() {
+		return new IAccount[] {
+			WebConnector.getInstance().getAccount(),
+		};
 	}
 }

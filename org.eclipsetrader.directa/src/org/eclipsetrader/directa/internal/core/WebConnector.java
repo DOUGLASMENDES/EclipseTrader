@@ -75,6 +75,7 @@ public class WebConnector {
 	private HttpClient client;
 	private String userName;
 	private String password;
+	private Account account;
 
 	private String prt = "";
 	private String urt = "";
@@ -99,12 +100,12 @@ public class WebConnector {
 	}
 
 	public synchronized void login() {
-		final ISecurePreferences preferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
+		final ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
 		try {
 			if (userName == null)
-				userName = preferences.get(Activator.PREFS_USERNAME, "");
+				userName = securePreferences.get(Activator.PREFS_USERNAME, "");
 			if (password == null)
-				password = preferences.get(Activator.PREFS_PASSWORD, "");
+				password = securePreferences.get(Activator.PREFS_PASSWORD, "");
 		} catch (Exception e) {
 			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
 			Activator.log(status);
@@ -125,8 +126,8 @@ public class WebConnector {
 							password = dlg.getPassword();
 							if (dlg.isSavePassword()) {
 								try {
-									preferences.put(Activator.PREFS_USERNAME, userName, true);
-									preferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true);
+									securePreferences.put(Activator.PREFS_USERNAME, userName, true);
+									securePreferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true);
 								} catch (Exception e) {
 									Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
 									Activator.log(status);
@@ -184,6 +185,22 @@ public class WebConnector {
 				password = "";
 
 		} while (user.equals("") || prt.equals("") || urt.equals(""));
+
+		IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
+		preferenceStore.putValue(Activator.PREFS_USERNAME, userName);
+
+		account = new Account(userName);
+	}
+
+	public Account getAccount() {
+		if (account == null) {
+			if (userName == null) {
+				IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
+				userName = preferenceStore.getString(Activator.PREFS_USERNAME);
+			}
+			account = new Account("".equals(userName) ? "Default" : userName);
+		}
+		return account;
 	}
 
 	private void setupProxy(HttpClient client, String host) {
