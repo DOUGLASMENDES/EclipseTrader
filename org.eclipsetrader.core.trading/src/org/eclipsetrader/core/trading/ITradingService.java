@@ -26,4 +26,8 @@ public interface ITradingService {
 	public void addOrderChangeListener(IOrderChangeListener listener);
 
 	public void removeOrderChangeListener(IOrderChangeListener listener);
+
+	public void addPositionListener(IPositionListener listener);
+
+	public void removePositionListener(IPositionListener listener);
 }

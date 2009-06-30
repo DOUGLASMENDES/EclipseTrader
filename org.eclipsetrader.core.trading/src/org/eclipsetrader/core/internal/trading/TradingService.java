@@ -30,6 +30,7 @@ import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
 import org.eclipsetrader.core.trading.IOrderMonitor;
+import org.eclipsetrader.core.trading.IPositionListener;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
@@ -41,6 +42,7 @@ public class TradingService implements ITradingService {
 	private Set<IOrderMonitor> orders = new HashSet<IOrderMonitor>();
 
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+	private ListenerList positionListeners = new ListenerList(ListenerList.IDENTITY);
 
 	private IOrderChangeListener orderChangeListener = new IOrderChangeListener() {
 		public void orderChanged(OrderChangeEvent event) {
@@ -61,7 +63,8 @@ public class TradingService implements ITradingService {
 					IBroker connector = (IBroker) configElements[j].createExecutableExtension("class");
 					brokers.put(connector.getId(), connector);
 				} catch (CoreException e) {
-					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error creating broker instance with id " +
+					                                                                 configElements[j].getAttribute("id"), e);
 					Activator.log(status);
 				}
 			}
@@ -177,5 +180,19 @@ public class TradingService implements ITradingService {
 				}
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.ITradingService#addPositionListener(org.eclipsetrader.core.trading.IPositionListener)
+	 */
+	public void addPositionListener(IPositionListener listener) {
+		positionListeners.add(listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.ITradingService#removePositionListener(org.eclipsetrader.core.trading.IPositionListener)
+	 */
+	public void removePositionListener(IPositionListener listener) {
+		positionListeners.remove(listener);
 	}
 }

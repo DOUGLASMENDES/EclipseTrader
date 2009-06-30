@@ -75,8 +75,7 @@ public class Activator extends Plugin {
 
 		final TradeSystemService tradeSystemService = new TradeSystemService();
 		context.registerService(new String[] {
-		    ITradeSystemService.class.getName(),
-		    TradeSystemService.class.getName()
+		    ITradeSystemService.class.getName(), TradeSystemService.class.getName()
 		}, tradeSystemService, new Hashtable<Object, Object>());
 
 		Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);

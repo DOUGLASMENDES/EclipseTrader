@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.internal;
 
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.BrokerException;
+import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
@@ -72,11 +73,11 @@ public class TestBroker implements IBroker {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#getAllowedRoutes()
-     */
-    public IOrderRoute[] getAllowedRoutes() {
-	    return null;
-    }
+	 * @see org.eclipsetrader.core.trading.IBroker#getAllowedRoutes()
+	 */
+	public IOrderRoute[] getAllowedRoutes() {
+		return null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBroker#getId()
@@ -107,28 +108,35 @@ public class TestBroker implements IBroker {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#getSecurityFromSymbol(java.lang.String)
-     */
-    public ISecurity getSecurityFromSymbol(String symbol) {
-	    return null;
-    }
+	 * @see org.eclipsetrader.core.trading.IBroker#getSecurityFromSymbol(java.lang.String)
+	 */
+	public ISecurity getSecurityFromSymbol(String symbol) {
+		return null;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public String getSymbolFromSecurity(ISecurity security) {
-	    return null;
-    }
+	 * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public String getSymbolFromSecurity(ISecurity security) {
+		return null;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-     */
-    public void addOrderChangeListener(IOrderChangeListener listener) {
-    }
+	 * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+	 */
+	public void addOrderChangeListener(IOrderChangeListener listener) {
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-     */
-    public void removeOrderChangeListener(IOrderChangeListener listener) {
-    }
+	 * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+	 */
+	public void removeOrderChangeListener(IOrderChangeListener listener) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.IBroker#getAccounts()
+	 */
+	public IAccount[] getAccounts() {
+		return null;
+	}
 }

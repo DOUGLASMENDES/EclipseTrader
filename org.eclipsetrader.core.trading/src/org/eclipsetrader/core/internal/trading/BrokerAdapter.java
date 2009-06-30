@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.BrokerException;
+import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
@@ -136,6 +137,13 @@ public class BrokerAdapter extends XmlAdapter<String, IBroker> {
 		 * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
 		 */
 		public void removeOrderChangeListener(IOrderChangeListener listener) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipsetrader.core.trading.IBroker#getAccounts()
+		 */
+		public IAccount[] getAccounts() {
+			return new IAccount[0];
 		}
 	}
 

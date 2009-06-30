@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,17 +11,11 @@
 
 package org.eclipsetrader.core.trading;
 
-public interface IAccount {
+public interface IPositionListener {
 
-	public String getId();
+	public void positionOpened(PositionEvent e);
 
-	public String getDescription();
+	public void positionChanged(PositionEvent e);
 
-	public ITransaction[] getTransactions();
-
-	public IPosition[] getPositions();
-
-	public void addPositionListener(IPositionListener listener);
-
-	public void removePositionListener(IPositionListener listener);
+	public void positionClosed(PositionEvent e);
 }
