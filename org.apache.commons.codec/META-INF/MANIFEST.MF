@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Commons Codec
 Bundle-SymbolicName: org.apache.commons.codec
-Bundle-Version: 1.3.0.qualifier
+Bundle-Version: 1.3.0.v200906221723
 Bundle-Vendor: Apache Software Foundation
 Export-Package: org.apache.commons.codec;version="1.3.0",
  org.apache.commons.codec.binary;version="1.3.0",

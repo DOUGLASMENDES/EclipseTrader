@@ -2,7 +2,7 @@
 <feature
       id="org.apache.commons"
       label="%featureName"
-      version="1.0.0.qualifier"
+      version="1.0.0.v200906221723-7A60BgJ99r9cJJEhJO"
       provider-name="%providerName">
 
    <description>
