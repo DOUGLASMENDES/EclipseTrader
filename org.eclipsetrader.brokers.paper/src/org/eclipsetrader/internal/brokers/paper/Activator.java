@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,12 +19,11 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-
-	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipsetrader.brokers.paper";
 
-	// The shared instance
 	private static Activator plugin;
+
+	private AccountRepository repository;
 
 	/**
 	 * The constructor
@@ -37,9 +36,12 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+
+		repository = new AccountRepository();
+		repository.load(getStateLocation().append("accounts.xml").toFile());
 	}
 
 	/*
@@ -47,7 +49,9 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
+		repository.save(getStateLocation().append("accounts.xml").toFile());
+
 		plugin = null;
 		super.stop(context);
 	}
@@ -62,11 +66,12 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static void log(IStatus status) {
-		if (plugin == null) {
-			if (status.getException() != null)
-				status.getException().printStackTrace();
-			return;
-		}
+		if (plugin == null)
+			throw new RuntimeException(status.getMessage(), status.getException());
 		plugin.getLog().log(status);
+	}
+
+	public AccountRepository getRepository() {
+		return repository;
 	}
 }

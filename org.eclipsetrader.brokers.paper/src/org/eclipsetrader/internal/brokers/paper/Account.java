@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,15 +26,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IPosition;
+import org.eclipsetrader.core.trading.IPositionListener;
 import org.eclipsetrader.core.trading.ITransaction;
+import org.eclipsetrader.core.trading.PositionEvent;
 import org.eclipsetrader.internal.brokers.paper.transactions.ExpenseTransaction;
 import org.eclipsetrader.internal.brokers.paper.transactions.StockTransaction;
 import org.eclipsetrader.internal.brokers.paper.transactions.TradeTransaction;
 import org.eclipsetrader.internal.brokers.paper.types.CurrencyAdapter;
+import org.eclipsetrader.internal.brokers.paper.types.ExpenseSchemeAdapter;
 
 @XmlRootElement(name = "account")
 public class Account implements IAccount {
@@ -48,36 +53,40 @@ public class Account implements IAccount {
 	@XmlJavaTypeAdapter(CurrencyAdapter.class)
 	private Currency currency;
 
-	@XmlElement(name = "initial-balance")
-	private Double initialBalance;
+	@XmlElement(name = "balance")
+	private Double balance = 0.0;
 
 	@XmlElementWrapper(name = "transactions")
-	@XmlElementRefs({
-		@XmlElementRef(type = ExpenseTransaction.class),
-		@XmlElementRef(type = TradeTransaction.class),
-		@XmlElementRef(type = StockTransaction.class),
+	@XmlElementRefs( {
+	    @XmlElementRef(type = ExpenseTransaction.class),
+	    @XmlElementRef(type = TradeTransaction.class),
+	    @XmlElementRef(type = StockTransaction.class),
 	})
 	private List<ITransaction> transactions = new ArrayList<ITransaction>();
 
 	@XmlElementWrapper(name = "portfolio")
-    @XmlElementRef
+	@XmlElementRef
 	private List<Position> portfolio = new ArrayList<Position>();
 
+	@XmlAttribute(name = "expense-scheme")
+	@XmlJavaTypeAdapter(ExpenseSchemeAdapter.class)
 	private IExpenseScheme expenseScheme;
+
+	private ListenerList listeners = new ListenerList();
 
 	protected Account() {
 	}
 
 	public Account(String description) {
 		this.id = UUID.randomUUID().toString();
-	    this.description = description;
-	    try {
-	    	this.currency = Currency.getInstance(Locale.getDefault());
-	    } catch(Exception e) {
+		this.description = description;
+		try {
+			this.currency = Currency.getInstance(Locale.getDefault());
+		} catch (Exception e) {
 			// Ignore, some locales may throw an exception
-	    }
-	    this.initialBalance = 0.0;
-    }
+		}
+		this.balance = 0.0;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IAccount#getId()
@@ -96,33 +105,35 @@ public class Account implements IAccount {
 	}
 
 	public void setDescription(String description) {
-    	this.description = description;
-    }
+		this.description = description;
+	}
 
+	@XmlTransient
 	public Currency getCurrency() {
-    	return currency;
-    }
+		return currency;
+	}
 
 	public void setCurrency(Currency currency) {
-    	this.currency = currency;
-    }
+		this.currency = currency;
+	}
 
-	public Double getInitialBalance() {
-    	return initialBalance;
-    }
+	@XmlTransient
+	public Double getBalance() {
+		return balance;
+	}
 
-	public void setInitialBalance(Double initialBalance) {
-    	this.initialBalance = initialBalance;
-    }
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
 
 	@XmlTransient
 	public IExpenseScheme getExpenseScheme() {
-    	return expenseScheme;
-    }
+		return expenseScheme;
+	}
 
 	public void setExpenseScheme(IExpenseScheme expenseScheme) {
-    	this.expenseScheme = expenseScheme;
-    }
+		this.expenseScheme = expenseScheme;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IAccount#getTransactions()
@@ -140,12 +151,10 @@ public class Account implements IAccount {
 			else if (monitor.getOrder().getSide() == IOrderSide.Sell)
 				expenses = expenseScheme.getSellExpenses(monitor.getFilledQuantity(), monitor.getAveragePrice());
 		}
-		TradeTransaction transaction = new TradeTransaction(
-				monitor.getOrder(),
-				monitor.getTransactions(),
-				expenses != null ? new ExpenseTransaction(new Cash(expenses, currency)) : null
-			);
+		TradeTransaction transaction = new TradeTransaction(monitor.getOrder(), monitor.getTransactions(), expenses != null ? new ExpenseTransaction(new Cash(expenses, currency)) : null);
 		transactions.add(transaction);
+
+		balance -= transaction.getAmount().getAmount();
 
 		Position position = null;
 		for (Position p : portfolio) {
@@ -155,23 +164,84 @@ public class Account implements IAccount {
 			}
 		}
 
-		Long quantity = monitor.getOrder().getSide() == IOrderSide.Sell ? - monitor.getFilledQuantity() : monitor.getFilledQuantity();
+		Long quantity = monitor.getOrder().getSide() == IOrderSide.Sell ? -monitor.getFilledQuantity() : monitor.getFilledQuantity();
 		if (position == null) {
 			position = new Position(monitor.getOrder().getSecurity(), quantity, monitor.getAveragePrice());
 			portfolio.add(position);
+			firePositionOpenedEvent(position);
 		}
 		else {
 			position.add(quantity, monitor.getAveragePrice());
-			if (position.getQuantity() == 0L)
+			if (position.getQuantity() == 0L) {
 				portfolio.remove(position);
+				firePositionClosedEvent(position);
+			}
+			else
+				firePositionChangedEvent(position);
+		}
+	}
+
+	protected void firePositionOpenedEvent(Position position) {
+		PositionEvent event = new PositionEvent(this, position);
+
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((IPositionListener) l[i]).positionOpened(event);
+			} catch (Throwable t) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error notifying listeners", t);
+				Activator.log(status);
+			}
+		}
+	}
+
+	protected void firePositionClosedEvent(Position position) {
+		PositionEvent event = new PositionEvent(this, position);
+
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((IPositionListener) l[i]).positionClosed(event);
+			} catch (Throwable t) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error notifying listeners", t);
+				Activator.log(status);
+			}
+		}
+	}
+
+	protected void firePositionChangedEvent(Position position) {
+		PositionEvent event = new PositionEvent(this, position);
+
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((IPositionListener) l[i]).positionChanged(event);
+			} catch (Throwable t) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error notifying listeners", t);
+				Activator.log(status);
+			}
 		}
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.trading.IAccount#getPositions()
-     */
+	 * @see org.eclipsetrader.core.trading.IAccount#getPositions()
+	 */
 	@XmlTransient
-    public IPosition[] getPositions() {
+	public IPosition[] getPositions() {
 		return portfolio.toArray(new IPosition[portfolio.size()]);
-    }
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.IAccount#addPositionListener(org.eclipsetrader.core.trading.IPositionListener)
+	 */
+	public void addPositionListener(IPositionListener listener) {
+		listeners.add(listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.IAccount#removePositionListener(org.eclipsetrader.core.trading.IPositionListener)
+	 */
+	public void removePositionListener(IPositionListener listener) {
+		listeners.remove(listener);
+	}
 }

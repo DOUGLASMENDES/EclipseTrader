@@ -18,7 +18,6 @@ import java.util.UUID;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.core.runtime.IExecutableExtensionFactory;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
@@ -31,6 +30,7 @@ import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.BrokerException;
+import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderChangeListener;
@@ -46,9 +46,7 @@ import org.eclipsetrader.internal.brokers.paper.transactions.StockTransaction;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class PaperBroker implements IBroker, IExecutableExtension, IExecutableExtensionFactory {
-	private static PaperBroker instance;
-
+public class PaperBroker implements IBroker, IExecutableExtension {
 	private String id;
 	private String name;
 	private MarketPricingEnvironment pricingEnvironment;
@@ -72,12 +70,6 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 		this.pricingEnvironment = pricingEnvironment;
 	}
 
-	public static PaperBroker getInstance() {
-		if (instance == null)
-			instance = new PaperBroker();
-		return instance;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getId()
 	 */
@@ -98,15 +90,6 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
 		id = config.getAttribute("id");
 		name = config.getAttribute("name");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
-	 */
-	public Object create() throws CoreException {
-		if (instance == null)
-			instance = this;
-		return instance;
 	}
 
 	/* (non-Javadoc)
@@ -271,9 +254,11 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 		for (int i = 0; i < monitors.length; i++) {
 			IOrder order = monitors[i].getOrder();
 			if (order.getSecurity() == security) {
-				if (order.getType() == IOrderType.Market || (order.getType() == IOrderType.Limit && ((order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) || (order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice())))) {
+				if (order.getType() == IOrderType.Market ||
+				    (order.getType() == IOrderType.Limit && ((order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) || (order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice())))) {
 
-					double totalPrice = monitors[i].getFilledQuantity() != null ? monitors[i].getFilledQuantity() * monitors[i].getAveragePrice() : 0.0;
+					double totalPrice = monitors[i].getFilledQuantity() != null ? monitors[i].getFilledQuantity() *
+					                                                              monitors[i].getAveragePrice() : 0.0;
 					long filledQuantity = monitors[i].getFilledQuantity() != null ? monitors[i].getFilledQuantity() : 0L;
 					long remainQuantity = order.getQuantity() - filledQuantity;
 
@@ -284,10 +269,14 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 					monitors[i].setFilledQuantity(filledQuantity);
 					monitors[i].setAveragePrice(totalPrice / filledQuantity);
 
-					if (quantity != 0)
-						monitors[i].addTransaction(new StockTransaction(monitors[i].getOrder().getSecurity(), quantity, trade.getPrice()));
+					if (quantity != 0) {
+						if (order.getSide() == IOrderSide.Buy || order.getSide() == IOrderSide.BuyCover)
+							monitors[i].addTransaction(new StockTransaction(monitors[i].getOrder().getSecurity(), quantity, trade.getPrice()));
+						if (order.getSide() == IOrderSide.Sell || order.getSide() == IOrderSide.SellShort)
+							monitors[i].addTransaction(new StockTransaction(monitors[i].getOrder().getSecurity(), -quantity, trade.getPrice()));
+					}
 
-					if (monitors[i].getFilledQuantity() == order.getQuantity()) {
+					if (monitors[i].getFilledQuantity().equals(order.getQuantity())) {
 						monitors[i].setStatus(IOrderStatus.Filled);
 						monitors[i].fireOrderCompletedEvent();
 						synchronized (pendingOrders) {
@@ -337,5 +326,12 @@ public class PaperBroker implements IBroker, IExecutableExtension, IExecutableEx
 				}
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.IBroker#getAccounts()
+	 */
+	public IAccount[] getAccounts() {
+		return Activator.getDefault().getRepository().getAccounts();
 	}
 }

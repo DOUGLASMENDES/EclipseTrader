@@ -4,7 +4,7 @@
    <extension
          point="org.eclipsetrader.core.trading.brokers">
       <broker
-            class="org.eclipsetrader.internal.brokers.paper.PaperBroker"
+            class="org.eclipsetrader.internal.brokers.paper.PaperBrokerFactory"
             id="org.eclipsetrader.brokers.paper"
             name="Paper (Simulated)">
       </broker>
@@ -29,6 +29,34 @@
             </parameter>
          </command>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipsetrader.brokers.paper.category"
+            name="Paper Broker">
+      </category>
+      <wizard
+            canFinishEarly="false"
+            category="org.eclipsetrader.brokers.paper.category"
+            class="org.eclipsetrader.internal.brokers.paper.NewAccountWizard"
+            hasPages="true"
+            id="org.eclipsetrader.brokers.paper.account"
+            name="Account">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.eclipsetrader.internal.brokers.paper.AccountPropertyPage"
+            id="org.eclipsetrader.brokers.paper.properties.account"
+            name="Account">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipsetrader.internal.ui.trading.AccountElement">
+            </instanceof>
+         </enabledWhen>
+      </page>
    </extension>
 
 </plugin>

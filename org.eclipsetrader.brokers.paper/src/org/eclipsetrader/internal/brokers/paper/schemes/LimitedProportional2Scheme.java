@@ -41,10 +41,28 @@ public class LimitedProportional2Scheme implements IExpenseScheme {
 	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return "Limited Proportional 2 (0.19%, max=19.0)";
-    }
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		return this.getClass().equals(obj.getClass());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return 11 * toString().hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Limited Proportional 2 (0.19%, max=19.0)";
+	}
 }

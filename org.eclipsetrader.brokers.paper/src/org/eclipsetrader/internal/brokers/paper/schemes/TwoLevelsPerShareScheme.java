@@ -47,10 +47,28 @@ public class TwoLevelsPerShareScheme implements IExpenseScheme {
 	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return "2 Levels Per Share (0.01 < 500, 0.005 > 500, min=1.00)";
-    }
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		return this.getClass().equals(obj.getClass());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return 11 * toString().hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "2 Levels Per Share (0.01 < 500, 0.005 > 500, min=1.00)";
+	}
 }
