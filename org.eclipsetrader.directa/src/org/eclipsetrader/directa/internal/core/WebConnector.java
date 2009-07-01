@@ -12,6 +12,7 @@
 package org.eclipsetrader.directa.internal.core;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -67,14 +68,13 @@ public class WebConnector {
 	private static final String HOST = "www1.directatrading.com";
 
 	public static final String[] PROPERTIES = new String[] {
-	    "org.eclipsetrader.directa.symbol",
-	    "org.eclipsetrader.directaworld.symbol",
-	    "org.eclipsetrader.borsaitalia.code",
+	    "org.eclipsetrader.directa.symbol", "org.eclipsetrader.directaworld.symbol", "org.eclipsetrader.borsaitalia.code",
 	};
 
 	private HttpClient client;
 	private String userName;
 	private String password;
+
 	private Account account;
 
 	private String prt = "";
@@ -87,6 +87,12 @@ public class WebConnector {
 
 	WebConnector() {
 		instance = this;
+
+		File file = null;
+		if (Activator.getDefault() != null)
+			file = Activator.getDefault().getStateLocation().append("positions.xml").toFile();
+		account = new Account("Default", file);
+		account.load();
 	}
 
 	public synchronized static WebConnector getInstance() {
@@ -189,16 +195,16 @@ public class WebConnector {
 		IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
 		preferenceStore.putValue(Activator.PREFS_USERNAME, userName);
 
-		account = new Account(userName);
+		account.setId(userName);
 	}
 
 	public Account getAccount() {
-		if (account == null) {
-			if (userName == null) {
-				IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
-				userName = preferenceStore.getString(Activator.PREFS_USERNAME);
-			}
-			account = new Account("".equals(userName) ? "Default" : userName);
+		if (userName == null) {
+			IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
+			userName = preferenceStore.getString(Activator.PREFS_USERNAME);
+
+			if (!"".equals(userName))
+				account.setId(userName);
 		}
 		return account;
 	}
@@ -374,7 +380,8 @@ public class WebConnector {
 				}
 				in.close();
 			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error confirming order [" + order.toString() + "]", e);
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error confirming order [" + order.toString() +
+				                                                                 "]", e);
 				Activator.log(status);
 			}
 
@@ -428,8 +435,7 @@ public class WebConnector {
 			GetMethod method = new GetMethod("https://" + HOST + "/trading/select");
 			method.setFollowRedirects(true);
 			method.setQueryString(new NameValuePair[] {
-			    new NameValuePair("USER", user),
-			    new NameValuePair("INCR", "N"),
+			    new NameValuePair("USER", user), new NameValuePair("INCR", "N"),
 			});
 
 			logger.info(method.getURI().toString());
@@ -459,8 +465,7 @@ public class WebConnector {
 			HttpMethod method = new GetMethod("https://" + HOST + "/trading/tabelc_4");
 			method.setFollowRedirects(true);
 			method.setQueryString(new NameValuePair[] {
-			    new NameValuePair("USER", user),
-			    new NameValuePair("DEVAR", id),
+			    new NameValuePair("USER", user), new NameValuePair("DEVAR", id),
 			});
 
 			logger.info(method.getURI().toString());

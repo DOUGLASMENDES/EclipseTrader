@@ -16,6 +16,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -130,6 +131,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 	private Socket socket;
 	private OutputStream os;
 	private DataInputStream is;
+	private Set<String> sTit;
+	private Set<String> sTit2;
 
 	private Log logger = LogFactory.getLog(getClass());
 
@@ -396,8 +399,9 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 	public void run() {
 		int n = 0;
 		byte bHeader[] = new byte[4];
-		Set<String> sTit = new HashSet<String>();
-		Set<String> sTit2 = new HashSet<String>();
+
+		sTit = new HashSet<String>();
+		sTit2 = new HashSet<String>();
 
 		// Apertura del socket verso il server
 		try {
@@ -468,98 +472,12 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
 		while (!isStopping()) {
 			if (subscriptionsChanged) {
-				Set<String> toAdd = new HashSet<String>();
-				Set<String> toRemove = new HashSet<String>();
-				Set<String> toAdd2 = new HashSet<String>();
-				Set<String> toRemove2 = new HashSet<String>();
-
-				synchronized (symbolSubscriptions) {
-					for (FeedSubscription s : symbolSubscriptions.values()) {
-						if (!sTit.contains(s.getIdentifierType().getSymbol()))
-							toAdd.add(s.getIdentifierType().getSymbol());
-						if (s.getLevel2InstanceCount() != 0) {
-							if (!sTit2.contains(s.getIdentifierType().getSymbol()))
-								toAdd2.add(s.getIdentifierType().getSymbol());
-						}
-					}
-					for (String s : sTit) {
-						if (!symbolSubscriptions.containsKey(s))
-							toRemove.add(s);
-					}
-					for (String s : sTit2) {
-						if (!symbolSubscriptions2.containsKey(s))
-							toRemove2.add(s);
-					}
-					subscriptionsChanged = false;
-				}
-
-				if (toRemove.size() != 0) {
-					try {
-						logger.info("Removing " + toRemove);
-						int flag[] = new int[toRemove.size()];
-						for (int i = 0; i < flag.length; i++)
-							flag[i] = 0;
-						os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_DEL, toRemove.toArray(new String[toRemove.size()]), flag));
-						os.flush();
-					} catch (Exception e) {
-						thread = null;
-						Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error removing symbols from stream", e));
-						break;
-					}
-				}
-
-				if (toAdd.size() != 0) {
-					try {
-						logger.info("Adding " + toAdd);
-						String s[] = toAdd.toArray(new String[toAdd.size()]);
-						int flag[] = new int[s.length];
-						for (int i = 0; i < flag.length; i++)
-							flag[i] = sTit2.contains(s[i]) || toAdd2.contains(s[i]) ? 105 : 0;
-						os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_ADD, s, flag));
-						os.flush();
-					} catch (Exception e) {
-						thread = null;
-						Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error adding symbols from stream", e));
-						break;
-					}
-				}
-
-				if (toAdd2.size() != 0 || toRemove2.size() != 0) {
-					try {
-						Map<String, Integer> toMod = new HashMap<String, Integer>();
-						for (String s : toAdd2) {
-							if (!toAdd.contains(s))
-								toMod.put(s, new Integer(105));
-						}
-						for (String s : toRemove2)
-							toMod.put(s, new Integer(0));
-
-						if (toMod.size() != 0) {
-							logger.info("Modifying " + toMod);
-
-							String s[] = toMod.keySet().toArray(new String[toMod.keySet().size()]);
-							int flag[] = new int[s.length];
-							for (int i = 0; i < flag.length; i++)
-								flag[i] = toMod.get(s[i]).intValue();
-							os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_MOD, s, flag));
-							os.flush();
-						}
-					} catch (Exception e) {
-						thread = null;
-						Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error adding symbols from stream", e));
-						break;
-					}
-				}
-
-				sTit.removeAll(toRemove);
-				sTit.addAll(toAdd);
-				sTit2.removeAll(toRemove2);
-				sTit2.addAll(toAdd2);
-
-				if (toAdd.size() != 0) {
-					final String[] addSymbols = toAdd.toArray(new String[toAdd.size()]);
-					fetchLatestBookSnapshot(addSymbols);
-					fetchLatestSnapshot(addSymbols);
+				try {
+					updateStreamSubscriptions();
+				} catch (Exception e) {
+					thread = null;
+					Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error updating stream subscriptions", e));
+					break;
 				}
 			}
 
@@ -622,116 +540,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 						continue;
 					}
 
-					FeedSubscription subscription = symbolSubscriptions.get(obj.head.key);
-					if (subscription != null) {
-						PriceDataType priceData = subscription.getIdentifierType().getPriceData();
-
-						if (obj instanceof Price) {
-							Price pm = (Price) obj;
-
-							Object oldValue = subscription.getQuote();
-							priceData.setLast(pm.val_ult);
-							priceData.setLastSize(pm.qta_ult);
-							priceData.setVolume(pm.qta_prgs);
-							priceData.setTime(new Date(pm.ora_ult));
-							Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-							if (!newValue.equals(oldValue)) {
-								subscription.setTrade((ITrade) newValue);
-								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-								wakeupNotifyThread();
-							}
-
-							oldValue = subscription.getTodayOHL();
-							priceData.setHigh(pm.max);
-							priceData.setLow(pm.min);
-							newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-							if (!newValue.equals(oldValue)) {
-								subscription.setTodayOHL((ITodayOHL) newValue);
-								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-								wakeupNotifyThread();
-							}
-						}
-						else if (obj instanceof Book) {
-							Book bm = (Book) obj;
-
-							IBookEntry[] bidEntry = new IBookEntry[0];
-							IBookEntry[] askEntry = new IBookEntry[0];
-
-							IBook oldValue = subscription.getBook();
-							if (oldValue != null) {
-								if (oldValue.getBidProposals() != null)
-									bidEntry = oldValue.getBidProposals();
-								if (oldValue.getAskProposals() != null)
-									askEntry = oldValue.getAskProposals();
-							}
-
-							int levels = bm.offset + 5;
-							if (bidEntry.length < levels) {
-								IBookEntry[] newEntry = new IBookEntry[levels];
-								for (int i = 0; i < bidEntry.length; i++)
-									newEntry[i] = bidEntry[i];
-								bidEntry = newEntry;
-							}
-							if (askEntry.length < levels) {
-								IBookEntry[] newEntry = new IBookEntry[levels];
-								for (int i = 0; i < askEntry.length; i++)
-									newEntry[i] = askEntry[i];
-								askEntry = newEntry;
-							}
-
-							int index = bm.offset;
-							for (int i = 0; i < 5; i++) {
-								bidEntry[index + i] = new BookEntry(null, bm.val_c[i], new Long(bm.q_pdn_c[i]), new Long(bm.n_pdn_c[i]), null);
-								askEntry[index + i] = new BookEntry(null, bm.val_v[i], new Long(bm.q_pdn_v[i]), new Long(bm.n_pdn_v[i]), null);
-							}
-							IBook newValue = new org.eclipsetrader.core.feed.Book(bidEntry, askEntry);
-							subscription.setBook(newValue);
-							subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-							wakeupNotifyThread();
-						}
-						else if (obj instanceof BidAsk) {
-							BidAsk bam = (BidAsk) obj;
-
-							Object oldValue = subscription.getQuote();
-							priceData.setBid(bam.bid);
-							priceData.setBidSize(bam.num_bid);
-							priceData.setAsk(bam.ask);
-							priceData.setAskSize(bam.num_ask);
-							Object newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
-							if (!newValue.equals(oldValue)) {
-								subscription.setQuote((IQuote) newValue);
-								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-								wakeupNotifyThread();
-							}
-						}
-						else if (obj instanceof AstaApertura) {
-							AstaApertura ap = (AstaApertura) obj;
-
-							Object oldValue = subscription.getTrade();
-							priceData.setLast(ap.val_aper);
-							priceData.setVolume(ap.qta_aper);
-							priceData.setTime(new Date(ap.ora_aper));
-							Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-							if (!newValue.equals(oldValue)) {
-								subscription.setTrade((ITrade) newValue);
-								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-								wakeupNotifyThread();
-							}
-						}
-						else if (obj instanceof AstaChiusura) {
-							AstaChiusura ac = (AstaChiusura) obj;
-
-							Object oldValue = subscription.getTrade();
-							priceData.setLast(ac.val_chiu);
-							priceData.setTime(new Date(ac.ora_chiu));
-							Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-							if (!newValue.equals(oldValue)) {
-								subscription.setTrade((ITrade) newValue);
-								subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-								wakeupNotifyThread();
-							}
-						}
-					}
+					processMessage(obj);
 				}
 			}
 		}
@@ -770,6 +579,198 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 				// Do nothing
 			}
 			thread.start();
+		}
+	}
+
+	void updateStreamSubscriptions() throws IOException {
+		Set<String> toAdd = new HashSet<String>();
+		Set<String> toRemove = new HashSet<String>();
+		Set<String> toAdd2 = new HashSet<String>();
+		Set<String> toRemove2 = new HashSet<String>();
+
+		synchronized (symbolSubscriptions) {
+			for (FeedSubscription s : symbolSubscriptions.values()) {
+				if (!sTit.contains(s.getIdentifierType().getSymbol()))
+					toAdd.add(s.getIdentifierType().getSymbol());
+				if (s.getLevel2InstanceCount() != 0) {
+					if (!sTit2.contains(s.getIdentifierType().getSymbol()))
+						toAdd2.add(s.getIdentifierType().getSymbol());
+				}
+			}
+			for (String s : sTit) {
+				if (!symbolSubscriptions.containsKey(s))
+					toRemove.add(s);
+			}
+			for (String s : sTit2) {
+				if (!symbolSubscriptions2.containsKey(s))
+					toRemove2.add(s);
+			}
+			subscriptionsChanged = false;
+		}
+
+		if (toRemove.size() != 0) {
+			logger.info("Removing " + toRemove);
+			int flag[] = new int[toRemove.size()];
+			for (int i = 0; i < flag.length; i++)
+				flag[i] = 0;
+			os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_DEL, toRemove.toArray(new String[toRemove.size()]), flag));
+			os.flush();
+		}
+
+		if (toAdd.size() != 0) {
+			logger.info("Adding " + toAdd);
+			String s[] = toAdd.toArray(new String[toAdd.size()]);
+			int flag[] = new int[s.length];
+			for (int i = 0; i < flag.length; i++)
+				flag[i] = sTit2.contains(s[i]) || toAdd2.contains(s[i]) ? 105 : 0;
+			os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_ADD, s, flag));
+			os.flush();
+		}
+
+		if (toAdd2.size() != 0 || toRemove2.size() != 0) {
+			Map<String, Integer> toMod = new HashMap<String, Integer>();
+			for (String s : toAdd2) {
+				if (!toAdd.contains(s))
+					toMod.put(s, new Integer(105));
+			}
+			for (String s : toRemove2)
+				toMod.put(s, new Integer(0));
+
+			if (toMod.size() != 0) {
+				logger.info("Modifying " + toMod);
+
+				String s[] = toMod.keySet().toArray(new String[toMod.keySet().size()]);
+				int flag[] = new int[s.length];
+				for (int i = 0; i < flag.length; i++)
+					flag[i] = toMod.get(s[i]).intValue();
+				os.write(CreaMsg.creaPortMsg(CreaMsg.PORT_MOD, s, flag));
+				os.flush();
+			}
+		}
+
+		sTit.removeAll(toRemove);
+		sTit.addAll(toAdd);
+		sTit2.removeAll(toRemove2);
+		sTit2.addAll(toAdd2);
+
+		if (toAdd.size() != 0) {
+			final String[] addSymbols = toAdd.toArray(new String[toAdd.size()]);
+			fetchLatestBookSnapshot(addSymbols);
+			fetchLatestSnapshot(addSymbols);
+		}
+	}
+
+	void processMessage(DataMessage obj) {
+		FeedSubscription subscription = symbolSubscriptions.get(obj.head.key);
+		if (subscription == null)
+			return;
+
+		PriceDataType priceData = subscription.getIdentifierType().getPriceData();
+
+		if (obj instanceof Price) {
+			Price pm = (Price) obj;
+
+			Object oldValue = subscription.getQuote();
+			priceData.setLast(pm.val_ult);
+			priceData.setLastSize(pm.qta_ult);
+			priceData.setVolume(pm.qta_prgs);
+			priceData.setTime(new Date(pm.ora_ult));
+			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
+			if (!newValue.equals(oldValue)) {
+				subscription.setTrade((ITrade) newValue);
+				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+				wakeupNotifyThread();
+			}
+
+			oldValue = subscription.getTodayOHL();
+			priceData.setHigh(pm.max);
+			priceData.setLow(pm.min);
+			newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
+			if (!newValue.equals(oldValue)) {
+				subscription.setTodayOHL((ITodayOHL) newValue);
+				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+				wakeupNotifyThread();
+			}
+		}
+		else if (obj instanceof Book) {
+			Book bm = (Book) obj;
+
+			IBookEntry[] bidEntry = new IBookEntry[0];
+			IBookEntry[] askEntry = new IBookEntry[0];
+
+			IBook oldValue = subscription.getBook();
+			if (oldValue != null) {
+				if (oldValue.getBidProposals() != null)
+					bidEntry = oldValue.getBidProposals();
+				if (oldValue.getAskProposals() != null)
+					askEntry = oldValue.getAskProposals();
+			}
+
+			int levels = bm.offset + 5;
+			if (bidEntry.length < levels) {
+				IBookEntry[] newEntry = new IBookEntry[levels];
+				for (int i = 0; i < bidEntry.length; i++)
+					newEntry[i] = bidEntry[i];
+				bidEntry = newEntry;
+			}
+			if (askEntry.length < levels) {
+				IBookEntry[] newEntry = new IBookEntry[levels];
+				for (int i = 0; i < askEntry.length; i++)
+					newEntry[i] = askEntry[i];
+				askEntry = newEntry;
+			}
+
+			int index = bm.offset;
+			for (int i = 0; i < 5; i++) {
+				bidEntry[index + i] = new BookEntry(null, bm.val_c[i], new Long(bm.q_pdn_c[i]), new Long(bm.n_pdn_c[i]), null);
+				askEntry[index + i] = new BookEntry(null, bm.val_v[i], new Long(bm.q_pdn_v[i]), new Long(bm.n_pdn_v[i]), null);
+			}
+			IBook newValue = new org.eclipsetrader.core.feed.Book(bidEntry, askEntry);
+			subscription.setBook(newValue);
+			subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+			wakeupNotifyThread();
+		}
+		else if (obj instanceof BidAsk) {
+			BidAsk bam = (BidAsk) obj;
+
+			Object oldValue = subscription.getQuote();
+			priceData.setBid(bam.bid);
+			priceData.setBidSize(bam.num_bid);
+			priceData.setAsk(bam.ask);
+			priceData.setAskSize(bam.num_ask);
+			Object newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
+			if (!newValue.equals(oldValue)) {
+				subscription.setQuote((IQuote) newValue);
+				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+				wakeupNotifyThread();
+			}
+		}
+		else if (obj instanceof AstaApertura) {
+			AstaApertura ap = (AstaApertura) obj;
+
+			Object oldValue = subscription.getTrade();
+			priceData.setLast(ap.val_aper);
+			priceData.setVolume(ap.qta_aper);
+			priceData.setTime(new Date(ap.ora_aper));
+			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
+			if (!newValue.equals(oldValue)) {
+				subscription.setTrade((ITrade) newValue);
+				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+				wakeupNotifyThread();
+			}
+		}
+		else if (obj instanceof AstaChiusura) {
+			AstaChiusura ac = (AstaChiusura) obj;
+
+			Object oldValue = subscription.getTrade();
+			priceData.setLast(ac.val_chiu);
+			priceData.setTime(new Date(ac.ora_chiu));
+			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
+			if (!newValue.equals(oldValue)) {
+				subscription.setTrade((ITrade) newValue);
+				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
+				wakeupNotifyThread();
+			}
 		}
 	}
 

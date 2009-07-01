@@ -11,22 +11,55 @@
 
 package org.eclipsetrader.directa.internal.core;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IPosition;
 import org.eclipsetrader.core.trading.IPositionListener;
 import org.eclipsetrader.core.trading.ITransaction;
+import org.eclipsetrader.core.trading.PositionEvent;
+import org.eclipsetrader.directa.internal.Activator;
 
 public class Account implements IAccount {
 	String id;
 	String name;
+	File file;
 
-	public Account(String id) {
+	List<Position> positions = new ArrayList<Position>();
+	ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+
+	public Account(String id, File file) {
 		this.id = id;
+		this.file = file;
 	}
 
-	public Account(String id, String name) {
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.trading.IAccount#getId()
+	 */
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
 		this.id = id;
-		this.name = name;
 	}
 
 	/* (non-Javadoc)
@@ -37,29 +70,26 @@ public class Account implements IAccount {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAccount#getId()
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IAccount#addPositionListener(org.eclipsetrader.core.trading.IPositionListener)
 	 */
 	public void addPositionListener(IPositionListener listener) {
+		listeners.add(listener);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IAccount#removePositionListener(org.eclipsetrader.core.trading.IPositionListener)
 	 */
 	public void removePositionListener(IPositionListener listener) {
+		listeners.remove(listener);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IAccount#getPositions()
 	 */
 	public IPosition[] getPositions() {
-		return new IPosition[0];
+		synchronized (positions) {
+			return positions.toArray(new IPosition[positions.size()]);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -67,6 +97,105 @@ public class Account implements IAccount {
 	 */
 	public ITransaction[] getTransactions() {
 		return new ITransaction[0];
+	}
+
+	public Position getPositionFor(ISecurity security) {
+		synchronized (positions) {
+			for (Position p : positions) {
+				if (p.getSecurity().equals(security))
+					return p;
+			}
+		}
+		return null;
+	}
+
+	public void setPositions(Position[] newPositions) {
+		for (int i = 0; i < newPositions.length; i++) {
+			Position existingPosition = getPositionFor(newPositions[i].getSecurity());
+			if (existingPosition == null) {
+				synchronized (positions) {
+					positions.add(newPositions[i]);
+				}
+				firePositionOpenedEvent(newPositions[i]);
+			}
+			else {
+				synchronized (positions) {
+					positions.remove(existingPosition);
+					positions.add(newPositions[i]);
+				}
+				firePositionUpdateEvent(newPositions[i]);
+			}
+		}
+
+		Position[] currentPositions;
+		synchronized (positions) {
+			currentPositions = positions.toArray(new Position[positions.size()]);
+		}
+		for (int i = 0; i < currentPositions.length; i++) {
+			boolean doRemove = true;
+			for (int j = 0; j < newPositions.length; j++) {
+				if (newPositions[j].getSecurity().equals(currentPositions[i].getSecurity())) {
+					doRemove = false;
+					break;
+				}
+			}
+			if (doRemove) {
+				synchronized (positions) {
+					positions.remove(currentPositions[i]);
+				}
+				firePositionClosedEvent(currentPositions[i]);
+			}
+		}
+	}
+
+	public void firePositionOpenedEvent(Position p) {
+		PositionEvent event = new PositionEvent(this, p);
+
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((IPositionListener) l[i]).positionOpened(event);
+			} catch (Throwable t) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", t); //$NON-NLS-1$
+				Activator.log(status);
+			}
+		}
+	}
+
+	public void firePositionUpdateEvent(Position p) {
+		PositionEvent event = new PositionEvent(this, p);
+
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((IPositionListener) l[i]).positionChanged(event);
+			} catch (Throwable t) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", t); //$NON-NLS-1$
+				Activator.log(status);
+			}
+		}
+	}
+
+	public void firePositionClosedEvent(Position p) {
+		PositionEvent event = new PositionEvent(this, p);
+
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((IPositionListener) l[i]).positionClosed(event);
+			} catch (Throwable t) {
+				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", t); //$NON-NLS-1$
+				Activator.log(status);
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return 11 * id.hashCode();
 	}
 
 	/* (non-Javadoc)
@@ -79,11 +208,47 @@ public class Account implements IAccount {
 		return id.equals(((Account) obj).id);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return 11 * id.hashCode();
+	public void load() {
+		if (file == null || !file.exists())
+			return;
+
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(Position[].class);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			unmarshaller.setEventHandler(new ValidationEventHandler() {
+				public boolean handleEvent(ValidationEvent event) {
+					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+					Activator.log(status);
+					return true;
+				}
+			});
+			JAXBElement<Position[]> element = unmarshaller.unmarshal(new StreamSource(file), Position[].class);
+			if (element != null)
+				positions.addAll(Arrays.asList(element.getValue()));
+		} catch (JAXBException e) {
+			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error loading positions", e); //$NON-NLS-1$
+			Activator.log(status);
+		}
+	}
+
+	public void save() throws JAXBException, IOException {
+		if (file.exists())
+			file.delete();
+
+		JAXBContext jaxbContext = JAXBContext.newInstance(Position[].class);
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setEventHandler(new ValidationEventHandler() {
+			public boolean handleEvent(ValidationEvent event) {
+				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+				Activator.log(status);
+				return true;
+			}
+		});
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+
+		Position[] elements = positions.toArray(new Position[positions.size()]);
+		JAXBElement<Position[]> element = new JAXBElement<Position[]>(new QName("list"), Position[].class, elements);
+		marshaller.marshal(element, new FileWriter(file));
 	}
 }

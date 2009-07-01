@@ -22,9 +22,11 @@ import java.nio.channels.spi.SelectorProvider;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -306,6 +308,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	public void run() {
 		Selector socketSelector;
 		ByteBuffer dst = ByteBuffer.wrap(new byte[2048]);
+		List<Position> positions = new ArrayList<Position>();
 
 		try {
 			// Create a non-blocking socket channel
@@ -416,6 +419,18 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 								if (s[i].indexOf(";6;0;") != -1) {
 									updateStatusLine(s[i]);
 								}
+								if (s[i].indexOf(";7;0;") != -1) {
+									try {
+										positions.add(new Position(s[i]));
+									} catch (Exception e) {
+										Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + s[i], e); //$NON-NLS-1$
+										Activator.log(status);
+									}
+								}
+								if (s[i].indexOf(";7;9;") != -1) {
+									Account account = WebConnector.getInstance().getAccount();
+									account.setPositions(positions.toArray(new Position[positions.size()]));
+								}
 							}
 						}
 					}
@@ -430,6 +445,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 	private static final int IDX_ID = 3;
 	private static final int IDX_STATUS = 4;
 	private static final int IDX_SYMBOL = 5;
+	private static final int IDX_PF_QUANTITY = 9;
 	private static final int IDX_AVERAGE_PRICE = 10;
 	private static final int IDX_QUANTITY = 15;
 	private static final int IDX_PRICE = 16;
@@ -522,7 +538,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 				status = IOrderStatus.Partial;
 		}
 
-		if ((status == IOrderStatus.Filled || status == IOrderStatus.Canceled || status == IOrderStatus.Rejected) && tracker.getStatus() != status) {
+		if ((status == IOrderStatus.Filled || status == IOrderStatus.Canceled || status == IOrderStatus.Rejected) &&
+		    tracker.getStatus() != status) {
 			tracker.setStatus(status);
 			tracker.fireOrderCompletedEvent();
 		}
@@ -530,6 +547,16 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 			tracker.setStatus(status);
 
 		return tracker;
+	}
+
+	protected Position parsePositionLine(String line) {
+		String[] item = line.split(";");
+
+		ISecurity security = getSecurityFromSymbol(item[IDX_SYMBOL]);
+		Long quantity = Long.parseLong(item[IDX_PF_QUANTITY]);
+		Double price = Double.parseDouble(item[IDX_AVERAGE_PRICE]);
+
+		return new Position(security, quantity, price);
 	}
 
 	protected void updateStatusLine(String line) {
