@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderRoute;
@@ -63,6 +64,7 @@ public class OrderDialog extends TitleAreaDialog {
 	ComboViewer typeCombo;
 	Text price;
 	ComboViewer brokerCombo;
+	ComboViewer accountCombo;
 	ComboViewer routeCombo;
 
 	ComboViewer validityCombo;
@@ -273,6 +275,20 @@ public class OrderDialog extends TitleAreaDialog {
 		brokerCombo.setInput(tradingService.getBrokers());
 
 		label = new Label(content, SWT.NONE);
+		label.setText("Account");
+		accountCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
+		accountCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		accountCombo.setContentProvider(new ArrayContentProvider());
+		accountCombo.setLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return ((IAccount) element).getDescription();
+			}
+		});
+		accountCombo.setSorter(new ViewerSorter());
+		accountCombo.getControl().setEnabled(false);
+
+		label = new Label(content, SWT.NONE);
 		label.setText(Messages.OrderDialog_RouteLabel);
 		routeCombo = new ComboViewer(content, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
 		routeCombo.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
@@ -376,6 +392,12 @@ public class OrderDialog extends TitleAreaDialog {
 		routeCombo.setInput(routes);
 		if (routeCombo.getSelection().isEmpty() && routes.length != 0)
 			routeCombo.setSelection(new StructuredSelection(routes[0]));
+
+		IAccount[] accounts = connector.getAccounts();
+		accountCombo.setInput(accounts);
+		if (accountCombo.getSelection().isEmpty() && accounts.length != 0)
+			accountCombo.setSelection(new StructuredSelection(accounts[0]));
+		accountCombo.getControl().setEnabled(accounts.length > 0);
 	}
 
 	protected String getSecuritySymbol(ISecurity security) {
@@ -475,9 +497,11 @@ public class OrderDialog extends TitleAreaDialog {
 	@Override
 	protected void okPressed() {
 		try {
+			IAccount account = (IAccount) ((IStructuredSelection) accountCombo.getSelection()).getFirstElement();
 			IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
 			Double limitPrice = orderType == IOrderType.Market ? null : priceFormat.parse(price.getText()).doubleValue();
-			Order order = new Order(null, orderType, (IOrderSide) ((IStructuredSelection) sideCombo.getSelection()).getFirstElement(), security, numberFormat.parse(quantity.getText()).longValue(), limitPrice);
+
+			Order order = new Order(account, orderType, (IOrderSide) ((IStructuredSelection) sideCombo.getSelection()).getFirstElement(), security, numberFormat.parse(quantity.getText()).longValue(), limitPrice);
 
 			if (!routeCombo.getSelection().isEmpty())
 				order.setRoute((IOrderRoute) ((IStructuredSelection) routeCombo.getSelection()).getFirstElement());

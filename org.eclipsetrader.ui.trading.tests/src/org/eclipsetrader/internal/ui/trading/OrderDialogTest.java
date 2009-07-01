@@ -17,6 +17,7 @@ import org.easymock.EasyMock;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderRoute;
 import org.eclipsetrader.core.trading.IOrderSide;
@@ -26,6 +27,7 @@ import org.eclipsetrader.core.trading.ITradingService;
 
 public class OrderDialogTest extends TestCase {
 	Shell shell;
+	IAccount account;
 	ITradingService tradingService;
 
 	/* (non-Javadoc)
@@ -34,6 +36,9 @@ public class OrderDialogTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		shell = new Shell(Display.getDefault());
+
+		account = EasyMock.createNiceMock(IAccount.class);
+		EasyMock.expect(account.getDescription()).andStubReturn("Demo");
 
 		IBroker broker = EasyMock.createNiceMock(IBroker.class);
 		EasyMock.expect(broker.getName()).andStubReturn("Test Broker");
@@ -50,13 +55,16 @@ public class OrderDialogTest extends TestCase {
 			IOrderValidity.Day
 		});
 		EasyMock.expect(broker.getAllowedRoutes()).andStubReturn(new IOrderRoute[0]);
+		EasyMock.expect(broker.getAccounts()).andStubReturn(new IAccount[] {
+			account
+		});
 
 		tradingService = EasyMock.createNiceMock(ITradingService.class);
 		EasyMock.expect(tradingService.getBrokers()).andStubReturn(new IBroker[] {
 			broker
 		});
 
-		EasyMock.replay(tradingService, broker);
+		EasyMock.replay(tradingService, broker, account);
 	}
 
 	/* (non-Javadoc)
