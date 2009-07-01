@@ -12,7 +12,10 @@
 package org.eclipsetrader.ui.internal.preferences;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -69,20 +72,20 @@ public class LaunchersPreferences extends PreferencePage implements IWorkbenchPr
 		startAllLaunchers.setText("Start All Services");
 		startAllLaunchers.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		startAllLaunchers.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-            	runLaunchers.getControl().setEnabled(startSelectedLaunchers.getSelection());
-            }
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				runLaunchers.getControl().setEnabled(startSelectedLaunchers.getSelection());
+			}
 		});
 
 		startSelectedLaunchers = new Button(content, SWT.RADIO);
 		startSelectedLaunchers.setText("Start Services Selected Below");
 		startSelectedLaunchers.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		startSelectedLaunchers.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-            	runLaunchers.getControl().setEnabled(startSelectedLaunchers.getSelection());
-            }
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				runLaunchers.getControl().setEnabled(startSelectedLaunchers.getSelection());
+			}
 		});
 
 		runLaunchers = CheckboxTableViewer.newCheckList(content, SWT.BORDER);
@@ -90,14 +93,14 @@ public class LaunchersPreferences extends PreferencePage implements IWorkbenchPr
 		((GridData) runLaunchers.getControl().getLayoutData()).heightHint = convertHeightInCharsToPixels(6);
 		runLaunchers.setContentProvider(new ArrayContentProvider());
 		runLaunchers.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-	            return ((IConfigurationElement) element).getAttribute("name");
-            }
+			@Override
+			public String getText(Object element) {
+				return ((IConfigurationElement) element).getAttribute("name");
+			}
 		});
 
-        Label label = new Label(content, SWT.NONE);
-        label.setText("Services Launched at Startup");
+		Label label = new Label(content, SWT.NONE);
+		label.setText("Services Launched at Startup");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
 		startupLaunchers = CheckboxTableViewer.newCheckList(content, SWT.BORDER);
@@ -105,17 +108,24 @@ public class LaunchersPreferences extends PreferencePage implements IWorkbenchPr
 		((GridData) startupLaunchers.getControl().getLayoutData()).heightHint = convertHeightInCharsToPixels(6);
 		startupLaunchers.setContentProvider(new ArrayContentProvider());
 		startupLaunchers.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-	            return ((IConfigurationElement) element).getAttribute("name");
-            }
+			@Override
+			public String getText(Object element) {
+				return ((IConfigurationElement) element).getAttribute("name");
+			}
 		});
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LAUNCHERS_EXTENSION_ID);
 		if (extensionPoint != null) {
-    		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
-    		startupLaunchers.setInput(configElements);
-    		runLaunchers.setInput(configElements);
+			List<IConfigurationElement> configElements = Arrays.asList(extensionPoint.getConfigurationElements());
+
+			Collections.sort(configElements, new Comparator<IConfigurationElement>() {
+				public int compare(IConfigurationElement o1, IConfigurationElement o2) {
+					return o1.getAttribute("name").compareToIgnoreCase(o2.getAttribute("name"));
+				}
+			});
+
+			startupLaunchers.setInput(configElements);
+			runLaunchers.setInput(configElements);
 		}
 
 		performDefaults();
@@ -124,74 +134,74 @@ public class LaunchersPreferences extends PreferencePage implements IWorkbenchPr
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-     */
-    @Override
-    protected void performDefaults() {
-    	IPreferenceStore preferenceStore = getPreferenceStore();
+	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+	 */
+	@Override
+	protected void performDefaults() {
+		IPreferenceStore preferenceStore = getPreferenceStore();
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LAUNCHERS_EXTENSION_ID);
 		if (extensionPoint != null) {
-    		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
-    		startupLaunchers.setAllChecked(false);
-    		runLaunchers.setAllChecked(false);
+			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+			startupLaunchers.setAllChecked(false);
+			runLaunchers.setAllChecked(false);
 
-        	Set<String> startupSet = new HashSet<String>(Arrays.asList(preferenceStore.getString("STARTUP_LAUNCHERS").split(";")));
-        	Set<String> runSet = new HashSet<String>(Arrays.asList(preferenceStore.getString("RUN_LAUNCHERS").split(";")));
+			Set<String> startupSet = new HashSet<String>(Arrays.asList(preferenceStore.getString("STARTUP_LAUNCHERS").split(";")));
+			Set<String> runSet = new HashSet<String>(Arrays.asList(preferenceStore.getString("RUN_LAUNCHERS").split(";")));
 
-        	for (int i = 0; i < configElements.length; i++) {
-        		String id = configElements[i].getAttribute("id");
-        		if (startupSet.contains(id))
-        			startupLaunchers.setChecked(configElements[i], true);
-        		if (runSet.contains(id))
-        			runLaunchers.setChecked(configElements[i], true);
-        	}
+			for (int i = 0; i < configElements.length; i++) {
+				String id = configElements[i].getAttribute("id");
+				if (startupSet.contains(id))
+					startupLaunchers.setChecked(configElements[i], true);
+				if (runSet.contains(id))
+					runLaunchers.setChecked(configElements[i], true);
+			}
 		}
 
-    	startAllLaunchers.setSelection(preferenceStore.getBoolean("RUN_ALL_LAUNCHERS"));
-    	startSelectedLaunchers.setSelection(!startAllLaunchers.getSelection());
-    	runLaunchers.getControl().setEnabled(startSelectedLaunchers.getSelection());
+		startAllLaunchers.setSelection(preferenceStore.getBoolean("RUN_ALL_LAUNCHERS"));
+		startSelectedLaunchers.setSelection(!startAllLaunchers.getSelection());
+		runLaunchers.getControl().setEnabled(startSelectedLaunchers.getSelection());
 
-    	super.performDefaults();
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipse.jface.preference.PreferencePage#performOk()
-     */
-    @Override
-    public boolean performOk() {
-    	IPreferenceStore preferenceStore = getPreferenceStore();
-
-    	StringBuffer sb = new StringBuffer();
-    	Object[] o = startupLaunchers.getCheckedElements();
-    	for (int i = 0; i < o.length; i++) {
-    		String id = ((IConfigurationElement) o[i]).getAttribute("id");
-    		if (i != 0)
-    			sb.append(";");
-    		sb.append(id);
-    	}
-    	preferenceStore.setValue("STARTUP_LAUNCHERS", sb.toString());
-
-    	sb = new StringBuffer();
-    	o = runLaunchers.getCheckedElements();
-    	for (int i = 0; i < o.length; i++) {
-    		String id = ((IConfigurationElement) o[i]).getAttribute("id");
-    		if (i != 0)
-    			sb.append(";");
-    		sb.append(id);
-    	}
-    	preferenceStore.setValue("RUN_LAUNCHERS", sb.toString());
-
-    	preferenceStore.setValue("RUN_ALL_LAUNCHERS", startAllLaunchers.getSelection());
-
-    	return super.performOk();
-    }
+		super.performDefaults();
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.preference.PreferencePage#doGetPreferenceStore()
-     */
-    @Override
-    protected IPreferenceStore doGetPreferenceStore() {
-	    return UIActivator.getDefault().getPreferenceStore();
-    }
+	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
+	 */
+	@Override
+	public boolean performOk() {
+		IPreferenceStore preferenceStore = getPreferenceStore();
+
+		StringBuffer sb = new StringBuffer();
+		Object[] o = startupLaunchers.getCheckedElements();
+		for (int i = 0; i < o.length; i++) {
+			String id = ((IConfigurationElement) o[i]).getAttribute("id");
+			if (i != 0)
+				sb.append(";");
+			sb.append(id);
+		}
+		preferenceStore.setValue("STARTUP_LAUNCHERS", sb.toString());
+
+		sb = new StringBuffer();
+		o = runLaunchers.getCheckedElements();
+		for (int i = 0; i < o.length; i++) {
+			String id = ((IConfigurationElement) o[i]).getAttribute("id");
+			if (i != 0)
+				sb.append(";");
+			sb.append(id);
+		}
+		preferenceStore.setValue("RUN_LAUNCHERS", sb.toString());
+
+		preferenceStore.setValue("RUN_ALL_LAUNCHERS", startAllLaunchers.getSelection());
+
+		return super.performOk();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#doGetPreferenceStore()
+	 */
+	@Override
+	protected IPreferenceStore doGetPreferenceStore() {
+		return UIActivator.getDefault().getPreferenceStore();
+	}
 }

@@ -11,8 +11,12 @@
 
 package org.eclipsetrader.ui.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -66,64 +70,57 @@ public class StartFeedAction implements IWorkbenchWindowActionDelegate, IWorkben
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.swt.widgets.Menu)
-     */
-    public Menu getMenu(Menu parent) {
+	 * @see org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.swt.widgets.Menu)
+	 */
+	public Menu getMenu(Menu parent) {
 		if (menubarMenu != null) {
 			menubarMenu.dispose();
 		}
 		menubarMenu = new Menu(parent);
 		initMenu(menubarMenu);
 		return menubarMenu;
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWindowPulldownDelegate#getMenu(org.eclipse.swt.widgets.Control)
-     */
-    public Menu getMenu(Control parent) {
+	 * @see org.eclipse.ui.IWorkbenchWindowPulldownDelegate#getMenu(org.eclipse.swt.widgets.Control)
+	 */
+	public Menu getMenu(Control parent) {
 		if (toolbarMenu != null) {
 			toolbarMenu.dispose();
 		}
 		toolbarMenu = new Menu(parent);
 		initMenu(toolbarMenu);
 		return toolbarMenu;
-    }
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
 		Job job = new Job("Feed Startup") {
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-            	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
-            	try {
-            		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LAUNCHERS_EXTENSION_ID);
-            		if (extensionPoint != null) {
-                		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
+				try {
+					boolean startAll = UIActivator.getDefault().getPreferenceStore().getBoolean("RUN_ALL_LAUNCHERS");
+					Set<String> set = new HashSet<String>(Arrays.asList(UIActivator.getDefault().getPreferenceStore().getString("RUN_LAUNCHERS").split(";")));
 
-                		boolean startAll = UIActivator.getDefault().getPreferenceStore().getBoolean("RUN_ALL_LAUNCHERS");
-                		Set<String> set = new HashSet<String>(Arrays.asList(UIActivator.getDefault().getPreferenceStore().getString("RUN_LAUNCHERS").split(";")));
-
-                		for (int j = 0; j < configElements.length; j++) {
-                			String id = configElements[j].getAttribute("id"); //$NON-NLS-1$
-                			if (startAll || set.contains(id)) {
-                    			try {
-                    				ILauncher launcher = (ILauncher) configElements[j].createExecutableExtension("class");
-                    				if (launcher != null)
-                    					launcher.launch(monitor);
-                    			} catch (Exception e) {
-                    	    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error launching " + id, e);
-                    	    		UIActivator.getDefault().getLog().log(status);
-                    			}
-                			}
-                		}
-            		}
-            	} finally {
-            		monitor.done();
-            	}
-	            return Status.OK_STATUS;
-            }
+					ILauncher[] launchers = getLaunchers();
+					for (int i = 0; i < launchers.length; i++) {
+						if (startAll || set.contains(launchers[i].getId())) {
+							try {
+								launchers[i].launch(monitor);
+							} catch (Exception e) {
+								Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error launching " + launchers[i].getId(), e);
+								UIActivator.getDefault().getLog().log(status);
+							}
+						}
+					}
+				} finally {
+					monitor.done();
+				}
+				return Status.OK_STATUS;
+			}
 		};
 		job.setUser(false);
 		job.schedule();
@@ -141,7 +138,7 @@ public class StartFeedAction implements IWorkbenchWindowActionDelegate, IWorkben
 	private void initMenu(Menu menu) {
 		menu.addMenuListener(new MenuAdapter() {
 			@Override
-            public void menuShown(MenuEvent e) {
+			public void menuShown(MenuEvent e) {
 				Menu m = (Menu) e.widget;
 				MenuItem[] items = m.getItems();
 				for (int i = 0; i < items.length; i++) {
@@ -158,23 +155,39 @@ public class StartFeedAction implements IWorkbenchWindowActionDelegate, IWorkben
 
 		new MenuItem(menu, SWT.SEPARATOR);
 
+		ILauncher[] launchers = getLaunchers();
+		for (int i = 0; i < launchers.length; i++) {
+			item = new ActionContributionItem(new LauncherStartAction(launchers[i]));
+			item.fill(menu, -1);
+		}
+	}
+
+	ILauncher[] getLaunchers() {
+		List<ILauncher> list = new ArrayList<ILauncher>();
+
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LAUNCHERS_EXTENSION_ID);
 		if (extensionPoint != null) {
-    		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 
-    		for (int j = 0; j < configElements.length; j++) {
-    			String id = configElements[j].getAttribute("id"); //$NON-NLS-1$
-    			try {
-    				ILauncher launcher = (ILauncher) configElements[j].createExecutableExtension("class");
-    				if (launcher != null) {
-    					item = new ActionContributionItem(new LauncherStartAction(launcher));
-    					item.fill(menu, -1);
-    				}
-    			} catch (Exception e) {
-    	    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error launching " + id, e);
-    	    		UIActivator.getDefault().getLog().log(status);
-    			}
-    		}
+			for (int j = 0; j < configElements.length; j++) {
+				String id = configElements[j].getAttribute("id"); //$NON-NLS-1$
+				try {
+					ILauncher launcher = (ILauncher) configElements[j].createExecutableExtension("class");
+					if (launcher != null)
+						list.add(launcher);
+				} catch (Exception e) {
+					Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error launching " + id, e);
+					UIActivator.getDefault().getLog().log(status);
+				}
+			}
 		}
+
+		Collections.sort(list, new Comparator<ILauncher>() {
+			public int compare(ILauncher o1, ILauncher o2) {
+				return o1.getName().compareToIgnoreCase(o2.getName());
+			}
+		});
+
+		return list.toArray(new ILauncher[list.size()]);
 	}
 }
