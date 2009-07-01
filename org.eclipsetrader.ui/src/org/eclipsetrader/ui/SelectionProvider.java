@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.ui.internal;
+package org.eclipsetrader.ui;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.SafeRunner;
@@ -20,6 +20,11 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 
+/**
+ * Generic selection provider implementation.
+ * 
+ * @since 1.0
+ */
 public class SelectionProvider implements ISelectionProvider {
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 	private ISelection selection = StructuredSelection.EMPTY;
@@ -31,14 +36,14 @@ public class SelectionProvider implements ISelectionProvider {
 	 * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-        listeners.add(listener);
+		listeners.add(listener);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-        listeners.remove(listener);
+		listeners.remove(listener);
 	}
 
 	/* (non-Javadoc)
@@ -53,16 +58,16 @@ public class SelectionProvider implements ISelectionProvider {
 	 */
 	public void setSelection(ISelection selection) {
 		this.selection = selection;
-        final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
-        Object[] listenersArray = listeners.getListeners();
+		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
+		Object[] listenersArray = listeners.getListeners();
 
-        for (int i = 0; i < listenersArray.length; i++) {
-            final ISelectionChangedListener l = (ISelectionChangedListener) listenersArray[i];
-            SafeRunner.run(new SafeRunnable() {
-                public void run() {
-                    l.selectionChanged(e);
-                }
-            });
+		for (int i = 0; i < listenersArray.length; i++) {
+			final ISelectionChangedListener l = (ISelectionChangedListener) listenersArray[i];
+			SafeRunner.run(new SafeRunnable() {
+				public void run() {
+					l.selectionChanged(e);
+				}
+			});
 		}
 	}
 }
