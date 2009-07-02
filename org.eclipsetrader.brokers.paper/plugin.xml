@@ -52,9 +52,12 @@
             id="org.eclipsetrader.brokers.paper.properties.account"
             name="Account">
          <enabledWhen>
-            <instanceof
-                  value="org.eclipsetrader.internal.ui.trading.AccountElement">
-            </instanceof>
+            <adapt
+                  type="org.eclipsetrader.core.trading.IAccount">
+               <instanceof
+                     value="org.eclipsetrader.internal.brokers.paper.Account">
+               </instanceof>
+            </adapt>
          </enabledWhen>
       </page>
    </extension>
