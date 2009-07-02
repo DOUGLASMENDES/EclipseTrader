@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,13 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
+import org.easymock.classextension.EasyMock;
 import org.eclipsetrader.core.feed.FeedIdentifier;
+import org.eclipsetrader.core.feed.Quote;
 import org.eclipsetrader.core.feed.Trade;
+import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IOrderStatus;
@@ -26,6 +30,20 @@ import org.eclipsetrader.core.trading.ITransaction;
 import org.eclipsetrader.core.trading.Order;
 
 public class PaperBrokerTest extends TestCase {
+	ISecurity security;
+	MarketPricingEnvironment pricingEnvironment;
+
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception {
+		security = new Security("TEST", null);
+
+		pricingEnvironment = EasyMock.createNiceMock(MarketPricingEnvironment.class);
+		EasyMock.expect(pricingEnvironment.getQuote(security)).andStubReturn(new Quote(10.0, 11.0));
+		EasyMock.replay(pricingEnvironment);
+	}
 
 	public void testPrepareOrder() throws Exception {
 		PaperBroker broker = new PaperBroker();
@@ -37,7 +55,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testSubmitPreparedOrder() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Buy, new Security("Test", new FeedIdentifier("TEST", null)), 100L));
 		monitor.submit();
@@ -47,7 +65,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testProcessMarketOrder() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Buy, security, 100L));
@@ -61,7 +79,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testProcessLimitOrder() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 100L, 10.0, null));
@@ -81,7 +99,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testProcessPartialFill() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Buy, security, 100L));
@@ -95,7 +113,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testProcessTradeWithoutSize() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Buy, security, 100L));
@@ -109,7 +127,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testIgnoreTradeWithUnknownSecurity() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Buy, security, 100L));
@@ -123,7 +141,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testAveragePrice() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Buy, security, 100L));
@@ -138,7 +156,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testBuyAtBetterPrice() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 100L, 10.0, null));
@@ -152,7 +170,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testSellAtBetterPrice() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderType.Limit, IOrderSide.Sell, security, 100L, 10.0, null));
@@ -166,7 +184,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testAddBuyTransaction() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Buy, security, 100L));
@@ -179,7 +197,7 @@ public class PaperBrokerTest extends TestCase {
 	}
 
 	public void testAddSellTransaction() throws Exception {
-		PaperBroker broker = new PaperBroker();
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
 
 		Security security = new Security("Test", new FeedIdentifier("TEST", null));
 		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderSide.Sell, security, 100L));
@@ -189,5 +207,27 @@ public class PaperBrokerTest extends TestCase {
 
 		ITransaction transaction = ((OrderMonitor) monitor).getTransactions()[0];
 		assertEquals(-100 * 10.0, transaction.getAmount().getAmount());
+	}
+
+	public void testBuyAtAskPrice() throws Exception {
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
+
+		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderType.Market, IOrderSide.Buy, security, 100L, null, null));
+		monitor.submit();
+
+		assertEquals(new Long(100), monitor.getFilledQuantity());
+		assertEquals(new Double(11.0), monitor.getAveragePrice());
+		assertEquals(IOrderStatus.Filled, monitor.getStatus());
+	}
+
+	public void testSellAtBidPrice() throws Exception {
+		PaperBroker broker = new PaperBroker(pricingEnvironment);
+
+		IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderType.Market, IOrderSide.Sell, security, 100L, null, null));
+		monitor.submit();
+
+		assertEquals(new Long(100), monitor.getFilledQuantity());
+		assertEquals(new Double(10.0), monitor.getAveragePrice());
+		assertEquals(IOrderStatus.Filled, monitor.getStatus());
 	}
 }

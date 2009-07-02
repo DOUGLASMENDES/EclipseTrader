@@ -11,9 +11,10 @@
 
 package org.eclipsetrader.internal.brokers.paper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -22,6 +23,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IPricingListener;
+import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
@@ -226,11 +228,20 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 				synchronized (pendingOrders) {
 					pendingOrders.add(this);
 				}
-				setId(Long.toHexString(UUID.randomUUID().getLeastSignificantBits()));
+
+				SimpleDateFormat idFormatter = new SimpleDateFormat("yyMMddHHmmssSSS");
+				setId(idFormatter.format(new Date()));
 				setStatus(IOrderStatus.PendingNew);
+
 				fireUpdateNotifications(new OrderDelta[] {
 					new OrderDelta(OrderDelta.KIND_UPDATED, this),
 				});
+
+				if (getOrder().getType() == IOrderType.Market) {
+					IQuote quote = pricingEnvironment.getQuote(getOrder().getSecurity());
+					if (quote != null)
+						processMarketOrder(this, quote);
+				}
 			}
 		};
 
@@ -244,6 +255,27 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 		return monitor;
 	}
 
+	protected void processMarketOrder(OrderMonitor monitor, IQuote quote) {
+		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
+
+		IOrder order = monitor.getOrder();
+		if (order.getSide() == IOrderSide.Buy) {
+			if (quote.getAsk() != null) {
+				fillOrder(monitor, monitor.getOrder(), null, quote.getAsk());
+				deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
+			}
+		}
+		else if (order.getSide() == IOrderSide.Sell) {
+			if (quote.getBid() != null) {
+				fillOrder(monitor, monitor.getOrder(), null, quote.getBid());
+				deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
+			}
+		}
+
+		if (deltas.size() != 0)
+			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
+	}
+
 	protected void processTrade(ISecurity security, ITrade trade) {
 		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
 
@@ -254,49 +286,59 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 		for (int i = 0; i < monitors.length; i++) {
 			IOrder order = monitors[i].getOrder();
 			if (order.getSecurity() == security) {
-				if (order.getType() == IOrderType.Market ||
-				    (order.getType() == IOrderType.Limit && ((order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) || (order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice())))) {
-
-					double totalPrice = monitors[i].getFilledQuantity() != null ? monitors[i].getFilledQuantity() *
-					                                                              monitors[i].getAveragePrice() : 0.0;
-					long filledQuantity = monitors[i].getFilledQuantity() != null ? monitors[i].getFilledQuantity() : 0L;
-					long remainQuantity = order.getQuantity() - filledQuantity;
-
-					long quantity = trade.getSize() != null && trade.getSize() < remainQuantity ? trade.getSize() : remainQuantity;
-					filledQuantity += quantity;
-					totalPrice += quantity * trade.getPrice();
-
-					monitors[i].setFilledQuantity(filledQuantity);
-					monitors[i].setAveragePrice(totalPrice / filledQuantity);
-
-					if (quantity != 0) {
-						if (order.getSide() == IOrderSide.Buy || order.getSide() == IOrderSide.BuyCover)
-							monitors[i].addTransaction(new StockTransaction(monitors[i].getOrder().getSecurity(), quantity, trade.getPrice()));
-						if (order.getSide() == IOrderSide.Sell || order.getSide() == IOrderSide.SellShort)
-							monitors[i].addTransaction(new StockTransaction(monitors[i].getOrder().getSecurity(), -quantity, trade.getPrice()));
-					}
-
-					if (monitors[i].getFilledQuantity().equals(order.getQuantity())) {
-						monitors[i].setStatus(IOrderStatus.Filled);
-						monitors[i].fireOrderCompletedEvent();
-						synchronized (pendingOrders) {
-							pendingOrders.remove(monitors[i]);
-						}
-
-						Account account = (Account) monitors[i].getOrder().getAccount();
-						if (account != null)
-							account.processCompletedOrder(monitors[i]);
-					}
-					else
-						monitors[i].setStatus(IOrderStatus.Partial);
-
+				if (order.getType() == IOrderType.Market) {
+					fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
 					deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
+				}
+				else if (order.getType() == IOrderType.Limit) {
+					if (order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) {
+						fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
+						deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
+					}
+					else if (order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice()) {
+						fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
+						deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
+					}
 				}
 			}
 		}
 
 		if (deltas.size() != 0)
 			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
+	}
+
+	protected void fillOrder(OrderMonitor monitor, IOrder order, Long size, Double price) {
+		double totalPrice = monitor.getFilledQuantity() != null ? monitor.getFilledQuantity() * monitor.getAveragePrice() : 0.0;
+		long filledQuantity = monitor.getFilledQuantity() != null ? monitor.getFilledQuantity() : 0L;
+		long remainQuantity = order.getQuantity() - filledQuantity;
+
+		long quantity = size != null && size < remainQuantity ? size : remainQuantity;
+		filledQuantity += quantity;
+		totalPrice += quantity * price;
+
+		monitor.setFilledQuantity(filledQuantity);
+		monitor.setAveragePrice(totalPrice / filledQuantity);
+
+		if (quantity != 0) {
+			if (order.getSide() == IOrderSide.Buy || order.getSide() == IOrderSide.BuyCover)
+				monitor.addTransaction(new StockTransaction(monitor.getOrder().getSecurity(), quantity, price));
+			if (order.getSide() == IOrderSide.Sell || order.getSide() == IOrderSide.SellShort)
+				monitor.addTransaction(new StockTransaction(monitor.getOrder().getSecurity(), -quantity, price));
+		}
+
+		if (monitor.getFilledQuantity().equals(order.getQuantity())) {
+			monitor.setStatus(IOrderStatus.Filled);
+			monitor.fireOrderCompletedEvent();
+			synchronized (pendingOrders) {
+				pendingOrders.remove(monitor);
+			}
+
+			Account account = (Account) monitor.getOrder().getAccount();
+			if (account != null)
+				account.processCompletedOrder(monitor);
+		}
+		else
+			monitor.setStatus(IOrderStatus.Partial);
 	}
 
 	/* (non-Javadoc)
