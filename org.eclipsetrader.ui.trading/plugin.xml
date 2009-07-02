@@ -10,6 +10,13 @@
             id="org.eclipsetrader.ui.views.orders"
             name="%orders.view.name">
       </view>
+      <view
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.internal.ui.trading.portfolio.PortfolioViewPart"
+            icon="icons/eview16/portfolio.png"
+            id="org.eclipsetrader.ui.views.portfolio"
+            name="Portfolio">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -288,6 +295,39 @@
                name="%validity.provider.name">
          </provider>
       </viewContribution>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipsetrader.internal.ui.trading.portfolio.BrokerElement"
+            class="org.eclipsetrader.internal.ui.trading.portfolio.BrokerElementAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.trading.IBroker">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipsetrader.internal.ui.trading.portfolio.AccountElement"
+            class="org.eclipsetrader.internal.ui.trading.portfolio.AccountElementAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.trading.IAccount">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipsetrader.internal.ui.trading.portfolio.PositionElement"
+            class="org.eclipsetrader.internal.ui.trading.portfolio.PositionElementAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.trading.IPosition">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.instruments.ISecurity">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.instruments.Security">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.feed.ITrade">
+         </adapter>
+      </factory>
    </extension>
 
 </plugin>

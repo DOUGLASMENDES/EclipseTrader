@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.eclipsetrader.ui.trading;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.internal.ui.trading.Activator
 Bundle-Vendor: EclipseTrader.org
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core,
  org.eclipsetrader.core.trading,
+ org.eclipse.ui,
  org.eclipsetrader.ui,
  org.eclipse.nebula.widgets.cdatetime
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
