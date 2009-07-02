@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.IAccount;
+import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IPosition;
 import org.eclipsetrader.core.trading.IPositionListener;
 import org.eclipsetrader.core.trading.ITransaction;
@@ -109,23 +110,53 @@ public class Account implements IAccount {
 		return null;
 	}
 
-	public void setPositions(Position[] newPositions) {
-		for (int i = 0; i < newPositions.length; i++) {
-			Position existingPosition = getPositionFor(newPositions[i].getSecurity());
-			if (existingPosition == null) {
-				synchronized (positions) {
-					positions.add(newPositions[i]);
-				}
-				firePositionOpenedEvent(newPositions[i]);
+	public void updatePosition(OrderMonitor monitor) {
+		Position newPosition;
+		if (monitor.getOrder().getSide() == IOrderSide.Sell || monitor.getOrder().getSide() == IOrderSide.SellShort)
+			newPosition = new Position(monitor.getOrder().getSecurity(), -monitor.getFilledQuantity(), monitor.getAveragePrice());
+		else
+			newPosition = new Position(monitor.getOrder().getSecurity(), monitor.getFilledQuantity(), monitor.getAveragePrice());
+
+		Position existingPosition = getPositionFor(monitor.getOrder().getSecurity());
+		if (existingPosition == null) {
+			synchronized (positions) {
+				positions.add(newPosition);
 			}
-			else {
+			firePositionOpenedEvent(newPosition);
+		}
+		else {
+			existingPosition.setQuantity(existingPosition.getQuantity() + newPosition.getQuantity());
+			if (existingPosition.getQuantity() == 0) {
 				synchronized (positions) {
 					positions.remove(existingPosition);
-					positions.add(newPositions[i]);
 				}
-				firePositionUpdateEvent(newPositions[i]);
+				firePositionClosedEvent(existingPosition);
 			}
+			else
+				firePositionUpdateEvent(existingPosition);
 		}
+	}
+
+	public void updatePosition(Position newPosition) {
+		Position existingPosition = getPositionFor(newPosition.getSecurity());
+		if (existingPosition == null) {
+			synchronized (positions) {
+				positions.add(newPosition);
+			}
+			firePositionOpenedEvent(newPosition);
+		}
+		else {
+			synchronized (positions) {
+				positions.remove(existingPosition);
+				positions.add(newPosition);
+			}
+			firePositionUpdateEvent(newPosition);
+		}
+	}
+
+	public void setPositions(Position[] newPositions) {
+		for (int i = 0; i < newPositions.length; i++)
+			updatePosition(newPositions[i]);
 
 		Position[] currentPositions;
 		synchronized (positions) {

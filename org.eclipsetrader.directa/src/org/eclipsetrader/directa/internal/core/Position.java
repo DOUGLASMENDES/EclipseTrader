@@ -67,12 +67,20 @@ public class Position implements IPosition {
 		return price;
 	}
 
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IPosition#getQuantity()
 	 */
 	@XmlTransient
 	public Long getQuantity() {
 		return quantity;
+	}
+
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
 	}
 
 	/* (non-Javadoc)

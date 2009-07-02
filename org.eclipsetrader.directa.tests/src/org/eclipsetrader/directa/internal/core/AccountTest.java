@@ -14,7 +14,12 @@ package org.eclipsetrader.directa.internal.core;
 import junit.framework.TestCase;
 
 import org.easymock.classextension.EasyMock;
+import org.eclipsetrader.core.feed.FeedIdentifier;
+import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.trading.IOrderSide;
+import org.eclipsetrader.core.trading.IOrderType;
 import org.eclipsetrader.core.trading.IPositionListener;
+import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.core.trading.PositionEvent;
 
 public class AccountTest extends TestCase {
@@ -106,5 +111,144 @@ public class AccountTest extends TestCase {
 		account.setPositions(new Position[0]);
 
 		EasyMock.verify(listener);
+	}
+
+	public void testAddNewPositionWithUpdatePosition() throws Exception {
+		Account account = new Account("ID", null);
+
+		Position position = new Position("4;7;0;;  ;UCG;I;;;100;1.8300;;;;;;;;;;;;015;A;H;;;");
+		account.updatePosition(position);
+
+		assertEquals(1, account.positions.size());
+		assertSame(position, account.positions.get(0));
+	}
+
+	public void testUpdateExistingPosition() throws Exception {
+		Account account = new Account("ID", null);
+		account.setPositions(new Position[] {
+			new Position("4;7;0;;  ;UCG;I;;;100;1.8300;;;;;;;;;;;;015;A;H;;;")
+		});
+
+		Position position = new Position("4;7;0;;  ;UCG;I;;;200;1.8300;;;;;;;;;;;;015;A;H;;;");
+		account.updatePosition(position);
+
+		assertEquals(new Long(200), account.positions.get(0).getQuantity());
+	}
+
+	public void testUpdatePositionFiresPositionOpenEvent() throws Exception {
+		IPositionListener listener = EasyMock.createMock(IPositionListener.class);
+		listener.positionOpened(EasyMock.isA(PositionEvent.class));
+		EasyMock.replay(listener);
+
+		Account account = new Account("ID", null);
+		account.addPositionListener(listener);
+
+		account.updatePosition(new Position("4;7;0;;  ;UCG;I;;;100;1.8300;;;;;;;;;;;;015;A;H;;;"));
+
+		EasyMock.verify(listener);
+	}
+
+	public void testUpdatePositionFiresPositionUpdateEvent() throws Exception {
+		Account account = new Account("ID", null);
+		account.setPositions(new Position[] {
+			new Position("4;7;0;;  ;UCG;I;;;100;1.8300;;;;;;;;;;;;015;A;H;;;")
+		});
+
+		IPositionListener listener = EasyMock.createMock(IPositionListener.class);
+		listener.positionChanged(EasyMock.isA(PositionEvent.class));
+		EasyMock.replay(listener);
+
+		account.addPositionListener(listener);
+		account.updatePosition(new Position("4;7;0;;  ;UCG;I;;;200;1.8300;;;;;;;;;;;;015;A;H;;;"));
+
+		EasyMock.verify(listener);
+	}
+
+	public void testUpdatePositionFromMonitorFiresPositionOpenEvent() throws Exception {
+		IPositionListener listener = EasyMock.createMock(IPositionListener.class);
+		listener.positionOpened(EasyMock.isA(PositionEvent.class));
+		EasyMock.replay(listener);
+
+		Account account = new Account("ID", null);
+		account.addPositionListener(listener);
+
+		Security security = new Security("Unitcredit", new FeedIdentifier("UCG", null));
+		OrderMonitor buyMonitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 100L, 1.83));
+		buyMonitor.setFilledQuantity(100L);
+		buyMonitor.setAveragePrice(1.87);
+		account.updatePosition(buyMonitor);
+
+		EasyMock.verify(listener);
+	}
+
+	public void testUpdatePositionFromMonitorFiresPositionUpdateEvent() throws Exception {
+		Security security = new Security("Unitcredit", new FeedIdentifier("UCG", null));
+
+		Account account = new Account("ID", null);
+		OrderMonitor buyMonitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 100L, 1.83));
+		buyMonitor.setFilledQuantity(100L);
+		buyMonitor.setAveragePrice(1.87);
+		account.updatePosition(buyMonitor);
+
+		IPositionListener listener = EasyMock.createMock(IPositionListener.class);
+		listener.positionChanged(EasyMock.isA(PositionEvent.class));
+		EasyMock.replay(listener);
+
+		account.addPositionListener(listener);
+
+		buyMonitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 100L, 1.83));
+		buyMonitor.setFilledQuantity(100L);
+		buyMonitor.setAveragePrice(1.87);
+		account.updatePosition(buyMonitor);
+
+		EasyMock.verify(listener);
+	}
+
+	public void testUpdatePositionFromMonitorFiresPositionCloseEvent() throws Exception {
+		Security security = new Security("Unitcredit", new FeedIdentifier("UCG", null));
+
+		Account account = new Account("ID", null);
+		account.setPositions(new Position[] {
+			new Position("4;7;0;;  ;UCG;I;;;100;1.8300;;;;;;;;;;;;015;A;H;;;")
+		});
+
+		OrderMonitor buyMonitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Buy, security, 100L, 1.83));
+		buyMonitor.setFilledQuantity(100L);
+		buyMonitor.setAveragePrice(1.87);
+		account.updatePosition(buyMonitor);
+
+		OrderMonitor sellMonitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Sell, security, 100L, 1.87));
+		sellMonitor.setFilledQuantity(100L);
+		sellMonitor.setAveragePrice(1.87);
+
+		IPositionListener listener = EasyMock.createMock(IPositionListener.class);
+		listener.positionClosed(EasyMock.isA(PositionEvent.class));
+		EasyMock.replay(listener);
+
+		account.addPositionListener(listener);
+		account.updatePosition(sellMonitor);
+
+		EasyMock.verify(listener);
+	}
+
+	public void testSetShortPositionFromMonitor() throws Exception {
+		Account account = new Account("ID", null);
+		Security security = new Security("Unitcredit", new FeedIdentifier("UCG", null));
+
+		OrderMonitor buyMonitor = new OrderMonitor(null, null, new Order(null, IOrderType.Limit, IOrderSide.Sell, security, 100L, 1.83));
+		buyMonitor.setFilledQuantity(100L);
+		buyMonitor.setAveragePrice(1.87);
+		account.updatePosition(buyMonitor);
+
+		assertEquals(new Long(-100), account.positions.get(0).getQuantity());
+	}
+
+	public void testSetShortPositionFromStream() throws Exception {
+		Account account = new Account("ID", null);
+
+		Position position = new Position("4;7;0;;  ;UCG;I;;;-100;1.8300;;;;;;;;;;;;015;A;H;;;");
+		account.updatePosition(position);
+
+		assertEquals(new Long(-100), account.positions.get(0).getQuantity());
 	}
 }
