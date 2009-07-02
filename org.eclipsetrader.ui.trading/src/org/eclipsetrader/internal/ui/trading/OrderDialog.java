@@ -14,7 +14,6 @@ package org.eclipsetrader.internal.ui.trading;
 import java.text.NumberFormat;
 import java.util.Date;
 
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -43,7 +42,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
-import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
@@ -73,12 +71,13 @@ public class OrderDialog extends TitleAreaDialog {
 
 	Label summaryLabel;
 
-	IAdaptable target;
-	ISecurity security;
-	IBroker broker;
-	Double limitPrice;
-	IOrderSide orderSide;
-	ITradingService tradingService;
+	private ISecurity security;
+	private IBroker broker;
+	private IAccount account;
+	private Long position;
+	private Double limitPrice;
+	private IOrderSide orderSide;
+	private ITradingService tradingService;
 
 	NumberFormat numberFormat;
 	NumberFormat priceFormat;
@@ -116,12 +115,20 @@ public class OrderDialog extends TitleAreaDialog {
 		totalPriceFormat.setGroupingUsed(true);
 	}
 
-	public void setTarget(IAdaptable target) {
-		this.target = target;
+	public void setSecurity(ISecurity security) {
+		this.security = security;
 	}
 
 	public void setBroker(IBroker broker) {
 		this.broker = broker;
+	}
+
+	public void setAccount(IAccount account) {
+		this.account = account;
+	}
+
+	public void setPosition(Long position) {
+		this.position = position;
 	}
 
 	public void setLimitPrice(Double limitPrice) {
@@ -196,6 +203,8 @@ public class OrderDialog extends TitleAreaDialog {
 		createSummaryGroup(composite);
 
 		setInitialParameters();
+		updateSummary();
+
 		addListeners();
 
 		quantity.setFocus();
@@ -333,15 +342,13 @@ public class OrderDialog extends TitleAreaDialog {
 	}
 
 	void setInitialParameters() {
-		if (getTarget() != null) {
-			security = (ISecurity) getTarget().getAdapter(ISecurity.class);
+		if (security != null) {
 			symbol.setText(getSecuritySymbol(security));
 			symbolDescription.setText(security.getName());
-
-			ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
-			if (trade != null && trade.getPrice() != null)
-				price.setText(priceFormat.format(trade.getPrice()));
 		}
+
+		if (position != null)
+			quantity.setText(numberFormat.format(position));
 
 		if (limitPrice != null)
 			price.setText(priceFormat.format(limitPrice));
@@ -357,12 +364,11 @@ public class OrderDialog extends TitleAreaDialog {
 		}
 		handleBrokerSelection((IStructuredSelection) brokerCombo.getSelection());
 
+		if (account != null)
+			accountCombo.setSelection(new StructuredSelection(account));
+
 		if (orderSide != null)
 			sideCombo.setSelection(new StructuredSelection(orderSide));
-	}
-
-	protected IAdaptable getTarget() {
-		return target;
 	}
 
 	protected void handleBrokerSelection(IStructuredSelection selection) {
@@ -473,11 +479,8 @@ public class OrderDialog extends TitleAreaDialog {
 			IOrderType orderType = (IOrderType) ((IStructuredSelection) typeCombo.getSelection()).getFirstElement();
 			if (orderType == IOrderType.Limit)
 				price = priceFormat.parse(this.price.getText()).doubleValue();
-			else {
-				ITrade trade = (ITrade) getTarget().getAdapter(ITrade.class);
-				if (trade != null && trade.getPrice() != null)
-					price = trade.getPrice();
-			}
+			else if (limitPrice != null)
+				price = limitPrice;
 
 			if (quantity != 0 && price != 0.0) {
 				summaryLabel.setText(NLS.bind(Messages.OrderDialog_TotalLabel, new Object[] {
