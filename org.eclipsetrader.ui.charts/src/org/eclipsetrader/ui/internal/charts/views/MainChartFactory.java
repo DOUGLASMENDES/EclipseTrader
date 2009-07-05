@@ -21,9 +21,9 @@ import org.eclipsetrader.ui.charts.HistogramAreaChart;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
-import org.eclipsetrader.ui.charts.LineChart;
 import org.eclipsetrader.ui.charts.OHLCField;
-import org.eclipsetrader.ui.charts.LineChart.LineStyle;
+import org.eclipsetrader.ui.charts.OHLCLineChart;
+import org.eclipsetrader.ui.charts.OHLCLineChart.LineStyle;
 
 public class MainChartFactory implements IChartObjectFactory {
 	public static final String FACTORY_ID = "org.eclipsetrader.ui.charts.main";
@@ -135,7 +135,7 @@ public class MainChartFactory implements IChartObjectFactory {
 		if (style == MainRenderStyle.Histogram)
 			return new HistogramAreaChart(source, lineColor);
 
-		return new LineChart(source, LineStyle.Solid, lineColor);
+		return new OHLCLineChart(source, LineStyle.Solid, lineColor);
 	}
 
 	/* (non-Javadoc)
