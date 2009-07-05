@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.core.feed;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +19,9 @@ import java.util.Date;
  *
  * @since 1.0
  */
-public class BookEntry implements IBookEntry {
+public class BookEntry implements IBookEntry, Serializable {
+	private static final long serialVersionUID = -1219296257841084810L;
+
 	private Date time;
 	private Double price;
 	private Long quantity;
@@ -29,12 +32,12 @@ public class BookEntry implements IBookEntry {
 	}
 
 	public BookEntry(Date time, Double price, Long quantity, Long proposals, String marketMaker) {
-	    this.time = time;
-	    this.price = price;
-	    this.quantity = quantity;
-	    this.proposals = proposals;
-	    this.marketMaker = marketMaker;
-    }
+		this.time = time;
+		this.price = price;
+		this.quantity = quantity;
+		this.proposals = proposals;
+		this.marketMaker = marketMaker;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IBookEntry#getMarketMaker()
@@ -72,29 +75,21 @@ public class BookEntry implements IBookEntry {
 	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-	    return 3 * (marketMaker != null ? marketMaker.hashCode() : 0) +
-	           7 * (price != null ? price.hashCode() : 0) +
-	           11 * (proposals != null ? proposals.hashCode() : 0) +
-	           13 * (quantity != null ? quantity.hashCode() : 0) +
-	           17 * (time != null ? time.hashCode() : 0);
-    }
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return 3 * (marketMaker != null ? marketMaker.hashCode() : 0) + 7 * (price != null ? price.hashCode() : 0) + 11 * (proposals != null ? proposals.hashCode() : 0) + 13 * (quantity != null ? quantity.hashCode() : 0) + 17 * (time != null ? time.hashCode() : 0);
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-    	if (!(obj instanceof IBookEntry))
-    		return false;
-    	IBookEntry other = (IBookEntry) obj;
-    	return (marketMaker == other.getMarketMaker() || (marketMaker != null && marketMaker.equals(other.getMarketMaker()))) &&
-    	       (price == other.getPrice() || (price != null && price.equals(other.getPrice()))) &&
-    	       (proposals == other.getProposals() || (proposals != null && proposals.equals(other.getProposals()))) &&
-    	       (quantity == other.getQuantity() || (quantity != null && quantity.equals(other.getQuantity()))) &&
-    	       (time == other.getTime() || (time != null && time.equals(other.getTime())));
-    }
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof IBookEntry))
+			return false;
+		IBookEntry other = (IBookEntry) obj;
+		return (marketMaker == other.getMarketMaker() || (marketMaker != null && marketMaker.equals(other.getMarketMaker()))) && (price == other.getPrice() || (price != null && price.equals(other.getPrice()))) && (proposals == other.getProposals() || (proposals != null && proposals.equals(other.getProposals()))) && (quantity == other.getQuantity() || (quantity != null && quantity.equals(other.getQuantity()))) && (time == other.getTime() || (time != null && time.equals(other.getTime())));
+	}
 }
