@@ -1,5 +1,5 @@
 /*
- * Copyright (calendar) 2004-2008 Marco Maccaferri and others.
+ * Copyright (calendar) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,11 +29,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Status;
-import org.eclipsetrader.core.feed.IQuote;
-import org.eclipsetrader.core.feed.ITodayOHL;
-import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.Quote;
-import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.TodayOHL;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
@@ -44,21 +40,21 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class StreamingConnector extends SnapshotConnector {
-    public static final String K_SYMBOL = "s";
-    public static final String K_LAST = "l10";
-    public static final String K_VOLUME = "v00";
-    public static final String K_ASK_PRICE = "a00";
-    public static final String K_ASK_SIZE = "a50";
-    public static final String K_BID_PRICE = "b00";
-    public static final String K_BID_SIZE = "b60";
-    public static final String K_HIGH = "h00";
-    public static final String K_LOW = "g00";
-    public static final String K_TIME = "t10";
-    private static StreamingConnector instance;
-    private StringBuilder line;
-    private StringBuilder script;
-    private boolean inTag;
-    private boolean inScript;
+	public static final String K_SYMBOL = "s";
+	public static final String K_LAST = "l10";
+	public static final String K_VOLUME = "v00";
+	public static final String K_ASK_PRICE = "a00";
+	public static final String K_ASK_SIZE = "a50";
+	public static final String K_BID_PRICE = "b00";
+	public static final String K_BID_SIZE = "b60";
+	public static final String K_HIGH = "h00";
+	public static final String K_LOW = "g00";
+	public static final String K_TIME = "t10";
+	private static StreamingConnector instance;
+	private StringBuilder line;
+	private StringBuilder script;
+	private boolean inTag;
+	private boolean inScript;
 
 	public StreamingConnector() {
 	}
@@ -66,14 +62,14 @@ public class StreamingConnector extends SnapshotConnector {
 	public synchronized static StreamingConnector getInstance() {
 		if (instance == null)
 			instance = new StreamingConnector();
-    	return instance;
-    }
+		return instance;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.yahoo.internal.feed.SnapshotMarketFeed#run()
-     */
-    @Override
-    public void run() {
+	 * @see org.eclipsetrader.yahoo.internal.feed.SnapshotMarketFeed#run()
+	 */
+	@Override
+	public void run() {
 		BufferedReader in = null;
 		char[] buffer = new char[512];
 
@@ -104,18 +100,18 @@ public class StreamingConnector extends SnapshotConnector {
 					try {
 						if (method != null)
 							method.releaseConnection();
-			            if (in != null)
-			            	in.close();
-		            } catch (Exception e) {
-		            	// We can't do anything at this time, ignore
-		            }
+						if (in != null)
+							in.close();
+					} catch (Exception e) {
+						// We can't do anything at this time, ignore
+					}
 
-		            String[] symbols;
-					synchronized(symbolSubscriptions) {
+					String[] symbols;
+					synchronized (symbolSubscriptions) {
 						Set<String> s = new HashSet<String>(symbolSubscriptions.keySet());
 						s.add("MSFT");
 						symbols = s.toArray(new String[s.size()]);
-	    				setSubscriptionsChanged(false);
+						setSubscriptionsChanged(false);
 						if (symbols.length == 0)
 							break;
 					}
@@ -136,16 +132,16 @@ public class StreamingConnector extends SnapshotConnector {
 				if (in.ready()) {
 					int length = in.read(buffer);
 					if (length == -1) {
-		            	in.close();
-		            	in = null;
-		    			continue;
+						in.close();
+						in = null;
+						continue;
 					}
 					processIncomingChars(buffer, length);
 				}
 				else {
 					// Check stale data
 					List<String> updateList = new ArrayList<String>();
-					synchronized(symbolSubscriptions) {
+					synchronized (symbolSubscriptions) {
 						long currentTime = System.currentTimeMillis();
 						for (FeedSubscription subscription : symbolSubscriptions.values()) {
 							long elapsedTime = currentTime - subscription.getIdentifierType().getLastUpdate();
@@ -170,17 +166,17 @@ public class StreamingConnector extends SnapshotConnector {
 				e.printStackTrace();
 		} finally {
 			try {
-	            if (in != null)
-	            	in.close();
-            } catch (Exception e) {
-            	// We can't do anything at this time, ignore
-            }
+				if (in != null)
+					in.close();
+			} catch (Exception e) {
+				// We can't do anything at this time, ignore
+			}
 		}
-    }
+	}
 
-    protected void processIncomingChars(char[] chars, int length) {
-    	for (int i = 0; i < length; i++) {
-    		char ch = chars[i];
+	protected void processIncomingChars(char[] chars, int length) {
+		for (int i = 0; i < length; i++) {
+			char ch = chars[i];
 			if (ch == '<' && !inTag)
 				inTag = true;
 			if (inTag)
@@ -197,25 +193,23 @@ public class StreamingConnector extends SnapshotConnector {
 					if (script.length() >= tag.length())
 						script.delete(script.length() - tag.length(), script.length());
 
-					Map<String,String> valueMap = new HashMap<String,String>();
-					parseScript(script.toString(), valueMap);
+					Map<String, String> valueMap = parseScript(script.toString());
 					processValues(valueMap);
 
 					script = new StringBuilder();
 				}
 				line = new StringBuilder();
 			}
-    	}
-    }
+		}
+	}
 
-    protected void processValues(Map<String,String> valueMap) {
+	protected void processValues(Map<String, String> valueMap) {
 		String symbol = valueMap.get(K_SYMBOL);
 		FeedSubscription subscription = symbolSubscriptions.get(symbol);
 		if (subscription != null) {
 			IdentifierType identifierType = subscription.getIdentifierType();
 			PriceDataType priceData = identifierType.getPriceData();
 
-			Object oldValue = subscription.getTrade();
 			if (valueMap.containsKey(K_TIME))
 				priceData.setTime(new Date(getLongValue(valueMap.get(K_TIME)).longValue() * 1000));
 			long tradeSize = 0;
@@ -225,13 +219,8 @@ public class StreamingConnector extends SnapshotConnector {
 			}
 			if (valueMap.containsKey(K_LAST))
 				priceData.setLast(getDoubleValue(valueMap.get(K_LAST)));
-			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-			if (!newValue.equals(oldValue)) {
-				subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-				subscription.setTrade((ITrade) newValue);
-			}
+			subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
 
-			oldValue = subscription.getQuote();
 			if (valueMap.containsKey(K_BID_PRICE))
 				priceData.setBid(getDoubleValue(valueMap.get(K_BID_PRICE)));
 			if (valueMap.containsKey(K_BID_SIZE))
@@ -240,30 +229,23 @@ public class StreamingConnector extends SnapshotConnector {
 				priceData.setAsk(getDoubleValue(valueMap.get(K_ASK_PRICE)));
 			if (valueMap.containsKey(K_ASK_SIZE))
 				priceData.setAskSize(getLongValue(valueMap.get(K_ASK_SIZE)));
-			newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
-			if (!newValue.equals(oldValue)) {
-				subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-				subscription.setQuote((IQuote) newValue);
-			}
+			subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
 
-			oldValue = subscription.getTodayOHL();
 			if (valueMap.containsKey(K_HIGH))
 				priceData.setHigh(getDoubleValue(valueMap.get(K_HIGH)));
 			if (valueMap.containsKey(K_LOW))
 				priceData.setLow(getDoubleValue(valueMap.get(K_LOW)));
 			if (valueMap.containsKey(K_VOLUME))
 				priceData.setVolume(getLongValue(valueMap.get(K_VOLUME)));
-			newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-			if (!newValue.equals(oldValue)) {
-				subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-				subscription.setTodayOHL((ITodayOHL) newValue);
-			}
+			subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
 
 			subscription.fireNotification();
 		}
-    }
+	}
 
-	protected void parseScript(String script, Map<String,String> valueMap) {
+	protected Map<String, String> parseScript(String script) {
+		Map<String, String> map = new HashMap<String, String>();
+
 		int e = 0;
 		int s = script.indexOf("unixtime");
 		if (s != -1) {
@@ -271,7 +253,7 @@ public class StreamingConnector extends SnapshotConnector {
 			e = script.indexOf(',', s);
 			if (e == -1)
 				e = script.indexOf('}', s);
-			valueMap.put("unixtime", script.substring(s, e));
+			map.put("unixtime", script.substring(s, e));
 		}
 
 		s = script.indexOf("open");
@@ -280,7 +262,7 @@ public class StreamingConnector extends SnapshotConnector {
 			e = script.indexOf(',', s);
 			if (e == -1)
 				e = script.indexOf('}', s);
-			valueMap.put("open", script.substring(s, e));
+			map.put("open", script.substring(s, e));
 		}
 
 		s = script.indexOf("close");
@@ -289,7 +271,7 @@ public class StreamingConnector extends SnapshotConnector {
 			e = script.indexOf(',', s);
 			if (e == -1)
 				e = script.indexOf('}', s);
-			valueMap.put("close", script.substring(s, e));
+			map.put("close", script.substring(s, e));
 		}
 
 		s = script.indexOf('"', e);
@@ -297,7 +279,7 @@ public class StreamingConnector extends SnapshotConnector {
 			s++;
 			e = script.indexOf('"', s);
 			String symbol = script.substring(s, e);
-			valueMap.put(K_SYMBOL, symbol);
+			map.put(K_SYMBOL, symbol);
 
 			boolean inExpression = false;
 			boolean inValue = false;
@@ -314,14 +296,14 @@ public class StreamingConnector extends SnapshotConnector {
 							vs = i + 1;
 						else {
 							ve = i;
-	                        try {
-	                        	String key = script.substring(s, e);
-	                        	String value = script.substring(vs, ve);
-								valueMap.put(key, value);
-	                        } catch (RuntimeException e1) {
-	                        	System.err.println(script);
-		                        e1.printStackTrace();
-	                        }
+							try {
+								String key = script.substring(s, e);
+								String value = script.substring(vs, ve);
+								map.put(key, value);
+							} catch (RuntimeException e1) {
+								System.err.println(script);
+								e1.printStackTrace();
+							}
 						}
 					}
 					if ((ch == ',' || ch == '}') && !inValue)
@@ -335,5 +317,7 @@ public class StreamingConnector extends SnapshotConnector {
 				}
 			}
 		}
+
+		return map;
 	}
 }

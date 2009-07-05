@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -42,13 +44,8 @@ import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
-import org.eclipsetrader.core.feed.ILastClose;
-import org.eclipsetrader.core.feed.IQuote;
-import org.eclipsetrader.core.feed.ITodayOHL;
-import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.LastClose;
 import org.eclipsetrader.core.feed.Quote;
-import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.TodayOHL;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
@@ -74,11 +71,11 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	private static final int I_CLOSE = 11;
 	//private static final int I_BID_SIZE = 12;
 	//private static final int I_ASK_SIZE = 13;
-    private static SnapshotConnector instance;
-    private String id;
-    private String name;
+	private static SnapshotConnector instance;
+	private String id;
+	private String name;
 
-	protected Map<String,FeedSubscription> symbolSubscriptions;
+	protected Map<String, FeedSubscription> symbolSubscriptions;
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	protected TimeZone timeZone;
@@ -90,20 +87,21 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	protected Thread thread;
 	private boolean stopping = false;
 	private boolean subscriptionsChanged = false;
+	private Timer barTimer;
 
 	public SnapshotConnector() {
-		symbolSubscriptions = new HashMap<String,FeedSubscription>();
+		symbolSubscriptions = new HashMap<String, FeedSubscription>();
 
 		timeZone = TimeZone.getTimeZone("America/New_York");
 
 		dateTimeParser = new SimpleDateFormat("MM/dd/yyyy h:mma"); //$NON-NLS-1$
-        dateTimeParser.setTimeZone(timeZone);
+		dateTimeParser.setTimeZone(timeZone);
 
-        dateParser = new SimpleDateFormat("MM/dd/yyyy"); //$NON-NLS-1$
-        dateParser.setTimeZone(timeZone);
+		dateParser = new SimpleDateFormat("MM/dd/yyyy"); //$NON-NLS-1$
+		dateParser.setTimeZone(timeZone);
 
-        timeParser = new SimpleDateFormat("h:mma"); //$NON-NLS-1$
-        timeParser.setTimeZone(timeZone);
+		timeParser = new SimpleDateFormat("h:mma"); //$NON-NLS-1$
+		timeParser.setTimeZone(timeZone);
 
 		numberFormat = NumberFormat.getInstance(Locale.US);
 	}
@@ -111,89 +109,115 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	public synchronized static SnapshotConnector getInstance() {
 		if (instance == null)
 			instance = new SnapshotConnector();
-    	return instance;
-    }
+		return instance;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
-    }
+	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+	 */
+	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+		id = config.getAttribute("id");
+		name = config.getAttribute("name");
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
-     */
-    public String getId() {
-	    return id;
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
+	 */
+	public String getId() {
+		return id;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
-     */
-    public String getName() {
-	    return name;
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
+	 */
+	public String getName() {
+		return name;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
-     */
-    public IFeedSubscription subscribe(IFeedIdentifier identifier) {
-		synchronized(symbolSubscriptions) {
-	    	IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
-	    	FeedSubscription subscription = symbolSubscriptions.get(identifierType.getSymbol());
-	    	if (subscription == null) {
-	    		subscription = new FeedSubscription(this, identifierType);
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
+	 */
+	public IFeedSubscription subscribe(IFeedIdentifier identifier) {
+		synchronized (symbolSubscriptions) {
+			IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
+			FeedSubscription subscription = symbolSubscriptions.get(identifierType.getSymbol());
+			if (subscription == null) {
+				subscription = new FeedSubscription(this, identifierType);
 
-	    	    PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
-	    	    if (propertyChangeSupport != null)
-	    	    	propertyChangeSupport.addPropertyChangeListener(this);
+				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
+				if (propertyChangeSupport != null)
+					propertyChangeSupport.addPropertyChangeListener(this);
 
-	    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
+				symbolSubscriptions.put(identifierType.getSymbol(), subscription);
 				setSubscriptionsChanged(true);
-	    	}
-	    	subscription.incrementInstanceCount();
-		    return subscription;
+			}
+			subscription.incrementInstanceCount();
+			return subscription;
 		}
-    }
+	}
 
-    protected void disposeSubscription(FeedSubscription subscription) {
-		synchronized(symbolSubscriptions) {
-	    	if (subscription.decrementInstanceCount() <= 0) {
-		    	IdentifierType identifierType = subscription.getIdentifierType();
+	protected void disposeSubscription(FeedSubscription subscription) {
+		synchronized (symbolSubscriptions) {
+			if (subscription.decrementInstanceCount() <= 0) {
+				IdentifierType identifierType = subscription.getIdentifierType();
 
-		    	if (subscription.getIdentifier() != null) {
-		    	    PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subscription.getIdentifier().getAdapter(PropertyChangeSupport.class);
-		    	    if (propertyChangeSupport != null)
-		    	    	propertyChangeSupport.removePropertyChangeListener(this);
-		    	}
+				if (subscription.getIdentifier() != null) {
+					PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subscription.getIdentifier().getAdapter(PropertyChangeSupport.class);
+					if (propertyChangeSupport != null)
+						propertyChangeSupport.removePropertyChangeListener(this);
+				}
 
-	    	    symbolSubscriptions.remove(identifierType.getSymbol());
-	    		setSubscriptionsChanged(true);
-	    	}
+				symbolSubscriptions.remove(identifierType.getSymbol());
+				setSubscriptionsChanged(true);
+			}
 		}
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
-     */
-    public void connect() {
-        if (thread == null || !thread.isAlive()) {
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
+	 */
+	public void connect() {
+		if (thread == null || !thread.isAlive()) {
 			stopping = false;
 			thread = new Thread(this, name + " - Data Reader");
 			thread.start();
 		}
-    }
+
+		if (barTimer != null) {
+			barTimer = new Timer(name + " - Bar Timer", true);
+			barTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					FeedSubscription[] subscriptions;
+					synchronized (symbolSubscriptions) {
+						Collection<FeedSubscription> c = symbolSubscriptions.values();
+						subscriptions = c.toArray(new FeedSubscription[c.size()]);
+					}
+
+					for (int i = 0; i < subscriptions.length; i++)
+						subscriptions[i].forceBarClose();
+
+					for (int i = 0; i < subscriptions.length; i++)
+						subscriptions[i].fireNotification();
+				}
+			}, 1000);
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
-     */
-    public void disconnect() {
-        stopping = true;
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
+	 */
+	public void disconnect() {
+		stopping = true;
+
+		if (barTimer != null) {
+			barTimer.cancel();
+			barTimer = null;
+		}
+
 		if (thread != null) {
 			try {
-				synchronized(thread) {
+				synchronized (thread) {
 					thread.notify();
 				}
 				thread.join(30 * 1000);
@@ -203,16 +227,16 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			}
 			thread = null;
 		}
-    }
+	}
 
 	public boolean isStopping() {
-    	return stopping;
-    }
+		return stopping;
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    public void run() {
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
 		try {
 			HttpClient client = new HttpClient();
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
@@ -233,9 +257,9 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 				}
 			}
 
-			synchronized(thread) {
+			synchronized (thread) {
 				while (!isStopping()) {
-					synchronized(symbolSubscriptions) {
+					synchronized (symbolSubscriptions) {
 						if (symbolSubscriptions.size() != 0) {
 							String[] symbols = symbolSubscriptions.keySet().toArray(new String[symbolSubscriptions.size()]);
 							fetchLatestSnapshot(client, symbols, false);
@@ -258,75 +282,21 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			else
 				e.printStackTrace();
 		}
-    }
+	}
 
 	protected void fetchLatestSnapshot(HttpClient client, String[] symbols, boolean isStaleUpdate) {
 		HttpMethod method = null;
 		BufferedReader in = null;
+		String line = ""; //$NON-NLS-1$
 
 		try {
 			method = Util.getSnapshotFeedMethod(symbols);
 
 			client.executeMethod(method);
 
-			// Read the last prices
-			String line = ""; //$NON-NLS-1$
 			in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-			while ((line = in.readLine()) != null) {
-				String[] elements;
-				if (line.indexOf(";") != -1) //$NON-NLS-1$
-					elements = line.split(";"); //$NON-NLS-1$
-				else
-					elements = line.split(","); //$NON-NLS-1$
-
-				String symbol = stripQuotes(elements[I_CODE]);
-				FeedSubscription subscription = symbolSubscriptions.get(symbol);
-				if (subscription != null) {
-					IdentifierType identifierType = subscription.getIdentifierType();
-					PriceDataType priceData = identifierType.getPriceData();
-
-					Object oldValue = subscription.getTrade();
-					priceData.setTime(getDateValue(elements[I_DATE], elements[I_TIME]));
-					priceData.setLast(getDoubleValue(elements[I_LAST]));
-					priceData.setVolume(getLongValue(elements[I_VOLUME]));
-					Object newValue = new Trade(priceData.getTime(), priceData.getLast(), null, priceData.getVolume());
-					if (!newValue.equals(oldValue)) {
-						subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-						subscription.setTrade((ITrade) newValue);
-					}
-
-					oldValue = subscription.getQuote();
-					priceData.setBid(getDoubleValue(elements[I_BID]));
-					if (!isStaleUpdate)
-						priceData.setBidSize(null); // getLongValue(elements[I_BID_SIZE]));
-					priceData.setAsk(getDoubleValue(elements[I_ASK]));
-					if (!isStaleUpdate)
-						priceData.setAskSize(null); // getLongValue(elements[I_ASK_SIZE]));
-					newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
-					if (!newValue.equals(oldValue)) {
-						subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-						subscription.setQuote((IQuote) newValue);
-					}
-
-					oldValue = subscription.getTodayOHL();
-					priceData.setOpen(getDoubleValue(elements[I_OPEN]));
-					priceData.setHigh(getDoubleValue(elements[I_HIGH]));
-					priceData.setLow(getDoubleValue(elements[I_LOW]));
-					newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-					if (!newValue.equals(oldValue)) {
-						subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-						subscription.setTodayOHL((ITodayOHL) newValue);
-					}
-
-					oldValue = subscription.getLastClose();
-					priceData.setClose(getDoubleValue(elements[I_CLOSE]));
-					newValue = new LastClose(priceData.getClose(), null);
-					if (!newValue.equals(oldValue)) {
-						subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-						subscription.setLastClose((ILastClose) newValue);
-					}
-				}
-			}
+			while ((line = in.readLine()) != null)
+				processSnapshotData(line, isStaleUpdate);
 
 			FeedSubscription[] subscriptions;
 			synchronized (symbolSubscriptions) {
@@ -341,54 +311,91 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			YahooActivator.log(status);
 		} finally {
 			try {
-	            if (in != null)
-	            	in.close();
+				if (in != null)
+					in.close();
 				if (method != null)
 					method.releaseConnection();
-            } catch (Exception e) {
-            	// We can't do anything at this time, ignore
-            }
+			} catch (Exception e) {
+				Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Connection wasn't closed cleanly", e);
+				YahooActivator.log(status);
+			}
+		}
+	}
+
+	void processSnapshotData(String line, boolean isStaleUpdate) {
+		String[] elements;
+		if (line.indexOf(";") != -1) //$NON-NLS-1$
+			elements = line.split(";"); //$NON-NLS-1$
+		else
+			elements = line.split(","); //$NON-NLS-1$
+
+		String symbol = stripQuotes(elements[I_CODE]);
+		FeedSubscription subscription = symbolSubscriptions.get(symbol);
+		if (subscription != null) {
+			IdentifierType identifierType = subscription.getIdentifierType();
+			PriceDataType priceData = identifierType.getPriceData();
+
+			priceData.setTime(getDateValue(elements[I_DATE], elements[I_TIME]));
+			priceData.setLast(getDoubleValue(elements[I_LAST]));
+			priceData.setVolume(getLongValue(elements[I_VOLUME]));
+			subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), null, priceData.getVolume()));
+
+			priceData.setBid(getDoubleValue(elements[I_BID]));
+			if (!isStaleUpdate)
+				priceData.setBidSize(null); // getLongValue(elements[I_BID_SIZE]));
+			priceData.setAsk(getDoubleValue(elements[I_ASK]));
+			if (!isStaleUpdate)
+				priceData.setAskSize(null); // getLongValue(elements[I_ASK_SIZE]));
+			subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
+
+			priceData.setOpen(getDoubleValue(elements[I_OPEN]));
+			priceData.setHigh(getDoubleValue(elements[I_HIGH]));
+			priceData.setLow(getDoubleValue(elements[I_LOW]));
+			subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+
+			priceData.setClose(getDoubleValue(elements[I_CLOSE]));
+			subscription.setLastClose(new LastClose(priceData.getClose(), null));
 		}
 	}
 
 	protected Date getDateValue(String dateValue, String timeValue) {
-        String date = stripQuotes(dateValue);
-        String time = stripQuotes(timeValue);
+		String date = stripQuotes(dateValue);
+		String time = stripQuotes(timeValue);
 
-        if (date.indexOf("N/A") != -1 && time.indexOf("N/A") != -1)
+		if (date.indexOf("N/A") != -1 && time.indexOf("N/A") != -1)
 			return null;
 
 		try {
-	        if (date.indexOf("N/A") != -1) //$NON-NLS-1$
-	        	date = dateParser.format(Calendar.getInstance(timeZone).getTime());
-	        if (time.indexOf("N/A") != -1) //$NON-NLS-1$
-	        	time = timeParser.format(Calendar.getInstance(timeZone).getTime());
+			if (date.indexOf("N/A") != -1) //$NON-NLS-1$
+				date = dateParser.format(Calendar.getInstance(timeZone).getTime());
+			if (time.indexOf("N/A") != -1) //$NON-NLS-1$
+				time = timeParser.format(Calendar.getInstance(timeZone).getTime());
 
-	        Calendar c = Calendar.getInstance();
-	        c.setTime(dateTimeParser.parse(date + " " + time)); //$NON-NLS-1$
-	        c.set(Calendar.SECOND, 0);
-	        c.set(Calendar.MILLISECOND, 0);
-	        c.setTimeZone(TimeZone.getDefault());
-	        if (c.get(Calendar.YEAR) < 70)
-	        	c.add(Calendar.YEAR, 2000);
+			Calendar c = Calendar.getInstance();
+			c.setTime(dateTimeParser.parse(date + " " + time)); //$NON-NLS-1$
+			c.set(Calendar.SECOND, 0);
+			c.set(Calendar.MILLISECOND, 0);
+			c.setTimeZone(TimeZone.getDefault());
+			if (c.get(Calendar.YEAR) < 70)
+				c.add(Calendar.YEAR, 2000);
 
-	        return c.getTime();
-        } catch (ParseException e) {
+			return c.getTime();
+		} catch (ParseException e) {
 			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error parsing date/time values", e);
 			YahooActivator.log(status);
-        }
+		}
 
-        return null;
+		return null;
 	}
 
 	protected Double getDoubleValue(String value) {
 		try {
 			if (!value.equals("") && !value.equalsIgnoreCase("N/A")) //$NON-NLS-1$
 				return numberFormat.parse(value).doubleValue();
-        } catch (ParseException e) {
+		} catch (ParseException e) {
 			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error parsing number", e);
 			YahooActivator.log(status);
-        }
+		}
 		return null;
 	}
 
@@ -396,10 +403,10 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 		try {
 			if (!value.equals("") && !value.equalsIgnoreCase("N/A")) //$NON-NLS-1$
 				return numberFormat.parse(value).longValue();
-        } catch (ParseException e) {
+		} catch (ParseException e) {
 			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error parsing number", e);
 			YahooActivator.log(status);
-        }
+		}
 		return null;
 	}
 
@@ -411,50 +418,50 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 		return s;
 	}
 
-    protected boolean isSubscriptionsChanged() {
-    	return subscriptionsChanged;
-    }
+	protected boolean isSubscriptionsChanged() {
+		return subscriptionsChanged;
+	}
 
 	protected void setSubscriptionsChanged(boolean subscriptionsChanged) {
-    	this.subscriptionsChanged = subscriptionsChanged;
-    }
+		this.subscriptionsChanged = subscriptionsChanged;
+	}
 
 	Map<String, FeedSubscription> getSymbolSubscriptions() {
-    	return symbolSubscriptions;
-    }
+		return symbolSubscriptions;
+	}
 
 	/* (non-Javadoc)
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-     */
-    public void propertyChange(PropertyChangeEvent evt) {
-    	if (evt.getSource() instanceof IFeedIdentifier) {
-    		IFeedIdentifier identifier = (IFeedIdentifier) evt.getSource();
-			synchronized(symbolSubscriptions) {
+	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+	 */
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getSource() instanceof IFeedIdentifier) {
+			IFeedIdentifier identifier = (IFeedIdentifier) evt.getSource();
+			synchronized (symbolSubscriptions) {
 				for (FeedSubscription subscription : symbolSubscriptions.values()) {
 					if (subscription.getIdentifier() == identifier) {
 						symbolSubscriptions.remove(subscription.getIdentifierType().getSymbol());
-				    	IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
-				    	subscription.setIdentifierType(identifierType);
-			    		symbolSubscriptions.put(identifierType.getSymbol(), subscription);
-			    		setSubscriptionsChanged(true);
-			    		break;
+						IdentifierType identifierType = IdentifiersList.getInstance().getIdentifierFor(identifier);
+						subscription.setIdentifierType(identifierType);
+						symbolSubscriptions.put(identifierType.getSymbol(), subscription);
+						setSubscriptionsChanged(true);
+						break;
 					}
 				}
 			}
-    	}
-    }
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-     */
-    public void addConnectorListener(IConnectorListener listener) {
-    	listeners.add(listener);
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+	 */
+	public void addConnectorListener(IConnectorListener listener) {
+		listeners.add(listener);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-     */
-    public void removeConnectorListener(IConnectorListener listener) {
-    	listeners.remove(listener);
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+	 */
+	public void removeConnectorListener(IConnectorListener listener) {
+		listeners.remove(listener);
+	}
 }

@@ -35,6 +35,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -123,6 +125,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
 	private Thread thread;
 	private Thread notificationThread;
+	private Timer barTimer;
 	private boolean stopping = false;
 
 	private String streamingServer = "213.92.13.41";
@@ -357,6 +360,24 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 			thread = new Thread(this, name + " - Data Reader");
 			thread.start();
 		}
+		if (barTimer != null) {
+			barTimer = new Timer(name + " - Bar Timer", true);
+			barTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					FeedSubscription[] subscriptions;
+					synchronized (symbolSubscriptions) {
+						Collection<FeedSubscription> c = symbolSubscriptions.values();
+						subscriptions = c.toArray(new FeedSubscription[c.size()]);
+					}
+
+					for (int i = 0; i < subscriptions.length; i++)
+						subscriptions[i].forceBarClose();
+
+					wakeupNotifyThread();
+				}
+			}, 1000);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -364,6 +385,11 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 	 */
 	public synchronized void disconnect() {
 		stopping = true;
+
+		if (barTimer != null) {
+			barTimer.cancel();
+			barTimer = null;
+		}
 
 		if (thread != null) {
 			try {
@@ -451,7 +477,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 			is.read(msgResp);
 			if (Util.byteToInt(bHeaderLogin[1]) == CreaMsg.ERROR_MSG) {
 				ErrorMessage eMsg = new ErrorMessage(msgResp);
-				Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server: " + eMsg.sMessageError, null));
+				Activator.log(new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server: " +
+				                                                               eMsg.sMessageError, null));
 				return;
 			}
 			try {
@@ -517,12 +544,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 				else if (h.tipo == Message.TIP_ECHO) {
 					try {
 						os.write(new byte[] {
-						    bHeader[0],
-						    bHeader[1],
-						    bHeader[2],
-						    bHeader[3],
-						    mes[0],
-						    mes[1]
+						    bHeader[0], bHeader[1], bHeader[2], bHeader[3], mes[0], mes[1]
 						});
 						os.flush();
 					} catch (Exception e) {
@@ -670,27 +692,15 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 		if (obj instanceof Price) {
 			Price pm = (Price) obj;
 
-			Object oldValue = subscription.getQuote();
 			priceData.setLast(pm.val_ult);
 			priceData.setLastSize(pm.qta_ult);
 			priceData.setVolume(pm.qta_prgs);
 			priceData.setTime(new Date(pm.ora_ult));
-			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-			if (!newValue.equals(oldValue)) {
-				subscription.setTrade((ITrade) newValue);
-				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-				wakeupNotifyThread();
-			}
+			subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
 
-			oldValue = subscription.getTodayOHL();
 			priceData.setHigh(pm.max);
 			priceData.setLow(pm.min);
-			newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-			if (!newValue.equals(oldValue)) {
-				subscription.setTodayOHL((ITodayOHL) newValue);
-				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-				wakeupNotifyThread();
-			}
+			subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
 		}
 		else if (obj instanceof Book) {
 			Book bm = (Book) obj;
@@ -727,51 +737,34 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 			}
 			IBook newValue = new org.eclipsetrader.core.feed.Book(bidEntry, askEntry);
 			subscription.setBook(newValue);
-			subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-			wakeupNotifyThread();
 		}
 		else if (obj instanceof BidAsk) {
 			BidAsk bam = (BidAsk) obj;
 
-			Object oldValue = subscription.getQuote();
 			priceData.setBid(bam.bid);
 			priceData.setBidSize(bam.num_bid);
 			priceData.setAsk(bam.ask);
 			priceData.setAskSize(bam.num_ask);
-			Object newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
-			if (!newValue.equals(oldValue)) {
-				subscription.setQuote((IQuote) newValue);
-				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-				wakeupNotifyThread();
-			}
+			subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
 		}
 		else if (obj instanceof AstaApertura) {
 			AstaApertura ap = (AstaApertura) obj;
 
-			Object oldValue = subscription.getTrade();
 			priceData.setLast(ap.val_aper);
 			priceData.setVolume(ap.qta_aper);
 			priceData.setTime(new Date(ap.ora_aper));
-			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-			if (!newValue.equals(oldValue)) {
-				subscription.setTrade((ITrade) newValue);
-				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-				wakeupNotifyThread();
-			}
+			subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
 		}
 		else if (obj instanceof AstaChiusura) {
 			AstaChiusura ac = (AstaChiusura) obj;
 
-			Object oldValue = subscription.getTrade();
 			priceData.setLast(ac.val_chiu);
 			priceData.setTime(new Date(ac.ora_chiu));
-			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-			if (!newValue.equals(oldValue)) {
-				subscription.setTrade((ITrade) newValue);
-				subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
-				wakeupNotifyThread();
-			}
+			subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
 		}
+
+		if (subscription.hasPendingChanges())
+			wakeupNotifyThread();
 	}
 
 	protected IPreferenceStore getPreferenceStore() {
@@ -914,7 +907,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 					else
 						priceData.setTime(df.parse(sVal[DATA] + " " + sVal[ORA]));
 				} catch (Exception e) {
-					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal[DATA] + "', TIME='" + sVal[ORA] + "')", e);
+					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" +
+					                                                                 sVal[DATA] + "', TIME='" + sVal[ORA] + "')", e);
 					Activator.log(status);
 				}
 				Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());

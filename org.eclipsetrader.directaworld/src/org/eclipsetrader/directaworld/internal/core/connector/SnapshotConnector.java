@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -45,13 +47,8 @@ import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
-import org.eclipsetrader.core.feed.ILastClose;
-import org.eclipsetrader.core.feed.IQuote;
-import org.eclipsetrader.core.feed.ITodayOHL;
-import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.LastClose;
 import org.eclipsetrader.core.feed.Quote;
-import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.TodayOHL;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.directaworld.internal.Activator;
@@ -99,6 +96,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	private boolean connected;
 	private boolean stopping;
 	private int requiredDelay = 15;
+	private Timer barTimer;
 
 	public SnapshotConnector() {
 		symbolSubscriptions = new HashMap<String, FeedSubscription>();
@@ -189,10 +187,36 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			thread = new Thread(this, name + " - Data Reader");
 			thread.start();
 		}
+
+		if (barTimer != null) {
+			barTimer = new Timer(name + " - Bar Timer", true);
+			barTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					FeedSubscription[] subscriptions;
+					synchronized (symbolSubscriptions) {
+						Collection<FeedSubscription> c = symbolSubscriptions.values();
+						subscriptions = c.toArray(new FeedSubscription[c.size()]);
+					}
+
+					for (int i = 0; i < subscriptions.length; i++)
+						subscriptions[i].forceBarClose();
+
+					for (int i = 0; i < subscriptions.length; i++)
+						subscriptions[i].fireNotification();
+				}
+			}, 1000);
+		}
 	}
 
 	protected void stopThread() {
 		stopping = true;
+
+		if (barTimer != null) {
+			barTimer.cancel();
+			barTimer = null;
+		}
+
 		if (thread != null) {
 			try {
 				synchronized (thread) {
@@ -380,10 +404,10 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			IdentifierType identifierType = subscription.getIdentifierType();
 			PriceDataType priceData = identifierType.getPriceData();
 
-			Object oldValue = identifierType.getTrade();
 			try {
 				if (item[I_TIME].length() == 7)
-					item[I_TIME] = item[I_TIME].charAt(0) + ":" + item[I_TIME].charAt(1) + item[I_TIME].charAt(3) + ":" + item[5].charAt(4) + item[I_TIME].charAt(6); //$NON-NLS-1$ //$NON-NLS-2$
+					item[I_TIME] = item[I_TIME].charAt(0) +
+					               ":" + item[I_TIME].charAt(1) + item[I_TIME].charAt(3) + ":" + item[5].charAt(4) + item[I_TIME].charAt(6); //$NON-NLS-1$ //$NON-NLS-2$
 				if ("".equals(item[I_DATE]) || " ".equals(item[I_DATE]))
 					priceData.setTime(timeParser.parse(item[I_TIME]));
 				else
@@ -394,40 +418,21 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			}
 			priceData.setLast(numberFormat.parse(item[I_LAST]).doubleValue());
 			priceData.setVolume(numberFormat.parse(item[I_VOLUME]).longValue());
-			Object newValue = new Trade(priceData.getTime(), priceData.getLast(), null, priceData.getVolume());
-			if (!newValue.equals(oldValue)) {
-				subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-				identifierType.setTrade((ITrade) newValue);
-			}
+			subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), null, priceData.getVolume()));
 
-			oldValue = identifierType.getQuote();
 			priceData.setBid(numberFormat.parse(item[I_BID]).doubleValue());
 			priceData.setBidSize(numberFormat.parse(item[I_BID_SIZE]).longValue());
 			priceData.setAsk(numberFormat.parse(item[I_ASK]).doubleValue());
 			priceData.setAskSize(numberFormat.parse(item[I_ASK_SIZE]).longValue());
-			newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
-			if (!newValue.equals(oldValue)) {
-				subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-				identifierType.setQuote((IQuote) newValue);
-			}
+			subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
 
-			oldValue = identifierType.getTodayOHL();
 			priceData.setOpen(numberFormat.parse(item[I_OPEN]).doubleValue());
 			priceData.setHigh(numberFormat.parse(item[I_HIGH]).doubleValue());
 			priceData.setLow(numberFormat.parse(item[I_LOW]).doubleValue());
-			newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-			if (!newValue.equals(oldValue)) {
-				subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-				identifierType.setTodayOHL((ITodayOHL) newValue);
-			}
+			subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
 
-			oldValue = identifierType.getLastClose();
 			priceData.setClose(numberFormat.parse(item[I_CLOSE]).doubleValue());
-			newValue = new LastClose(priceData.getClose(), null);
-			if (!newValue.equals(oldValue)) {
-				subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-				identifierType.setLastClose((ILastClose) newValue);
-			}
+			subscription.setLastClose(new LastClose(priceData.getClose(), null));
 		}
 	}
 

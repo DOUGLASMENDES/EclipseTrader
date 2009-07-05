@@ -13,9 +13,13 @@ package org.eclipsetrader.directaworld.internal.core.connector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.BarGenerator;
+import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
 import org.eclipsetrader.core.feed.ILastClose;
@@ -25,6 +29,7 @@ import org.eclipsetrader.core.feed.ITodayOHL;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.QuoteEvent;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.directaworld.internal.Activator;
 import org.eclipsetrader.directaworld.internal.core.repository.IdentifierType;
 
@@ -35,6 +40,8 @@ public class FeedSubscription implements IFeedSubscription {
 	private IQuote quote;
 	private ITodayOHL todayOHL;
 	private ILastClose lastClose;
+	private IBar bar;
+	private BarGenerator barGenerator;
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 	private IdentifierType identifierType;
 	private List<QuoteDelta> deltaList = new ArrayList<QuoteDelta>();
@@ -43,36 +50,48 @@ public class FeedSubscription implements IFeedSubscription {
 	public FeedSubscription(SnapshotConnector connector, IdentifierType identifierType) {
 		this.connector = connector;
 		this.identifierType = identifierType;
-	    this.identifier = identifierType.getIdentifier();
-	    this.trade = identifierType.getTrade();
-	    this.quote = identifierType.getQuote();
-	    this.todayOHL = identifierType.getTodayOHL();
-	    this.lastClose = identifierType.getLastClose();
+		this.identifier = identifierType.getIdentifier();
+		this.trade = identifierType.getTrade();
+		this.quote = identifierType.getQuote();
+		this.todayOHL = identifierType.getTodayOHL();
+		this.lastClose = identifierType.getLastClose();
+
+		this.barGenerator = new BarGenerator(TimeSpan.minutes(1));
+		this.barGenerator.addObserver(new Observer() {
+			public void update(Observable o, Object arg) {
+				if (arg instanceof IBar) {
+					addDelta(new QuoteDelta(FeedSubscription.this.identifierType.getIdentifier(), bar, arg));
+					bar = (IBar) arg;
+				}
+				else
+					addDelta(new QuoteDelta(FeedSubscription.this.identifierType.getIdentifier(), null, arg));
+			}
+		});
 	}
 
 	public IdentifierType getIdentifierType() {
-    	return identifierType;
-    }
+		return identifierType;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedSubscription#dispose()
-     */
-    public void dispose() {
+	 * @see org.eclipsetrader.core.feed.IFeedSubscription#dispose()
+	 */
+	public void dispose() {
 		connector.disposeSubscription(this);
-    }
+	}
 
-    protected void incrementInstanceCount() {
-    	instanceCount++;
-    }
+	protected void incrementInstanceCount() {
+		instanceCount++;
+	}
 
-    protected int decrementInstanceCount() {
-    	instanceCount--;
-    	return instanceCount;
-    }
+	protected int decrementInstanceCount() {
+		instanceCount--;
+		return instanceCount;
+	}
 
 	protected int getInstanceCount() {
-    	return instanceCount;
-    }
+		return instanceCount;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#addSubscriptionListener(org.eclipsetrader.core.feed.ISubscriptionListener)
@@ -96,11 +115,11 @@ public class FeedSubscription implements IFeedSubscription {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedSubscription#getSymbol()
-     */
-    public String getSymbol() {
-	    return identifierType.getSymbol();
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getSymbol()
+	 */
+	public String getSymbol() {
+		return identifierType.getSymbol();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getQuote()
@@ -110,8 +129,12 @@ public class FeedSubscription implements IFeedSubscription {
 	}
 
 	public void setQuote(IQuote quote) {
-    	this.quote = quote;
-    }
+		if (!quote.equals(this.quote)) {
+			addDelta(new QuoteDelta(identifierType.getIdentifier(), this.quote, quote));
+			this.quote = quote;
+			this.identifierType.setQuote(quote);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getTodayOHL()
@@ -121,8 +144,12 @@ public class FeedSubscription implements IFeedSubscription {
 	}
 
 	public void setTodayOHL(ITodayOHL todayOHL) {
-    	this.todayOHL = todayOHL;
-    }
+		if (!todayOHL.equals(this.todayOHL)) {
+			addDelta(new QuoteDelta(identifierType.getIdentifier(), this.todayOHL, todayOHL));
+			this.todayOHL = todayOHL;
+			this.identifierType.setTodayOHL(todayOHL);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getTrade()
@@ -132,50 +159,65 @@ public class FeedSubscription implements IFeedSubscription {
 	}
 
 	public void setTrade(ITrade trade) {
-    	this.trade = trade;
-    }
+		if (!trade.equals(this.trade)) {
+			addDelta(new QuoteDelta(identifierType.getIdentifier(), this.trade, trade));
+			this.trade = trade;
+			this.identifierType.setTrade(trade);
+		}
+
+		barGenerator.addTrade(trade);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IFeedSubscription#getLastClose()
-     */
-    public ILastClose getLastClose() {
-	    return lastClose;
-    }
+	 * @see org.eclipsetrader.core.feed.IFeedSubscription#getLastClose()
+	 */
+	public ILastClose getLastClose() {
+		return lastClose;
+	}
 
 	public void setLastClose(ILastClose lastClose) {
-    	this.lastClose = lastClose;
-    }
+		if (!lastClose.equals(this.lastClose)) {
+			addDelta(new QuoteDelta(identifierType.getIdentifier(), this.lastClose, lastClose));
+			this.lastClose = lastClose;
+			this.identifierType.setLastClose(lastClose);
+		}
+	}
 
 	public void addDelta(QuoteDelta delta) {
-    	synchronized(deltaList) {
-        	deltaList.add(delta);
-    	}
-    }
+		synchronized (deltaList) {
+			deltaList.add(delta);
+		}
+	}
 
 	public boolean hasListeners() {
 		return listeners.size() != 0;
 	}
 
-    public void fireNotification() {
-    	QuoteDelta[] deltas;
-    	synchronized(deltaList) {
-        	if (deltaList.isEmpty())
-        		return;
-        	deltas = deltaList.toArray(new QuoteDelta[deltaList.size()]);
-        	deltaList.clear();
-    	}
-    	QuoteEvent event = new QuoteEvent(connector, getIdentifier(), deltas);
-    	Object[] l = listeners.getListeners();
-    	for (int i = 0; i < l.length; i++) {
-    		try {
-        		((ISubscriptionListener) l[i]).quoteUpdate(event);
-    		} catch(Exception e) {
+	public void fireNotification() {
+		QuoteDelta[] deltas;
+		synchronized (deltaList) {
+			if (deltaList.isEmpty())
+				return;
+			deltas = deltaList.toArray(new QuoteDelta[deltaList.size()]);
+			deltaList.clear();
+		}
+		QuoteEvent event = new QuoteEvent(connector, getIdentifier(), deltas);
+		Object[] l = listeners.getListeners();
+		for (int i = 0; i < l.length; i++) {
+			try {
+				((ISubscriptionListener) l[i]).quoteUpdate(event);
+			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error notifying a quote update", e);
 				Activator.log(status);
-    		} catch (LinkageError e) {
+			} catch (LinkageError e) {
 				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error notifying a quote update", e);
 				Activator.log(status);
-    		}
-    	}
-    }
+			}
+		}
+	}
+
+	public void forceBarClose() {
+		if (barGenerator.isBarExpired())
+			barGenerator.forceBarClose();
+	}
 }

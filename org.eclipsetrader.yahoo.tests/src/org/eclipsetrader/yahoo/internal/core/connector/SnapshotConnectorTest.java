@@ -19,25 +19,25 @@ import org.eclipsetrader.yahoo.internal.core.repository.IdentifierType;
 import org.eclipsetrader.yahoo.internal.core.repository.IdentifiersList;
 
 public class SnapshotConnectorTest extends TestCase {
+	SnapshotConnector connector;
 
 	/* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-    	new IdentifiersList();
-    }
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception {
+		new IdentifiersList();
+		connector = new SnapshotConnector();
+	}
 
 	public void testSubscribeWithoutProperties() throws Exception {
-		SnapshotConnector connector = new SnapshotConnector();
 		FeedSubscription subscription = (FeedSubscription) connector.subscribe(new FeedIdentifier("ID", null));
 		assertSame(subscription, connector.symbolSubscriptions.get("ID"));
 		assertTrue(connector.isSubscriptionsChanged());
 		assertEquals(1, subscription.getInstanceCount());
-    }
+	}
 
 	public void testSubscribeWithProperties() throws Exception {
-		SnapshotConnector connector = new SnapshotConnector();
 		FeedIdentifier identifier = new FeedIdentifier("ID", new FeedProperties());
 		identifier.getProperties().setProperty("org.eclipsetrader.yahoo.symbol", "Y-ID");
 		FeedSubscription subscription = (FeedSubscription) connector.subscribe(identifier);
@@ -45,27 +45,24 @@ public class SnapshotConnectorTest extends TestCase {
 		assertSame(subscription, connector.symbolSubscriptions.get("Y-ID"));
 		assertTrue(connector.isSubscriptionsChanged());
 		assertEquals(1, subscription.getInstanceCount());
-    }
+	}
 
 	public void testDisposeSubcription() throws Exception {
-		SnapshotConnector connector = new SnapshotConnector();
 		FeedSubscription subscription = new FeedSubscription(connector, new IdentifierType("ID"));
 		connector.symbolSubscriptions.put("ID", subscription);
 		connector.disposeSubscription(subscription);
 		assertNull(connector.symbolSubscriptions.get("ID"));
 		assertTrue(connector.isSubscriptionsChanged());
-    }
+	}
 
 	public void testUseSingleInstanceWithMultipleSubscriptions() throws Exception {
-		SnapshotConnector connector = new SnapshotConnector();
 		FeedSubscription subscription1 = (FeedSubscription) connector.subscribe(new FeedIdentifier("ID", null));
 		FeedSubscription subscription2 = (FeedSubscription) connector.subscribe(new FeedIdentifier("ID", null));
 		assertSame(subscription1, subscription2);
 		assertEquals(2, subscription1.getInstanceCount());
-    }
+	}
 
 	public void testDisposeSubcriptionOnLastInstance() throws Exception {
-		SnapshotConnector connector = new SnapshotConnector();
 		FeedSubscription subscription = new FeedSubscription(connector, new IdentifierType("ID"));
 		subscription.incrementInstanceCount();
 		subscription.incrementInstanceCount();
@@ -76,10 +73,9 @@ public class SnapshotConnectorTest extends TestCase {
 		connector.disposeSubscription(subscription);
 		assertNull(connector.symbolSubscriptions.get("ID"));
 		assertTrue(connector.isSubscriptionsChanged());
-    }
+	}
 
 	public void testUpdateStreamWhenIdentifierChanges() throws Exception {
-		SnapshotConnector connector = new SnapshotConnector();
 		FeedIdentifier identifier = new FeedIdentifier("ID", null);
 		connector.subscribe(identifier);
 		connector.setSubscriptionsChanged(false);
@@ -87,10 +83,9 @@ public class SnapshotConnectorTest extends TestCase {
 		assertTrue(connector.isSubscriptionsChanged());
 		assertNull(connector.symbolSubscriptions.get("ID"));
 		assertNotNull(connector.symbolSubscriptions.get("NEWID"));
-    }
+	}
 
 	public void testUpdateStreamWhenIdentifierPropertyChanges() throws Exception {
-		SnapshotConnector connector = new SnapshotConnector();
 		FeedIdentifier identifier = new FeedIdentifier("ID", new FeedProperties());
 		identifier.getProperties().setProperty("org.eclipsetrader.yahoo.symbol", "Y-ID");
 		connector.subscribe(identifier);
@@ -100,5 +95,5 @@ public class SnapshotConnectorTest extends TestCase {
 		assertNull(connector.symbolSubscriptions.get("ID"));
 		assertNull(connector.symbolSubscriptions.get("Y-ID"));
 		assertNotNull(connector.symbolSubscriptions.get("Y-NEWID"));
-    }
+	}
 }
