@@ -360,9 +360,10 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 			thread = new Thread(this, name + " - Data Reader");
 			thread.start();
 		}
-		if (barTimer != null) {
+
+		if (barTimer == null) {
 			barTimer = new Timer(name + " - Bar Timer", true);
-			barTimer.schedule(new TimerTask() {
+			barTimer.scheduleAtFixedRate(new TimerTask() {
 				@Override
 				public void run() {
 					FeedSubscription[] subscriptions;
@@ -376,7 +377,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
 					wakeupNotifyThread();
 				}
-			}, 1000);
+			}, 1000, 1000);
 		}
 	}
 

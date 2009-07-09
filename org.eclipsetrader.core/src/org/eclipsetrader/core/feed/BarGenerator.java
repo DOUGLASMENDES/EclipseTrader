@@ -31,6 +31,7 @@ public class BarGenerator extends Observable {
 	Long volume;
 
 	Date dateClose;
+	private Calendar calendar = Calendar.getInstance();
 
 	/**
 	 * Constructs a new instance of the generator using the given time span to aggregate trades.
@@ -49,13 +50,12 @@ public class BarGenerator extends Observable {
 	 * @param trade the trade to add.
 	 */
 	public void addTrade(ITrade trade) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(trade.getTime());
-		c.set(Calendar.SECOND, 0);
-		c.set(Calendar.MILLISECOND, 0);
+		calendar.setTime(trade.getTime());
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 
 		if (dateOpen != null && dateClose != null) {
-			Date time = c.getTime();
+			Date time = calendar.getTime();
 
 			if (!time.before(dateOpen) && time.before(dateClose)) {
 				if (high == null || trade.getPrice() > high)
@@ -76,11 +76,11 @@ public class BarGenerator extends Observable {
 		}
 
 		if (dateOpen == null) {
-			int round = c.get(Calendar.MINUTE) % timeSpan.getLength();
-			c.add(Calendar.MINUTE, -round);
-			dateOpen = c.getTime();
-			c.add(Calendar.MINUTE, timeSpan.getLength());
-			dateClose = c.getTime();
+			int round = calendar.get(Calendar.MINUTE) % timeSpan.getLength();
+			calendar.add(Calendar.MINUTE, -round);
+			dateOpen = calendar.getTime();
+			calendar.add(Calendar.MINUTE, timeSpan.getLength());
+			dateClose = calendar.getTime();
 
 			open = trade.getPrice();
 			high = trade.getPrice();

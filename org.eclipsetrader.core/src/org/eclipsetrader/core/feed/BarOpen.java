@@ -81,6 +81,6 @@ public class BarOpen implements IBarOpen, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "[" + date + "TS=" + timeSpan.toString() + " O=" + open + "]";
+		return "[BarOpen: " + date + " TS=" + timeSpan.toString() + " O=" + open + "]";
 	}
 }

@@ -183,9 +183,9 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			thread.start();
 		}
 
-		if (barTimer != null) {
+		if (barTimer == null) {
 			barTimer = new Timer(name + " - Bar Timer", true);
-			barTimer.schedule(new TimerTask() {
+			barTimer.scheduleAtFixedRate(new TimerTask() {
 				@Override
 				public void run() {
 					FeedSubscription[] subscriptions;
@@ -200,7 +200,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 					for (int i = 0; i < subscriptions.length; i++)
 						subscriptions[i].fireNotification();
 				}
-			}, 1000);
+			}, 1000, 1000);
 		}
 	}
 

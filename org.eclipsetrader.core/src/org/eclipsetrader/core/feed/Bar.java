@@ -112,10 +112,10 @@ public class Bar implements IBar, Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return (3 * (date != null ? date.hashCode() : 0)) +
-		       (7 * (timeSpan != null ? timeSpan.hashCode() : 0)) + (11 * (open != null ? open.hashCode() : 0)) +
-		       (13 * (high != null ? high.hashCode() : 0)) + (17 * (low != null ? low.hashCode() : 0)) +
-		       (19 * (close != null ? close.hashCode() : 0)) + (23 * (volume != null ? volume.hashCode() : 0));
+		return (3 * (date != null ? date.hashCode() : 0)) + (7 * (timeSpan != null ? timeSpan.hashCode() : 0)) +
+		       (11 * (open != null ? open.hashCode() : 0)) + (13 * (high != null ? high.hashCode() : 0)) +
+		       (17 * (low != null ? low.hashCode() : 0)) + (19 * (close != null ? close.hashCode() : 0)) +
+		       (23 * (volume != null ? volume.hashCode() : 0));
 	}
 
 	/* (non-Javadoc)
@@ -123,8 +123,7 @@ public class Bar implements IBar, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "[" +
-		       date + "TS=" + timeSpan.toString() + " O=" + open + " H=" + high + " L=" + low + " C=" + close + " V=" + volume +
-		       "]";
+		return "[Bar: " + date + " TS=" + timeSpan.toString() + " O=" + open + " H=" + high + " L=" + low + " C=" + close + " V=" +
+		       volume + "]";
 	}
 }
