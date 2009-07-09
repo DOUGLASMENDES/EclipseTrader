@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,6 +42,7 @@ public class HistoryDay implements IHistory {
 	private IOHLC highest;
 	private IOHLC lowest;
 
+	private Map<Date, StoreObject> storeObjects = new TreeMap<Date, StoreObject>();
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	private class StoreObject implements IStoreObject {
@@ -49,66 +50,64 @@ public class HistoryDay implements IHistory {
 		private IStoreProperties storeProperties;
 
 		public StoreObject(IStore store, IStoreProperties storeProperties) {
-	        this.store = store;
-	        this.storeProperties = storeProperties;
-        }
+			this.store = store;
+			this.storeProperties = storeProperties;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
-         */
-        public IStore getStore() {
-	        return store;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
+		 */
+		public IStore getStore() {
+			return store;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
-         */
-        public IStoreProperties getStoreProperties() {
-	        return storeProperties;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
+		 */
+		public IStoreProperties getStoreProperties() {
+			return storeProperties;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
-         */
-        public void setStore(IStore store) {
-        	this.store = store;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
+		 */
+		public void setStore(IStore store) {
+			this.store = store;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
-         */
-        public void setStoreProperties(IStoreProperties storeProperties) {
-        	this.storeProperties = storeProperties;
-        }
+		 * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
+		 */
+		public void setStoreProperties(IStoreProperties storeProperties) {
+			this.storeProperties = storeProperties;
+		}
 	}
-
-	private Map<Date, StoreObject> storeObjects = new TreeMap<Date, StoreObject>();
 
 	protected HistoryDay() {
 	}
 
 	public HistoryDay(ISecurity security, TimeSpan timeSpan) {
 		this.security = security;
-	    this.timeSpan = timeSpan;
+		this.timeSpan = timeSpan;
 	}
 
 	public HistoryDay(ISecurity security, TimeSpan timeSpan, IStore[] store, IStoreProperties[] storeProperties) {
 		this.security = security;
-	    this.timeSpan = timeSpan;
-	    setStoreProperties(store, storeProperties);
-    }
+		this.timeSpan = timeSpan;
+		setStoreProperties(store, storeProperties);
+	}
 
 	public HistoryDay(ISecurity security, TimeSpan timeSpan, IOHLC[] bars) {
 		this.security = security;
-	    this.timeSpan = timeSpan;
-	    this.bars = bars;
-    }
+		this.timeSpan = timeSpan;
+		this.bars = bars;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IHistory#getAdjustedOHLC()
 	 */
 	public IOHLC[] getAdjustedOHLC() {
-	    return bars;
+		return bars;
 	}
 
 	/* (non-Javadoc)
@@ -151,17 +150,17 @@ public class HistoryDay implements IHistory {
 
 		List<IOHLC> l = new ArrayList<IOHLC>(Arrays.asList(bars));
 		Collections.sort(l, new Comparator<IOHLC>() {
-            public int compare(IOHLC o1, IOHLC o2) {
-	            return o1.getDate().compareTo(o2.getDate());
-            }
+			public int compare(IOHLC o1, IOHLC o2) {
+				return o1.getDate().compareTo(o2.getDate());
+			}
 		});
 		this.bars = l.toArray(new IOHLC[l.size()]);
 
 		updateStoreObjects();
-	    updateRange();
+		updateRange();
 
 		propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
-    }
+	}
 
 	protected IStoreObject[] updateStoreObjects() {
 		Set<StoreObject> updatedStoreObjects = new HashSet<StoreObject>();
@@ -245,19 +244,19 @@ public class HistoryDay implements IHistory {
 	}
 
 	protected void setSecurity(ISecurity security) {
-    	this.security = security;
-    }
+		this.security = security;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IHistory#getSplits()
 	 */
 	public ISplit[] getSplits() {
-	    return null;
+		return null;
 	}
 
 	public void setSplits(ISplit[] splits) {
 		// Do nothing
-    }
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.feed.IHistory#getSubset(java.util.Date, java.util.Date)
@@ -275,8 +274,8 @@ public class HistoryDay implements IHistory {
 	 * @see org.eclipsetrader.core.feed.IHistory#getSubset(java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
 	 */
 	public IHistory getSubset(Date first, Date last, TimeSpan aggregation) {
-    	if (this.timeSpan != null && this.timeSpan.equals(aggregation))
-    		return getSubset(first, last);
+		if (this.timeSpan != null && this.timeSpan.equals(aggregation))
+			return getSubset(first, last);
 		return null;
 	}
 
@@ -284,26 +283,26 @@ public class HistoryDay implements IHistory {
 	 * @see org.eclipsetrader.core.feed.IHistory#getTimeSpan()
 	 */
 	public TimeSpan getTimeSpan() {
-	    return timeSpan;
+		return timeSpan;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		if (adapter.isAssignableFrom(getClass()))
 			return this;
 
-    	if (adapter.isAssignableFrom(PropertyChangeSupport.class))
-    		return propertyChangeSupport;
+		if (adapter.isAssignableFrom(PropertyChangeSupport.class))
+			return propertyChangeSupport;
 
-    	if (adapter.isAssignableFrom(IStoreObject[].class)) {
-    		Collection<StoreObject> c = storeObjects.values();
-    		return c.toArray(new IStoreObject[c.size()]);
-    	}
+		if (adapter.isAssignableFrom(IStoreObject[].class)) {
+			Collection<StoreObject> c = storeObjects.values();
+			return c.toArray(new IStoreObject[c.size()]);
+		}
 
-    	return null;
+		return null;
 	}
 
 	public void setStoreProperties(IStore[] store, IStoreProperties[] storeProperties) {
@@ -312,25 +311,25 @@ public class HistoryDay implements IHistory {
 		storeObjects.clear();
 
 		if (storeProperties.length != 0)
-	    	this.security = (ISecurity) storeProperties[0].getProperty(IPropertyConstants.SECURITY);
+			this.security = (ISecurity) storeProperties[0].getProperty(IPropertyConstants.SECURITY);
 
 		Object oldValue = this.bars;
 
-	    List<IOHLC> l1 = new ArrayList<IOHLC>(2048);
+		List<IOHLC> l1 = new ArrayList<IOHLC>(2048);
 
 		for (int i = 0; i < store.length; i++) {
 			StoreObject object = new StoreObject(store[i], storeProperties[i]);
 			Date date = (Date) storeProperties[i].getProperty(IPropertyConstants.BARS_DATE);
 			storeObjects.put(date, object);
 
-		    IOHLC[] bars = (IOHLC[]) storeProperties[i].getProperty(timeSpan.toString());
-		    if (bars == null) {
-		    	IOHLC[] minuteBars = (IOHLC[]) storeProperties[i].getProperty(TimeSpan.minutes(1).toString());
-		    	if (minuteBars != null) {
+			IOHLC[] bars = (IOHLC[]) storeProperties[i].getProperty(timeSpan.toString());
+			if (bars == null) {
+				IOHLC[] minuteBars = (IOHLC[]) storeProperties[i].getProperty(TimeSpan.minutes(1).toString());
+				if (minuteBars != null) {
 					Date startDate = null, endDate = null;
 					Double open = null, high = null, low = null, close = null;
 					Long volume = 0L;
-			    	Calendar c = Calendar.getInstance();
+					Calendar c = Calendar.getInstance();
 
 					List<IOHLC> l = new ArrayList<IOHLC>();
 					for (IOHLC currentBar : minuteBars) {
@@ -340,10 +339,10 @@ public class HistoryDay implements IHistory {
 						}
 
 						if (startDate == null) {
-				    		c.setTime(currentBar.getDate());
-				    		startDate = c.getTime();
-				    		c.add(Calendar.MINUTE, timeSpan.getLength());
-				    		endDate = c.getTime();
+							c.setTime(currentBar.getDate());
+							startDate = c.getTime();
+							c.add(Calendar.MINUTE, timeSpan.getLength());
+							endDate = c.getTime();
 							open = high = low = close = null;
 							volume = 0L;
 						}
@@ -360,25 +359,25 @@ public class HistoryDay implements IHistory {
 						l.add(new OHLC(startDate, open, high, low, close, volume));
 
 					bars = l.toArray(new IOHLC[l.size()]);
-		    	}
-		    }
+				}
+			}
 			if (bars != null)
 				l1.addAll(Arrays.asList(bars));
 		}
 
-	    Collections.sort(l1, new Comparator<IOHLC>() {
-            public int compare(IOHLC o1, IOHLC o2) {
-	            return o1.getDate().compareTo(o2.getDate());
-            }
+		Collections.sort(l1, new Comparator<IOHLC>() {
+			public int compare(IOHLC o1, IOHLC o2) {
+				return o1.getDate().compareTo(o2.getDate());
+			}
 		});
 		this.bars = l1.toArray(new IOHLC[l1.size()]);
 
-	    updateRange();
+		updateRange();
 
-	    propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
-    }
+		propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
+	}
 
-    protected void updateRange() {
+	protected void updateRange() {
 		highest = null;
 		lowest = null;
 		for (IOHLC b : bars) {
@@ -387,5 +386,5 @@ public class HistoryDay implements IHistory {
 			if (lowest == null || b.getLow() < lowest.getLow())
 				lowest = b;
 		}
-    }
+	}
 }

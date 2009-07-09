@@ -90,19 +90,19 @@ public class RepositoryService implements IRepositoryService {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.IRepositoryService#getRepositories()
-     */
-    public IRepository[] getRepositories() {
+	 * @see org.eclipsetrader.core.IRepositoryService#getRepositories()
+	 */
+	public IRepository[] getRepositories() {
 		Collection<IRepository> c = repositoryMap.values();
 		return c.toArray(new IRepository[c.size()]);
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.IRepositoryService#getRepository(java.lang.String)
-     */
-    public IRepository getRepository(String scheme) {
-	    return repositoryMap.get(scheme);
-    }
+	 * @see org.eclipsetrader.core.IRepositoryService#getRepository(java.lang.String)
+	 */
+	public IRepository getRepository(String scheme) {
+		return repositoryMap.get(scheme);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.IRepositoryService#getSecurities()
@@ -143,54 +143,54 @@ public class RepositoryService implements IRepositoryService {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#getHistoryFor(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public IHistory getHistoryFor(ISecurity security) {
-    	WeakReference<IHistory> reference = historyMap.get(security);
-    	IHistory history = reference != null ? reference.get() : null;
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#getHistoryFor(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public IHistory getHistoryFor(ISecurity security) {
+		WeakReference<IHistory> reference = historyMap.get(security);
+		IHistory history = reference != null ? reference.get() : null;
 
-    	if (history == null) {
-        	IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
-        	if (storeObject != null && storeObject.getStore() != null) {
-        		IStore[] stores = storeObject.getStore().fetchChilds(null);
-        		for (int i = 0; i < stores.length; i++) {
-        			IStoreObject object = createElement(stores[i], stores[i].fetchProperties(null));
-        			if (object instanceof IHistory) {
-        				history = (IHistory) object;
-        	    		historyMap.put(security, new WeakReference<IHistory>(history));
-        				break;
-        			}
-        		}
-        	}
-    	}
+		if (history == null) {
+			IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
+			if (storeObject != null && storeObject.getStore() != null) {
+				IStore[] stores = storeObject.getStore().fetchChilds(null);
+				for (int i = 0; i < stores.length; i++) {
+					IStoreObject object = createElement(stores[i], stores[i].fetchProperties(null));
+					if (object instanceof IHistory) {
+						history = (IHistory) object;
+						historyMap.put(security, new WeakReference<IHistory>(history));
+						break;
+					}
+				}
+			}
+		}
 
-    	if (history == null) {
-    		history = new History(security, new IOHLC[0]);
-    		historyMap.put(security, new WeakReference<IHistory>(history));
-    	}
+		if (history == null) {
+			history = new History(security, new IOHLC[0]);
+			historyMap.put(security, new WeakReference<IHistory>(history));
+		}
 
-    	return history;
-    }
+		return history;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#getWatchLists()
-     */
-    public IWatchList[] getWatchLists() {
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#getWatchLists()
+	 */
+	public IWatchList[] getWatchLists() {
 		Collection<IWatchList> c = watchlistUriMap.values();
 		return c.toArray(new IWatchList[c.size()]);
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#getWatchListFromName(java.lang.String)
-     */
-    public IWatchList getWatchListFromName(String name) {
-	    return watchlistNameMap.get(name);
-    }
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#getWatchListFromName(java.lang.String)
+	 */
+	public IWatchList getWatchListFromName(String name) {
+		return watchlistNameMap.get(name);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#getWatchListFromURI(java.net.URI)
-     */
-    public IWatchList getWatchListFromURI(URI uri) {
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#getWatchListFromURI(java.net.URI)
+	 */
+	public IWatchList getWatchListFromURI(URI uri) {
 		if (watchlistUriMap.containsKey(uri))
 			return watchlistUriMap.get(uri);
 
@@ -208,421 +208,417 @@ public class RepositoryService implements IRepositoryService {
 		}
 
 		return null;
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#getTrades()
-     */
-    public IHolding[] getTrades() {
-	    return trades.toArray(new IHolding[trades.size()]);
-    }
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#deleteAdaptable(org.eclipse.core.runtime.IAdaptable[])
-     */
-    public void deleteAdaptable(IAdaptable[] adaptables) {
-    	Map<IRepository,Set<IAdaptable>> repositories = new HashMap<IRepository,Set<IAdaptable>>();
-    	Map<IRepository,Set<ISchedulingRule>> rules = new HashMap<IRepository,Set<ISchedulingRule>>();
-
-    	// Computes the rules needed to access all repositories
-    	for (IAdaptable adaptable : adaptables) {
-    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
-    		if (storeObjects == null) {
-        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-        		if (object == null)
-        			continue;
-        		storeObjects = new IStoreObject[] { object };
-    		}
-
-    		for (IStoreObject object : storeObjects) {
-        		IStore store = object.getStore();
-        		if (store != null) {
-        			IRepository repository = store.getRepository();
-
-        			Set<IAdaptable> objectSet = repositories.get(repository);
-        			if (objectSet == null) {
-        				objectSet = new HashSet<IAdaptable>();
-        				repositories.put(repository, objectSet);
-        			}
-        			objectSet.add(adaptable);
-
-        			Set<ISchedulingRule> ruleSet = rules.get(repository);
-        			if (ruleSet == null) {
-        				ruleSet = new HashSet<ISchedulingRule>();
-        				rules.put(repository, ruleSet);
-        			}
-        			if (repository instanceof ISchedulingRule)
-               			ruleSet.add((ISchedulingRule) repository);
-        		}
-    		}
-    	}
-
-    	final Set<IAdaptable> saveCascade = new HashSet<IAdaptable>();
-
-    	for (IRepository repository : repositories.keySet()) {
-    		final Set<IAdaptable> set = repositories.get(repository);
-
-			Set<ISchedulingRule> ruleSet = rules.get(repository);
-        	MultiRule rule = new MultiRule(ruleSet.toArray(new ISchedulingRule[ruleSet.size()]));
-
-    		IStatus status = repository.runInRepository(new IRepositoryRunnable() {
-                public IStatus run(IProgressMonitor monitor) throws Exception {
-                	try {
-                		for (IAdaptable adaptable : set) {
-                			if (monitor != null && monitor.isCanceled())
-                				return Status.CANCEL_STATUS;
-
-                    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
-                    		if (storeObjects == null) {
-                        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-                        		if (object == null)
-                        			continue;
-                        		storeObjects = new IStoreObject[] { object };
-                    		}
-
-                    		for (IStoreObject object : storeObjects) {
-                    			IStore store = object.getStore();
-                    			if (store != null) {
-                    				store.delete(monitor);
-                    				object.setStore(null);
-
-                            		if (adaptable instanceof ISecurity) {
-                        	        	uriMap.remove(store.toURI());
-                        	        	nameMap.remove(((ISecurity) adaptable).getName());
-                        	        	Set<IAdaptable> containers = removeSecurityFromContainers((ISecurity) adaptable);
-                        	        	saveCascade.addAll(containers);
-                        	        	historyMap.remove(adaptable);
-                        	        }
-                            		if (adaptable instanceof IWatchList) {
-                        	        	watchlistUriMap.remove(store.toURI());
-                        	        	watchlistNameMap.remove(((IWatchList) adaptable).getName());
-                        	        }
-                        			if (adaptable instanceof IHolding)
-                        				trades.remove(adaptable);
-
-                        			if (deltas != null) {
-                            	        int kind = RepositoryResourceDelta.MOVED_FROM | RepositoryResourceDelta.REMOVED;
-                            	        deltas.add(new RepositoryResourceDelta(
-                            	        		kind,
-                            	        		adaptable,
-                            	        		store.getRepository(),
-                            	        		null,
-                            	        		null,
-                            	        		null));
-                        			}
-                    			}
-                    		}
-                		}
-                    } catch (Exception e) {
-            			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error deleting object", e); //$NON-NLS-1$
-            			CoreActivator.getDefault().getLog().log(status);
-            			return status;
-                    } catch (LinkageError e) {
-            			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error deleting object", e); //$NON-NLS-1$
-            			CoreActivator.getDefault().getLog().log(status);
-            			return status;
-                    }
-    	            return Status.OK_STATUS;
-                }
-        	}, rule, null);
-    		if (status == Status.CANCEL_STATUS)
-    			break;
-		}
-
-    	if (saveCascade.size() != 0)
-    		saveAdaptable(saveCascade.toArray(new IAdaptable[saveCascade.size()]));
 	}
 
-    protected Set<IAdaptable> removeSecurityFromContainers(ISecurity security) {
-    	Set<IAdaptable> saveCascade = new HashSet<IAdaptable>();
-
-    	for (IWatchList list : watchlistUriMap.values()) {
-    		if (!(list instanceof WatchList))
-    			continue;
-    		IWatchListElement[] elements = list.getItem(security);
-    		if (elements != null && elements.length != 0) {
-        		List<IWatchListElement> allElements = new ArrayList<IWatchListElement>();
-        		allElements.addAll(Arrays.asList(list.getItems()));
-        		allElements.removeAll(Arrays.asList(elements));
-        		((WatchList) list).setItems(allElements.toArray(new IWatchListElement[allElements.size()]));
-   				saveCascade.add(list);
-    		}
-    	}
-
-    	return saveCascade;
-    }
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#getTrades()
+	 */
+	public IHolding[] getTrades() {
+		return trades.toArray(new IHolding[trades.size()]);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[])
-     */
-    public void saveAdaptable(IAdaptable[] adaptables) {
-    	saveAdaptable(adaptables, getRepository("local"));
-    }
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#deleteAdaptable(org.eclipse.core.runtime.IAdaptable[])
+	 */
+	public void deleteAdaptable(IAdaptable[] adaptables) {
+		Map<IRepository, Set<IAdaptable>> repositories = new HashMap<IRepository, Set<IAdaptable>>();
+		Map<IRepository, Set<ISchedulingRule>> rules = new HashMap<IRepository, Set<ISchedulingRule>>();
 
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[], org.eclipsetrader.core.repositories.IRepository)
-     */
-    public void saveAdaptable(IAdaptable[] adaptables, IRepository defaultRepository) {
-    	Map<IRepository,Set<IAdaptable>> repositories = new HashMap<IRepository,Set<IAdaptable>>();
-    	Map<IRepository,Set<ISchedulingRule>> rules = new HashMap<IRepository,Set<ISchedulingRule>>();
+		// Computes the rules needed to access all repositories
+		for (IAdaptable adaptable : adaptables) {
+			IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+			if (storeObjects == null) {
+				IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+				if (object == null)
+					continue;
+				storeObjects = new IStoreObject[] {
+					object
+				};
+			}
 
-    	// Computes the rules needed to access all repositories
-    	for (IAdaptable adaptable : adaptables) {
-    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
-    		if (storeObjects == null) {
-        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-        		if (object == null)
-        			continue;
-        		storeObjects = new IStoreObject[] { object };
-    		}
+			for (IStoreObject object : storeObjects) {
+				IStore store = object.getStore();
+				if (store != null) {
+					IRepository repository = store.getRepository();
 
-    		for (IStoreObject object : storeObjects) {
-        		IRepository repository = defaultRepository;
-        		IStore store = object.getStore();
-        		if (store != null && store.getRepository() != null)
-        			repository = store.getRepository();
+					Set<IAdaptable> objectSet = repositories.get(repository);
+					if (objectSet == null) {
+						objectSet = new HashSet<IAdaptable>();
+						repositories.put(repository, objectSet);
+					}
+					objectSet.add(adaptable);
 
-    			Set<IAdaptable> objectSet = repositories.get(repository);
-    			if (objectSet == null) {
-    				objectSet = new HashSet<IAdaptable>();
-    				repositories.put(repository, objectSet);
-    			}
-    			objectSet.add(adaptable);
+					Set<ISchedulingRule> ruleSet = rules.get(repository);
+					if (ruleSet == null) {
+						ruleSet = new HashSet<ISchedulingRule>();
+						rules.put(repository, ruleSet);
+					}
+					if (repository instanceof ISchedulingRule)
+						ruleSet.add((ISchedulingRule) repository);
+				}
+			}
+		}
 
-    			Set<ISchedulingRule> ruleSet = rules.get(repository);
-    			if (ruleSet == null) {
-    				ruleSet = new HashSet<ISchedulingRule>();
-    				rules.put(repository, ruleSet);
-    			}
-    			if (repository instanceof ISchedulingRule)
-           			ruleSet.add((ISchedulingRule) repository);
-    		}
-    	}
+		final Set<IAdaptable> saveCascade = new HashSet<IAdaptable>();
 
-    	for (IRepository r : repositories.keySet()) {
-    		final IRepository repository = r;
-    		final Set<IAdaptable> set = repositories.get(repository);
+		for (IRepository repository : repositories.keySet()) {
+			final Set<IAdaptable> set = repositories.get(repository);
 
 			Set<ISchedulingRule> ruleSet = rules.get(repository);
-        	MultiRule rule = new MultiRule(ruleSet.toArray(new ISchedulingRule[ruleSet.size()]));
+			MultiRule rule = new MultiRule(ruleSet.toArray(new ISchedulingRule[ruleSet.size()]));
 
-    		IStatus status = repository.runInRepository(new IRepositoryRunnable() {
-                public IStatus run(IProgressMonitor monitor) throws Exception {
-                	try {
-                		for (IAdaptable adaptable : set) {
-                			if (monitor != null && monitor.isCanceled())
-                				return Status.CANCEL_STATUS;
+			IStatus status = repository.runInRepository(new IRepositoryRunnable() {
+				public IStatus run(IProgressMonitor monitor) throws Exception {
+					try {
+						for (IAdaptable adaptable : set) {
+							if (monitor != null && monitor.isCanceled())
+								return Status.CANCEL_STATUS;
 
-                    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
-                    		if (storeObjects == null) {
-                        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-                        		storeObjects = new IStoreObject[] { object };
-                    		}
+							IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+							if (storeObjects == null) {
+								IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+								if (object == null)
+									continue;
+								storeObjects = new IStoreObject[] {
+									object
+								};
+							}
 
-                    		for (IStoreObject object : storeObjects) {
-                    			IStore store = object.getStore();
-                    			if (store == null)
-                    				store = repository.createObject();
+							for (IStoreObject object : storeObjects) {
+								IStore store = object.getStore();
+								if (store != null) {
+									store.delete(monitor);
+									object.setStore(null);
 
-                    			IStoreProperties properties = object.getStoreProperties();
-                    			store.putProperties(properties, monitor);
-                    			object.setStore(store);
+									if (adaptable instanceof ISecurity) {
+										uriMap.remove(store.toURI());
+										nameMap.remove(((ISecurity) adaptable).getName());
+										Set<IAdaptable> containers = removeSecurityFromContainers((ISecurity) adaptable);
+										saveCascade.addAll(containers);
+										historyMap.remove(adaptable);
+									}
+									if (adaptable instanceof IWatchList) {
+										watchlistUriMap.remove(store.toURI());
+										watchlistNameMap.remove(((IWatchList) adaptable).getName());
+									}
+									if (adaptable instanceof IHolding)
+										trades.remove(adaptable);
 
-                    			if (adaptable instanceof ISecurity) {
-                    				uriMap.put(store.toURI(), (ISecurity) adaptable);
-                    				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
-                    			}
-                    			if (adaptable instanceof IWatchList) {
-                    				watchlistUriMap.put(store.toURI(), (IWatchList) adaptable);
-                    				watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
-                    			}
-                    			if (adaptable instanceof IHolding)
-                    				trades.add((IHolding) adaptable);
+									if (deltas != null) {
+										int kind = RepositoryResourceDelta.MOVED_FROM | RepositoryResourceDelta.REMOVED;
+										deltas.add(new RepositoryResourceDelta(kind, adaptable, store.getRepository(), null, null, null));
+									}
+								}
+							}
+						}
+					} catch (Exception e) {
+						Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error deleting object", e); //$NON-NLS-1$
+						CoreActivator.getDefault().getLog().log(status);
+						return status;
+					} catch (LinkageError e) {
+						Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error deleting object", e); //$NON-NLS-1$
+						CoreActivator.getDefault().getLog().log(status);
+						return status;
+					}
+					return Status.OK_STATUS;
+				}
+			}, rule, null);
+			if (status == Status.CANCEL_STATUS)
+				break;
+		}
 
-                    			if (deltas != null) {
-                        	        int kind = RepositoryResourceDelta.MOVED_TO | RepositoryResourceDelta.ADDED;
-                        	        deltas.add(new RepositoryResourceDelta(
-                        	        		kind,
-                        	        		adaptable,
-                        	        		null,
-                        	        		store.getRepository(),
-                        	        		null,
-                        	        		properties));
-                    			}
-                    		}
-                		}
-                    } catch (Exception e) {
-            			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error saving object", e); //$NON-NLS-1$
-            			CoreActivator.getDefault().getLog().log(status);
-            			return status;
-                    } catch (LinkageError e) {
-            			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error saving object", e); //$NON-NLS-1$
-            			CoreActivator.getDefault().getLog().log(status);
-            			return status;
-                    }
-    	            return Status.OK_STATUS;
-                }
-        	}, rule, null);
-    		if (status == Status.CANCEL_STATUS)
-    			break;
+		if (saveCascade.size() != 0)
+			saveAdaptable(saveCascade.toArray(new IAdaptable[saveCascade.size()]));
+	}
+
+	protected Set<IAdaptable> removeSecurityFromContainers(ISecurity security) {
+		Set<IAdaptable> saveCascade = new HashSet<IAdaptable>();
+
+		for (IWatchList list : watchlistUriMap.values()) {
+			if (!(list instanceof WatchList))
+				continue;
+			IWatchListElement[] elements = list.getItem(security);
+			if (elements != null && elements.length != 0) {
+				List<IWatchListElement> allElements = new ArrayList<IWatchListElement>();
+				allElements.addAll(Arrays.asList(list.getItems()));
+				allElements.removeAll(Arrays.asList(elements));
+				((WatchList) list).setItems(allElements.toArray(new IWatchListElement[allElements.size()]));
+				saveCascade.add(list);
+			}
+		}
+
+		return saveCascade;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[])
+	 */
+	public void saveAdaptable(IAdaptable[] adaptables) {
+		saveAdaptable(adaptables, getRepository("local"));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#saveAdaptable(org.eclipse.core.runtime.IAdaptable[], org.eclipsetrader.core.repositories.IRepository)
+	 */
+	public void saveAdaptable(IAdaptable[] adaptables, IRepository defaultRepository) {
+		Map<IRepository, Set<IAdaptable>> repositories = new HashMap<IRepository, Set<IAdaptable>>();
+		Map<IRepository, Set<ISchedulingRule>> rules = new HashMap<IRepository, Set<ISchedulingRule>>();
+
+		// Computes the rules needed to access all repositories
+		for (IAdaptable adaptable : adaptables) {
+			IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+			if (storeObjects == null) {
+				IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+				if (object == null)
+					continue;
+				storeObjects = new IStoreObject[] {
+					object
+				};
+			}
+
+			for (IStoreObject object : storeObjects) {
+				IRepository repository = defaultRepository;
+				IStore store = object.getStore();
+				if (store != null && store.getRepository() != null)
+					repository = store.getRepository();
+
+				Set<IAdaptable> objectSet = repositories.get(repository);
+				if (objectSet == null) {
+					objectSet = new HashSet<IAdaptable>();
+					repositories.put(repository, objectSet);
+				}
+				objectSet.add(adaptable);
+
+				Set<ISchedulingRule> ruleSet = rules.get(repository);
+				if (ruleSet == null) {
+					ruleSet = new HashSet<ISchedulingRule>();
+					rules.put(repository, ruleSet);
+				}
+				if (repository instanceof ISchedulingRule)
+					ruleSet.add((ISchedulingRule) repository);
+			}
+		}
+
+		for (IRepository r : repositories.keySet()) {
+			final IRepository repository = r;
+			final Set<IAdaptable> set = repositories.get(repository);
+
+			Set<ISchedulingRule> ruleSet = rules.get(repository);
+			MultiRule rule = new MultiRule(ruleSet.toArray(new ISchedulingRule[ruleSet.size()]));
+
+			IStatus status = repository.runInRepository(new IRepositoryRunnable() {
+				public IStatus run(IProgressMonitor monitor) throws Exception {
+					try {
+						for (IAdaptable adaptable : set) {
+							if (monitor != null && monitor.isCanceled())
+								return Status.CANCEL_STATUS;
+
+							IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+							if (storeObjects == null) {
+								IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+								storeObjects = new IStoreObject[] {
+									object
+								};
+							}
+
+							for (IStoreObject object : storeObjects) {
+								IStore store = object.getStore();
+								if (store == null)
+									store = repository.createObject();
+
+								IStoreProperties properties = object.getStoreProperties();
+								store.putProperties(properties, monitor);
+								object.setStore(store);
+
+								if (adaptable instanceof ISecurity) {
+									uriMap.put(store.toURI(), (ISecurity) adaptable);
+									nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
+								}
+								if (adaptable instanceof IWatchList) {
+									watchlistUriMap.put(store.toURI(), (IWatchList) adaptable);
+									watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
+								}
+								if (adaptable instanceof IHolding)
+									trades.add((IHolding) adaptable);
+
+								if (deltas != null) {
+									int kind = RepositoryResourceDelta.MOVED_TO | RepositoryResourceDelta.ADDED;
+									deltas.add(new RepositoryResourceDelta(kind, adaptable, null, store.getRepository(), null, properties));
+								}
+							}
+						}
+					} catch (Exception e) {
+						Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error saving object", e); //$NON-NLS-1$
+						CoreActivator.getDefault().getLog().log(status);
+						return status;
+					} catch (LinkageError e) {
+						Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error saving object", e); //$NON-NLS-1$
+						CoreActivator.getDefault().getLog().log(status);
+						return status;
+					}
+					return Status.OK_STATUS;
+				}
+			}, rule, null);
+			if (status == Status.CANCEL_STATUS)
+				break;
 		}
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#moveAdaptable(org.eclipse.core.runtime.IAdaptable[], org.eclipsetrader.core.repositories.IRepository)
-     */
-    public void moveAdaptable(final IAdaptable[] adaptables, final IRepository destination) {
-    	// Computes the rules needed to access all source and destination repositories
-    	List<ISchedulingRule> rules = new ArrayList<ISchedulingRule>();
-    	if (destination instanceof ISchedulingRule)
-    		rules.add((ISchedulingRule) destination);
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#moveAdaptable(org.eclipse.core.runtime.IAdaptable[], org.eclipsetrader.core.repositories.IRepository)
+	 */
+	public void moveAdaptable(final IAdaptable[] adaptables, final IRepository destination) {
+		// Computes the rules needed to access all source and destination repositories
+		List<ISchedulingRule> rules = new ArrayList<ISchedulingRule>();
+		if (destination instanceof ISchedulingRule)
+			rules.add((ISchedulingRule) destination);
 
-    	for (IAdaptable adaptable : adaptables) {
-    		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
-    		if (storeObjects == null) {
-        		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-        		if (object == null)
-        			continue;
-        		storeObjects = new IStoreObject[] { object };
-    		}
+		for (IAdaptable adaptable : adaptables) {
+			IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+			if (storeObjects == null) {
+				IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+				if (object == null)
+					continue;
+				storeObjects = new IStoreObject[] {
+					object
+				};
+			}
 
-    		for (IStoreObject object : storeObjects) {
-        		IStore store = object.getStore();
-        		if (store != null && store.getRepository() instanceof ISchedulingRule)
-        			rules.add((ISchedulingRule) store.getRepository());
-    		}
-    	}
+			for (IStoreObject object : storeObjects) {
+				IStore store = object.getStore();
+				if (store != null && store.getRepository() instanceof ISchedulingRule)
+					rules.add((ISchedulingRule) store.getRepository());
+			}
+		}
 
 		destination.runInRepository(new IRepositoryRunnable() {
-            public IStatus run(IProgressMonitor monitor) throws Exception {
-            	try {
-            		for (IAdaptable adaptable : adaptables) {
-            			if (monitor != null && monitor.isCanceled())
-            				return Status.CANCEL_STATUS;
+			public IStatus run(IProgressMonitor monitor) throws Exception {
+				try {
+					for (IAdaptable adaptable : adaptables) {
+						if (monitor != null && monitor.isCanceled())
+							return Status.CANCEL_STATUS;
 
-                		IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
-                		if (storeObjects == null) {
-                    		IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-                    		if (object == null)
-                    			continue;
-                    		storeObjects = new IStoreObject[] { object };
-                		}
+						IStoreObject[] storeObjects = (IStoreObject[]) adaptable.getAdapter(IStoreObject[].class);
+						if (storeObjects == null) {
+							IStoreObject object = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+							if (object == null)
+								continue;
+							storeObjects = new IStoreObject[] {
+								object
+							};
+						}
 
-                		List<IStoreObject> childStoreObjects = new ArrayList<IStoreObject>();
-                		if (adaptable instanceof ISecurity) {
-                			IHistory history = getHistoryFor((ISecurity) adaptable);
-                			if (history != null) {
-                				IStoreObject historyStoreObject = (IStoreObject) history.getAdapter(IStoreObject.class);
-                				if (historyStoreObject != null && historyStoreObject.getStore() != null)
-                					childStoreObjects.add(historyStoreObject);
+						List<IStoreObject> childStoreObjects = new ArrayList<IStoreObject>();
+						if (adaptable instanceof ISecurity) {
+							IHistory history = getHistoryFor((ISecurity) adaptable);
+							if (history != null) {
+								IStoreObject historyStoreObject = (IStoreObject) history.getAdapter(IStoreObject.class);
+								if (historyStoreObject != null && historyStoreObject.getStore() != null)
+									childStoreObjects.add(historyStoreObject);
 
-                				IOHLC[] ohlc = history.getOHLC();
-                				if (ohlc != null && ohlc.length != 0) {
-                					Date first = ohlc[0].getDate();
-                					Date last = ohlc[ohlc.length - 1].getDate();
-                					IHistory historySubset = history.getSubset(first, last, TimeSpan.minutes(1));
-                					if (historySubset != null) {
-                						IStoreObject[] subsetStoreObject = (IStoreObject[]) historySubset.getAdapter(IStoreObject[].class);
-                	    				if (subsetStoreObject != null)
-                	    					childStoreObjects.addAll(Arrays.asList(subsetStoreObject));
-                					}
-                				}
-                			}
-                		}
+								IOHLC[] ohlc = history.getOHLC();
+								if (ohlc != null && ohlc.length != 0) {
+									Date first = ohlc[0].getDate();
+									Date last = ohlc[ohlc.length - 1].getDate();
+									IHistory historySubset = history.getSubset(first, last, TimeSpan.minutes(1));
+									if (historySubset != null) {
+										IStoreObject[] subsetStoreObject = (IStoreObject[]) historySubset.getAdapter(IStoreObject[].class);
+										if (subsetStoreObject != null)
+											childStoreObjects.addAll(Arrays.asList(subsetStoreObject));
+									}
+								}
+							}
+						}
 
-                		for (IStoreObject object : storeObjects) {
-                			IStore  oldStore = object.getStore();
-                			if (oldStore != null && oldStore.getRepository() == destination)
-                				continue;
+						for (IStoreObject object : storeObjects) {
+							IStore oldStore = object.getStore();
+							if (oldStore != null && oldStore.getRepository() == destination)
+								continue;
 
-                			IStoreProperties properties = object.getStoreProperties();
+							IStoreProperties properties = object.getStoreProperties();
 
-                	        IStore newStore = destination.createObject();
-                	        newStore.putProperties(properties, monitor);
-                	        object.setStore(newStore);
+							IStore newStore = destination.createObject();
+							newStore.putProperties(properties, monitor);
+							object.setStore(newStore);
 
-                	        for (IStoreObject childObject : childStoreObjects) {
-                    			IStore oldChildStore = childObject.getStore();
-                    			if (oldChildStore != null && oldChildStore.getRepository() == destination)
-                    				continue;
+							for (IStoreObject childObject : childStoreObjects) {
+								IStore oldChildStore = childObject.getStore();
+								if (oldChildStore != null && oldChildStore.getRepository() == destination)
+									continue;
 
-                    			IStoreProperties childProperties = childObject.getStoreProperties();
+								IStoreProperties childProperties = childObject.getStoreProperties();
 
-                    	        IStore newChildStore = destination.createObject();
-                    	        newChildStore.putProperties(childProperties, monitor);
-                    	        childObject.setStore(newStore);
-                	        }
+								IStore newChildStore = destination.createObject();
+								newChildStore.putProperties(childProperties, monitor);
+								childObject.setStore(newStore);
 
-                	        if (oldStore != null)
-                	        	oldStore.delete(monitor);
+								oldChildStore.delete(monitor);
+							}
 
-                	        if (adaptable instanceof ISecurity) {
-                    	        if (oldStore != null)
-                    	        	uriMap.remove(oldStore.toURI());
-                	        	uriMap.put(newStore.toURI(), (ISecurity) adaptable);
-                				nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
+							if (oldStore != null)
+								oldStore.delete(monitor);
 
-                				for (IWatchList watchList : watchlistUriMap.values()) {
-                					if (watchList.getItem((ISecurity) adaptable) != null) {
-                                		IStoreObject otherObject = (IStoreObject) watchList.getAdapter(IStoreObject.class);
-                            			IStoreProperties otherProperties = otherObject.getStoreProperties();
-                            			otherObject.getStore().putProperties(otherProperties, monitor);
-                					}
-                				}
-                	        }
-                	        if (adaptable instanceof IWatchList) {
-                    	        if (oldStore != null)
-                    	        	watchlistUriMap.remove(oldStore.toURI());
-                    	        watchlistUriMap.put(newStore.toURI(), (IWatchList) adaptable);
-                    	        watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
-                	        }
+							if (adaptable instanceof ISecurity) {
+								if (oldStore != null)
+									uriMap.remove(oldStore.toURI());
+								uriMap.put(newStore.toURI(), (ISecurity) adaptable);
+								nameMap.put(((ISecurity) adaptable).getName(), (ISecurity) adaptable);
 
-                			if (deltas != null) {
-                    	        int kind = RepositoryResourceDelta.MOVED_TO;
-                    	        if (oldStore != null)
-                    	        	kind |= RepositoryResourceDelta.MOVED_FROM;
-                    	        else
-                    	        	kind |= RepositoryResourceDelta.ADDED;
+								for (IWatchList watchList : watchlistUriMap.values()) {
+									if (watchList.getItem((ISecurity) adaptable) != null) {
+										IStoreObject otherObject = (IStoreObject) watchList.getAdapter(IStoreObject.class);
+										IStoreProperties otherProperties = otherObject.getStoreProperties();
+										otherObject.getStore().putProperties(otherProperties, monitor);
+									}
+								}
+							}
+							if (adaptable instanceof IWatchList) {
+								if (oldStore != null)
+									watchlistUriMap.remove(oldStore.toURI());
+								watchlistUriMap.put(newStore.toURI(), (IWatchList) adaptable);
+								watchlistNameMap.put(((IWatchList) adaptable).getName(), (IWatchList) adaptable);
+							}
 
-                    	        deltas.add(new RepositoryResourceDelta(
-                    	        		kind,
-                    	        		adaptable,
-                    	        		oldStore != null ? oldStore.getRepository() : null,
-                    	        		newStore.getRepository(),
-                    	        		null,
-                    	        		null));
-                			}
-                		}
-            		}
-                } catch (Exception e) {
-        			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error moving object", e); //$NON-NLS-1$
-        			CoreActivator.getDefault().getLog().log(status);
-        			return status;
-                } catch (LinkageError e) {
-        			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error moving object", e); //$NON-NLS-1$
-        			CoreActivator.getDefault().getLog().log(status);
-        			return status;
-                }
+							if (deltas != null) {
+								int kind = RepositoryResourceDelta.MOVED_TO;
+								if (oldStore != null)
+									kind |= RepositoryResourceDelta.MOVED_FROM;
+								else
+									kind |= RepositoryResourceDelta.ADDED;
 
-	            return Status.OK_STATUS;
-            }
-    	}, new MultiRule(rules.toArray(new ISchedulingRule[rules.size()])), null);
+								deltas.add(new RepositoryResourceDelta(kind, adaptable, oldStore != null ? oldStore.getRepository() : null, newStore.getRepository(), null, null));
+							}
+						}
+					}
+				} catch (Exception e) {
+					Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error moving object", e); //$NON-NLS-1$
+					CoreActivator.getDefault().getLog().log(status);
+					return status;
+				} catch (LinkageError e) {
+					Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error moving object", e); //$NON-NLS-1$
+					CoreActivator.getDefault().getLog().log(status);
+					return status;
+				}
+
+				return Status.OK_STATUS;
+			}
+		}, new MultiRule(rules.toArray(new ISchedulingRule[rules.size()])), null);
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.IRepositoryService#getFeedIdentifierFromSymbol(java.lang.String)
-     */
-    public IFeedIdentifier getFeedIdentifierFromSymbol(String symbol) {
-	    return identifiersMap.get(symbol);
-    }
+	 * @see org.eclipsetrader.core.IRepositoryService#getFeedIdentifierFromSymbol(java.lang.String)
+	 */
+	public IFeedIdentifier getFeedIdentifierFromSymbol(String symbol) {
+		return identifiersMap.get(symbol);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.IRepositoryService#getFeedIdentifiers()
-     */
-    public IFeedIdentifier[] getFeedIdentifiers() {
+	 * @see org.eclipsetrader.core.IRepositoryService#getFeedIdentifiers()
+	 */
+	public IFeedIdentifier[] getFeedIdentifiers() {
 		Collection<IFeedIdentifier> c = identifiersMap.values();
 		return c.toArray(new IFeedIdentifier[c.size()]);
-    }
+	}
 
 	public void startUp() {
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(CoreActivator.REPOSITORY_ID);
@@ -643,9 +639,9 @@ public class RepositoryService implements IRepositoryService {
 			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to create repository with id " + id, e);
 				CoreActivator.log(status);
-            } catch (LinkageError e) {
+			} catch (LinkageError e) {
 				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to create repository with id " + id, e);
-    			CoreActivator.log(status);
+				CoreActivator.log(status);
 			}
 		}
 
@@ -662,9 +658,9 @@ public class RepositoryService implements IRepositoryService {
 			} catch (Exception e) {
 				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to instantiate repository provider " + clazz, e);
 				CoreActivator.log(status);
-            } catch (LinkageError e) {
+			} catch (LinkageError e) {
 				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Unable to instantiate repository provider " + clazz, e);
-    			CoreActivator.log(status);
+				CoreActivator.log(status);
 			}
 		}
 
@@ -709,10 +705,10 @@ public class RepositoryService implements IRepositoryService {
 			IRepositoryElementFactory factory = (IRepositoryElementFactory) properties.getProperty(IPropertyConstants.ELEMENT_FACTORY);
 			if (factory != null)
 				return factory.createElement(store, properties);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error creating element " + store.toURI().toString(), e);
 			CoreActivator.getDefault().getLog().log(status);
-		} catch(LinkageError e) {
+		} catch (LinkageError e) {
 			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error creating element " + store.toURI().toString(), e);
 			CoreActivator.getDefault().getLog().log(status);
 		}
@@ -721,66 +717,66 @@ public class RepositoryService implements IRepositoryService {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.IRepositoryService#runInService(org.eclipsetrader.core.repositories.IRepositoryRunnable, org.eclipse.core.runtime.IProgressMonitor)
-     */
-    public IStatus runInService(IRepositoryRunnable runnable, IProgressMonitor monitor) {
-    	return runInService(runnable, null, monitor);
-    }
+	 * @see org.eclipsetrader.core.IRepositoryService#runInService(org.eclipsetrader.core.repositories.IRepositoryRunnable, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public IStatus runInService(IRepositoryRunnable runnable, IProgressMonitor monitor) {
+		return runInService(runnable, null, monitor);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.IRepositoryService#runInService(org.eclipsetrader.core.repositories.IRepositoryRunnable, org.eclipse.core.runtime.jobs.ISchedulingRule, org.eclipse.core.runtime.IProgressMonitor)
-     */
-    public IStatus runInService(IRepositoryRunnable runnable, ISchedulingRule rule, IProgressMonitor monitor) {
-    	IStatus status;
-    	if (rule != null)
-    		jobManager.beginRule(rule, monitor);
+	 * @see org.eclipsetrader.core.IRepositoryService#runInService(org.eclipsetrader.core.repositories.IRepositoryRunnable, org.eclipse.core.runtime.jobs.ISchedulingRule, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public IStatus runInService(IRepositoryRunnable runnable, ISchedulingRule rule, IProgressMonitor monitor) {
+		IStatus status;
+		if (rule != null)
+			jobManager.beginRule(rule, monitor);
 		try {
 			lock.acquire();
 			deltas = new ArrayList<RepositoryResourceDelta>();
 
 			try {
-    			status = runnable.run(monitor);
-    		} catch(Exception e) {
-    			status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
-    			CoreActivator.getDefault().getLog().log(status);
-    		} catch(LinkageError e) {
-    			status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
-    			CoreActivator.getDefault().getLog().log(status);
-    		}
+				status = runnable.run(monitor);
+			} catch (Exception e) {
+				status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
+				CoreActivator.getDefault().getLog().log(status);
+			} catch (LinkageError e) {
+				status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running service task", e); //$NON-NLS-1$
+				CoreActivator.getDefault().getLog().log(status);
+			}
 
-    		if (deltas.size() != 0) {
-        		final RepositoryChangeEvent event = new RepositoryChangeEvent(getDeltas());
-        		Object[] l = listeners.getListeners();
-        		for (int i = 0; i < l.length; i++) {
-        			final IRepositoryChangeListener listener = (IRepositoryChangeListener) l[i];
-        			SafeRunner.run(new ISafeRunnable() {
-                        public void run() throws Exception {
-                			listener.repositoryResourceChanged(event);
-                        }
+			if (deltas.size() != 0) {
+				final RepositoryChangeEvent event = new RepositoryChangeEvent(getDeltas());
+				Object[] l = listeners.getListeners();
+				for (int i = 0; i < l.length; i++) {
+					final IRepositoryChangeListener listener = (IRepositoryChangeListener) l[i];
+					SafeRunner.run(new ISafeRunnable() {
+						public void run() throws Exception {
+							listener.repositoryResourceChanged(event);
+						}
 
-                        public void handleException(Throwable exception) {
-                			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running repository listener", exception); //$NON-NLS-1$
-                			CoreActivator.getDefault().getLog().log(status);
-                        }
-        			});
-        		}
-    		}
+						public void handleException(Throwable exception) {
+							Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running repository listener", exception); //$NON-NLS-1$
+							CoreActivator.getDefault().getLog().log(status);
+						}
+					});
+				}
+			}
 
 		} catch (Exception e) {
 			status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
 			CoreActivator.getDefault().getLog().log(status);
 		} finally {
 			lock.release();
-	    	if (rule != null)
-	    		jobManager.endRule(rule);
+			if (rule != null)
+				jobManager.endRule(rule);
 		}
 		return status;
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.jobs.ISchedulingRule#contains(org.eclipse.core.runtime.jobs.ISchedulingRule)
-     */
-    public boolean contains(ISchedulingRule rule) {
+	 * @see org.eclipse.core.runtime.jobs.ISchedulingRule#contains(org.eclipse.core.runtime.jobs.ISchedulingRule)
+	 */
+	public boolean contains(ISchedulingRule rule) {
 		if (this == rule)
 			return true;
 		if (rule instanceof MultiRule) {
@@ -791,35 +787,35 @@ public class RepositoryService implements IRepositoryService {
 					return false;
 			return true;
 		}
-	    return false;
-    }
+		return false;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.jobs.ISchedulingRule#isConflicting(org.eclipse.core.runtime.jobs.ISchedulingRule)
-     */
-    public boolean isConflicting(ISchedulingRule rule) {
+	 * @see org.eclipse.core.runtime.jobs.ISchedulingRule#isConflicting(org.eclipse.core.runtime.jobs.ISchedulingRule)
+	 */
+	public boolean isConflicting(ISchedulingRule rule) {
 		if (this == rule)
 			return true;
-	    return false;
-    }
+		return false;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#addRepositoryResourceListener(org.eclipsetrader.core.repositories.IRepositoryChangeListener)
-     */
-    public void addRepositoryResourceListener(IRepositoryChangeListener listener) {
-    	listeners.add(listener);
-    }
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#addRepositoryResourceListener(org.eclipsetrader.core.repositories.IRepositoryChangeListener)
+	 */
+	public void addRepositoryResourceListener(IRepositoryChangeListener listener) {
+		listeners.add(listener);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IRepositoryService#removeRepositoryResourceListener(org.eclipsetrader.core.repositories.IRepositoryChangeListener)
-     */
-    public void removeRepositoryResourceListener(IRepositoryChangeListener listener) {
-    	listeners.remove(listener);
-    }
+	 * @see org.eclipsetrader.core.repositories.IRepositoryService#removeRepositoryResourceListener(org.eclipsetrader.core.repositories.IRepositoryChangeListener)
+	 */
+	public void removeRepositoryResourceListener(IRepositoryChangeListener listener) {
+		listeners.remove(listener);
+	}
 
 	protected RepositoryResourceDelta[] getDeltas() {
 		if (deltas == null)
 			return new RepositoryResourceDelta[0];
-    	return deltas.toArray(new RepositoryResourceDelta[deltas.size()]);
-    }
+		return deltas.toArray(new RepositoryResourceDelta[deltas.size()]);
+	}
 }

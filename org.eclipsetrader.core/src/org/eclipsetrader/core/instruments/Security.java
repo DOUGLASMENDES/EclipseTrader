@@ -38,23 +38,23 @@ public class Security implements ISecurity, IStoreObject {
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent evt) {
-        	propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, null, identifier);
-        }
+		public void propertyChange(PropertyChangeEvent evt) {
+			propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, null, identifier);
+		}
 	};
 
 	protected Security() {
 	}
 
 	public Security(String name, IFeedIdentifier identifier) {
-	    this.name = name;
-	    this.identifier = identifier;
-    }
+		this.name = name;
+		this.identifier = identifier;
+	}
 
 	public Security(IStore store, IStoreProperties storeProperties) {
 		setStore(store);
 		setStoreProperties(storeProperties);
-    }
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.instruments.ISecurity#getName()
@@ -65,9 +65,9 @@ public class Security implements ISecurity, IStoreObject {
 
 	public void setName(String name) {
 		Object oldValue = this.name;
-    	this.name = name;
-    	propertyChangeSupport.firePropertyChange(IPropertyConstants.NAME, oldValue, this.name);
-    }
+		this.name = name;
+		propertyChangeSupport.firePropertyChange(IPropertyConstants.NAME, oldValue, this.name);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.instruments.ISecurity#getIdentifier()
@@ -94,26 +94,26 @@ public class Security implements ISecurity, IStoreObject {
 		}
 
 		propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, oldValue, this.identifier);
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.instruments.ISecurity#getProperties()
-     */
-    public IUserProperties getProperties() {
-	    return userProperties;
-    }
+	 * @see org.eclipsetrader.core.instruments.ISecurity#getProperties()
+	 */
+	public IUserProperties getProperties() {
+		return userProperties;
+	}
 
 	public void setProperties(IUserProperties userProperties) {
 		Object oldValue = this.userProperties;
-    	this.userProperties = userProperties;
-    	propertyChangeSupport.firePropertyChange(IPropertyConstants.USER_PROPERTIES, oldValue, this.userProperties);
-    }
+		this.userProperties = userProperties;
+		propertyChangeSupport.firePropertyChange(IPropertyConstants.USER_PROPERTIES, oldValue, this.userProperties);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(Class adapter) {
+	@SuppressWarnings("unchecked")
+	public Object getAdapter(Class adapter) {
 		if (adapter.isAssignableFrom(getClass()))
 			return this;
 
@@ -122,30 +122,30 @@ public class Security implements ISecurity, IStoreObject {
 		if (userProperties != null && adapter.isAssignableFrom(userProperties.getClass()))
 			return userProperties;
 
-    	if (adapter.isAssignableFrom(PropertyChangeSupport.class))
-    		return propertyChangeSupport;
+		if (adapter.isAssignableFrom(PropertyChangeSupport.class))
+			return propertyChangeSupport;
 
-    	return null;
+		return null;
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
-     */
-    public IStore getStore() {
-	    return store;
-    }
+	 * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
+	 */
+	public IStore getStore() {
+		return store;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
-     */
-    public void setStore(IStore store) {
-    	this.store = store;
-    }
+	 * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
+	 */
+	public void setStore(IStore store) {
+		this.store = store;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
-     */
-    public IStoreProperties getStoreProperties() {
+	 * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
+	 */
+	public IStoreProperties getStoreProperties() {
 		if (storeProperties == null)
 			storeProperties = new StoreProperties();
 
@@ -156,13 +156,13 @@ public class Security implements ISecurity, IStoreObject {
 		storeProperties.setProperty(IPropertyConstants.USER_PROPERTIES, getProperties());
 
 		return storeProperties;
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
-     */
-    public void setStoreProperties(IStoreProperties storeProperties) {
-	    this.storeProperties = storeProperties;
+	 * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
+	 */
+	public void setStoreProperties(IStoreProperties storeProperties) {
+		this.storeProperties = storeProperties;
 
 		if (this.identifier != null) {
 			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
@@ -179,13 +179,32 @@ public class Security implements ISecurity, IStoreObject {
 			if (propertyChangeSupport != null)
 				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
 		}
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return name;
-    }
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ISecurity))
+			return false;
+
+		ISecurity other = (ISecurity) obj;
+		if (!name.equals(other.getName()))
+			return false;
+		if (identifier == null && other.getIdentifier() != null)
+			return false;
+		if (identifier != null && !identifier.equals(other.getIdentifier()))
+			return false;
+
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return name;
+	}
 }
