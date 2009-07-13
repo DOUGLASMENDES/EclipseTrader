@@ -12,6 +12,7 @@
 package org.eclipsetrader.yahoo.internal.news;
 
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -40,10 +41,10 @@ public class RSSNewsHandler implements INewsHandler {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.yahoo.internal.news.INewsHandler#parseNewsPages(java.net.URL[], org.eclipse.core.runtime.IProgressMonitor)
-     */
-    public HeadLine[] parseNewsPages(URL[] url, IProgressMonitor monitor) {
-    	List<HeadLine> list = new ArrayList<HeadLine>();
+	 * @see org.eclipsetrader.yahoo.internal.news.INewsHandler#parseNewsPages(java.net.URL[], org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public HeadLine[] parseNewsPages(URL[] url, IProgressMonitor monitor) {
+		List<HeadLine> list = new ArrayList<HeadLine>();
 
 		HttpClient client = new HttpClient();
 		client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
@@ -75,6 +76,7 @@ public class RSSNewsHandler implements INewsHandler {
 					String link = entry.getLink();
 					if (link.lastIndexOf('*') != -1)
 						link = link.substring(link.lastIndexOf('*') + 1);
+					link = URLDecoder.decode(link, "UTF-8");
 
 					String source = null;
 
@@ -97,12 +99,12 @@ public class RSSNewsHandler implements INewsHandler {
 			} catch (IllegalArgumentException e) {
 				// Do nothing, could be an invalid URL
 			} catch (Exception e) {
-		        e.printStackTrace();
+				e.printStackTrace();
 			}
 
 			monitor.worked(1);
 		}
 
 		return list.toArray(new HeadLine[list.size()]);
-    }
+	}
 }
