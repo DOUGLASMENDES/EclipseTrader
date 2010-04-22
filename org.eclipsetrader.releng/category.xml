@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipsetrader.platform_1.0.0.qualifier.jar" id="org.eclipsetrader.platform" version="1.0.0.qualifier">
+      <category name="main"/>
+   </feature>
+   <feature url="features/org.eclipsetrader.brokers.paper_1.0.0.qualifier.jar" id="org.eclipsetrader.brokers.paper" version="1.0.0.qualifier">
+      <category name="plugins"/>
+   </feature>
+   <feature url="features/org.eclipsetrader.directa_1.0.0.qualifier.jar" id="org.eclipsetrader.directa" version="1.0.0.qualifier">
+      <category name="plugins"/>
+   </feature>
+   <feature url="features/org.eclipsetrader.directaworld_1.0.0.qualifier.jar" id="org.eclipsetrader.directaworld" version="1.0.0.qualifier">
+      <category name="plugins"/>
+   </feature>
+   <feature url="features/org.eclipsetrader.yahoo_1.0.0.qualifier.jar" id="org.eclipsetrader.yahoo" version="1.0.0.qualifier">
+      <category name="plugins"/>
+   </feature>
+   <category-def name="main" label="Main"/>
+   <category-def name="plugins" label="Plugins"/>
+</site>

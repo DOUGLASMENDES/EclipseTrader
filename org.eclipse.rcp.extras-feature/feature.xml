@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.rcp.extras"
       label="%featureName"
-      version="3.4.100.r341_v20080814"
+      version="3.5.1.R35x_v20090811"
       provider-name="%providerName"
       plugin="org.eclipse.rcp.extras">
 
@@ -23,7 +23,7 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.rcp" version="3.4.0.v20080324a-989JERhEk-jWnd5IY8K5tjxB"/>
+      <import feature="org.eclipse.rcp" version="0.0.0"/>
    </requires>
 
    <plugin
@@ -55,7 +55,14 @@
          unpack="false"/>
 
    <plugin
-         id="org.mortbay.jetty"
+         id="org.mortbay.jetty.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mortbay.jetty.server"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -197,6 +204,7 @@
    <plugin
          id="org.eclipse.update.core.linux"
          os="linux"
+         arch="x86"
          download-size="0"
          install-size="0"
          version="0.0.0"
