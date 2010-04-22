@@ -12,7 +12,6 @@
 package org.eclipsetrader.ui.internal.markets;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -45,23 +44,23 @@ public class HolidayDialog extends Dialog {
 	MarketHolidayElement element;
 
 	private SelectionAdapter buttonSelectionListener = new SelectionAdapter() {
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-    		updateButtonsEnablement();
-        }
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			updateButtonsEnablement();
+		}
 	};
 
 	private ModifyListener validationModifyListener = new ModifyListener() {
-        public void modifyText(ModifyEvent e) {
-        	getButton(IDialogConstants.OK_ID).setEnabled(isValid());
-        }
+		public void modifyText(ModifyEvent e) {
+			getButton(IDialogConstants.OK_ID).setEnabled(isValid());
+		}
 	};
 
 	private SelectionAdapter validationSelectionListener = new SelectionAdapter() {
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-        	getButton(IDialogConstants.OK_ID).setEnabled(isValid());
-        }
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			getButton(IDialogConstants.OK_ID).setEnabled(isValid());
+		}
 	};
 
 	public HolidayDialog(Shell parentShell, MarketHolidayElement day) {
@@ -70,31 +69,31 @@ public class HolidayDialog extends Dialog {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
-     */
-    @Override
-    protected void configureShell(Shell newShell) {
-	    super.configureShell(newShell);
-	    newShell.setText("Edit Market Holiday");
-    }
+	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+	 */
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		newShell.setText("Edit Market Holiday");
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
-    protected Control createDialogArea(Composite parent) {
-	    parent = (Composite) super.createDialogArea(parent);
+	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	protected Control createDialogArea(Composite parent) {
+		parent = (Composite) super.createDialogArea(parent);
 
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
-	    content.setLayout(gridLayout);
+		Composite content = new Composite(parent, SWT.NONE);
+		GridLayout gridLayout = new GridLayout(2, false);
+		gridLayout.marginWidth = gridLayout.marginHeight = 0;
+		content.setLayout(gridLayout);
 
-	    Label label = new Label(content, SWT.NONE);
-	    label.setText("Date");
-	    date = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
-	    date.setPattern(Util.getDateFormatPattern());
-	    date.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
+		Label label = new Label(content, SWT.NONE);
+		label.setText("Date");
+		date = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
+		date.setPattern(Util.getDateFormatPattern());
+		date.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
 
 		label = new Label(content, SWT.NONE);
 		label.setText("Description");
@@ -116,14 +115,14 @@ public class HolidayDialog extends Dialog {
 		openTime = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
 		openTime.setPattern("HH:mm");
 		openTime.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
-		openTime.setNullText("", Locale.getDefault());
+		openTime.setNullText("");
 
 		closeTimeLabel = new Label(content, SWT.NONE);
 		closeTimeLabel.setText("Close Time");
 		closeTime = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
 		closeTime.setPattern("HH:mm");
 		closeTime.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
-		closeTime.setNullText("", Locale.getDefault());
+		closeTime.setNullText("");
 
 		if (element != null) {
 			date.setSelection(element.getDate());
@@ -134,7 +133,7 @@ public class HolidayDialog extends Dialog {
 			closeTime.setSelection(element.getCloseTime());
 		}
 		else {
-		    date.setSelection(Calendar.getInstance().getTime());
+			date.setSelection(Calendar.getInstance().getTime());
 			description.setText("");
 			closed.setSelection(true);
 			open.setSelection(false);
@@ -142,71 +141,68 @@ public class HolidayDialog extends Dialog {
 			closeTime.setSelection(null);
 		}
 
-		date.addModifyListener(validationModifyListener);
-	    date.addSelectionListener(validationSelectionListener);
+		date.addSelectionListener(validationSelectionListener);
 		description.addModifyListener(validationModifyListener);
 		closed.addSelectionListener(buttonSelectionListener);
 		open.addSelectionListener(buttonSelectionListener);
-		openTime.addModifyListener(validationModifyListener);
 		openTime.addSelectionListener(validationSelectionListener);
-		closeTime.addModifyListener(validationModifyListener);
 		closeTime.addSelectionListener(validationSelectionListener);
 
-	    return parent;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.Dialog#createContents(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
-    protected Control createContents(Composite parent) {
-	    Control control = super.createContents(parent);
-		updateButtonsEnablement();
-		return control;
-    }
-
-	protected void updateButtonsEnablement() {
-    	openTimeLabel.setEnabled(open.getSelection());
-    	openTime.setEnabled(open.getSelection());
-    	closeTimeLabel.setEnabled(open.getSelection());
-    	closeTime.setEnabled(open.getSelection());
-    	getButton(IDialogConstants.OK_ID).setEnabled(isValid());
-    }
-
-    protected boolean isValid() {
-    	if (date.getSelection() == null)
-    		return false;
-    	if (description.getText().equals(""))
-    		return false;
-    	if (open.getSelection()) {
-        	if (openTime.getSelection() == null)
-        		return false;
-        	if (closeTime.getSelection() == null)
-        		return false;
-    	}
-    	return true;
-    }
+		return parent;
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-     */
-    @Override
-    protected void okPressed() {
-    	commitChanges();
-	    super.okPressed();
-    }
+	 * @see org.eclipse.jface.dialogs.Dialog#createContents(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	protected Control createContents(Composite parent) {
+		Control control = super.createContents(parent);
+		updateButtonsEnablement();
+		return control;
+	}
 
-    protected void commitChanges() {
-    	if (element == null)
-    		element = new MarketHolidayElement();
+	protected void updateButtonsEnablement() {
+		openTimeLabel.setEnabled(open.getSelection());
+		openTime.setEnabled(open.getSelection());
+		closeTimeLabel.setEnabled(open.getSelection());
+		closeTime.setEnabled(open.getSelection());
+		getButton(IDialogConstants.OK_ID).setEnabled(isValid());
+	}
 
-    	element.setDate(date.getSelection());
-    	element.setDescription(!description.getText().equals("") ? description.getText() : null);
-    	element.setOpenTime(open.getSelection() ? openTime.getSelection() : null);
-    	element.setCloseTime(open.getSelection() ? closeTime.getSelection() : null);
-    }
+	protected boolean isValid() {
+		if (date.getSelection() == null)
+			return false;
+		if (description.getText().equals(""))
+			return false;
+		if (open.getSelection()) {
+			if (openTime.getSelection() == null)
+				return false;
+			if (closeTime.getSelection() == null)
+				return false;
+		}
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+	 */
+	@Override
+	protected void okPressed() {
+		commitChanges();
+		super.okPressed();
+	}
+
+	protected void commitChanges() {
+		if (element == null)
+			element = new MarketHolidayElement();
+
+		element.setDate(date.getSelection());
+		element.setDescription(!description.getText().equals("") ? description.getText() : null);
+		element.setOpenTime(open.getSelection() ? openTime.getSelection() : null);
+		element.setCloseTime(open.getSelection() ? closeTime.getSelection() : null);
+	}
 
 	public MarketHolidayElement getElement() {
-    	return element;
-    }
+		return element;
+	}
 }

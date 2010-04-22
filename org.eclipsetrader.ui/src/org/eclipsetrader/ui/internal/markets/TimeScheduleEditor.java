@@ -31,8 +31,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.nebula.jface.cdatetime.CDateTimeCellEditor;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
-import org.eclipse.nebula.widgets.cdatetime.CDateTimeCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -68,12 +68,12 @@ public class TimeScheduleEditor extends Observable {
 		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-	     */
-	    @Override
-	    public String getText(Object element) {
-		    return getColumnText(element, 0);
-	    }
+		 * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+		 */
+		@Override
+		public String getText(Object element) {
+			return getColumnText(element, 0);
+		}
 
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
@@ -81,7 +81,7 @@ public class TimeScheduleEditor extends Observable {
 		public String getColumnText(Object element, int columnIndex) {
 			if (element instanceof MarketTimeElement) {
 				MarketTimeElement e = (MarketTimeElement) element;
-				switch(columnIndex) {
+				switch (columnIndex) {
 					case 0:
 						return timeFormat.format(e.getOpenTime());
 					case 1:
@@ -129,21 +129,21 @@ public class TimeScheduleEditor extends Observable {
 		viewer.setLabelProvider(new ScheduleElementLabelProvider());
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setSorter(new ViewerSorter() {
-            @Override
-            public int compare(Viewer viewer, Object e1, Object e2) {
-	            return ((MarketTimeElement) e1).compareTo((MarketTimeElement) e2);
-            }
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				return ((MarketTimeElement) e1).compareTo((MarketTimeElement) e2);
+			}
 		});
 
 		viewer.setCellModifier(new ICellModifier() {
-            public boolean canModify(Object element, String property) {
-	            return true;
-            }
+			public boolean canModify(Object element, String property) {
+				return true;
+			}
 
-            public Object getValue(Object element, String property) {
-            	MarketTimeElement e = (MarketTimeElement) element;
-            	int columnIndex = Integer.valueOf(property);
-				switch(columnIndex) {
+			public Object getValue(Object element, String property) {
+				MarketTimeElement e = (MarketTimeElement) element;
+				int columnIndex = Integer.valueOf(property);
+				switch (columnIndex) {
 					case 0:
 						return e.getOpenTime();
 					case 1:
@@ -151,13 +151,13 @@ public class TimeScheduleEditor extends Observable {
 					case 2:
 						return e.getDescription() != null ? e.getDescription() : "";
 				}
-	            return "";
-            }
+				return "";
+			}
 
-            public void modify(Object element, String property, Object value) {
-            	MarketTimeElement e = (MarketTimeElement) (element instanceof TableItem ? ((TableItem) element).getData() : element);
-            	int columnIndex = Integer.valueOf(property);
-				switch(columnIndex) {
+			public void modify(Object element, String property, Object value) {
+				MarketTimeElement e = (MarketTimeElement) (element instanceof TableItem ? ((TableItem) element).getData() : element);
+				int columnIndex = Integer.valueOf(property);
+				switch (columnIndex) {
 					case 0:
 						e.setOpenTime(normalizeDate((Date) value));
 						break;
@@ -171,30 +171,32 @@ public class TimeScheduleEditor extends Observable {
 				viewer.refresh();
 				setChanged();
 				notifyObservers();
-            }
+			}
 
-    		private Date normalizeDate(Date date) {
-    			Calendar calendar = Calendar.getInstance();
-    			calendar.setTime(date);
-    			calendar.set(Calendar.SECOND, 0);
-    			calendar.set(Calendar.MILLISECOND, 0);
-    			return calendar.getTime();
-    		}
+			private Date normalizeDate(Date date) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(date);
+				calendar.set(Calendar.SECOND, 0);
+				calendar.set(Calendar.MILLISECOND, 0);
+				return calendar.getTime();
+			}
 		});
-		viewer.setColumnProperties(new String[] { "0", "1", "2" });
+		viewer.setColumnProperties(new String[] {
+		    "0", "1", "2"
+		});
 		viewer.setCellEditors(new CellEditor[] {
-				new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
-				new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
-				new TextCellEditor(viewer.getTable(), SWT.NONE),
+		    new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
+		    new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
+		    new TextCellEditor(viewer.getTable(), SWT.NONE),
 		});
 
 		viewer.setInput(input);
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-            	if (remove != null)
-            		remove.setEnabled(!event.getSelection().isEmpty());
-            }
+			public void selectionChanged(SelectionChangedEvent event) {
+				if (remove != null)
+					remove.setEnabled(!event.getSelection().isEmpty());
+			}
 		});
 	}
 
@@ -208,38 +210,38 @@ public class TimeScheduleEditor extends Observable {
 		add = new Button(content, SWT.PUSH);
 		add.setText("Add");
 		add.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-            	Calendar now = Calendar.getInstance();
-            	now.set(Calendar.SECOND, 0);
-            	now.set(Calendar.MILLISECOND, 0);
-            	MarketTimeElement element = new MarketTimeElement(now.getTime(), now.getTime());
-            	input.add(element);
-        		viewer.refresh();
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Calendar now = Calendar.getInstance();
+				now.set(Calendar.SECOND, 0);
+				now.set(Calendar.MILLISECOND, 0);
+				MarketTimeElement element = new MarketTimeElement(now.getTime(), now.getTime());
+				input.add(element);
+				viewer.refresh();
 
-        		setChanged();
+				setChanged();
 				notifyObservers();
 
 				viewer.getControl().setFocus();
-        		viewer.setSelection(new StructuredSelection(element), true);
-        		viewer.editElement(element, 0);
-            }
+				viewer.setSelection(new StructuredSelection(element), true);
+				viewer.editElement(element, 0);
+			}
 		});
 		add.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 
 		remove = new Button(content, SWT.PUSH);
 		remove.setText("Remove");
 		remove.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-            	IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-            	if (!selection.isEmpty()) {
-            		input.removeAll(selection.toList());
-            		viewer.refresh();
-    				setChanged();
-    				notifyObservers();
-            	}
-            }
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+				if (!selection.isEmpty()) {
+					input.removeAll(selection.toList());
+					viewer.refresh();
+					setChanged();
+					notifyObservers();
+				}
+			}
 		});
 		remove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		remove.setEnabled(false);
@@ -260,16 +262,16 @@ public class TimeScheduleEditor extends Observable {
 	}
 
 	public Control getControl() {
-    	return content;
-    }
+		return content;
+	}
 
 	protected TableViewer getViewer() {
-    	return viewer;
-    }
+		return viewer;
+	}
 
 	protected List<MarketTimeElement> getInput() {
-    	return input;
-    }
+		return input;
+	}
 
 	protected void addSelectionChangedListener(ISelectionChangedListener listener) {
 		viewer.addSelectionChangedListener(listener);

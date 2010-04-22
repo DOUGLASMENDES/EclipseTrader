@@ -51,7 +51,7 @@ public class CDateTimeCellEditor extends CellEditor {
     }
 
     protected Control createControl(Composite parent) {
-		cdt = new CDateTime(parent, CDT.DROP_DOWN | getStyle());
+		cdt = new CDateTime(parent, getStyle());
 		cdt.addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 		        fireApplyEditorValue();

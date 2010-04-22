@@ -8,6 +8,7 @@ Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.nebula.widgets.cdatetime,
+ org.eclipse.nebula.jface.cdatetime,
  org.eclipsetrader.core,
  org.eclipse.ui.forms,
  org.eclipsetrader.core.trading
