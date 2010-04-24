@@ -23,6 +23,8 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -437,11 +439,13 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 				BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 				ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
 				if (reference != null) {
-					IProxyService proxy = (IProxyService) context.getService(reference);
-					IProxyData data = proxy.getProxyDataForHost(streamingServer, IProxyData.SOCKS_PROXY_TYPE);
-					if (data != null) {
-						if (data.getHost() != null)
-							socksProxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(data.getHost(), data.getPort()));
+					IProxyService proxyService = (IProxyService) context.getService(reference);
+					IProxyData[] proxyData = proxyService.select(new URI(null, streamingServer, null, null));
+					for (int i = 0; i < proxyData.length; i++) {
+						if (IProxyData.SOCKS_PROXY_TYPE.equals(proxyData[i].getType()) && proxyData[i].getHost() != null) {
+							socksProxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(proxyData[i].getHost(), proxyData[i].getPort()));
+							break;
+						}
 					}
 					context.ungetService(reference);
 				}
@@ -1002,18 +1006,22 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 		return method;
 	}
 
-	protected void setupProxy(HttpClient client, String host) {
+	private void setupProxy(HttpClient client, String host) throws URISyntaxException {
 		if (Activator.getDefault() != null) {
 			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 			ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
 			if (reference != null) {
-				IProxyService proxy = (IProxyService) context.getService(reference);
-				IProxyData data = proxy.getProxyDataForHost(host, IProxyData.HTTP_PROXY_TYPE);
-				if (data != null) {
-					if (data.getHost() != null)
-						client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-					if (data.isRequiresAuthentication())
-						client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
+				IProxyService proxyService = (IProxyService) context.getService(reference);
+				IProxyData[] proxyData = proxyService.select(new URI(null, host, null, null));
+				for (int i = 0; i < proxyData.length; i++) {
+					if (IProxyData.HTTP_PROXY_TYPE.equals(proxyData[i].getType())) {
+						IProxyData data = proxyData[i];
+						if (data.getHost() != null)
+							client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
+						if (data.isRequiresAuthentication())
+							client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
+						break;
+					}
 				}
 				context.ungetService(reference);
 			}

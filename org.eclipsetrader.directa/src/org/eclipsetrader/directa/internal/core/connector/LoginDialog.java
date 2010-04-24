@@ -75,7 +75,8 @@ public class LoginDialog extends TitleAreaDialog {
 		Label label = new Label(composite, SWT.NONE);
 		label.setText("User Code");
 		text1 = new Text(composite, SWT.BORDER);
-		text1.setText(userName);
+		if (userName != null)
+			text1.setText(userName);
 		text1.setLayoutData(new GridData(convertHorizontalDLUsToPixels(140), SWT.DEFAULT));
 
 		label = new Label(composite, SWT.NONE);

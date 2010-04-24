@@ -13,6 +13,8 @@ package org.eclipsetrader.directaworld.internal.core.connector;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -240,25 +242,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		client = new HttpClient();
-		client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-
-		if (Activator.getDefault() != null) {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-			if (reference != null) {
-				IProxyService proxy = (IProxyService) context.getService(reference);
-				IProxyData data = proxy.getProxyDataForHost(HOST, IProxyData.HTTP_PROXY_TYPE);
-				if (data != null) {
-					if (data.getHost() != null)
-						client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-					if (data.isRequiresAuthentication())
-						client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
-				}
-				context.ungetService(reference);
-			}
-		}
-
 		final ISecurePreferences preferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
 		try {
 			if (userName == null)
@@ -266,13 +249,33 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 			if (password == null)
 				password = preferences.get(Activator.PREFS_PASSWORD, "");
 		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
-			Activator.log(status);
-			ErrorDialog.openError(null, null, null, status);
+			final Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+			Display.getDefault().syncExec(new Runnable() {
+
+				public void run() {
+					Activator.log(status);
+					ErrorDialog.openError(null, null, null, status);
+				}
+			});
+		}
+
+		client = new HttpClient();
+		client.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
+		try {
+			setupProxy(client, HOST);
+		} catch (URISyntaxException e) {
+			final Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Error setting proxy", e);
+			Display.getDefault().syncExec(new Runnable() {
+
+				public void run() {
+					Activator.log(status);
+					ErrorDialog.openError(null, null, null, status);
+				}
+			});
 		}
 
 		do {
-			if ("".equals(userName) || "".equals(password)) {
+			if (userName == null || password == null || "".equals(userName) || "".equals(password)) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						Shell shell = PlatformUI.isWorkbenchRunning() ? PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell() : null;
@@ -319,6 +322,28 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 
 		client = null;
 		thread = null;
+	}
+
+	private void setupProxy(HttpClient client, String host) throws URISyntaxException {
+		if (Activator.getDefault() != null) {
+			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+			ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
+			if (reference != null) {
+				IProxyService proxyService = (IProxyService) context.getService(reference);
+				IProxyData[] proxyData = proxyService.select(new URI(null, host, null, null));
+				for (int i = 0; i < proxyData.length; i++) {
+					if (IProxyData.HTTP_PROXY_TYPE.equals(proxyData[i].getType())) {
+						IProxyData data = proxyData[i];
+						if (data.getHost() != null)
+							client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
+						if (data.isRequiresAuthentication())
+							client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
+						break;
+					}
+				}
+				context.ungetService(reference);
+			}
+		}
 	}
 
 	protected IPreferenceStore getPreferenceStore() {
