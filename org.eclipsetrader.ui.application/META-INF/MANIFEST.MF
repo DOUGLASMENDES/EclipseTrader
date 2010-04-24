@@ -7,8 +7,7 @@ Bundle-Activator: org.eclipsetrader.ui.internal.application.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- org.eclipsetrader.ui,
- org.eclipse.update.ui
+ org.eclipsetrader.ui
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

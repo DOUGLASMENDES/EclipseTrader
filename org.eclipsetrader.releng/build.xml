@@ -1,41 +1,13 @@
-<!--
-   Copyright (c) 2004-2010 Marco Maccaferri and others.
-   All rights reserved. This program and the accompanying materials
-   are made available under the terms of the Eclipse Public License v1.0
-   which accompanies this distribution, and is available at
-   http://www.eclipse.org/legal/epl-v10.html
-
-   Contributors:
-       Marco Maccaferri - initial API and implementation
--->
-
 <project name="Product Build">
 	<property name="eclipse.home" value="${user.home}/eclipse"/>
-	<property name="buildDirectory" value="${user.home}/eclipsetrader.build"/>
+	<property name="buildDirectory" value="${user.home}/eclipsetrader.build.p2"/>
 	<property name="baseLocation" value="${user.home}/eclipse-platform-3.5"/>
-
-    <path id="eclipse.launcher.id">
-        <fileset dir="${eclipse.home}/plugins">
-            <include name="org.eclipse.equinox.launcher_*.jar"/>
-        </fileset>
-    </path>
-    <property name="eclipse.launcher" refid="eclipse.launcher.id"/>
-    <echo message="Launcher ${eclipse.launcher}"/>
-
-    <path id="eclipse.pde.build.id">
-        <dirset dir="${eclipse.home}/plugins">
-            <include name="org.eclipse.pde.build_*"/>
-        </dirset>
-    </path>
-    <property name="eclipse.pde.build" refid="eclipse.pde.build.id"/>
-    <echo message="PDE Build ${eclipse.pde.build}"/>
 
 	<available file="${buildDirectory}/label.properties" property="label.properties.exists" />
 	<property file="${buildDirectory}/label.properties" />
 
-    <available file="${buildDirectory}/wc" type="dir" property="wc.exists"/>
-    <property name="repository" value="http://svn.eclipsetrader.org/svnroot/eclipsetrader"/>
-    <property name="tag" value="trunk"/>
+	<available file="${buildDirectory}/wc" type="dir" property="wc.present"/>
+	<property name="tag" value="http://svn.eclipsetrader.org/svnroot/eclipsetrader/trunk"/>
 
 	<path id="project.classpath">
 		<pathelement location="${basedir}/libs/svnjavahl.jar"/>
@@ -44,84 +16,208 @@
 	</path>
 	<taskdef resource="svntask.properties" classpathref="project.classpath"/>
 
-    <target name="clean">
-        <delete dir="${buildDirectory}/features"/>
-        <delete dir="${buildDirectory}/plugins"/>
-        <delete file="${buildDirectory}/label.properties"/>
-        <delete>
-            <fileset dir="${buildDirectory}" includes="assemble.*"/>
-            <fileset dir="${buildDirectory}" includes="package.*"/>
-            <fileset dir="${buildDirectory}" includes="final*"/>
-        </delete>
-    </target>
+	<target name="create.label.properties" unless="label.properties.exists">
+		<mkdir dir="${buildDirectory}" />
+		
+		<tstamp>
+		   <format property="timestamp" pattern="yyyyMMddHHmm"/>
+		</tstamp>
+		<property name="buildType" value="N"/>
+		<property name="buildId" value="${buildType}${timestamp}"/>
+		<property name="buildLabel" value="${buildType}${timestamp}"/>
 
-    <target name="fetch" depends="fetch-checkout,fetch-update">
-        <delete dir="${buildDirectory}/features"/>
-        <copy todir="${buildDirectory}/features">
-            <fileset dir="${buildDirectory}/wc">
-                <include name="*-feature/**/*" />
-            </fileset>
-        </copy>
-        <delete dir="${buildDirectory}/plugins"/>
-        <copy todir="${buildDirectory}/plugins">
-            <fileset dir="${buildDirectory}/wc">
-                <include name="*/**/*" />
-                <exclude name="*-feature/**/*" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="fetch-checkout" description="Checking out source from repository..." unless="wc.exists">
-        <svn>
-            <checkout url="${repository}/${tag}" destpath="${buildDirectory}/wc" revision="HEAD"/>
-        </svn>
-    </target>
-
-    <target name="fetch-update" description="Updating source from repository..." if="wc.exists">
-        <svn>
-            <update dir="${buildDirectory}/wc"/>
-        </svn>
-    </target>
-
-	<target name="build" depends="create.label.properties">
-        <replace dir="${buildDirectory}/plugins" value="${buildId}" token="@build@">
-            <include name="**/about.mappings" />
-        </replace>
-        <replace dir="${buildDirectory}/features" value="${buildId}" token="@build@">
-            <include name="**/config.ini" />
-        </replace>
-        
-        <java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
-            <arg value="-application"/>
-            <arg value="org.eclipse.ant.core.antRunner"/>
-            <arg value="-buildfile"/>
-            <arg value="${eclipse.pde.build}/scripts/productBuild/productBuild.xml"/>
-            <arg value="-DbaseLocation=${baseLocation}"/>
-            <arg value="-Dproduct=${basedir}/eclipsetrader.product"/>
-            <arg value="-DbuildType=${buildType}"/>
-            <arg value="-DbuildId=${buildId}"/>
-            <arg value="-DbuildLabel=${buildLabel}"/>
-            <arg value="-Dtimestamp=${timestamp}"/>
-            <arg value="-DbuildDirectory=${buildDirectory}"/>
-        </java>
+		<echo file="${buildDirectory}/label.properties">timestamp=${timestamp}
+buildType=${buildType}
+buildId=${buildId}
+buildLabel=${buildLabel}</echo>
 	</target>
 
-    <target name="create.label.properties" unless="label.properties.exists">
-        <mkdir dir="${buildDirectory}" />
-        
-        <tstamp>
-           <format property="timestamp" pattern="yyyyMMddHHmm"/>
-        </tstamp>
-        <property name="buildType" value="N"/>
-        <property name="buildId" value="${buildType}${timestamp}"/>
-        <property name="buildLabel" value="${buildType}${timestamp}"/>
+	<target name="pde.build.init">
+    	    <path id="eclipse.launcher.id">
+		    <fileset dir="${eclipse.home}/plugins">
+			<include name="org.eclipse.equinox.launcher_*.jar"/>
+		    </fileset>
+	    </path>
+	    <property name="eclipse.launcher" refid="eclipse.launcher.id"/>
+	    <echo message="Launcher ${eclipse.launcher}"/>
 
-        <echo file="${buildDirectory}/label.properties">
-            timestamp=${timestamp}
-            buildType=${buildType}
-            buildId=${buildId}
-            buildLabel=${buildLabel}
-        </echo>
-    </target>
+	    <path id="eclipse.pde.build.id">
+		    <dirset dir="${eclipse.home}/plugins">
+			<include name="org.eclipse.pde.build_*"/>
+		    </dirset>
+	    </path>
+	    <property name="eclipse.pde.build" refid="eclipse.pde.build.id"/>
+	    <echo message="PDE Build ${eclipse.pde.build}"/>
+	</target>
+
+	<target name="fetch-checkout" description="Checking out source from repository..." unless="wc.present">
+		<svn>
+			<checkout url="${tag}" destpath="${buildDirectory}/wc" revision="HEAD"/>
+		</svn>
+	</target>
+
+	<target name="fetch-update" description="Upadting source from repository..." if="wc.present">
+		<svn>
+			<update dir="${buildDirectory}/wc"/>
+		</svn>
+	</target>
+
+	<target name="fetch" depends="fetch-checkout,fetch-update">
+		<delete dir="${buildDirectory}/features"/>
+		<copy todir="${buildDirectory}/features">
+			<fileset dir="${buildDirectory}/wc">
+				<include name="*-feature/**/*" />
+			</fileset>
+		</copy>
+		<delete dir="${buildDirectory}/plugins"/>
+		<copy todir="${buildDirectory}/plugins">
+			<fileset dir="${buildDirectory}/wc">
+				<include name="*/**/*" />
+				<exclude name="*.tests/**/*" />
+				<exclude name="*-feature/**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build" depends="create.label.properties,pde.build.init">
+		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
+			<arg value="-application"/>
+			<arg value="org.eclipse.ant.core.antRunner"/>
+			<arg value="-buildfile"/>
+			<arg value="${eclipse.pde.build}/scripts/productBuild/productBuild.xml"/>
+			<arg value="-DbaseLocation=${baseLocation}"/>
+			<arg value="-Dproduct=${basedir}/eclipsetrader.product"/>
+			<arg value="-DbuildType=${buildType}"/>
+			<arg value="-DbuildId=${buildId}"/>
+			<arg value="-DbuildLabel=updates"/>
+			<arg value="-Dtimestamp=${timestamp}"/>
+			<arg value="-DbuildDirectory=${buildDirectory}"/>
+			<arg value="-Dp2.gathering=true"/>
+			<arg value="-Dp2.build.repo=file:${buildDirectory}/updates"/>
+			<arg value="-Dp2.category.definition=file:${buildDirectory}/category.xml"/>
+			<arg value="-Dp2.compress=true"/>
+			<arg value="-Dp2.flavor=tooling"/>
+			<arg value="-Dp2.publish.artifacts=true"/>
+			<arg value="-DskipDirector=true"/>
+		</java>
+	</target>
+
+	<target name="publish" depends="pde.build.init">
+		<mkdir dir="${buildDirectory}/${buildLabel}" />
+		<delete dir="${buildDirectory}/tmp" />
+
+		<antcall target="director">
+			<param name="os" value="linux" />
+			<param name="ws" value="gtk" />
+			<param name="arch" value="x86" />
+		</antcall>
+		<exec executable="tar" dir="${buildDirectory}/tmp">
+			<arg line="czf" />
+			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-linux.gtk.x86.tar.gz" />
+			<arg line="." />
+		</exec>
+		<delete dir="${buildDirectory}/tmp" />
+
+		<antcall target="director">
+			<param name="os" value="linux" />
+			<param name="ws" value="gtk" />
+			<param name="arch" value="x86_64" />
+		</antcall>
+		<exec executable="tar" dir="${buildDirectory}/tmp">
+			<arg line="czf" />
+			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-linux.gtk.x86_64.tar.gz" />
+			<arg line="." />
+		</exec>
+		<delete dir="${buildDirectory}/tmp" />
+
+		<antcall target="director">
+			<param name="os" value="win32" />
+			<param name="ws" value="win32" />
+			<param name="arch" value="x86" />
+		</antcall>
+		<exec executable="zip" dir="${buildDirectory}/tmp">
+			<arg line="-r" />
+			<arg line="-q" />
+			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-win32.win32.x86.zip" />
+			<arg line="." />
+		</exec>
+		<delete dir="${buildDirectory}/tmp" />
+
+		<antcall target="director">
+			<param name="os" value="win32" />
+			<param name="ws" value="win32" />
+			<param name="arch" value="x86_64" />
+		</antcall>
+		<exec executable="zip" dir="${buildDirectory}/tmp">
+			<arg line="-r" />
+			<arg line="-q" />
+			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-win32.win32.x86_64.zip" />
+			<arg line="." />
+		</exec>
+		<delete dir="${buildDirectory}/tmp" />
+
+		<antcall target="director">
+			<param name="os" value="win32" />
+			<param name="ws" value="wpf" />
+			<param name="arch" value="x86" />
+		</antcall>
+		<exec executable="zip" dir="${buildDirectory}/tmp">
+			<arg line="-r" />
+			<arg line="-q" />
+			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-win32.wpf.x86.zip" />
+			<arg line="." />
+		</exec>
+		<delete dir="${buildDirectory}/tmp" />
+
+		<antcall target="director">
+			<param name="os" value="macosx" />
+			<param name="ws" value="carbon" />
+			<param name="arch" value="ppc" />
+		</antcall>
+		<exec executable="zip" dir="${buildDirectory}/tmp">
+			<arg line="-r" />
+			<arg line="-q" />
+			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-macosx.carbon.ppc.zip" />
+			<arg line="." />
+		</exec>
+		<delete dir="${buildDirectory}/tmp" />
+	</target>
+
+	<target name="director">
+		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
+			<arg line="-application" />
+			<arg line="org.eclipse.equinox.p2.director" />
+			<arg line="-flavor tooling" />
+			<arg line="-installIU org.eclipsetrader.platform.workbench" />
+			<arg line="-p2.os ${os}" />
+			<arg line="-p2.ws ${ws}" />
+			<arg line="-p2.arch ${arch}" />
+			<arg line="-roaming" />
+			<arg line="-profile SDKProfile" />
+			<arg line="-profileProperties org.eclipse.update.install.features=true" />
+			<arg line="-metadataRepository file:${buildDirectory}/updates" />
+			<arg line="-artifactRepository file:${buildDirectory}/updates" />
+			<arg line="-destination ${buildDirectory}/tmp/eclipsetrader" />
+			<arg line="-bundlepool ${buildDirectory}/tmp/eclipsetrader" />
+			<arg line="-profileProperties org.eclipse.update.install.features=true" />
+			<arg line="-vmargs" />
+			<arg line="-Declipse.p2.data.area=${buildDirectory}/tmp/eclipsetrader/p2" />
+		</java>
+
+	</target>
+
+	<target name="clean">
+		<delete dir="${buildDirectory}/features"/>
+		<delete dir="${buildDirectory}/plugins"/>
+		<delete dir="${buildDirectory}/updates"/>
+		<delete dir="${buildDirectory}/artifact"/>
+		<delete dir="${buildDirectory}/repo"/>
+		<delete file="${buildDirectory}/label.properties"/>
+		<delete>
+			<fileset dir="${buildDirectory}" includes="assemble.*"/>
+			<fileset dir="${buildDirectory}" includes="package.*"/>
+			<fileset dir="${buildDirectory}" includes="final*"/>
+		</delete>
+	</target>
 
 </project>

@@ -15,6 +15,6 @@
    <feature url="features/org.eclipsetrader.yahoo_1.0.0.qualifier.jar" id="org.eclipsetrader.yahoo" version="1.0.0.qualifier">
       <category name="plugins"/>
    </feature>
-   <category-def name="main" label="Main"/>
-   <category-def name="plugins" label="Plugins"/>
+   <category-def name="main" label="Platform"/>
+   <category-def name="plugins" label="Connectors"/>
 </site>

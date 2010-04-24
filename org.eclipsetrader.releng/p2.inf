@@ -1,0 +1,8 @@
+instructions.configure = \
+  addRepository(type:0,location:http${#58}//eclipsetrader.org/updates2,name:EclipseTrader Updates);\
+  addRepository(type:1,location:http${#58}//eclipsetrader.org/updates2,name:EclipseTrader Updates);\
+  mkdir(path:${installFolder}/dropins);\
+  setProgramProperty(propName:org.eclipse.equinox.simpleconfigurator.configUrl,propValue:file:org.eclipse.equinox.simpleconfigurator/bundles.info);
+
+instructions.unconfigure = \
+  setProgramProperty(propName:org.eclipse.equinox.simpleconfigurator.configUrl,propValue:);
