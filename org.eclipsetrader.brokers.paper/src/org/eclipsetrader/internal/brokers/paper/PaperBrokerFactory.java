@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
+import org.eclipse.core.runtime.Status;
 
 public class PaperBrokerFactory implements IExecutableExtension, IExecutableExtensionFactory {
 	private static PaperBroker instance;
@@ -42,7 +43,24 @@ public class PaperBrokerFactory implements IExecutableExtension, IExecutableExte
 		if (instance == null) {
 			instance = new PaperBroker();
 			instance.setInitializationData(config, propertyName, data);
+			try {
+				instance.load(Activator.getDefault().getStateLocation().append("monitors.xml").toFile());
+			} catch (Exception e) {
+				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error loading monitors", e); //$NON-NLS-1$
+				Activator.log(status);
+			}
 		}
 		return instance;
+	}
+
+	public void dispose() {
+		try {
+			if (instance != null)
+				instance.save(Activator.getDefault().getStateLocation().append("monitors.xml").toFile());
+		} catch (Exception e) {
+			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error saving monitors", e); //$NON-NLS-1$
+			Activator.log(status);
+		}
+		instance = null;
 	}
 }

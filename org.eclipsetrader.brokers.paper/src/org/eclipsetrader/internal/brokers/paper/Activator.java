@@ -52,6 +52,8 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		repository.save(getStateLocation().append("accounts.xml").toFile());
 
+		new PaperBrokerFactory().dispose();
+
 		plugin = null;
 		super.stop(context);
 	}

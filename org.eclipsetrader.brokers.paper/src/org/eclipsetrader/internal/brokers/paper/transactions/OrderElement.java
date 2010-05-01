@@ -73,88 +73,88 @@ public class OrderElement {
 	private class Order implements IOrder {
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getDate()
-	     */
-	    public Date getDate() {
-		    return date;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getDate()
+		 */
+		public Date getDate() {
+			return date;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getAccount()
-	     */
-	    public IAccount getAccount() {
-		    return null;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getAccount()
+		 */
+		public IAccount getAccount() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getSecurity()
-	     */
-	    public ISecurity getSecurity() {
-		    return security;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getSecurity()
+		 */
+		public ISecurity getSecurity() {
+			return security;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getPrice()
-	     */
-	    public Double getPrice() {
-		    return price;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getPrice()
+		 */
+		public Double getPrice() {
+			return price;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getQuantity()
-	     */
-	    public Long getQuantity() {
-		    return quantity;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getQuantity()
+		 */
+		public Long getQuantity() {
+			return quantity;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getRoute()
-	     */
-	    public IOrderRoute getRoute() {
-		    return null;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getRoute()
+		 */
+		public IOrderRoute getRoute() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getSide()
-	     */
-	    public IOrderSide getSide() {
-		    return side;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getSide()
+		 */
+		public IOrderSide getSide() {
+			return side;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getStopPrice()
-	     */
-	    public Double getStopPrice() {
-		    return stopPrice;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getStopPrice()
+		 */
+		public Double getStopPrice() {
+			return stopPrice;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getType()
-	     */
-	    public IOrderType getType() {
-		    return type;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getType()
+		 */
+		public IOrderType getType() {
+			return type;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getValidity()
-	     */
-	    public IOrderValidity getValidity() {
-		    return null;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getValidity()
+		 */
+		public IOrderValidity getValidity() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-	     * @see org.eclipsetrader.core.trading.IOrder#getExpire()
-	     */
-	    public Date getExpire() {
-		    return expire;
-	    }
+		 * @see org.eclipsetrader.core.trading.IOrder#getExpire()
+		 */
+		public Date getExpire() {
+			return expire;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.trading.IOrder#getReference()
-         */
-        public String getReference() {
-	        return reference;
-        }
+		 * @see org.eclipsetrader.core.trading.IOrder#getReference()
+		 */
+		public String getReference() {
+			return reference;
+		}
 	}
 
 	public OrderElement() {
@@ -163,6 +163,8 @@ public class OrderElement {
 
 	public OrderElement(IOrder order) {
 		this.date = order.getDate();
+		this.side = order.getSide();
+		this.type = order.getType();
 		this.security = order.getSecurity();
 		this.quantity = order.getQuantity();
 		this.price = order.getPrice();
@@ -171,10 +173,10 @@ public class OrderElement {
 		this.reference = order.getReference();
 
 		this.order = order;
-    }
+	}
 
 	@XmlTransient
 	public IOrder getOrder() {
-    	return order;
-    }
+		return order;
+	}
 }

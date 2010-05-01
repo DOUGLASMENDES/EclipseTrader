@@ -165,13 +165,15 @@ public class Account implements IAccount {
 		}
 
 		Long quantity = monitor.getOrder().getSide() == IOrderSide.Sell ? -monitor.getFilledQuantity() : monitor.getFilledQuantity();
+		double averagePrice = transaction.getAmount().getAmount() / monitor.getFilledQuantity();
+
 		if (position == null) {
-			position = new Position(monitor.getOrder().getSecurity(), quantity, monitor.getAveragePrice());
+			position = new Position(monitor.getOrder().getSecurity(), quantity, averagePrice);
 			portfolio.add(position);
 			firePositionOpenedEvent(position);
 		}
 		else {
-			position.add(quantity, monitor.getAveragePrice());
+			position.add(quantity, averagePrice);
 			if (position.getQuantity() == 0L) {
 				portfolio.remove(position);
 				firePositionClosedEvent(position);

@@ -74,6 +74,7 @@ public class AccountTest extends TestCase {
 		OrderMonitor monitor = new OrderMonitor(null, order);
 		monitor.setFilledQuantity(1000L);
 		monitor.setAveragePrice(1.5);
+		monitor.addTransaction(new StockTransaction(null, 1000L, 1.5));
 
 		Account account = new Account();
 		account.processCompletedOrder(monitor);
@@ -105,6 +106,7 @@ public class AccountTest extends TestCase {
 		OrderMonitor monitor = new OrderMonitor(null, order);
 		monitor.setFilledQuantity(1000L);
 		monitor.setAveragePrice(1.5);
+		monitor.addTransaction(new StockTransaction(null, 1000L, 1.5));
 
 		Account account = new Account();
 		account.processCompletedOrder(monitor);
@@ -119,11 +121,13 @@ public class AccountTest extends TestCase {
 		OrderMonitor monitor1 = new OrderMonitor(null, order1);
 		monitor1.setFilledQuantity(1000L);
 		monitor1.setAveragePrice(1.5);
+		monitor1.addTransaction(new StockTransaction(null, 1000L, 1.5));
 
 		Order order2 = new Order(null, IOrderType.Market, IOrderSide.Buy, null, 1000L, 1.7);
 		OrderMonitor monitor2 = new OrderMonitor(null, order2);
 		monitor2.setFilledQuantity(1000L);
 		monitor2.setAveragePrice(1.7);
+		monitor2.addTransaction(new StockTransaction(null, 1000L, 1.7));
 
 		Account account = new Account();
 		account.processCompletedOrder(monitor1);

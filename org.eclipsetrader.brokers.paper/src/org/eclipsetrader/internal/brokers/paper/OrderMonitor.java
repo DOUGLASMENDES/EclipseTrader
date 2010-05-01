@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2009 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,8 +15,16 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrder;
@@ -25,31 +33,57 @@ import org.eclipsetrader.core.trading.IOrderMonitorListener;
 import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.core.trading.ITransaction;
 import org.eclipsetrader.core.trading.OrderMonitorEvent;
+import org.eclipsetrader.internal.brokers.paper.transactions.OrderElement;
+import org.eclipsetrader.internal.brokers.paper.types.DoubleValueAdapter;
+import org.eclipsetrader.internal.brokers.paper.types.OrderStatusAdapter;
 
+@XmlRootElement(name = "monitor")
 public class OrderMonitor implements IOrderMonitor, IAdaptable {
-	private IOrder order;
-
-	private PaperBroker broker;
+	@XmlAttribute(name = "id")
 	private String id;
 
+	@XmlElement(name = "order")
+	private OrderElement order;
+
+	@XmlAttribute(name = "filled-qty")
 	private Long filledQuantity;
+
+	@XmlAttribute(name = "avg-price")
+	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
 	private Double averagePrice;
+
+	@XmlAttribute(name = "status")
+	@XmlJavaTypeAdapter(OrderStatusAdapter.class)
 	private IOrderStatus status = IOrderStatus.New;
+
+	@XmlAttribute(name = "message")
 	private String message;
+
+	private PaperBroker broker;
 
 	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private List<ITransaction> transactions = new ArrayList<ITransaction>();
 
+	protected OrderMonitor() {
+		try {
+			broker = (PaperBroker) new PaperBrokerFactory().create();
+		} catch (CoreException e) {
+			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error initializing monitor", e); //$NON-NLS-1$
+			Activator.log(status);
+		}
+	}
+
 	public OrderMonitor(PaperBroker broker, IOrder order) {
 		this.broker = broker;
-		this.order = order;
+		this.order = new OrderElement(order);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getBrokerConnector()
 	 */
+	@XmlTransient
 	public IBroker getBrokerConnector() {
 		return broker;
 	}
@@ -57,6 +91,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getId()
 	 */
+	@XmlTransient
 	public String getId() {
 		return id;
 	}
@@ -68,8 +103,9 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getOrder()
 	 */
+	@XmlTransient
 	public IOrder getOrder() {
-		return order;
+		return order.getOrder();
 	}
 
 	/* (non-Javadoc)
@@ -115,6 +151,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getStatus()
 	 */
+	@XmlTransient
 	public IOrderStatus getStatus() {
 		return status;
 	}
@@ -130,6 +167,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getFilledQuantity()
 	 */
+	@XmlTransient
 	public Long getFilledQuantity() {
 		return filledQuantity;
 	}
@@ -145,6 +183,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getAveragePrice()
 	 */
+	@XmlTransient
 	public Double getAveragePrice() {
 		return averagePrice;
 	}
@@ -160,6 +199,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IOrderMonitor#getMessage()
 	 */
+	@XmlTransient
 	public String getMessage() {
 		return message;
 	}
@@ -181,7 +221,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	}
 
 	public void fireOrderCompletedEvent() {
-		OrderMonitorEvent event = new OrderMonitorEvent(this, order);
+		OrderMonitorEvent event = new OrderMonitorEvent(this, order.getOrder());
 
 		Object[] l = listeners.getListeners();
 		for (int i = 0; i < l.length; i++) {
@@ -193,6 +233,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 		}
 	}
 
+	@XmlTransient
 	public PropertyChangeSupport getPropertyChangeSupport() {
 		return propertyChangeSupport;
 	}
@@ -201,6 +242,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 		transactions.add(transaction);
 	}
 
+	@XmlTransient
 	public ITransaction[] getTransactions() {
 		return transactions.toArray(new ITransaction[transactions.size()]);
 	}
@@ -210,6 +252,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
 	 */
 	@Override
 	public String toString() {
-		return "OrderMonitor: id=" + getId() + ", status=" + getStatus() + ", filledQuantity=" + getFilledQuantity() + ", averagePrice=" + getAveragePrice() + " [" + order.toString() + "]";
+		return "OrderMonitor: id=" + getId() + ", status=" + getStatus() + ", filledQuantity=" + getFilledQuantity() +
+		       ", averagePrice=" + getAveragePrice() + " [" + order.toString() + "]";
 	}
 }

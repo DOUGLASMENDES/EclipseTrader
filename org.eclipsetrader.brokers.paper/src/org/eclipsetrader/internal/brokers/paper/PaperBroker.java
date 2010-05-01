@@ -11,10 +11,24 @@
 
 package org.eclipsetrader.internal.brokers.paper;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -107,6 +121,14 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 				context.ungetService(serviceReference);
 			}
 		}
+
+		List<OrderDelta> list = new ArrayList<OrderDelta>();
+		for (OrderMonitor monitor : pendingOrders) {
+			pricingEnvironment.addSecurity(monitor.getOrder().getSecurity());
+			list.add(new OrderDelta(OrderDelta.KIND_ADDED, monitor));
+		}
+		fireUpdateNotifications(list.toArray(new OrderDelta[list.size()]));
+
 		if (pricingEnvironment != null)
 			pricingEnvironment.addPricingListener(pricingListener);
 	}
@@ -214,9 +236,6 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 		OrderMonitor monitor = new OrderMonitor(this, order) {
 			@Override
 			public void cancel() throws BrokerException {
-				synchronized (pendingOrders) {
-					pendingOrders.remove(this);
-				}
 				setStatus(IOrderStatus.Canceled);
 				fireUpdateNotifications(new OrderDelta[] {
 					new OrderDelta(OrderDelta.KIND_UPDATED, this),
@@ -284,6 +303,8 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 			monitors = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
 		}
 		for (int i = 0; i < monitors.length; i++) {
+			if (monitors[i].getStatus() != IOrderStatus.PendingNew && monitors[i].getStatus() != IOrderStatus.Partial)
+				continue;
 			IOrder order = monitors[i].getOrder();
 			if (order.getSecurity() == security) {
 				if (order.getType() == IOrderType.Market) {
@@ -329,9 +350,6 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 		if (monitor.getFilledQuantity().equals(order.getQuantity())) {
 			monitor.setStatus(IOrderStatus.Filled);
 			monitor.fireOrderCompletedEvent();
-			synchronized (pendingOrders) {
-				pendingOrders.remove(monitor);
-			}
 
 			Account account = (Account) monitor.getOrder().getAccount();
 			if (account != null)
@@ -375,5 +393,51 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 	 */
 	public IAccount[] getAccounts() {
 		return Activator.getDefault().getRepository().getAccounts();
+	}
+
+	public void load(File file) throws JAXBException {
+		if (!file.exists())
+			return;
+
+		JAXBContext jaxbContext = JAXBContext.newInstance(OrderMonitor[].class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		unmarshaller.setEventHandler(new ValidationEventHandler() {
+			public boolean handleEvent(ValidationEvent event) {
+				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+				Activator.log(status);
+				return true;
+			}
+		});
+		JAXBElement<OrderMonitor[]> element = unmarshaller.unmarshal(new StreamSource(file), OrderMonitor[].class);
+		if (element != null) {
+			Calendar today = Calendar.getInstance();
+			Calendar order = Calendar.getInstance();
+			for (OrderMonitor monitor : element.getValue()) {
+				order.setTime(monitor.getOrder().getDate());
+				if (order.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR))
+					pendingOrders.add(monitor);
+			}
+		}
+	}
+
+	public void save(File file) throws JAXBException, IOException {
+		if (file.exists())
+			file.delete();
+
+		JAXBContext jaxbContext = JAXBContext.newInstance(OrderMonitor[].class);
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setEventHandler(new ValidationEventHandler() {
+			public boolean handleEvent(ValidationEvent event) {
+				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+				Activator.log(status);
+				return true;
+			}
+		});
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+
+		OrderMonitor[] elements = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
+		JAXBElement<OrderMonitor[]> element = new JAXBElement<OrderMonitor[]>(new QName("list"), OrderMonitor[].class, elements);
+		marshaller.marshal(element, new FileWriter(file));
 	}
 }
