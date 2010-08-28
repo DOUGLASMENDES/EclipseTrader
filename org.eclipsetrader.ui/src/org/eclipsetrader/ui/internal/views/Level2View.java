@@ -88,6 +88,7 @@ public class Level2View extends ViewPart {
 	public static final String VIEW_ID = "org.eclipsetrader.ui.views.level2";
 	private static final String K_FADE_LEVELS = "fade-levels";
 	private static final int FADE_TIMER = 500;
+	private static final String VIEW_TITLE_TOOLTIP = "Level II - {0}";
 
 	private Text symbol;
 	private Label activeConnector;
@@ -315,8 +316,13 @@ public class Level2View extends ViewPart {
 			if (s != null) {
 				symbol.setText(s);
 				ISecurity security = getSecurityFromSymbol(s);
-				if (security != null)
+				if (security != null) {
 					getSite().getSelectionProvider().setSelection(new StructuredSelection(security));
+					setPartName(security.getName());
+					setTitleToolTip(NLS.bind(VIEW_TITLE_TOOLTIP, new Object[] {
+						security.getName()
+					}));
+				}
 			}
 
 			String id = memento.getString("connector");
@@ -716,6 +722,15 @@ public class Level2View extends ViewPart {
 			IBook book = subscription.getBook();
 			if (book != null)
 				onBookUpdate(book);
+
+			ISecurity security = getSecurityFromSymbol(symbol.getText());
+			if (security != null) {
+				getSite().getSelectionProvider().setSelection(new StructuredSelection(security));
+				setPartName(security.getName());
+				setTitleToolTip(NLS.bind(VIEW_TITLE_TOOLTIP, new Object[] {
+					security.getName()
+				}));
+			}
 		}
 	}
 
@@ -826,8 +841,7 @@ public class Level2View extends ViewPart {
 		if (trade != null && lastClose != null && lastClose.getPrice() != null && trade.getPrice() != null) {
 			double changePercent = (trade.getPrice() - lastClose.getPrice()) / lastClose.getPrice() * 100.0;
 			change.setText(NLS.bind("{0}{1}%", new Object[] {
-			    changePercent < 0 ? "-" : (changePercent > 0 ? "+" : ""),
-			    percentageFormatter.format(Math.abs(changePercent)),
+			    changePercent < 0 ? "-" : (changePercent > 0 ? "+" : ""), percentageFormatter.format(Math.abs(changePercent)),
 			}));
 		}
 		else
