@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2010 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -278,7 +278,7 @@ public class NewsProvider implements INewsProvider {
 
 				HeadLine[] list = handler.parseNewsPages(l.toArray(new URL[l.size()]), monitor);
 				for (HeadLine headLine : list) {
-					if (headLine.getDate().before(limitDate))
+					if (headLine.getDate() == null || headLine.getDate().before(limitDate))
 						continue;
 					if (!oldItems.contains(headLine)) {
 						if (!headLine.getDate().before(recentLimitDate))
@@ -319,9 +319,16 @@ public class NewsProvider implements INewsProvider {
 							SyndEntry entry = (SyndEntry) iter.next();
 
 							String link = entry.getLink();
-							while (link.indexOf('*') != -1)
-								link = link.substring(link.indexOf('*') + 1);
-							link = URLDecoder.decode(link, "UTF-8");
+							if (link == null && entry.getLinks().size() != 0) {
+								link = (String) entry.getLinks().get(0);
+							}
+							if (link != null) {
+								while (link.indexOf('*') != -1)
+									link = link.substring(link.indexOf('*') + 1);
+								link = URLDecoder.decode(link, "UTF-8");
+							}
+							if (link == null)
+								continue;
 
 							String source = null;
 
