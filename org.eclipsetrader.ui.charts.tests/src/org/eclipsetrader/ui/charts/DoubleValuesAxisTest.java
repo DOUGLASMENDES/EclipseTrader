@@ -13,8 +13,6 @@ package org.eclipsetrader.ui.charts;
 
 import junit.framework.TestCase;
 
-import org.eclipsetrader.ui.charts.DoubleValuesAxis;
-
 public class DoubleValuesAxisTest extends TestCase {
 
 	public void testComputeSize() throws Exception {
@@ -25,7 +23,9 @@ public class DoubleValuesAxisTest extends TestCase {
 	public void testMapToAxis() throws Exception {
 		DoubleValuesAxis axis = new DoubleValuesAxis();
 		axis.marginHeight = 0;
-		axis.addValues(new Object[] { 0.0, 10.0, 20.0, 15.0, 30.0, 100.0 });
+		axis.addValues(new Object[] {
+		    0.0, 10.0, 20.0, 15.0, 30.0, 100.0
+		});
 		axis.computeSize(100);
 		assertEquals(90, axis.mapToAxis(10.0));
 		assertEquals(70, axis.mapToAxis(30.0));
@@ -34,7 +34,9 @@ public class DoubleValuesAxisTest extends TestCase {
 	public void testMapToValue() throws Exception {
 		DoubleValuesAxis axis = new DoubleValuesAxis();
 		axis.marginHeight = 0;
-		axis.addValues(new Object[] { 0.0, 10.0, 20.0, 15.0, 30.0, 100.0 });
+		axis.addValues(new Object[] {
+		    0.0, 10.0, 20.0, 15.0, 30.0, 100.0
+		});
 		axis.computeSize(100);
 		assertEquals(10.0, axis.mapToValue(90));
 		assertEquals(30.0, axis.mapToValue(70));
@@ -43,7 +45,9 @@ public class DoubleValuesAxisTest extends TestCase {
 	public void testMapToAxisWithMargin() throws Exception {
 		DoubleValuesAxis axis = new DoubleValuesAxis();
 		axis.marginHeight = 5;
-		axis.addValues(new Object[] { 0.0, 10.0, 20.0, 15.0, 30.0, 100.0 });
+		axis.addValues(new Object[] {
+		    0.0, 10.0, 20.0, 15.0, 30.0, 100.0
+		});
 		axis.computeSize(110);
 		assertEquals(90 + 5, axis.mapToAxis(10.0));
 		assertEquals(70 + 5, axis.mapToAxis(30.0));
@@ -52,7 +56,9 @@ public class DoubleValuesAxisTest extends TestCase {
 	public void testMapToValueWithMargin() throws Exception {
 		DoubleValuesAxis axis = new DoubleValuesAxis();
 		axis.marginHeight = 5;
-		axis.addValues(new Object[] { 0.0, 10.0, 20.0, 15.0, 30.0, 100.0 });
+		axis.addValues(new Object[] {
+		    0.0, 10.0, 20.0, 15.0, 30.0, 100.0
+		});
 		axis.computeSize(110);
 		assertEquals(10.0, axis.mapToValue(90 + 5));
 		assertEquals(30.0, axis.mapToValue(70 + 5));
