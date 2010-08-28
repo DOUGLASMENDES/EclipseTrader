@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2010 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,12 +19,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.IBar;
+import org.eclipsetrader.core.feed.IBarOpen;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IConnectorOverride;
 import org.eclipsetrader.core.feed.IFeedConnector;
@@ -63,6 +65,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		ITodayOHL todayOHL;
 		ILastClose lastClose;
 		IBook book;
+		IBar bar;
 		List<PricingDelta> deltas = new ArrayList<PricingDelta>();
 	}
 
@@ -83,26 +86,26 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
 	private ISubscriptionListener listener = new ISubscriptionListener() {
-        public void quoteUpdate(QuoteEvent event) {
-        	processUpdateQuotes(event.getIdentifier(), event.getDelta());
-        }
+		public void quoteUpdate(QuoteEvent event) {
+			processUpdateQuotes(event.getIdentifier(), event.getDelta());
+		}
 	};
 
 	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent evt) {
-        	if (evt.getSource() instanceof IMarket)
-        		handleMarketChanges((IMarket) evt.getSource(), evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-        	if (evt.getSource() instanceof IFeedIdentifier) {
-            	for (Iterator<Entry<IFeedIdentifier, SubscriptionStatus>> iter = identifiersMap.entrySet().iterator(); iter.hasNext(); ) {
-            		Entry<IFeedIdentifier, SubscriptionStatus> entry = iter.next();
-            		if (entry.getKey() == evt.getSource()) {
-            			iter.remove();
-            			identifiersMap.put((IFeedIdentifier) evt.getSource(), entry.getValue());
-            			break;
-            		}
-            	}
-        	}
-        }
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (evt.getSource() instanceof IMarket)
+				handleMarketChanges((IMarket) evt.getSource(), evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+			if (evt.getSource() instanceof IFeedIdentifier) {
+				for (Iterator<Entry<IFeedIdentifier, SubscriptionStatus>> iter = identifiersMap.entrySet().iterator(); iter.hasNext();) {
+					Entry<IFeedIdentifier, SubscriptionStatus> entry = iter.next();
+					if (entry.getKey() == evt.getSource()) {
+						iter.remove();
+						identifiersMap.put((IFeedIdentifier) evt.getSource(), entry.getValue());
+						break;
+					}
+				}
+			}
+		}
 	};
 
 	protected MarketPricingEnvironment() {
@@ -110,20 +113,20 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
 	public MarketPricingEnvironment(IMarketService marketService) {
 		this(marketService, null);
-    }
+	}
 
 	public MarketPricingEnvironment(IMarketService marketService, ISecurity[] securities) {
-	    this.marketService = marketService;
+		this.marketService = marketService;
 
-	    for (IMarket market : marketService.getMarkets()) {
-    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
-    		if (propertyChangeSupport != null)
-    			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-	    }
+		for (IMarket market : marketService.getMarkets()) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+		}
 
-	    if (securities != null)
-	    	addSecurities(securities);
-    }
+		if (securities != null)
+			addSecurities(securities);
+	}
 
 	protected IMarket getMarketsForSecurity(ISecurity security) {
 		if (marketService != null) {
@@ -135,7 +138,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		return null;
 	}
 
-    public void addSecurity(ISecurity security) {
+	public void addSecurity(ISecurity security) {
 		IFeedConnector connector = getDefaultConnector();
 
 		IMarket market = getMarketsForSecurity(security);
@@ -150,14 +153,14 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
 		if (connector != null)
 			subscribeSecurity(security, connector);
-    }
+	}
 
-    public void addSecurities(ISecurity[] securities) {
+	public void addSecurities(ISecurity[] securities) {
 		for (ISecurity security : securities)
 			addSecurity(security);
-    }
+	}
 
-    public void addLevel2Security(ISecurity security) {
+	public void addLevel2Security(ISecurity security) {
 		IFeedConnector2 connector = null;
 
 		IMarket market = getMarketsForSecurity(security);
@@ -166,7 +169,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
 		if (connector != null)
 			subscribeSecurity2(security, connector);
-    }
+	}
 
 	protected IFeedConnector getDefaultConnector() {
 		if (CoreActivator.getDefault() == null)
@@ -178,7 +181,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
 		PricingStatus pricingStatus;
-		synchronized(securitiesMap) {
+		synchronized (securitiesMap) {
 			pricingStatus = securitiesMap.get(security);
 			if (pricingStatus == null) {
 				pricingStatus = new PricingStatus();
@@ -193,8 +196,8 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 				identifiersMap.put(identifier, subscriptionStatus);
 
 				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
-	    		if (propertyChangeSupport != null)
-	    			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+				if (propertyChangeSupport != null)
+					propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
 			}
 
 			subscriptionStatus.securities.add(security);
@@ -217,7 +220,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
 		PricingStatus pricingStatus;
-		synchronized(securitiesMap) {
+		synchronized (securitiesMap) {
 			pricingStatus = securitiesMap.get(security);
 			if (pricingStatus == null) {
 				pricingStatus = new PricingStatus();
@@ -232,8 +235,8 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 				identifiersMap2.put(identifier, subscriptionStatus);
 
 				PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
-	    		if (propertyChangeSupport != null)
-	    			propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+				if (propertyChangeSupport != null)
+					propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
 			}
 
 			subscriptionStatus.securities.add(security);
@@ -253,7 +256,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 		}
 	}
 
-    public void removeSecurity(ISecurity security) {
+	public void removeSecurity(ISecurity security) {
 		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
 		if (identifier != null) {
@@ -269,19 +272,19 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 					identifiersMap.remove(identifier);
 
 					PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
-		    		if (propertyChangeSupport != null)
-		    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+					if (propertyChangeSupport != null)
+						propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
 				}
 			}
 		}
 
-		synchronized(securitiesMap) {
+		synchronized (securitiesMap) {
 			if (!identifiersMap.containsKey(identifier) && !identifiersMap2.containsKey(identifier))
 				securitiesMap.remove(security);
 		}
-    }
+	}
 
-    public void removeLevel2Security(ISecurity security) {
+	public void removeLevel2Security(ISecurity security) {
 		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 
 		if (identifier != null) {
@@ -297,22 +300,22 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 					identifiersMap2.remove(identifier);
 
 					PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) identifier.getAdapter(PropertyChangeSupport.class);
-		    		if (propertyChangeSupport != null)
-		    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+					if (propertyChangeSupport != null)
+						propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
 				}
 			}
 		}
 
-		synchronized(securitiesMap) {
+		synchronized (securitiesMap) {
 			if (!identifiersMap.containsKey(identifier) && !identifiersMap2.containsKey(identifier))
 				securitiesMap.remove(security);
 		}
-    }
+	}
 
-    public void removeSecurities(ISecurity[] securities) {
+	public void removeSecurities(ISecurity[] securities) {
 		for (ISecurity security : securities)
 			removeSecurity(security);
-    }
+	}
 
 	protected void handleMarketChanges(IMarket market, String propertyName, Object oldValue, Object newValue) {
 		if ("liveFeedConnector".equals(propertyName)) {
@@ -377,29 +380,29 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 	 * @see org.eclipsetrader.core.feed.IPricingEnvironment#dispose()
 	 */
 	public void dispose() {
-	    for (IMarket market : marketService.getMarkets()) {
-    		PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
-    		if (propertyChangeSupport != null)
-    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-	    }
+		for (IMarket market : marketService.getMarkets()) {
+			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+		}
 
-	    listeners.clear();
+		listeners.clear();
 
-    	for (Iterator<Entry<IFeedIdentifier, SubscriptionStatus>> iter = identifiersMap.entrySet().iterator(); iter.hasNext(); ) {
-    		Entry<IFeedIdentifier, SubscriptionStatus> entry = iter.next();
+		for (Iterator<Entry<IFeedIdentifier, SubscriptionStatus>> iter = identifiersMap.entrySet().iterator(); iter.hasNext();) {
+			Entry<IFeedIdentifier, SubscriptionStatus> entry = iter.next();
 
-    		for (IFeedSubscription subscription : entry.getValue().subscriptions.values()) {
+			for (IFeedSubscription subscription : entry.getValue().subscriptions.values()) {
 				subscription.removeSubscriptionListener(listener);
 				subscription.dispose();
-    		}
+			}
 
 			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) entry.getKey().getAdapter(PropertyChangeSupport.class);
-    		if (propertyChangeSupport != null)
-    			propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-    	}
+			if (propertyChangeSupport != null)
+				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+		}
 
-    	identifiersMap.clear();
-    	securitiesMap.clear();
+		identifiersMap.clear();
+		securitiesMap.clear();
 	}
 
 	/* (non-Javadoc)
@@ -424,18 +427,18 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IPricingEnvironment#getLastClose(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public ILastClose getLastClose(ISecurity security) {
+	 * @see org.eclipsetrader.core.feed.IPricingEnvironment#getLastClose(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public ILastClose getLastClose(ISecurity security) {
 		return securitiesMap.get(security) != null ? securitiesMap.get(security).lastClose : null;
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IPricingEnvironment#getBook(org.eclipsetrader.core.instruments.ISecurity)
-     */
-    public IBook getBook(ISecurity security) {
+	 * @see org.eclipsetrader.core.feed.IPricingEnvironment#getBook(org.eclipsetrader.core.instruments.ISecurity)
+	 */
+	public IBook getBook(ISecurity security) {
 		return securitiesMap.get(security) != null ? securitiesMap.get(security).book : null;
-    }
+	}
 
 	protected void processUpdateQuotes(IFeedIdentifier identifier, QuoteDelta[] delta) {
 		SubscriptionStatus subscriptionStatus = identifiersMap.get(identifier);
@@ -446,51 +449,64 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 					for (QuoteDelta d : delta) {
 						if (d.getNewValue() instanceof ITrade) {
 							Object oldValue = pricingStatus.trade;
-							if ((oldValue == null && d.getNewValue() != null) || (oldValue != null && !oldValue.equals(d.getNewValue()))) {
+							if ((oldValue == null && d.getNewValue() != null) ||
+							    (oldValue != null && !oldValue.equals(d.getNewValue()))) {
 								pricingStatus.trade = (ITrade) d.getNewValue();
 								pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
 							}
 						}
 						if (d.getNewValue() instanceof IQuote) {
 							Object oldValue = pricingStatus.quote;
-							if ((oldValue == null && d.getNewValue() != null) || (oldValue != null && !oldValue.equals(d.getNewValue()))) {
+							if ((oldValue == null && d.getNewValue() != null) ||
+							    (oldValue != null && !oldValue.equals(d.getNewValue()))) {
 								pricingStatus.quote = (IQuote) d.getNewValue();
 								pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
 							}
 						}
 						if (d.getNewValue() instanceof ITodayOHL) {
 							Object oldValue = pricingStatus.todayOHL;
-							if ((oldValue == null && d.getNewValue() != null) || (oldValue != null && !oldValue.equals(d.getNewValue()))) {
+							if ((oldValue == null && d.getNewValue() != null) ||
+							    (oldValue != null && !oldValue.equals(d.getNewValue()))) {
 								pricingStatus.todayOHL = (ITodayOHL) d.getNewValue();
 								pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
 							}
 						}
 						if (d.getNewValue() instanceof ILastClose) {
 							Object oldValue = pricingStatus.lastClose;
-							if ((oldValue == null && d.getNewValue() != null) || (oldValue != null && !oldValue.equals(d.getNewValue()))) {
+							if ((oldValue == null && d.getNewValue() != null) ||
+							    (oldValue != null && !oldValue.equals(d.getNewValue()))) {
 								pricingStatus.lastClose = (ILastClose) d.getNewValue();
 								pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
 							}
 						}
 						if (d.getNewValue() instanceof IBook) {
 							Object oldValue = pricingStatus.book;
-							if ((oldValue == null && d.getNewValue() != null) || (oldValue != null && !oldValue.equals(d.getNewValue()))) {
+							if ((oldValue == null && d.getNewValue() != null) ||
+							    (oldValue != null && !oldValue.equals(d.getNewValue()))) {
 								pricingStatus.book = (IBook) d.getNewValue();
 								pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
 							}
+						}
+						if (d.getNewValue() instanceof IBarOpen) {
+							pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
+						}
+						if (d.getNewValue() instanceof IBar) {
+							Object oldValue = pricingStatus.bar;
+							pricingStatus.bar = (IBar) d.getNewValue();
+							pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
 						}
 					}
 				}
 			}
 			notifyListeners();
 		}
-    }
+	}
 
 	protected void notifyListeners() {
 		Object[] l = listeners.getListeners();
 
 		ISecurity[] securities;
-		synchronized(securitiesMap) {
+		synchronized (securitiesMap) {
 			Set<ISecurity> set = securitiesMap.keySet();
 			securities = set.toArray(new ISecurity[set.size()]);
 		}
@@ -500,18 +516,18 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 			if (pricingStatus == null || pricingStatus.deltas.size() == 0)
 				continue;
 			PricingEvent event = new PricingEvent(security, pricingStatus.deltas.toArray(new PricingDelta[pricingStatus.deltas.size()]));
-    		for (int i = 0; i < l.length; i++) {
-        		try {
-        			((IPricingListener) l[i]).pricingUpdate(event);
-        		} catch(Exception e) {
-        			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running pricing environment listener", e); //$NON-NLS-1$
-        			CoreActivator.log(status);
-        		} catch (LinkageError e) {
-        			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running pricing environment listener", e); //$NON-NLS-1$
-        			CoreActivator.log(status);
-        		}
-    		}
-    		pricingStatus.deltas.clear();
+			for (int i = 0; i < l.length; i++) {
+				try {
+					((IPricingListener) l[i]).pricingUpdate(event);
+				} catch (Exception e) {
+					Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running pricing environment listener", e); //$NON-NLS-1$
+					CoreActivator.log(status);
+				} catch (LinkageError e) {
+					Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running pricing environment listener", e); //$NON-NLS-1$
+					CoreActivator.log(status);
+				}
+			}
+			pricingStatus.deltas.clear();
 		}
 	}
 
