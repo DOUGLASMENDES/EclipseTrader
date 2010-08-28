@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2010 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +49,7 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 	private String name;
 
 	private SimpleDateFormat df = new SimpleDateFormat("yy-MM-dd"); //$NON-NLS-1$
+	private SimpleDateFormat df2 = new SimpleDateFormat("yyyyMMdd"); //$NON-NLS-1$
 	private SimpleDateFormat dfAlt = new SimpleDateFormat("dd-MMM-yy", Locale.US); //$NON-NLS-1$
 	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
 	private NumberFormat pf = NumberFormat.getInstance(Locale.US);
@@ -83,7 +87,7 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 			return true;
 
 		String symbol = Util.getSymbol(identifier);
-		if (symbol.startsWith("^"))
+		if (symbol.startsWith("^") || symbol.contains("."))
 			return false;
 
 		if (timeSpan.getUnits() == Units.Minutes && timeSpan.getLength() == 1)
@@ -113,20 +117,40 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 	private IOHLC[] backfillDailyHistory(IFeedIdentifier identifier, Date from, Date to) {
 		List<OHLC> list = new ArrayList<OHLC>();
 
-		try {
-			HttpMethod method = Util.getHistoryFeedMethod(identifier, from, to);
-			method.setFollowRedirects(true);
+		Calendar c = Calendar.getInstance();
+		c.setTime(from);
+		int firstYear = c.get(Calendar.YEAR);
+		c.setTime(to);
+		int lastYear = c.get(Calendar.YEAR);
 
-			HttpClient client = new HttpClient();
-			client.executeMethod(method);
+		HttpClient client = new HttpClient();
+		for (int ys = firstYear; ys <= lastYear; ys++) {
+			try {
+				HttpMethod method = Util.get1YearHistoryFeedMethod(identifier, ys);
+				client.executeMethod(method);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-			readBackfillStream(list, in);
-			in.close();
+				BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+				readDailyBackfillStream(list, in);
+				in.close();
 
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
-			YahooActivator.log(status);
+			} catch (Exception e) {
+				Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
+				YahooActivator.log(status);
+			}
+		}
+
+		Collections.sort(list, new Comparator<OHLC>() {
+
+			@Override
+			public int compare(OHLC o1, OHLC o2) {
+				return o1.getDate().compareTo(o2.getDate());
+			}
+		});
+
+		for (Iterator<OHLC> iter = list.iterator(); iter.hasNext();) {
+			OHLC ohlc = iter.next();
+			if (ohlc.getDate().before(from) || ohlc.getDate().after(to))
+				iter.remove();
 		}
 
 		return list.toArray(new IOHLC[list.size()]);
@@ -211,6 +235,24 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		}
 	}
 
+	void readDailyBackfillStream(List<OHLC> list, BufferedReader in) throws IOException {
+		String inputLine;
+
+		while ((inputLine = in.readLine()) != null) {
+			if (!Character.isDigit(inputLine.charAt(0)))
+				continue;
+
+			try {
+				OHLC bar = parseResponseLine(inputLine);
+				if (bar != null)
+					list.add(bar);
+			} catch (ParseException e) {
+				Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error parsing data: " + inputLine, e);
+				YahooActivator.log(status);
+			}
+		}
+	}
+
 	protected OHLC parseResponseLine(String inputLine) throws ParseException {
 		String[] item = inputLine.split(","); //$NON-NLS-1$
 		if (item.length < 6)
@@ -221,9 +263,13 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 			day.setTime(df.parse(item[0]));
 		} catch (ParseException e) {
 			try {
-				day.setTime(dfAlt.parse(item[0]));
+				day.setTime(df2.parse(item[0]));
 			} catch (ParseException e1) {
-				throw e1;
+				try {
+					day.setTime(dfAlt.parse(item[0]));
+				} catch (ParseException e2) {
+					throw e2;
+				}
 			}
 		}
 		day.set(Calendar.HOUR, 0);

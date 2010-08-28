@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2007 Marco Maccaferri and others.
+ * Copyright (c) 2004-2010 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import java.util.Date;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
@@ -57,8 +58,7 @@ public class Util {
 			s.append(symbols[i]);
 		}
 		method.setQueryString(new NameValuePair[] {
-		    new NameValuePair("symbols", s.toString()),
-		    new NameValuePair("format", "sl1d1t1c1ohgvbapb6a5"),
+		    new NameValuePair("symbols", s.toString()), new NameValuePair("format", "sl1d1t1c1ohgvbapb6a5"),
 		});
 		return method;
 	}
@@ -107,7 +107,25 @@ public class Util {
 		Calendar toDate = Calendar.getInstance();
 		toDate.setTime(to);
 
-		GetMethod method = new GetMethod("http://" + historyFeedHost + "/table.csv");
+		/*GetMethod method = new GetMethod("http://" + historyFeedHost + "/table.csv");
+		method.setQueryString(new NameValuePair[] {
+		    new NameValuePair("s", symbol),
+		    new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
+		    new NameValuePair("e", String.valueOf(toDate.get(Calendar.DAY_OF_MONTH))),
+		    new NameValuePair("f", String.valueOf(toDate.get(Calendar.YEAR))),
+		    new NameValuePair("g", "d"),
+		    new NameValuePair("a", String.valueOf(fromDate.get(Calendar.MONTH))),
+		    new NameValuePair("b", String.valueOf(fromDate.get(Calendar.DAY_OF_MONTH))),
+		    new NameValuePair("c", String.valueOf(fromDate.get(Calendar.YEAR))),
+		    new NameValuePair("ignore", ".csv"),
+		});*/
+
+		StringBuilder sb = new StringBuilder("http://chartapi.finance.yahoo.com/instrument/1.0/");
+		sb.append(symbol.toLowerCase());
+		sb.append("/chartdata");
+		sb.append(";type=quote");
+
+		GetMethod method = new GetMethod(sb.toString());
 		method.setQueryString(new NameValuePair[] {
 		    new NameValuePair("s", symbol),
 		    new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
@@ -120,6 +138,11 @@ public class Util {
 		    new NameValuePair("ignore", ".csv"),
 		});
 		method.setFollowRedirects(true);
+		try {
+			System.out.println(method.getURI().toString());
+		} catch (URIException e) {
+			e.printStackTrace();
+		}
 
 		return method;
 	}
@@ -127,7 +150,8 @@ public class Util {
 	public static HttpMethod get1DayHistoryFeedMethod(IFeedIdentifier identifier) {
 		String symbol = getSymbol(identifier);
 
-		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() + "/chartdata;type=quote;range=1d/csv/");
+		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() +
+		                                 "/chartdata;type=quote;range=1d/csv/");
 		method.setFollowRedirects(true);
 
 		return method;
@@ -136,7 +160,18 @@ public class Util {
 	public static HttpMethod get5DayHistoryFeedMethod(IFeedIdentifier identifier) {
 		String symbol = getSymbol(identifier);
 
-		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() + "/chartdata;type=quote;range=5d/csv/");
+		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() +
+		                                 "/chartdata;type=quote;range=5d/csv/");
+		method.setFollowRedirects(true);
+
+		return method;
+	}
+
+	public static HttpMethod get1YearHistoryFeedMethod(IFeedIdentifier identifier, int year) {
+		String symbol = getSymbol(identifier);
+
+		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() +
+		                                 "/chartdata;type=quote;ys=" + year + ";yz=1/csv/");
 		method.setFollowRedirects(true);
 
 		return method;
