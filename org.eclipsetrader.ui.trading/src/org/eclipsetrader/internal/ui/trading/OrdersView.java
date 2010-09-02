@@ -289,12 +289,10 @@ public class OrdersView extends ViewPart {
 		selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				boolean enabled = false;
-				IStructuredSelection selection = (IStructuredSelection) getSite().getSelectionProvider().getSelection();
-				if (!selection.isEmpty()) {
-					for (Object o : selection.toList()) {
-						if (((IOrderMonitor) o).getStatus() != IOrderStatus.Canceled)
-							enabled = true;
-					}
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				for (Object o : selection.toList()) {
+					if (((IOrderMonitor) o).getStatus() != IOrderStatus.Canceled)
+						enabled = true;
 				}
 				cancelAction.setEnabled(enabled);
 			}
@@ -522,7 +520,8 @@ public class OrdersView extends ViewPart {
 						labelProvider = new OrdersLabelProviderWrapper(labelProvider);
 					viewerColumn.setLabelProvider(labelProvider);
 				} catch (Exception e) {
-					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, Messages.OrdersView_ErrorCreatingLabelProvider + enabledId[i], e);
+					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, Messages.OrdersView_ErrorCreatingLabelProvider +
+					                                                                enabledId[i], e);
 					Activator.log(status);
 				}
 			}
