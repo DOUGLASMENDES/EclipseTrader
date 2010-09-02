@@ -322,6 +322,7 @@ public class OrderDialog extends TitleAreaDialog {
 		label = new Label(content, SWT.NONE);
 		label.setText(Messages.OrderDialog_ExpireLabel);
 		expireDate = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+		expireDate.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
 		expireDate.setSelection(new Date());
 		expireDate.setEnabled(false);
 
