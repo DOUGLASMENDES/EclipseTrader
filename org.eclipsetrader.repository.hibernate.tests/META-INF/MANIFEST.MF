@@ -8,6 +8,6 @@ Fragment-Host: org.eclipsetrader.repository.hibernate;bundle-version="1.0.0"
 Require-Bundle: org.junit
 Bundle-ClassPath: fragment.jar,
  hsqldb.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.easymock,
  org.easymock.classextension

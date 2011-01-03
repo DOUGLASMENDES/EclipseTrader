@@ -94,11 +94,19 @@ buildLabel=${buildLabel}</echo>
 			<arg value="-DbuildDirectory=${buildDirectory}"/>
 			<arg value="-Dp2.gathering=true"/>
 			<arg value="-Dp2.build.repo=file:${buildDirectory}/updates"/>
-			<arg value="-Dp2.category.definition=file:${buildDirectory}/category.xml"/>
 			<arg value="-Dp2.compress=true"/>
 			<arg value="-Dp2.flavor=tooling"/>
 			<arg value="-Dp2.publish.artifacts=true"/>
 			<arg value="-DskipDirector=true"/>
+		</java>
+
+		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
+			<arg line="-application" />
+			<arg line="org.eclipse.equinox.p2.publisher.CategoryPublisher" />
+			<arg line="-metadataRepository file:${buildDirectory}/updates" />
+			<arg line="-categoryDefinition file:${buildDirectory}/category.xml"/>
+			<arg line="-categoryQualifier" />
+			<arg line="-compress" />
 		</java>
 	</target>
 
@@ -184,7 +192,7 @@ buildLabel=${buildLabel}</echo>
 	</target>
 
 	<target name="director">
-		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
+		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}" failonerror="true">
 			<arg line="-application" />
 			<arg line="org.eclipse.equinox.p2.director" />
 			<arg line="-flavor tooling" />

@@ -13,4 +13,4 @@ Require-Bundle: org.apache.lucene,
  org.eclipse.help.webapp,
  org.eclipse.ui
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

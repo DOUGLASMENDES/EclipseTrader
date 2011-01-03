@@ -6,3 +6,4 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: EclipseTrader.org
 Fragment-Host: org.eclipsetrader.yahoo;bundle-version="1.0.0"
 Require-Bundle: org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

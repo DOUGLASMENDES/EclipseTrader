@@ -15,7 +15,7 @@ Import-Package: com.tictactec.ta.lib;version="0.4.0",
  com.tictactec.ta.lib.meta;version="0.4.0",
  com.tictactec.ta.lib.meta.annotation;version="0.4.0",
  com.tictactec.ta.lib.meta.helpers;version="0.4.0"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipsetrader.ui.charts,
  org.eclipsetrader.ui.charts.indicators,
  org.eclipsetrader.ui.internal.charts;x-internal:=true,

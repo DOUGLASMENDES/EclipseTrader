@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipsetrader.directa.tests
 Bundle-Version: 1.0.0
 Bundle-Vendor: EclipseTrader.org
 Fragment-Host: org.eclipsetrader.directa;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit;bundle-version="3.8.2"
 Import-Package: org.easymock,
  org.easymock.classextension

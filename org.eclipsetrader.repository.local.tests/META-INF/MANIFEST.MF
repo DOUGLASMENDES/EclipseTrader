@@ -7,3 +7,4 @@ Bundle-Vendor: EclipseTrader.org
 Fragment-Host: org.eclipsetrader.repository.local;bundle-version="1.0.0"
 Require-Bundle: org.junit,
  org.eclipsetrader.tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

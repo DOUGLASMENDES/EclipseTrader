@@ -24,4 +24,4 @@ Export-Package: org.eclipsetrader.ui,
  org.eclipsetrader.ui.internal.securities.wizards;x-internal:=true,
  org.eclipsetrader.ui.internal.views;x-internal:=true
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
