@@ -123,6 +123,7 @@ public class BaseChartViewer implements ISelectionProvider {
 			public void widgetSelected(SelectionEvent e) {
 				revalidate();
 				redraw();
+				composite.update();
 			}
 		});
 

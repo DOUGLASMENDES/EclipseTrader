@@ -60,7 +60,7 @@ public class DefaultsPage extends PreferencePage implements IWorkbenchPreference
 		gridLayout.verticalSpacing = convertVerticalDLUsToPixels(2);
 		content.setLayout(gridLayout);
 
-		Group group = new Group(content, SWT.BORDER);
+		Group group = new Group(content, SWT.NONE);
 		group.setText("Initial backfill");
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		gridLayout = new GridLayout(3, false);

@@ -75,7 +75,7 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
             }
 		});
 
-		croshairActivationGroup = new Group(content, SWT.BORDER);
+		croshairActivationGroup = new Group(content, SWT.NONE);
 		croshairActivationGroup.setText(Messages.GeneralPreferencesPage_CrosshairModeLabel);
 		croshairActivationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		gridLayout = new GridLayout(2, false);
