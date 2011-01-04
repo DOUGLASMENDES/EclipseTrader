@@ -12,8 +12,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.expressions
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
-Import-Package: javax.persistence,
- javax.persistence.spi,
+Import-Package: javax.persistence;version="[1.0.0,1.0.0]",
+ javax.persistence.spi;version="[1.0.0,1.0.0]",
  javax.xml.bind,
  javax.xml.bind.annotation,
  javax.xml.bind.annotation.adapters,
