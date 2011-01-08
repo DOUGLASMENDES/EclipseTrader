@@ -21,27 +21,27 @@
          id="org.hibernate"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="3.2.6.20080315"/>
 
    <plugin
          id="org.apache.commons.collections"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v200906221723"
          unpack="false"/>
 
    <plugin
          id="org.apache.commons.logging"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.1.1.v200906221723"
          unpack="false"/>
 
    <plugin
          id="org.apache.log4j"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.2.14.v200701080905"
          unpack="false"/>
 
 </feature>

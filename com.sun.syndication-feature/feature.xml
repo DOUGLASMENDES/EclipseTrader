@@ -29,14 +29,14 @@
          id="com.sun.syndication"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0.v200807162045"
          unpack="false"/>
 
    <plugin
          id="com.sun.syndication.fetcher"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.9.0.v200703071050"
          unpack="false"/>
 
 </feature>
