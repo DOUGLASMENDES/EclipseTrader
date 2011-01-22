@@ -176,6 +176,12 @@ public class DateParser {
             String post = sDate.substring(utIndex+4);
             sDate = pre + post;
         }
+        utIndex = sDate.indexOf(" UTC");
+        if (utIndex>-1) {
+            String pre = sDate.substring(0,utIndex);
+            String post = sDate.substring(utIndex+4);
+            sDate = pre + " GMT" + post;
+        }
         utIndex = sDate.indexOf(" UT");
         if (utIndex>-1) {
             String pre = sDate.substring(0,utIndex);
