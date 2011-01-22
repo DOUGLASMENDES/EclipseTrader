@@ -1,22 +1,22 @@
 <project name="Product Build">
-	<property name="eclipse.home" value="${user.home}/eclipse"/>
-	<property name="buildDirectory" value="${user.home}/eclipsetrader.build.p2"/>
-	<property name="baseLocation" value="${user.home}/eclipse-platform-3.5"/>
+    <property name="eclipse.home" value="${user.home}/eclipse"/>
+    <property name="buildDirectory" value="${user.home}/eclipsetrader.build.p2"/>
+    <property name="baseLocation" value="${user.home}/eclipse-platform-3.5"/>
 
-	<available file="${buildDirectory}/label.properties" property="label.properties.exists" />
-	<property file="${buildDirectory}/label.properties" />
+    <available file="${buildDirectory}/label.properties" property="label.properties.exists" />
+    <property file="${buildDirectory}/label.properties" />
 
-	<available file="${buildDirectory}/wc" type="dir" property="wc.present"/>
-	<property name="tag" value="http://svn.eclipsetrader.org/svnroot/eclipsetrader/trunk"/>
+    <available file="${buildDirectory}/wc" type="dir" property="wc.present"/>
+    <property name="tag" value="http://svn.eclipsetrader.org/svnroot/eclipsetrader/trunk"/>
 
-	<path id="project.classpath">
-		<pathelement location="${basedir}/libs/svnjavahl.jar"/>
-		<pathelement location="${basedir}/libs/svnant.jar"/>
-		<pathelement location="${basedir}/libs/svnClientAdapter.jar"/>
-	</path>
-	<taskdef resource="svntask.properties" classpathref="project.classpath"/>
+    <path id="project.classpath">
+        <pathelement location="${basedir}/libs/svnjavahl.jar"/>
+        <pathelement location="${basedir}/libs/svnant.jar"/>
+        <pathelement location="${basedir}/libs/svnClientAdapter.jar"/>
+    </path>
+    <taskdef resource="svntask.properties" classpathref="project.classpath"/>
 
-	<target name="create.label.properties" unless="label.properties.exists">
+    <target name="create.label.properties" unless="label.properties.exists">
 		<mkdir dir="${buildDirectory}" />
 		
 		<tstamp>
@@ -33,9 +33,9 @@ buildLabel=${buildLabel}</echo>
 	</target>
 
 	<target name="pde.build.init">
-    	    <path id="eclipse.launcher.id">
-		    <fileset dir="${eclipse.home}/plugins">
-			<include name="org.eclipse.equinox.launcher_*.jar"/>
+	    <path id="eclipse.launcher.id">
+	        <fileset dir="${eclipse.home}/plugins">
+			    <include name="org.eclipse.equinox.launcher_*.jar"/>
 		    </fileset>
 	    </path>
 	    <property name="eclipse.launcher" refid="eclipse.launcher.id"/>
@@ -43,7 +43,7 @@ buildLabel=${buildLabel}</echo>
 
 	    <path id="eclipse.pde.build.id">
 		    <dirset dir="${eclipse.home}/plugins">
-			<include name="org.eclipse.pde.build_*"/>
+			    <include name="org.eclipse.pde.build_*"/>
 		    </dirset>
 	    </path>
 	    <property name="eclipse.pde.build" refid="eclipse.pde.build.id"/>
@@ -80,6 +80,13 @@ buildLabel=${buildLabel}</echo>
 	</target>
 
 	<target name="build" depends="create.label.properties,pde.build.init">
+        <replace dir="${buildDirectory}/plugins" value="${buildId}" token="@build@">
+            <include name="**/about.mappings" />
+        </replace>
+        <replace dir="${buildDirectory}/features" value="${buildId}" token="@build@">
+            <include name="**/config.ini" />
+        </replace>
+        
 		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
 			<arg value="-application"/>
 			<arg value="org.eclipse.ant.core.antRunner"/>
@@ -111,38 +118,54 @@ buildLabel=${buildLabel}</echo>
 	</target>
 
 	<target name="publish" depends="pde.build.init">
-		<mkdir dir="${buildDirectory}/${buildLabel}" />
-		<delete dir="${buildDirectory}/tmp" />
+		<antcall target="publish-linux-gtk-x86" />
+        <antcall target="publish-linux-gtk-x86_64" />
+        <antcall target="publish-win32-win32-x86" />
+        <antcall target="publish-win32-win32-x86_64" />
+        <antcall target="publish-macosx-cocoa-x86" />
+        <antcall target="publish-macosx-cocoa-x86_64" />
+    </target>
 
+    <target name="publish-linux-gtk-x86" depends="pde.build.init">
+        <delete dir="${buildDirectory}/tmp" />
 		<antcall target="director">
 			<param name="os" value="linux" />
 			<param name="ws" value="gtk" />
 			<param name="arch" value="x86" />
 		</antcall>
+        <mkdir dir="${buildDirectory}/${buildLabel}" />
 		<exec executable="tar" dir="${buildDirectory}/tmp">
 			<arg line="czf" />
 			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-linux.gtk.x86.tar.gz" />
 			<arg line="." />
 		</exec>
 		<delete dir="${buildDirectory}/tmp" />
+    </target>
 
+    <target name="publish-linux-gtk-x86_64" depends="pde.build.init">
+        <delete dir="${buildDirectory}/tmp" />
 		<antcall target="director">
 			<param name="os" value="linux" />
 			<param name="ws" value="gtk" />
 			<param name="arch" value="x86_64" />
 		</antcall>
+        <mkdir dir="${buildDirectory}/${buildLabel}" />
 		<exec executable="tar" dir="${buildDirectory}/tmp">
 			<arg line="czf" />
 			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-linux.gtk.x86_64.tar.gz" />
 			<arg line="." />
 		</exec>
 		<delete dir="${buildDirectory}/tmp" />
+    </target>
 
+    <target name="publish-win32-win32-x86" depends="pde.build.init">
+        <delete dir="${buildDirectory}/tmp" />
 		<antcall target="director">
 			<param name="os" value="win32" />
 			<param name="ws" value="win32" />
 			<param name="arch" value="x86" />
 		</antcall>
+        <mkdir dir="${buildDirectory}/${buildLabel}" />
 		<exec executable="zip" dir="${buildDirectory}/tmp">
 			<arg line="-r" />
 			<arg line="-q" />
@@ -150,12 +173,16 @@ buildLabel=${buildLabel}</echo>
 			<arg line="." />
 		</exec>
 		<delete dir="${buildDirectory}/tmp" />
+    </target>
 
+    <target name="publish-win32-win32-x86_64" depends="pde.build.init">
+        <delete dir="${buildDirectory}/tmp" />
 		<antcall target="director">
 			<param name="os" value="win32" />
 			<param name="ws" value="win32" />
 			<param name="arch" value="x86_64" />
 		</antcall>
+        <mkdir dir="${buildDirectory}/${buildLabel}" />
 		<exec executable="zip" dir="${buildDirectory}/tmp">
 			<arg line="-r" />
 			<arg line="-q" />
@@ -163,33 +190,41 @@ buildLabel=${buildLabel}</echo>
 			<arg line="." />
 		</exec>
 		<delete dir="${buildDirectory}/tmp" />
+    </target>
 
-		<antcall target="director">
-			<param name="os" value="win32" />
-			<param name="ws" value="wpf" />
-			<param name="arch" value="x86" />
-		</antcall>
-		<exec executable="zip" dir="${buildDirectory}/tmp">
-			<arg line="-r" />
-			<arg line="-q" />
-			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-win32.wpf.x86.zip" />
-			<arg line="." />
-		</exec>
-		<delete dir="${buildDirectory}/tmp" />
-
+    <target name="publish-macosx-cocoa-x86" depends="pde.build.init">
+        <delete dir="${buildDirectory}/tmp" />
 		<antcall target="director">
 			<param name="os" value="macosx" />
-			<param name="ws" value="carbon" />
-			<param name="arch" value="ppc" />
+			<param name="ws" value="cocoa" />
+			<param name="arch" value="x86" />
 		</antcall>
+        <mkdir dir="${buildDirectory}/${buildLabel}" />
 		<exec executable="zip" dir="${buildDirectory}/tmp">
 			<arg line="-r" />
 			<arg line="-q" />
-			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-macosx.carbon.ppc.zip" />
+			<arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-macosx.cocoa.x86.zip" />
 			<arg line="." />
 		</exec>
 		<delete dir="${buildDirectory}/tmp" />
 	</target>
+
+    <target name="publish-macosx-cocoa-x86_64" depends="pde.build.init">
+        <delete dir="${buildDirectory}/tmp" />
+        <antcall target="director">
+            <param name="os" value="macosx" />
+            <param name="ws" value="cocoa" />
+            <param name="arch" value="x86_64" />
+        </antcall>
+        <mkdir dir="${buildDirectory}/${buildLabel}" />
+        <exec executable="zip" dir="${buildDirectory}/tmp">
+            <arg line="-r" />
+            <arg line="-q" />
+            <arg line="${buildDirectory}/${buildLabel}/eclipsetrader-${buildLabel}-macosx.cocoa.x86_64.zip" />
+            <arg line="." />
+        </exec>
+        <delete dir="${buildDirectory}/tmp" />
+    </target>
 
 	<target name="director">
 		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}" failonerror="true">
