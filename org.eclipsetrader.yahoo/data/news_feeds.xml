@@ -1,261 +1,193 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <list>
 	<item id="US" name="United States">
-        <page id="US_TOPSTORIES">
-                <title>Top Stories</title>
-                <url>http://finance.yahoo.com/rss/topstories</url>
-        </page>
-        <page id="US_MARKETS">
-                <title>U.S. Markets</title>
-                <url>http://finance.yahoo.com/rss/usmarkets</url>
-        </page>
-        <page id="US_ECONOMY">
-                <title>Economy &amp; Government</title>
-                <url>http://finance.yahoo.com/rss/economy</url>
-        </page>
-        <page id="US_INTERNATIONAL">
-                <title>International Finance</title>
-                <url>http://finance.yahoo.com/rss/international</url>
-        </page>
-        <page id="US_MOSTPOPULAR">
-                <title>Most Popular</title>
-                <url>http://finance.yahoo.com/rss/mostpopular</url>
+        <page id="US_STOCKS">
+                <title>Stocks</title>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-stocks?region=US&amp;lang=en-US</url>
         </page>
         <page id="US_BONDS">
                 <title>Bonds</title>
-                <url>http://finance.yahoo.com/rss/bonds</url>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-bonds?region=US&amp;lang=en-US</url>
         </page>
         <page id="US_COMMODITIES">
                 <title>Commodities</title>
-                <url>http://finance.yahoo.com/rss/commodities</url>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-commodities?region=US&amp;lang=en-US</url>
         </page>
         <page id="US_CURRENCIES">
                 <title>Currencies</title>
-                <url>http://finance.yahoo.com/rss/currencies</url>
-        </page>
-        <page id="US_FUNDS">
-                <title>Funds</title>
-                <url>http://finance.yahoo.com/rss/funds</url>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-currencies?region=US&amp;lang=en-US</url>
         </page>
         <page id="US_OPTIONS">
                 <title>Options</title>
-                <url>http://finance.yahoo.com/rss/options</url>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-options?region=US&amp;lang=en-US</url>
+        </page>
+        <page id="US_IDEAS_AND_STRATEGIES">
+                <title>Investing Ideas &amp; Strategies</title>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-ideas-and-strategies?region=US&amp;lang=en-US</url>
+        </page>
+        <page id="US_ETFS">
+                <title>ETFs</title>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-etfs?region=US&amp;lang=en-US</url>
+        </page>
+        <page id="US_MUTUAL_FUNDS">
+                <title>Mutual Funds</title>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-mutual-funds?region=US&amp;lang=en-US</url>
         </page>
         <page id="US_EARNINGS">
                 <title>Earnings</title>
-                <url>http://finance.yahoo.com/rss/earnings</url>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-earnings?region=US&amp;lang=en-US</url>
         </page>
-        <page id="US_IPO">
-                <title>IPOs</title>
-                <url>http://finance.yahoo.com/rss/IPO</url>
-        </page>
-        <page id="US_MERGERSAQUISITIONS">
-                <title>Mergers &amp; Acquisitions</title>
-                <url>http://finance.yahoo.com/rss/mergersaquisitions</url>
-        </page>
-        <page id="US_UPGRADESDOWNGRADES">
+        <page id="US_UPGRADES_DOWNGRADES">
                 <title>Upgrades &amp; Downgrades</title>
-                <url>http://finance.yahoo.com/rss/upgradesdowngrades</url>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-upgrades-and-downgrades?region=US&amp;lang=en-US</url>
         </page>
-        <page id="US_VENTURECAPITAL">
+        <page id="US_M_A">
+                <title>Mergers &amp; Acquisitions</title>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-m-a?region=US&amp;lang=en-US</url>
+        </page>
+        <page id="US_IPOS">
+                <title>IPOs</title>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-ipos?region=US&amp;lang=en-US</url>
+        </page>
+        <page id="US_PE_HEDGEFUNDS">
+                <title>Private Equity &amp; Hedge Funds</title>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-pe-and-hedgefunds?region=US&amp;lang=en-US</url>
+        </page>
+        <page id="US_VENTURE_CAPITAL">
                 <title>Venture Capital</title>
-                <url>http://finance.yahoo.com/rss/venturecapital</url>
-        </page>
-        <page id="US_INVESTINGPICKS">
-                <title>Investing Picks</title>
-                <url>http://finance.yahoo.com/rss/investingpicks</url>
-        </page>
-        <page id="US_INVESTINGSTRATEGIES">
-                <title>Investing Strategies</title>
-                <url>http://finance.yahoo.com/rss/investingstrategies</url>
-        </page>
-        <page id="US_INVESTINGIDEAS">
-                <title>Investing Ideas</title>
-                <url>http://finance.yahoo.com/rss/investingideas</url>
-        </page>
-        <page id="US_BANKING">
-                <title>Banking</title>
-                <url>http://finance.yahoo.com/rss/banking</url>
-        </page>
-        <page id="US_MORTGAGES">
-                <title>Mortgages</title>
-                <url>http://finance.yahoo.com/rss/mortgages</url>
-        </page>
-        <page id="US_RETIREMENT">
-                <title>Retirement</title>
-                <url>http://finance.yahoo.com/rss/retirement</url>
-        </page>
-        <page id="US_TAXES">
-                <title>Taxes</title>
-                <url>http://finance.yahoo.com/rss/taxes</url>
+                <url>http://feeds.finance.yahoo.com/rss/2.0/category-venture-capital?region=US&amp;lang=en-US</url>
         </page>
 	</item>
-	<item id="IT" name="Italy" handler="org.eclipsetrader.yahoo.internal.news.ItalianNewsHandler">
-        <page id="IT_AFTER">
-                <title>After Hours</title>
-                <url>http://it.biz.yahoo.com/attualita/after.html</url>
+	<item id="IT" name="Italy">
+        <page id="IT_AFFARI_LEGALI">
+            <title>Affari Legali</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-affari-legali?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_AGENDA">
-                <title>Agenda</title>
-                <url>http://it.biz.yahoo.com/attualita/agenda.html</url>
+        <page id="IT_ECONOMIA_INTERNAZIONALE">
+            <title>Economia Internazionale</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-economia-internazionale?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_FREE">
-                <title>Affari Nostri</title>
-                <url>http://it.biz.yahoo.com/newslet/free/index.html</url>
+        <page id="IT_VALUTE_FOREZ">
+            <title>Valute e Forex</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-valute-forex?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_MERCATOCHIUSO">
-                <title>A mercato chiuso</title>
-                <url>http://it.biz.yahoo.com/mercatochiuso/index.html</url>
+        <page id="IT_COMMODITIES">
+            <title>Commodities</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-commodities?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_GANN">
-                <title>Analisi di Gann</title>
-                <url>http://it.biz.yahoo.com/attualita/gann/index.html</url>
+        <page id="IT_TITOLI_STATO">
+            <title>Titoli di Stato</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-economia-obbligazioni-titoli-stato?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_AVVISO">
-                <title>Analisi tecnica</title>
-                <url>http://it.biz.yahoo.com/attualita/avviso.html</url>
-        </page>
-        <page id="IT_ASPETTANDODOW">
-                <title>Aspettando il Dow</title>
-                <url>http://it.biz.yahoo.com/aspettandodow/index.html</url>
-        </page>
-        <page id="IT_CDA">
-                <title>Assemblee e Cda</title>
-                <url>http://it.biz.yahoo.com/attualita/cda.html</url>
-        </page>
-        <page id="IT_AUMENTICAP">
-                <title>Aumenti di capitale</title>
-                <url>http://it.biz.yahoo.com/attualita/aumenticap.html</url>
-        </page>
-        <page id="IT_ATTUALITA">
-                <title>Borse</title>
-                <url>http://it.biz.yahoo.com/attualita/index.html</url>
-        </page>
-        <page id="IT_MILANO_CHIUSURE">
-                <title>Chiusure dei mercati</title>
-                <url>http://it.biz.yahoo.com/attualita/milano_chiusure.html</url>
-        </page>
-        <page id="IT_COMUNICATI">
-                <title>Comuncati stampa</title>
-                <url>http://it.biz.yahoo.com/attualita/comunicati.html</url>
-        </page>
-        <page id="IT_COVEREDWARRANTS">
-                <title>Covered warrants e Warrants</title>
-                <url>http://it.biz.yahoo.com/attualita/coveredwarrants.html</url>
-        </page>
-        <page id="IT_DOLLARO">
-                <title>Dollaro</title>
-                <url>http://it.biz.yahoo.com/attualita/dollaro/index.html</url>
-        </page>
-        <page id="IT_ETF">
-                <title>ETF</title>
-                <url>http://it.biz.yahoo.com/etf/index.html</url>
-        </page>
-        <page id="IT_FUNDS">
-                <title>Fondi comuni</title>
-                <url>http://it.biz.yahoo.com/funds/news_old.html</url>
-        </page>
-        <page id="IT_FRANCOFORTE">
-                <title>Francoforte</title>
-                <url>http://it.biz.yahoo.com/francoforte.html</url>
-        </page>
-        <page id="IT_FIB30">
-                <title>Futures</title>
-                <url>http://it.biz.yahoo.com/attualita/fib30.html</url>
-        </page>
-        <page id="IT_NEWSFINANZAWORLD">
-                <title>In borsa con Carlà</title>
-                <url>http://it.biz.yahoo.com/newsfinanzaworld.html</url>
+        <page id="IT_RATING_BORSA">
+            <title>Rating di Borsa</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-rating-borsa?region=IT&amp;lang=it-IT</url>
         </page>
         <page id="IT_IPO">
-                <title>IPO</title>
-                <url>http://it.biz.yahoo.com/attualita/ipo.html</url>
+            <title>IPO</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-ipo?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_TRADER">
-                <title>L'angolo del trader</title>
-                <url>http://it.biz.yahoo.com/trader/index.html</url>
+        <page id="IT_FUTURES">
+            <title>Futures, Opzione e Derivati</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-futures-opzioni-derivati?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="It_LONDRA">
-                <title>Londra</title>
-                <url>http://it.biz.yahoo.com/londra.html</url>
+        <page id="IT_ETF_ETC">
+            <title>ETF e ETC</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-etf-etc?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_ASIA">
-                <title>Mercati asiatici</title>
-                <url>http://it.biz.yahoo.com/attualita/asia.html</url>
+        <page id="IT_EVENTI_SOCIETARI">
+            <title>Risultati ed Eventi Societari</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-eventi-societari?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_NASDAQ">
-                <title>New York</title>
-                <url>http://it.biz.yahoo.com/attualita/nasdaq.html</url>
+        <page id="IT_ANALISI_TECNICA">
+            <title>Analisi Tecnica</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-analisi-tecnica?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_PARIGI">
-                <title>Parigi</title>
-                <url>http://it.biz.yahoo.com/parigi.html</url>
+        <page id="IT_AZIONI_BORSA">
+            <title>Azioni FTSE MIB</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-principali-azioni-borsa?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_GIORNALI">
-                <title>Rassegna Stampa</title>
-                <url>http://it.biz.yahoo.com/attualita/giornali.html</url>
+        <page id="IT_BORSA_ITALIANA">
+            <title>Mercati Italia</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-borsa-italiana?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_RATINGS">
-                <title>Ratings</title>
-                <url>http://it.biz.yahoo.com/attualita/ratings.html</url>
+        <page id="IT_MERCATI_EUROPA">
+            <title>Mercati Europa</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-mercati-europa?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_COMPANYRES">
-                <title>Risultati societari</title>
-                <url>http://it.biz.yahoo.com/attualita/companyres.html</url>
+        <page id="IT_MERCATI_USA">
+            <title>Mercati USA e Nord America</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-mercati-usa?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_MIB30">
-                <title>S&amp;P/Mib</title>
-                <url>http://it.biz.yahoo.com/attualita/mib30/index.html</url>
+        <page id="IT_MERCATI_ASIA">
+            <title>Mercati Asia</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-mercati-asia?region=IT&amp;lang=it-IT</url>
         </page>
-        <page id="IT_SEUL">
-                <title>Seul</title>
-                <url>http://it.biz.yahoo.com/attualita/seul.html</url>
-        </page>
-        <page id="IT_SINGAPORE">
-                <title>Singapore</title>
-                <url>http://it.biz.yahoo.com/attualita/singapore.html</url>
-        </page>
-        <page id="IT_TAIWAN">
-                <title>Taiwan</title>
-                <url>http://it.biz.yahoo.com/attualita/taiwan.html</url>
-        </page>
-        <page id="IT_TECHSTAR">
-                <title>TechStar e All Stars</title>
-                <url>http://it.biz.yahoo.com/techstar/index.html</url>
-        </page>
-        <page id="IT_OCCHIO">
-                <title>Titoli caldi</title>
-                <url>http://it.biz.yahoo.com/attualita/occhio.html</url>
-        </page>
-        <page id="IT_OBBLIGAZIONI">
-                <title>Titoli di stato e obbligazioni</title>
-                <url>http://it.biz.yahoo.com/attualita/obbligazioni.html</url>
-        </page>
-        <page id="IT_GIAPPONE">
-                <title>Tokyo</title>
-                <url>http://it.biz.yahoo.com/attualita/giappone.html</url>
-        </page>
-        <page id="IT_FINANCE_TOP_BUSINESS">
-                <title>Top Business</title>
-                <url>http://it.biz.yahoo.com/finance_top_business.html</url>
-        </page>
-        <page id="IT_YEN">
-                <title>Yen</title>
-                <url>http://it.biz.yahoo.com/attualita/yen.html</url>
+        <page id="IT_MERCATI_EMERGENTI">
+            <title>Mercati Emergenti</title>
+            <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-mercati-emergenti?region=IT&amp;lang=it-IT</url>
         </page>
 	</item>
 	<item id="FR" name="France">
         <page id="FR_BOURSE">
                 <title>Bourse</title>
-                <url>http://fr.biz.yahoo.com/bourse/accueil/actu.html.xml</url>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-actions?region=FR&amp;lang=fr-FR</url>
         </page>
-        <page id="FR_ECONOMIE">
-                <title>Economie</title>
-                <url>http://fr.biz.yahoo.com/economie/accueil/actu.html.xml</url>
+        <page id="FR_PARIS">
+                <title>Paris</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-paris?region=FR&amp;lang=fr-FR</url>
         </page>
-        <page id="FR_PATRIMOINE">
-                <title>Patrimoine</title>
-                <url>http://fr.biz.yahoo.com/finance_personnelle/pfgen_event.html.xml</url>
+        <page id="FR_NEW_YORK">
+                <title>New York</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-new-york?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_EUROPE">
+                <title>Europe</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-europe?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_ASIE">
+                <title>Asie</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-asie?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_PAYS_EMERGENTS">
+                <title>Pays Emergents</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-pays-emergents?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_DEVISES">
+                <title>Devises</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-devises?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_MATIERES_PREMIERES">
+                <title>Matières Premières</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-matieres-premieres?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_ANALYSE_TECHNIQUE">
+                <title>Analyses Techniques</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-analyse-technique?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_RECOMMANDATIONS">
+                <title>Recommandations</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-recommandations?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_FINANCES_PUBLIQUES">
+                <title>Finances Publiques</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-finances-publiques?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_INTERVIEWS">
+                <title>Interviews</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-interviews?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_INTRODUCTIONS_EN_BOURSE">
+                <title>Introductions en Bourse</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-introductions-en-bourse?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_STATISTIQUES">
+                <title>Statistiques</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-statistiques?region=FR&amp;lang=fr-FR</url>
+        </page>
+        <page id="FR_BLOGS">
+                <title>Blogs</title>
+                <url>http://eu.feeds.finance.yahoo.com/rss/2.0/category-blogs?region=FR&amp;lang=fr-FR</url>
         </page>
 	</item>
 </list>
