@@ -12,17 +12,27 @@
 package org.eclipsetrader.yahoo.internal.core;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.yahoo.internal.YahooActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class Util {
 	public static final String snapshotFeedHost = "download.finance.yahoo.com"; //$NON-NLS-1$
@@ -219,5 +229,21 @@ public class Util {
 			feedUrl = new URL("http://de.finance.yahoo.com/rss/headline?s=" + symbol);
 
 		return feedUrl;
+	}
+
+	public static void setupProxy(HttpClient client, String host) throws URISyntaxException {
+		BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
+		ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
+		if (reference != null) {
+			IProxyService proxyService = (IProxyService) context.getService(reference);
+			IProxyData[] proxyData = proxyService.select(new URI(IProxyData.HTTP_PROXY_TYPE, "//" + host, null));
+			if (proxyData != null && proxyData.length != 0) {
+				if (proxyData[0].getHost() != null)
+					client.getHostConfiguration().setProxy(proxyData[0].getHost(), proxyData[0].getPort());
+				if (proxyData[0].isRequiresAuthentication())
+					client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(proxyData[0].getUserId(), proxyData[0].getPassword()));
+			}
+			context.ungetService(reference);
+		}
 	}
 }

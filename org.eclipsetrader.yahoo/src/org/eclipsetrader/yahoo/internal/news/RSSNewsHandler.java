@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,14 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.eclipse.core.net.proxy.IProxyData;
-import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipsetrader.yahoo.internal.YahooActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.eclipsetrader.yahoo.internal.core.Util;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -53,21 +47,7 @@ public class RSSNewsHandler implements INewsHandler {
 			monitor.subTask(url[i].toString());
 
 			try {
-				if (YahooActivator.getDefault() != null) {
-					BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
-					ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-					if (reference != null) {
-						IProxyService proxy = (IProxyService) context.getService(reference);
-						IProxyData data = proxy.getProxyDataForHost(url[i].getHost(), IProxyData.HTTP_PROXY_TYPE);
-						if (data != null) {
-							if (data.getHost() != null)
-								client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-							if (data.isRequiresAuthentication())
-								client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
-						}
-						context.ungetService(reference);
-					}
-				}
+				Util.setupProxy(client, url[i].getHost());
 
 				SyndFeed feed = fetcher.retrieveFeed(url[i], client);
 				for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,10 +31,6 @@ import java.util.TimerTask;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.eclipse.core.net.proxy.IProxyData;
-import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -53,8 +49,6 @@ import org.eclipsetrader.yahoo.internal.core.Util;
 import org.eclipsetrader.yahoo.internal.core.repository.IdentifierType;
 import org.eclipsetrader.yahoo.internal.core.repository.IdentifiersList;
 import org.eclipsetrader.yahoo.internal.core.repository.PriceDataType;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableExtension, PropertyChangeListener {
 	private static final int I_CODE = 0;
@@ -240,22 +234,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 		try {
 			HttpClient client = new HttpClient();
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-
-			if (YahooActivator.getDefault() != null) {
-				BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
-				ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-				if (reference != null) {
-					IProxyService proxy = (IProxyService) context.getService(reference);
-					IProxyData data = proxy.getProxyDataForHost(Util.snapshotFeedHost, IProxyData.HTTP_PROXY_TYPE);
-					if (data != null) {
-						if (data.getHost() != null)
-							client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-						if (data.isRequiresAuthentication())
-							client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
-					}
-					context.ungetService(reference);
-				}
-			}
+			Util.setupProxy(client, Util.snapshotFeedHost);
 
 			synchronized (thread) {
 				while (!isStopping()) {
@@ -275,12 +254,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 				}
 			}
 		} catch (Exception e) {
-			if (YahooActivator.getDefault() != null) {
-				Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
-				YahooActivator.getDefault().getLog().log(status);
-			}
-			else
-				e.printStackTrace();
+			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
+			YahooActivator.log(status);
 		}
 	}
 
