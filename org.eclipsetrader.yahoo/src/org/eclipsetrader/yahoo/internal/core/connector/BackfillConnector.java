@@ -242,7 +242,6 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		String inputLine;
 
 		while ((inputLine = in.readLine()) != null) {
-			System.out.println(inputLine);
 			if (!Character.isDigit(inputLine.charAt(0)))
 				continue;
 
