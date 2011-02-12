@@ -242,6 +242,7 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		String inputLine;
 
 		while ((inputLine = in.readLine()) != null) {
+			System.out.println(inputLine);
 			if (!Character.isDigit(inputLine.charAt(0)))
 				continue;
 
@@ -280,7 +281,13 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		day.set(Calendar.SECOND, 0);
 		day.set(Calendar.MILLISECOND, 0);
 
-		OHLC bar = new OHLC(day.getTime(), pf.parse(item[1].replace(',', '.')).doubleValue(), pf.parse(item[2].replace(',', '.')).doubleValue(), pf.parse(item[3].replace(',', '.')).doubleValue(), pf.parse(item[4].replace(',', '.')).doubleValue(), nf.parse(item[5]).longValue());
+		double close = pf.parse(item[1].replace(',', '.')).doubleValue();
+		double high = pf.parse(item[2].replace(',', '.')).doubleValue();
+		double low = pf.parse(item[3].replace(',', '.')).doubleValue();
+		double open = pf.parse(item[4].replace(',', '.')).doubleValue();
+		long volume = nf.parse(item[5]).longValue();
+
+		OHLC bar = new OHLC(day.getTime(), open, high, low, close, volume);
 
 		return bar;
 	}
@@ -291,8 +298,13 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 			return null;
 
 		Date date = new Date(Long.parseLong(item[0]) * 1000);
+		double close = pf.parse(item[1].replace(',', '.')).doubleValue();
+		double high = pf.parse(item[2].replace(',', '.')).doubleValue();
+		double low = pf.parse(item[3].replace(',', '.')).doubleValue();
+		double open = pf.parse(item[4].replace(',', '.')).doubleValue();
+		long volume = nf.parse(item[5]).longValue();
 
-		OHLC bar = new OHLC(date, pf.parse(item[4].replace(',', '.')).doubleValue(), pf.parse(item[2].replace(',', '.')).doubleValue(), pf.parse(item[3].replace(',', '.')).doubleValue(), pf.parse(item[1].replace(',', '.')).doubleValue(), nf.parse(item[5]).longValue());
+		OHLC bar = new OHLC(date, open, high, low, close, volume);
 
 		return bar;
 	}

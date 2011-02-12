@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,34 +31,34 @@ public class BackfillConnectorTest extends TestCase {
 		BackfillConnector connector = new BackfillConnector();
 
 		Calendar date = Calendar.getInstance();
-		date.set(2009, Calendar.JUNE, 19, 0, 0, 0);
+		date.set(2011, Calendar.JANUARY, 3, 0, 0, 0);
 		date.set(Calendar.MILLISECOND, 0);
 
-		OHLC ohlc = connector.parseResponseLine("2009-06-19,24.04,24.34,23.75,24.07,115446200,24.07");
+		OHLC ohlc = connector.parseResponseLine("20110103,1.5840,1.6190,1.5660,1.5750,204432704");
 
 		assertEquals(date.getTime(), ohlc.getDate());
-		assertEquals(24.04, ohlc.getOpen());
-		assertEquals(24.34, ohlc.getHigh());
-		assertEquals(23.75, ohlc.getLow());
-		assertEquals(24.07, ohlc.getClose());
-		assertEquals(new Long(115446200), ohlc.getVolume());
+		assertEquals(1.5750, ohlc.getOpen());
+		assertEquals(1.6190, ohlc.getHigh());
+		assertEquals(1.5660, ohlc.getLow());
+		assertEquals(1.5840, ohlc.getClose());
+		assertEquals(new Long(204432704), ohlc.getVolume());
 	}
 
 	public void testParseAlternateDateFormat() throws Exception {
 		BackfillConnector connector = new BackfillConnector();
 
 		Calendar date = Calendar.getInstance();
-		date.set(2009, Calendar.JUNE, 19, 0, 0, 0);
+		date.set(2011, Calendar.JANUARY, 3, 0, 0, 0);
 		date.set(Calendar.MILLISECOND, 0);
 
-		OHLC ohlc = connector.parseResponseLine("19-Jun-2009,24.04,24.34,23.75,24.07,115446200,24.07");
+		OHLC ohlc = connector.parseResponseLine("03-Jan-2011,1.5840,1.6190,1.5660,1.5750,204432704");
 
 		assertEquals(date.getTime(), ohlc.getDate());
-		assertEquals(24.04, ohlc.getOpen());
-		assertEquals(24.34, ohlc.getHigh());
-		assertEquals(23.75, ohlc.getLow());
-		assertEquals(24.07, ohlc.getClose());
-		assertEquals(new Long(115446200), ohlc.getVolume());
+		assertEquals(1.5750, ohlc.getOpen());
+		assertEquals(1.6190, ohlc.getHigh());
+		assertEquals(1.5660, ohlc.getLow());
+		assertEquals(1.5840, ohlc.getClose());
+		assertEquals(new Long(204432704), ohlc.getVolume());
 	}
 
 	public void testParse1DayResponseLine() throws Exception {
@@ -80,9 +80,9 @@ public class BackfillConnectorTest extends TestCase {
 
 	public void testReadBackfillStream() throws Exception {
 		StringBuilder text = new StringBuilder();
-		text.append("Date,Open,High,Low,Close,Volume,Adj Close\r\n");
-		text.append("2009-06-19,24.04,24.34,23.75,24.07,115446200,24.07\r\n");
-		text.append("2009-06-18,23.62,23.69,23.30,23.50,58825800,23.50\r\n");
+		text.append("values:Date,close,high,low,open,volume\r\n");
+		text.append("20110103,1.5840,1.6190,1.5660,1.5750,204432704\r\n");
+		text.append("20110104,1.5900,1.6060,1.5690,1.5830,254641200\r\n");
 		StringReader sr = new StringReader(text.toString());
 
 		List<OHLC> list = new ArrayList<OHLC>();
@@ -95,7 +95,7 @@ public class BackfillConnectorTest extends TestCase {
 
 	public void testReadEmptyBackfillStream() throws Exception {
 		StringBuilder text = new StringBuilder();
-		text.append("Date,Open,High,Low,Close,Volume,Adj Close\r\n");
+		text.append("values:Date,close,high,low,open,volume\r\n");
 		StringReader sr = new StringReader(text.toString());
 
 		List<OHLC> list = new ArrayList<OHLC>();
