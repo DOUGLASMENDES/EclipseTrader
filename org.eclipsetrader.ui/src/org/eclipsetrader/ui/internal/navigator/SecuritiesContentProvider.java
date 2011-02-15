@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,12 +21,13 @@ import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class SecuritiesContentProvider implements IStructuredContentProvider {
-	private Viewer viewer;
+	final IRepositoryService repository;
+	Viewer viewer;
 
-	private IRepositoryChangeListener resourceListener = new IRepositoryChangeListener() {
+	IRepositoryChangeListener resourceListener = new IRepositoryChangeListener() {
 		public void repositoryResourceChanged(RepositoryChangeEvent event) {
-    		NavigatorView view = (NavigatorView) viewer.getInput();
-    		view.update();
+			NavigatorView view = (NavigatorView) viewer.getInput();
+			view.update();
 
 			if (!viewer.getControl().isDisposed()) {
 				try {
@@ -45,32 +46,35 @@ public class SecuritiesContentProvider implements IStructuredContentProvider {
 	};
 
 	public SecuritiesContentProvider() {
+		repository = getRepositoryService();
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-     */
-    public Object[] getElements(Object inputElement) {
-		return getRepositoryService().getSecurities();
-    }
+	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+	 */
+	public Object[] getElements(Object inputElement) {
+		return repository.getSecurities();
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-     */
-    public void dispose() {
-		getRepositoryService().removeRepositoryResourceListener(resourceListener);
-    }
+	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+	 */
+	public void dispose() {
+		repository.removeRepositoryResourceListener(resourceListener);
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-     */
-    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-    	if (oldInput != null)
-			getRepositoryService().removeRepositoryResourceListener(resourceListener);
-    	this.viewer = viewer;
-    	if (newInput != null)
-			getRepositoryService().addRepositoryResourceListener(resourceListener);
-    }
+	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+	 */
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		if (oldInput != null)
+			repository.removeRepositoryResourceListener(resourceListener);
+
+		this.viewer = viewer;
+
+		if (newInput != null)
+			repository.addRepositoryResourceListener(resourceListener);
+	}
 
 	protected IRepositoryService getRepositoryService() {
 		return UIActivator.getDefault().getRepositoryService();

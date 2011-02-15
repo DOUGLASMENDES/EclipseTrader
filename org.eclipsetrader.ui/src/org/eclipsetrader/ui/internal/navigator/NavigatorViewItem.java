@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,37 +31,37 @@ public class NavigatorViewItem implements IViewItem {
 
 	public NavigatorViewItem(NavigatorViewItem parent, Object reference) {
 		this.parent = parent;
-	    this.reference = reference;
+		this.reference = reference;
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IViewItem#getItemCount()
-     */
-    public int getItemCount() {
+	 * @see org.eclipsetrader.core.views.IViewItem#getItemCount()
+	 */
+	public int getItemCount() {
 		return childs != null ? childs.size() : 0;
-    }
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IViewItem#getItems()
-     */
-    public IViewItem[] getItems() {
+	 * @see org.eclipsetrader.core.views.IViewItem#getItems()
+	 */
+	public IViewItem[] getItems() {
 		return childs.toArray(new IViewItem[childs.size()]);
-    }
+	}
 
-    protected void setItems(NavigatorViewItem[] items) {
-    	childs.clear();
-    	for (NavigatorViewItem viewItem : items) {
-    		childs.add(viewItem);
-    		viewItem.parent = this;
-    	}
-    }
+	protected void setItems(NavigatorViewItem[] items) {
+		childs.clear();
+		for (NavigatorViewItem viewItem : items) {
+			childs.add(viewItem);
+			viewItem.parent = this;
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IViewItem#getParent()
-     */
-    public IViewItem getParent() {
-    	return parent;
-    }
+	 * @see org.eclipsetrader.core.views.IViewItem#getParent()
+	 */
+	public IViewItem getParent() {
+		return parent;
+	}
 
 	/**
 	 * Checks if the given reference object is a child of the receiver.
@@ -109,7 +109,12 @@ public class NavigatorViewItem implements IViewItem {
 	}
 
 	public void removeChild(Object reference) {
-		childs.remove(reference);
+		for (NavigatorViewItem viewItem : childs) {
+			if (viewItem.getReference().equals(reference)) {
+				childs.remove(viewItem);
+				break;
+			}
+		}
 	}
 
 	public Iterator<NavigatorViewItem> iterator() {
@@ -117,21 +122,21 @@ public class NavigatorViewItem implements IViewItem {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IViewItem#getValues()
-     */
-    public IAdaptable[] getValues() {
-	    return new IAdaptable[0];
-    }
+	 * @see org.eclipsetrader.core.views.IViewItem#getValues()
+	 */
+	public IAdaptable[] getValues() {
+		return new IAdaptable[0];
+	}
 
 	public Object getReference() {
-    	return reference;
-    }
+		return reference;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public Object getAdapter(Class adapter) {
+	public Object getAdapter(Class adapter) {
 		if (reference != null && adapter.isAssignableFrom(reference.getClass()))
 			return reference;
 
@@ -151,29 +156,28 @@ public class NavigatorViewItem implements IViewItem {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.views.IViewItem#accept(org.eclipsetrader.core.views.IViewItemVisitor)
-     */
-    public void accept(IViewItemVisitor visitor) {
-    	if (visitor.visit(this)) {
-    		for (IViewItem viewItem : getItems())
-    			viewItem.accept(visitor);
-    	}
-    }
+	 * @see org.eclipsetrader.core.views.IViewItem#accept(org.eclipsetrader.core.views.IViewItemVisitor)
+	 */
+	public void accept(IViewItemVisitor visitor) {
+		if (visitor.visit(this)) {
+			for (IViewItem viewItem : getItems())
+				viewItem.accept(visitor);
+		}
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-	    return 7 * (reference != null ? reference.hashCode() : 0) +
-	           11 * (parent != null ? parent.hashCode() : 0);
-    }
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return 7 * (reference != null ? reference.hashCode() : 0) + 11 * (parent != null ? parent.hashCode() : 0);
+	}
 
 	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return reference != null ? reference.toString() : super.toString();
-    }
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return reference != null ? reference.toString() : super.toString();
+	}
 }
