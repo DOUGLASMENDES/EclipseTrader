@@ -494,6 +494,16 @@
          </enabledWhen>
       </page>
       <page
+            class="org.eclipsetrader.ui.internal.securities.properties.DividendsProperties"
+            id="org.eclipsetrader.ui.propertypages.dividends"
+            name="Dividends">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipsetrader.core.instruments.Stock">
+            </instanceof>
+         </enabledWhen>
+      </page>
+      <page
             class="org.eclipsetrader.ui.internal.markets.ConnectorsPage"
             id="org.eclipsetrader.ui.propertypages.markets.connectors"
             name="Connectors">
