@@ -12,7 +12,6 @@
 package org.eclipsetrader.yahoo.internal.core;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
@@ -21,6 +20,7 @@ import java.util.Date;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -108,7 +108,7 @@ public class Util {
 	 *
 	 * @return the method.
 	 */
-	public static HttpMethod getHistoryFeedMethod(IFeedIdentifier identifier, Date from, Date to) {
+	public static HttpMethod getHistoryFeedMethod(IFeedIdentifier identifier, Date from, Date to) throws URIException {
 		String symbol = getSymbol(identifier);
 
 		Calendar fromDate = Calendar.getInstance();
@@ -117,25 +117,12 @@ public class Util {
 		Calendar toDate = Calendar.getInstance();
 		toDate.setTime(to);
 
-		/*GetMethod method = new GetMethod("http://" + historyFeedHost + "/table.csv");
-		method.setQueryString(new NameValuePair[] {
-		    new NameValuePair("s", symbol),
-		    new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
-		    new NameValuePair("e", String.valueOf(toDate.get(Calendar.DAY_OF_MONTH))),
-		    new NameValuePair("f", String.valueOf(toDate.get(Calendar.YEAR))),
-		    new NameValuePair("g", "d"),
-		    new NameValuePair("a", String.valueOf(fromDate.get(Calendar.MONTH))),
-		    new NameValuePair("b", String.valueOf(fromDate.get(Calendar.DAY_OF_MONTH))),
-		    new NameValuePair("c", String.valueOf(fromDate.get(Calendar.YEAR))),
-		    new NameValuePair("ignore", ".csv"),
-		});*/
+		String prefix = "/instrument/1.0/";
+		String suffix = "/chartdata;type=quote";
+		URI uri = new URI("http", "chartapi.finance.yahoo.com", prefix + symbol.toLowerCase() + suffix, "");
 
-		StringBuilder sb = new StringBuilder("http://chartapi.finance.yahoo.com/instrument/1.0/");
-		sb.append(symbol.toLowerCase());
-		sb.append("/chartdata");
-		sb.append(";type=quote");
-
-		GetMethod method = new GetMethod(sb.toString());
+		GetMethod method = new GetMethod();
+		method.setURI(uri);
 		method.setQueryString(new NameValuePair[] {
 		    new NameValuePair("s", symbol),
 		    new NameValuePair("d", String.valueOf(toDate.get(Calendar.MONTH))),
@@ -157,31 +144,43 @@ public class Util {
 		return method;
 	}
 
-	public static HttpMethod get1DayHistoryFeedMethod(IFeedIdentifier identifier) {
+	public static HttpMethod get1DayHistoryFeedMethod(IFeedIdentifier identifier) throws URIException {
 		String symbol = getSymbol(identifier);
 
-		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() +
-		                                 "/chartdata;type=quote;range=1d/csv/");
+		String prefix = "/instrument/1.0/";
+		String suffix = "/chartdata;type=quote;range=1d/csv/";
+		URI uri = new URI("http", "chartapi.finance.yahoo.com", prefix + symbol.toLowerCase() + suffix, "");
+
+		GetMethod method = new GetMethod();
+		method.setURI(uri);
 		method.setFollowRedirects(true);
 
 		return method;
 	}
 
-	public static HttpMethod get5DayHistoryFeedMethod(IFeedIdentifier identifier) {
+	public static HttpMethod get5DayHistoryFeedMethod(IFeedIdentifier identifier) throws URIException {
 		String symbol = getSymbol(identifier);
 
-		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() +
-		                                 "/chartdata;type=quote;range=5d/csv/");
+		String prefix = "/instrument/1.0/";
+		String suffix = "/chartdata;type=quote;range=5d/csv/";
+		URI uri = new URI("http", "chartapi.finance.yahoo.com", prefix + symbol.toLowerCase() + suffix, "");
+
+		GetMethod method = new GetMethod();
+		method.setURI(uri);
 		method.setFollowRedirects(true);
 
 		return method;
 	}
 
-	public static HttpMethod get1YearHistoryFeedMethod(IFeedIdentifier identifier, int year) {
+	public static HttpMethod get1YearHistoryFeedMethod(IFeedIdentifier identifier, int year) throws URIException {
 		String symbol = getSymbol(identifier);
 
-		GetMethod method = new GetMethod("http://chartapi.finance.yahoo.com/instrument/1.0/" + symbol.toLowerCase() +
-		                                 "/chartdata;type=quote;ys=" + year + ";yz=1/csv/");
+		String prefix = "/instrument/1.0/";
+		String suffix = "/chartdata;type=quote;ys=" + year + ";yz=1/csv/";
+		URI uri = new URI("http", "chartapi.finance.yahoo.com", prefix + symbol.toLowerCase() + suffix, "");
+
+		GetMethod method = new GetMethod();
+		method.setURI(uri);
 		method.setFollowRedirects(true);
 
 		return method;
@@ -213,22 +212,22 @@ public class Util {
 		return method;
 	}
 
-	public static URL getRSSNewsFeedForSecurity(ISecurity security) throws MalformedURLException {
+	public static URL getRSSNewsFeedForSecurity(ISecurity security) throws MalformedURLException, URIException, NullPointerException {
 		IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
 		if (identifier == null)
 			return null;
 
 		String symbol = getSymbol(identifier);
 
-		URL feedUrl = new URL("http://finance.yahoo.com/rss/headline?s=" + symbol);
+		URI feedUrl = new URI("http://finance.yahoo.com/rss/headline?s=" + symbol, false);
 		if (symbol.toLowerCase().endsWith(".mi"))
-			feedUrl = new URL("http://it.finance.yahoo.com/rss/headline?s=" + symbol);
+			feedUrl = new URI("http://it.finance.yahoo.com/rss/headline?s=" + symbol, false);
 		else if (symbol.toLowerCase().endsWith(".pa"))
-			feedUrl = new URL("http://fr.finance.yahoo.com/rss/headline?s=" + symbol);
+			feedUrl = new URI("http://fr.finance.yahoo.com/rss/headline?s=" + symbol, false);
 		else if (symbol.toLowerCase().endsWith(".de"))
-			feedUrl = new URL("http://de.finance.yahoo.com/rss/headline?s=" + symbol);
+			feedUrl = new URI("http://de.finance.yahoo.com/rss/headline?s=" + symbol, false);
 
-		return feedUrl;
+		return new URL(feedUrl.toString());
 	}
 
 	public static void setupProxy(HttpClient client, String host) throws URISyntaxException {
@@ -236,7 +235,7 @@ public class Util {
 		ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
 		if (reference != null) {
 			IProxyService proxyService = (IProxyService) context.getService(reference);
-			IProxyData[] proxyData = proxyService.select(new URI(IProxyData.HTTP_PROXY_TYPE, "//" + host, null));
+			IProxyData[] proxyData = proxyService.select(new java.net.URI(IProxyData.HTTP_PROXY_TYPE, "//" + host, null));
 			if (proxyData != null && proxyData.length != 0) {
 				if (proxyData[0].getHost() != null)
 					client.getHostConfiguration().setProxy(proxyData[0].getHost(), proxyData[0].getPort());
