@@ -216,8 +216,12 @@ public class DividendsProperties extends PropertyPage implements IWorkbenchPrope
 	protected void performDefaults() {
 		IStock security = (IStock) getElement().getAdapter(IStock.class);
 
+		input = new ArrayList<IDividend>();
+
 		IDividend[] dividends = security.getDividends();
-		input = new ArrayList<IDividend>(Arrays.asList(dividends));
+		if (dividends != null)
+			input.addAll(Arrays.asList(dividends));
+
 		viewer.setInput(input);
 
 		super.performDefaults();
