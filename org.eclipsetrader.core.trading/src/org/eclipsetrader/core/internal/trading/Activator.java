@@ -14,12 +14,9 @@ package org.eclipsetrader.core.internal.trading;
 import java.util.Hashtable;
 
 import org.eclipse.core.internal.runtime.AdapterManager;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.ats.ITradeSystem;
 import org.eclipsetrader.core.ats.ITradeSystemService;
 import org.eclipsetrader.core.internal.ats.TradeSystemService;
@@ -77,36 +74,15 @@ public class Activator extends Plugin {
 		context.registerService(new String[] {
 		    ITradeSystemService.class.getName(), TradeSystemService.class.getName()
 		}, tradeSystemService, new Hashtable<Object, Object>());
+		tradeSystemService.startUp();
 
 		Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
-
-		Job job = new Job("Trade System Service Startup") {
-			@Override
-			public IStatus run(IProgressMonitor monitor) {
-				tradeSystemService.startUp();
-				return Status.OK_STATUS;
-			}
-		};
-		job.schedule(1000);
 
 		alertService = new AlertService();
 		alertServiceRegistration = context.registerService(new String[] {
 		    IAlertService.class.getName(), AlertService.class.getName()
 		}, alertService, new Hashtable<Object, Object>());
-
-		job = new Job("Alerts Service Startup") {
-			@Override
-			public IStatus run(IProgressMonitor monitor) {
-				try {
-					alertService.startUp();
-				} catch (Exception e) {
-					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Starting alerts service", e); //$NON-NLS-1$
-					return status;
-				}
-				return Status.OK_STATUS;
-			}
-		};
-		job.schedule(100);
+		alertService.startUp();
 	}
 
 	/*

@@ -28,98 +28,90 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class BackfillConnectorAdapter extends XmlAdapter<String, IBackfillConnector> {
-	private static IFeedService feedService;
 
 	public class FailsafeBackfillConnector implements IBackfillConnector {
 		private String id;
 
 		public FailsafeBackfillConnector(String id) {
-	        this.id = id;
-        }
+			this.id = id;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillDividends(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
-         */
-        public IDividend[] backfillDividends(IFeedIdentifier identifier, Date from, Date to) {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillDividends(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
+		 */
+		public IDividend[] backfillDividends(IFeedIdentifier identifier, Date from, Date to) {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillHistory(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
-         */
-        public IOHLC[] backfillHistory(IFeedIdentifier identifier, Date from, Date to, TimeSpan timeSpan) {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillHistory(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
+		 */
+		public IOHLC[] backfillHistory(IFeedIdentifier identifier, Date from, Date to, TimeSpan timeSpan) {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillSplits(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
-         */
-        public ISplit[] backfillSplits(IFeedIdentifier identifier, Date from, Date to) {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillSplits(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
+		 */
+		public ISplit[] backfillSplits(IFeedIdentifier identifier, Date from, Date to) {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IBackfillConnector#canBackfill(org.eclipsetrader.core.feed.IFeedIdentifier, org.eclipsetrader.core.feed.TimeSpan)
-         */
-        public boolean canBackfill(IFeedIdentifier identifier, TimeSpan timeSpan) {
-	        return false;
-        }
+		 * @see org.eclipsetrader.core.feed.IBackfillConnector#canBackfill(org.eclipsetrader.core.feed.IFeedIdentifier, org.eclipsetrader.core.feed.TimeSpan)
+		 */
+		public boolean canBackfill(IFeedIdentifier identifier, TimeSpan timeSpan) {
+			return false;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IBackfillConnector#getId()
-         */
-        public String getId() {
-	        return id;
-        }
+		 * @see org.eclipsetrader.core.feed.IBackfillConnector#getId()
+		 */
+		public String getId() {
+			return id;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IBackfillConnector#getName()
-         */
-        public String getName() {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.feed.IBackfillConnector#getName()
+		 */
+		public String getName() {
+			return null;
+		}
 	}
 
 	public BackfillConnectorAdapter() {
 	}
 
 	/* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
-     */
-    @Override
-    public String marshal(IBackfillConnector v) throws Exception {
-	    return v != null ? v.getId() : null;
-    }
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public String marshal(IBackfillConnector v) throws Exception {
+		return v != null ? v.getId() : null;
+	}
 
 	/* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
-     */
-    @Override
-    public IBackfillConnector unmarshal(String v) throws Exception {
-    	if (v == null)
-    		return null;
-
-		if (feedService == null) {
-	    	try {
-	    		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-	    		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
-	    		feedService = (IFeedService) context.getService(serviceReference);
-	    		context.ungetService(serviceReference);
-	    	} catch(Exception e) {
-	    		Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-	    		CoreActivator.log(status);
-	    	}
-		}
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public IBackfillConnector unmarshal(String v) throws Exception {
+		if (v == null)
+			return null;
 
 		IBackfillConnector connector = null;
-		if (feedService != null)
+		try {
+			BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+
+			IFeedService feedService = (IFeedService) context.getService(serviceReference);
 			connector = feedService.getBackfillConnector(v);
-		if (connector == null) {
-    		Status status = new Status(Status.WARNING, CoreActivator.PLUGIN_ID, 0, "Failed to load connector " + v, null);
-    		CoreActivator.log(status);
-			return new FailsafeBackfillConnector(v);
+
+			context.ungetService(serviceReference);
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+			CoreActivator.log(status);
 		}
 
 		return connector;
-    }
+	}
 }

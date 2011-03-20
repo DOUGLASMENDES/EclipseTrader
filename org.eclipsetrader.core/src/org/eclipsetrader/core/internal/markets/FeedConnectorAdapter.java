@@ -24,101 +24,93 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class FeedConnectorAdapter extends XmlAdapter<String, IFeedConnector> {
-	private static IFeedService feedService;
 
 	public class FailsafeFeedConnector implements IFeedConnector {
 		private String id;
 
 		public FailsafeFeedConnector(String id) {
-	        this.id = id;
-        }
+			this.id = id;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
-         */
-        public void connect() {
-        }
+		 * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
+		 */
+		public void connect() {
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
-         */
-        public void disconnect() {
-        }
+		 * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
+		 */
+		public void disconnect() {
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
-         */
-        public String getId() {
-	        return id;
-        }
+		 * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
+		 */
+		public String getId() {
+			return id;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
-         */
-        public String getName() {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
+		 */
+		public String getName() {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
-         */
-        public IFeedSubscription subscribe(IFeedIdentifier identifier) {
-	        return null;
-        }
+		 * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
+		 */
+		public IFeedSubscription subscribe(IFeedIdentifier identifier) {
+			return null;
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-         */
-        public void addConnectorListener(IConnectorListener listener) {
-        }
+		 * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+		 */
+		public void addConnectorListener(IConnectorListener listener) {
+		}
 
 		/* (non-Javadoc)
-         * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-         */
-        public void removeConnectorListener(IConnectorListener listener) {
-        }
+		 * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+		 */
+		public void removeConnectorListener(IConnectorListener listener) {
+		}
 	}
 
 	public FeedConnectorAdapter() {
 	}
 
 	/* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
-     */
-    @Override
-    public String marshal(IFeedConnector v) throws Exception {
-	    return v != null ? v.getId() : null;
-    }
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+	 */
+	@Override
+	public String marshal(IFeedConnector v) throws Exception {
+		return v != null ? v.getId() : null;
+	}
 
 	/* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
-     */
-    @Override
-    public IFeedConnector unmarshal(String v) throws Exception {
-    	if (v == null)
-    		return null;
-
-		if (feedService == null) {
-	    	try {
-	    		BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-	    		ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
-	    		feedService = (IFeedService) context.getService(serviceReference);
-	    		context.ungetService(serviceReference);
-	    	} catch(Exception e) {
-	    		Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-	    		CoreActivator.log(status);
-	    	}
-		}
+	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+	 */
+	@Override
+	public IFeedConnector unmarshal(String v) throws Exception {
+		if (v == null)
+			return null;
 
 		IFeedConnector connector = null;
-		if (feedService != null)
+		try {
+			BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
+			ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+
+			IFeedService feedService = (IFeedService) context.getService(serviceReference);
 			connector = feedService.getConnector(v);
-		if (connector == null) {
-    		Status status = new Status(Status.WARNING, CoreActivator.PLUGIN_ID, 0, "Failed to load connector " + v, null);
-    		CoreActivator.log(status);
-			return new FailsafeFeedConnector(v);
+
+			context.ungetService(serviceReference);
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+			CoreActivator.log(status);
 		}
 
 		return connector;
-    }
+	}
 }
