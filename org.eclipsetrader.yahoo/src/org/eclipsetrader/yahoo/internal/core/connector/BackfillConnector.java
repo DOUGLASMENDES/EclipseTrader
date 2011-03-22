@@ -87,7 +87,7 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 			return true;
 
 		String symbol = Util.getSymbol(identifier);
-		if (symbol.startsWith("^") || symbol.contains("."))
+		if (symbol.startsWith("^"))
 			return false;
 
 		if (timeSpan.getUnits() == Units.Minutes && timeSpan.getLength() == 1)
