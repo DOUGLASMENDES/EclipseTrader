@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.yahoo.internal.news;
+package org.eclipsetrader.yahoo.internal.core.news;
 
 import java.net.URL;
 import java.util.List;
@@ -24,7 +24,7 @@ import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
-public class RSSNewsHandlerTest extends TestCase {
+public class RSSNewsHandlerFunctionalTest extends TestCase {
 
 	@SuppressWarnings("rawtypes")
 	public void testGetUSNews() throws Exception {

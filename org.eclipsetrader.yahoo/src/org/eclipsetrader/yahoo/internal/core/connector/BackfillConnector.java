@@ -102,14 +102,19 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 	 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillHistory(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
 	 */
 	public IOHLC[] backfillHistory(IFeedIdentifier identifier, Date from, Date to, TimeSpan timeSpan) {
-		if (TimeSpan.days(1).equals(timeSpan)) {
-			return backfillDailyHistory(identifier, from, to);
-		}
-		else if (TimeSpan.minutes(1).equals(timeSpan)) {
-			return backfill1DayHistory(identifier);
-		}
-		else if (TimeSpan.minutes(5).equals(timeSpan)) {
-			return backfill5DayHistory(identifier);
+		try {
+			if (TimeSpan.days(1).equals(timeSpan)) {
+				return backfillDailyHistory(identifier, from, to);
+			}
+			else if (TimeSpan.minutes(1).equals(timeSpan)) {
+				return backfill1DayHistory(identifier);
+			}
+			else if (TimeSpan.minutes(5).equals(timeSpan)) {
+				return backfill5DayHistory(identifier);
+			}
+		} catch (Exception e) {
+			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
+			YahooActivator.log(status);
 		}
 		return null;
 	}
@@ -157,48 +162,36 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
 		return list.toArray(new IOHLC[list.size()]);
 	}
 
-	private IOHLC[] backfill1DayHistory(IFeedIdentifier identifier) {
+	private IOHLC[] backfill1DayHistory(IFeedIdentifier identifier) throws Exception {
 		List<OHLC> list = new ArrayList<OHLC>();
 
-		try {
-			HttpMethod method = Util.get1DayHistoryFeedMethod(identifier);
-			method.setFollowRedirects(true);
+		HttpMethod method = Util.get1DayHistoryFeedMethod(identifier);
+		method.setFollowRedirects(true);
 
-			HttpClient client = new HttpClient();
-			Util.setupProxy(client, method.getURI().getHost());
-			client.executeMethod(method);
+		HttpClient client = new HttpClient();
+		Util.setupProxy(client, method.getURI().getHost());
+		client.executeMethod(method);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-			read1DayBackfillStream(list, in);
-			in.close();
-
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
-			YahooActivator.log(status);
-		}
+		BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+		read1DayBackfillStream(list, in);
+		in.close();
 
 		return list.toArray(new IOHLC[list.size()]);
 	}
 
-	private IOHLC[] backfill5DayHistory(IFeedIdentifier identifier) {
+	private IOHLC[] backfill5DayHistory(IFeedIdentifier identifier) throws Exception {
 		List<OHLC> list = new ArrayList<OHLC>();
 
-		try {
-			HttpMethod method = Util.get5DayHistoryFeedMethod(identifier);
-			method.setFollowRedirects(true);
+		HttpMethod method = Util.get5DayHistoryFeedMethod(identifier);
+		method.setFollowRedirects(true);
 
-			HttpClient client = new HttpClient();
-			Util.setupProxy(client, method.getURI().getHost());
-			client.executeMethod(method);
+		HttpClient client = new HttpClient();
+		Util.setupProxy(client, method.getURI().getHost());
+		client.executeMethod(method);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-			read1DayBackfillStream(list, in);
-			in.close();
-
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error reading data", e);
-			YahooActivator.log(status);
-		}
+		BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+		read1DayBackfillStream(list, in);
+		in.close();
 
 		return list.toArray(new IOHLC[list.size()]);
 	}
