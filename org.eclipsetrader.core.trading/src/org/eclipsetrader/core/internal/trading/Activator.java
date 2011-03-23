@@ -68,12 +68,12 @@ public class Activator extends Plugin {
 		tradingServiceFactory = new TradingServiceFactory();
 		tradingServiceRegistration = context.registerService(new String[] {
 		    ITradingService.class.getName(), TradingService.class.getName()
-		}, tradingServiceFactory, new Hashtable<Object, Object>());
+		}, tradingServiceFactory, new Hashtable<String, Object>());
 
 		final TradeSystemService tradeSystemService = new TradeSystemService();
 		context.registerService(new String[] {
 		    ITradeSystemService.class.getName(), TradeSystemService.class.getName()
-		}, tradeSystemService, new Hashtable<Object, Object>());
+		}, tradeSystemService, new Hashtable<String, Object>());
 		tradeSystemService.startUp();
 
 		Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
@@ -81,7 +81,7 @@ public class Activator extends Plugin {
 		alertService = new AlertService();
 		alertServiceRegistration = context.registerService(new String[] {
 		    IAlertService.class.getName(), AlertService.class.getName()
-		}, alertService, new Hashtable<Object, Object>());
+		}, alertService, new Hashtable<String, Object>());
 		alertService.startUp();
 	}
 

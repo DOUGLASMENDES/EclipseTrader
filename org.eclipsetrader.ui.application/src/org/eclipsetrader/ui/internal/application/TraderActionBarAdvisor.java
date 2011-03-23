@@ -11,7 +11,7 @@
 
 package org.eclipsetrader.ui.internal.application;
 
- import java.util.Hashtable;
+import java.util.Hashtable;
 
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.GroupMarker;
@@ -28,9 +28,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.NewWizardDropDownAction;
-import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipsetrader.ui.internal.actions.NewWizardMenu;
@@ -55,28 +55,28 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction printAction;
 
 	private IWorkbenchAction importResourcesAction;
-    private IWorkbenchAction exportResourcesAction;
+	private IWorkbenchAction exportResourcesAction;
 
-    private IWorkbenchAction propertiesAction;
+	private IWorkbenchAction propertiesAction;
 	private IWorkbenchAction quitAction;
 
 	private IWorkbenchAction cutAction;
-    private IWorkbenchAction copyAction;
-    private IWorkbenchAction pasteAction;
-    private IWorkbenchAction deleteAction;
-    private IWorkbenchAction settingsAction;
+	private IWorkbenchAction copyAction;
+	private IWorkbenchAction pasteAction;
+	private IWorkbenchAction deleteAction;
+	private IWorkbenchAction settingsAction;
 
-    private IWorkbenchAction newWindowAction;
+	private IWorkbenchAction newWindowAction;
 
-    private IWorkbenchAction editActionSetsAction;
-    private IWorkbenchAction savePerspectiveAction;
-    private IWorkbenchAction resetPerspectiveAction;
-    private IWorkbenchAction closePerspAction;
-    private IWorkbenchAction closeAllPerspsAction;
+	private IWorkbenchAction editActionSetsAction;
+	private IWorkbenchAction savePerspectiveAction;
+	private IWorkbenchAction resetPerspectiveAction;
+	private IWorkbenchAction closePerspAction;
+	private IWorkbenchAction closeAllPerspsAction;
 
 	private IWorkbenchAction helpContentsAction;
-    private IWorkbenchAction helpSearchAction;
-    private IWorkbenchAction dynamicHelpAction;
+	private IWorkbenchAction helpSearchAction;
+	private IWorkbenchAction dynamicHelpAction;
 	private IWorkbenchAction aboutAction;
 	private IWorkbenchAction openPreferencesAction;
 
@@ -85,15 +85,15 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		window = configurer.getWindowConfigurer().getWindow();
 	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.application.ActionBarAdvisor#makeActions(org.eclipse.ui.IWorkbenchWindow)
-     */
-    @Override
-    protected void makeActions(final IWorkbenchWindow window) {
-        newWizardAction = ActionFactory.NEW.create(window);
-        register(newWizardAction);
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.application.ActionBarAdvisor#makeActions(org.eclipse.ui.IWorkbenchWindow)
+	 */
+	@Override
+	protected void makeActions(final IWorkbenchWindow window) {
+		newWizardAction = ActionFactory.NEW.create(window);
+		register(newWizardAction);
 
-        newWizardDropDownAction = NEW_WIZARD_DROP_DOWN.create(window);
+		newWizardDropDownAction = NEW_WIZARD_DROP_DOWN.create(window);
 		register(newWizardDropDownAction);
 
 		openAction = new OpenAction(window);
@@ -119,7 +119,7 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		printAction.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/print.png"));
 		register(printAction);
 
-        importResourcesAction = ActionFactory.IMPORT.create(window);
+		importResourcesAction = ActionFactory.IMPORT.create(window);
 		register(importResourcesAction);
 
 		exportResourcesAction = ActionFactory.EXPORT.create(window);
@@ -131,32 +131,32 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		quitAction = ActionFactory.QUIT.create(window);
 		register(quitAction);
 
-        cutAction = ActionFactory.CUT.create(window);
+		cutAction = ActionFactory.CUT.create(window);
 		register(cutAction);
-        copyAction = ActionFactory.COPY.create(window);
+		copyAction = ActionFactory.COPY.create(window);
 		register(copyAction);
-        pasteAction = ActionFactory.PASTE.create(window);
+		pasteAction = ActionFactory.PASTE.create(window);
 		register(pasteAction);
-        deleteAction = ActionFactory.DELETE.create(window);
+		deleteAction = ActionFactory.DELETE.create(window);
 		register(deleteAction);
 
 		settingsAction = new SettingsAction(window);
 		register(settingsAction);
 
 		newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(getWindow());
-        newWindowAction.setText("&New Window");
-        register(newWindowAction);
+		newWindowAction.setText("&New Window");
+		register(newWindowAction);
 
 		editActionSetsAction = ActionFactory.EDIT_ACTION_SETS.create(window);
 		register(editActionSetsAction);
-	    savePerspectiveAction = ActionFactory.SAVE_PERSPECTIVE.create(window);
-	    register(savePerspectiveAction);
-        resetPerspectiveAction = ActionFactory.RESET_PERSPECTIVE.create(window);
-        register(resetPerspectiveAction);
-	    closePerspAction = ActionFactory.CLOSE_PERSPECTIVE.create(window);
-	    register(closePerspAction);
-	    closeAllPerspsAction = ActionFactory.CLOSE_ALL_PERSPECTIVES.create(window);
-        register(closeAllPerspsAction);
+		savePerspectiveAction = ActionFactory.SAVE_PERSPECTIVE.create(window);
+		register(savePerspectiveAction);
+		resetPerspectiveAction = ActionFactory.RESET_PERSPECTIVE.create(window);
+		register(resetPerspectiveAction);
+		closePerspAction = ActionFactory.CLOSE_PERSPECTIVE.create(window);
+		register(closePerspAction);
+		closeAllPerspsAction = ActionFactory.CLOSE_ALL_PERSPECTIVES.create(window);
+		register(closeAllPerspsAction);
 
 		openPreferencesAction = ActionFactory.PREFERENCES.create(window);
 		register(openPreferencesAction);
@@ -164,11 +164,11 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);
 		register(helpContentsAction);
 
-        helpSearchAction = ActionFactory.HELP_SEARCH.create(window);
-        register(helpSearchAction);
+		helpSearchAction = ActionFactory.HELP_SEARCH.create(window);
+		register(helpSearchAction);
 
-        dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);
-        register(dynamicHelpAction);
+		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);
+		register(dynamicHelpAction);
 
 		aboutAction = ActionFactory.ABOUT.create(window);
 		register(aboutAction);
@@ -181,17 +181,17 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 	protected void fillCoolBar(ICoolBarManager coolBar) {
 		coolBar.add(new GroupMarker(IWorkbenchActionConstants.GROUP_FILE));
 		{
-            IToolBarManager fileToolBar = new ToolBarManager(SWT.FLAT);
-            fileToolBar.add(new Separator(IWorkbenchActionConstants.NEW_GROUP));
-            fileToolBar.add(newWizardDropDownAction);
-            fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.NEW_EXT));
-            fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_GROUP));
-            fileToolBar.add(saveAction);
-            fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_EXT));
-            fileToolBar.add(printAction);
-            fileToolBar.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+			IToolBarManager fileToolBar = new ToolBarManager(SWT.FLAT);
+			fileToolBar.add(new Separator(IWorkbenchActionConstants.NEW_GROUP));
+			fileToolBar.add(newWizardDropDownAction);
+			fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.NEW_EXT));
+			fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_GROUP));
+			fileToolBar.add(saveAction);
+			fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_EXT));
+			fileToolBar.add(printAction);
+			fileToolBar.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
-            // Add to the cool bar manager
+			// Add to the cool bar manager
 			coolBar.add(new ToolBarContributionItem(fileToolBar, IWorkbenchActionConstants.TOOLBAR_HELP));
 		}
 
@@ -200,18 +200,18 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		coolBar.add(new GroupMarker(IWorkbenchActionConstants.GROUP_EDITOR));
 
 		coolBar.add(new GroupMarker(IWorkbenchActionConstants.GROUP_HELP));
-        { // Help group
-            IToolBarManager helpToolBar = new ToolBarManager(SWT.FLAT);
-            helpToolBar.add(new Separator(IWorkbenchActionConstants.GROUP_HELP));
-            // Add the group for applications to contribute
-            helpToolBar.add(new GroupMarker(IWorkbenchActionConstants.GROUP_APP));
-            // Add to the cool bar manager
+		{ // Help group
+			IToolBarManager helpToolBar = new ToolBarManager(SWT.FLAT);
+			helpToolBar.add(new Separator(IWorkbenchActionConstants.GROUP_HELP));
+			// Add the group for applications to contribute
+			helpToolBar.add(new GroupMarker(IWorkbenchActionConstants.GROUP_APP));
+			// Add to the cool bar manager
 			coolBar.add(new ToolBarContributionItem(helpToolBar, IWorkbenchActionConstants.TOOLBAR_HELP));
-        }
+		}
 	}
 
 	@Override
-    protected void fillMenuBar(IMenuManager menuBar) {
+	protected void fillMenuBar(IMenuManager menuBar) {
 		menuBar.add(createFileMenu(menuBar));
 		menuBar.add(createEditMenu(menuBar));
 		menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -223,41 +223,41 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager menu = new MenuManager("&File", IWorkbenchActionConstants.M_FILE);
 		menu.add(new GroupMarker(IWorkbenchActionConstants.FILE_START));
 		{
-	        String newId = ActionFactory.NEW.getId();
-	        MenuManager newMenu = new MenuManager("&New", newId) {
-	            @Override
-                public String getMenuText() {
-	                String result = super.getMenuText();
-	                if (newQuickMenu == null) {
+			String newId = ActionFactory.NEW.getId();
+			MenuManager newMenu = new MenuManager("&New", newId) {
+				@Override
+				public String getMenuText() {
+					String result = super.getMenuText();
+					if (newQuickMenu == null) {
 						return result;
 					}
-	                String shortCut = newQuickMenu.getShortCutString();
-	                if (shortCut == null) {
+					String shortCut = newQuickMenu.getShortCutString();
+					if (shortCut == null) {
 						return result;
 					}
-	                return result + "\t" + shortCut; //$NON-NLS-1$
-	            }
-	        };
-	        newMenu.add(new Separator(newId));
-	        this.newWizardMenu = new NewWizardMenu(getWindow());
-	        newMenu.add(this.newWizardMenu);
-	        newMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	        menu.add(newMenu);
+					return result + "\t" + shortCut; //$NON-NLS-1$
+				}
+			};
+			newMenu.add(new Separator(newId));
+			this.newWizardMenu = new NewWizardMenu(getWindow());
+			newMenu.add(this.newWizardMenu);
+			newMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+			menu.add(newMenu);
 		}
 
-        menu.add(new GroupMarker(IWorkbenchActionConstants.NEW_EXT));
-        menu.add(new Separator());
+		menu.add(new GroupMarker(IWorkbenchActionConstants.NEW_EXT));
+		menu.add(new Separator());
 
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
-        menu.add(new Separator());
+		menu.add(new Separator());
 		menu.add(printAction);
 
-        menu.add(new Separator());
-        menu.add(importResourcesAction);
-        menu.add(exportResourcesAction);
-        menu.add(new GroupMarker(IWorkbenchActionConstants.IMPORT_EXT));
+		menu.add(new Separator());
+		menu.add(importResourcesAction);
+		menu.add(exportResourcesAction);
+		menu.add(new GroupMarker(IWorkbenchActionConstants.IMPORT_EXT));
 
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
@@ -271,14 +271,14 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 	private MenuManager createEditMenu(IMenuManager menuBar) {
 		MenuManager menu = new MenuManager("&Edit", IWorkbenchActionConstants.M_EDIT);
 		menu.add(new GroupMarker(IWorkbenchActionConstants.EDIT_START));
-        menu.add(cutAction);
-        menu.add(copyAction);
-        menu.add(pasteAction);
-        menu.add(new Separator());
-        menu.add(deleteAction);
+		menu.add(cutAction);
+		menu.add(copyAction);
+		menu.add(pasteAction);
+		menu.add(new Separator());
+		menu.add(deleteAction);
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		menu.add(new Separator(IWorkbenchActionConstants.EDIT_END));
-        menu.add(settingsAction);
+		menu.add(settingsAction);
 		return menu;
 	}
 
@@ -314,10 +314,10 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 
 		menu.add(new Separator());
 		menu.add(editActionSetsAction);
-        menu.add(savePerspectiveAction);
-        menu.add(resetPerspectiveAction);
-        menu.add(closePerspAction);
-        menu.add(closeAllPerspsAction);
+		menu.add(savePerspectiveAction);
+		menu.add(resetPerspectiveAction);
+		menu.add(closePerspAction);
+		menu.add(closeAllPerspsAction);
 	}
 
 	private MenuManager createHelpMenu(IMenuManager menuBar) {
@@ -326,7 +326,7 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(new GroupMarker("group.intro.ext")); //$NON-NLS-1$
 		menu.add(new Separator("group.main")); //$NON-NLS-1$
 		menu.add(helpContentsAction);
-        menu.add(helpSearchAction);
+		menu.add(helpSearchAction);
 		menu.add(dynamicHelpAction);
 		menu.add(new Separator("group.assist")); //$NON-NLS-1$
 		menu.add(new GroupMarker(IWorkbenchActionConstants.HELP_START));
@@ -341,7 +341,7 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 
 		ActionContributionItem aboutItem = new ActionContributionItem(aboutAction);
 		aboutItem.setVisible(!"carbon".equals(SWT.getPlatform()));
-        menu.add(aboutItem);
+		menu.add(aboutItem);
 		menu.add(new GroupMarker("group.about.ext"));
 		return menu;
 	}
@@ -352,7 +352,7 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 
 	public static final ActionFactory NEW_WIZARD_DROP_DOWN = new ActionFactory("newWizardDropDown") { //$NON-NLS-1$
 		@Override
-        public IWorkbenchAction create(IWorkbenchWindow window) {
+		public IWorkbenchAction create(IWorkbenchWindow window) {
 			if (window == null) {
 				throw new IllegalArgumentException();
 			}
@@ -365,23 +365,20 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
 
 			IWorkbenchAction action = new NewWizardDropDownAction(window, innerAction, newWizardMenu);
 			action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/etool16/new_wizard.png"));
-	        action.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/new_wizard.png"));
+			action.setDisabledImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/dtool16/new_wizard.png"));
 			action.setId(getId());
 			return action;
 		}
 	};
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.application.ActionBarAdvisor#fillStatusLine(org.eclipse.jface.action.IStatusLineManager)
-     */
-    @Override
-    protected void fillStatusLine(IStatusLineManager statusLine) {
-    	BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-		context.registerService(
-				new String[] {
-						IStatusLineManager.class.getName(),
-					},
-				statusLine,
-				new Hashtable<Object,Object>());
-    }
+	 * @see org.eclipse.ui.application.ActionBarAdvisor#fillStatusLine(org.eclipse.jface.action.IStatusLineManager)
+	 */
+	@Override
+	protected void fillStatusLine(IStatusLineManager statusLine) {
+		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+		context.registerService(new String[] {
+			IStatusLineManager.class.getName(),
+		}, statusLine, new Hashtable<String, Object>());
+	}
 }

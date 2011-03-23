@@ -61,7 +61,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 
@@ -71,9 +71,8 @@ public class Activator extends AbstractUIPlugin {
 
 		newsServiceFactory = new NewsServiceFactory();
 		newsServiceRegistration = context.registerService(new String[] {
-				INewsService.class.getName(),
-				NewsService.class.getName()
-			}, newsServiceFactory, new Hashtable<Object, Object>());
+		    INewsService.class.getName(), NewsService.class.getName()
+		}, newsServiceFactory, new Hashtable<String, Object>());
 
 		repositoryServiceReference = context.getServiceReference(IRepositoryService.class.getName());
 		if (repositoryServiceReference != null)
@@ -85,7 +84,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		if (newsServiceFactory != null && newsServiceFactory.getServiceInstance() != null)
 			newsServiceFactory.getServiceInstance().shutDown(null);
 		if (newsServiceRegistration != null)
@@ -115,18 +114,18 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
-     */
-    @Override
-    protected void initializeImageRegistry(ImageRegistry reg) {
-	    reg.put("readed_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/readed_ovr.gif")));
-	    reg.put("unreaded_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/unreaded_ovr.gif")));
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
+	 */
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		reg.put("readed_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/readed_ovr.gif")));
+		reg.put("unreaded_ovr", ImageDescriptor.createFromURL(getBundle().getResource("icons/ovr16/unreaded_ovr.gif")));
 
-	    reg.put("normal_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/headlines.png")));
-	    reg.put("new_headlines_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/headlines_unread.png")));
-    }
+		reg.put("normal_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/headlines.png")));
+		reg.put("new_headlines_icon", ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/headlines_unread.png")));
+	}
 
-    /**
+	/**
 	 * Returns an image descriptor for the image file at the given
 	 * plug-in relative path.
 	 *

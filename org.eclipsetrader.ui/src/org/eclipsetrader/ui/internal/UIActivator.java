@@ -71,8 +71,8 @@ public class UIActivator extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-    @Override
-    public void start(BundleContext context) throws Exception {
+	@Override
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 
@@ -87,9 +87,8 @@ public class UIActivator extends AbstractUIPlugin {
 
 		NotificationService notificationService = new NotificationService();
 		notificationServiceRegistration = context.registerService(new String[] {
-				INotificationService.class.getName(),
-				NotificationService.class.getName()
-			}, notificationService, new Hashtable<Object, Object>());
+		    INotificationService.class.getName(), NotificationService.class.getName()
+		}, notificationService, new Hashtable<String, Object>());
 	}
 
 	/*
@@ -97,9 +96,9 @@ public class UIActivator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-    public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		if (notificationServiceRegistration != null)
-            notificationServiceRegistration.unregister();
+			notificationServiceRegistration.unregister();
 
 		plugin = null;
 		super.stop(context);
@@ -114,7 +113,7 @@ public class UIActivator extends AbstractUIPlugin {
 		return plugin;
 	}
 
-    /**
+	/**
 	 * Returns an image descriptor for the image file at the given
 	 * plug-in relative path.
 	 *
@@ -126,45 +125,47 @@ public class UIActivator extends AbstractUIPlugin {
 	}
 
 	/* (non-Javadoc)
-     * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
-     */
-    @Override
-    protected void initializeImageRegistry(ImageRegistry reg) {
-    	reg.put(UIConstants.BLANK_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/blank_obj.gif")));
-    	reg.put(UIConstants.FOLDER_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/fldr_obj.png")));
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
+	 */
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		reg.put(UIConstants.BLANK_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/blank_obj.gif")));
+		reg.put(UIConstants.FOLDER_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/fldr_obj.png")));
 
-    	reg.put(UIConstants.MARKET_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market.png")));
-    	reg.put(UIConstants.MARKET_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market_fldr.png")));
+		reg.put(UIConstants.MARKET_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market.png")));
+		reg.put(UIConstants.MARKET_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/market_fldr.png")));
 
-    	reg.put(UIConstants.REPOSITORY, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository.png")));
-    	reg.put(UIConstants.REPOSITORY_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_fldr.png")));
-    	reg.put(UIConstants.REPOSITORY_OBJECT_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object_fldr.png")));
-    	reg.put(UIConstants.REPOSITORY_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object.png")));
+		reg.put(UIConstants.REPOSITORY, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository.png")));
+		reg.put(UIConstants.REPOSITORY_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_fldr.png")));
+		reg.put(UIConstants.REPOSITORY_OBJECT_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object_fldr.png")));
+		reg.put(UIConstants.REPOSITORY_OBJECT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/repository_object.png")));
 
-    	reg.put(UIConstants.DELETE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/delete.gif")));
-    	reg.put(UIConstants.DELETE_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dlcl16/delete.gif")));
+		reg.put(UIConstants.DELETE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/delete.gif")));
+		reg.put(UIConstants.DELETE_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dlcl16/delete.gif")));
 
-    	reg.put(UIConstants.CUT_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/cut_edit.gif")));
-    	reg.put(UIConstants.CUT_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/cut_edit.gif")));
-    	reg.put(UIConstants.COPY_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/copy_edit.gif")));
-    	reg.put(UIConstants.COPY_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/copy_edit.gif")));
-    	reg.put(UIConstants.PASTE_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/paste_edit.gif")));
-    	reg.put(UIConstants.PASTE_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/paste_edit.gif")));
-    	reg.put(UIConstants.DELETE_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/delete_edit.gif")));
-    	reg.put(UIConstants.DELETE_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/delete_edit.gif")));
+		reg.put(UIConstants.CUT_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/cut_edit.gif")));
+		reg.put(UIConstants.CUT_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/cut_edit.gif")));
+		reg.put(UIConstants.COPY_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/copy_edit.gif")));
+		reg.put(UIConstants.COPY_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/copy_edit.gif")));
+		reg.put(UIConstants.PASTE_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/paste_edit.gif")));
+		reg.put(UIConstants.PASTE_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/paste_edit.gif")));
+		reg.put(UIConstants.DELETE_EDIT_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/delete_edit.gif")));
+		reg.put(UIConstants.DELETE_EDIT_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/delete_edit.gif")));
 
-    	reg.put(UIConstants.REFRESH_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/refresh.gif")));
+		reg.put(UIConstants.REFRESH_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/refresh.gif")));
 
-    	reg.put(UIConstants.COLLAPSEALL_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/collapseall.gif")));
-    	reg.put(UIConstants.EXPANDALL_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/expandall.gif")));
+		reg.put(UIConstants.COLLAPSEALL_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/collapseall.gif")));
+		reg.put(UIConstants.EXPANDALL_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/expandall.gif")));
 
-    	reg.put(UIConstants.TREND_STABLE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_stable.gif")));
-    	reg.put(UIConstants.TREND_UP_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_up.gif")));
-    	reg.put(UIConstants.TREND_DOWN_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_down.gif")));
+		reg.put(UIConstants.TREND_STABLE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_stable.gif")));
+		reg.put(UIConstants.TREND_UP_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_up.gif")));
+		reg.put(UIConstants.TREND_DOWN_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/trend_down.gif")));
 
-    	reg.put(UIConstants.TOOLBAR_ARROW_DOWN, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" + UIConstants.TOOLBAR_ARROW_DOWN)));
-    	reg.put(UIConstants.TOOLBAR_ARROW_RIGHT, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" + UIConstants.TOOLBAR_ARROW_RIGHT)));
-    }
+		reg.put(UIConstants.TOOLBAR_ARROW_DOWN, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" +
+		                                                                                              UIConstants.TOOLBAR_ARROW_DOWN)));
+		reg.put(UIConstants.TOOLBAR_ARROW_RIGHT, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" +
+		                                                                                               UIConstants.TOOLBAR_ARROW_RIGHT)));
+	}
 
 	public IRepositoryService getRepositoryService() {
 		if (repositoryService == null) {

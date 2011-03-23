@@ -95,25 +95,24 @@ public class CoreActivator extends Plugin {
 
 		repositoryService = new RepositoryService();
 		repositoryServiceRegistration = context.registerService(new String[] {
-		    IRepositoryService.class.getName(),
-		    RepositoryService.class.getName()
-		}, repositoryService, new Hashtable<Object, Object>());
+		    IRepositoryService.class.getName(), RepositoryService.class.getName()
+		}, repositoryService, new Hashtable<String, Object>());
 		repositoryService.startUp();
 
 		feedServiceFactory = new FeedServiceFactory();
 		feedServiceRegistration = context.registerService(new String[] {
 		    IFeedService.class.getName(), FeedService.class.getName()
-		}, feedServiceFactory, new Hashtable<Object, Object>());
+		}, feedServiceFactory, new Hashtable<String, Object>());
 
 		marketServiceFactory = new MarketServiceFactory();
 		marketServiceRegistration = context.registerService(new String[] {
 		    IMarketService.class.getName(), MarketService.class.getName()
-		}, marketServiceFactory, new Hashtable<Object, Object>());
+		}, marketServiceFactory, new Hashtable<String, Object>());
 
 		currencyServiceFactory = new CurrencyServiceFactory();
 		currencyServiceRegistration = context.registerService(new String[] {
 		    ICurrencyService.class.getName(), CurrencyService.class.getName()
-		}, currencyServiceFactory, new Hashtable<Object, Object>());
+		}, currencyServiceFactory, new Hashtable<String, Object>());
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
 		if (extensionPoint != null) {
@@ -124,7 +123,8 @@ public class CoreActivator extends Plugin {
 					IDataProviderFactory factory = (IDataProviderFactory) configElements[j].createExecutableExtension("class");
 					providersFactoryMap.put(strID, factory);
 				} catch (Exception e) {
-					Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Unable to create data provider factory with id " + strID, e);
+					Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Unable to create data provider factory with id " +
+					                                                         strID, e);
 					getLog().log(status);
 				}
 			}
@@ -260,7 +260,8 @@ public class CoreActivator extends Plugin {
 					factory = (IDataProviderFactory) targetElement.createExecutableExtension("class");
 					providersFactoryMap.put(targetID, factory);
 				} catch (Exception e) {
-					Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Unable to create data provider factory with id " + targetID, e);
+					Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Unable to create data provider factory with id " +
+					                                                         targetID, e);
 					getLog().log(status);
 				}
 			}
