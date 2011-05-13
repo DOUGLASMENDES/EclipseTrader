@@ -14,6 +14,7 @@ package org.eclipsetrader.ui.internal;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.IPlaceholderFolderLayout;
 import org.eclipsetrader.ui.UIConstants;
 
 public class TraderPerspective implements IPerspectiveFactory {
@@ -23,34 +24,34 @@ public class TraderPerspective implements IPerspectiveFactory {
 		layout.setEditorAreaVisible(false);
 
 		// Our editor area
-		IFolderLayout editorsFolder = layout.createFolder("org.eclipsetrader.ui.editorss", IPageLayout.LEFT, (float) 100.0, layout.getEditorArea()); //$NON-NLS-1$
+		IFolderLayout editorsFolder = layout.createFolder(UIConstants.EDITOR_AREA, IPageLayout.LEFT, (float) 100.0, layout.getEditorArea());
 		editorsFolder.addPlaceholder("org.eclipsetrader.ui.views.watchlist:*");
 
-        // Left.
-        IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.18, UIConstants.EDITOR_AREA); //$NON-NLS-1$
-        left.addView("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
-        left.addPlaceholder("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
+		// Left.
+		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.18, UIConstants.EDITOR_AREA); //$NON-NLS-1$
+		left.addView("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
+		left.addPlaceholder("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
 
-        // Right.
-        IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, (float) 0.75, UIConstants.EDITOR_AREA); //$NON-NLS-1$
-        right.addPlaceholder("org.eclipsetrader.ui.views.level2:*"); //$NON-NLS-1$
-
-        // Bottom
+		// Bottom
 		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, UIConstants.EDITOR_AREA); //$NON-NLS-1$
 		bottom.addView("org.eclipsetrader.ui.views.markets"); //$NON-NLS-1$
 		bottom.addPlaceholder("org.eclipse.ui.views.ProgressView"); //$NON-NLS-1$
 
-        // Add "new wizards".
+		// Right.
+		IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, (float) 0.75, UIConstants.EDITOR_AREA); //$NON-NLS-1$
+		right.addPlaceholder("org.eclipsetrader.ui.views.level2:*"); //$NON-NLS-1$
+
+		// Add "new wizards".
 		layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.stock");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.currency");//$NON-NLS-1$
-        layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.watchList");//$NON-NLS-1$
+		layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.watchList");//$NON-NLS-1$
 
-        // Add "show views".
-        layout.addShowViewShortcut("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
-        layout.addShowViewShortcut("org.eclipsetrader.ui.views.markets"); //$NON-NLS-1$
-        layout.addShowViewShortcut("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
+		// Add "show views".
+		layout.addShowViewShortcut("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
+		layout.addShowViewShortcut("org.eclipsetrader.ui.views.markets"); //$NON-NLS-1$
+		layout.addShowViewShortcut("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
 
-        // Add default action sets
-        layout.addActionSet("org.eclipsetrader.ui.launcher");
+		// Add default action sets
+		layout.addActionSet("org.eclipsetrader.ui.launcher");
 	}
 }

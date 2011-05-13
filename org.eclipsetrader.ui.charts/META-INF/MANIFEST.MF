@@ -9,6 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipsetrader.core,
  org.eclipsetrader.core.charts,
+ org.eclipsetrader.ui,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.nebula.widgets.pshelf,
  org.eclipse.core.expressions

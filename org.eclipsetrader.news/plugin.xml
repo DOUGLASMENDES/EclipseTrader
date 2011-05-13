@@ -112,5 +112,17 @@
             name="News Reader">
       </launcher>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipsetrader.ui.traderPerspective">
+         <view
+               id="org.eclipsetrader.ui.views.headlines"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProgressView">
+         </view>
+      </perspectiveExtension>
+   </extension>
 
 </plugin>

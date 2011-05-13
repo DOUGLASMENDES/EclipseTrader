@@ -14,6 +14,7 @@ package org.eclipsetrader.news.internal.ui;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipsetrader.ui.UIConstants;
 
 public class Perspective implements IPerspectiveFactory {
 
@@ -28,18 +29,18 @@ public class Perspective implements IPerspectiveFactory {
 		layout.setEditorAreaVisible(false);
 
 		// Our editor area
-		IFolderLayout editorsFolder = layout.createFolder("org.eclipsetrader.ui.editorss", IPageLayout.LEFT, (float) 100.0, layout.getEditorArea()); //$NON-NLS-1$
+		IFolderLayout editorsFolder = layout.createFolder(UIConstants.EDITOR_AREA, IPageLayout.LEFT, (float) 100.0, layout.getEditorArea());
 		editorsFolder.addPlaceholder("org.eclipsetrader.ui.views.watchlist:*");
 		editorsFolder.addPlaceholder("org.eclipsetrader.news.browser:*");
 		editorsFolder.addView("org.eclipsetrader.news.browser"); //$NON-NLS-1$
 
-        // Left.
-        IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.20, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
-        left.addView("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
+		// Left.
+		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.20, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
+		left.addView("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
 
-        // Bottom
-        IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
-        bottom.addView("org.eclipsetrader.ui.views.headlines"); //$NON-NLS-1$
+		// Bottom
+		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, (float) 0.75, "org.eclipsetrader.ui.editorss"); //$NON-NLS-1$
+		bottom.addView("org.eclipsetrader.ui.views.headlines"); //$NON-NLS-1$
 		bottom.addPlaceholder("org.eclipse.ui.views.ProgressView"); //$NON-NLS-1$
 	}
 }

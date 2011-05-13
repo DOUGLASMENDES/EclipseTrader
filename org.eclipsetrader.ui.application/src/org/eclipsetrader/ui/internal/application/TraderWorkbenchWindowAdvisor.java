@@ -29,19 +29,19 @@ import org.eclipsetrader.ui.internal.UIActivator;
 
 @SuppressWarnings("restriction")
 public class TraderWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
-	 public static final String EXIT_PROMPT_ON_CLOSE_LAST_WINDOW = "EXIT_PROMPT_ON_CLOSE_LAST_WINDOW"; //$NON-NLS-1$
+	public static final String EXIT_PROMPT_ON_CLOSE_LAST_WINDOW = "EXIT_PROMPT_ON_CLOSE_LAST_WINDOW"; //$NON-NLS-1$
 
 	public TraderWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
 	}
 
 	@Override
-    public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
+	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
 		return new TraderActionBarAdvisor(configurer);
 	}
 
 	@Override
-    public void preWindowOpen() {
+	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setShowMenuBar(true);
 		configurer.setShowCoolBar(true);
@@ -49,7 +49,7 @@ public class TraderWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		configurer.setShowStatusLine(true);
 		configurer.setShowProgressIndicator(true);
 
-        configurer.getWindow().addPageListener(new IPageListener() {
+		configurer.getWindow().addPageListener(new IPageListener() {
 			public void pageActivated(IWorkbenchPage page) {
 				updateTitle();
 			}
@@ -63,17 +63,17 @@ public class TraderWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		});
 		configurer.getWindow().addPerspectiveListener(new PerspectiveAdapter() {
 			@Override
-            public void perspectiveActivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
+			public void perspectiveActivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
 				updateTitle();
 			}
 
 			@Override
-            public void perspectiveSavedAs(IWorkbenchPage page, IPerspectiveDescriptor oldPerspective, IPerspectiveDescriptor newPerspective) {
+			public void perspectiveSavedAs(IWorkbenchPage page, IPerspectiveDescriptor oldPerspective, IPerspectiveDescriptor newPerspective) {
 				updateTitle();
 			}
 
 			@Override
-            public void perspectiveDeactivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
+			public void perspectiveDeactivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
 				updateTitle();
 			}
 		});
@@ -82,7 +82,7 @@ public class TraderWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#preWindowShellClose()
 	 */
-    @Override
+	@Override
 	public boolean preWindowShellClose() {
 		if (getWorkbench().getWorkbenchWindowCount() > 1)
 			return true;
@@ -91,14 +91,7 @@ public class TraderWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		boolean promptOnExit = preferenceStore.getBoolean(EXIT_PROMPT_ON_CLOSE_LAST_WINDOW);
 
 		if (promptOnExit) {
-			MessageDialogWithToggle dlg = MessageDialogWithToggle.openOkCancelConfirm(
-					getWindowConfigurer().getWindow().getShell(),
-					"Confirm Exit",
-					"Exit EclipseTrader ?",
-					"Always exit without prompt",
-					false,
-					null,
-					null);
+			MessageDialogWithToggle dlg = MessageDialogWithToggle.openOkCancelConfirm(getWindowConfigurer().getWindow().getShell(), "Confirm Exit", "Exit EclipseTrader ?", "Always exit without prompt", false, null, null);
 			if (dlg.getReturnCode() != IDialogConstants.OK_ID)
 				return false;
 
@@ -120,7 +113,7 @@ public class TraderWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		return getWindowConfigurer().getWorkbenchConfigurer().getWorkbench();
 	}
 
-    private String computeTitle() {
+	private String computeTitle() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		IWorkbenchPage currentPage = configurer.getWindow().getActivePage();
 
@@ -148,5 +141,16 @@ public class TraderWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		String newTitle = computeTitle();
 		if (!newTitle.equals(oldTitle))
 			configurer.setTitle(newTitle);
-    }
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#isDurableFolder(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public boolean isDurableFolder(String perspectiveId, String folderId) {
+		if ("org.eclipsetrader.ui.editorss".equals(folderId))
+			return true;
+
+		return super.isDurableFolder(perspectiveId, folderId);
+	}
 }
