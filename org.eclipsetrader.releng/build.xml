@@ -54,15 +54,24 @@ buildLabel=${buildLabel}</echo>
 		<svn>
 			<checkout url="${tag}" destpath="${buildDirectory}/wc" revision="HEAD"/>
 		</svn>
+        <cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" package="org.eclipse.ui.workbench" dest="${buildDirectory}/wc" command="checkout" quiet="true" />
+        <cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" package="org.eclipse.sdk-feature/features/org.eclipse.rcp" command="checkout -d 'org.eclipse.rcp-feature'" dest="${buildDirectory}/wc" quiet="true" />
 	</target>
 
 	<target name="fetch-update" description="Upadting source from repository..." if="wc.present">
 		<svn>
 			<update dir="${buildDirectory}/wc"/>
 		</svn>
+        <cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" package="org.eclipse.ui.workbench" dest="${buildDirectory}/wc" command="update" quiet="true" />
+        <cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" command="update -d 'org.eclipse.rcp-feature'" dest="${buildDirectory}/wc" quiet="true" />
 	</target>
 
-	<target name="fetch" depends="fetch-checkout,fetch-update">
+    <target name="fetch.cvs" description="Checking out source from repository...">
+        <cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" package="org.eclipse.ui.workbench" tag="${cvs.tag}" dest="${buildDirectory}/wc" command="checkout" quiet="true" />
+        <cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" package="org.eclipse.sdk-feature/features/org.eclipse.rcp" tag="${cvs.tag}" command="checkout -d 'org.eclipse.rcp-feature'" dest="${buildDirectory}/wc" quiet="true" />
+    </target>
+
+	<target name="fetch" depends="fetch.cvs,fetch-checkout,fetch-update">
 		<delete dir="${buildDirectory}/features"/>
 		<copy todir="${buildDirectory}/features">
 			<fileset dir="${buildDirectory}/wc">
@@ -77,6 +86,10 @@ buildLabel=${buildLabel}</echo>
 				<exclude name="*-feature/**/*" />
 			</fileset>
 		</copy>
+
+        <replace file="${buildDirectory}/wc/org.eclipse.ui.workbench/META-INF/MANIFEST.MF" value="I20110515-1000" token="qualifier" />
+        <replace file="${buildDirectory}/wc/org.eclipse.rcp-feature/feature.xml" value="R35x_v20110515-9SA0FxwFnoCU5XxWItFdXXb27BA6" token="qualifier" />
+        <patch patchfile="durable_folder.patch" dir="${buildDirectory}/plugins/org.eclipse.ui.workbench" strip="0" />
 	</target>
 
 	<target name="build" depends="create.label.properties,pde.build.init">

@@ -1,0 +1,87 @@
+Index: Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java
+===================================================================
+RCS file: /cvsroot/eclipse/org.eclipse.ui.workbench/Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java,v
+retrieving revision 1.83
+diff -u -r1.83 IWorkbenchConstants.java
+--- Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	25 May 2009 20:52:11 -0000	1.83
++++ Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	13 May 2011 08:55:29 -0000
+@@ -346,4 +346,6 @@
+     //Colors
+     public static final String COLOR_HIGHLIGHT = "org.eclipse.ui.highlight"; //$NON-NLS-1$
+ 
++	public static final String TAG_DURABLE = "durable"; //$NON-NLS-1$
++
+ }
+Index: Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java
+===================================================================
+RCS file: /cvsroot/eclipse/org.eclipse.ui.workbench/Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java,v
+retrieving revision 1.16
+diff -u -r1.16 ViewSashContainer.java
+--- Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	16 Mar 2007 18:00:32 -0000	1.16
++++ Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	13 May 2011 08:55:29 -0000
+@@ -118,10 +118,14 @@
+                 folder.setID(partID);
+                 result.add(folder.restoreState(childMem
+                         .getChild(IWorkbenchConstants.TAG_FOLDER)));
+-                ContainerPlaceholder placeholder = new ContainerPlaceholder(
+-                        partID);
+-                placeholder.setRealContainer(folder);
+-                part = placeholder;
++				if (!folder.getDurable()) {
++					ContainerPlaceholder placeholder = new ContainerPlaceholder(
++							partID);
++					placeholder.setRealContainer(folder);
++					part = placeholder;
++				} else {
++					part = folder;
++				}
+             }
+             // 1FUN70C: ITPUI:WIN - Shouldn't set Container when not active
+             part.setContainer(this);
+Index: Eclipse UI/org/eclipse/ui/internal/ViewStack.java
+===================================================================
+RCS file: /cvsroot/eclipse/org.eclipse.ui.workbench/Eclipse UI/org/eclipse/ui/internal/ViewStack.java,v
+retrieving revision 1.31
+diff -u -r1.31 ViewStack.java
+--- Eclipse UI/org/eclipse/ui/internal/ViewStack.java	25 May 2009 20:52:11 -0000	1.31
++++ Eclipse UI/org/eclipse/ui/internal/ViewStack.java	13 May 2011 08:55:30 -0000
+@@ -13,7 +13,9 @@
+  *******************************************************************************/
+ package org.eclipse.ui.internal;
+ 
++import org.eclipse.core.runtime.IStatus;
+ import org.eclipse.jface.action.IMenuManager;
++import org.eclipse.ui.IMemento;
+ import org.eclipse.ui.internal.presentations.PresentablePart;
+ import org.eclipse.ui.internal.presentations.PresentationFactoryUtil;
+ import org.eclipse.ui.internal.presentations.SystemMenuDetach;
+@@ -95,6 +97,11 @@
+             return false;
+         }
+ 
++		// Durable folders should not move
++		if (durable) {
++			return false;
++		}
++
+         // We need to search if one of the presentations is not moveable
+         // if that's the case the whole folder should not be moveable
+         IStackPresentationSite presenationSite;
+@@ -227,4 +234,17 @@
+ 	public boolean getDurable () {
+ 		return this.durable;
+ 	}
++
++	public IStatus saveState(IMemento memento) {
++		memento.putBoolean(IWorkbenchConstants.TAG_DURABLE, durable);
++		return super.saveState(memento);
++	}
++
++	public IStatus restoreState(IMemento memento) {
++		Boolean result = memento.getBoolean(IWorkbenchConstants.TAG_DURABLE);
++		if (result != null) {
++			this.durable = result.booleanValue();
++		}
++		return super.restoreState(memento);
++	}
+ }
