@@ -420,7 +420,7 @@ public class OrderDialog extends TitleAreaDialog {
 				if (!brokerCombo.getSelection().isEmpty()) {
 					IBroker connector = (IBroker) ((IStructuredSelection) brokerCombo.getSelection()).getFirstElement();
 					security = connector.getSecurityFromSymbol(symbol.getText());
-					symbolDescription.setText(security.getName());
+					symbolDescription.setText(security != null ? security.getName() : "");
 				}
 				getButton(OK).setEnabled(isValid());
 			}
