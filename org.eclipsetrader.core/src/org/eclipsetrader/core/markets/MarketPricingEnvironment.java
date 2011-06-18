@@ -318,7 +318,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 	}
 
 	protected void handleMarketChanges(IMarket market, String propertyName, Object oldValue, Object newValue) {
-		if ("liveFeedConnector".equals(propertyName)) {
+		if (IMarket.PROP_LIVE_FEED_CONNECTOR.equals(propertyName)) {
 			IFeedConnector oldConnector = (IFeedConnector) oldValue;
 			IFeedConnector newConnector = (IFeedConnector) newValue;
 			if (newConnector == null)

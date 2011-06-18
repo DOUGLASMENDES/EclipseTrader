@@ -29,69 +29,87 @@ public class MarketPricingEnvironmentTest extends TestCase {
 	private MarketPricingEnvironment environment;
 
 	/* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-    	security1 = new Security("Security1", new FeedIdentifier("id1", null));
-    	security2 = new Security("Security2", new FeedIdentifier("id2", null));
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception {
+		security1 = new Security("Security1", new FeedIdentifier("id1", null));
+		security2 = new Security("Security2", new FeedIdentifier("id2", null));
 
-    	connector1 = new TestFeedConnector("id1", "Connector1");
-    	connector2 = new TestFeedConnector("id2", "Connector2");
+		connector1 = new TestFeedConnector("id1", "Connector1");
+		connector2 = new TestFeedConnector("id2", "Connector2");
 
-    	market1 = new TestMarket("Market1");
-    	market1.setLiveFeedConnector(connector1);
-    	market1.addMembers(new ISecurity[] { security1 });
+		market1 = new TestMarket("Market1");
+		market1.setLiveFeedConnector(connector1);
+		market1.addMembers(new ISecurity[] {
+			security1
+		});
 
-    	market2 = new TestMarket("Market2");
-    	market2.setLiveFeedConnector(connector2);
-    	market2.addMembers(new ISecurity[] { security2 });
+		market2 = new TestMarket("Market2");
+		market2.setLiveFeedConnector(connector2);
+		market2.addMembers(new ISecurity[] {
+			security2
+		});
 
-    	environment = new MarketPricingEnvironment() {
-            @Override
-            protected IMarket getMarketsForSecurity(ISecurity security) {
-            	if (security == security1)
-            		return market1;
-            	if (security == security2)
-            		return market2;
-    	        return null;
-            }
-    	};
-    }
+		environment = new MarketPricingEnvironment() {
+			@Override
+			protected IMarket getMarketsForSecurity(ISecurity security) {
+				if (security == security1)
+					return market1;
+				if (security == security2)
+					return market2;
+				return null;
+			}
+		};
+	}
 
 	public void testAddSecurity() throws Exception {
-		environment.addSecurities(new ISecurity[] { security1 });
+		environment.addSecurities(new ISecurity[] {
+			security1
+		});
 		assertNotNull(environment.getSubscriptionStatus(security1));
 		assertEquals(1, connector1.getSubscriptions().size());
-    }
+	}
 
 	public void testRemoveSecurity() throws Exception {
-		environment.addSecurities(new ISecurity[] { security1 });
-		environment.removeSecurities(new ISecurity[] { security1 });
+		environment.addSecurities(new ISecurity[] {
+			security1
+		});
+		environment.removeSecurities(new ISecurity[] {
+			security1
+		});
 		assertNull(environment.getSubscriptionStatus(security1));
 		assertEquals(0, connector1.getSubscriptions().size());
-    }
+	}
 
 	public void testChangeMarketConnector() throws Exception {
-		environment.addSecurities(new ISecurity[] { security1 });
-		environment.handleMarketChanges(market1, "liveFeedConnector", connector1, connector2);
+		environment.addSecurities(new ISecurity[] {
+			security1
+		});
+		environment.handleMarketChanges(market1, IMarket.PROP_LIVE_FEED_CONNECTOR, connector1, connector2);
 		assertNotNull(environment.getSubscriptionStatus(security1));
 		assertEquals(0, connector1.getSubscriptions().size());
 		assertEquals(1, connector2.getSubscriptions().size());
-    }
+	}
 
 	public void testSubscribeSecurity() throws Exception {
-		environment.addSecurities(new ISecurity[] { security1 });
+		environment.addSecurities(new ISecurity[] {
+			security1
+		});
 		assertNotNull(environment.getSubscriptionStatus(security1));
 		assertEquals(1, connector1.getSubscriptions().size());
 		assertEquals(0, connector2.getSubscriptions().size());
-    }
+	}
 
 	public void testUnsubscribeSecurityFromMultipleMarkets() throws Exception {
-		environment.addSecurities(new ISecurity[] { security1 });
-		environment.removeSecurities(new ISecurity[] { security1 });
+		environment.addSecurities(new ISecurity[] {
+			security1
+		});
+		environment.removeSecurities(new ISecurity[] {
+			security1
+		});
 		assertNull(environment.getSubscriptionStatus(security1));
 		assertEquals(0, connector1.getSubscriptions().size());
 		assertEquals(0, connector2.getSubscriptions().size());
-    }
+	}
 }
