@@ -203,7 +203,7 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="org.eclipsetrader.ui.traderPerspective">
+            targetID="*">
          <perspectiveShortcut
                id="org.eclipsetrader.ui.charts">
          </perspectiveShortcut>

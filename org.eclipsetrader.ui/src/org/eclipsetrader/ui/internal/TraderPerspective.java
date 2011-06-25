@@ -25,7 +25,12 @@ public class TraderPerspective implements IPerspectiveFactory {
 
 		// Our editor area
 		IFolderLayout editorsFolder = layout.createFolder(UIConstants.EDITOR_AREA, IPageLayout.LEFT, (float) 100.0, layout.getEditorArea());
+		editorsFolder.addPlaceholder("org.eclipsetrader.ui.views.watchlist");
 		editorsFolder.addPlaceholder("org.eclipsetrader.ui.views.watchlist:*");
+		editorsFolder.addPlaceholder("org.eclipsetrader.ui.chart"); //$NON-NLS-1$
+		editorsFolder.addPlaceholder("org.eclipsetrader.ui.chart:*"); //$NON-NLS-1$
+		editorsFolder.addPlaceholder("org.eclipsetrader.news.browser");
+		editorsFolder.addPlaceholder("org.eclipsetrader.news.browser:*");
 
 		// Left.
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.18, UIConstants.EDITOR_AREA); //$NON-NLS-1$

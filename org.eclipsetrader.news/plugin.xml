@@ -115,6 +115,19 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
+            targetID="*">
+         <perspectiveShortcut
+               id="org.eclipsetrader.news.perspective">
+         </perspectiveShortcut>
+         <view
+               id="org.eclipsetrader.ui.views.headlines:*"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProgressView"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
             targetID="org.eclipsetrader.ui.traderPerspective">
          <view
                id="org.eclipsetrader.ui.views.headlines"

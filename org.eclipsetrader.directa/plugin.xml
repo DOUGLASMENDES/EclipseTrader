@@ -266,5 +266,38 @@
             type="java.lang.Object">
       </propertyTester>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipsetrader.ui.traderPerspective">
+         <view
+               id="org.eclipsetrader.directa.browser"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipsetrader.ui.views.watchlist"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipsetrader.ui.charts">
+         <view
+               id="org.eclipsetrader.directa.browser"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipsetrader.ui.chart"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipsetrader.news.perspective">
+         <view
+               id="org.eclipsetrader.directa.browser"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipsetrader.news.browser"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+   </extension>
 
 </plugin>

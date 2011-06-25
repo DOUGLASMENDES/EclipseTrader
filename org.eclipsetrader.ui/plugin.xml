@@ -534,5 +534,14 @@
          </enabledWhen>
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="*">
+         <perspectiveShortcut
+               id="org.eclipsetrader.ui.traderPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   </extension>
 
 </plugin>
