@@ -72,276 +72,316 @@ import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
 
 @SuppressWarnings("restriction")
 public class Navigator extends ViewPart {
-	private TreeViewer viewer;
-	private IMemento memento;
+    private TreeViewer viewer;
+    private IMemento memento;
 
-	private Action collapseAllAction;
-	private Action expandAllAction;
+    private Action collapseAllAction;
+    private Action expandAllAction;
 
-	private Action deleteAction;
+    private Action deleteAction;
 
-	public Navigator() {
-	}
+    public Navigator() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
-	 */
-	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException {
-		super.init(site, memento);
-		this.memento = memento;
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+        super.init(site, memento);
+        this.memento = memento;
 
-		ImageRegistry imageRegistry = UIActivator.getDefault().getImageRegistry();
+        ImageRegistry imageRegistry = UIActivator.getDefault().getImageRegistry();
 
-		site.setSelectionProvider(new SelectionProvider());
+        site.setSelectionProvider(new SelectionProvider());
 
-		collapseAllAction = new Action("Collapse All", imageRegistry.getDescriptor(UIConstants.COLLAPSEALL_ICON)) {
-			@Override
-			public void run() {
-				viewer.collapseAll();
-			}
-		};
+        collapseAllAction = new Action("Collapse All", imageRegistry.getDescriptor(UIConstants.COLLAPSEALL_ICON)) {
 
-		expandAllAction = new Action("Expand All", imageRegistry.getDescriptor(UIConstants.EXPANDALL_ICON)) {
-			@Override
-			public void run() {
-				viewer.expandAll();
-			}
-		};
+            @Override
+            public void run() {
+                viewer.collapseAll();
+            }
+        };
 
-		deleteAction = new Action("Delete") {
-			@Override
-			public void run() {
-				final IAdaptable[] objects = getSelectedObject(viewer.getSelection());
-				if (objects.length != 0) {
-					if (!MessageDialog.openConfirm(getViewSite().getShell(), getPartName(), Messages.RepositoryExplorer_DeleteConfirmMessage))
-						return;
-					final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
-					service.runInService(new IRepositoryRunnable() {
-						public IStatus run(IProgressMonitor monitor) throws Exception {
-							service.deleteAdaptable(objects);
-							return Status.OK_STATUS;
-						}
-					}, null);
-				}
-			}
-		};
-		deleteAction.setImageDescriptor(imageRegistry.getDescriptor(UIConstants.DELETE_EDIT_ICON));
-		deleteAction.setDisabledImageDescriptor(imageRegistry.getDescriptor(UIConstants.DELETE_EDIT_DISABLED_ICON));
-		deleteAction.setId(ActionFactory.DELETE.getId());
-		deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
-		deleteAction.setEnabled(false);
+        expandAllAction = new Action("Expand All", imageRegistry.getDescriptor(UIConstants.EXPANDALL_ICON)) {
 
-		IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
-		toolBarManager.add(expandAllAction);
-		toolBarManager.add(collapseAllAction);
+            @Override
+            public void run() {
+                viewer.expandAll();
+            }
+        };
 
-		site.getActionBars().setGlobalActionHandler(deleteAction.getId(), deleteAction);
+        deleteAction = new Action("Delete") {
 
-		site.getActionBars().updateActionBars();
-	}
+            @Override
+            public void run() {
+                final IAdaptable[] objects = getSelectedObject(viewer.getSelection());
+                if (objects.length != 0) {
+                    if (!MessageDialog.openConfirm(getViewSite().getShell(), getPartName(), Messages.RepositoryExplorer_DeleteConfirmMessage)) {
+                        return;
+                    }
+                    final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
+                    service.runInService(new IRepositoryRunnable() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
-		viewer.setUseHashlookup(true);
-		viewer.setLabelProvider(new DecoratingLabelProvider(new NavigatorLabelProvider(), WorkbenchPlugin.getDefault().getDecoratorManager().getLabelDecorator()));
-		viewer.setContentProvider(new NavigatorContentProvider());
-		viewer.setSorter(new ViewerSorter() {
-			@Override
-			public int category(Object element) {
-				if (element instanceof IAdaptable) {
-					if (((IAdaptable) element).getAdapter(ISecurity.class) != null)
-						return 1;
-					if (((IAdaptable) element).getAdapter(IWatchList.class) != null)
-						return 2;
-					if (((IAdaptable) element).getAdapter(IRepository.class) != null)
-						return 3;
-				}
-				return 0;
-			}
+                        @Override
+                        public IStatus run(IProgressMonitor monitor) throws Exception {
+                            service.deleteAdaptable(objects);
+                            return Status.OK_STATUS;
+                        }
+                    }, null);
+                }
+            }
+        };
+        deleteAction.setImageDescriptor(imageRegistry.getDescriptor(UIConstants.DELETE_EDIT_ICON));
+        deleteAction.setDisabledImageDescriptor(imageRegistry.getDescriptor(UIConstants.DELETE_EDIT_DISABLED_ICON));
+        deleteAction.setId(ActionFactory.DELETE.getId());
+        deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
+        deleteAction.setEnabled(false);
 
-			/* (non-Javadoc)
-			 * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-			 */
-			@Override
-			public int compare(Viewer viewer, Object e1, Object e2) {
-				if ((e1 instanceof IAdaptable) && (e2 instanceof IAdaptable)) {
-					if (((IAdaptable) e1).getAdapter(String.class) != null && ((IAdaptable) e2).getAdapter(String.class) != null)
-						return 0;
-				}
-				return super.compare(viewer, e1, e2);
-			}
-		});
+        IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
+        toolBarManager.add(expandAllAction);
+        toolBarManager.add(collapseAllAction);
 
-		DragSource dragSource = new DragSource(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE);
-		dragSource.setTransfer(new Transfer[] {
-			SecurityObjectTransfer.getInstance()
-		});
-		dragSource.addDragListener(new DragSourceListener() {
-			public void dragStart(DragSourceEvent event) {
-				event.doit = getSelectedObject(viewer.getSelection()).length != 0;
-			}
+        site.getActionBars().setGlobalActionHandler(deleteAction.getId(), deleteAction);
 
-			public void dragSetData(DragSourceEvent event) {
-				if (SecurityObjectTransfer.getInstance().isSupportedType(event.dataType))
-					event.data = getSelectedObject(viewer.getSelection());
-			}
+        site.getActionBars().updateActionBars();
+    }
 
-			public void dragFinished(DragSourceEvent event) {
-			}
-		});
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createPartControl(Composite parent) {
+        viewer = new TreeViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
+        viewer.setUseHashlookup(true);
+        viewer.setLabelProvider(new DecoratingLabelProvider(new NavigatorLabelProvider(), WorkbenchPlugin.getDefault().getDecoratorManager().getLabelDecorator()));
+        viewer.setContentProvider(new NavigatorContentProvider());
+        viewer.setSorter(new ViewerSorter() {
 
-		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager menuManager) {
-				menuManager.add(new Separator("group.new"));
-				menuManager.add(new GroupMarker("group.goto"));
-				menuManager.add(new Separator("group.open"));
-				menuManager.add(new GroupMarker("group.openWith"));
-				menuManager.add(new Separator("group.trade"));
-				menuManager.add(new GroupMarker("group.tradeWith"));
-				menuManager.add(new Separator("group.show"));
-				menuManager.add(new Separator("group.edit"));
-				menuManager.add(new GroupMarker("group.reorganize"));
-				menuManager.add(new GroupMarker("group.port"));
-				menuManager.add(new Separator("group.generate"));
-				menuManager.add(new Separator("group.search"));
-				menuManager.add(new Separator("group.build"));
-				menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-				menuManager.add(new Separator("group.properties"));
+            @Override
+            public int category(Object element) {
+                if (element instanceof IAdaptable) {
+                    if (((IAdaptable) element).getAdapter(ISecurity.class) != null) {
+                        return 1;
+                    }
+                    if (((IAdaptable) element).getAdapter(IWatchList.class) != null) {
+                        return 2;
+                    }
+                    if (((IAdaptable) element).getAdapter(IRepository.class) != null) {
+                        return 3;
+                    }
+                }
+                return 0;
+            }
 
-				menuManager.appendToGroup("group.show", new Action("Expand All") {
-					@Override
-					public void run() {
-						IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-						for (Iterator<?> iter = selection.iterator(); iter.hasNext();)
-							viewer.expandToLevel(iter.next(), TreeViewer.ALL_LEVELS);
-					}
-				});
-				menuManager.appendToGroup("group.reorganize", deleteAction);
-			}
-		});
-		viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
-		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
+            /* (non-Javadoc)
+             * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+             */
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2) {
+                if ((e1 instanceof IAdaptable) && (e2 instanceof IAdaptable)) {
+                    if (((IAdaptable) e1).getAdapter(String.class) != null && ((IAdaptable) e2).getAdapter(String.class) != null) {
+                        return 0;
+                    }
+                }
+                return super.compare(viewer, e1, e2);
+            }
+        });
 
-		viewer.addOpenListener(new IOpenListener() {
-			public void open(OpenEvent event) {
-				try {
-					IHandlerService service = (IHandlerService) getSite().getService(IHandlerService.class);
-					service.executeCommand("org.eclipse.ui.file.open", null);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IAdaptable[] objects = getSelectedObject(event.getSelection());
-				deleteAction.setEnabled(objects.length != 0);
-				getViewSite().getSelectionProvider().setSelection(event.getSelection());
-			}
-		});
+        DragSource dragSource = new DragSource(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE);
+        dragSource.setTransfer(new Transfer[] {
+            SecurityObjectTransfer.getInstance()
+        });
+        dragSource.addDragListener(new DragSourceListener() {
 
-		NavigatorView view = new NavigatorView();
-		view.setContentProviders(new IStructuredContentProvider[] {
-		    new SecuritiesContentProvider(), new WatchListsContentProvider(),
-		});
-		view.setGroups(new INavigatorContentGroup[] {
-		    new InstrumentTypeGroup(), new MarketGroup(),
-		});
-		view.update();
-		viewer.setInput(view);
+            @Override
+            public void dragStart(DragSourceEvent event) {
+                event.doit = getSelectedObject(viewer.getSelection()).length != 0;
+            }
 
-		if (memento != null) {
-			String s = memento.getString("expanded");
-			if (s != null) {
-				String[] sr = s.split(";");
-				final Set<Integer> itemHash = new HashSet<Integer>();
-				for (int i = 0; i < sr.length; i++) {
-					try {
-						itemHash.add(Integer.parseInt(sr[i]));
-					} catch (Exception e) {
-						// Do nothing
-					}
-				}
-				view.accept(new IViewVisitor() {
-					public boolean visit(IView view) {
-						return true;
-					}
+            @Override
+            public void dragSetData(DragSourceEvent event) {
+                if (SecurityObjectTransfer.getInstance().isSupportedType(event.dataType)) {
+                    event.data = getSelectedObject(viewer.getSelection());
+                }
+            }
 
-					public boolean visit(IViewItem viewItem) {
-						if (itemHash.contains(viewItem.hashCode()))
-							viewer.setExpandedState(viewItem, true);
-						return true;
-					}
-				});
-			}
-		}
-	}
+            @Override
+            public void dragFinished(DragSourceEvent event) {
+            }
+        });
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-	 */
-	@Override
-	public void setFocus() {
-		if (!viewer.getControl().isDisposed())
-			viewer.getControl().setFocus();
-	}
+        MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
-	 */
-	@Override
-	public void saveState(IMemento memento) {
-		Object[] o = viewer.getExpandedElements();
-		if (o != null && o.length != 0) {
-			StringBuffer s = new StringBuffer();
-			for (int i = 0; i < o.length; i++) {
-				if (i != 0)
-					s.append(";");
-				s.append(o[i].hashCode());
-			}
-			memento.putString("expanded", s.toString());
-		}
+            @Override
+            public void menuAboutToShow(IMenuManager menuManager) {
+                menuManager.add(new Separator("group.new"));
+                menuManager.add(new GroupMarker("group.goto"));
+                menuManager.add(new Separator("group.open"));
+                menuManager.add(new GroupMarker("group.openWith"));
+                menuManager.add(new Separator("group.trade"));
+                menuManager.add(new GroupMarker("group.tradeWith"));
+                menuManager.add(new Separator("group.show"));
+                menuManager.add(new Separator("group.edit"));
+                menuManager.add(new GroupMarker("group.reorganize"));
+                menuManager.add(new GroupMarker("group.port"));
+                menuManager.add(new Separator("group.generate"));
+                menuManager.add(new Separator("group.search"));
+                menuManager.add(new Separator("group.build"));
+                menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+                menuManager.add(new Separator("group.properties"));
 
-		super.saveState(memento);
-	}
+                menuManager.appendToGroup("group.show", new Action("Expand All") {
+                    @Override
+                    public void run() {
+                        IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+                        for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
+                            viewer.expandToLevel(iter.next(), TreeViewer.ALL_LEVELS);
+                        }
+                    }
+                });
+                menuManager.appendToGroup("group.reorganize", deleteAction);
+            }
+        });
+        viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
+        getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-	 */
-	@Override
-	public void dispose() {
-		NavigatorView view = (NavigatorView) viewer.getInput();
-		if (view != null)
-			view.dispose();
+        viewer.addOpenListener(new IOpenListener() {
 
-		super.dispose();
-	}
+            @Override
+            public void open(OpenEvent event) {
+                try {
+                    IHandlerService service = (IHandlerService) getSite().getService(IHandlerService.class);
+                    service.executeCommand("org.eclipse.ui.file.open", null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
-	protected IAdaptable[] getSelectedObject(ISelection selection) {
-		final Set<ISecurity> list = new HashSet<ISecurity>();
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                IAdaptable[] objects = getSelectedObject(event.getSelection());
+                deleteAction.setEnabled(objects.length != 0);
+                getViewSite().getSelectionProvider().setSelection(event.getSelection());
+            }
+        });
 
-		if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-			for (Object o : ((IStructuredSelection) selection).toArray()) {
-				if (o instanceof NavigatorViewItem) {
-					((NavigatorViewItem) o).accept(new IViewItemVisitor() {
-						public boolean visit(IViewItem viewItem) {
-							ISecurity reference = (ISecurity) viewItem.getAdapter(ISecurity.class);
-							if (reference != null)
-								list.add(reference);
-							return true;
-						}
-					});
-				}
-			}
-		}
+        NavigatorView view = new NavigatorView();
+        view.setContentProviders(new IStructuredContentProvider[] {
+                new SecuritiesContentProvider(),
+                new WatchListsContentProvider(),
+        });
+        view.setGroups(new INavigatorContentGroup[] {
+                new InstrumentTypeGroup(), new MarketGroup(),
+        });
+        view.update();
+        viewer.setInput(view);
 
-		return list.toArray(new IAdaptable[list.size()]);
-	}
+        if (memento != null) {
+            String s = memento.getString("expanded");
+            if (s != null) {
+                String[] sr = s.split(";");
+                final Set<Integer> itemHash = new HashSet<Integer>();
+                for (int i = 0; i < sr.length; i++) {
+                    try {
+                        itemHash.add(Integer.parseInt(sr[i]));
+                    } catch (Exception e) {
+                        // Do nothing
+                    }
+                }
+                view.accept(new IViewVisitor() {
+
+                    @Override
+                    public boolean visit(IView view) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean visit(IViewItem viewItem) {
+                        if (itemHash.contains(viewItem.hashCode())) {
+                            viewer.setExpandedState(viewItem, true);
+                        }
+                        return true;
+                    }
+                });
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+     */
+    @Override
+    public void setFocus() {
+        if (!viewer.getControl().isDisposed()) {
+            viewer.getControl().setFocus();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void saveState(IMemento memento) {
+        Object[] o = viewer.getExpandedElements();
+        if (o != null && o.length != 0) {
+            StringBuffer s = new StringBuffer();
+            for (int i = 0; i < o.length; i++) {
+                if (i != 0) {
+                    s.append(";");
+                }
+                s.append(o[i].hashCode());
+            }
+            memento.putString("expanded", s.toString());
+        }
+
+        super.saveState(memento);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+     */
+    @Override
+    public void dispose() {
+        NavigatorView view = (NavigatorView) viewer.getInput();
+        if (view != null) {
+            view.dispose();
+        }
+
+        super.dispose();
+    }
+
+    protected IAdaptable[] getSelectedObject(ISelection selection) {
+        final Set<IAdaptable> list = new HashSet<IAdaptable>();
+
+        if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
+            for (Object o : ((IStructuredSelection) selection).toArray()) {
+                if (o instanceof NavigatorViewItem) {
+                    ((NavigatorViewItem) o).accept(new IViewItemVisitor() {
+
+                        @Override
+                        public boolean visit(IViewItem viewItem) {
+                            ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
+                            if (security != null) {
+                                list.add(security);
+                            }
+
+                            IWatchList watchlist = (IWatchList) viewItem.getAdapter(IWatchList.class);
+                            if (watchlist != null) {
+                                list.add(watchlist);
+                            }
+
+                            return true;
+                        }
+                    });
+                }
+            }
+        }
+
+        return list.toArray(new IAdaptable[list.size()]);
+    }
 }
