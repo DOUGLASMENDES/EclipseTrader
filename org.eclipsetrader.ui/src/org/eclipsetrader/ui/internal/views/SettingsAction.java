@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.internal.dialogs.FilteredPreferenceDialog;
+import org.eclipsetrader.ui.PriorityPreferenceNode;
 
 public class SettingsAction extends Action implements ISelectionChangedListener {
 	private Shell shell;
@@ -52,7 +53,7 @@ public class SettingsAction extends Action implements ISelectionChangedListener 
 		final IAdaptable adaptableElement = getWrappedElement(view);
 
 		PreferenceManager pageManager = new PreferenceManager();
-   		pageManager.addToRoot(new PreferenceNode("general", new GeneralProperties()));
+   		pageManager.addToRoot(new PriorityPreferenceNode("general", new GeneralProperties(), -1));
    		pageManager.addToRoot(new PreferenceNode("columns", new ColumnsProperties()));
 
 		for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
