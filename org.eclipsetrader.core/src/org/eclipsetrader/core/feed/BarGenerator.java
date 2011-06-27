@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import java.util.Observable;
 
 /**
  * General purpose bar generator.
- * 
+ *
  * @since 1.0
  */
 public class BarGenerator extends Observable {
@@ -35,7 +35,7 @@ public class BarGenerator extends Observable {
 
 	/**
 	 * Constructs a new instance of the generator using the given time span to aggregate trades.
-	 * 
+	 *
 	 * @param timeSpan the aggregation time span.
 	 */
 	public BarGenerator(TimeSpan timeSpan) {
@@ -46,10 +46,13 @@ public class BarGenerator extends Observable {
 	 * Adds a new trade to the current bar.
 	 * <p>If the new trade causes a pending bar to close (the trade time is past the expected close time)
 	 * the method returns the closed bar, otherwise it returns <code>null</code>.</p>
-	 * 
+	 *
 	 * @param trade the trade to add.
 	 */
 	public void addTrade(ITrade trade) {
+		if (trade.getTime() == null)
+			return;
+
 		calendar.setTime(trade.getTime());
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
@@ -109,7 +112,7 @@ public class BarGenerator extends Observable {
 	/**
 	 * Gets if the there is a pending bar that is expired (current time is past the expected
 	 * close time).
-	 * 
+	 *
 	 * @return <code>true</code> if there is a pending expired bar.
 	 */
 	public boolean isBarExpired() {

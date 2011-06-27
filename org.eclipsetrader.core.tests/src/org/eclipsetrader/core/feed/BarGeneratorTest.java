@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -178,5 +178,17 @@ public class BarGeneratorTest extends TestCase {
 		generator.addTrade(new Trade(new Date(new Date().getTime() - 60 * 1000), 1.0, 100L, 1000L));
 
 		assertTrue(generator.isBarExpired());
+	}
+
+	public void testIgnoreTradeWithNullDate() throws Exception {
+		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+
+		generator.addTrade(new Trade(null, 1.0, 100L, 1000L));
+
+		assertNull(generator.open);
+		assertNull(generator.high);
+		assertNull(generator.low);
+		assertNull(generator.close);
+		assertNull(generator.volume);
 	}
 }
