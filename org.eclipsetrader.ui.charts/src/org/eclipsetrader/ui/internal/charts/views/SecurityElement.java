@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,38 +17,44 @@ import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.ui.charts.IBarDecorator;
 
 public class SecurityElement implements IAdaptable, IBarDecorator {
-	private IDataSeries dataSeries;
 
-	private RGB positiveBarColor = new RGB(0, 255, 0);
-	private RGB negavitBarColor = new RGB(255, 0, 0);
+    private IDataSeries dataSeries;
 
-	public SecurityElement(IDataSeries dataSeries) {
-		this.dataSeries = dataSeries;
-	}
+    private RGB positiveBarColor = new RGB(0, 255, 0);
+    private RGB negavitBarColor = new RGB(255, 0, 0);
 
-	/* (non-Javadoc)
+    public SecurityElement(IDataSeries dataSeries) {
+        this.dataSeries = dataSeries;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.model.IBarDecorator#getPositiveBarColor()
      */
+    @Override
     public RGB getPositiveBarColor() {
-	    return positiveBarColor;
+        return positiveBarColor;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.model.IBarDecorator#getNegativeBarColor()
      */
+    @Override
     public RGB getNegativeBarColor() {
-	    return negavitBarColor;
+        return negavitBarColor;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(IDataSeries.class))
-    		return dataSeries;
-    	if (adapter.isAssignableFrom(getClass()))
-    		return this;
-	    return null;
+        if (adapter.isAssignableFrom(IDataSeries.class)) {
+            return dataSeries;
+        }
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+        return null;
     }
 }

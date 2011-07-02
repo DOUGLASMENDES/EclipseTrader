@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,116 +27,121 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.ui.charts.indicators.TREND;
 
 public class TRENDGeneralPropertiesPage extends PropertyPage {
-	private Text text;
-	private Button override;
-	private ColorSelector upperLineColor;
-	private ColorSelector middleLineColor;
-	private ColorSelector lowerLineColor;
 
-	public TRENDGeneralPropertiesPage() {
-		noDefaultAndApplyButton();
-	}
+    private Text text;
+    private Button override;
+    private ColorSelector upperLineColor;
+    private ColorSelector middleLineColor;
+    private ColorSelector lowerLineColor;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		setTitle("General");
+    public TRENDGeneralPropertiesPage() {
+        noDefaultAndApplyButton();
+    }
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Label");
-		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
-		text = new Text(content, SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        setTitle("General");
 
-		label = new Label(content, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Label");
+        label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
+        text = new Text(content, SWT.BORDER);
+        text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		override = new Button(content, SWT.CHECK);
-		override.setText("Override color theme");
-		override.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-		override.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				updateControlsEnablement();
-			}
-		});
+        label = new Label(content, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        ((GridData) label.getLayoutData()).heightHint = convertVerticalDLUsToPixels(5);
 
-		label = new Label(content, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        override = new Button(content, SWT.CHECK);
+        override.setText("Override color theme");
+        override.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+        override.addSelectionListener(new SelectionAdapter() {
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Upper Line Color");
-		upperLineColor = new ColorSelector(content);
-		upperLineColor.setColorValue(new RGB(0, 0, 255));
-		upperLineColor.getButton().setData("label", label);
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateControlsEnablement();
+            }
+        });
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Middle Line Color");
-		middleLineColor = new ColorSelector(content);
-		middleLineColor.setColorValue(new RGB(0, 0, 255));
-		middleLineColor.getButton().setData("label", label);
+        label = new Label(content, SWT.SEPARATOR | SWT.HORIZONTAL);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Lower Line Color");
-		lowerLineColor = new ColorSelector(content);
-		lowerLineColor.setColorValue(new RGB(0, 0, 255));
-		lowerLineColor.getButton().setData("label", label);
+        label = new Label(content, SWT.NONE);
+        label.setText("Upper Line Color");
+        upperLineColor = new ColorSelector(content);
+        upperLineColor.setColorValue(new RGB(0, 0, 255));
+        upperLineColor.getButton().setData("label", label);
 
-		performDefaults();
+        label = new Label(content, SWT.NONE);
+        label.setText("Middle Line Color");
+        middleLineColor = new ColorSelector(content);
+        middleLineColor.setColorValue(new RGB(0, 0, 255));
+        middleLineColor.getButton().setData("label", label);
 
-		return content;
-	}
+        label = new Label(content, SWT.NONE);
+        label.setText("Lower Line Color");
+        lowerLineColor = new ColorSelector(content);
+        lowerLineColor.setColorValue(new RGB(0, 0, 255));
+        lowerLineColor.getButton().setData("label", label);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-	 */
-	@Override
-	protected void performDefaults() {
-		TREND object = (TREND) getElement().getAdapter(TREND.class);
-		text.setText(object.getName());
+        performDefaults();
 
-		override.setSelection(object.getUpperLineColor() != null || object.getMiddleLineColor() != null || object.getLowerLineColor() != null);
-		if (object.getUpperLineColor() != null)
-			upperLineColor.setColorValue(object.getUpperLineColor());
-		if (object.getMiddleLineColor() != null)
-			middleLineColor.setColorValue(object.getMiddleLineColor());
-		if (object.getLowerLineColor() != null)
-			lowerLineColor.setColorValue(object.getLowerLineColor());
+        return content;
+    }
 
-		updateControlsEnablement();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        TREND object = (TREND) getElement().getAdapter(TREND.class);
+        text.setText(object.getName());
 
-		super.performDefaults();
-	}
+        override.setSelection(object.getUpperLineColor() != null || object.getMiddleLineColor() != null || object.getLowerLineColor() != null);
+        if (object.getUpperLineColor() != null) {
+            upperLineColor.setColorValue(object.getUpperLineColor());
+        }
+        if (object.getMiddleLineColor() != null) {
+            middleLineColor.setColorValue(object.getMiddleLineColor());
+        }
+        if (object.getLowerLineColor() != null) {
+            lowerLineColor.setColorValue(object.getLowerLineColor());
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
-	 */
-	@Override
-	public boolean performOk() {
-		TREND object = (TREND) getElement().getAdapter(TREND.class);
-		object.setName(text.getText());
+        updateControlsEnablement();
 
-		object.setUpperLineColor(override.getSelection() ? upperLineColor.getColorValue() : null);
-		object.setMiddleLineColor(override.getSelection() ? middleLineColor.getColorValue() : null);
-		object.setLowerLineColor(override.getSelection() ? lowerLineColor.getColorValue() : null);
+        super.performDefaults();
+    }
 
-		return super.performOk();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+        TREND object = (TREND) getElement().getAdapter(TREND.class);
+        object.setName(text.getText());
 
-	protected void updateControlsEnablement() {
-		upperLineColor.setEnabled(override.getSelection());
-		((Label) upperLineColor.getButton().getData("label")).setEnabled(override.getSelection());
-		middleLineColor.setEnabled(override.getSelection());
-		((Label) middleLineColor.getButton().getData("label")).setEnabled(override.getSelection());
-		lowerLineColor.setEnabled(override.getSelection());
-		((Label) lowerLineColor.getButton().getData("label")).setEnabled(override.getSelection());
-	}
+        object.setUpperLineColor(override.getSelection() ? upperLineColor.getColorValue() : null);
+        object.setMiddleLineColor(override.getSelection() ? middleLineColor.getColorValue() : null);
+        object.setLowerLineColor(override.getSelection() ? lowerLineColor.getColorValue() : null);
+
+        return super.performOk();
+    }
+
+    protected void updateControlsEnablement() {
+        upperLineColor.setEnabled(override.getSelection());
+        ((Label) upperLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        middleLineColor.setEnabled(override.getSelection());
+        ((Label) middleLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        lowerLineColor.setEnabled(override.getSelection());
+        ((Label) lowerLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+    }
 }

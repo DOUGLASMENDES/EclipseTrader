@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,14 +12,15 @@
 package org.eclipsetrader.core.trading;
 
 public class OrderMonitorEvent {
-	public IOrder order;
-	public IOrderMonitor monitor;
 
-	public OrderMonitorEvent() {
-	}
+    public IOrder order;
+    public IOrderMonitor monitor;
 
-	public OrderMonitorEvent(IOrderMonitor monitor, IOrder order) {
-	    this.monitor = monitor;
-	    this.order = order;
+    public OrderMonitorEvent() {
+    }
+
+    public OrderMonitorEvent(IOrderMonitor monitor, IOrder order) {
+        this.monitor = monitor;
+        this.order = order;
     }
 }

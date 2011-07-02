@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,48 +20,50 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name = "category")
 public class Category {
+
     @XmlAttribute(name = "name")
-	private String name;
+    private String name;
 
     @XmlAttribute(name = "id")
-	private String id;
+    private String id;
 
     @XmlAttribute(name = "handler")
-	private String handler;
+    private String handler;
 
     @XmlElement(name = "page")
     private List<Page> pages;
 
-	public Category() {
-	}
-
-	@XmlTransient
-	public String getName() {
-    	return name;
+    public Category() {
     }
 
-	@XmlTransient
-	public String getId() {
-    	return id;
+    @XmlTransient
+    public String getName() {
+        return name;
     }
 
-	@XmlTransient
-	public String getHandler() {
-    	return handler;
+    @XmlTransient
+    public String getId() {
+        return id;
     }
 
-	@XmlTransient
-	public Page[] getPages() {
-		if (pages != null)
-			return pages.toArray(new Page[pages.size()]);
-		return new Page[0];
-	}
+    @XmlTransient
+    public String getHandler() {
+        return handler;
+    }
 
-	/* (non-Javadoc)
+    @XmlTransient
+    public Page[] getPages() {
+        if (pages != null) {
+            return pages.toArray(new Page[pages.size()]);
+        }
+        return new Page[0];
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-	    return name;
+        return name;
     }
 }

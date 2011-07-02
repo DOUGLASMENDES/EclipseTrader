@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,200 +30,224 @@ import org.eclipsetrader.core.repositories.StoreProperties;
  * @since 1.0
  */
 public class WatchList implements IWatchList, IStoreObject {
-	private String name;
-	private List<IWatchListColumn> columns = new ArrayList<IWatchListColumn>();
-	private List<IWatchListElement> items = new ArrayList<IWatchListElement>();
 
-	private IStore store;
-	private IStoreProperties storeProperties;
+    private String name;
+    private List<IWatchListColumn> columns = new ArrayList<IWatchListColumn>();
+    private List<IWatchListElement> items = new ArrayList<IWatchListElement>();
 
-	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private IStore store;
+    private IStoreProperties storeProperties;
 
-	protected WatchList() {
-	}
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-	public WatchList(String name, IWatchListColumn[] columns) {
-	    this.name = name;
-	    setColumns(columns);
+    protected WatchList() {
     }
 
-	public WatchList(IStore store, IStoreProperties storeProperties) {
-	    setStore(store);
-	    setStoreProperties(storeProperties);
+    public WatchList(String name, IWatchListColumn[] columns) {
+        this.name = name;
+        setColumns(columns);
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    public WatchList(IStore store, IStoreProperties storeProperties) {
+        setStore(store);
+        setStoreProperties(storeProperties);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IWatchList#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
     public void setName(String name) {
-    	String oldValue = this.name;
-    	this.name = name;
-		propertyChangeSupport.firePropertyChange(IWatchList.NAME, oldValue, this.name);
+        String oldValue = this.name;
+        this.name = name;
+        propertyChangeSupport.firePropertyChange(IWatchList.NAME, oldValue, this.name);
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getColumnCount()
-	 */
-	public int getColumnCount() {
-		return columns.size();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IWatchList#getColumnCount()
+     */
+    @Override
+    public int getColumnCount() {
+        return columns.size();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getColumns()
-	 */
-	public IWatchListColumn[] getColumns() {
-		return columns.toArray(new IWatchListColumn[columns.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IWatchList#getColumns()
+     */
+    @Override
+    public IWatchListColumn[] getColumns() {
+        return columns.toArray(new IWatchListColumn[columns.size()]);
+    }
 
     public void setColumns(IWatchListColumn[] columns) {
-		IWatchListColumn[] oldValue = this.columns.toArray(new IWatchListColumn[this.columns.size()]);
-		this.columns = new ArrayList<IWatchListColumn>(Arrays.asList(columns));
-		propertyChangeSupport.firePropertyChange(IWatchList.COLUMNS, oldValue, this.columns.toArray(new IWatchListColumn[this.columns.size()]));
+        IWatchListColumn[] oldValue = this.columns.toArray(new IWatchListColumn[this.columns.size()]);
+        this.columns = new ArrayList<IWatchListColumn>(Arrays.asList(columns));
+        propertyChangeSupport.firePropertyChange(IWatchList.COLUMNS, oldValue, this.columns.toArray(new IWatchListColumn[this.columns.size()]));
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getItemCount()
-	 */
-	public int getItemCount() {
-		return items.size();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IWatchList#getItemCount()
+     */
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getItems()
-	 */
-	public IWatchListElement[] getItems() {
-		return items.toArray(new IWatchListElement[items.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IWatchList#getItems()
+     */
+    @Override
+    public IWatchListElement[] getItems() {
+        return items.toArray(new IWatchListElement[items.size()]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getItem(int)
-	 */
-	public IWatchListElement getItem(int index) {
-		if (index < 0 || index >= items.size())
-			throw new IllegalArgumentException(index + " index out of range");
-		return items.get(index);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IWatchList#getItem(int)
+     */
+    @Override
+    public IWatchListElement getItem(int index) {
+        if (index < 0 || index >= items.size()) {
+            throw new IllegalArgumentException(index + " index out of range");
+        }
+        return items.get(index);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IWatchList#getItem(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public IWatchListElement[] getItem(ISecurity security) {
-		List<IWatchListElement> list = new ArrayList<IWatchListElement>();
-		for (IWatchListElement element : items) {
-			if (element.getSecurity() == security)
-				list.add(element);
-		}
-		return list.toArray(new IWatchListElement[list.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IWatchList#getItem(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public IWatchListElement[] getItem(ISecurity security) {
+        List<IWatchListElement> list = new ArrayList<IWatchListElement>();
+        for (IWatchListElement element : items) {
+            if (element.getSecurity() == security) {
+                list.add(element);
+            }
+        }
+        return list.toArray(new IWatchListElement[list.size()]);
+    }
 
     public void setItems(IWatchListElement[] items) {
-		IWatchListElement[] oldValue = this.items.toArray(new IWatchListElement[this.items.size()]);
-		this.items = new ArrayList<IWatchListElement>(Arrays.asList(items));
-		propertyChangeSupport.firePropertyChange(IWatchList.HOLDINGS, oldValue, this.items.toArray(new IWatchListElement[this.items.size()]));
+        IWatchListElement[] oldValue = this.items.toArray(new IWatchListElement[this.items.size()]);
+        this.items = new ArrayList<IWatchListElement>(Arrays.asList(items));
+        propertyChangeSupport.firePropertyChange(IWatchList.HOLDINGS, oldValue, this.items.toArray(new IWatchListElement[this.items.size()]));
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IWatchList#accept(org.eclipsetrader.core.views.IWatchListVisitor)
      */
+    @Override
     public void accept(IWatchListVisitor visitor) {
-    	if (visitor.visit(this)) {
-    		for (IWatchListColumn c : columns)
-    			visitor.visit(c);
-    		for (IWatchListElement e : items)
-    			visitor.visit(e);
-    	}
+        if (visitor.visit(this)) {
+            for (IWatchListColumn c : columns) {
+                visitor.visit(c);
+            }
+            for (IWatchListElement e : items) {
+                visitor.visit(e);
+            }
+        }
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-		if (adapter.isAssignableFrom(propertyChangeSupport.getClass()))
-			return propertyChangeSupport;
-		if (adapter.isAssignableFrom(IStoreProperties.class))
-			return getStoreProperties();
-		if (adapter.isAssignableFrom(getClass()))
-			return this;
-		return null;
-	}
+        if (adapter.isAssignableFrom(propertyChangeSupport.getClass())) {
+            return propertyChangeSupport;
+        }
+        if (adapter.isAssignableFrom(IStoreProperties.class)) {
+            return getStoreProperties();
+        }
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
      */
+    @Override
     public IStore getStore() {
-	    return store;
+        return store;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
      */
+    @Override
     public void setStore(IStore store) {
-    	this.store = store;
+        this.store = store;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
      */
+    @Override
     public IStoreProperties getStoreProperties() {
-		if (storeProperties == null)
-			storeProperties = new StoreProperties();
+        if (storeProperties == null) {
+            storeProperties = new StoreProperties();
+        }
 
-		storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IWatchList.class.getName());
-		storeProperties.setProperty(IPropertyConstants.NAME, getName());
-		storeProperties.setProperty(IPropertyConstants.COLUMNS, columns.toArray(new IColumn[columns.size()]));
-		storeProperties.setProperty(IPropertyConstants.HOLDINGS, items.toArray(new IHolding[items.size()]));
+        storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IWatchList.class.getName());
+        storeProperties.setProperty(IPropertyConstants.NAME, getName());
+        storeProperties.setProperty(IPropertyConstants.COLUMNS, columns.toArray(new IColumn[columns.size()]));
+        storeProperties.setProperty(IPropertyConstants.HOLDINGS, items.toArray(new IHolding[items.size()]));
 
-		return storeProperties;
+        return storeProperties;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
      */
+    @Override
     public void setStoreProperties(IStoreProperties storeProperties) {
-    	this.storeProperties = storeProperties;
-		this.name = (String) storeProperties.getProperty(IPropertyConstants.NAME);
+        this.storeProperties = storeProperties;
+        this.name = (String) storeProperties.getProperty(IPropertyConstants.NAME);
 
-		this.columns = new ArrayList<IWatchListColumn>();
-		IColumn[] columns = (IColumn[]) storeProperties.getProperty(IPropertyConstants.COLUMNS);
-		if (columns != null) {
-			for (IColumn column : columns)
-				this.columns.add(new WatchListColumn(column));
-		}
+        this.columns = new ArrayList<IWatchListColumn>();
+        IColumn[] columns = (IColumn[]) storeProperties.getProperty(IPropertyConstants.COLUMNS);
+        if (columns != null) {
+            for (IColumn column : columns) {
+                this.columns.add(new WatchListColumn(column));
+            }
+        }
 
-		this.items = new ArrayList<IWatchListElement>();
-		IHolding[] holdings = (IHolding[]) storeProperties.getProperty(IPropertyConstants.HOLDINGS);
-		if (holdings != null) {
-			for (IHolding holding : holdings)
-				this.items.add(new WatchListElement(holding));
-		}
+        this.items = new ArrayList<IWatchListElement>();
+        IHolding[] holdings = (IHolding[]) storeProperties.getProperty(IPropertyConstants.HOLDINGS);
+        if (holdings != null) {
+            for (IHolding holding : holdings) {
+                this.items.add(new WatchListElement(holding));
+            }
+        }
     }
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(listener);
-	}
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
 
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(listener);
-	}
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
 
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+    }
 
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-	    return name;
+        return name;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,71 +28,75 @@ import org.eclipsetrader.core.instruments.ISecurity;
 @XmlRootElement(name = "day")
 public class HistoryDayType {
 
-	@XmlAttribute(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	private ISecurity security;
+    @XmlAttribute(name = "security")
+    @XmlJavaTypeAdapter(SecurityAdapter.class)
+    private ISecurity security;
 
-	@XmlAttribute(name = "date")
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	private Date date;
+    @XmlAttribute(name = "date")
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    private Date date;
 
-	@XmlElementRef
-	private Set<HistoryType> periods = new TreeSet<HistoryType>();
+    @XmlElementRef
+    private Set<HistoryType> periods = new TreeSet<HistoryType>();
 
-	HistoryDayType() {
-	}
-
-	public HistoryDayType(ISecurity security, Date date) {
-	    this.security = security;
-	    this.date = date;
+    HistoryDayType() {
     }
 
-	public void addHistory(HistoryType historyType) {
-		for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext(); ) {
-			if (iter.next().getPeriod().equals(historyType.getPeriod()))
-				iter.remove();
-		}
-		periods.add(historyType);
-	}
-
-	public void removeHistory(HistoryType historyType) {
-		for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext(); ) {
-			if (iter.next().getPeriod().equals(historyType.getPeriod()))
-				iter.remove();
-		}
-	}
-
-	public void removeHistory(TimeSpan timeSpan) {
-		for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext(); ) {
-			if (iter.next().getPeriod().equals(timeSpan))
-				iter.remove();
-		}
-	}
-
-	public void removeAll() {
-		periods.clear();
-	}
-
-	@XmlTransient
-	public ISecurity getSecurity() {
-    	return security;
+    public HistoryDayType(ISecurity security, Date date) {
+        this.security = security;
+        this.date = date;
     }
 
-	@XmlTransient
-	public Date getDate() {
-    	return date;
+    public void addHistory(HistoryType historyType) {
+        for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext();) {
+            if (iter.next().getPeriod().equals(historyType.getPeriod())) {
+                iter.remove();
+            }
+        }
+        periods.add(historyType);
     }
 
-	@XmlTransient
-	public HistoryType[] getPeriods() {
-		return periods.toArray(new HistoryType[periods.size()]);
-	}
+    public void removeHistory(HistoryType historyType) {
+        for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext();) {
+            if (iter.next().getPeriod().equals(historyType.getPeriod())) {
+                iter.remove();
+            }
+        }
+    }
 
-	public HistoryType getPeriod(TimeSpan period) {
-		for (HistoryType type : periods) {
-			if (type.getPeriod() == period)
-				return type;
-		}
-		return null;
-	}
+    public void removeHistory(TimeSpan timeSpan) {
+        for (Iterator<HistoryType> iter = periods.iterator(); iter.hasNext();) {
+            if (iter.next().getPeriod().equals(timeSpan)) {
+                iter.remove();
+            }
+        }
+    }
+
+    public void removeAll() {
+        periods.clear();
+    }
+
+    @XmlTransient
+    public ISecurity getSecurity() {
+        return security;
+    }
+
+    @XmlTransient
+    public Date getDate() {
+        return date;
+    }
+
+    @XmlTransient
+    public HistoryType[] getPeriods() {
+        return periods.toArray(new HistoryType[periods.size()]);
+    }
+
+    public HistoryType getPeriod(TimeSpan period) {
+        for (HistoryType type : periods) {
+            if (type.getPeriod() == period) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

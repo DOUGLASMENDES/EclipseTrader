@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,85 +21,89 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.core.feed.IOHLC;
 
 public class SummaryOHLCItem {
-	Label label;
-	Label changeLabel;
 
-	NumberFormat numberFormat = NumberFormat.getInstance();
-	NumberFormat percentFormat = NumberFormat.getInstance();
-	Color foreground;
-	Color positiveForeground;
-	Color negativeForeground;
+    Label label;
+    Label changeLabel;
 
-	public SummaryOHLCItem(Composite parent, int style) {
-		changeLabel = new Label(parent, SWT.NONE);
-		label = new Label(parent, SWT.NONE);
+    NumberFormat numberFormat = NumberFormat.getInstance();
+    NumberFormat percentFormat = NumberFormat.getInstance();
+    Color foreground;
+    Color positiveForeground;
+    Color negativeForeground;
 
-		foreground = parent.getDisplay().getSystemColor(SWT.COLOR_BLUE);
-		positiveForeground = parent.getDisplay().getSystemColor(SWT.COLOR_GREEN);
-		negativeForeground = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
+    public SummaryOHLCItem(Composite parent, int style) {
+        changeLabel = new Label(parent, SWT.NONE);
+        label = new Label(parent, SWT.NONE);
 
-		numberFormat.setMinimumFractionDigits(0);
-		numberFormat.setMaximumFractionDigits(4);
-		numberFormat.setGroupingUsed(true);
+        foreground = parent.getDisplay().getSystemColor(SWT.COLOR_BLUE);
+        positiveForeground = parent.getDisplay().getSystemColor(SWT.COLOR_GREEN);
+        negativeForeground = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
 
-		percentFormat.setMinimumFractionDigits(2);
-		percentFormat.setMaximumFractionDigits(2);
-		percentFormat.setGroupingUsed(false);
-	}
+        numberFormat.setMinimumFractionDigits(0);
+        numberFormat.setMaximumFractionDigits(4);
+        numberFormat.setGroupingUsed(true);
 
-	public Color getForeground() {
-		return foreground;
-	}
+        percentFormat.setMinimumFractionDigits(2);
+        percentFormat.setMaximumFractionDigits(2);
+        percentFormat.setGroupingUsed(false);
+    }
 
-	public void setForeground(Color color) {
-		this.foreground = color;
-	}
+    public Color getForeground() {
+        return foreground;
+    }
 
-	public Color getPositiveForeground() {
-		return positiveForeground;
-	}
+    public void setForeground(Color color) {
+        this.foreground = color;
+    }
 
-	public void setPositiveForeground(Color positiveColor) {
-		this.positiveForeground = positiveColor;
-	}
+    public Color getPositiveForeground() {
+        return positiveForeground;
+    }
 
-	public Color getNegativeForeground() {
-		return negativeForeground;
-	}
+    public void setPositiveForeground(Color positiveColor) {
+        this.positiveForeground = positiveColor;
+    }
 
-	public void setNegativeForeground(Color negativeColor) {
-		this.negativeForeground = negativeColor;
-	}
+    public Color getNegativeForeground() {
+        return negativeForeground;
+    }
 
-	public void setOHLC(IOHLC currentOHLC, IOHLC previousOHLC) {
-		if (currentOHLC != null) {
-			label.setText(NLS.bind("O={0} H={1} L={2} C={3}", new Object[] { //$NON-NLS-1$
-			    numberFormat.format(currentOHLC.getOpen()),
-			    numberFormat.format(currentOHLC.getHigh()),
-			    numberFormat.format(currentOHLC.getLow()),
-			    numberFormat.format(currentOHLC.getClose()),
-			}));
+    public void setNegativeForeground(Color negativeColor) {
+        this.negativeForeground = negativeColor;
+    }
 
-			if (previousOHLC != null) {
-				double change = (currentOHLC.getClose() - previousOHLC.getClose()) / previousOHLC.getClose() * 100.0;
-				changeLabel.setText(NLS.bind("{0}%", new Object[] { //$NON-NLS-1$
-					(change > 0 ? "+" : "") + percentFormat.format(change), //$NON-NLS-1$ //$NON-NLS-2$
-				}));
-				if (change > 0)
-					changeLabel.setForeground(positiveForeground);
-				else if (change < 0)
-					changeLabel.setForeground(negativeForeground);
-				else
-					changeLabel.setForeground(null);
-			}
-		}
-		else {
-			label.setText(""); //$NON-NLS-1$
-			changeLabel.setText(""); //$NON-NLS-1$
-			changeLabel.setForeground(null);
-		}
-		label.setForeground(foreground);
+    public void setOHLC(IOHLC currentOHLC, IOHLC previousOHLC) {
+        if (currentOHLC != null) {
+            label.setText(NLS.bind("O={0} H={1} L={2} C={3}", new Object[] { //$NON-NLS-1$
+                    numberFormat.format(currentOHLC.getOpen()),
+                    numberFormat.format(currentOHLC.getHigh()),
+                    numberFormat.format(currentOHLC.getLow()),
+                    numberFormat.format(currentOHLC.getClose()),
+            }));
 
-		label.getParent().layout();
-	}
+            if (previousOHLC != null) {
+                double change = (currentOHLC.getClose() - previousOHLC.getClose()) / previousOHLC.getClose() * 100.0;
+                changeLabel.setText(NLS.bind("{0}%", new Object[] { //$NON-NLS-1$
+                    (change > 0 ? "+" : "") + percentFormat.format(change), //$NON-NLS-1$ //$NON-NLS-2$
+                }));
+                if (change > 0) {
+                    changeLabel.setForeground(positiveForeground);
+                }
+                else if (change < 0) {
+                    changeLabel.setForeground(negativeForeground);
+                }
+                else {
+                    changeLabel.setForeground(null);
+                }
+            }
+        }
+        else {
+            label.setText(""); //$NON-NLS-1$
+            changeLabel.setText(""); //$NON-NLS-1$
+            changeLabel.setForeground(null);
+        }
+        label.setForeground(foreground);
+
+        label.getParent().layout();
+    }
 }

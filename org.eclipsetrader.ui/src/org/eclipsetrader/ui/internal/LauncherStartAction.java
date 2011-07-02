@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,31 +19,33 @@ import org.eclipse.jface.action.Action;
 import org.eclipsetrader.core.ILauncher;
 
 public class LauncherStartAction extends Action {
-	private ILauncher launcher;
 
-	public LauncherStartAction(ILauncher launcher) {
-		super(launcher.getName());
-		this.launcher = launcher;
-	}
+    private ILauncher launcher;
 
-	/* (non-Javadoc)
+    public LauncherStartAction(ILauncher launcher) {
+        super(launcher.getName());
+        this.launcher = launcher;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
     public void run() {
-		Job job = new Job(launcher.getName() + " Startup") {
+        Job job = new Job(launcher.getName() + " Startup") {
+
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-            	monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
-            	try {
+                monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
+                try {
                     launcher.launch(monitor);
-            	} finally {
-            		monitor.done();
-            	}
-	            return Status.OK_STATUS;
+                } finally {
+                    monitor.done();
+                }
+                return Status.OK_STATUS;
             }
-		};
-		job.setUser(false);
-		job.schedule();
+        };
+        job.setUser(false);
+        job.schedule();
     }
 }

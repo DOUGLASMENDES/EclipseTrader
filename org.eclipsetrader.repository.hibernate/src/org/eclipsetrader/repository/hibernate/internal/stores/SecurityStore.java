@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,7 @@ import javax.persistence.Version;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IDividend;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
@@ -61,232 +62,249 @@ import org.hibernate.annotations.Target;
 @Entity
 @Table(name = "securities")
 public class SecurityStore implements IStore {
-	@Id
+
+    @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	private String id;
+    private String id;
 
-	@Version
-	@Column(name = "version")
-	@SuppressWarnings("unused")
-	private Integer version;
+    @Version
+    @Column(name = "version")
+    @SuppressWarnings("unused")
+    private Integer version;
 
-	@Column(name = "factory")
-	@Target(RepositoryFactoryType.class)
-	private IRepositoryElementFactory factory;
+    @Column(name = "factory")
+    @Target(RepositoryFactoryType.class)
+    private IRepositoryElementFactory factory;
 
-	@Column(name = "type")
-	private String type;
+    @Column(name = "type")
+    private String type;
 
-	@Column(name = "name", unique = true)
-	private String name;
+    @Column(name = "name", unique = true)
+    private String name;
 
-	@ManyToOne
-	private IdentifierType identifier;
+    @ManyToOne
+    private IdentifierType identifier;
 
-	@Column(name = "currency")
-	private Currency currency;
+    @Column(name = "currency")
+    private Currency currency;
 
-	@OneToMany(mappedBy = "security", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	@OrderBy("exDate")
-	private List<DividendType> dividends = new ArrayList<DividendType>();
+    @OneToMany(mappedBy = "security", cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @OrderBy("exDate")
+    private List<DividendType> dividends = new ArrayList<DividendType>();
 
-	@Transient
-	private IUserProperties userProperties;
+    @Transient
+    private IUserProperties userProperties;
 
-	@OneToMany(mappedBy = "security", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private List<SecurityUnknownPropertyType> unknownProperties = new ArrayList<SecurityUnknownPropertyType>();
+    @OneToMany(mappedBy = "security", cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    private List<SecurityUnknownPropertyType> unknownProperties = new ArrayList<SecurityUnknownPropertyType>();
 
-	@Transient
-	private HibernateRepository repository;
+    @Transient
+    private HibernateRepository repository;
 
-	@Transient
-	private HistoryStore historyStore;
+    @Transient
+    private HistoryStore historyStore;
 
-	private static Set<String> knownProperties = new HashSet<String>();
-	static {
-		knownProperties.add(IPropertyConstants.ELEMENT_FACTORY);
-		knownProperties.add(IPropertyConstants.OBJECT_TYPE);
+    private static Set<String> knownProperties = new HashSet<String>();
+    static {
+        knownProperties.add(IPropertyConstants.ELEMENT_FACTORY);
+        knownProperties.add(IPropertyConstants.OBJECT_TYPE);
 
-		knownProperties.add(IPropertyConstants.NAME);
-		knownProperties.add(IPropertyConstants.IDENTIFIER);
-		knownProperties.add(IPropertyConstants.CURRENCY);
-		knownProperties.add(IPropertyConstants.DIVIDENDS);
-		knownProperties.add(IPropertyConstants.USER_PROPERTIES);
-	}
-
-	public SecurityStore() {
-	}
-
-	public SecurityStore(HibernateRepository repository) {
-		this.repository = repository;
-	}
-
-	public String getId() {
-    	return id;
+        knownProperties.add(IPropertyConstants.NAME);
+        knownProperties.add(IPropertyConstants.IDENTIFIER);
+        knownProperties.add(IPropertyConstants.CURRENCY);
+        knownProperties.add(IPropertyConstants.DIVIDENDS);
+        knownProperties.add(IPropertyConstants.USER_PROPERTIES);
     }
 
-	public void setRepository(HibernateRepository repository) {
-		this.repository = repository;
-	}
+    public SecurityStore() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#toURI()
-	 */
-	public URI toURI() {
-		try {
-			return new URI(repository.getSchema(), HibernateRepository.URI_SECURITY_PART, id);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public SecurityStore(HibernateRepository repository) {
+        this.repository = repository;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public IStoreProperties fetchProperties(IProgressMonitor monitor) {
-		StoreProperties properties = new StoreProperties();
+    public String getId() {
+        return id;
+    }
 
-    	if (factory != null)
-    		properties.setProperty(IPropertyConstants.ELEMENT_FACTORY, factory);
-    	properties.setProperty(IPropertyConstants.OBJECT_TYPE, type == null ? ISecurity.class.getName() : type);
+    public void setRepository(HibernateRepository repository) {
+        this.repository = repository;
+    }
 
-		properties.setProperty(IPropertyConstants.NAME, name);
-		if (identifier != null)
-			properties.setProperty(IPropertyConstants.IDENTIFIER, identifier.getIdentifier());
-		if (currency != null)
-			properties.setProperty(IPropertyConstants.CURRENCY, currency);
-		properties.setProperty(IPropertyConstants.USER_PROPERTIES, userProperties);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#toURI()
+     */
+    @Override
+    public URI toURI() {
+        try {
+            return new URI(repository.getSchema(), HibernateRepository.URI_SECURITY_PART, id);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-		if (dividends != null) {
-			int i = 0;
-			IDividend[] dividends = new IDividend[this.dividends.size()];
-			for (DividendType type : this.dividends)
-				dividends[i++] = type.getDividend();
-			properties.setProperty(IPropertyConstants.DIVIDENDS, dividends);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
+    public IStoreProperties fetchProperties(IProgressMonitor monitor) {
+        StoreProperties properties = new StoreProperties();
 
-		if (unknownProperties != null) {
-			for (SecurityUnknownPropertyType property : unknownProperties)
-				properties.setProperty(property.getName(), SecurityUnknownPropertyType.convert(property));
-		}
+        if (factory != null) {
+            properties.setProperty(IPropertyConstants.ELEMENT_FACTORY, factory);
+        }
+        properties.setProperty(IPropertyConstants.OBJECT_TYPE, type == null ? ISecurity.class.getName() : type);
 
-		return properties;
-	}
+        properties.setProperty(IPropertyConstants.NAME, name);
+        if (identifier != null) {
+            properties.setProperty(IPropertyConstants.IDENTIFIER, identifier.getIdentifier());
+        }
+        if (currency != null) {
+            properties.setProperty(IPropertyConstants.CURRENCY, currency);
+        }
+        properties.setProperty(IPropertyConstants.USER_PROPERTIES, userProperties);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#putProperties(org.eclipsetrader.core.repositories.IStoreProperties, org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
-		Session session = repository.getSession();
+        if (dividends != null) {
+            int i = 0;
+            IDividend[] dividends = new IDividend[this.dividends.size()];
+            for (DividendType type : this.dividends) {
+                dividends[i++] = type.getDividend();
+            }
+            properties.setProperty(IPropertyConstants.DIVIDENDS, dividends);
+        }
 
-		this.factory = (IRepositoryElementFactory) properties.getProperty(IPropertyConstants.ELEMENT_FACTORY);
-		this.type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
+        if (unknownProperties != null) {
+            for (SecurityUnknownPropertyType property : unknownProperties) {
+                properties.setProperty(property.getName(), SecurityUnknownPropertyType.convert(property));
+            }
+        }
 
-		this.name = (String) properties.getProperty(IPropertyConstants.NAME);
+        return properties;
+    }
 
-		IFeedIdentifier feedIdentifier = (IFeedIdentifier) properties.getProperty(IPropertyConstants.IDENTIFIER);
-		this.identifier = feedIdentifier != null ? repository.getIdentifierTypeFromFeedIdentifier(feedIdentifier) : null;
-		if (this.identifier != null) {
-			this.identifier.updateProperties((IFeedProperties) feedIdentifier.getAdapter(IFeedProperties.class));
-			session.save(this.identifier);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#putProperties(org.eclipsetrader.core.repositories.IStoreProperties, org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
+    public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
+        Session session = repository.getSession();
 
-		this.currency = (Currency) properties.getProperty(IPropertyConstants.CURRENCY);
-		this.userProperties = (IUserProperties) properties.getProperty(IPropertyConstants.USER_PROPERTIES);
+        this.factory = (IRepositoryElementFactory) properties.getProperty(IPropertyConstants.ELEMENT_FACTORY);
+        this.type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
 
-		this.dividends.clear();
-		IDividend[] dividends = (IDividend[]) properties.getProperty(IPropertyConstants.DIVIDENDS);
-		if (dividends != null) {
-			for (int i = 0; i < dividends.length; i++)
-				this.dividends.add(new DividendType(this, dividends[i]));
-		}
+        this.name = (String) properties.getProperty(IPropertyConstants.NAME);
 
-		this.unknownProperties.clear();
-		for (String name : properties.getPropertyNames()) {
-			if (!knownProperties.contains(name))
-				this.unknownProperties.add(SecurityUnknownPropertyType.create(this, name, properties.getProperty(name)));
-		}
+        IFeedIdentifier feedIdentifier = (IFeedIdentifier) properties.getProperty(IPropertyConstants.IDENTIFIER);
+        this.identifier = feedIdentifier != null ? repository.getIdentifierTypeFromFeedIdentifier(feedIdentifier) : null;
+        if (this.identifier != null) {
+            this.identifier.updateProperties((IFeedProperties) feedIdentifier.getAdapter(IFeedProperties.class));
+            session.save(this.identifier);
+        }
 
-		session.save(this);
-	}
+        this.currency = (Currency) properties.getProperty(IPropertyConstants.CURRENCY);
+        this.userProperties = (IUserProperties) properties.getProperty(IPropertyConstants.USER_PROPERTIES);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
-	 */
+        this.dividends.clear();
+        IDividend[] dividends = (IDividend[]) properties.getProperty(IPropertyConstants.DIVIDENDS);
+        if (dividends != null) {
+            for (int i = 0; i < dividends.length; i++) {
+                this.dividends.add(new DividendType(this, dividends[i]));
+            }
+        }
+
+        this.unknownProperties.clear();
+        for (String name : properties.getPropertyNames()) {
+            if (!knownProperties.contains(name)) {
+                this.unknownProperties.add(SecurityUnknownPropertyType.create(this, name, properties.getProperty(name)));
+            }
+        }
+
+        session.save(this);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
     @SuppressWarnings("unchecked")
-	public void delete(IProgressMonitor monitor) throws CoreException {
-		Session session = repository.getSession();
+    public void delete(IProgressMonitor monitor) throws CoreException {
+        Session session = repository.getSession();
 
-		Transaction currentTransaction = session.beginTransaction();
-		try {
-			session.delete(this);
+        Transaction currentTransaction = session.beginTransaction();
+        try {
+            session.delete(this);
 
-			Query query = repository.getSession().createQuery("from HistoryStore where instrument = :instrument");
-			query.setString("instrument", toURI().toString());
-			List l = query.list();
-			if (l != null) {
-				for (Object o : l)
-					session.delete(o);
-			}
+            Query query = repository.getSession().createQuery("from HistoryStore where instrument = :instrument");
+            query.setString("instrument", toURI().toString());
+            List l = query.list();
+            if (l != null) {
+                for (Object o : l) {
+                    session.delete(o);
+                }
+            }
 
-			currentTransaction.commit();
-			currentTransaction = null;
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
-			Activator.log(status);
-		} finally {
-			if (currentTransaction != null) {
-				try {
-					currentTransaction.rollback();
-				} catch(Exception e1) {
-					Status status1 = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error rolling back transaction", e1); //$NON-NLS-1$
-					Activator.log(status1);
-				}
-			}
-		}
+            currentTransaction.commit();
+            currentTransaction = null;
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
+            Activator.log(status);
+        } finally {
+            if (currentTransaction != null) {
+                try {
+                    currentTransaction.rollback();
+                } catch (Exception e1) {
+                    Status status1 = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error rolling back transaction", e1); //$NON-NLS-1$
+                    Activator.log(status1);
+                }
+            }
+        }
 
-		session.clear();
-	}
+        session.clear();
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public IStore[] fetchChilds(IProgressMonitor monitor) {
-    	if (historyStore == null) {
-    		Query query = repository.getSession().createQuery("from HistoryStore where instrument = :instrument and type = :type");
-    		query.setString("instrument", toURI().toString());
-    		query.setString("type", "history");
-    		List l = query.list();
-    		if (l != null && l.size() == 1) {
-    			historyStore = (HistoryStore) l.get(0);
-    			historyStore.setRepository(repository);
-    		}
-    	}
+        if (historyStore == null) {
+            Query query = repository.getSession().createQuery("from HistoryStore where instrument = :instrument and type = :type");
+            query.setString("instrument", toURI().toString());
+            query.setString("type", "history");
+            List l = query.list();
+            if (l != null && l.size() == 1) {
+                historyStore = (HistoryStore) l.get(0);
+                historyStore.setRepository(repository);
+            }
+        }
 
-    	List<IStore> l = new ArrayList<IStore>();
-    	if (historyStore != null)
-    		l.add(historyStore);
-		return l.toArray(new IStore[l.size()]);
+        List<IStore> l = new ArrayList<IStore>();
+        if (historyStore != null) {
+            l.add(historyStore);
+        }
+        return l.toArray(new IStore[l.size()]);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#createChild()
      */
+    @Override
     public IStore createChild() {
-	    return new RepositoryStore(repository);
+        return new RepositoryStore(repository);
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#getRepository()
-	 */
-	@Transient
-	public IRepository getRepository() {
-		return repository;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#getRepository()
+     */
+    @Override
+    @Transient
+    public IRepository getRepository() {
+        return repository;
+    }
 }

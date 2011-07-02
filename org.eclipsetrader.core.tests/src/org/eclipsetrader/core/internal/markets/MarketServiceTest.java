@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,31 +20,31 @@ import org.easymock.EasyMock;
 
 public class MarketServiceTest extends TestCase {
 
-	public void testNotifyObserversOnAddMarket() throws Exception {
-		MarketService service = new MarketService();
+    public void testNotifyObserversOnAddMarket() throws Exception {
+        MarketService service = new MarketService();
 
-		Observer observer = EasyMock.createMock(Observer.class);
-		observer.update(service, null);
-		EasyMock.replay(observer);
+        Observer observer = EasyMock.createMock(Observer.class);
+        observer.update(service, null);
+        EasyMock.replay(observer);
 
-		service.addObserver(observer);
-		service.addMarket(new Market("Test", new ArrayList<MarketTime>()));
+        service.addObserver(observer);
+        service.addMarket(new Market("Test", new ArrayList<MarketTime>()));
 
-		EasyMock.verify(observer);
-	}
+        EasyMock.verify(observer);
+    }
 
-	public void testNotifyObserversOnDeleteMarket() throws Exception {
-		Market market = new Market("Test", new ArrayList<MarketTime>());
-		MarketService service = new MarketService();
-		service.addMarket(market);
+    public void testNotifyObserversOnDeleteMarket() throws Exception {
+        Market market = new Market("Test", new ArrayList<MarketTime>());
+        MarketService service = new MarketService();
+        service.addMarket(market);
 
-		Observer observer = EasyMock.createMock(Observer.class);
-		observer.update(service, null);
-		EasyMock.replay(observer);
+        Observer observer = EasyMock.createMock(Observer.class);
+        observer.update(service, null);
+        EasyMock.replay(observer);
 
-		service.addObserver(observer);
-		service.deleteMarket(market);
+        service.addObserver(observer);
+        service.deleteMarket(market);
 
-		EasyMock.verify(observer);
-	}
+        EasyMock.verify(observer);
+    }
 }

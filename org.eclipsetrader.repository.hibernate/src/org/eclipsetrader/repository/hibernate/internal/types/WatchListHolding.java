@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,85 +29,93 @@ import org.hibernate.annotations.Target;
 @Entity
 @Table(name = "watchlists_elements")
 public class WatchListHolding implements IHolding {
+
     @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@SuppressWarnings("unused")
-	private String id;
+    @SuppressWarnings("unused")
+    private String id;
 
-	@Column(name = "instrument")
-	@Target(SecurityType.class)
-	private ISecurity security;
+    @Column(name = "instrument")
+    @Target(SecurityType.class)
+    private ISecurity security;
 
-	@Column(name = "position")
-	private Long position;
+    @Column(name = "position")
+    private Long position;
 
-	@Column(name = "price")
-	private Double purchasePrice;
+    @Column(name = "price")
+    private Double purchasePrice;
 
-	@Column(name = "date")
-	private Date date;
+    @Column(name = "date")
+    private Date date;
 
     @Column(name = "index")
-	@SuppressWarnings("unused")
-	private int index;
+    @SuppressWarnings("unused")
+    private int index;
 
-	@ManyToOne
-	@SuppressWarnings("unused")
-	private WatchListStore watchlist;
+    @ManyToOne
+    @SuppressWarnings("unused")
+    private WatchListStore watchlist;
 
-	public WatchListHolding() {
-	}
+    public WatchListHolding() {
+    }
 
-	public WatchListHolding(IHolding element, WatchListStore watchlist, int index) {
-		this.security = element.getSecurity();
-		this.position = element.getPosition();
-		this.purchasePrice = element.getPurchasePrice();
-		this.date = element.getDate();
-		this.watchlist = watchlist;
-		this.index = index;
-	}
+    public WatchListHolding(IHolding element, WatchListStore watchlist, int index) {
+        this.security = element.getSecurity();
+        this.position = element.getPosition();
+        this.purchasePrice = element.getPurchasePrice();
+        this.date = element.getDate();
+        this.watchlist = watchlist;
+        this.index = index;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IHolding#getDate()
      */
+    @Override
     public Date getDate() {
-	    return date;
+        return date;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IHolding#getPosition()
      */
+    @Override
     public Long getPosition() {
-	    return position;
+        return position;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IHolding#getPurchasePrice()
      */
+    @Override
     public Double getPurchasePrice() {
-	    return purchasePrice;
+        return purchasePrice;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IHolding#getSecurity()
      */
+    @Override
     public ISecurity getSecurity() {
-	    return security;
+        return security;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
-	@SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-		if (security != null) {
-			if (security.getIdentifier() != null && adapter.isAssignableFrom(security.getIdentifier().getClass()))
-				return security;
-			if (adapter.isAssignableFrom(security.getClass()))
-				return security;
-		}
-		return null;
-	}
+        if (security != null) {
+            if (security.getIdentifier() != null && adapter.isAssignableFrom(security.getIdentifier().getClass())) {
+                return security;
+            }
+            if (adapter.isAssignableFrom(security.getClass())) {
+                return security;
+            }
+        }
+        return null;
+    }
 }

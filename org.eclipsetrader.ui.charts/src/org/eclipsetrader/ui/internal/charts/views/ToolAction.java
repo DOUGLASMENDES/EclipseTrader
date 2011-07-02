@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,82 +24,86 @@ import org.eclipsetrader.ui.charts.IEditableChartObject;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ToolAction extends Action {
-	private IViewPart viewPart;
-	private String chartObjectId;
 
-	private IChartObjectFactory factory;
-	private IChartObject chartObject;
+    private IViewPart viewPart;
+    private String chartObjectId;
 
-	private IChartEditorListener editorListener = new IChartEditorListener() {
+    private IChartObjectFactory factory;
+    private IChartObject chartObject;
+
+    private IChartEditorListener editorListener = new IChartEditorListener() {
+
+        @Override
         public void applyEditorValue() {
-			BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
-			viewer.getEditor().removeListener(editorListener);
+            BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+            viewer.getEditor().removeListener(editorListener);
 
-			handleApplyEditorValue();
+            handleApplyEditorValue();
         }
 
+        @Override
         public void cancelEditor() {
-			BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
-			viewer.getEditor().removeListener(editorListener);
+            BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+            viewer.getEditor().removeListener(editorListener);
 
-        	handleCancelEditor();
+            handleCancelEditor();
         }
-	};
+    };
 
-	public ToolAction(String title, IViewPart viewPart, String chartObjectId) {
-		super(title, AS_CHECK_BOX);
-		setId(chartObjectId);
-		this.viewPart = viewPart;
-		this.chartObjectId = chartObjectId;
-	}
+    public ToolAction(String title, IViewPart viewPart, String chartObjectId) {
+        super(title, AS_CHECK_BOX);
+        setId(chartObjectId);
+        this.viewPart = viewPart;
+        this.chartObjectId = chartObjectId;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
     public void run() {
-		factory = ChartsUIActivator.getDefault().getChartObjectFactory(chartObjectId);
-		if (factory != null) {
-			chartObject = factory.createObject(null);
-			if (chartObject instanceof IEditableChartObject) {
-				BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
-				viewer.getEditor().addListener(editorListener);
-				viewer.activateEditor((IEditableChartObject) chartObject);
-			}
-		}
+        factory = ChartsUIActivator.getDefault().getChartObjectFactory(chartObjectId);
+        if (factory != null) {
+            chartObject = factory.createObject(null);
+            if (chartObject instanceof IEditableChartObject) {
+                BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+                viewer.getEditor().addListener(editorListener);
+                viewer.activateEditor((IEditableChartObject) chartObject);
+            }
+        }
     }
 
     protected void handleApplyEditorValue() {
-		BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
+        BaseChartViewer viewer = (BaseChartViewer) viewPart.getAdapter(BaseChartViewer.class);
 
-		IChartObject[] currentObject = viewer.getSelectedChartCanvas().getChartObject();
-		int index = viewer.getSelectedChartCanvasIndex();
+        IChartObject[] currentObject = viewer.getSelectedChartCanvas().getChartObject();
+        int index = viewer.getSelectedChartCanvasIndex();
 
-		if (index != -1) {
-			IChartObject[] newObject = new IChartObject[currentObject.length + 1];
-			System.arraycopy(currentObject, 0, newObject, 0, currentObject.length);
-			newObject[currentObject.length] = chartObject;
+        if (index != -1) {
+            IChartObject[] newObject = new IChartObject[currentObject.length + 1];
+            System.arraycopy(currentObject, 0, newObject, 0, currentObject.length);
+            newObject[currentObject.length] = chartObject;
 
-			viewer.getSelectedChartCanvas().setChartObject(newObject);
+            viewer.getSelectedChartCanvas().setChartObject(newObject);
 
-			ChartView view = (ChartView) viewPart.getAdapter(ChartView.class);
-			((ChartRowViewItem) view.getItems()[index]).addFactory(factory);
+            ChartView view = (ChartView) viewPart.getAdapter(ChartView.class);
+            ((ChartRowViewItem) view.getItems()[index]).addFactory(factory);
 
-			viewer.setSelection(new StructuredSelection(chartObject));
-		}
+            viewer.setSelection(new StructuredSelection(chartObject));
+        }
 
-    	factory = null;
-    	chartObject = null;
-    	setChecked(false);
+        factory = null;
+        chartObject = null;
+        setChecked(false);
     }
 
     protected void handleCancelEditor() {
-    	factory = null;
-    	chartObject = null;
-    	setChecked(false);
+        factory = null;
+        chartObject = null;
+        setChecked(false);
     }
 
-	protected IChartObjectFactory getFactory() {
-    	return factory;
+    protected IChartObjectFactory getFactory() {
+        return factory;
     }
 }

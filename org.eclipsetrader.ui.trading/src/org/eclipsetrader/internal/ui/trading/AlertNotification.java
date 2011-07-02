@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,55 +17,61 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.ui.INotification;
 
 public class AlertNotification implements INotification, Comparable<INotification> {
-	private static final String LABEL_TEXT = Messages.AlertNotification_Label;
 
-	private ISecurity security;
-	private String description;
+    private static final String LABEL_TEXT = Messages.AlertNotification_Label;
 
-	public AlertNotification() {
-	}
+    private ISecurity security;
+    private String description;
 
-	public void setSecurity(ISecurity security) {
-		this.security = security;
-	}
+    public AlertNotification() {
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setSecurity(ISecurity security) {
+        this.security = security;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.INotification#getLabel()
-	 */
-	public String getLabel() {
-		return NLS.bind(LABEL_TEXT, new Object[] {
-			security.getName()
-		});
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.INotification#getDescription()
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.INotification#getLabel()
+     */
+    @Override
+    public String getLabel() {
+        return NLS.bind(LABEL_TEXT, new Object[] {
+            security.getName()
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.INotification#getNotificationImage()
-	 */
-	public Image getNotificationImage() {
-		return Activator.getDefault().getImageRegistry().get(Activator.ALERT_NOTIFICATION_IMAGE);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.INotification#getDescription()
+     */
+    @Override
+    public String getDescription() {
+        return description;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.INotification#open()
-	 */
-	public void open() {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.INotification#getNotificationImage()
+     */
+    @Override
+    public Image getNotificationImage() {
+        return Activator.getDefault().getImageRegistry().get(Activator.ALERT_NOTIFICATION_IMAGE);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(INotification o) {
-		return 0;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.INotification#open()
+     */
+    @Override
+    public void open() {
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(INotification o) {
+        return 0;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,24 +21,24 @@ import org.eclipsetrader.core.feed.IFeedIdentifier;
  */
 public interface ISecurity extends IAdaptable {
 
-	/**
-	 * Gets the security name.
-	 *
-	 * @return the name
-	 */
-	public String getName();
+    /**
+     * Gets the security name.
+     *
+     * @return the name
+     */
+    public String getName();
 
-	/**
-	 * Gets the feed identifier, or null if the security doesn't have an identifier.
-	 *
-	 * @return the identifier, or null.
-	 */
-	public IFeedIdentifier getIdentifier();
+    /**
+     * Gets the feed identifier, or null if the security doesn't have an identifier.
+     *
+     * @return the identifier, or null.
+     */
+    public IFeedIdentifier getIdentifier();
 
-	/**
-	 * Gets the user defined properties collection.
-	 *
-	 * @return the user properies.
-	 */
-	public IUserProperties getProperties();
+    /**
+     * Gets the user defined properties collection.
+     *
+     * @return the user properies.
+     */
+    public IUserProperties getProperties();
 }

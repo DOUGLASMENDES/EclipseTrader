@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,65 +26,69 @@ import org.eclipsetrader.repository.local.internal.stores.SecurityStore;
 
 @XmlRootElement(name = "list")
 public class SecurityCollection {
-	private static SecurityCollection instance;
 
-	@XmlAttribute(name = "next_id")
-	private Integer nextId = new Integer(1);
+    private static SecurityCollection instance;
 
-	@XmlElementRef
-	private List<SecurityStore> list;
+    @XmlAttribute(name = "next_id")
+    private Integer nextId = new Integer(1);
 
-	private Map<URI, SecurityStore> uriMap;
+    @XmlElementRef
+    private List<SecurityStore> list;
 
-	public SecurityCollection() {
-		instance = this;
-		list = new ArrayList<SecurityStore>();
-	}
+    private Map<URI, SecurityStore> uriMap;
 
-	public static SecurityCollection getInstance() {
-    	return instance;
+    public SecurityCollection() {
+        instance = this;
+        list = new ArrayList<SecurityStore>();
     }
 
-	public SecurityStore get(URI uri) {
-		synchronized(this) {
-			if (uriMap == null) {
-				uriMap = new HashMap<URI, SecurityStore>();
-				for (SecurityStore securityStore : list)
-					uriMap.put(securityStore.toURI(), securityStore);
-			}
-		}
-		return uriMap.get(uri);
-	}
+    public static SecurityCollection getInstance() {
+        return instance;
+    }
 
-	public SecurityStore create() {
-		SecurityStore securityStore = new SecurityStore(nextId);
-		list.add(securityStore);
-		if (uriMap != null)
-			uriMap.put(securityStore.toURI(), securityStore);
-		nextId = new Integer(nextId + 1);
-		return securityStore;
-	}
+    public SecurityStore get(URI uri) {
+        synchronized (this) {
+            if (uriMap == null) {
+                uriMap = new HashMap<URI, SecurityStore>();
+                for (SecurityStore securityStore : list) {
+                    uriMap.put(securityStore.toURI(), securityStore);
+                }
+            }
+        }
+        return uriMap.get(uri);
+    }
 
-	public void delete(SecurityStore securityStore) {
-		for (Iterator<SecurityStore> iter = list.iterator(); iter.hasNext(); ) {
-			if (iter.next() == securityStore) {
-				iter.remove();
-				if (uriMap != null)
-					uriMap.remove(securityStore.toURI());
-				break;
-			}
-		}
-	}
+    public SecurityStore create() {
+        SecurityStore securityStore = new SecurityStore(nextId);
+        list.add(securityStore);
+        if (uriMap != null) {
+            uriMap.put(securityStore.toURI(), securityStore);
+        }
+        nextId = new Integer(nextId + 1);
+        return securityStore;
+    }
 
-	public SecurityStore[] getAll() {
-		return list.toArray(new SecurityStore[list.size()]);
-	}
+    public void delete(SecurityStore securityStore) {
+        for (Iterator<SecurityStore> iter = list.iterator(); iter.hasNext();) {
+            if (iter.next() == securityStore) {
+                iter.remove();
+                if (uriMap != null) {
+                    uriMap.remove(securityStore.toURI());
+                }
+                break;
+            }
+        }
+    }
 
-	public List<SecurityStore> getList() {
-		return list;
-	}
+    public SecurityStore[] getAll() {
+        return list.toArray(new SecurityStore[list.size()]);
+    }
 
-	public SecurityStore[] toArray() {
-		return list.toArray(new SecurityStore[list.size()]);
-	}
+    public List<SecurityStore> getList() {
+        return list;
+    }
+
+    public SecurityStore[] toArray() {
+        return list.toArray(new SecurityStore[list.size()]);
+    }
 }

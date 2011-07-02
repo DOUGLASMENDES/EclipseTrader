@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,71 +22,79 @@ import org.eclipsetrader.news.core.IHeadLine;
 import org.eclipsetrader.news.internal.repository.HeadLine;
 
 public class HeadLineViewerTest extends TestCase {
-	private Shell shell;
 
-	/* (non-Javadoc)
+    private Shell shell;
+
+    /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
     @Override
     protected void setUp() throws Exception {
-	    shell = new Shell(Display.getCurrent());
+        shell = new Shell(Display.getCurrent());
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see junit.framework.TestCase#tearDown()
      */
     @Override
     protected void tearDown() throws Exception {
-	    shell.dispose();
+        shell.dispose();
     }
 
-	public void testCreatePartControl() throws Exception {
-		HeadLineViewer view = new HeadLineViewer() {
+    public void testCreatePartControl() throws Exception {
+        HeadLineViewer view = new HeadLineViewer() {
+
             @Override
             protected IHeadLine[] getHeadLines() {
-	            return new IHeadLine[0];
+                return new IHeadLine[0];
             }
-		};
-		view.createPartControl(shell);
-		assertEquals(0, view.getViewer().getTable().getItemCount());
+        };
+        view.createPartControl(shell);
+        assertEquals(0, view.getViewer().getTable().getItemCount());
     }
 
-	public void testSortHeadLines() throws Exception {
-		final HeadLine h1 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 50), "Source", "Title1", null, "link1");
-		final HeadLine h2 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 55), "Source", "Title2", null, "link2");
-		HeadLineViewer view = new HeadLineViewer() {
+    public void testSortHeadLines() throws Exception {
+        final HeadLine h1 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 50), "Source", "Title1", null, "link1");
+        final HeadLine h2 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 55), "Source", "Title2", null, "link2");
+        HeadLineViewer view = new HeadLineViewer() {
+
             @Override
             protected IHeadLine[] getHeadLines() {
-	            return new IHeadLine[] { h1, h2, };
+                return new IHeadLine[] {
+                        h1, h2,
+                };
             }
-		};
-		view.createPartControl(shell);
-		assertEquals(2, view.getViewer().getTable().getItemCount());
-		assertSame(h2, view.getViewer().getTable().getItem(0).getData());
-		assertSame(h1, view.getViewer().getTable().getItem(1).getData());
+        };
+        view.createPartControl(shell);
+        assertEquals(2, view.getViewer().getTable().getItemCount());
+        assertSame(h2, view.getViewer().getTable().getItem(0).getData());
+        assertSame(h1, view.getViewer().getTable().getItem(1).getData());
     }
 
-	public void testDisplayRecentNewsFirst() throws Exception {
-		final HeadLine h1 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 50), "Source", "Title1", null, "link1");
-		h1.setRecent(true);
-		final HeadLine h2 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 55), "Source", "Title2", null, "link2");
-		h2.setRecent(false);
-		HeadLineViewer view = new HeadLineViewer() {
+    public void testDisplayRecentNewsFirst() throws Exception {
+        final HeadLine h1 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 50), "Source", "Title1", null, "link1");
+        h1.setRecent(true);
+        final HeadLine h2 = new HeadLine(getTime(2008, Calendar.MAY, 27, 11, 55), "Source", "Title2", null, "link2");
+        h2.setRecent(false);
+        HeadLineViewer view = new HeadLineViewer() {
+
             @Override
             protected IHeadLine[] getHeadLines() {
-	            return new IHeadLine[] { h1, h2, };
+                return new IHeadLine[] {
+                        h1, h2,
+                };
             }
-		};
-		view.createPartControl(shell);
-		assertEquals(2, view.getViewer().getTable().getItemCount());
-		assertSame(h1, view.getViewer().getTable().getItem(0).getData());
-		assertSame(h2, view.getViewer().getTable().getItem(1).getData());
+        };
+        view.createPartControl(shell);
+        assertEquals(2, view.getViewer().getTable().getItemCount());
+        assertSame(h1, view.getViewer().getTable().getItem(0).getData());
+        assertSame(h2, view.getViewer().getTable().getItem(1).getData());
     }
 
-	private Date getTime(int year, int month, int day, int hour, int minute) {
-	    Calendar date = Calendar.getInstance();
-	    date.set(year, month, day, hour, minute, 0);
-		date.set(Calendar.MILLISECOND, 0);
-		return date.getTime();
-	}
+    private Date getTime(int year, int month, int day, int hour, int minute) {
+        Calendar date = Calendar.getInstance();
+        date.set(year, month, day, hour, minute, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date.getTime();
+    }
 }

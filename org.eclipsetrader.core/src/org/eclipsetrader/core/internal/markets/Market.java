@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,355 +43,382 @@ import org.eclipsetrader.core.markets.IMarketDay;
 @XmlRootElement(name = "market")
 @XmlType(name = "org.eclipsetrader.core.markets.Market")
 public class Market extends PlatformObject implements IMarket {
-	@XmlAttribute(name = "name")
-	private String name;
 
-	@XmlAttribute(name = "timeZone")
-	@XmlJavaTypeAdapter(TimeZoneAdapter.class)
-	private TimeZone timeZone;
+    @XmlAttribute(name = "name")
+    private String name;
 
-	@XmlAttribute(name = "weekDays")
-	@XmlJavaTypeAdapter(WeekdaysAdapter.class)
-	private Set<Integer> weekDays;
+    @XmlAttribute(name = "timeZone")
+    @XmlJavaTypeAdapter(TimeZoneAdapter.class)
+    private TimeZone timeZone;
 
-	@XmlElement(name = "liveFeed")
-	private MarketConnector liveFeedConnector;
+    @XmlAttribute(name = "weekDays")
+    @XmlJavaTypeAdapter(WeekdaysAdapter.class)
+    private Set<Integer> weekDays;
 
-	@XmlElement(name = "backfill")
-	private MarketBackfillConnector backfillConnector;
+    @XmlElement(name = "liveFeed")
+    private MarketConnector liveFeedConnector;
 
-	@XmlElement(name = "intraday-backfill")
-	private MarketBackfillConnector intradayBackfillConnector;
+    @XmlElement(name = "backfill")
+    private MarketBackfillConnector backfillConnector;
 
-	@XmlElementWrapper(name = "schedule")
-	@XmlElementRef
-	private SortedSet<MarketTime> schedule;
+    @XmlElement(name = "intraday-backfill")
+    private MarketBackfillConnector intradayBackfillConnector;
 
-	@XmlElementWrapper(name = "holidays")
-	@XmlElementRef
-	private SortedSet<MarketHoliday> holidays;
+    @XmlElementWrapper(name = "schedule")
+    @XmlElementRef
+    private SortedSet<MarketTime> schedule;
 
-	@XmlElementWrapper(name = "members")
-	@XmlElement(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	private List<ISecurity> members;
+    @XmlElementWrapper(name = "holidays")
+    @XmlElementRef
+    private SortedSet<MarketHoliday> holidays;
 
-	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    @XmlElementWrapper(name = "members")
+    @XmlElement(name = "security")
+    @XmlJavaTypeAdapter(SecurityAdapter.class)
+    private List<ISecurity> members;
 
-	protected Market() {
-	}
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-	public Market(String name, Collection<MarketTime> schedule) {
-		this(name, schedule, null);
-	}
+    protected Market() {
+    }
 
-	public Market(String name, Collection<MarketTime> schedule, TimeZone timeZone) {
-		this.name = name;
-		this.schedule = schedule != null ? new TreeSet<MarketTime>(schedule) : null;
-		this.timeZone = timeZone;
-	}
+    public Market(String name, Collection<MarketTime> schedule) {
+        this(name, schedule, null);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#getName()
-	 */
-	@XmlTransient
-	public String getName() {
-		return name;
-	}
+    public Market(String name, Collection<MarketTime> schedule, TimeZone timeZone) {
+        this.name = name;
+        this.schedule = schedule != null ? new TreeSet<MarketTime>(schedule) : null;
+        this.timeZone = timeZone;
+    }
 
-	public void setName(String name) {
-		Object oldValue = this.name;
-		this.name = name;
-		propertyChangeSupport.firePropertyChange(PROP_NAME, oldValue, this.name);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getName()
+     */
+    @Override
+    @XmlTransient
+    public String getName() {
+        return name;
+    }
 
-	@XmlTransient
-	public MarketTime[] getSchedule() {
-		return schedule.toArray(new MarketTime[schedule.size()]);
-	}
+    public void setName(String name) {
+        Object oldValue = this.name;
+        this.name = name;
+        propertyChangeSupport.firePropertyChange(PROP_NAME, oldValue, this.name);
+    }
 
-	public void setSchedule(MarketTime[] schedule) {
-		Object oldValue = this.schedule.toArray(new MarketTime[this.schedule.size()]);
-		this.schedule = schedule != null ? new TreeSet<MarketTime>(Arrays.asList(schedule)) : null;
-		propertyChangeSupport.firePropertyChange(PROP_SCHEDULE, oldValue, this.schedule.toArray(new MarketTime[this.schedule.size()]));
-	}
+    @XmlTransient
+    public MarketTime[] getSchedule() {
+        return schedule.toArray(new MarketTime[schedule.size()]);
+    }
 
-	@XmlTransient
-	public Integer[] getWeekDays() {
-		if (weekDays == null)
-			return new Integer[0];
-		return weekDays.toArray(new Integer[weekDays.size()]);
-	}
+    public void setSchedule(MarketTime[] schedule) {
+        Object oldValue = this.schedule.toArray(new MarketTime[this.schedule.size()]);
+        this.schedule = schedule != null ? new TreeSet<MarketTime>(Arrays.asList(schedule)) : null;
+        propertyChangeSupport.firePropertyChange(PROP_SCHEDULE, oldValue, this.schedule.toArray(new MarketTime[this.schedule.size()]));
+    }
 
-	public void setWeekDays(Integer[] weekDays) {
-		Object oldValue = this.weekDays;
-		this.weekDays = new HashSet<Integer>(Arrays.asList(weekDays));
-		propertyChangeSupport.firePropertyChange(PROP_WEEKDAYS, oldValue, this.weekDays);
-	}
+    @XmlTransient
+    public Integer[] getWeekDays() {
+        if (weekDays == null) {
+            return new Integer[0];
+        }
+        return weekDays.toArray(new Integer[weekDays.size()]);
+    }
 
-	@XmlTransient
-	public MarketHoliday[] getHolidays() {
-		if (holidays == null)
-			return new MarketHoliday[0];
-		return holidays.toArray(new MarketHoliday[holidays.size()]);
-	}
+    public void setWeekDays(Integer[] weekDays) {
+        Object oldValue = this.weekDays;
+        this.weekDays = new HashSet<Integer>(Arrays.asList(weekDays));
+        propertyChangeSupport.firePropertyChange(PROP_WEEKDAYS, oldValue, this.weekDays);
+    }
 
-	public void setHolidays(MarketHoliday[] holidays) {
-		Object oldValue = this.holidays;
-		this.holidays = new TreeSet<MarketHoliday>(Arrays.asList(holidays));
-		propertyChangeSupport.firePropertyChange(PROP_HOLIDAYS, oldValue, this.holidays);
-	}
+    @XmlTransient
+    public MarketHoliday[] getHolidays() {
+        if (holidays == null) {
+            return new MarketHoliday[0];
+        }
+        return holidays.toArray(new MarketHoliday[holidays.size()]);
+    }
 
-	@XmlTransient
-	public TimeZone getTimeZone() {
-		return timeZone;
-	}
+    public void setHolidays(MarketHoliday[] holidays) {
+        Object oldValue = this.holidays;
+        this.holidays = new TreeSet<MarketHoliday>(Arrays.asList(holidays));
+        propertyChangeSupport.firePropertyChange(PROP_HOLIDAYS, oldValue, this.holidays);
+    }
 
-	public void setTimeZone(TimeZone timeZone) {
-		Object oldValue = this.timeZone;
-		this.timeZone = timeZone;
-		propertyChangeSupport.firePropertyChange(PROP_TIMEZONE, oldValue, this.timeZone);
-	}
+    @XmlTransient
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.model.markets.IMarket#isOpen()
-	 */
-	public boolean isOpen() {
-		return isOpen(Calendar.getInstance().getTime());
-	}
+    public void setTimeZone(TimeZone timeZone) {
+        Object oldValue = this.timeZone;
+        this.timeZone = timeZone;
+        propertyChangeSupport.firePropertyChange(PROP_TIMEZONE, oldValue, this.timeZone);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.model.markets.IMarket#isOpen(java.util.Date)
-	 */
-	public boolean isOpen(Date time) {
-		MarketDay day = getMarketDayFor(time);
-		return day.isOpen(time);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.model.markets.IMarket#isOpen()
+     */
+    @Override
+    public boolean isOpen() {
+        return isOpen(Calendar.getInstance().getTime());
+    }
 
-	protected Date getCombinedDateTime(Date date, Date time) {
-		Calendar normalized = Calendar.getInstance(timeZone != null ? timeZone : TimeZone.getDefault());
-		Calendar refTime = Calendar.getInstance();
-		refTime.setTime(date);
-		normalized.set(Calendar.YEAR, refTime.get(Calendar.YEAR));
-		normalized.set(Calendar.MONTH, refTime.get(Calendar.MONTH));
-		normalized.set(Calendar.DAY_OF_MONTH, refTime.get(Calendar.DAY_OF_MONTH));
-		refTime = Calendar.getInstance();
-		refTime.setTime(time);
-		normalized.set(Calendar.HOUR_OF_DAY, refTime.get(Calendar.HOUR_OF_DAY));
-		normalized.set(Calendar.MINUTE, refTime.get(Calendar.MINUTE));
-		normalized.set(Calendar.SECOND, 0);
-		normalized.set(Calendar.MILLISECOND, 0);
-		return normalized.getTime();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.model.markets.IMarket#isOpen(java.util.Date)
+     */
+    @Override
+    public boolean isOpen(Date time) {
+        MarketDay day = getMarketDayFor(time);
+        return day.isOpen(time);
+    }
 
-	protected String getHolidayDescriptionFor(Date time) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(time);
-		calendar.set(Calendar.MILLISECOND, 0);
+    protected Date getCombinedDateTime(Date date, Date time) {
+        Calendar normalized = Calendar.getInstance(timeZone != null ? timeZone : TimeZone.getDefault());
+        Calendar refTime = Calendar.getInstance();
+        refTime.setTime(date);
+        normalized.set(Calendar.YEAR, refTime.get(Calendar.YEAR));
+        normalized.set(Calendar.MONTH, refTime.get(Calendar.MONTH));
+        normalized.set(Calendar.DAY_OF_MONTH, refTime.get(Calendar.DAY_OF_MONTH));
+        refTime = Calendar.getInstance();
+        refTime.setTime(time);
+        normalized.set(Calendar.HOUR_OF_DAY, refTime.get(Calendar.HOUR_OF_DAY));
+        normalized.set(Calendar.MINUTE, refTime.get(Calendar.MINUTE));
+        normalized.set(Calendar.SECOND, 0);
+        normalized.set(Calendar.MILLISECOND, 0);
+        return normalized.getTime();
+    }
 
-		if (holidays != null) {
-			Calendar holiday = Calendar.getInstance();
-			for (MarketHoliday day : holidays) {
-				holiday.setTime(day.getDate());
-				if (calendar.get(Calendar.YEAR) == holiday.get(Calendar.YEAR) && calendar.get(Calendar.MONTH) == holiday.get(Calendar.MONTH) && calendar.get(Calendar.DAY_OF_MONTH) == holiday.get(Calendar.DAY_OF_MONTH))
-					return day.getDescription();
-			}
-		}
+    protected String getHolidayDescriptionFor(Date time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-		return null;
-	}
+        if (holidays != null) {
+            Calendar holiday = Calendar.getInstance();
+            for (MarketHoliday day : holidays) {
+                holiday.setTime(day.getDate());
+                if (calendar.get(Calendar.YEAR) == holiday.get(Calendar.YEAR) && calendar.get(Calendar.MONTH) == holiday.get(Calendar.MONTH) && calendar.get(Calendar.DAY_OF_MONTH) == holiday.get(Calendar.DAY_OF_MONTH)) {
+                    return day.getDescription();
+                }
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#getToday()
-	 */
-	public IMarketDay getToday() {
-		return getMarketDayFor(Calendar.getInstance().getTime());
-	}
+        return null;
+    }
 
-	protected MarketDay getMarketDayFor(Date time) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(time);
-		calendar.set(Calendar.MILLISECOND, 0);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getToday()
+     */
+    @Override
+    public IMarketDay getToday() {
+        return getMarketDayFor(Calendar.getInstance().getTime());
+    }
 
-		if (holidays != null) {
-			Calendar holiday = Calendar.getInstance();
-			for (MarketHoliday day : holidays) {
-				holiday.setTime(day.getDate());
-				if (calendar.get(Calendar.YEAR) == holiday.get(Calendar.YEAR) && calendar.get(Calendar.MONTH) == holiday.get(Calendar.MONTH) && calendar.get(Calendar.DAY_OF_MONTH) == holiday.get(Calendar.DAY_OF_MONTH)) {
-					if (day.getOpenTime() == null || day.getCloseTime() == null)
-						return new MarketDay(null, null, day.getDescription());
-					return new MarketDay(getCombinedDateTime(day.getOpenTime(), day.getOpenTime()), getCombinedDateTime(day.getCloseTime(), day.getCloseTime()), day.getDescription());
-				}
-			}
-		}
+    protected MarketDay getMarketDayFor(Date time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-		if (weekDays != null) {
-			if (!weekDays.contains(calendar.get(Calendar.DAY_OF_WEEK)))
-				return new MarketDay(null, null, null);
-		}
+        if (holidays != null) {
+            Calendar holiday = Calendar.getInstance();
+            for (MarketHoliday day : holidays) {
+                holiday.setTime(day.getDate());
+                if (calendar.get(Calendar.YEAR) == holiday.get(Calendar.YEAR) && calendar.get(Calendar.MONTH) == holiday.get(Calendar.MONTH) && calendar.get(Calendar.DAY_OF_MONTH) == holiday.get(Calendar.DAY_OF_MONTH)) {
+                    if (day.getOpenTime() == null || day.getCloseTime() == null) {
+                        return new MarketDay(null, null, day.getDescription());
+                    }
+                    return new MarketDay(getCombinedDateTime(day.getOpenTime(), day.getOpenTime()), getCombinedDateTime(day.getCloseTime(), day.getCloseTime()), day.getDescription());
+                }
+            }
+        }
 
-		if (schedule != null) {
-			for (MarketTime marketTime : schedule) {
-				Date openTime = getCombinedDateTime(time, marketTime.getOpenTime());
-				Date closeTime = getCombinedDateTime(time, marketTime.getCloseTime());
-				if (!marketTime.isExcluded(time) && (time.equals(openTime) || time.after(openTime)) && time.before(closeTime))
-					return new MarketDay(openTime, closeTime, marketTime.getDescription());
-			}
-			for (MarketTime marketTime : schedule) {
-				Date openTime = getCombinedDateTime(time, marketTime.getOpenTime());
-				Date closeTime = getCombinedDateTime(time, marketTime.getCloseTime());
-				if (openTime.equals(time) || openTime.after(time))
-					return new MarketDay(openTime, closeTime, null);
-			}
-		}
+        if (weekDays != null) {
+            if (!weekDays.contains(calendar.get(Calendar.DAY_OF_WEEK))) {
+                return new MarketDay(null, null, null);
+            }
+        }
 
-		return new MarketDay(null, null, null);
-	}
+        if (schedule != null) {
+            for (MarketTime marketTime : schedule) {
+                Date openTime = getCombinedDateTime(time, marketTime.getOpenTime());
+                Date closeTime = getCombinedDateTime(time, marketTime.getCloseTime());
+                if (!marketTime.isExcluded(time) && (time.equals(openTime) || time.after(openTime)) && time.before(closeTime)) {
+                    return new MarketDay(openTime, closeTime, marketTime.getDescription());
+                }
+            }
+            for (MarketTime marketTime : schedule) {
+                Date openTime = getCombinedDateTime(time, marketTime.getOpenTime());
+                Date closeTime = getCombinedDateTime(time, marketTime.getCloseTime());
+                if (openTime.equals(time) || openTime.after(time)) {
+                    return new MarketDay(openTime, closeTime, null);
+                }
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#getNextDay()
-	 */
-	public IMarketDay getNextDay() {
-		return getNextMarketDayFor(Calendar.getInstance().getTime());
-	}
+        return new MarketDay(null, null, null);
+    }
 
-	protected MarketDay getNextMarketDayFor(Date time) {
-		Calendar calendar = Calendar.getInstance(timeZone != null ? timeZone : TimeZone.getDefault());
-		calendar.setTime(time);
-		calendar.set(Calendar.MILLISECOND, 0);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getNextDay()
+     */
+    @Override
+    public IMarketDay getNextDay() {
+        return getNextMarketDayFor(Calendar.getInstance().getTime());
+    }
 
-		MarketDay day = getMarketDayFor(time);
-		if (day.getOpenTime() != null && time.before(day.getOpenTime()))
-			return day;
+    protected MarketDay getNextMarketDayFor(Date time) {
+        Calendar calendar = Calendar.getInstance(timeZone != null ? timeZone : TimeZone.getDefault());
+        calendar.setTime(time);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-		if (schedule != null && schedule.size() != 0) {
-			Calendar refTime = Calendar.getInstance();
-			refTime.setTime(schedule.first().getOpenTime());
-			calendar.set(Calendar.HOUR_OF_DAY, refTime.get(Calendar.HOUR_OF_DAY));
-			calendar.set(Calendar.MINUTE, refTime.get(Calendar.MINUTE));
-			calendar.set(Calendar.SECOND, 0);
-			calendar.set(Calendar.MILLISECOND, 0);
+        MarketDay day = getMarketDayFor(time);
+        if (day.getOpenTime() != null && time.before(day.getOpenTime())) {
+            return day;
+        }
 
-			for (int i = 0; i < 7; i++) {
-				calendar.add(Calendar.DATE, 1);
-				day = getMarketDayFor(calendar.getTime());
-				if (day.isOpen(calendar.getTime()))
-					return day;
-			}
-		}
+        if (schedule != null && schedule.size() != 0) {
+            Calendar refTime = Calendar.getInstance();
+            refTime.setTime(schedule.first().getOpenTime());
+            calendar.set(Calendar.HOUR_OF_DAY, refTime.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, refTime.get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
 
-		return null;
-	}
+            for (int i = 0; i < 7; i++) {
+                calendar.add(Calendar.DATE, 1);
+                day = getMarketDayFor(calendar.getTime());
+                if (day.isOpen(calendar.getTime())) {
+                    return day;
+                }
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#addMember(org.eclipsetrader.core.instruments.ISecurity[])
-	 */
-	public void addMembers(ISecurity[] securities) {
-		if (members == null)
-			members = new ArrayList<ISecurity>();
+        return null;
+    }
 
-		Object oldValue = getMembers();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#addMember(org.eclipsetrader.core.instruments.ISecurity[])
+     */
+    @Override
+    public void addMembers(ISecurity[] securities) {
+        if (members == null) {
+            members = new ArrayList<ISecurity>();
+        }
 
-		for (ISecurity security : securities) {
-			if (!members.contains(security))
-				members.add(security);
-		}
+        Object oldValue = getMembers();
 
-		propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
-	}
+        for (ISecurity security : securities) {
+            if (!members.contains(security)) {
+                members.add(security);
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#removeMember(org.eclipsetrader.core.instruments.ISecurity[])
-	 */
-	public void removeMembers(ISecurity[] securities) {
-		if (members != null) {
-			Object oldValue = getMembers();
-			members.removeAll(Arrays.asList(securities));
-			propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
-		}
-	}
+        propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#getMembers()
-	 */
-	@XmlTransient
-	public ISecurity[] getMembers() {
-		if (members == null)
-			return new ISecurity[0];
-		return members.toArray(new ISecurity[members.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#removeMember(org.eclipsetrader.core.instruments.ISecurity[])
+     */
+    @Override
+    public void removeMembers(ISecurity[] securities) {
+        if (members != null) {
+            Object oldValue = getMembers();
+            members.removeAll(Arrays.asList(securities));
+            propertyChangeSupport.firePropertyChange(PROP_MEMBERS, oldValue, getMembers());
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#hasMember(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public boolean hasMember(ISecurity security) {
-		return members != null && members.contains(security);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getMembers()
+     */
+    @Override
+    @XmlTransient
+    public ISecurity[] getMembers() {
+        if (members == null) {
+            return new ISecurity[0];
+        }
+        return members.toArray(new ISecurity[members.size()]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#getLiveFeedConnector()
-	 */
-	@XmlTransient
-	public IFeedConnector getLiveFeedConnector() {
-		return liveFeedConnector != null ? liveFeedConnector.getConnector() : null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#hasMember(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public boolean hasMember(ISecurity security) {
+        return members != null && members.contains(security);
+    }
 
-	public void setLiveFeedConnector(IFeedConnector liveFeedConnector) {
-		Object oldValue = this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null;
-		this.liveFeedConnector = liveFeedConnector != null ? new MarketConnector(liveFeedConnector) : null;
-		propertyChangeSupport.firePropertyChange(PROP_LIVE_FEED_CONNECTOR, oldValue, this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getLiveFeedConnector()
+     */
+    @Override
+    @XmlTransient
+    public IFeedConnector getLiveFeedConnector() {
+        return liveFeedConnector != null ? liveFeedConnector.getConnector() : null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
-	 */
-	@XmlTransient
-	public IBackfillConnector getBackfillConnector() {
-		return backfillConnector != null ? backfillConnector.getConnector() : null;
-	}
+    public void setLiveFeedConnector(IFeedConnector liveFeedConnector) {
+        Object oldValue = this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null;
+        this.liveFeedConnector = liveFeedConnector != null ? new MarketConnector(liveFeedConnector) : null;
+        propertyChangeSupport.firePropertyChange(PROP_LIVE_FEED_CONNECTOR, oldValue, this.liveFeedConnector != null ? this.liveFeedConnector.getConnector() : null);
+    }
 
-	public void setBackfillConnector(IBackfillConnector backfillConnector) {
-		this.backfillConnector = backfillConnector != null ? new MarketBackfillConnector(backfillConnector) : null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
+     */
+    @Override
+    @XmlTransient
+    public IBackfillConnector getBackfillConnector() {
+        return backfillConnector != null ? backfillConnector.getConnector() : null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
-	 */
-	@XmlTransient
-	public IBackfillConnector getIntradayBackfillConnector() {
-		return intradayBackfillConnector != null ? intradayBackfillConnector.getConnector() : null;
-	}
+    public void setBackfillConnector(IBackfillConnector backfillConnector) {
+        this.backfillConnector = backfillConnector != null ? new MarketBackfillConnector(backfillConnector) : null;
+    }
 
-	public void setIntradayBackfillConnector(IBackfillConnector intradayBackfillConnector) {
-		this.intradayBackfillConnector = intradayBackfillConnector != null ? new MarketBackfillConnector(intradayBackfillConnector) : null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
+     */
+    @Override
+    @XmlTransient
+    public IBackfillConnector getIntradayBackfillConnector() {
+        return intradayBackfillConnector != null ? intradayBackfillConnector.getConnector() : null;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return 7 * name.hashCode();
-	}
+    public void setIntradayBackfillConnector(IBackfillConnector intradayBackfillConnector) {
+        this.intradayBackfillConnector = intradayBackfillConnector != null ? new MarketBackfillConnector(intradayBackfillConnector) : null;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return name;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return 7 * name.hashCode();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Class adapter) {
-		if (adapter.isAssignableFrom(PropertyChangeSupport.class))
-			return propertyChangeSupport;
-		if (adapter.isAssignableFrom(getClass()))
-			return this;
-		return super.getAdapter(adapter);
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(PropertyChangeSupport.class)) {
+            return propertyChangeSupport;
+        }
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+        return super.getAdapter(adapter);
+    }
 }

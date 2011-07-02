@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,43 +21,43 @@ import org.osgi.framework.BundleContext;
 
 public class TestUIActivator extends UIActivator {
 
-	public TestUIActivator() throws Exception {
-		Field[] fields = UIActivator.class.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			if (fields[i].getName().equals("plugin")) {
-				fields[i].setAccessible(true);
-				fields[i].set(this, this);
-			}
-		}
-	}
+    public TestUIActivator() throws Exception {
+        Field[] fields = UIActivator.class.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getName().equals("plugin")) {
+                fields[i].setAccessible(true);
+                fields[i].set(this, this);
+            }
+        }
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.UIActivator#start(org.osgi.framework.BundleContext)
      */
     @Override
     public void start(BundleContext context) throws Exception {
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.UIActivator#stop(org.osgi.framework.BundleContext)
      */
     @Override
     public void stop(BundleContext context) throws Exception {
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.UIActivator#getMarketService()
      */
     @Override
     public IMarketService getMarketService() {
-	    return new MarketService();
+        return new MarketService();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.UIActivator#getRepositoryService()
      */
     @Override
     public IRepositoryService getRepositoryService() {
-	    return new RepositoryService();
+        return new RepositoryService();
     }
 }

@@ -22,162 +22,176 @@ import org.eclipsetrader.core.views.IViewItemVisitor;
 
 @SuppressWarnings("restriction")
 public class NavigatorViewItem implements IViewItem {
-	private Object reference;
-	private NavigatorViewItem parent;
-	private List<NavigatorViewItem> childs = new ArrayList<NavigatorViewItem>();
 
-	public NavigatorViewItem() {
-	}
+    private Object reference;
+    private NavigatorViewItem parent;
+    private List<NavigatorViewItem> childs = new ArrayList<NavigatorViewItem>();
 
-	public NavigatorViewItem(NavigatorViewItem parent, Object reference) {
-		this.parent = parent;
-		this.reference = reference;
-	}
+    public NavigatorViewItem() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getItemCount()
-	 */
-	public int getItemCount() {
-		return childs != null ? childs.size() : 0;
-	}
+    public NavigatorViewItem(NavigatorViewItem parent, Object reference) {
+        this.parent = parent;
+        this.reference = reference;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getItems()
-	 */
-	public IViewItem[] getItems() {
-		return childs.toArray(new IViewItem[childs.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getItemCount()
+     */
+    @Override
+    public int getItemCount() {
+        return childs != null ? childs.size() : 0;
+    }
 
-	protected void setItems(NavigatorViewItem[] items) {
-		childs.clear();
-		for (NavigatorViewItem viewItem : items) {
-			childs.add(viewItem);
-			viewItem.parent = this;
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getItems()
+     */
+    @Override
+    public IViewItem[] getItems() {
+        return childs.toArray(new IViewItem[childs.size()]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getParent()
-	 */
-	public IViewItem getParent() {
-		return parent;
-	}
+    protected void setItems(NavigatorViewItem[] items) {
+        childs.clear();
+        for (NavigatorViewItem viewItem : items) {
+            childs.add(viewItem);
+            viewItem.parent = this;
+        }
+    }
 
-	/**
-	 * Checks if the given reference object is a child of the receiver.
-	 *
-	 * @param reference the reference object.
-	 * @return <code>true</code> if it is a child.
-	 */
-	public boolean hasChild(Object reference) {
-		for (NavigatorViewItem viewItem : childs) {
-			if (viewItem.getReference().equals(reference))
-				return true;
-		}
-		return false;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getParent()
+     */
+    @Override
+    public IViewItem getParent() {
+        return parent;
+    }
 
-	/**
-	 * Returns the <code>WatchListViewItem</code> that holds the given reference object.
-	 *
-	 * @param reference the reference object.
-	 * @return the <code>WatchListViewItem</code> that holds the object, or <code>null</code>.
-	 */
-	public NavigatorViewItem getChild(Object reference) {
-		for (NavigatorViewItem viewItem : childs) {
-			if (viewItem.getReference().equals(reference))
-				return viewItem;
-		}
-		return null;
-	}
+    /**
+     * Checks if the given reference object is a child of the receiver.
+     *
+     * @param reference the reference object.
+     * @return <code>true</code> if it is a child.
+     */
+    public boolean hasChild(Object reference) {
+        for (NavigatorViewItem viewItem : childs) {
+            if (viewItem.getReference().equals(reference)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Creates a <code>WatchListViewItem</code> that is a child of the receiver.
-	 *
-	 * @param reference the object to associate to the new item.
-	 * @return the new <code>WatchListViewItem</code>.
-	 */
-	public NavigatorViewItem createChild(Object reference) {
-		NavigatorViewItem viewItem = new NavigatorViewItem(this, reference);
-		childs.add(viewItem);
-		return viewItem;
-	}
+    /**
+     * Returns the <code>WatchListViewItem</code> that holds the given reference object.
+     *
+     * @param reference the reference object.
+     * @return the <code>WatchListViewItem</code> that holds the object, or <code>null</code>.
+     */
+    public NavigatorViewItem getChild(Object reference) {
+        for (NavigatorViewItem viewItem : childs) {
+            if (viewItem.getReference().equals(reference)) {
+                return viewItem;
+            }
+        }
+        return null;
+    }
 
-	protected void addChild(NavigatorViewItem viewItem) {
-		childs.add(viewItem);
-		viewItem.parent = this;
-	}
+    /**
+     * Creates a <code>WatchListViewItem</code> that is a child of the receiver.
+     *
+     * @param reference the object to associate to the new item.
+     * @return the new <code>WatchListViewItem</code>.
+     */
+    public NavigatorViewItem createChild(Object reference) {
+        NavigatorViewItem viewItem = new NavigatorViewItem(this, reference);
+        childs.add(viewItem);
+        return viewItem;
+    }
 
-	public void removeChild(Object reference) {
-		for (NavigatorViewItem viewItem : childs) {
-			if (viewItem.getReference().equals(reference)) {
-				childs.remove(viewItem);
-				break;
-			}
-		}
-	}
+    protected void addChild(NavigatorViewItem viewItem) {
+        childs.add(viewItem);
+        viewItem.parent = this;
+    }
 
-	public Iterator<NavigatorViewItem> iterator() {
-		return childs.iterator();
-	}
+    public void removeChild(Object reference) {
+        for (NavigatorViewItem viewItem : childs) {
+            if (viewItem.getReference().equals(reference)) {
+                childs.remove(viewItem);
+                break;
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getValues()
-	 */
-	public IAdaptable[] getValues() {
-		return new IAdaptable[0];
-	}
+    public Iterator<NavigatorViewItem> iterator() {
+        return childs.iterator();
+    }
 
-	public Object getReference() {
-		return reference;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getValues()
+     */
+    @Override
+    public IAdaptable[] getValues() {
+        return new IAdaptable[0];
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Class adapter) {
-		if (reference != null && adapter.isAssignableFrom(reference.getClass()))
-			return reference;
+    public Object getReference() {
+        return reference;
+    }
 
-		if (reference instanceof IAdaptable) {
-			Object obj = ((IAdaptable) reference).getAdapter(adapter);
-			if (obj != null)
-				return obj;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+        if (reference != null && adapter.isAssignableFrom(reference.getClass())) {
+            return reference;
+        }
 
-		if (adapter.isAssignableFrom(getClass()))
-			return this;
+        if (reference instanceof IAdaptable) {
+            Object obj = ((IAdaptable) reference).getAdapter(adapter);
+            if (obj != null) {
+                return obj;
+            }
+        }
 
-		if (reference instanceof IAdaptable)
-			return AdapterManager.getDefault().getAdapter(reference, adapter);
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
 
-		return null;
-	}
+        if (reference instanceof IAdaptable) {
+            return AdapterManager.getDefault().getAdapter(reference, adapter);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#accept(org.eclipsetrader.core.views.IViewItemVisitor)
-	 */
-	public void accept(IViewItemVisitor visitor) {
-		if (visitor.visit(this)) {
-			for (IViewItem viewItem : getItems())
-				viewItem.accept(visitor);
-		}
-	}
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return 7 * (reference != null ? reference.hashCode() : 0) + 11 * (parent != null ? parent.hashCode() : 0);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#accept(org.eclipsetrader.core.views.IViewItemVisitor)
+     */
+    @Override
+    public void accept(IViewItemVisitor visitor) {
+        if (visitor.visit(this)) {
+            for (IViewItem viewItem : getItems()) {
+                viewItem.accept(visitor);
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return reference != null ? reference.toString() : super.toString();
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return 7 * (reference != null ? reference.hashCode() : 0) + 11 * (parent != null ? parent.hashCode() : 0);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return reference != null ? reference.toString() : super.toString();
+    }
 }

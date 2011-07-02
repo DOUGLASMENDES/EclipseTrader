@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,26 +19,29 @@ import org.eclipsetrader.core.trading.IPosition;
 
 public class PositionElementAdapterFactory implements IAdapterFactory {
 
-	public PositionElementAdapterFactory() {
-	}
+    public PositionElementAdapterFactory() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adaptableObject instanceof PositionElement)
-			return ((PositionElement) adaptableObject).getAdapter(adapterType);
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Object adaptableObject, Class adapterType) {
+        if (adaptableObject instanceof PositionElement) {
+            return ((PositionElement) adaptableObject).getAdapter(adapterType);
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
-	 */
-	@SuppressWarnings("unchecked")
-	public Class[] getAdapterList() {
-		return new Class[] {
-		    Security.class, ISecurity.class, IPosition.class, ITrade.class
-		};
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class[] getAdapterList() {
+        return new Class[] {
+                Security.class, ISecurity.class, IPosition.class, ITrade.class
+        };
+    }
 }

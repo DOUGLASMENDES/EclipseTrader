@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,73 +35,75 @@ import org.eclipsetrader.internal.brokers.paper.schemes.SimpleFixedScheme;
 import org.eclipsetrader.internal.brokers.paper.schemes.TwoLevelsPerShareScheme;
 
 public class SettingsPage extends WizardPage {
-	ComboViewer currency;
-	ComboViewer expenses;
-	Spinner balance;
 
-	private IExpenseScheme[] availableSchemes = new IExpenseScheme[] {
-	    new NoExpensesScheme(),
-	    new SimpleFixedScheme(),
-	    new LimitedProportional1Scheme(),
-	    new LimitedProportional2Scheme(),
-	    new TwoLevelsPerShareScheme(),
-	};
+    ComboViewer currency;
+    ComboViewer expenses;
+    Spinner balance;
 
-	public SettingsPage() {
-		super("settings");
-		setTitle("Settings");
-	}
+    private IExpenseScheme[] availableSchemes = new IExpenseScheme[] {
+            new NoExpensesScheme(),
+            new SimpleFixedScheme(),
+            new LimitedProportional1Scheme(),
+            new LimitedProportional2Scheme(),
+            new TwoLevelsPerShareScheme(),
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
+    public SettingsPage() {
+        super("settings");
+        setTitle("Settings");
+    }
 
-		Label label = new Label(composite, SWT.NONE);
-		label.setText("Currency");
-		currency = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		currency.setLabelProvider(new LabelProvider());
-		currency.setContentProvider(new ArrayContentProvider());
-		currency.setSorter(new ViewerSorter());
-		Locale[] l = Locale.getAvailableLocales();
-		Set<Currency> c = new HashSet<Currency>();
-		for (int i = 0; i < l.length; i++) {
-			try {
-				c.add(Currency.getInstance(l[i]));
-			} catch (Exception e) {
-				// Ignore, some locales may throw an exception
-			}
-		}
-		currency.setInput(c.toArray());
-		currency.setSelection(new StructuredSelection(Currency.getInstance(Locale.getDefault())));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayout(new GridLayout(2, false));
 
-		label = new Label(composite, SWT.NONE);
-		label.setText("Initial Balance");
-		balance = new Spinner(composite, SWT.BORDER);
-		balance.setValues(0, 0, 999999999, 2, 10000, 100000);
+        Label label = new Label(composite, SWT.NONE);
+        label.setText("Currency");
+        currency = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+        currency.setLabelProvider(new LabelProvider());
+        currency.setContentProvider(new ArrayContentProvider());
+        currency.setSorter(new ViewerSorter());
+        Locale[] l = Locale.getAvailableLocales();
+        Set<Currency> c = new HashSet<Currency>();
+        for (int i = 0; i < l.length; i++) {
+            try {
+                c.add(Currency.getInstance(l[i]));
+            } catch (Exception e) {
+                // Ignore, some locales may throw an exception
+            }
+        }
+        currency.setInput(c.toArray());
+        currency.setSelection(new StructuredSelection(Currency.getInstance(Locale.getDefault())));
 
-		label = new Label(composite, SWT.NONE);
-		label.setText("Expenses Scheme");
-		expenses = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		expenses.setLabelProvider(new LabelProvider());
-		expenses.setContentProvider(new ArrayContentProvider());
-		expenses.setInput(availableSchemes);
-		expenses.setSelection(new StructuredSelection(availableSchemes[0]));
+        label = new Label(composite, SWT.NONE);
+        label.setText("Initial Balance");
+        balance = new Spinner(composite, SWT.BORDER);
+        balance.setValues(0, 0, 999999999, 2, 10000, 100000);
 
-		setControl(composite);
-	}
+        label = new Label(composite, SWT.NONE);
+        label.setText("Expenses Scheme");
+        expenses = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+        expenses.setLabelProvider(new LabelProvider());
+        expenses.setContentProvider(new ArrayContentProvider());
+        expenses.setInput(availableSchemes);
+        expenses.setSelection(new StructuredSelection(availableSchemes[0]));
 
-	public Currency getCurrency() {
-		return (Currency) ((IStructuredSelection) currency.getSelection()).getFirstElement();
-	}
+        setControl(composite);
+    }
 
-	public IExpenseScheme getExpenseScheme() {
-		return (IExpenseScheme) ((IStructuredSelection) expenses.getSelection()).getFirstElement();
-	}
+    public Currency getCurrency() {
+        return (Currency) ((IStructuredSelection) currency.getSelection()).getFirstElement();
+    }
 
-	public Double getBalance() {
-		return balance.getSelection() / Math.pow(10, balance.getDigits());
-	}
+    public IExpenseScheme getExpenseScheme() {
+        return (IExpenseScheme) ((IStructuredSelection) expenses.getSelection()).getFirstElement();
+    }
+
+    public Double getBalance() {
+        return balance.getSelection() / Math.pow(10, balance.getDigits());
+    }
 }

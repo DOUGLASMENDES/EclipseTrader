@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,7 @@ import javax.persistence.Version;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
@@ -66,162 +67,175 @@ import org.osgi.framework.ServiceReference;
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING, length = 16)
 @DiscriminatorValue("history")
 public class HistoryStore implements IStore {
+
     @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	String id;
+    String id;
 
-	@Version
-	@Column(name = "version")
-	@SuppressWarnings("unused")
-	private Integer version;
+    @Version
+    @Column(name = "version")
+    @SuppressWarnings("unused")
+    private Integer version;
 
-	@Column(name = "instrument")
-	@Target(SecurityType.class)
-	ISecurity security;
+    @Column(name = "instrument")
+    @Target(SecurityType.class)
+    ISecurity security;
 
-	@OneToMany(mappedBy = "history", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	List<HistoryData> data = new ArrayList<HistoryData>();
+    @OneToMany(mappedBy = "history", cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    List<HistoryData> data = new ArrayList<HistoryData>();
 
-	@OneToMany(mappedBy = "history", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private List<SplitData> splits = new ArrayList<SplitData>();
+    @OneToMany(mappedBy = "history", cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    private List<SplitData> splits = new ArrayList<SplitData>();
 
-	@Transient
-	HibernateRepository repository;
+    @Transient
+    HibernateRepository repository;
 
-	public HistoryStore() {
-	}
-
-	public HistoryStore(ISecurity security, HibernateRepository repository) {
-		this.repository = repository;
-		this.security = security;
-	}
-
-	public void setRepository(HibernateRepository repository) {
-    	this.repository = repository;
+    public HistoryStore() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public IStoreProperties fetchProperties(IProgressMonitor monitor) {
-		StoreProperties properties = new StoreProperties();
+    public HistoryStore(ISecurity security, HibernateRepository repository) {
+        this.repository = repository;
+        this.security = security;
+    }
 
-		properties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+    public void setRepository(HibernateRepository repository) {
+        this.repository = repository;
+    }
 
-		properties.setProperty(IPropertyConstants.SECURITY, security);
-		properties.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.days(1));
-		properties.setProperty(IPropertyConstants.BARS, data.toArray(new IOHLC[data.size()]));
-		properties.setProperty(IPropertyConstants.SPLITS, splits.toArray(new ISplit[splits.size()]));
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
+    public IStoreProperties fetchProperties(IProgressMonitor monitor) {
+        StoreProperties properties = new StoreProperties();
 
-		return properties;
-	}
+        properties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#putProperties(org.eclipsetrader.core.repositories.IStoreProperties, org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
-    	Session session = repository.getSession();
+        properties.setProperty(IPropertyConstants.SECURITY, security);
+        properties.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.days(1));
+        properties.setProperty(IPropertyConstants.BARS, data.toArray(new IOHLC[data.size()]));
+        properties.setProperty(IPropertyConstants.SPLITS, splits.toArray(new ISplit[splits.size()]));
 
-		this.security = (ISecurity) properties.getProperty(IPropertyConstants.SECURITY);
+        return properties;
+    }
 
-		List<HistoryData> newData = new ArrayList<HistoryData>(2048);
-		IOHLC[] bars = (IOHLC[]) properties.getProperty(IPropertyConstants.BARS);
-		if (bars != null) {
-			TimeSpan timeSpan = TimeSpan.days(1);
-			for (int i = 0; i < bars.length; i++)
-				newData.add(new HistoryData(this, bars[i], timeSpan));
-		}
-		for (HistoryData ohlc : newData) {
-			if (!this.data.contains(ohlc))
-				this.data.add(ohlc);
-		}
-		for (Iterator<HistoryData> iter = this.data.iterator(); iter.hasNext(); ) {
-			if (!newData.contains(iter.next()))
-				iter.remove();
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#putProperties(org.eclipsetrader.core.repositories.IStoreProperties, org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
+    public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
+        Session session = repository.getSession();
 
-		ISplit[] s = (ISplit[]) properties.getProperty(IPropertyConstants.SPLITS);
-		splits.clear();
-		if (s != null) {
-			for (int i = 0; i < s.length; i++)
-				splits.add(new SplitData(this, s[i]));
-		}
+        this.security = (ISecurity) properties.getProperty(IPropertyConstants.SECURITY);
 
-		session.save(this);
-	}
+        List<HistoryData> newData = new ArrayList<HistoryData>(2048);
+        IOHLC[] bars = (IOHLC[]) properties.getProperty(IPropertyConstants.BARS);
+        if (bars != null) {
+            TimeSpan timeSpan = TimeSpan.days(1);
+            for (int i = 0; i < bars.length; i++) {
+                newData.add(new HistoryData(this, bars[i], timeSpan));
+            }
+        }
+        for (HistoryData ohlc : newData) {
+            if (!this.data.contains(ohlc)) {
+                this.data.add(ohlc);
+            }
+        }
+        for (Iterator<HistoryData> iter = this.data.iterator(); iter.hasNext();) {
+            if (!newData.contains(iter.next())) {
+                iter.remove();
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public void delete(IProgressMonitor monitor) throws CoreException {
-	}
+        ISplit[] s = (ISplit[]) properties.getProperty(IPropertyConstants.SPLITS);
+        splits.clear();
+        if (s != null) {
+            for (int i = 0; i < s.length; i++) {
+                splits.add(new SplitData(this, s[i]));
+            }
+        }
 
-	/* (non-Javadoc)
+        session.save(this);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
+    public void delete(IProgressMonitor monitor) throws CoreException {
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public IStore[] fetchChilds(IProgressMonitor monitor) {
-    	List<IStore> l = new ArrayList<IStore>();
+        List<IStore> l = new ArrayList<IStore>();
 
-    	Query query = repository.getSession().createQuery("from IntradayHistoryStore where instrument = :instrument");
-    	IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
-		query.setString("instrument", storeObject.getStore().toURI().toString());
+        Query query = repository.getSession().createQuery("from IntradayHistoryStore where instrument = :instrument");
+        IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
+        query.setString("instrument", storeObject.getStore().toURI().toString());
 
-		List list = query.list();
-		if (list != null) {
-			for (Object o : list)
-				l.add((IStore) o);
-		}
+        List list = query.list();
+        if (list != null) {
+            for (Object o : list) {
+                l.add((IStore) o);
+            }
+        }
 
-		return l.toArray(new IStore[l.size()]);
+        return l.toArray(new IStore[l.size()]);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#createChild()
      */
+    @Override
     public IStore createChild() {
-	    return new IntradayHistoryStore(security, repository);
+        return new IntradayHistoryStore(security, repository);
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#toURI()
-	 */
-	public URI toURI() {
-		try {
-			return new URI(repository.getSchema(), HibernateRepository.URI_SECURITY_HISTORY_PART, id);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#toURI()
+     */
+    @Override
+    public URI toURI() {
+        try {
+            return new URI(repository.getSchema(), HibernateRepository.URI_SECURITY_HISTORY_PART, id);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         return null;
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStore#getRepository()
-	 */
-	public IRepository getRepository() {
-		return repository;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStore#getRepository()
+     */
+    @Override
+    public IRepository getRepository() {
+        return repository;
+    }
 
-	protected ISecurity getSecurityFromURI(URI uri) {
-		ISecurity security = null;
-    	try {
-    		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-    		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-    		IRepositoryService repositoryService = (IRepositoryService) context.getService(serviceReference);
-	        security = repositoryService.getSecurityFromURI(uri);
-	        if (security != null) {
-	        	Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
-	        	Activator.log(status);
-	        }
-    		context.ungetService(serviceReference);
-    	} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
-    		Activator.log(status);
-    	}
-    	return security;
-	}
+    protected ISecurity getSecurityFromURI(URI uri) {
+        ISecurity security = null;
+        try {
+            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+            IRepositoryService repositoryService = (IRepositoryService) context.getService(serviceReference);
+            security = repositoryService.getSecurityFromURI(uri);
+            if (security != null) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
+                Activator.log(status);
+            }
+            context.ungetService(serviceReference);
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
+            Activator.log(status);
+        }
+        return security;
+    }
 }

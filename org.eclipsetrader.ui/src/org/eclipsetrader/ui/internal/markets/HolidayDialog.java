@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,176 +33,186 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipsetrader.ui.Util;
 
 public class HolidayDialog extends Dialog {
-	CDateTime date;
-	Text description;
-	Button closed;
-	Button open;
-	Label openTimeLabel;
-	CDateTime openTime;
-	Label closeTimeLabel;
-	CDateTime closeTime;
-	MarketHolidayElement element;
 
-	private SelectionAdapter buttonSelectionListener = new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			updateButtonsEnablement();
-		}
-	};
+    CDateTime date;
+    Text description;
+    Button closed;
+    Button open;
+    Label openTimeLabel;
+    CDateTime openTime;
+    Label closeTimeLabel;
+    CDateTime closeTime;
+    MarketHolidayElement element;
 
-	private ModifyListener validationModifyListener = new ModifyListener() {
-		public void modifyText(ModifyEvent e) {
-			getButton(IDialogConstants.OK_ID).setEnabled(isValid());
-		}
-	};
+    private SelectionAdapter buttonSelectionListener = new SelectionAdapter() {
 
-	private SelectionAdapter validationSelectionListener = new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			getButton(IDialogConstants.OK_ID).setEnabled(isValid());
-		}
-	};
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            updateButtonsEnablement();
+        }
+    };
 
-	public HolidayDialog(Shell parentShell, MarketHolidayElement day) {
-		super(parentShell);
-		this.element = day;
-	}
+    private ModifyListener validationModifyListener = new ModifyListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
-	 */
-	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText("Edit Market Holiday");
-	}
+        @Override
+        public void modifyText(ModifyEvent e) {
+            getButton(IDialogConstants.OK_ID).setEnabled(isValid());
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		parent = (Composite) super.createDialogArea(parent);
+    private SelectionAdapter validationSelectionListener = new SelectionAdapter() {
 
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            getButton(IDialogConstants.OK_ID).setEnabled(isValid());
+        }
+    };
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Date");
-		date = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
-		date.setPattern(Util.getDateFormatPattern());
-		date.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
+    public HolidayDialog(Shell parentShell, MarketHolidayElement day) {
+        super(parentShell);
+        this.element = day;
+    }
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Description");
-		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
-		description = new Text(content, SWT.BORDER);
-		description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		((GridData) description.getLayoutData()).widthHint = convertWidthInCharsToPixels(50);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+     */
+    @Override
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText("Edit Market Holiday");
+    }
 
-		label = new Label(content, SWT.NONE);
-		closed = new Button(content, SWT.RADIO);
-		closed.setText("Market is closed");
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        parent = (Composite) super.createDialogArea(parent);
 
-		label = new Label(content, SWT.NONE);
-		open = new Button(content, SWT.RADIO);
-		open.setText("Market is partially open");
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
 
-		openTimeLabel = new Label(content, SWT.NONE);
-		openTimeLabel.setText("Open Time");
-		openTime = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
-		openTime.setPattern("HH:mm");
-		openTime.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
-		openTime.setNullText("");
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Date");
+        date = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
+        date.setPattern(Util.getDateFormatPattern());
+        date.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
 
-		closeTimeLabel = new Label(content, SWT.NONE);
-		closeTimeLabel.setText("Close Time");
-		closeTime = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
-		closeTime.setPattern("HH:mm");
-		closeTime.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
-		closeTime.setNullText("");
+        label = new Label(content, SWT.NONE);
+        label.setText("Description");
+        label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
+        description = new Text(content, SWT.BORDER);
+        description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        ((GridData) description.getLayoutData()).widthHint = convertWidthInCharsToPixels(50);
 
-		if (element != null) {
-			date.setSelection(element.getDate());
-			description.setText(element.getDescription() != null ? element.getDescription() : "");
-			closed.setSelection(element.getOpenTime() == null || element.getCloseTime() == null);
-			open.setSelection(element.getOpenTime() != null && element.getCloseTime() != null);
-			openTime.setSelection(element.getOpenTime());
-			closeTime.setSelection(element.getCloseTime());
-		}
-		else {
-			date.setSelection(Calendar.getInstance().getTime());
-			description.setText("");
-			closed.setSelection(true);
-			open.setSelection(false);
-			openTime.setSelection(null);
-			closeTime.setSelection(null);
-		}
+        label = new Label(content, SWT.NONE);
+        closed = new Button(content, SWT.RADIO);
+        closed.setText("Market is closed");
 
-		date.addSelectionListener(validationSelectionListener);
-		description.addModifyListener(validationModifyListener);
-		closed.addSelectionListener(buttonSelectionListener);
-		open.addSelectionListener(buttonSelectionListener);
-		openTime.addSelectionListener(validationSelectionListener);
-		closeTime.addSelectionListener(validationSelectionListener);
+        label = new Label(content, SWT.NONE);
+        open = new Button(content, SWT.RADIO);
+        open.setText("Market is partially open");
 
-		return parent;
-	}
+        openTimeLabel = new Label(content, SWT.NONE);
+        openTimeLabel.setText("Open Time");
+        openTime = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
+        openTime.setPattern("HH:mm");
+        openTime.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
+        openTime.setNullText("");
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Control control = super.createContents(parent);
-		updateButtonsEnablement();
-		return control;
-	}
+        closeTimeLabel = new Label(content, SWT.NONE);
+        closeTimeLabel.setText("Close Time");
+        closeTime = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
+        closeTime.setPattern("HH:mm");
+        closeTime.setLayoutData(new GridData(convertHorizontalDLUsToPixels(50), SWT.DEFAULT));
+        closeTime.setNullText("");
 
-	protected void updateButtonsEnablement() {
-		openTimeLabel.setEnabled(open.getSelection());
-		openTime.setEnabled(open.getSelection());
-		closeTimeLabel.setEnabled(open.getSelection());
-		closeTime.setEnabled(open.getSelection());
-		getButton(IDialogConstants.OK_ID).setEnabled(isValid());
-	}
+        if (element != null) {
+            date.setSelection(element.getDate());
+            description.setText(element.getDescription() != null ? element.getDescription() : "");
+            closed.setSelection(element.getOpenTime() == null || element.getCloseTime() == null);
+            open.setSelection(element.getOpenTime() != null && element.getCloseTime() != null);
+            openTime.setSelection(element.getOpenTime());
+            closeTime.setSelection(element.getCloseTime());
+        }
+        else {
+            date.setSelection(Calendar.getInstance().getTime());
+            description.setText("");
+            closed.setSelection(true);
+            open.setSelection(false);
+            openTime.setSelection(null);
+            closeTime.setSelection(null);
+        }
 
-	protected boolean isValid() {
-		if (date.getSelection() == null)
-			return false;
-		if (description.getText().equals(""))
-			return false;
-		if (open.getSelection()) {
-			if (openTime.getSelection() == null)
-				return false;
-			if (closeTime.getSelection() == null)
-				return false;
-		}
-		return true;
-	}
+        date.addSelectionListener(validationSelectionListener);
+        description.addModifyListener(validationModifyListener);
+        closed.addSelectionListener(buttonSelectionListener);
+        open.addSelectionListener(buttonSelectionListener);
+        openTime.addSelectionListener(validationSelectionListener);
+        closeTime.addSelectionListener(validationSelectionListener);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-	 */
-	@Override
-	protected void okPressed() {
-		commitChanges();
-		super.okPressed();
-	}
+        return parent;
+    }
 
-	protected void commitChanges() {
-		if (element == null)
-			element = new MarketHolidayElement();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Control control = super.createContents(parent);
+        updateButtonsEnablement();
+        return control;
+    }
 
-		element.setDate(date.getSelection());
-		element.setDescription(!description.getText().equals("") ? description.getText() : null);
-		element.setOpenTime(open.getSelection() ? openTime.getSelection() : null);
-		element.setCloseTime(open.getSelection() ? closeTime.getSelection() : null);
-	}
+    protected void updateButtonsEnablement() {
+        openTimeLabel.setEnabled(open.getSelection());
+        openTime.setEnabled(open.getSelection());
+        closeTimeLabel.setEnabled(open.getSelection());
+        closeTime.setEnabled(open.getSelection());
+        getButton(IDialogConstants.OK_ID).setEnabled(isValid());
+    }
 
-	public MarketHolidayElement getElement() {
-		return element;
-	}
+    protected boolean isValid() {
+        if (date.getSelection() == null) {
+            return false;
+        }
+        if (description.getText().equals("")) {
+            return false;
+        }
+        if (open.getSelection()) {
+            if (openTime.getSelection() == null) {
+                return false;
+            }
+            if (closeTime.getSelection() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+     */
+    @Override
+    protected void okPressed() {
+        commitChanges();
+        super.okPressed();
+    }
+
+    protected void commitChanges() {
+        if (element == null) {
+            element = new MarketHolidayElement();
+        }
+
+        element.setDate(date.getSelection());
+        element.setDescription(!description.getText().equals("") ? description.getText() : null);
+        element.setOpenTime(open.getSelection() ? openTime.getSelection() : null);
+        element.setCloseTime(open.getSelection() ? closeTime.getSelection() : null);
+    }
+
+    public MarketHolidayElement getElement() {
+        return element;
+    }
 }

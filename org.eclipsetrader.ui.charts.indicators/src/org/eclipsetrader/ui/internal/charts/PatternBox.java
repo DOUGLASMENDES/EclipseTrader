@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,112 +24,116 @@ import org.eclipsetrader.ui.charts.ChartObjectFocusEvent;
 import org.eclipsetrader.ui.charts.IGraphics;
 
 public class PatternBox extends ChartObject {
-	IOHLC[] bars;
-	RGB color;
-	String title;
-	String label;
-	double highest = Double.MIN_VALUE;
-	double lowest = Double.MAX_VALUE;
 
-	int x1;
-	int x2;
-	int y1;
-	int y2;
-	Rectangle r1;
-	Rectangle r2;
-	boolean selected;
+    IOHLC[] bars;
+    RGB color;
+    String title;
+    String label;
+    double highest = Double.MIN_VALUE;
+    double lowest = Double.MAX_VALUE;
 
-	public PatternBox(IOHLC[] bars, RGB color, String title, String label) {
-		this.bars = bars;
-		this.color = color;
-		this.title = title;
-		this.label = label;
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+    Rectangle r1;
+    Rectangle r2;
+    boolean selected;
 
-		for (int i = 0; i < bars.length; i++) {
-			highest = Math.max(highest, bars[i].getHigh());
-			lowest = Math.min(lowest, bars[i].getLow());
-		}
-	}
+    public PatternBox(IOHLC[] bars, RGB color, String title, String label) {
+        this.bars = bars;
+        this.color = color;
+        this.title = title;
+        this.label = label;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.ChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
-	 */
-	@Override
-	public void paint(IGraphics graphics) {
-		x1 = graphics.mapToHorizontalAxis(bars[0].getDate());
-		x2 = graphics.mapToHorizontalAxis(bars[bars.length - 1].getDate());
-		y1 = graphics.mapToVerticalAxis(highest) - 10;
-		y2 = graphics.mapToVerticalAxis(lowest) + 10;
+        for (int i = 0; i < bars.length; i++) {
+            highest = Math.max(highest, bars[i].getHigh());
+            lowest = Math.min(lowest, bars[i].getLow());
+        }
+    }
 
-		graphics.setForegroundColor(color);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
+     */
+    @Override
+    public void paint(IGraphics graphics) {
+        x1 = graphics.mapToHorizontalAxis(bars[0].getDate());
+        x2 = graphics.mapToHorizontalAxis(bars[bars.length - 1].getDate());
+        y1 = graphics.mapToVerticalAxis(highest) - 10;
+        y2 = graphics.mapToVerticalAxis(lowest) + 10;
 
-		Font oldFont = graphics.getFont();
-		Font font = null;
-		if (selected) {
-			graphics.setLineWidth(2);
-			FontData fontData = oldFont.getFontData()[0];
-			font = new Font(Display.getCurrent(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
-			graphics.setFont(font);
-		}
+        graphics.setForegroundColor(color);
 
-		Point e1 = graphics.stringExtent(title);
-		Point e2 = graphics.stringExtent(label);
+        Font oldFont = graphics.getFont();
+        Font font = null;
+        if (selected) {
+            graphics.setLineWidth(2);
+            FontData fontData = oldFont.getFontData()[0];
+            font = new Font(Display.getCurrent(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+            graphics.setFont(font);
+        }
 
-		r1 = new Rectangle(x1, y1 - e1.y - e2.y, e1.x, e1.y);
-		graphics.drawString(title, x1, y1 - e1.y - e2.y);
-		r2 = new Rectangle(x1, y1 - e2.y, e2.x, e2.y);
-		graphics.drawString(label, x1, y1 - e2.y);
+        Point e1 = graphics.stringExtent(title);
+        Point e2 = graphics.stringExtent(label);
 
-		graphics.drawLine(x1, y1, x2, y1);
-		graphics.drawLine(x1, y1, x1, y1 + 5);
-		graphics.drawLine(x2, y1, x2, y1 + 5);
+        r1 = new Rectangle(x1, y1 - e1.y - e2.y, e1.x, e1.y);
+        graphics.drawString(title, x1, y1 - e1.y - e2.y);
+        r2 = new Rectangle(x1, y1 - e2.y, e2.x, e2.y);
+        graphics.drawString(label, x1, y1 - e2.y);
 
-		graphics.drawLine(x1, y2, x1, y2 - 5);
-		graphics.drawLine(x2, y2, x2, y2 - 5);
-		graphics.drawLine(x1, y2, x2, y2);
+        graphics.drawLine(x1, y1, x2, y1);
+        graphics.drawLine(x1, y1, x1, y1 + 5);
+        graphics.drawLine(x2, y1, x2, y1 + 5);
 
-		if (font != null) {
-			graphics.setFont(oldFont);
-			font.dispose();
-		}
-	}
+        graphics.drawLine(x1, y2, x1, y2 - 5);
+        graphics.drawLine(x2, y2, x2, y2 - 5);
+        graphics.drawLine(x1, y2, x2, y2);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.ChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
-	 */
-	@Override
-	public void handleFocusGained(ChartObjectFocusEvent event) {
-		selected = true;
-	}
+        if (font != null) {
+            graphics.setFont(oldFont);
+            font.dispose();
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.ChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
-	 */
-	@Override
-	public void handleFocusLost(ChartObjectFocusEvent event) {
-		selected = false;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    @Override
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+        selected = true;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.ChartObject#containsPoint(int, int)
-	 */
-	@Override
-	public boolean containsPoint(int x, int y) {
-		if (x >= x1 && x <= x2) {
-			if (Math.abs(y - y1) <= 2 || Math.abs(y - y2) <= 2)
-				return true;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    @Override
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+        selected = false;
+    }
 
-		if (x >= r1.x && x < (r1.x + r1.width)) {
-			if (y >= r1.y && y < (r1.y + r1.height))
-				return true;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ChartObject#containsPoint(int, int)
+     */
+    @Override
+    public boolean containsPoint(int x, int y) {
+        if (x >= x1 && x <= x2) {
+            if (Math.abs(y - y1) <= 2 || Math.abs(y - y2) <= 2) {
+                return true;
+            }
+        }
 
-		if (x >= r2.x && x < (r2.x + r2.width)) {
-			if (y >= r2.y && y < (r2.y + r2.height))
-				return true;
-		}
+        if (x >= r1.x && x < r1.x + r1.width) {
+            if (y >= r1.y && y < r1.y + r1.height) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        if (x >= r2.x && x < r2.x + r2.width) {
+            if (y >= r2.y && y < r2.y + r2.height) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

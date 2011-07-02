@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,20 +22,20 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 public interface IFeedIdentifier extends IAdaptable {
 
-	/**
-	 * Symbol property.
-	 */
-	public static final String PROP_SYMBOL = "symbol";
+    /**
+     * Symbol property.
+     */
+    public static final String PROP_SYMBOL = "symbol";
 
-	/**
-	 * Properties set property.
-	 */
-	public static final String PROP_PROPERTIES = "properties";
+    /**
+     * Properties set property.
+     */
+    public static final String PROP_PROPERTIES = "properties";
 
-	/**
-	 * Returns the symbol used to identify the security.
-	 *
-	 * @return the symbol
-	 */
-	public String getSymbol();
+    /**
+     * Returns the symbol used to identify the security.
+     *
+     * @return the symbol
+     */
+    public String getSymbol();
 }

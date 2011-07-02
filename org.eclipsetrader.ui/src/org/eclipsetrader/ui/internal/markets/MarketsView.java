@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,210 +49,235 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class MarketsView extends ViewPart {
-	Display display;
-	TableViewer viewer;
 
-	Action newMarketAction;
-	Action deleteAction;
+    Display display;
+    TableViewer viewer;
 
-	MarketService marketService;
+    Action newMarketAction;
+    Action deleteAction;
 
-	private Runnable timedRunnable = new Runnable() {
-		public void run() {
-			if (!viewer.getControl().isDisposed()) {
-				viewer.update((Object[]) viewer.getInput(), null);
-				int delay = (int) (60000 - System.currentTimeMillis() % 60000);
-				Display.getCurrent().timerExec(delay, timedRunnable);
-			}
-		}
-	};
+    MarketService marketService;
 
-	private Observer serviceObserver = new Observer() {
-		public void update(Observable o, Object arg) {
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (!viewer.getControl().isDisposed())
-						refreshInput();
-				}
-			});
-		}
-	};
+    private Runnable timedRunnable = new Runnable() {
 
-	private IMarketStatusListener marketStatusListener = new IMarketStatusListener() {
-		public void marketStatusChanged(MarketStatusEvent event) {
-			final IMarket market = event.getMarket();
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (!viewer.getControl().isDisposed())
-						viewer.update(market, null);
-				}
-			});
-		}
-	};
+        @Override
+        public void run() {
+            if (!viewer.getControl().isDisposed()) {
+                viewer.update((Object[]) viewer.getInput(), null);
+                int delay = (int) (60000 - System.currentTimeMillis() % 60000);
+                Display.getCurrent().timerExec(delay, timedRunnable);
+            }
+        }
+    };
 
-	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-		public void propertyChange(final PropertyChangeEvent evt) {
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (!viewer.getControl().isDisposed()) {
-						if (IMarket.PROP_NAME.equals(evt.getPropertyName()))
-							viewer.refresh();
-						else
-							viewer.update(evt.getSource(), null);
-					}
-				}
-			});
-		}
-	};
+    private Observer serviceObserver = new Observer() {
 
-	public MarketsView() {
-	}
+        @Override
+        public void update(Observable o, Object arg) {
+            display.asyncExec(new Runnable() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
-	 */
-	@Override
-	public void init(IViewSite site) throws PartInitException {
-		super.init(site);
+                @Override
+                public void run() {
+                    if (!viewer.getControl().isDisposed()) {
+                        refreshInput();
+                    }
+                }
+            });
+        }
+    };
 
-		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(MarketService.class.getName());
-		marketService = (MarketService) context.getService(serviceReference);
-		context.ungetService(serviceReference);
+    private IMarketStatusListener marketStatusListener = new IMarketStatusListener() {
 
-		site.setSelectionProvider(new SelectionProvider());
+        @Override
+        public void marketStatusChanged(MarketStatusEvent event) {
+            final IMarket market = event.getMarket();
+            display.asyncExec(new Runnable() {
 
-		newMarketAction = new NewMarketAction(site.getShell());
+                @Override
+                public void run() {
+                    if (!viewer.getControl().isDisposed()) {
+                        viewer.update(market, null);
+                    }
+                }
+            });
+        }
+    };
 
-		deleteAction = new Action("Delete") {
-			@Override
-			public void run() {
-				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-				for (Object obj : selection.toArray()) {
-					if (obj instanceof Market) {
-						Market market = (Market) obj;
-						marketService.deleteMarket(market);
-						PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
-						if (propertyChangeSupport != null)
-							propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-					}
-				}
-			}
-		};
-		deleteAction.setImageDescriptor(UIActivator.getDefault().getImageRegistry().getDescriptor(UIConstants.DELETE_ICON));
-		deleteAction.setDisabledImageDescriptor(UIActivator.getDefault().getImageRegistry().getDescriptor(UIConstants.DELETE_DISABLED_ICON));
-		deleteAction.setEnabled(false);
-	}
+    private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	public void createPartControl(Composite parent) {
-		display = parent.getDisplay();
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt) {
+            display.asyncExec(new Runnable() {
 
-		createViewer(parent);
-		createContextMenu();
+                @Override
+                public void run() {
+                    if (!viewer.getControl().isDisposed()) {
+                        if (IMarket.PROP_NAME.equals(evt.getPropertyName())) {
+                            viewer.refresh();
+                        }
+                        else {
+                            viewer.update(evt.getSource(), null);
+                        }
+                    }
+                }
+            });
+        }
+    };
 
-		refreshInput();
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				getViewSite().getSelectionProvider().setSelection(event.getSelection());
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				deleteAction.setEnabled(!selection.isEmpty());
-			}
-		});
+    public MarketsView() {
+    }
 
-		marketService.addMarketStatusListener(marketStatusListener);
-		marketService.addObserver(serviceObserver);
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite)
+     */
+    @Override
+    public void init(IViewSite site) throws PartInitException {
+        super.init(site);
 
-		int delay = (int) (60000 - System.currentTimeMillis() % 60000);
-		Display.getCurrent().timerExec(delay, timedRunnable);
-	}
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+        ServiceReference serviceReference = context.getServiceReference(MarketService.class.getName());
+        marketService = (MarketService) context.getService(serviceReference);
+        context.ungetService(serviceReference);
 
-	protected void createViewer(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
-		viewer.getTable().setHeaderVisible(true);
-		viewer.getTable().setLinesVisible(false);
+        site.setSelectionProvider(new SelectionProvider());
 
-		TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Market");
-		tableColumn.setWidth(150);
-		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("State");
-		tableColumn.setWidth(150);
-		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Message");
-		tableColumn.setWidth(250);
+        newMarketAction = new NewMarketAction(site.getShell());
 
-		viewer.setLabelProvider(new MarketLabelProvider());
-		viewer.setComparator(new ViewerComparator());
-		viewer.setContentProvider(new ArrayContentProvider());
-	}
+        deleteAction = new Action("Delete") {
 
-	protected void refreshInput() {
-		IMarket[] input = marketService.getMarkets();
-		for (IMarket market : input) {
-			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
-			if (propertyChangeSupport != null) {
-				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-			}
-		}
-		viewer.setInput(input);
-	}
+            @Override
+            public void run() {
+                IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+                for (Object obj : selection.toArray()) {
+                    if (obj instanceof Market) {
+                        Market market = (Market) obj;
+                        marketService.deleteMarket(market);
+                        PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
+                        if (propertyChangeSupport != null) {
+                            propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+                        }
+                    }
+                }
+            }
+        };
+        deleteAction.setImageDescriptor(UIActivator.getDefault().getImageRegistry().getDescriptor(UIConstants.DELETE_ICON));
+        deleteAction.setDisabledImageDescriptor(UIActivator.getDefault().getImageRegistry().getDescriptor(UIConstants.DELETE_DISABLED_ICON));
+        deleteAction.setEnabled(false);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-	 */
-	@Override
-	public void setFocus() {
-		viewer.getControl().setFocus();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createPartControl(Composite parent) {
+        display = parent.getDisplay();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-	 */
-	@Override
-	public void dispose() {
-		Display.getCurrent().timerExec(-1, timedRunnable);
+        createViewer(parent);
+        createContextMenu();
 
-		marketService.deleteObserver(serviceObserver);
-		marketService.removeMarketStatusListener(marketStatusListener);
+        refreshInput();
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
-		super.dispose();
-	}
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                getViewSite().getSelectionProvider().setSelection(event.getSelection());
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                deleteAction.setEnabled(!selection.isEmpty());
+            }
+        });
 
-	protected void createContextMenu() {
-		MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager menuManager) {
-				MenuManager newMenu = new MenuManager("New", "group.new");
-				{
-					newMenu.add(new Separator("top")); //$NON-NLS-1$
-					newMenu.add(newMarketAction);
-					newMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-					newMenu.add(new Separator("bottom")); //$NON-NLS-1$
-				}
-				menuManager.add(newMenu);
-				menuManager.add(new GroupMarker("group.goto"));
-				menuManager.add(new Separator("group.open"));
-				menuManager.add(new GroupMarker("group.openWith"));
-				menuManager.add(new Separator("group.show"));
-				menuManager.add(new Separator("group.edit"));
-				menuManager.add(new GroupMarker("group.reorganize"));
-				menuManager.add(new GroupMarker("group.port"));
-				menuManager.add(new Separator("group.generate"));
-				menuManager.add(new Separator("group.search"));
-				menuManager.add(new Separator("group.build"));
-				menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-				menuManager.add(new Separator("group.properties"));
+        marketService.addMarketStatusListener(marketStatusListener);
+        marketService.addObserver(serviceObserver);
 
-				menuManager.appendToGroup("group.reorganize", deleteAction);
-			}
-		});
-		viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
-		getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
-	}
+        int delay = (int) (60000 - System.currentTimeMillis() % 60000);
+        Display.getCurrent().timerExec(delay, timedRunnable);
+    }
+
+    protected void createViewer(Composite parent) {
+        viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION);
+        viewer.getTable().setHeaderVisible(true);
+        viewer.getTable().setLinesVisible(false);
+
+        TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Market");
+        tableColumn.setWidth(150);
+        tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("State");
+        tableColumn.setWidth(150);
+        tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Message");
+        tableColumn.setWidth(250);
+
+        viewer.setLabelProvider(new MarketLabelProvider());
+        viewer.setComparator(new ViewerComparator());
+        viewer.setContentProvider(new ArrayContentProvider());
+    }
+
+    protected void refreshInput() {
+        IMarket[] input = marketService.getMarkets();
+        for (IMarket market : input) {
+            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
+            if (propertyChangeSupport != null) {
+                propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+                propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+            }
+        }
+        viewer.setInput(input);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+     */
+    @Override
+    public void setFocus() {
+        viewer.getControl().setFocus();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+     */
+    @Override
+    public void dispose() {
+        Display.getCurrent().timerExec(-1, timedRunnable);
+
+        marketService.deleteObserver(serviceObserver);
+        marketService.removeMarketStatusListener(marketStatusListener);
+
+        super.dispose();
+    }
+
+    protected void createContextMenu() {
+        MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener() {
+
+            @Override
+            public void menuAboutToShow(IMenuManager menuManager) {
+                MenuManager newMenu = new MenuManager("New", "group.new");
+                {
+                    newMenu.add(new Separator("top")); //$NON-NLS-1$
+                    newMenu.add(newMarketAction);
+                    newMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+                    newMenu.add(new Separator("bottom")); //$NON-NLS-1$
+                }
+                menuManager.add(newMenu);
+                menuManager.add(new GroupMarker("group.goto"));
+                menuManager.add(new Separator("group.open"));
+                menuManager.add(new GroupMarker("group.openWith"));
+                menuManager.add(new Separator("group.show"));
+                menuManager.add(new Separator("group.edit"));
+                menuManager.add(new GroupMarker("group.reorganize"));
+                menuManager.add(new GroupMarker("group.port"));
+                menuManager.add(new Separator("group.generate"));
+                menuManager.add(new Separator("group.search"));
+                menuManager.add(new Separator("group.build"));
+                menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+                menuManager.add(new Separator("group.properties"));
+
+                menuManager.appendToGroup("group.reorganize", deleteAction);
+            }
+        });
+        viewer.getControl().setMenu(menuMgr.createContextMenu(viewer.getControl()));
+        getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
+    }
 }

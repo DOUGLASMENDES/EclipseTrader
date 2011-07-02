@@ -18,38 +18,39 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 public class DateCellEditor extends TextCellEditor {
-	DateFormat dateFormat = Util.getDateFormat();
 
-	public DateCellEditor() {
-	}
+    DateFormat dateFormat = Util.getDateFormat();
 
-	public DateCellEditor(Composite parent) {
-		super(parent);
-	}
+    public DateCellEditor() {
+    }
 
-	public DateCellEditor(Composite parent, int style) {
-		super(parent, style);
-	}
+    public DateCellEditor(Composite parent) {
+        super(parent);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.TextCellEditor#doGetValue()
-	 */
-	@Override
-	protected Object doGetValue() {
-		String text = (String) super.doGetValue();
-		try {
-			return dateFormat.parse(text);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public DateCellEditor(Composite parent, int style) {
+        super(parent, style);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.TextCellEditor#doSetValue(java.lang.Object)
-	 */
-	@Override
-	protected void doSetValue(Object value) {
-		super.doSetValue(dateFormat.format(value));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.TextCellEditor#doGetValue()
+     */
+    @Override
+    protected Object doGetValue() {
+        String text = (String) super.doGetValue();
+        try {
+            return dateFormat.parse(text);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.TextCellEditor#doSetValue(java.lang.Object)
+     */
+    @Override
+    protected void doSetValue(Object value) {
+        super.doSetValue(dateFormat.format(value));
+    }
 }

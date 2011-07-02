@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,89 +32,90 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipsetrader.core.feed.TimeSpan;
 
 public class CustomPeriodDialog extends Dialog {
-	private CDateTime from;
-	private CDateTime to;
-	private ComboViewer resolution;
 
-	private Date firstDate;
-	private Date lastDate;
-	private TimeSpan resolutionTimeSpan;
+    private CDateTime from;
+    private CDateTime to;
+    private ComboViewer resolution;
 
-	public CustomPeriodDialog(Shell parentShell, Date firstDate, Date lastDate) {
-		super(parentShell);
-		this.firstDate = firstDate;
-		this.lastDate = lastDate;
-	}
+    private Date firstDate;
+    private Date lastDate;
+    private TimeSpan resolutionTimeSpan;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
-	 */
-	@Override
+    public CustomPeriodDialog(Shell parentShell, Date firstDate, Date lastDate) {
+        super(parentShell);
+        this.firstDate = firstDate;
+        this.lastDate = lastDate;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+     */
+    @Override
     protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText(Messages.CustomPeriodDialog_CustomPeriodTitle);
-	}
+        super.configureShell(newShell);
+        newShell.setText(Messages.CustomPeriodDialog_CustomPeriodTitle);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
     protected Control createDialogArea(Composite parent) {
-		parent = (Composite) super.createDialogArea(parent);
+        parent = (Composite) super.createDialogArea(parent);
 
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(4, false);
-		gridLayout.marginHeight = gridLayout.marginWidth = 0;
-		content.setLayout(gridLayout);
-		content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(4, false);
+        gridLayout.marginHeight = gridLayout.marginWidth = 0;
+        content.setLayout(gridLayout);
+        content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText(Messages.CustomPeriodDialog_BeginDateLabel);
-		from = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
+        Label label = new Label(content, SWT.NONE);
+        label.setText(Messages.CustomPeriodDialog_BeginDateLabel);
+        from = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.CustomPeriodDialog_EndDateLabel);
-		to = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.CustomPeriodDialog_EndDateLabel);
+        to = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.CustomPeriodDialog_ResolutionLabel);
-		resolution = new ComboViewer(content, SWT.DROP_DOWN | SWT.READ_ONLY);
-		resolution.setLabelProvider(new LabelProvider());
-		resolution.setContentProvider(new ArrayContentProvider());
-		resolution.setSorter(new ViewerSorter());
-		resolution.setInput(new Object[] {
-				TimeSpan.days(1),
-				TimeSpan.minutes(1),
-				TimeSpan.minutes(5),
-				TimeSpan.minutes(10),
-				TimeSpan.minutes(15),
-				TimeSpan.minutes(30),
-				TimeSpan.minutes(60),
-			});
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.CustomPeriodDialog_ResolutionLabel);
+        resolution = new ComboViewer(content, SWT.DROP_DOWN | SWT.READ_ONLY);
+        resolution.setLabelProvider(new LabelProvider());
+        resolution.setContentProvider(new ArrayContentProvider());
+        resolution.setSorter(new ViewerSorter());
+        resolution.setInput(new Object[] {
+                TimeSpan.days(1),
+                TimeSpan.minutes(1),
+                TimeSpan.minutes(5),
+                TimeSpan.minutes(10),
+                TimeSpan.minutes(15),
+                TimeSpan.minutes(30),
+                TimeSpan.minutes(60),
+        });
 
-		from.setSelection(firstDate);
-		to.setSelection(lastDate);
-		resolution.setSelection(new StructuredSelection(resolutionTimeSpan));
+        from.setSelection(firstDate);
+        to.setSelection(lastDate);
+        resolution.setSelection(new StructuredSelection(resolutionTimeSpan));
 
-		return content;
-	}
+        return content;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-	 */
-	@Override
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+     */
+    @Override
     protected void okPressed() {
-		firstDate = from.getSelection();
-		lastDate = to.getSelection();
-		resolutionTimeSpan = (TimeSpan) ((IStructuredSelection) resolution.getSelection()).getFirstElement();
-		super.okPressed();
-	}
+        firstDate = from.getSelection();
+        lastDate = to.getSelection();
+        resolutionTimeSpan = (TimeSpan) ((IStructuredSelection) resolution.getSelection()).getFirstElement();
+        super.okPressed();
+    }
 
-	public Date getFirstDate() {
-		return firstDate;
-	}
+    public Date getFirstDate() {
+        return firstDate;
+    }
 
-	public Date getLastDate() {
-		return lastDate;
-	}
+    public Date getLastDate() {
+        return lastDate;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,29 +19,32 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipsetrader.ui.Util;
 
 public class MarketHolidayLabelProvider extends LabelProvider implements ITableLabelProvider {
-	protected DateFormat dateFormat = Util.getDateFormat();
 
-	public MarketHolidayLabelProvider() {
-	}
+    protected DateFormat dateFormat = Util.getDateFormat();
 
-	/* (non-Javadoc)
+    public MarketHolidayLabelProvider() {
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
      */
+    @Override
     public Image getColumnImage(Object element, int columnIndex) {
         return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
      */
+    @Override
     public String getColumnText(Object object, int columnIndex) {
-    	MarketHolidayElement element = (MarketHolidayElement) object;
-    	switch(columnIndex) {
-    		case 0:
-    			return dateFormat.format(element.getDate());
-    		case 1:
-    			return element.getDescription();
-    	}
+        MarketHolidayElement element = (MarketHolidayElement) object;
+        switch (columnIndex) {
+            case 0:
+                return dateFormat.format(element.getDate());
+            case 1:
+                return element.getDescription();
+        }
         return "";
     }
 }

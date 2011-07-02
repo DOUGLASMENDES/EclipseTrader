@@ -25,93 +25,97 @@ import org.eclipse.ui.internal.actions.NewWizardShortcutAction;
 import org.eclipse.ui.internal.dialogs.WorkbenchWizardElement;
 import org.eclipse.ui.wizards.IWizardDescriptor;
 
-@SuppressWarnings( { "unchecked", "restriction" })
+@SuppressWarnings({
+        "unchecked", "restriction"
+})
 public class NewWizardMenu extends BaseNewWizardMenu {
-	private boolean enabled = true;
 
-	/**
-	 * Creates a new wizard shortcut menu for the IDE.
-	 *
-	 * @param window - the window containing the menu
-	 */
-	public NewWizardMenu(IWorkbenchWindow window) {
-		this(window, null);
+    private boolean enabled = true;
 
-	}
+    /**
+     * Creates a new wizard shortcut menu for the IDE.
+     *
+     * @param window - the window containing the menu
+     */
+    public NewWizardMenu(IWorkbenchWindow window) {
+        this(window, null);
 
-	/**
-	 * Creates a new wizard shortcut menu for the IDE.
-	 *
-	 * @param window - the window containing the menu
-	 * @param id - the identifier for this contribution item
-	 */
-	public NewWizardMenu(IWorkbenchWindow window, String id) {
-		super(window, id);
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.actions.BaseNewWizardMenu#addItems(org.eclipse.jface.action.IContributionManager)
-	 */
-	@Override
-	protected void addItems(List list) {
-		ArrayList shortCuts = new ArrayList();
-		addShortcuts(shortCuts);
+    /**
+     * Creates a new wizard shortcut menu for the IDE.
+     *
+     * @param window - the window containing the menu
+     * @param id - the identifier for this contribution item
+     */
+    public NewWizardMenu(IWorkbenchWindow window, String id) {
+        super(window, id);
+    }
 
-		for (Iterator iterator = shortCuts.iterator(); iterator.hasNext();) {
-			Object curr = iterator.next();
-			if (curr instanceof ActionContributionItem && isNewProjectWizardAction(((ActionContributionItem) curr).getAction())) {
-				iterator.remove();
-				list.add(curr);
-			}
-		}
-		if (!list.isEmpty())
-			list.add(new Separator());
-		if (!shortCuts.isEmpty()) {
-			list.addAll(shortCuts);
-			list.add(new Separator());
-		}
-		list.add(new ActionContributionItem(getShowDialogAction()));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.actions.BaseNewWizardMenu#addItems(org.eclipse.jface.action.IContributionManager)
+     */
+    @Override
+    protected void addItems(List list) {
+        ArrayList shortCuts = new ArrayList();
+        addShortcuts(shortCuts);
 
-	private boolean isNewProjectWizardAction(IAction action) {
-		if (action instanceof NewWizardShortcutAction) {
-			IWizardDescriptor wizardDescriptor = ((NewWizardShortcutAction) action).getWizardDescriptor();
-			String[] tags = wizardDescriptor.getTags();
-			for (int i = 0; i < tags.length; i++) {
-				if (WorkbenchWizardElement.TAG_PROJECT.equals(tags[i])) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+        for (Iterator iterator = shortCuts.iterator(); iterator.hasNext();) {
+            Object curr = iterator.next();
+            if (curr instanceof ActionContributionItem && isNewProjectWizardAction(((ActionContributionItem) curr).getAction())) {
+                iterator.remove();
+                list.add(curr);
+            }
+        }
+        if (!list.isEmpty()) {
+            list.add(new Separator());
+        }
+        if (!shortCuts.isEmpty()) {
+            list.addAll(shortCuts);
+            list.add(new Separator());
+        }
+        list.add(new ActionContributionItem(getShowDialogAction()));
+    }
 
-	/* (non-Javadoc)
-	 * Method declared on IContributionItem.
-	 */
-	@Override
-	public boolean isEnabled() {
-		return enabled;
-	}
+    private boolean isNewProjectWizardAction(IAction action) {
+        if (action instanceof NewWizardShortcutAction) {
+            IWizardDescriptor wizardDescriptor = ((NewWizardShortcutAction) action).getWizardDescriptor();
+            String[] tags = wizardDescriptor.getTags();
+            for (int i = 0; i < tags.length; i++) {
+                if (WorkbenchWizardElement.TAG_PROJECT.equals(tags[i])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Sets the enabled state of the receiver.
-	 *
-	 * @param enabledValue if <code>true</code> the menu is enabled; else
-	 * 		it is disabled
-	 */
-	public void setEnabled(boolean enabledValue) {
-		this.enabled = enabledValue;
-	}
+    /* (non-Javadoc)
+     * Method declared on IContributionItem.
+     */
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.actions.BaseNewWizardMenu#getContributionItems()
-	 */
-	@Override
-	protected IContributionItem[] getContributionItems() {
-		if (isEnabled()) {
-			return super.getContributionItems();
-		}
-		return new IContributionItem[0];
-	}
+    /**
+     * Sets the enabled state of the receiver.
+     *
+     * @param enabledValue if <code>true</code> the menu is enabled; else
+     * 		it is disabled
+     */
+    public void setEnabled(boolean enabledValue) {
+        this.enabled = enabledValue;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.actions.BaseNewWizardMenu#getContributionItems()
+     */
+    @Override
+    protected IContributionItem[] getContributionItems() {
+        if (isEnabled()) {
+            return super.getContributionItems();
+        }
+        return new IContributionItem[0];
+    }
 }

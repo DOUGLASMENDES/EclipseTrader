@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,142 +41,153 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class IdentifierProperties extends PropertyPage implements IWorkbenchPropertyPage {
-	private Text name;
-	private Label propertiesLabel;
-	private FeedPropertiesControl properties;
 
-	private ModifyListener modifyListener = new ModifyListener() {
-		public void modifyText(ModifyEvent e) {
-			updateSymbolSelection();
-			setValid(isValid());
-		}
-	};
+    private Text name;
+    private Label propertiesLabel;
+    private FeedPropertiesControl properties;
 
-	public IdentifierProperties() {
-		setTitle("Identifier");
-	}
+    private ModifyListener modifyListener = new ModifyListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		initializeDialogUnits(content);
+        @Override
+        public void modifyText(ModifyEvent e) {
+            updateSymbolSelection();
+            setValid(isValid());
+        }
+    };
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Identifier name:");
-		name = new Text(content, SWT.BORDER);
-		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    public IdentifierProperties() {
+        setTitle("Identifier");
+    }
 
-		propertiesLabel = new Label(content, SWT.NONE);
-		propertiesLabel.setText("Properties:");
-		propertiesLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		properties = new FeedPropertiesControl(content);
-		properties.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		((GridData) properties.getControl().getLayoutData()).heightHint = properties.getTree().getItemHeight() * 15;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        initializeDialogUnits(content);
 
-		performDefaults();
-		name.addModifyListener(modifyListener);
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Identifier name:");
+        name = new Text(content, SWT.BORDER);
+        name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		return content;
-	}
+        propertiesLabel = new Label(content, SWT.NONE);
+        propertiesLabel.setText("Properties:");
+        propertiesLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        properties = new FeedPropertiesControl(content);
+        properties.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        ((GridData) properties.getControl().getLayoutData()).heightHint = properties.getTree().getItemHeight() * 15;
 
-	/* (non-Javadoc)
+        performDefaults();
+        name.addModifyListener(modifyListener);
+
+        return content;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-		ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
+        ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
 
-		IFeedIdentifier feedIdentifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-		if (feedIdentifier != null)
-			name.setText(feedIdentifier.getSymbol());
+        IFeedIdentifier feedIdentifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+        if (feedIdentifier != null) {
+            name.setText(feedIdentifier.getSymbol());
+        }
 
-		FeedProperties feedProperties = (FeedProperties) feedIdentifier.getAdapter(FeedProperties.class);
-		properties.setProperties(feedProperties);
+        FeedProperties feedProperties = (FeedProperties) feedIdentifier.getAdapter(FeedProperties.class);
+        properties.setProperties(feedProperties);
 
-		updateSymbolSelection();
+        updateSymbolSelection();
 
-		super.performDefaults();
+        super.performDefaults();
     }
 
     protected void applyChanges() {
-		Security security = (Security) getElement().getAdapter(Security.class);
-		if (security != null) {
-			if (name.getText().equals(""))
-				security.setIdentifier(null);
-			else {
-				IFeedIdentifier feedIdentifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-				if (feedIdentifier == null) {
-					feedIdentifier = getRepositoryService().getFeedIdentifierFromSymbol(name.getText());
-					if (feedIdentifier == null)
-						feedIdentifier = new FeedIdentifier(name.getText(), new FeedProperties());
-				}
-				if (feedIdentifier instanceof FeedIdentifier) {
-					((FeedIdentifier) feedIdentifier).setSymbol(name.getText());
-					((FeedIdentifier) feedIdentifier).setProperties(properties.getProperties());
-				}
-				security.setIdentifier(feedIdentifier);
-			}
-		}
+        Security security = (Security) getElement().getAdapter(Security.class);
+        if (security != null) {
+            if (name.getText().equals("")) {
+                security.setIdentifier(null);
+            }
+            else {
+                IFeedIdentifier feedIdentifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+                if (feedIdentifier == null) {
+                    feedIdentifier = getRepositoryService().getFeedIdentifierFromSymbol(name.getText());
+                    if (feedIdentifier == null) {
+                        feedIdentifier = new FeedIdentifier(name.getText(), new FeedProperties());
+                    }
+                }
+                if (feedIdentifier instanceof FeedIdentifier) {
+                    ((FeedIdentifier) feedIdentifier).setSymbol(name.getText());
+                    ((FeedIdentifier) feedIdentifier).setProperties(properties.getProperties());
+                }
+                security.setIdentifier(feedIdentifier);
+            }
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#isValid()
      */
     @Override
     public boolean isValid() {
-	    return true;
+        return true;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	if (getControl() != null)
-    		applyChanges();
-	    return super.performOk();
+        if (getControl() != null) {
+            applyChanges();
+        }
+        return super.performOk();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
     protected void performApply() {
-    	applyChanges();
+        applyChanges();
 
-    	final ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
-		final IRepositoryService service = getRepositoryService();
-		service.runInService(new IRepositoryRunnable() {
+        final ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
+        final IRepositoryService service = getRepositoryService();
+        service.runInService(new IRepositoryRunnable() {
+
+            @Override
             public IStatus run(IProgressMonitor monitor) throws Exception {
-            	service.saveAdaptable(new IAdaptable[] { security });
-	            return Status.OK_STATUS;
+                service.saveAdaptable(new IAdaptable[] {
+                    security
+                });
+                return Status.OK_STATUS;
             }
-		}, null);
+        }, null);
     }
 
     protected void updateSymbolSelection() {
-		boolean hasIdentifier = !name.getText().equals("");
-		propertiesLabel.setEnabled(hasIdentifier);
-		properties.getTree().setEnabled(hasIdentifier);
+        boolean hasIdentifier = !name.getText().equals("");
+        propertiesLabel.setEnabled(hasIdentifier);
+        properties.getTree().setEnabled(hasIdentifier);
     }
 
-	protected IMarket[] getMarkets() {
-		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-		if (serviceReference != null) {
-			IMarketService marketService = (IMarketService) context.getService(serviceReference);
-			return marketService.getMarkets();
-		}
-		return new IMarket[0];
-	}
+    protected IMarket[] getMarkets() {
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+        ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+        if (serviceReference != null) {
+            IMarketService marketService = (IMarketService) context.getService(serviceReference);
+            return marketService.getMarkets();
+        }
+        return new IMarket[0];
+    }
 
-	protected IRepositoryService getRepositoryService() {
-		return UIActivator.getDefault().getRepositoryService();
-	}
+    protected IRepositoryService getRepositoryService() {
+        return UIActivator.getDefault().getRepositoryService();
+    }
 }

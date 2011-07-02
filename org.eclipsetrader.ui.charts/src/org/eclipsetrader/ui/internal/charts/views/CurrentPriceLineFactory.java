@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,80 +25,90 @@ import org.eclipsetrader.ui.charts.IChartParameters;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class CurrentPriceLineFactory implements IChartObjectFactory {
-	private ISecurity security;
-	private MarketPricingEnvironment pricingEnvironment;
-	private CurrentPriceLine object = new CurrentPriceLine();
 
-	private IPricingListener pricingListener = new IPricingListener() {
+    private ISecurity security;
+    private MarketPricingEnvironment pricingEnvironment;
+    private CurrentPriceLine object = new CurrentPriceLine();
+
+    private IPricingListener pricingListener = new IPricingListener() {
+
+        @Override
         public void pricingUpdate(PricingEvent event) {
-        	if (!event.getSecurity().equals(security))
-        		return;
-        	for (PricingDelta delta : event.getDelta()) {
-        		if (delta.getNewValue() instanceof ITrade)
-        			object.setTrade((ITrade) delta.getNewValue());
-        	}
+            if (!event.getSecurity().equals(security)) {
+                return;
+            }
+            for (PricingDelta delta : event.getDelta()) {
+                if (delta.getNewValue() instanceof ITrade) {
+                    object.setTrade((ITrade) delta.getNewValue());
+                }
+            }
         }
-	};
+    };
 
-	public CurrentPriceLineFactory() {
-		IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
+    public CurrentPriceLineFactory() {
+        IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
 
-		pricingEnvironment = new MarketPricingEnvironment(marketService);
-    	pricingEnvironment.addPricingListener(pricingListener);
-	}
+        pricingEnvironment = new MarketPricingEnvironment(marketService);
+        pricingEnvironment.addPricingListener(pricingListener);
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getId()
      */
+    @Override
     public String getId() {
-	    return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
      */
+    @Override
     public String getName() {
-	    return Messages.CurrentPriceLineFactory_Name;
+        return Messages.CurrentPriceLineFactory_Name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
+    @Override
     public IChartObject createObject(IDataSeries source) {
-	    return object;
+        return object;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
      */
+    @Override
     public IChartParameters getParameters() {
-	    return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
+    @Override
     public void setParameters(IChartParameters parameters) {
     }
 
-	public void setSecurity(ISecurity security) {
-    	this.security = security;
+    public void setSecurity(ISecurity security) {
+        this.security = security;
     }
 
-	public void setEnable(boolean enable) {
-		if (enable) {
-	    	pricingEnvironment.addSecurity(security);
+    public void setEnable(boolean enable) {
+        if (enable) {
+            pricingEnvironment.addSecurity(security);
 
-	    	ITrade trade = pricingEnvironment.getTrade(security);
-	    	object.setTrade(trade);
-		}
-		else {
-	    	pricingEnvironment.removeSecurity(security);
-	    	object.setTrade(null);
-		}
-	}
+            ITrade trade = pricingEnvironment.getTrade(security);
+            object.setTrade(trade);
+        }
+        else {
+            pricingEnvironment.removeSecurity(security);
+            object.setTrade(null);
+        }
+    }
 
-	public void dispose() {
-		pricingEnvironment.dispose();
-	}
+    public void dispose() {
+        pricingEnvironment.dispose();
+    }
 }

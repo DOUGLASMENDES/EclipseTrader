@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,22 +23,23 @@ import org.eclipsetrader.ui.charts.indicators.AROON;
 import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
 public class AROONPropertiesPage extends PropertyPage {
-	private Spinner period;
-	private RenderStyleInput upperLineStyle;
-	private RenderStyleInput lowerLineStyle;
 
-	public AROONPropertiesPage() {
+    private Spinner period;
+    private RenderStyleInput upperLineStyle;
+    private RenderStyleInput lowerLineStyle;
+
+    public AROONPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         setTitle("Moving Average");
@@ -63,15 +64,15 @@ public class AROONPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	AROON object = (AROON) getElement().getAdapter(AROON.class);
+        AROON object = (AROON) getElement().getAdapter(AROON.class);
         period.setSelection(object.getPeriod());
 
         upperLineStyle.setSelection(object.getUpperLineStyle());
@@ -80,17 +81,17 @@ public class AROONPropertiesPage extends PropertyPage {
         super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	AROON object = (AROON) getElement().getAdapter(AROON.class);
-    	object.setPeriod(period.getSelection());
+        AROON object = (AROON) getElement().getAdapter(AROON.class);
+        object.setPeriod(period.getSelection());
 
-    	object.setUpperLineStyle(upperLineStyle.getSelection());
-    	object.setMiddleLineStyle(lowerLineStyle.getSelection());
+        object.setUpperLineStyle(upperLineStyle.getSelection());
+        object.setMiddleLineStyle(lowerLineStyle.getSelection());
 
-	    return super.performOk();
+        return super.performOk();
     }
 }

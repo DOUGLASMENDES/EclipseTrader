@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,74 +28,79 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipsetrader.core.internal.trading.TargetPrice;
 
 public class TargetPriceWizardPage extends WizardPage {
-	Combo field;
-	Spinner value;
-	Button cross;
-	Label description;
 
-	private SelectionAdapter selectionListener = new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			description.setText(getDescriptionText());
-		}
-	};
+    Combo field;
+    Spinner value;
+    Button cross;
+    Label description;
 
-	public TargetPriceWizardPage() {
-		super("general", Messages.TargetPriceWizardPage_Title, null); //$NON-NLS-1$
-		setDescription(Messages.TargetPriceWizardPage_Description);
-	}
+    private SelectionAdapter selectionListener = new SelectionAdapter() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            description.setText(getDescriptionText());
+        }
+    };
 
-		initializeDialogUnits(content);
-		setControl(content);
+    public TargetPriceWizardPage() {
+        super("general", Messages.TargetPriceWizardPage_Title, null); //$NON-NLS-1$
+        setDescription(Messages.TargetPriceWizardPage_Description);
+    }
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText(Messages.TargetPriceWizardPage_PriceFieldLabel);
-		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(90), SWT.DEFAULT));
-		field = new Combo(content, SWT.READ_ONLY | SWT.DROP_DOWN);
-		field.setItems(new String[] {
-		    Messages.TargetPriceWizardPage_LastFieldText, Messages.TargetPriceWizardPage_BidFieldText, Messages.TargetPriceWizardPage_AskFieldText
-		});
-		field.select(0);
-		field.addSelectionListener(selectionListener);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.TargetPriceWizardPage_ValueLabel);
-		value = new Spinner(content, SWT.BORDER);
-		value.setDigits(4);
-		value.setMinimum(0);
-		value.setMaximum(99999999);
-		value.addSelectionListener(selectionListener);
+        initializeDialogUnits(content);
+        setControl(content);
 
-		label = new Label(content, SWT.NONE);
-		cross = new Button(content, SWT.CHECK);
-		cross.setText(Messages.TargetPriceWizardPage_TriggerIfCrossedLabel);
-		cross.addSelectionListener(selectionListener);
+        Label label = new Label(content, SWT.NONE);
+        label.setText(Messages.TargetPriceWizardPage_PriceFieldLabel);
+        label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(90), SWT.DEFAULT));
+        field = new Combo(content, SWT.READ_ONLY | SWT.DROP_DOWN);
+        field.setItems(new String[] {
+                Messages.TargetPriceWizardPage_LastFieldText,
+                Messages.TargetPriceWizardPage_BidFieldText,
+                Messages.TargetPriceWizardPage_AskFieldText
+        });
+        field.select(0);
+        field.addSelectionListener(selectionListener);
 
-		label = new Label(content, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.TargetPriceWizardPage_ValueLabel);
+        value = new Spinner(content, SWT.BORDER);
+        value.setDigits(4);
+        value.setMinimum(0);
+        value.setMaximum(99999999);
+        value.addSelectionListener(selectionListener);
 
-		description = new Label(content, SWT.NONE);
-		description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-	}
+        label = new Label(content, SWT.NONE);
+        cross = new Button(content, SWT.CHECK);
+        cross.setText(Messages.TargetPriceWizardPage_TriggerIfCrossedLabel);
+        cross.addSelectionListener(selectionListener);
 
-	public Map<String, Object> getParametersMap() {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put(TargetPrice.K_FIELD, field.getSelectionIndex());
-		map.put(TargetPrice.K_PRICE, value.getSelection() / Math.pow(10.0, value.getDigits()));
-		map.put(TargetPrice.K_CROSS, cross.getSelection());
-		return map;
-	}
+        label = new Label(content, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-	String getDescriptionText() {
-		return TargetPrice.getDescriptionFor(getParametersMap());
-	}
+        description = new Label(content, SWT.NONE);
+        description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+    }
+
+    public Map<String, Object> getParametersMap() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put(TargetPrice.K_FIELD, field.getSelectionIndex());
+        map.put(TargetPrice.K_PRICE, value.getSelection() / Math.pow(10.0, value.getDigits()));
+        map.put(TargetPrice.K_CROSS, cross.getSelection());
+        return map;
+    }
+
+    String getDescriptionText() {
+        return TargetPrice.getDescriptionFor(getParametersMap());
+    }
 }

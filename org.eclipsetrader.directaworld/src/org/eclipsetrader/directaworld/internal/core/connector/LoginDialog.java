@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,108 +28,115 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.directaworld.internal.Activator;
 
 public class LoginDialog extends TitleAreaDialog {
-	private String userName = ""; //$NON-NLS-1$
-	private String password = ""; //$NON-NLS-1$
-	private boolean savePassword;
-	private Text text1;
-	private Text text2;
-	private Button button;
-	private Image image;
 
-	private DisposeListener disposeListener = new DisposeListener() {
-		public void widgetDisposed(DisposeEvent e) {
-			if (image != null)
-				image.dispose();
-		}
-	};
+    private String userName = ""; //$NON-NLS-1$
+    private String password = ""; //$NON-NLS-1$
+    private boolean savePassword;
+    private Text text1;
+    private Text text2;
+    private Button button;
+    private Image image;
 
-	public LoginDialog(Shell parentShell, String userName, String password) {
-		super(parentShell);
-		this.userName = userName;
-		this.password = password;
-		try {
-			this.image = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/key.gif").createImage(); //$NON-NLS-1$
-		} catch (Exception e) {
-		}
-	}
+    private DisposeListener disposeListener = new DisposeListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
-	 */
-	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText("Login");
-		newShell.addDisposeListener(disposeListener);
-	}
+        @Override
+        public void widgetDisposed(DisposeEvent e) {
+            if (image != null) {
+                image.dispose();
+            }
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
-		composite.setLayout(new GridLayout(2, false));
+    public LoginDialog(Shell parentShell, String userName, String password) {
+        super(parentShell);
+        this.userName = userName;
+        this.password = password;
+        try {
+            this.image = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/key.gif").createImage(); //$NON-NLS-1$
+        } catch (Exception e) {
+        }
+    }
 
-		Label label = new Label(composite, SWT.NONE);
-		label.setText("User Code");
-		text1 = new Text(composite, SWT.BORDER);
-		if (userName != null)
-			text1.setText(userName);
-		text1.setLayoutData(new GridData(convertHorizontalDLUsToPixels(140), SWT.DEFAULT));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+     */
+    @Override
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText("Login");
+        newShell.addDisposeListener(disposeListener);
+    }
 
-		label = new Label(composite, SWT.NONE);
-		label.setText("Password");
-		text2 = new Text(composite, SWT.BORDER | SWT.PASSWORD);
-		text2.setLayoutData(new GridData(convertHorizontalDLUsToPixels(140), SWT.DEFAULT));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+        composite.setLayout(new GridLayout(2, false));
 
-		label = new Label(composite, SWT.NONE);
-		button = new Button(composite, SWT.CHECK);
-		button.setText("Save Password");
+        Label label = new Label(composite, SWT.NONE);
+        label.setText("User Code");
+        text1 = new Text(composite, SWT.BORDER);
+        if (userName != null) {
+            text1.setText(userName);
+        }
+        text1.setLayoutData(new GridData(convertHorizontalDLUsToPixels(140), SWT.DEFAULT));
 
-		if (text1.getText().equals(""))
-			text1.setFocus();
-		else
-			text2.setFocus();
+        label = new Label(composite, SWT.NONE);
+        label.setText("Password");
+        text2 = new Text(composite, SWT.BORDER | SWT.PASSWORD);
+        text2.setLayoutData(new GridData(convertHorizontalDLUsToPixels(140), SWT.DEFAULT));
 
-		return super.createDialogArea(parent);
-	}
+        label = new Label(composite, SWT.NONE);
+        button = new Button(composite, SWT.CHECK);
+        button.setText("Save Password");
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.window.Window#open()
-	 */
-	@Override
-	public int open() {
-		create();
+        if (text1.getText().equals("")) {
+            text1.setFocus();
+        }
+        else {
+            text2.setFocus();
+        }
 
-		setTitle("DirectaWorld Login");
-		setMessage("Please enter your user code and password");
-		setTitleImage(image);
+        return super.createDialogArea(parent);
+    }
 
-		return super.open();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#open()
+     */
+    @Override
+    public int open() {
+        create();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-	 */
-	@Override
-	protected void okPressed() {
-		userName = text1.getText();
-		password = text2.getText();
-		savePassword = button.getSelection();
-		super.okPressed();
-	}
+        setTitle("DirectaWorld Login");
+        setMessage("Please enter your user code and password");
+        setTitleImage(image);
 
-	public String getUserName() {
-		return userName;
-	}
+        return super.open();
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+     */
+    @Override
+    protected void okPressed() {
+        userName = text1.getText();
+        password = text2.getText();
+        savePassword = button.getSelection();
+        super.okPressed();
+    }
 
-	public boolean isSavePassword() {
-		return savePassword;
-	}
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public boolean isSavePassword() {
+        return savePassword;
+    }
 }

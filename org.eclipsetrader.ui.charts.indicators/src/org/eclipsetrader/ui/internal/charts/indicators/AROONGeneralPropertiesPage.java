@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,23 +27,24 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.ui.charts.indicators.AROON;
 
 public class AROONGeneralPropertiesPage extends PropertyPage {
-	private Text text;
-	private Button override;
-	private ColorSelector upperLineColor;
-	private ColorSelector lowerLineColor;
 
-	public AROONGeneralPropertiesPage() {
+    private Text text;
+    private Button override;
+    private ColorSelector upperLineColor;
+    private ColorSelector lowerLineColor;
+
+    public AROONGeneralPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         setTitle("General");
@@ -62,6 +63,7 @@ public class AROONGeneralPropertiesPage extends PropertyPage {
         override.setText("Override color theme");
         override.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
         override.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateControlsEnablement();
@@ -85,46 +87,48 @@ public class AROONGeneralPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	AROON object = (AROON) getElement().getAdapter(AROON.class);
+        AROON object = (AROON) getElement().getAdapter(AROON.class);
         text.setText(object.getName());
 
         override.setSelection(object.getUpperLineColor() != null || object.getMiddleLineColor() != null);
-        if (object.getUpperLineColor() != null)
-        	upperLineColor.setColorValue(object.getUpperLineColor());
-        if (object.getMiddleLineColor() != null)
-        	lowerLineColor.setColorValue(object.getMiddleLineColor());
+        if (object.getUpperLineColor() != null) {
+            upperLineColor.setColorValue(object.getUpperLineColor());
+        }
+        if (object.getMiddleLineColor() != null) {
+            lowerLineColor.setColorValue(object.getMiddleLineColor());
+        }
 
         updateControlsEnablement();
 
         super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	AROON object = (AROON) getElement().getAdapter(AROON.class);
-    	object.setName(text.getText());
+        AROON object = (AROON) getElement().getAdapter(AROON.class);
+        object.setName(text.getText());
 
         object.setUpperLineColor(override.getSelection() ? upperLineColor.getColorValue() : null);
         object.setMiddleLineColor(override.getSelection() ? lowerLineColor.getColorValue() : null);
 
-	    return super.performOk();
+        return super.performOk();
     }
 
     protected void updateControlsEnablement() {
-    	upperLineColor.setEnabled(override.getSelection());
-    	((Label) upperLineColor.getButton().getData("label")).setEnabled(override.getSelection());
-    	lowerLineColor.setEnabled(override.getSelection());
-    	((Label) lowerLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        upperLineColor.setEnabled(override.getSelection());
+        ((Label) upperLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        lowerLineColor.setEnabled(override.getSelection());
+        ((Label) lowerLineColor.getButton().getData("label")).setEnabled(override.getSelection());
     }
 }

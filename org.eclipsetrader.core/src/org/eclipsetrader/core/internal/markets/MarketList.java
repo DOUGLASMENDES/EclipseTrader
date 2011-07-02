@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,17 +21,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "list")
 @XmlType(name = "org.eclipsetrader.core.markets.List")
 public class MarketList {
+
     @XmlElementRef
-	private List<Market> list = new ArrayList<Market>();
+    private List<Market> list = new ArrayList<Market>();
 
-	public MarketList() {
-	}
-
-	public MarketList(List<Market> list) {
-	    this.list = list;
+    public MarketList() {
     }
 
-	public List<Market> getList() {
-    	return list;
+    public MarketList(List<Market> list) {
+        this.list = list;
+    }
+
+    public List<Market> getList() {
+        return list;
     }
 }

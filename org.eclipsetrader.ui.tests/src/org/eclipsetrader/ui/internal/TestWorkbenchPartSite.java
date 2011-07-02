@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,188 +28,214 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.services.IServiceLocator;
 
 public class TestWorkbenchPartSite implements IWorkbenchPartSite, IViewSite {
-	private Shell shell;
-	private String id;
-	private String secondaryId;
-	private String pluginId;
-	private ISelectionProvider selectionProvider;
 
-	private IActionBars actionBars = new IActionBars() {
+    private Shell shell;
+    private String id;
+    private String secondaryId;
+    private String pluginId;
+    private ISelectionProvider selectionProvider;
 
-		/* (non-Javadoc)
+    private IActionBars actionBars = new IActionBars() {
+
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#clearGlobalActionHandlers()
          */
+        @Override
         public void clearGlobalActionHandlers() {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#getGlobalActionHandler(java.lang.String)
          */
+        @Override
         public IAction getGlobalActionHandler(String actionId) {
-	        return null;
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#getMenuManager()
          */
+        @Override
         public IMenuManager getMenuManager() {
-	        return null;
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#getServiceLocator()
          */
+        @Override
         public IServiceLocator getServiceLocator() {
-	        return null;
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#getStatusLineManager()
          */
+        @Override
         public IStatusLineManager getStatusLineManager() {
-	        return null;
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#getToolBarManager()
          */
+        @Override
         public IToolBarManager getToolBarManager() {
-	        return null;
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#setGlobalActionHandler(java.lang.String, org.eclipse.jface.action.IAction)
          */
+        @Override
         public void setGlobalActionHandler(String actionId, IAction handler) {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.ui.IActionBars#updateActionBars()
          */
+        @Override
         public void updateActionBars() {
         }
-	};
+    };
 
-	public TestWorkbenchPartSite(Shell shell) {
-		this.shell = shell;
-	}
+    public TestWorkbenchPartSite(Shell shell) {
+        this.shell = shell;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPartSite#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPartSite#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.ui.IViewSite#getSecondaryId()
      */
+    @Override
     public String getSecondaryId() {
-	    return secondaryId;
+        return secondaryId;
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IViewSite#getActionBars()
      */
+    @Override
     public IActionBars getActionBars() {
-	    return actionBars;
+        return actionBars;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPartSite#getKeyBindingService()
-	 */
-	public IKeyBindingService getKeyBindingService() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPartSite#getKeyBindingService()
+     */
+    @Override
+    public IKeyBindingService getKeyBindingService() {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPartSite#getPart()
-	 */
-	public IWorkbenchPart getPart() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPartSite#getPart()
+     */
+    @Override
+    public IWorkbenchPart getPart() {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPartSite#getPluginId()
-	 */
-	public String getPluginId() {
-		return pluginId;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPartSite#getPluginId()
+     */
+    @Override
+    public String getPluginId() {
+        return pluginId;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPartSite#getRegisteredName()
-	 */
-	public String getRegisteredName() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPartSite#getRegisteredName()
+     */
+    @Override
+    public String getRegisteredName() {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(org.eclipse.jface.action.MenuManager, org.eclipse.jface.viewers.ISelectionProvider)
-	 */
-	public void registerContextMenu(MenuManager menuManager, ISelectionProvider selectionProvider) {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(org.eclipse.jface.action.MenuManager, org.eclipse.jface.viewers.ISelectionProvider)
+     */
+    @Override
+    public void registerContextMenu(MenuManager menuManager, ISelectionProvider selectionProvider) {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(java.lang.String, org.eclipse.jface.action.MenuManager, org.eclipse.jface.viewers.ISelectionProvider)
-	 */
-	public void registerContextMenu(String menuId, MenuManager menuManager, ISelectionProvider selectionProvider) {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(java.lang.String, org.eclipse.jface.action.MenuManager, org.eclipse.jface.viewers.ISelectionProvider)
+     */
+    @Override
+    public void registerContextMenu(String menuId, MenuManager menuManager, ISelectionProvider selectionProvider) {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchSite#getPage()
-	 */
-	public IWorkbenchPage getPage() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchSite#getPage()
+     */
+    @Override
+    public IWorkbenchPage getPage() {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchSite#getSelectionProvider()
-	 */
-	public ISelectionProvider getSelectionProvider() {
-		return selectionProvider;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchSite#getSelectionProvider()
+     */
+    @Override
+    public ISelectionProvider getSelectionProvider() {
+        return selectionProvider;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchSite#getShell()
-	 */
-	public Shell getShell() {
-		return shell;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchSite#getShell()
+     */
+    @Override
+    public Shell getShell() {
+        return shell;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchSite#getWorkbenchWindow()
-	 */
-	public IWorkbenchWindow getWorkbenchWindow() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchSite#getWorkbenchWindow()
+     */
+    @Override
+    public IWorkbenchWindow getWorkbenchWindow() {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchSite#setSelectionProvider(org.eclipse.jface.viewers.ISelectionProvider)
-	 */
-	public void setSelectionProvider(ISelectionProvider provider) {
-		selectionProvider = provider;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchSite#setSelectionProvider(org.eclipse.jface.viewers.ISelectionProvider)
+     */
+    @Override
+    public void setSelectionProvider(ISelectionProvider provider) {
+        selectionProvider = provider;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	public Object getAdapter(Class adapter) {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    public Object getAdapter(Class adapter) {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.services.IServiceLocator#getService(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public Object getService(Class api) {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.services.IServiceLocator#getService(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getService(Class api) {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.services.IServiceLocator#hasService(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.services.IServiceLocator#hasService(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
     public boolean hasService(Class api) {
-		return false;
-	}
+        return false;
+    }
 }

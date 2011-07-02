@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,63 +26,65 @@ import org.eclipsetrader.directa.internal.core.WebConnector;
 @XmlRootElement(name = "list")
 @XmlType(name = "org.eclipsetrader.directaworld.IdentifiersList")
 public class IdentifiersList {
-	private static IdentifiersList instance;
+
+    private static IdentifiersList instance;
 
     @XmlElementRef
-	private List<IdentifierType> identifiers;
+    private List<IdentifierType> identifiers;
 
-	public IdentifiersList() {
-		instance = this;
-		identifiers = new ArrayList<IdentifierType>();
-	}
-
-	public static IdentifiersList getInstance() {
-    	return instance;
+    public IdentifiersList() {
+        instance = this;
+        identifiers = new ArrayList<IdentifierType>();
     }
 
-	@XmlTransient
-	public List<IdentifierType> getIdentifiers() {
-    	return identifiers;
+    public static IdentifiersList getInstance() {
+        return instance;
     }
 
-	public void setIdentifiers(List<IdentifierType> identifiers) {
-    	this.identifiers = identifiers;
+    @XmlTransient
+    public List<IdentifierType> getIdentifiers() {
+        return identifiers;
     }
 
-	public IdentifierType getIdentifierFor(IFeedIdentifier identifier) {
-		String symbol = identifier.getSymbol();
+    public void setIdentifiers(List<IdentifierType> identifiers) {
+        this.identifiers = identifiers;
+    }
 
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			for (int i = 0; i < WebConnector.PROPERTIES.length; i++) {
-				if (properties.getProperty(WebConnector.PROPERTIES[i]) != null) {
-					symbol = properties.getProperty(WebConnector.PROPERTIES[i]);
-					break;
-				}
-			}
-		}
+    public IdentifierType getIdentifierFor(IFeedIdentifier identifier) {
+        String symbol = identifier.getSymbol();
 
-		for (IdentifierType type : identifiers) {
-			if (type.getSymbol().equals(symbol)) {
-				type.setIdentifier(identifier);
-				return type;
-			}
-		}
+        IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+        if (properties != null) {
+            for (int i = 0; i < WebConnector.PROPERTIES.length; i++) {
+                if (properties.getProperty(WebConnector.PROPERTIES[i]) != null) {
+                    symbol = properties.getProperty(WebConnector.PROPERTIES[i]);
+                    break;
+                }
+            }
+        }
 
-		IdentifierType type = new IdentifierType(symbol);
-		type.setIdentifier(identifier);
-		identifiers.add(type);
-		return type;
-	}
+        for (IdentifierType type : identifiers) {
+            if (type.getSymbol().equals(symbol)) {
+                type.setIdentifier(identifier);
+                return type;
+            }
+        }
 
-	public IdentifierType getIdentifierFor(String symbol) {
-		for (IdentifierType type : identifiers) {
-			if (type.getSymbol().equals(symbol))
-				return type;
-		}
+        IdentifierType type = new IdentifierType(symbol);
+        type.setIdentifier(identifier);
+        identifiers.add(type);
+        return type;
+    }
 
-		IdentifierType type = new IdentifierType(symbol);
-		identifiers.add(type);
-		return type;
-	}
+    public IdentifierType getIdentifierFor(String symbol) {
+        for (IdentifierType type : identifiers) {
+            if (type.getSymbol().equals(symbol)) {
+                return type;
+            }
+        }
+
+        IdentifierType type = new IdentifierType(symbol);
+        identifiers.add(type);
+        return type;
+    }
 }

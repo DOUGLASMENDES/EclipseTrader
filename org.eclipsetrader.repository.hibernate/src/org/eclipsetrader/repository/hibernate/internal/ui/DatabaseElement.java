@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,61 +14,62 @@ package org.eclipsetrader.repository.hibernate.internal.ui;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.eclipsetrader.repository.hibernate.internal.Activator;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class DatabaseElement {
-	private String label;
-	private Image icon;
-	private String driver;
-	private String dialect;
 
-	private String schema;
-	private String url;
+    private String label;
+    private Image icon;
+    private String driver;
+    private String dialect;
 
-	public DatabaseElement(IConfigurationElement element) {
-		label = element.getAttribute("name");
-		driver = element.getAttribute("driver_class");
-		dialect = element.getAttribute("dialect");
+    private String schema;
+    private String url;
 
-		schema = element.getAttribute("schema");
-		url = element.getAttribute("url");
+    public DatabaseElement(IConfigurationElement element) {
+        label = element.getAttribute("name");
+        driver = element.getAttribute("driver_class");
+        dialect = element.getAttribute("dialect");
 
-		if (!"".equals(element.getAttribute("icon"))) {
-			String pluginId = element.getContributor().getName();
-			ImageDescriptor imageDescriptor = Activator.imageDescriptorFromPlugin(pluginId, element.getAttribute("icon"));
-			icon = imageDescriptor.createImage();
-		}
-	}
+        schema = element.getAttribute("schema");
+        url = element.getAttribute("url");
 
-	public String getDriver() {
-    	return driver;
+        if (!"".equals(element.getAttribute("icon"))) {
+            String pluginId = element.getContributor().getName();
+            ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, element.getAttribute("icon"));
+            icon = imageDescriptor.createImage();
+        }
     }
 
-	public String getDialect() {
-    	return dialect;
+    public String getDriver() {
+        return driver;
     }
 
-	public String getLabel() {
-    	return label;
+    public String getDialect() {
+        return dialect;
     }
 
-	public Image getIcon() {
-    	return icon;
+    public String getLabel() {
+        return label;
     }
 
-	public String getSchema() {
-    	return schema;
+    public Image getIcon() {
+        return icon;
     }
 
-	public String getUrl() {
-    	return url;
+    public String getSchema() {
+        return schema;
     }
 
-	/* (non-Javadoc)
+    public String getUrl() {
+        return url;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-	    return label;
+        return label;
     }
 }

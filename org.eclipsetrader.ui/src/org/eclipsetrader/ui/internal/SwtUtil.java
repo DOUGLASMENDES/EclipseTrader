@@ -28,207 +28,223 @@ import org.eclipse.swt.widgets.TreeItem;
  */
 public class SwtUtil {
 
-	public static final long FADE_RESCHEDULE_DELAY = 80;
+    public static final long FADE_RESCHEDULE_DELAY = 80;
 
-	public static final int FADE_IN_INCREMENT = 15;
+    public static final int FADE_IN_INCREMENT = 15;
 
-	public static final int FADE_OUT_INCREMENT = -20;
+    public static final int FADE_OUT_INCREMENT = -20;
 
-	public static void collectItemData(TreeItem[] items, Set<Object> allVisible) {
-		for (TreeItem item : items) {
-			allVisible.add(item.getData());
-			collectItemData(item.getItems(), allVisible);
-		}
-	}
+    public static void collectItemData(TreeItem[] items, Set<Object> allVisible) {
+        for (TreeItem item : items) {
+            allVisible.add(item.getData());
+            collectItemData(item.getItems(), allVisible);
+        }
+    }
 
-	// TODO e3.4 get rid of reflection on 3.4 branch
-	public static boolean setAlpha(Shell shell, int value) {
-		Method method = null;
-		try {
-			method = shell.getClass().getMethod("setAlpha", new Class[] { int.class }); //$NON-NLS-1$
-			method.setAccessible(true);
-			//shell.setAlpha(value);
-			method.invoke(shell, new Object[] { value });
-			return true;
-		} catch (Exception e) {
-			// ignore, not supported on Eclipse 3.3
-			return false;
-		}
-	}
+    // TODO e3.4 get rid of reflection on 3.4 branch
+    public static boolean setAlpha(Shell shell, int value) {
+        Method method = null;
+        try {
+            method = shell.getClass().getMethod("setAlpha", new Class[] { int.class}); //$NON-NLS-1$
+            method.setAccessible(true);
+            //shell.setAlpha(value);
+            method.invoke(shell, new Object[] {
+                value
+            });
+            return true;
+        } catch (Exception e) {
+            // ignore, not supported on Eclipse 3.3
+            return false;
+        }
+    }
 
-	// TODO e3.4 get rid of reflection on 3.4 branch
-	public static int getAlpha(Shell shell) {
-		Method method = null;
-		try {
-			method = shell.getClass().getMethod("getAlpha"); //$NON-NLS-1$
-			method.setAccessible(true);
-			return (Integer) method.invoke(shell);
-		} catch (Exception e) {
-			return 0xFF;
-		}
-	}
+    // TODO e3.4 get rid of reflection on 3.4 branch
+    public static int getAlpha(Shell shell) {
+        Method method = null;
+        try {
+            method = shell.getClass().getMethod("getAlpha"); //$NON-NLS-1$
+            method.setAccessible(true);
+            return (Integer) method.invoke(shell);
+        } catch (Exception e) {
+            return 0xFF;
+        }
+    }
 
-	public static FadeJob fastFadeIn(Shell shell, IFadeListener listener) {
-		return new FadeJob(shell, 2 * FADE_IN_INCREMENT, FADE_RESCHEDULE_DELAY, listener);
-	}
+    public static FadeJob fastFadeIn(Shell shell, IFadeListener listener) {
+        return new FadeJob(shell, 2 * FADE_IN_INCREMENT, FADE_RESCHEDULE_DELAY, listener);
+    }
 
-	public static FadeJob fadeIn(Shell shell, IFadeListener listener) {
-		return new FadeJob(shell, FADE_IN_INCREMENT, FADE_RESCHEDULE_DELAY, listener);
-	}
+    public static FadeJob fadeIn(Shell shell, IFadeListener listener) {
+        return new FadeJob(shell, FADE_IN_INCREMENT, FADE_RESCHEDULE_DELAY, listener);
+    }
 
-	public static FadeJob fadeOut(Shell shell, IFadeListener listener) {
-		return new FadeJob(shell, FADE_OUT_INCREMENT, FADE_RESCHEDULE_DELAY, listener);
-	}
+    public static FadeJob fadeOut(Shell shell, IFadeListener listener) {
+        return new FadeJob(shell, FADE_OUT_INCREMENT, FADE_RESCHEDULE_DELAY, listener);
+    }
 
-	// TODO e3.4 get rid of reflection on 3.4 branch
-	public static void fade(Shell shell, boolean fadeIn, int increment, int speed) {
-		try {
-			Method method = shell.getClass().getMethod("setAlpha", new Class[] { int.class }); //$NON-NLS-1$
-			method.setAccessible(true);
+    // TODO e3.4 get rid of reflection on 3.4 branch
+    public static void fade(Shell shell, boolean fadeIn, int increment, int speed) {
+        try {
+            Method method = shell.getClass().getMethod("setAlpha", new Class[] { int.class}); //$NON-NLS-1$
+            method.setAccessible(true);
 
-			if (fadeIn) {
-				for (int i = 0; i <= 255; i += increment) {
-					// shell.setAlpha(i);
-					method.invoke(shell, new Object[] { i });
-					try {
-						Thread.sleep(speed);
-					} catch (InterruptedException e) {
-						// ignore
-					}
-				}
-				// shell.setAlpha(255);
-				method.invoke(shell, new Object[] { 255 });
-			} else {
-				for (int i = 244; i >= 0; i -= increment) {
-					// shell.setAlpha(i);
-					method.invoke(shell, new Object[] { i });
-					try {
-						Thread.sleep(speed);
-					} catch (InterruptedException e) {
-						// ignore
-					}
-				}
-				// shell.setAlpha(0);
-				method.invoke(shell, new Object[] { 0 });
-			}
-		} catch (Exception e) {
-			// ignore, not supported on Eclipse 3.3
-		}
-	}
+            if (fadeIn) {
+                for (int i = 0; i <= 255; i += increment) {
+                    // shell.setAlpha(i);
+                    method.invoke(shell, new Object[] {
+                        i
+                    });
+                    try {
+                        Thread.sleep(speed);
+                    } catch (InterruptedException e) {
+                        // ignore
+                    }
+                }
+                // shell.setAlpha(255);
+                method.invoke(shell, new Object[] {
+                    255
+                });
+            }
+            else {
+                for (int i = 244; i >= 0; i -= increment) {
+                    // shell.setAlpha(i);
+                    method.invoke(shell, new Object[] {
+                        i
+                    });
+                    try {
+                        Thread.sleep(speed);
+                    } catch (InterruptedException e) {
+                        // ignore
+                    }
+                }
+                // shell.setAlpha(0);
+                method.invoke(shell, new Object[] {
+                    0
+                });
+            }
+        } catch (Exception e) {
+            // ignore, not supported on Eclipse 3.3
+        }
+    }
 
-	public static class FadeJob extends Job {
+    public static class FadeJob extends Job {
 
-		private final Shell shell;
+        private final Shell shell;
 
-		private final int increment;
+        private final int increment;
 
-		private volatile boolean stopped;
+        private volatile boolean stopped;
 
-		private volatile int currentAlpha;
+        private volatile int currentAlpha;
 
-		private final long delay;
+        private final long delay;
 
-		private final IFadeListener fadeListener;
+        private final IFadeListener fadeListener;
 
-		public FadeJob(Shell shell, int increment, long delay, IFadeListener fadeListener) {
-			super("Fading");
-			if (increment < -255 || increment == 0 || increment > 255) {
-				throw new IllegalArgumentException("-255 <= increment <= 255 && increment != 0"); //$NON-NLS-1$
-			}
-			if (delay < 1) {
-				throw new IllegalArgumentException("delay must be > 0"); //$NON-NLS-1$
-			}
-			this.currentAlpha = getAlpha(shell);
-			this.shell = shell;
-			this.increment = increment;
-			this.delay = delay;
-			this.fadeListener = fadeListener;
+        public FadeJob(Shell shell, int increment, long delay, IFadeListener fadeListener) {
+            super("Fading");
+            if (increment < -255 || increment == 0 || increment > 255) {
+                throw new IllegalArgumentException("-255 <= increment <= 255 && increment != 0"); //$NON-NLS-1$
+            }
+            if (delay < 1) {
+                throw new IllegalArgumentException("delay must be > 0"); //$NON-NLS-1$
+            }
+            this.currentAlpha = getAlpha(shell);
+            this.shell = shell;
+            this.increment = increment;
+            this.delay = delay;
+            this.fadeListener = fadeListener;
 
-			setSystem(true);
-			schedule(delay);
-		}
+            setSystem(true);
+            schedule(delay);
+        }
 
-		@Override
-		protected void canceling() {
-			stopped = true;
-		}
+        @Override
+        protected void canceling() {
+            stopped = true;
+        }
 
-		private void reschedule() {
-			if (stopped) {
-				return;
-			}
-			schedule(delay);
-		}
+        private void reschedule() {
+            if (stopped) {
+                return;
+            }
+            schedule(delay);
+        }
 
-		public void cancelAndWait(final boolean setAlpha) {
-			if (stopped) {
-				return;
-			}
-			cancel();
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					if (setAlpha) {
-						SwtUtil.setAlpha(shell, getLastAlpha());
-					}
-				}
-			});
-		}
+        public void cancelAndWait(final boolean setAlpha) {
+            if (stopped) {
+                return;
+            }
+            cancel();
+            Display.getDefault().syncExec(new Runnable() {
 
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			if (stopped) {
-				return Status.OK_STATUS;
-			}
+                @Override
+                public void run() {
+                    if (setAlpha) {
+                        SwtUtil.setAlpha(shell, getLastAlpha());
+                    }
+                }
+            });
+        }
 
-			currentAlpha += increment;
-			if (currentAlpha <= 0) {
-				currentAlpha = 0;
-			} else if (currentAlpha >= 255) {
-				currentAlpha = 255;
-			}
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            if (stopped) {
+                return Status.OK_STATUS;
+            }
 
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					if (stopped) {
-						return;
-					}
+            currentAlpha += increment;
+            if (currentAlpha <= 0) {
+                currentAlpha = 0;
+            }
+            else if (currentAlpha >= 255) {
+                currentAlpha = 255;
+            }
 
-					if (shell.isDisposed()) {
-						stopped = true;
-						return;
-					}
+            Display.getDefault().syncExec(new Runnable() {
 
-					if (!SwtUtil.setAlpha(shell, currentAlpha)) {
-						// just in case it failed for some other reason than lack of support on the platform
-						currentAlpha = getLastAlpha();
-						SwtUtil.setAlpha(shell, currentAlpha);
-						stopped = true;
-					}
+                @Override
+                public void run() {
+                    if (stopped) {
+                        return;
+                    }
 
-					if (fadeListener != null) {
-						fadeListener.faded(shell, currentAlpha);
-					}
-				}
-			});
+                    if (shell.isDisposed()) {
+                        stopped = true;
+                        return;
+                    }
 
-			if (currentAlpha == 0 || currentAlpha == 255) {
-				stopped = true;
-			}
+                    if (!SwtUtil.setAlpha(shell, currentAlpha)) {
+                        // just in case it failed for some other reason than lack of support on the platform
+                        currentAlpha = getLastAlpha();
+                        SwtUtil.setAlpha(shell, currentAlpha);
+                        stopped = true;
+                    }
 
-			reschedule();
-			return Status.OK_STATUS;
-		}
+                    if (fadeListener != null) {
+                        fadeListener.faded(shell, currentAlpha);
+                    }
+                }
+            });
 
-		private int getLastAlpha() {
-			return (increment < 0) ? 0 : 255;
-		}
+            if (currentAlpha == 0 || currentAlpha == 255) {
+                stopped = true;
+            }
 
-	}
+            reschedule();
+            return Status.OK_STATUS;
+        }
 
-	public static interface IFadeListener {
+        private int getLastAlpha() {
+            return increment < 0 ? 0 : 255;
+        }
 
-		public void faded(Shell shell, int alpha);
+    }
 
-	}
+    public static interface IFadeListener {
+
+        public void faded(Shell shell, int alpha);
+
+    }
 
 }

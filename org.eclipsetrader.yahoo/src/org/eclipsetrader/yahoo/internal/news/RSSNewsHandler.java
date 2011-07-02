@@ -28,63 +28,68 @@ import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class RSSNewsHandler implements INewsHandler {
-	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
-	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
 
-	public RSSNewsHandler() {
-	}
+    private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
+    private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.yahoo.internal.news.INewsHandler#parseNewsPages(java.net.URL[], org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public HeadLine[] parseNewsPages(URL[] url, IProgressMonitor monitor) {
-		List<HeadLine> list = new ArrayList<HeadLine>();
+    public RSSNewsHandler() {
+    }
 
-		HttpClient client = new HttpClient();
-		client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.yahoo.internal.news.INewsHandler#parseNewsPages(java.net.URL[], org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
+    public HeadLine[] parseNewsPages(URL[] url, IProgressMonitor monitor) {
+        List<HeadLine> list = new ArrayList<HeadLine>();
 
-		for (int i = 0; i < url.length && !monitor.isCanceled(); i++) {
-			monitor.subTask(url[i].toString());
+        HttpClient client = new HttpClient();
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-			try {
-				Util.setupProxy(client, url[i].getHost());
+        for (int i = 0; i < url.length && !monitor.isCanceled(); i++) {
+            monitor.subTask(url[i].toString());
 
-				SyndFeed feed = fetcher.retrieveFeed(url[i], client);
-				for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
-					SyndEntry entry = (SyndEntry) iter.next();
+            try {
+                Util.setupProxy(client, url[i].getHost());
 
-					String link = entry.getLink();
-					if (link.lastIndexOf('*') != -1)
-						link = link.substring(link.lastIndexOf('*') + 1);
-					link = URLDecoder.decode(link, "UTF-8");
+                SyndFeed feed = fetcher.retrieveFeed(url[i], client);
+                for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
+                    SyndEntry entry = (SyndEntry) iter.next();
 
-					String source = null;
+                    String link = entry.getLink();
+                    if (link.lastIndexOf('*') != -1) {
+                        link = link.substring(link.lastIndexOf('*') + 1);
+                    }
+                    link = URLDecoder.decode(link, "UTF-8");
 
-					String title = entry.getTitle();
-					if (title.startsWith("[$$]"))
-						title = title.substring(4, title.length());
+                    String source = null;
 
-					if (title.endsWith(")")) {
-						int s = title.lastIndexOf('(');
-						if (s != -1) {
-							source = title.substring(s + 1, title.length() - 1);
-							if (source.startsWith("at "))
-								source = source.substring(3);
-							title = title.substring(0, s - 1).trim();
-						}
-					}
+                    String title = entry.getTitle();
+                    if (title.startsWith("[$$]")) {
+                        title = title.substring(4, title.length());
+                    }
 
-					list.add(new HeadLine(entry.getPublishedDate(), source, title, null, link));
-				}
-			} catch (IllegalArgumentException e) {
-				// Do nothing, could be an invalid URL
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+                    if (title.endsWith(")")) {
+                        int s = title.lastIndexOf('(');
+                        if (s != -1) {
+                            source = title.substring(s + 1, title.length() - 1);
+                            if (source.startsWith("at ")) {
+                                source = source.substring(3);
+                            }
+                            title = title.substring(0, s - 1).trim();
+                        }
+                    }
 
-			monitor.worked(1);
-		}
+                    list.add(new HeadLine(entry.getPublishedDate(), source, title, null, link));
+                }
+            } catch (IllegalArgumentException e) {
+                // Do nothing, could be an invalid URL
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-		return list.toArray(new HeadLine[list.size()]);
-	}
+            monitor.worked(1);
+        }
+
+        return list.toArray(new HeadLine[list.size()]);
+    }
 }

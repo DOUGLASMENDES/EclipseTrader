@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,80 +21,91 @@ import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 
 public class LastTradeTimeFactory extends AbstractProviderFactory {
-	protected DateFormat formatter = DateFormat.getTimeInstance(SimpleDateFormat.MEDIUM);
 
-	public class DataProvider implements IDataProvider {
+    protected DateFormat formatter = DateFormat.getTimeInstance(SimpleDateFormat.MEDIUM);
 
-		public DataProvider() {
+    public class DataProvider implements IDataProvider {
+
+        public DataProvider() {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#init(org.eclipse.core.runtime.IAdaptable)
          */
+        @Override
         public void init(IAdaptable adaptable) {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#getFactory()
          */
+        @Override
         public IDataProviderFactory getFactory() {
-	        return LastTradeTimeFactory.this;
+            return LastTradeTimeFactory.this;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#getValue(org.eclipse.core.runtime.IAdaptable)
          */
+        @Override
         public IAdaptable getValue(IAdaptable adaptable) {
-        	ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
-        	if (trade != null && trade.getTime() != null) {
-        		final Date value = trade.getTime();
-        		return new IAdaptable() {
+            ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
+            if (trade != null && trade.getTime() != null) {
+                final Date value = trade.getTime();
+                return new IAdaptable() {
+
+                    @Override
                     @SuppressWarnings("unchecked")
                     public Object getAdapter(Class adapter) {
-                    	if (adapter.isAssignableFrom(String.class))
-                    		return formatter.format(value);
-                    	if (adapter.isAssignableFrom(Date.class))
-                    		return value;
-	                    return null;
+                        if (adapter.isAssignableFrom(String.class)) {
+                            return formatter.format(value);
+                        }
+                        if (adapter.isAssignableFrom(Date.class)) {
+                            return value;
+                        }
+                        return null;
                     }
 
                     @Override
                     public boolean equals(Object obj) {
-                    	if (!(obj instanceof IAdaptable))
-                    		return false;
-                    	Date s = (Date) ((IAdaptable) obj).getAdapter(Date.class);
-                    	return s == value || (value != null && value.equals(s));
+                        if (!(obj instanceof IAdaptable)) {
+                            return false;
+                        }
+                        Date s = (Date) ((IAdaptable) obj).getAdapter(Date.class);
+                        return s == value || value != null && value.equals(s);
                     }
-        		};
-        	}
-	        return null;
+                };
+            }
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#dispose()
          */
+        @Override
         public void dispose() {
         }
-	}
+    }
 
-	public LastTradeTimeFactory() {
-	}
+    public LastTradeTimeFactory() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IDataProviderFactory#createProvider()
-	 */
-	public IDataProvider createProvider() {
-		return new DataProvider();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IDataProviderFactory#createProvider()
+     */
+    @Override
+    public IDataProvider createProvider() {
+        return new DataProvider();
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Class[] getType() {
-	    return new Class[] {
-	    		Date.class,
-	    		String.class,
-	    	};
+        return new Class[] {
+                Date.class, String.class,
+        };
     }
 }

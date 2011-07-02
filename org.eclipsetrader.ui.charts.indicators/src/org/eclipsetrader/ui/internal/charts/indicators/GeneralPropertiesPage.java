@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,23 +28,24 @@ import org.eclipsetrader.ui.charts.ILineDecorator;
 import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
 public class GeneralPropertiesPage extends PropertyPage {
-	private Text text;
-	private RenderStyleInput style;
-	private Button override;
-	private ColorSelector color;
 
-	public GeneralPropertiesPage() {
+    private Text text;
+    private RenderStyleInput style;
+    private Button override;
+    private ColorSelector color;
+
+    public GeneralPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         setTitle("General");
@@ -71,6 +72,7 @@ public class GeneralPropertiesPage extends PropertyPage {
         override.setText("Override color theme");
         override.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
         override.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateControlsEnablement();
@@ -88,45 +90,46 @@ public class GeneralPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	IGeneralPropertiesAdapter object = (IGeneralPropertiesAdapter) getElement().getAdapter(IGeneralPropertiesAdapter.class);
+        IGeneralPropertiesAdapter object = (IGeneralPropertiesAdapter) getElement().getAdapter(IGeneralPropertiesAdapter.class);
         text.setText(object.getName());
         style.setSelection(object.getRenderStyle());
 
         ILineDecorator decorator = (ILineDecorator) getElement().getAdapter(ILineDecorator.class);
         override.setSelection(decorator.getColor() != null);
-        if (decorator.getColor() != null)
-        	color.setColorValue(decorator.getColor());
+        if (decorator.getColor() != null) {
+            color.setColorValue(decorator.getColor());
+        }
 
         updateControlsEnablement();
 
         super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	IGeneralPropertiesAdapter object = (IGeneralPropertiesAdapter) getElement().getAdapter(IGeneralPropertiesAdapter.class);
-    	object.setName(text.getText());
-    	object.setRenderStyle(style.getSelection());
+        IGeneralPropertiesAdapter object = (IGeneralPropertiesAdapter) getElement().getAdapter(IGeneralPropertiesAdapter.class);
+        object.setName(text.getText());
+        object.setRenderStyle(style.getSelection());
 
         ILineDecorator decorator = (ILineDecorator) getElement().getAdapter(ILineDecorator.class);
         decorator.setColor(override.getSelection() ? color.getColorValue() : null);
 
-	    return super.performOk();
+        return super.performOk();
     }
 
     protected void updateControlsEnablement() {
-    	color.setEnabled(override.getSelection());
-    	((Label) color.getButton().getData("label")).setEnabled(override.getSelection());
+        color.setEnabled(override.getSelection());
+        ((Label) color.getButton().getData("label")).setEnabled(override.getSelection());
     }
 }

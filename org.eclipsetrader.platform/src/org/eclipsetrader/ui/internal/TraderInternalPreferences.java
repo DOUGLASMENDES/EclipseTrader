@@ -13,6 +13,6 @@ package org.eclipsetrader.ui.internal;
 
 public class TraderInternalPreferences {
 
-	// (boolean) Prompt for exit confirmation when last window closed.
-	public static final String EXIT_PROMPT_ON_CLOSE_LAST_WINDOW = "EXIT_PROMPT_ON_CLOSE_LAST_WINDOW"; //$NON-NLS-1$
+    // (boolean) Prompt for exit confirmation when last window closed.
+    public static final String EXIT_PROMPT_ON_CLOSE_LAST_WINDOW = "EXIT_PROMPT_ON_CLOSE_LAST_WINDOW"; //$NON-NLS-1$
 }

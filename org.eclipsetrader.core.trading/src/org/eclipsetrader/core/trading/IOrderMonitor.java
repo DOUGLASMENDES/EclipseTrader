@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,40 +12,41 @@
 package org.eclipsetrader.core.trading;
 
 public interface IOrderMonitor {
-	public static final String PROP_ID = "id";
-	public static final String PROP_STATUS = "status";
-	public static final String PROP_FILLED_QUANTITY = "filledQuantity";
-	public static final String PROP_AVERAGE_PRICE = "averagePrice";
-	public static final String PROP_MESSAGE = "message";
 
-	public IOrder getOrder();
+    public static final String PROP_ID = "id";
+    public static final String PROP_STATUS = "status";
+    public static final String PROP_FILLED_QUANTITY = "filledQuantity";
+    public static final String PROP_AVERAGE_PRICE = "averagePrice";
+    public static final String PROP_MESSAGE = "message";
 
-	public IBroker getBrokerConnector();
+    public IOrder getOrder();
 
-	/**
-	 * Gets the broker assigned order id.
-	 *
-	 * @return the order id.
-	 */
-	public String getId();
+    public IBroker getBrokerConnector();
 
-	public void addOrderMonitorListener(IOrderMonitorListener listener);
+    /**
+     * Gets the broker assigned order id.
+     *
+     * @return the order id.
+     */
+    public String getId();
 
-	public void removeOrderMonitorListener(IOrderMonitorListener listener);
+    public void addOrderMonitorListener(IOrderMonitorListener listener);
 
-	public void submit() throws BrokerException;
+    public void removeOrderMonitorListener(IOrderMonitorListener listener);
 
-	public void cancel() throws BrokerException;
+    public void submit() throws BrokerException;
 
-	public boolean allowModify();
+    public void cancel() throws BrokerException;
 
-	public void modify(IOrder order) throws BrokerException;
+    public boolean allowModify();
 
-	public IOrderStatus getStatus();
+    public void modify(IOrder order) throws BrokerException;
 
-	public Long getFilledQuantity();
+    public IOrderStatus getStatus();
 
-	public Double getAveragePrice();
+    public Long getFilledQuantity();
 
-	public String getMessage();
+    public Double getAveragePrice();
+
+    public String getMessage();
 }

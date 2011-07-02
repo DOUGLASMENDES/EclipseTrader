@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.ui.internal.charts;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.ui.charts.ChartParameters;
@@ -19,93 +21,100 @@ import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
 
-import junit.framework.TestCase;
-
 public class ChartViewItemPropertyTesterTest extends TestCase {
-	private ChartViewItemPropertyTester tester = new ChartViewItemPropertyTester();
 
-	public void testIdProperty() throws Exception {
-		ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock(), "viewItem.id");
-		assertTrue(tester.test(viewItem, "id", new Object[0], "viewItem.id"));
-		assertFalse(tester.test(viewItem, "id", new Object[0], "id"));
+    private ChartViewItemPropertyTester tester = new ChartViewItemPropertyTester();
+
+    public void testIdProperty() throws Exception {
+        ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock(), "viewItem.id");
+        assertTrue(tester.test(viewItem, "id", new Object[0], "viewItem.id"));
+        assertFalse(tester.test(viewItem, "id", new Object[0], "id"));
     }
 
-	public void testObjectFactoryProperty() throws Exception {
-		ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock(), "viewItem.id");
-		assertTrue(tester.test(viewItem, "chartObjectFactory", new Object[0], "test.factory"));
-		assertFalse(tester.test(viewItem, "chartObjectFactory", new Object[0], "factory"));
+    public void testObjectFactoryProperty() throws Exception {
+        ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock(), "viewItem.id");
+        assertTrue(tester.test(viewItem, "chartObjectFactory", new Object[0], "test.factory"));
+        assertFalse(tester.test(viewItem, "chartObjectFactory", new Object[0], "factory"));
     }
 
-	public void testUnknownProperty() throws Exception {
-		ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock(), "viewItem.id");
-		assertFalse(tester.test(viewItem, "unknownProperty", new Object[0], "viewItem.id"));
+    public void testUnknownProperty() throws Exception {
+        ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock(), "viewItem.id");
+        assertFalse(tester.test(viewItem, "unknownProperty", new Object[0], "viewItem.id"));
     }
 
-	public void testNotChartViewItemObject() throws Exception {
-		assertFalse(tester.test("test", "id", new Object[0], "test"));
-		assertFalse(tester.test("test", "chartObjectFactory", new Object[0], "test"));
+    public void testNotChartViewItemObject() throws Exception {
+        assertFalse(tester.test("test", "id", new Object[0], "test"));
+        assertFalse(tester.test("test", "chartObjectFactory", new Object[0], "test"));
     }
 
-	public void testAdaptsProperty() throws Exception {
-		ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock("Adapter Object"), "viewItem.id");
-		assertTrue(tester.test(viewItem, "adapts", new Object[0], "java.lang.String"));
-		assertTrue(tester.test(viewItem, "adapts", new Object[0], IAdaptable.class.getName()));
-		assertFalse(tester.test(viewItem, "adapts", new Object[0], "java.lang.Double"));
+    public void testAdaptsProperty() throws Exception {
+        ChartViewItem viewItem = new ChartViewItem(null, new ChartObjectFactoryMock("Adapter Object"), "viewItem.id");
+        assertTrue(tester.test(viewItem, "adapts", new Object[0], "java.lang.String"));
+        assertTrue(tester.test(viewItem, "adapts", new Object[0], IAdaptable.class.getName()));
+        assertFalse(tester.test(viewItem, "adapts", new Object[0], "java.lang.Double"));
     }
 
-	private class ChartObjectFactoryMock implements IChartObjectFactory, IAdaptable {
-		private Object reference;
+    private class ChartObjectFactoryMock implements IChartObjectFactory, IAdaptable {
 
-		public ChartObjectFactoryMock() {
+        private Object reference;
+
+        public ChartObjectFactoryMock() {
         }
 
-		public ChartObjectFactoryMock(Object reference) {
-	        this.reference = reference;
+        public ChartObjectFactoryMock(Object reference) {
+            this.reference = reference;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
          */
+        @Override
         public IChartObject createObject(IDataSeries source) {
-	        return null;
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getId()
          */
+        @Override
         public String getId() {
-	        return "test.factory";
+            return "test.factory";
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
          */
+        @Override
         public String getName() {
-	        return null;
+            return null;
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
          */
+        @Override
         public IChartParameters getParameters() {
-        	ChartParameters parameters = new ChartParameters();
-    	    return parameters;
+            ChartParameters parameters = new ChartParameters();
+            return parameters;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
          */
+        @Override
         public void setParameters(IChartParameters parameters) {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
          */
+        @Override
         @SuppressWarnings("unchecked")
         public Object getAdapter(Class adapter) {
-        	if (reference != null && adapter.isAssignableFrom(reference.getClass()))
-        		return reference;
-	        return null;
+            if (reference != null && adapter.isAssignableFrom(reference.getClass())) {
+                return reference;
+            }
+            return null;
         }
-	}
+    }
 }

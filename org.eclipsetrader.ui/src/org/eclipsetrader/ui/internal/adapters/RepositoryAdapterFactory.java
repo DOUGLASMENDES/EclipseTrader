@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,59 +21,68 @@ import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class RepositoryAdapterFactory implements IAdapterFactory {
-	private Image icon;
 
-	private LabelProvider labelProvider = new LabelProvider() {
+    private Image icon;
 
-		/* (non-Javadoc)
-	     * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
-	     */
-	    @Override
-	    public Image getImage(Object element) {
-			if (element instanceof IAdaptable)
-				element = ((IAdaptable) element).getAdapter(IRepository.class);
-			if (element instanceof IRepository)
-				return icon;
-			return null;
-	    }
+    private LabelProvider labelProvider = new LabelProvider() {
 
-		/* (non-Javadoc)
-	     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-	     */
-	    @Override
-	    public String getText(Object element) {
-			if (element instanceof IAdaptable)
-				element = ((IAdaptable) element).getAdapter(IRepository.class);
-			if (element instanceof IRepository)
-				return ((IRepository) element).toString();
-			return null;
-	    }
-	};
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
+         */
+        @Override
+        public Image getImage(Object element) {
+            if (element instanceof IAdaptable) {
+                element = ((IAdaptable) element).getAdapter(IRepository.class);
+            }
+            if (element instanceof IRepository) {
+                return icon;
+            }
+            return null;
+        }
 
-	public RepositoryAdapterFactory() {
-		if (UIActivator.getDefault() != null)
-			icon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY_FOLDER);
-	}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+         */
+        @Override
+        public String getText(Object element) {
+            if (element instanceof IAdaptable) {
+                element = ((IAdaptable) element).getAdapter(IRepository.class);
+            }
+            if (element instanceof IRepository) {
+                return ((IRepository) element).toString();
+            }
+            return null;
+        }
+    };
 
-	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
-     */
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(Object adaptableObject, Class adapterType) {
-    	if (adaptableObject instanceof IRepository) {
-    		if (adapterType.isAssignableFrom(labelProvider.getClass()))
-    			return labelProvider;
-    	}
-	    return null;
+    public RepositoryAdapterFactory() {
+        if (UIActivator.getDefault() != null) {
+            icon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY_FOLDER);
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Object adaptableObject, Class adapterType) {
+        if (adaptableObject instanceof IRepository) {
+            if (adapterType.isAssignableFrom(labelProvider.getClass())) {
+                return labelProvider;
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Class[] getAdapterList() {
-	    return new Class[] {
-	    		ILabelProvider.class,
-	    	};
+        return new Class[] {
+            ILabelProvider.class,
+        };
     }
 }

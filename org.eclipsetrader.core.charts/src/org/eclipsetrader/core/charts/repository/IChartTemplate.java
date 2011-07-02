@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,17 +18,17 @@ package org.eclipsetrader.core.charts.repository;
  */
 public interface IChartTemplate {
 
-	public String getName();
+    public String getName();
 
-	public void setName(String name);
+    public void setName(String name);
 
-	public IChartSection[] getSections();
+    public IChartSection[] getSections();
 
-	public void setSections(IChartSection[] sections);
+    public void setSections(IChartSection[] sections);
 
-	public IChartSection getSectionWithName(String name);
+    public IChartSection getSectionWithName(String name);
 
-	public IChartSection getSectionWithId(String id);
+    public IChartSection getSectionWithId(String id);
 
-	public void accept(IChartVisitor visitor);
+    public void accept(IChartVisitor visitor);
 }

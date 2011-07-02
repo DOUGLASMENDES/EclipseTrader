@@ -28,185 +28,209 @@ import org.eclipsetrader.core.repositories.StoreProperties;
  * @since 1.0
  */
 public class Security implements ISecurity, IStoreObject {
-	private String name;
-	private IFeedIdentifier identifier;
-	private IUserProperties userProperties;
 
-	private IStore store;
-	private IStoreProperties storeProperties;
+    private String name;
+    private IFeedIdentifier identifier;
+    private IUserProperties userProperties;
 
-	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private IStore store;
+    private IStoreProperties storeProperties;
 
-	private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-		public void propertyChange(PropertyChangeEvent evt) {
-			propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, null, identifier);
-		}
-	};
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-	protected Security() {
-	}
+    private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
 
-	public Security(String name, IFeedIdentifier identifier) {
-		this.name = name;
-		this.identifier = identifier;
-	}
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, null, identifier);
+        }
+    };
 
-	public Security(IStore store, IStoreProperties storeProperties) {
-		setStore(store);
-		setStoreProperties(storeProperties);
-	}
+    protected Security() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.ISecurity#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    public Security(String name, IFeedIdentifier identifier) {
+        this.name = name;
+        this.identifier = identifier;
+    }
 
-	public void setName(String name) {
-		Object oldValue = this.name;
-		this.name = name;
-		propertyChangeSupport.firePropertyChange(IPropertyConstants.NAME, oldValue, this.name);
-	}
+    public Security(IStore store, IStoreProperties storeProperties) {
+        setStore(store);
+        setStoreProperties(storeProperties);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.ISecurity#getIdentifier()
-	 */
-	public IFeedIdentifier getIdentifier() {
-		return identifier;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.ISecurity#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	public void setIdentifier(IFeedIdentifier identifier) {
-		Object oldValue = this.identifier;
+    public void setName(String name) {
+        Object oldValue = this.name;
+        this.name = name;
+        propertyChangeSupport.firePropertyChange(IPropertyConstants.NAME, oldValue, this.name);
+    }
 
-		if (this.identifier != null) {
-			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
-			if (propertyChangeSupport != null)
-				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.ISecurity#getIdentifier()
+     */
+    @Override
+    public IFeedIdentifier getIdentifier() {
+        return identifier;
+    }
 
-		this.identifier = identifier;
+    public void setIdentifier(IFeedIdentifier identifier) {
+        Object oldValue = this.identifier;
 
-		if (this.identifier != null) {
-			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
-			if (propertyChangeSupport != null)
-				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-		}
+        if (this.identifier != null) {
+            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+            if (propertyChangeSupport != null) {
+                propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+            }
+        }
 
-		propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, oldValue, this.identifier);
-	}
+        this.identifier = identifier;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.ISecurity#getProperties()
-	 */
-	public IUserProperties getProperties() {
-		return userProperties;
-	}
+        if (this.identifier != null) {
+            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+            if (propertyChangeSupport != null) {
+                propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+            }
+        }
 
-	public void setProperties(IUserProperties userProperties) {
-		Object oldValue = this.userProperties;
-		this.userProperties = userProperties;
-		propertyChangeSupport.firePropertyChange(IPropertyConstants.USER_PROPERTIES, oldValue, this.userProperties);
-	}
+        propertyChangeSupport.firePropertyChange(IPropertyConstants.IDENTIFIER, oldValue, this.identifier);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings({
-	    "unchecked", "rawtypes"
-	})
-	public Object getAdapter(Class adapter) {
-		if (adapter.isAssignableFrom(getClass()))
-			return this;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.ISecurity#getProperties()
+     */
+    @Override
+    public IUserProperties getProperties() {
+        return userProperties;
+    }
 
-		if (identifier != null && adapter.isAssignableFrom(identifier.getClass()))
-			return identifier;
-		if (userProperties != null && adapter.isAssignableFrom(userProperties.getClass()))
-			return userProperties;
+    public void setProperties(IUserProperties userProperties) {
+        Object oldValue = this.userProperties;
+        this.userProperties = userProperties;
+        propertyChangeSupport.firePropertyChange(IPropertyConstants.USER_PROPERTIES, oldValue, this.userProperties);
+    }
 
-		if (adapter.isAssignableFrom(PropertyChangeSupport.class))
-			return propertyChangeSupport;
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
 
-		return null;
-	}
+        if (identifier != null && adapter.isAssignableFrom(identifier.getClass())) {
+            return identifier;
+        }
+        if (userProperties != null && adapter.isAssignableFrom(userProperties.getClass())) {
+            return userProperties;
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
-	 */
-	public IStore getStore() {
-		return store;
-	}
+        if (adapter.isAssignableFrom(PropertyChangeSupport.class)) {
+            return propertyChangeSupport;
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
-	 */
-	public void setStore(IStore store) {
-		this.store = store;
-	}
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
-	 */
-	public IStoreProperties getStoreProperties() {
-		if (storeProperties == null)
-			storeProperties = new StoreProperties();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
+     */
+    @Override
+    public IStore getStore() {
+        return store;
+    }
 
-		storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, ISecurity.class.getName());
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
+     */
+    @Override
+    public void setStore(IStore store) {
+        this.store = store;
+    }
 
-		storeProperties.setProperty(IPropertyConstants.NAME, getName());
-		storeProperties.setProperty(IPropertyConstants.IDENTIFIER, getIdentifier());
-		storeProperties.setProperty(IPropertyConstants.USER_PROPERTIES, getProperties());
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
+     */
+    @Override
+    public IStoreProperties getStoreProperties() {
+        if (storeProperties == null) {
+            storeProperties = new StoreProperties();
+        }
 
-		return storeProperties;
-	}
+        storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, ISecurity.class.getName());
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
-	 */
-	public void setStoreProperties(IStoreProperties storeProperties) {
-		this.storeProperties = storeProperties;
+        storeProperties.setProperty(IPropertyConstants.NAME, getName());
+        storeProperties.setProperty(IPropertyConstants.IDENTIFIER, getIdentifier());
+        storeProperties.setProperty(IPropertyConstants.USER_PROPERTIES, getProperties());
 
-		if (this.identifier != null) {
-			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
-			if (propertyChangeSupport != null)
-				propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
-		}
+        return storeProperties;
+    }
 
-		this.name = (String) storeProperties.getProperty(IPropertyConstants.NAME);
-		this.identifier = (IFeedIdentifier) storeProperties.getProperty(IPropertyConstants.IDENTIFIER);
-		this.userProperties = (IUserProperties) storeProperties.getProperty(IPropertyConstants.USER_PROPERTIES);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
+     */
+    @Override
+    public void setStoreProperties(IStoreProperties storeProperties) {
+        this.storeProperties = storeProperties;
 
-		if (this.identifier != null) {
-			PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
-			if (propertyChangeSupport != null)
-				propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
-		}
-	}
+        if (this.identifier != null) {
+            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+            if (propertyChangeSupport != null) {
+                propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ISecurity))
-			return false;
+        this.name = (String) storeProperties.getProperty(IPropertyConstants.NAME);
+        this.identifier = (IFeedIdentifier) storeProperties.getProperty(IPropertyConstants.IDENTIFIER);
+        this.userProperties = (IUserProperties) storeProperties.getProperty(IPropertyConstants.USER_PROPERTIES);
 
-		ISecurity other = (ISecurity) obj;
-		if (!name.equals(other.getName()))
-			return false;
-		if (identifier == null && other.getIdentifier() != null)
-			return false;
-		if (identifier != null && !identifier.equals(other.getIdentifier()))
-			return false;
+        if (this.identifier != null) {
+            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) this.identifier.getAdapter(PropertyChangeSupport.class);
+            if (propertyChangeSupport != null) {
+                propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+            }
+        }
+    }
 
-		return true;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ISecurity)) {
+            return false;
+        }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return name;
-	}
+        ISecurity other = (ISecurity) obj;
+        if (!name.equals(other.getName())) {
+            return false;
+        }
+        if (identifier == null && other.getIdentifier() != null) {
+            return false;
+        }
+        if (identifier != null && !identifier.equals(other.getIdentifier())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
 }

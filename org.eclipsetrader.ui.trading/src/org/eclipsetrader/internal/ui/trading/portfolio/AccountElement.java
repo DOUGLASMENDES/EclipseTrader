@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,126 +25,141 @@ import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
 
 public class AccountElement extends PlatformObject implements IViewItem, IWorkbenchAdapter {
-	IViewItem parent;
-	IAccount account;
-	List<PositionElement> childs;
 
-	public AccountElement(IViewItem parent, IAccount account) {
-		this.parent = parent;
-		this.account = account;
+    IViewItem parent;
+    IAccount account;
+    List<PositionElement> childs;
 
-		childs = new ArrayList<PositionElement>();
-		for (IPosition position : account.getPositions())
-			childs.add(new PositionElement(this, position));
-	}
+    public AccountElement(IViewItem parent, IAccount account) {
+        this.parent = parent;
+        this.account = account;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#accept(org.eclipsetrader.core.views.IViewItemVisitor)
-	 */
-	public void accept(IViewItemVisitor visitor) {
-		if (visitor.visit(this)) {
-			for (PositionElement element : childs)
-				element.accept(visitor);
-		}
-	}
+        childs = new ArrayList<PositionElement>();
+        for (IPosition position : account.getPositions()) {
+            childs.add(new PositionElement(this, position));
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getItemCount()
-	 */
-	public int getItemCount() {
-		return childs.size();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#accept(org.eclipsetrader.core.views.IViewItemVisitor)
+     */
+    @Override
+    public void accept(IViewItemVisitor visitor) {
+        if (visitor.visit(this)) {
+            for (PositionElement element : childs) {
+                element.accept(visitor);
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getItems()
-	 */
-	public IViewItem[] getItems() {
-		return childs.toArray(new IViewItem[childs.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getItemCount()
+     */
+    @Override
+    public int getItemCount() {
+        return childs.size();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getParent()
-	 */
-	public IViewItem getParent() {
-		return parent;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getItems()
+     */
+    @Override
+    public IViewItem[] getItems() {
+        return childs.toArray(new IViewItem[childs.size()]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItem#getValues()
-	 */
-	public IAdaptable[] getValues() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getParent()
+     */
+    @Override
+    public IViewItem getParent() {
+        return parent;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.PlatformObject#getAdapter(java.lang.Class)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Class adapter) {
-		if (adapter.isAssignableFrom(account.getClass()))
-			return account;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItem#getValues()
+     */
+    @Override
+    public IAdaptable[] getValues() {
+        return null;
+    }
 
-		if (adapter.isAssignableFrom(IBroker.class)) {
-			IBroker broker = (IBroker) parent.getAdapter(IBroker.class);
-			if (broker != null)
-				return broker;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.PlatformObject#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(account.getClass())) {
+            return account;
+        }
 
-		return super.getAdapter(adapter);
-	}
+        if (adapter.isAssignableFrom(IBroker.class)) {
+            IBroker broker = (IBroker) parent.getAdapter(IBroker.class);
+            if (broker != null) {
+                return broker;
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof AccountElement))
-			return false;
-		return account.equals(((AccountElement) obj).account);
-	}
+        return super.getAdapter(adapter);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return 11 * account.hashCode();
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof AccountElement)) {
+            return false;
+        }
+        return account.equals(((AccountElement) obj).account);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.model.IWorkbenchAdapter#getChildren(java.lang.Object)
-	 */
-	public Object[] getChildren(Object o) {
-		return childs.toArray(new IViewItem[childs.size()]);
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return 11 * account.hashCode();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.model.IWorkbenchAdapter#getImageDescriptor(java.lang.Object)
-	 */
-	public ImageDescriptor getImageDescriptor(Object object) {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getChildren(java.lang.Object)
+     */
+    @Override
+    public Object[] getChildren(Object o) {
+        return childs.toArray(new IViewItem[childs.size()]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.model.IWorkbenchAdapter#getLabel(java.lang.Object)
-	 */
-	public String getLabel(Object o) {
-		return account.getDescription();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getImageDescriptor(java.lang.Object)
+     */
+    @Override
+    public ImageDescriptor getImageDescriptor(Object object) {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.model.IWorkbenchAdapter#getParent(java.lang.Object)
-	 */
-	public Object getParent(Object o) {
-		return parent;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getLabel(java.lang.Object)
+     */
+    @Override
+    public String getLabel(Object o) {
+        return account.getDescription();
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return account.getDescription();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.model.IWorkbenchAdapter#getParent(java.lang.Object)
+     */
+    @Override
+    public Object getParent(Object o) {
+        return parent;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return account.getDescription();
+    }
 }

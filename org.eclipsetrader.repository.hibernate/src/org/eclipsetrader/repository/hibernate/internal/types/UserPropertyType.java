@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,32 +24,33 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "user_properties")
 public class UserPropertyType {
-	@Id
+
+    @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@SuppressWarnings("unused")
-	private String id;
+    @SuppressWarnings("unused")
+    private String id;
 
-	@Column(name = "name")
-	private String name;
+    @Column(name = "name")
+    private String name;
 
-	@Column(name = "value")
-	private String defaultValue;
+    @Column(name = "value")
+    private String defaultValue;
 
-	@Column(name = "required")
-	private boolean required;
+    @Column(name = "required")
+    private boolean required;
 
-	public UserPropertyType() {
-	}
-
-	public UserPropertyType(IUserProperty userProperty) {
-	    this.name = userProperty.getName();
-	    this.defaultValue = userProperty.getDefaultValue();
-	    this.required = userProperty.isRequired();
+    public UserPropertyType() {
     }
 
-	public IUserProperty getProperty() {
-		return new UserProperty(name, required, defaultValue);
-	}
+    public UserPropertyType(IUserProperty userProperty) {
+        this.name = userProperty.getName();
+        this.defaultValue = userProperty.getDefaultValue();
+        this.required = userProperty.isRequired();
+    }
+
+    public IUserProperty getProperty() {
+        return new UserProperty(name, required, defaultValue);
+    }
 }

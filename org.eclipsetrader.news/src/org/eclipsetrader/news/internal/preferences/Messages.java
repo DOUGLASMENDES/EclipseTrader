@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,24 +14,25 @@ package org.eclipsetrader.news.internal.preferences;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.eclipsetrader.news.internal.preferences.messages"; //$NON-NLS-1$
 
-	private Messages() {
-	}
+    private static final String BUNDLE_NAME = "org.eclipsetrader.news.internal.preferences.messages"; //$NON-NLS-1$
 
-	static {
-		// initialize resource bundle
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
-	}
+    private Messages() {
+    }
 
-	public static String RSSFeedDialog_Title;
-	public static String RSSFeedDialog_Source;
-	public static String RSSFeedDialog_URL;
+    static {
+        // initialize resource bundle
+        NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+    }
 
-	public static String NewsPreferencesPage_RunAtStartup;
+    public static String RSSFeedDialog_Title;
+    public static String RSSFeedDialog_Source;
+    public static String RSSFeedDialog_URL;
+
+    public static String NewsPreferencesPage_RunAtStartup;
     public static String NewsPreferencesPage_FollowQuoteFeed;
     public static String NewsPreferencesPage_DaysToKeep;
-	public static String NewsPreferencesPage_EnableDecorators;
+    public static String NewsPreferencesPage_EnableDecorators;
     public static String NewsPreferencesPage_Providers;
 
     public static String RSSPreferencesPage_AutoUpdate;

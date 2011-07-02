@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
@@ -30,34 +31,36 @@ import org.eclipsetrader.ui.internal.views.Level2View;
 
 public class Level2OpenHandler extends AbstractHandler {
 
-	public Level2OpenHandler() {
-	}
+    public Level2OpenHandler() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-	 */
+    /* (non-Javadoc)
+     * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+     */
+    @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
-		IWorkbenchSite site = HandlerUtil.getActiveSite(event);
+        IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
+        IWorkbenchSite site = HandlerUtil.getActiveSite(event);
 
-		if (selection != null && !selection.isEmpty()) {
-			for (Iterator<?> iter = selection.iterator(); iter.hasNext(); ) {
-				Object target = iter.next();
-				if (target instanceof IAdaptable)
-					target = ((IAdaptable) target).getAdapter(ISecurity.class);
-				if (target instanceof ISecurity) {
-					ISecurity security = (ISecurity) target;
-					try {
-						Level2View view = (Level2View) site.getPage().showView(Level2View.VIEW_ID, UUID.randomUUID().toString(), IWorkbenchPage.VIEW_ACTIVATE);
-						view.setSecurity(security);
-		            } catch (PartInitException e) {
-		    			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening Level II view", e); //$NON-NLS-1$
-		    			UIActivator.getDefault().getLog().log(status);
-		            }
-				}
-			}
-		}
+        if (selection != null && !selection.isEmpty()) {
+            for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
+                Object target = iter.next();
+                if (target instanceof IAdaptable) {
+                    target = ((IAdaptable) target).getAdapter(ISecurity.class);
+                }
+                if (target instanceof ISecurity) {
+                    ISecurity security = (ISecurity) target;
+                    try {
+                        Level2View view = (Level2View) site.getPage().showView(Level2View.VIEW_ID, UUID.randomUUID().toString(), IWorkbenchPage.VIEW_ACTIVATE);
+                        view.setSecurity(security);
+                    } catch (PartInitException e) {
+                        Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening Level II view", e); //$NON-NLS-1$
+                        UIActivator.getDefault().getLog().log(status);
+                    }
+                }
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

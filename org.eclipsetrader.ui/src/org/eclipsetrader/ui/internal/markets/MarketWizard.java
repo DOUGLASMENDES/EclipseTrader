@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,48 +18,49 @@ import org.eclipsetrader.core.internal.markets.Market;
 import org.eclipsetrader.core.internal.markets.MarketService;
 
 public class MarketWizard extends Wizard {
-	GeneralWizardPage generalPage;
-	ScheduleWizardPage schedulePage;
-	ConnectorsWizardPage connectorsPage;
 
-	MarketService marketService;
+    GeneralWizardPage generalPage;
+    ScheduleWizardPage schedulePage;
+    ConnectorsWizardPage connectorsPage;
 
-	Market market;
+    MarketService marketService;
 
-	protected MarketWizard() {
-	}
+    Market market;
 
-	public MarketWizard(MarketService marketService) {
-		this.marketService = marketService;
-	}
+    protected MarketWizard() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#addPages()
-	 */
-	@Override
-	public void addPages() {
-		setWindowTitle("New Market");
-		addPage(generalPage = new GeneralWizardPage(marketService));
-		addPage(schedulePage = new ScheduleWizardPage());
-		addPage(connectorsPage = new ConnectorsWizardPage());
-	}
+    public MarketWizard(MarketService marketService) {
+        this.marketService = marketService;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
-	 */
-	@Override
-	public boolean performFinish() {
-		market = new Market(generalPage.getMarketName(), Arrays.asList(schedulePage.getSchedule()), schedulePage.getTimeZone());
-		market.setWeekDays(schedulePage.getWeekDays());
-		market.setLiveFeedConnector(connectorsPage.getLiveFeedConnector());
-		return true;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#addPages()
+     */
+    @Override
+    public void addPages() {
+        setWindowTitle("New Market");
+        addPage(generalPage = new GeneralWizardPage(marketService));
+        addPage(schedulePage = new ScheduleWizardPage());
+        addPage(connectorsPage = new ConnectorsWizardPage());
+    }
 
-	public MarketService getMarketService() {
-		return marketService;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#performFinish()
+     */
+    @Override
+    public boolean performFinish() {
+        market = new Market(generalPage.getMarketName(), Arrays.asList(schedulePage.getSchedule()), schedulePage.getTimeZone());
+        market.setWeekDays(schedulePage.getWeekDays());
+        market.setLiveFeedConnector(connectorsPage.getLiveFeedConnector());
+        return true;
+    }
 
-	public Market getMarket() {
-		return market;
-	}
+    public MarketService getMarketService() {
+        return marketService;
+    }
+
+    public Market getMarket() {
+        return market;
+    }
 }

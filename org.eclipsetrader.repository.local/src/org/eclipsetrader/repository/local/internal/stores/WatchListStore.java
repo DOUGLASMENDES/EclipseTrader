@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,126 +49,135 @@ import org.eclipsetrader.repository.local.internal.types.RepositoryFactoryAdapte
 @XmlRootElement(name = "watchlist")
 public class WatchListStore implements IStore {
 
-	@XmlAttribute(name = "id")
-	private Integer id;
+    @XmlAttribute(name = "id")
+    private Integer id;
 
-	@XmlAttribute(name = "factory")
-	@XmlJavaTypeAdapter(RepositoryFactoryAdapter.class)
-	private IRepositoryElementFactory factory;
+    @XmlAttribute(name = "factory")
+    @XmlJavaTypeAdapter(RepositoryFactoryAdapter.class)
+    private IRepositoryElementFactory factory;
 
-	@XmlElement(name = "name")
-	private String name;
+    @XmlElement(name = "name")
+    private String name;
 
-	@XmlElementWrapper(name = "columns")
-	@XmlElementRef
-	@XmlJavaTypeAdapter(ColumnAdapter.class)
-	private List<IColumn> columns = new ArrayList<IColumn>();
+    @XmlElementWrapper(name = "columns")
+    @XmlElementRef
+    @XmlJavaTypeAdapter(ColumnAdapter.class)
+    private List<IColumn> columns = new ArrayList<IColumn>();
 
-	@XmlElementWrapper(name = "elements")
-	@XmlElementRef
-	@XmlJavaTypeAdapter(HoldingAdapter.class)
-	private List<IHolding> elements = new ArrayList<IHolding>();
+    @XmlElementWrapper(name = "elements")
+    @XmlElementRef
+    @XmlJavaTypeAdapter(HoldingAdapter.class)
+    private List<IHolding> elements = new ArrayList<IHolding>();
 
-	@XmlElementWrapper(name = "properties")
-	@XmlElementRef
-	private List<PropertyType> unknownProperties;
+    @XmlElementWrapper(name = "properties")
+    @XmlElementRef
+    private List<PropertyType> unknownProperties;
 
-	private static Set<String> knownProperties = new HashSet<String>();
-	static {
-		knownProperties.add(IPropertyConstants.ELEMENT_FACTORY);
-		knownProperties.add(IPropertyConstants.OBJECT_TYPE);
+    private static Set<String> knownProperties = new HashSet<String>();
+    static {
+        knownProperties.add(IPropertyConstants.ELEMENT_FACTORY);
+        knownProperties.add(IPropertyConstants.OBJECT_TYPE);
 
-		knownProperties.add(IPropertyConstants.NAME);
-		knownProperties.add(IPropertyConstants.COLUMNS);
-		knownProperties.add(IPropertyConstants.HOLDINGS);
-	}
-
-	public WatchListStore() {
-	}
-
-	public WatchListStore(Integer id) {
-	    this.id = id;
+        knownProperties.add(IPropertyConstants.NAME);
+        knownProperties.add(IPropertyConstants.COLUMNS);
+        knownProperties.add(IPropertyConstants.HOLDINGS);
     }
 
-	/* (non-Javadoc)
+    public WatchListStore() {
+    }
+
+    public WatchListStore(Integer id) {
+        this.id = id;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#toURI()
      */
+    @Override
     public URI toURI() {
-	    try {
-	        return new URI(LocalRepository.URI_SCHEMA, LocalRepository.URI_WATCHLIST_PART, String.valueOf(id));
+        try {
+            return new URI(LocalRepository.URI_SCHEMA, LocalRepository.URI_WATCHLIST_PART, String.valueOf(id));
         } catch (URISyntaxException e) {
         }
         return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#fetchProperties(org.eclipse.core.runtime.IProgressMonitor)
      */
+    @Override
     public IStoreProperties fetchProperties(IProgressMonitor monitor) {
-    	StoreProperties properties = new StoreProperties();
+        StoreProperties properties = new StoreProperties();
 
-    	properties.setProperty(IPropertyConstants.ELEMENT_FACTORY, factory);
-    	properties.setProperty(IPropertyConstants.OBJECT_TYPE, IWatchList.class.getName());
+        properties.setProperty(IPropertyConstants.ELEMENT_FACTORY, factory);
+        properties.setProperty(IPropertyConstants.OBJECT_TYPE, IWatchList.class.getName());
 
-		properties.setProperty(IPropertyConstants.NAME, name);
-		properties.setProperty(IPropertyConstants.COLUMNS, columns.toArray(new IColumn[columns.size()]));
-		properties.setProperty(IPropertyConstants.HOLDINGS, elements.toArray(new IHolding[elements.size()]));
+        properties.setProperty(IPropertyConstants.NAME, name);
+        properties.setProperty(IPropertyConstants.COLUMNS, columns.toArray(new IColumn[columns.size()]));
+        properties.setProperty(IPropertyConstants.HOLDINGS, elements.toArray(new IHolding[elements.size()]));
 
-		if (unknownProperties != null) {
-			for (PropertyType property : unknownProperties)
-				properties.setProperty(property.getName(), PropertyType.convert(property));
-		}
+        if (unknownProperties != null) {
+            for (PropertyType property : unknownProperties) {
+                properties.setProperty(property.getName(), PropertyType.convert(property));
+            }
+        }
 
-		return properties;
+        return properties;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#putProperties(org.eclipsetrader.core.repositories.IStoreProperties, org.eclipse.core.runtime.IProgressMonitor)
      */
+    @Override
     public void putProperties(IStoreProperties properties, IProgressMonitor monitor) {
-		this.factory = (IRepositoryElementFactory) properties.getProperty(IPropertyConstants.ELEMENT_FACTORY);
+        this.factory = (IRepositoryElementFactory) properties.getProperty(IPropertyConstants.ELEMENT_FACTORY);
 
-		this.name = (String) properties.getProperty(IPropertyConstants.NAME);
+        this.name = (String) properties.getProperty(IPropertyConstants.NAME);
 
-		IHolding[] e = (IHolding[]) properties.getProperty(IPropertyConstants.HOLDINGS);
-		this.elements = e != null ? new ArrayList<IHolding>(Arrays.asList(e)) : new ArrayList<IHolding>();
+        IHolding[] e = (IHolding[]) properties.getProperty(IPropertyConstants.HOLDINGS);
+        this.elements = e != null ? new ArrayList<IHolding>(Arrays.asList(e)) : new ArrayList<IHolding>();
 
-		IColumn[] c = (IColumn[]) properties.getProperty(IPropertyConstants.COLUMNS);
-		this.columns = c != null ? new ArrayList<IColumn>(Arrays.asList(c)) : new ArrayList<IColumn>();
+        IColumn[] c = (IColumn[]) properties.getProperty(IPropertyConstants.COLUMNS);
+        this.columns = c != null ? new ArrayList<IColumn>(Arrays.asList(c)) : new ArrayList<IColumn>();
 
-		this.unknownProperties = new ArrayList<PropertyType>();
-		for (String name : properties.getPropertyNames()) {
-			if (!knownProperties.contains(name))
-				this.unknownProperties.add(PropertyType.create(name, properties.getProperty(name)));
-		}
+        this.unknownProperties = new ArrayList<PropertyType>();
+        for (String name : properties.getPropertyNames()) {
+            if (!knownProperties.contains(name)) {
+                this.unknownProperties.add(PropertyType.create(name, properties.getProperty(name)));
+            }
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
      */
+    @Override
     public void delete(IProgressMonitor monitor) throws CoreException {
-    	WatchListCollection.getInstance().delete(this);
+        WatchListCollection.getInstance().delete(this);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
      */
+    @Override
     public IStore[] fetchChilds(IProgressMonitor monitor) {
-	    return new IStore[0];
+        return new IStore[0];
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#createChild()
      */
+    @Override
     public IStore createChild() {
-	    return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#getRepository()
      */
-	@XmlTransient
+    @Override
+    @XmlTransient
     public IRepository getRepository() {
-	    return Activator.getDefault().getRepository();
+        return Activator.getDefault().getRepository();
     }
 }

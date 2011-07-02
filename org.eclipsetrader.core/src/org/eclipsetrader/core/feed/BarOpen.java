@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,66 +21,68 @@ import java.util.Date;
  * @see org.eclipsetrader.core.feed.IBarOpen
  */
 public class BarOpen implements IBarOpen, Serializable {
-	private static final long serialVersionUID = -2597107324979019758L;
 
-	private Date date;
-	private TimeSpan timeSpan;
-	private Double open;
+    private static final long serialVersionUID = -2597107324979019758L;
 
-	public BarOpen(Date date, TimeSpan timeSpan, Double open) {
-		this.date = date;
-		this.timeSpan = timeSpan;
-		this.open = open;
-	}
+    private Date date;
+    private TimeSpan timeSpan;
+    private Double open;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IOHLC#getDate()
-	 */
-	public Date getDate() {
-		return date;
-	}
+    public BarOpen(Date date, TimeSpan timeSpan, Double open) {
+        this.date = date;
+        this.timeSpan = timeSpan;
+        this.open = open;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IOHLC#getTimeSpan()
-	 */
-	public TimeSpan getTimeSpan() {
-		return timeSpan;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IOHLC#getDate()
+     */
+    @Override
+    public Date getDate() {
+        return date;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IOHLC#getOpen()
-	 */
-	public Double getOpen() {
-		return open;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IOHLC#getTimeSpan()
+     */
+    @Override
+    public TimeSpan getTimeSpan() {
+        return timeSpan;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof IBar))
-			return false;
-		IBar other = (IBar) obj;
-		return (getDate() == other.getDate() || (getDate() != null && getDate().equals(other.getDate()))) &&
-		       (getTimeSpan() == other.getTimeSpan() || (getTimeSpan() != null && getTimeSpan().equals(other.getTimeSpan()))) &&
-		       (getOpen() == other.getOpen() || (getOpen() != null && getOpen().equals(other.getOpen())));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IOHLC#getOpen()
+     */
+    @Override
+    public Double getOpen() {
+        return open;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return (3 * (date != null ? date.hashCode() : 0)) + (7 * (timeSpan != null ? timeSpan.hashCode() : 0)) +
-		       (11 * (open != null ? open.hashCode() : 0));
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IBar)) {
+            return false;
+        }
+        IBar other = (IBar) obj;
+        return (getDate() == other.getDate() || getDate() != null && getDate().equals(other.getDate())) && (getTimeSpan() == other.getTimeSpan() || getTimeSpan() != null && getTimeSpan().equals(other.getTimeSpan())) && (getOpen() == other.getOpen() || getOpen() != null && getOpen().equals(other.getOpen()));
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "[BarOpen: " + date + " TS=" + timeSpan.toString() + " O=" + open + "]";
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return 3 * (date != null ? date.hashCode() : 0) + 7 * (timeSpan != null ? timeSpan.hashCode() : 0) + 11 * (open != null ? open.hashCode() : 0);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "[BarOpen: " + date + " TS=" + timeSpan.toString() + " O=" + open + "]";
+    }
 }

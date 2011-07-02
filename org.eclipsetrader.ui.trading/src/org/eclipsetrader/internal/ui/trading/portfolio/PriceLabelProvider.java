@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,27 +19,30 @@ import org.eclipsetrader.core.trading.IPosition;
 import org.eclipsetrader.core.views.IViewItem;
 
 public class PriceLabelProvider extends CellLabelProvider {
-	private NumberFormat formatter = NumberFormat.getInstance();
 
-	public PriceLabelProvider() {
-		formatter.setGroupingUsed(true);
-		formatter.setMinimumIntegerDigits(1);
-		formatter.setMinimumFractionDigits(1);
-		formatter.setMaximumFractionDigits(4);
-	}
+    private NumberFormat formatter = NumberFormat.getInstance();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.CellLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
-	 */
-	@Override
-	public void update(ViewerCell cell) {
-		if (!(cell.getElement() instanceof IViewItem))
-			return;
+    public PriceLabelProvider() {
+        formatter.setGroupingUsed(true);
+        formatter.setMinimumIntegerDigits(1);
+        formatter.setMinimumFractionDigits(1);
+        formatter.setMaximumFractionDigits(4);
+    }
 
-		IPosition position = (IPosition) ((IViewItem) cell.getElement()).getAdapter(IPosition.class);
-		if (position == null)
-			return;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.CellLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
+     */
+    @Override
+    public void update(ViewerCell cell) {
+        if (!(cell.getElement() instanceof IViewItem)) {
+            return;
+        }
 
-		cell.setText(formatter.format(position.getPrice()));
-	}
+        IPosition position = (IPosition) ((IViewItem) cell.getElement()).getAdapter(IPosition.class);
+        if (position == null) {
+            return;
+        }
+
+        cell.setText(formatter.format(position.getPrice()));
+    }
 }

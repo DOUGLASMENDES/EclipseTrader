@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,27 +25,28 @@ import org.eclipsetrader.ui.internal.charts.OHLCFieldInput;
 import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
 public class BBANDSPropertiesPage extends PropertyPage {
-	private OHLCFieldInput input;
-	private Spinner period;
-	private Spinner upperDeviation;
-	private Spinner lowerDeviation;
-	private MATypeInput type;
-	private RenderStyleInput upperLineStyle;
-	private RenderStyleInput middleLineStyle;
-	private RenderStyleInput lowerLineStyle;
 
-	public BBANDSPropertiesPage() {
+    private OHLCFieldInput input;
+    private Spinner period;
+    private Spinner upperDeviation;
+    private Spinner lowerDeviation;
+    private MATypeInput type;
+    private RenderStyleInput upperLineStyle;
+    private RenderStyleInput middleLineStyle;
+    private RenderStyleInput lowerLineStyle;
+
+    public BBANDSPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         setTitle("Bollinger Bands");
@@ -92,19 +93,19 @@ public class BBANDSPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	BBANDS object = (BBANDS) getElement().getAdapter(BBANDS.class);
+        BBANDS object = (BBANDS) getElement().getAdapter(BBANDS.class);
         input.setSelection(object.getField());
         period.setSelection(object.getPeriod());
-        upperDeviation.setSelection((int)(object.getUpperDeviation() * 100));
-        lowerDeviation.setSelection((int)(object.getLowerDeviation() * 100));
+        upperDeviation.setSelection((int) (object.getUpperDeviation() * 100));
+        lowerDeviation.setSelection((int) (object.getLowerDeviation() * 100));
         type.setSelection(object.getMaType());
 
         upperLineStyle.setSelection(object.getUpperLineStyle());
@@ -114,22 +115,22 @@ public class BBANDSPropertiesPage extends PropertyPage {
         super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	BBANDS object = (BBANDS) getElement().getAdapter(BBANDS.class);
-    	object.setField(input.getSelection());
-    	object.setPeriod(period.getSelection());
-    	object.setUpperDeviation(upperDeviation.getSelection() / 100.0);
-    	object.setLowerDeviation(lowerDeviation.getSelection() / 100.0);
-    	object.setMaType(type.getSelection());
+        BBANDS object = (BBANDS) getElement().getAdapter(BBANDS.class);
+        object.setField(input.getSelection());
+        object.setPeriod(period.getSelection());
+        object.setUpperDeviation(upperDeviation.getSelection() / 100.0);
+        object.setLowerDeviation(lowerDeviation.getSelection() / 100.0);
+        object.setMaType(type.getSelection());
 
-    	object.setUpperLineStyle(upperLineStyle.getSelection());
-    	object.setMiddleLineStyle(middleLineStyle.getSelection());
-    	object.setLowerLineStyle(lowerLineStyle.getSelection());
+        object.setUpperLineStyle(upperLineStyle.getSelection());
+        object.setMiddleLineStyle(middleLineStyle.getSelection());
+        object.setLowerLineStyle(lowerLineStyle.getSelection());
 
-	    return super.performOk();
+        return super.performOk();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,155 +40,165 @@ import org.eclipsetrader.core.internal.markets.Market;
 import org.eclipsetrader.core.internal.markets.MarketHoliday;
 
 public class HolidaysPage extends PropertyPage {
-	TableViewer viewer;
-	Button add;
-	Button edit;
-	Button remove;
 
-	List<MarketHolidayElement> input;
+    TableViewer viewer;
+    Button add;
+    Button edit;
+    Button remove;
 
-	public HolidaysPage() {
-		setTitle("Holidays");
-		noDefaultAndApplyButton();
-	}
+    List<MarketHolidayElement> input;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(2, false));
-		((GridLayout) content.getLayout()).marginWidth = 0;
-		((GridLayout) content.getLayout()).marginHeight = 0;
+    public HolidaysPage() {
+        setTitle("Holidays");
+        noDefaultAndApplyButton();
+    }
 
-		createViewer(content);
-		createButtons(content);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(2, false));
+        ((GridLayout) content.getLayout()).marginWidth = 0;
+        ((GridLayout) content.getLayout()).marginHeight = 0;
 
-		input = new ArrayList<MarketHolidayElement>();
-		if (getElement() != null) {
-			Market market = (Market) getElement().getAdapter(Market.class);
-			if (market != null) {
-				for (MarketHoliday day : market.getHolidays())
-					input.add(new MarketHolidayElement(day));
-			}
-		}
-		viewer.setInput(input);
+        createViewer(content);
+        createButtons(content);
 
-		updateButtonsEnablement();
+        input = new ArrayList<MarketHolidayElement>();
+        if (getElement() != null) {
+            Market market = (Market) getElement().getAdapter(Market.class);
+            if (market != null) {
+                for (MarketHoliday day : market.getHolidays()) {
+                    input.add(new MarketHolidayElement(day));
+                }
+            }
+        }
+        viewer.setInput(input);
 
-		return content;
-	}
+        updateButtonsEnablement();
 
-	protected void createViewer(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		TableColumnLayout tableLayout = new TableColumnLayout();
-		content.setLayout(tableLayout);
-		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        return content;
+    }
 
-		viewer = new TableViewer(content, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		viewer.getTable().setHeaderVisible(true);
-		viewer.getTable().setLinesVisible(false);
-		viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		((GridData) viewer.getControl().getLayoutData()).heightHint = viewer.getTable().getItemHeight() * 8 + viewer.getTable().getBorderWidth() * 2;
+    protected void createViewer(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        TableColumnLayout tableLayout = new TableColumnLayout();
+        content.setLayout(tableLayout);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.RIGHT);
-		tableColumn.setText("Date");
-		tableLayout.setColumnData(tableColumn, new ColumnPixelData(convertHorizontalDLUsToPixels(60)));
-		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Description");
-		tableLayout.setColumnData(tableColumn, new ColumnWeightData(100));
+        viewer = new TableViewer(content, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        viewer.getTable().setHeaderVisible(true);
+        viewer.getTable().setLinesVisible(false);
+        viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData) viewer.getControl().getLayoutData()).heightHint = viewer.getTable().getItemHeight() * 8 + viewer.getTable().getBorderWidth() * 2;
 
-		viewer.setLabelProvider(new MarketHolidayLabelProvider());
-		viewer.setComparator(new ViewerComparator() {
+        TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.RIGHT);
+        tableColumn.setText("Date");
+        tableLayout.setColumnData(tableColumn, new ColumnPixelData(convertHorizontalDLUsToPixels(60)));
+        tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Description");
+        tableLayout.setColumnData(tableColumn, new ColumnWeightData(100));
+
+        viewer.setLabelProvider(new MarketHolidayLabelProvider());
+        viewer.setComparator(new ViewerComparator() {
+
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
-            	return ((MarketHolidayElement) e1).getDate().compareTo(((MarketHolidayElement) e2).getDate());
+                return ((MarketHolidayElement) e1).getDate().compareTo(((MarketHolidayElement) e2).getDate());
             }
-		});
-		viewer.setContentProvider(new ArrayContentProvider());
+        });
+        viewer.setContentProvider(new ArrayContentProvider());
 
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
-        		updateButtonsEnablement();
+                updateButtonsEnablement();
             }
-		});
-	}
+        });
+    }
 
-	protected void createButtons(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(1, false));
-		((GridLayout) content.getLayout()).marginWidth = 0;
-		((GridLayout) content.getLayout()).marginHeight = 0;
-		content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+    protected void createButtons(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(1, false));
+        ((GridLayout) content.getLayout()).marginWidth = 0;
+        ((GridLayout) content.getLayout()).marginHeight = 0;
+        content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 
-		add = new Button(content, SWT.PUSH);
-		add.setText("Add");
-		add.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		((GridData) add.getLayoutData()).widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
-		add.addSelectionListener(new SelectionAdapter() {
+        add = new Button(content, SWT.PUSH);
+        add.setText("Add");
+        add.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        ((GridData) add.getLayoutData()).widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+        add.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	HolidayDialog dlg = new HolidayDialog(add.getShell(), null);
-            	if (dlg.open() == HolidayDialog.OK) {
-            		input.add(dlg.getElement());
-            		viewer.refresh();
-            	}
+                HolidayDialog dlg = new HolidayDialog(add.getShell(), null);
+                if (dlg.open() == Window.OK) {
+                    input.add(dlg.getElement());
+                    viewer.refresh();
+                }
             }
-		});
+        });
 
-		edit = new Button(content, SWT.PUSH);
-		edit.setText("Edit");
-		edit.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		((GridData) edit.getLayoutData()).widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
-		edit.addSelectionListener(new SelectionAdapter() {
+        edit = new Button(content, SWT.PUSH);
+        edit.setText("Edit");
+        edit.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        ((GridData) edit.getLayoutData()).widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+        edit.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-            	if (!selection.isEmpty()) {
-            		MarketHolidayElement element = (MarketHolidayElement) selection.getFirstElement();
-                	HolidayDialog dlg = new HolidayDialog(edit.getShell(), element);
-                	if (dlg.open() == HolidayDialog.OK)
-                		viewer.refresh();
-            	}
+                IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+                if (!selection.isEmpty()) {
+                    MarketHolidayElement element = (MarketHolidayElement) selection.getFirstElement();
+                    HolidayDialog dlg = new HolidayDialog(edit.getShell(), element);
+                    if (dlg.open() == Window.OK) {
+                        viewer.refresh();
+                    }
+                }
             }
-		});
+        });
 
-		remove = new Button(content, SWT.PUSH);
-		remove.setText("Remove");
-		remove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		remove.addSelectionListener(new SelectionAdapter() {
+        remove = new Button(content, SWT.PUSH);
+        remove.setText("Remove");
+        remove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        remove.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-            	if (!selection.isEmpty()) {
-            		input.removeAll(selection.toList());
-            		viewer.refresh();
-            	}
+                IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+                if (!selection.isEmpty()) {
+                    input.removeAll(selection.toList());
+                    viewer.refresh();
+                }
             }
-		});
-	}
+        });
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-		if (isControlCreated() && getElement() != null) {
-			Market market = (Market) getElement().getAdapter(Market.class);
-			if (market != null) {
-				MarketHoliday[] holidays = new MarketHoliday[input.size()];
-				for (int i = 0; i < input.size(); i++)
-					holidays[i] = input.get(i).getMarketHoliday();
-				market.setHolidays(holidays);
-			}
-		}
-	    return super.performOk();
+        if (isControlCreated() && getElement() != null) {
+            Market market = (Market) getElement().getAdapter(Market.class);
+            if (market != null) {
+                MarketHoliday[] holidays = new MarketHoliday[input.size()];
+                for (int i = 0; i < input.size(); i++) {
+                    holidays[i] = input.get(i).getMarketHoliday();
+                }
+                market.setHolidays(holidays);
+            }
+        }
+        return super.performOk();
     }
 
     protected void updateButtonsEnablement() {
-    	IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-    	edit.setEnabled(selection.size() == 1);
-    	remove.setEnabled(!selection.isEmpty());
+        IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+        edit.setEnabled(selection.size() == 1);
+        remove.setEnabled(!selection.isEmpty());
     }
 }

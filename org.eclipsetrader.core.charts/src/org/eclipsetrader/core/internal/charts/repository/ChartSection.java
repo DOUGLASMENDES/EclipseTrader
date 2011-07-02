@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,129 +28,141 @@ import org.eclipsetrader.core.charts.repository.ISecuritySection;
 
 @XmlRootElement(name = "section")
 public class ChartSection implements IChartSection {
-	@XmlAttribute(name = "id")
-	private String id;
 
-	@XmlAttribute(name = "name")
-	private String name;
+    @XmlAttribute(name = "id")
+    private String id;
 
-	@XmlElementRef
-	@XmlJavaTypeAdapter(ElementSectionAdapter.class)
-	private IElementSection[] indicators;
+    @XmlAttribute(name = "name")
+    private String name;
 
-	@XmlElement(name = "security")
-	@XmlJavaTypeAdapter(SecuritySectionAdapter.class)
-	private ISecuritySection[] securities;
+    @XmlElementRef
+    @XmlJavaTypeAdapter(ElementSectionAdapter.class)
+    private IElementSection[] indicators;
 
-	public static class SecuritySectionAdapter extends XmlAdapter<SecuritySection, ISecuritySection> {
+    @XmlElement(name = "security")
+    @XmlJavaTypeAdapter(SecuritySectionAdapter.class)
+    private ISecuritySection[] securities;
 
-		public SecuritySectionAdapter() {
+    public static class SecuritySectionAdapter extends XmlAdapter<SecuritySection, ISecuritySection> {
+
+        public SecuritySectionAdapter() {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
          */
         @Override
         public SecuritySection marshal(ISecuritySection v) throws Exception {
-        	if (v instanceof SecuritySection)
-        		return (SecuritySection) v;
-	        return v != null ? new SecuritySection(v) : null;
+            if (v instanceof SecuritySection) {
+                return (SecuritySection) v;
+            }
+            return v != null ? new SecuritySection(v) : null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
          */
         @Override
         public ISecuritySection unmarshal(SecuritySection v) throws Exception {
-	        return v;
+            return v;
         }
-	}
-
-	public ChartSection() {
-	}
-
-	public ChartSection(String id, String name) {
-		this.id = id;
-	    this.name = name;
     }
 
-	public ChartSection(String name) {
-		this.id = UUID.randomUUID().toString();
-	    this.name = name;
+    public ChartSection() {
     }
 
-	public ChartSection(IChartSection section) {
-	    this.id = section.getId();
-	    this.name = section.getName();
-    	this.indicators = section.getElements();
-    	this.securities = section.getSecurities();
+    public ChartSection(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
-	/* (non-Javadoc)
+    public ChartSection(String name) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+    }
+
+    public ChartSection(IChartSection section) {
+        this.id = section.getId();
+        this.name = section.getName();
+        this.indicators = section.getElements();
+        this.securities = section.getSecurities();
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartSection#getId()
      */
-	@XmlTransient
-	public String getId() {
-    	return id;
+    @Override
+    @XmlTransient
+    public String getId() {
+        return id;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartSection#getName()
      */
-	@XmlTransient
-	public String getName() {
-    	return name;
+    @Override
+    @XmlTransient
+    public String getName() {
+        return name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartSection#setName(java.lang.String)
      */
-	public void setName(String name) {
-    	this.name = name;
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IElementSection#getElements()
      */
-	@XmlTransient
-	public IElementSection[] getElements() {
-    	return indicators != null ? indicators : new IElementSection[0];
+    @Override
+    @XmlTransient
+    public IElementSection[] getElements() {
+        return indicators != null ? indicators : new IElementSection[0];
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartSection#setElements(org.eclipsetrader.core.charts.repository.IElementSection[])
      */
+    @Override
     public void setElements(IElementSection[] indicators) {
-    	this.indicators = indicators;
+        this.indicators = indicators;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartSection#getSecurities()
      */
-	@XmlTransient
-	public ISecuritySection[] getSecurities() {
-    	return securities != null ? securities : new ISecuritySection[0];
+    @Override
+    @XmlTransient
+    public ISecuritySection[] getSecurities() {
+        return securities != null ? securities : new ISecuritySection[0];
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartSection#setSecurities(org.eclipsetrader.core.charts.repository.ISecuritySection[])
      */
+    @Override
     public void setSecurities(ISecuritySection[] securities) {
-    	this.securities = securities;
+        this.securities = securities;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartSection#accept(org.eclipsetrader.core.charts.repository.IChartVisitor)
      */
-	public void accept(IChartVisitor visitor) {
-		if (visitor.visit(this)) {
-			ISecuritySection[] s = getSecurities();
-			for (int i = 0; i < s.length; i++)
-				s[i].accept(visitor);
+    @Override
+    public void accept(IChartVisitor visitor) {
+        if (visitor.visit(this)) {
+            ISecuritySection[] s = getSecurities();
+            for (int i = 0; i < s.length; i++) {
+                s[i].accept(visitor);
+            }
 
-			IElementSection[] d = getElements();
-			for (int i = 0; i < d.length; i++)
-				d[i].accept(visitor);
-		}
-	}
+            IElementSection[] d = getElements();
+            for (int i = 0; i < d.length; i++) {
+                d[i].accept(visitor);
+            }
+        }
+    }
 }

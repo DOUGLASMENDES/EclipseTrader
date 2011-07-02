@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,96 +19,110 @@ import org.eclipsetrader.core.views.IDataProviderFactory;
 
 public class FeedIdentifierFactory extends AbstractProviderFactory {
 
-	public class DataProvider implements IDataProvider {
+    public class DataProvider implements IDataProvider {
 
-		public DataProvider() {
+        public DataProvider() {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#init(org.eclipse.core.runtime.IAdaptable)
          */
+        @Override
         public void init(IAdaptable adaptable) {
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#getFactory()
          */
+        @Override
         public IDataProviderFactory getFactory() {
-	        return FeedIdentifierFactory.this;
+            return FeedIdentifierFactory.this;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#getValue(org.eclipse.core.runtime.IAdaptable)
          */
+        @Override
         public IAdaptable getValue(IAdaptable adaptable) {
-        	IFeedIdentifier identifier = (IFeedIdentifier) adaptable.getAdapter(IFeedIdentifier.class);
-        	if (identifier != null) {
-        		final String value = identifier.getSymbol();
-        		return new IAdaptable() {
+            IFeedIdentifier identifier = (IFeedIdentifier) adaptable.getAdapter(IFeedIdentifier.class);
+            if (identifier != null) {
+                final String value = identifier.getSymbol();
+                return new IAdaptable() {
+
+                    @Override
                     @SuppressWarnings("unchecked")
                     public Object getAdapter(Class adapter) {
-                    	if (adapter.isAssignableFrom(String.class))
-                    		return value;
-	                    return null;
+                        if (adapter.isAssignableFrom(String.class)) {
+                            return value;
+                        }
+                        return null;
                     }
 
                     @Override
                     public boolean equals(Object obj) {
-                    	if (!(obj instanceof IAdaptable))
-                    		return false;
-                    	String s = (String) ((IAdaptable) obj).getAdapter(String.class);
-                    	return value.equals(s);
+                        if (!(obj instanceof IAdaptable)) {
+                            return false;
+                        }
+                        String s = (String) ((IAdaptable) obj).getAdapter(String.class);
+                        return value.equals(s);
                     }
-        		};
-        	}
+                };
+            }
 
-        	ISecurity security = (ISecurity) adaptable.getAdapter(ISecurity.class);
-        	if (security != null && security.getIdentifier() != null) {
-        		final String value = security.getIdentifier().getSymbol();
-        		return new IAdaptable() {
+            ISecurity security = (ISecurity) adaptable.getAdapter(ISecurity.class);
+            if (security != null && security.getIdentifier() != null) {
+                final String value = security.getIdentifier().getSymbol();
+                return new IAdaptable() {
+
+                    @Override
                     @SuppressWarnings("unchecked")
                     public Object getAdapter(Class adapter) {
-                    	if (adapter.isAssignableFrom(String.class))
-                    		return value;
-	                    return null;
+                        if (adapter.isAssignableFrom(String.class)) {
+                            return value;
+                        }
+                        return null;
                     }
 
                     @Override
                     public boolean equals(Object obj) {
-                    	if (!(obj instanceof IAdaptable))
-                    		return false;
-                    	String s = (String) ((IAdaptable) obj).getAdapter(String.class);
-                    	return value.equals(s);
+                        if (!(obj instanceof IAdaptable)) {
+                            return false;
+                        }
+                        String s = (String) ((IAdaptable) obj).getAdapter(String.class);
+                        return value.equals(s);
                     }
-        		};
-        	}
-	        return null;
+                };
+            }
+            return null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.views.IDataProvider#dispose()
          */
+        @Override
         public void dispose() {
         }
-	}
+    }
 
-	public FeedIdentifierFactory() {
-	}
+    public FeedIdentifierFactory() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IDataProviderFactory#createProvider()
-	 */
-	public IDataProvider createProvider() {
-		return new DataProvider();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IDataProviderFactory#createProvider()
+     */
+    @Override
+    public IDataProvider createProvider() {
+        return new DataProvider();
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Class[] getType() {
-	    return new Class[] {
-	    		String.class,
-	    	};
+        return new Class[] {
+            String.class,
+        };
     }
 }

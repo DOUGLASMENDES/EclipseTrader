@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,237 +47,253 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipsetrader.core.internal.markets.MarketTime;
 
 public class TimeScheduleEditor extends Observable {
-	private Composite content;
-	private TableViewer viewer;
-	private Button add;
-	private Button remove;
 
-	private List<MarketTimeElement> input = new ArrayList<MarketTimeElement>();
+    private Composite content;
+    private TableViewer viewer;
+    private Button add;
+    private Button remove;
 
-	private class ScheduleElementLabelProvider extends LabelProvider implements ITableLabelProvider {
-		private DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+    private List<MarketTimeElement> input = new ArrayList<MarketTimeElement>();
 
-		public ScheduleElementLabelProvider() {
-		}
+    private class ScheduleElementLabelProvider extends LabelProvider implements ITableLabelProvider {
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-		 */
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
-		}
+        private DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-		 */
-		@Override
-		public String getText(Object element) {
-			return getColumnText(element, 0);
-		}
+        public ScheduleElementLabelProvider() {
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-		 */
-		public String getColumnText(Object element, int columnIndex) {
-			if (element instanceof MarketTimeElement) {
-				MarketTimeElement e = (MarketTimeElement) element;
-				switch (columnIndex) {
-					case 0:
-						return timeFormat.format(e.getOpenTime());
-					case 1:
-						return timeFormat.format(e.getCloseTime());
-					case 2:
-						return e.getDescription() != null ? e.getDescription() : "";
-				}
-			}
-			return ""; //$NON-NLS-1$
-		}
-	}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
+         */
+        @Override
+        public Image getColumnImage(Object element, int columnIndex) {
+            return null;
+        }
 
-	protected TimeScheduleEditor() {
-	}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+         */
+        @Override
+        public String getText(Object element) {
+            return getColumnText(element, 0);
+        }
 
-	public TimeScheduleEditor(Composite parent) {
-		content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
+         */
+        @Override
+        public String getColumnText(Object element, int columnIndex) {
+            if (element instanceof MarketTimeElement) {
+                MarketTimeElement e = (MarketTimeElement) element;
+                switch (columnIndex) {
+                    case 0:
+                        return timeFormat.format(e.getOpenTime());
+                    case 1:
+                        return timeFormat.format(e.getCloseTime());
+                    case 2:
+                        return e.getDescription() != null ? e.getDescription() : "";
+                }
+            }
+            return ""; //$NON-NLS-1$
+        }
+    }
 
-		createViewer(content);
-		createButtons(content);
-	}
+    protected TimeScheduleEditor() {
+    }
 
-	protected void createViewer(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
-		viewer.getTable().setHeaderVisible(true);
+    public TimeScheduleEditor(Composite parent) {
+        content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.heightHint = viewer.getTable().getItemHeight() * 5 + viewer.getTable().getBorderWidth() * 2;
-		viewer.getControl().setLayoutData(gridData);
+        createViewer(content);
+        createButtons(content);
+    }
 
-		TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Open");
-		tableColumn.setWidth(70);
-		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Close");
-		tableColumn.setWidth(70);
-		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Description");
-		tableColumn.setWidth(150);
+    protected void createViewer(Composite parent) {
+        viewer = new TableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
+        viewer.getTable().setHeaderVisible(true);
 
-		viewer.setLabelProvider(new ScheduleElementLabelProvider());
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setSorter(new ViewerSorter() {
-			@Override
-			public int compare(Viewer viewer, Object e1, Object e2) {
-				return ((MarketTimeElement) e1).compareTo((MarketTimeElement) e2);
-			}
-		});
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gridData.heightHint = viewer.getTable().getItemHeight() * 5 + viewer.getTable().getBorderWidth() * 2;
+        viewer.getControl().setLayoutData(gridData);
 
-		viewer.setCellModifier(new ICellModifier() {
-			public boolean canModify(Object element, String property) {
-				return true;
-			}
+        TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Open");
+        tableColumn.setWidth(70);
+        tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Close");
+        tableColumn.setWidth(70);
+        tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Description");
+        tableColumn.setWidth(150);
 
-			public Object getValue(Object element, String property) {
-				MarketTimeElement e = (MarketTimeElement) element;
-				int columnIndex = Integer.valueOf(property);
-				switch (columnIndex) {
-					case 0:
-						return e.getOpenTime();
-					case 1:
-						return e.getCloseTime();
-					case 2:
-						return e.getDescription() != null ? e.getDescription() : "";
-				}
-				return "";
-			}
+        viewer.setLabelProvider(new ScheduleElementLabelProvider());
+        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setSorter(new ViewerSorter() {
 
-			public void modify(Object element, String property, Object value) {
-				MarketTimeElement e = (MarketTimeElement) (element instanceof TableItem ? ((TableItem) element).getData() : element);
-				int columnIndex = Integer.valueOf(property);
-				switch (columnIndex) {
-					case 0:
-						e.setOpenTime(normalizeDate((Date) value));
-						break;
-					case 1:
-						e.setCloseTime(normalizeDate((Date) value));
-						break;
-					case 2:
-						e.setDescription("".equals(value) ? null : value.toString());
-						break;
-				}
-				viewer.refresh();
-				setChanged();
-				notifyObservers();
-			}
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2) {
+                return ((MarketTimeElement) e1).compareTo((MarketTimeElement) e2);
+            }
+        });
 
-			private Date normalizeDate(Date date) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(date);
-				calendar.set(Calendar.SECOND, 0);
-				calendar.set(Calendar.MILLISECOND, 0);
-				return calendar.getTime();
-			}
-		});
-		viewer.setColumnProperties(new String[] {
-		    "0", "1", "2"
-		});
-		viewer.setCellEditors(new CellEditor[] {
-		    new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
-		    new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
-		    new TextCellEditor(viewer.getTable(), SWT.NONE),
-		});
+        viewer.setCellModifier(new ICellModifier() {
 
-		viewer.setInput(input);
+            @Override
+            public boolean canModify(Object element, String property) {
+                return true;
+            }
 
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				if (remove != null)
-					remove.setEnabled(!event.getSelection().isEmpty());
-			}
-		});
-	}
+            @Override
+            public Object getValue(Object element, String property) {
+                MarketTimeElement e = (MarketTimeElement) element;
+                int columnIndex = Integer.valueOf(property);
+                switch (columnIndex) {
+                    case 0:
+                        return e.getOpenTime();
+                    case 1:
+                        return e.getCloseTime();
+                    case 2:
+                        return e.getDescription() != null ? e.getDescription() : "";
+                }
+                return "";
+            }
 
-	protected void createButtons(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+            @Override
+            public void modify(Object element, String property, Object value) {
+                MarketTimeElement e = (MarketTimeElement) (element instanceof TableItem ? ((TableItem) element).getData() : element);
+                int columnIndex = Integer.valueOf(property);
+                switch (columnIndex) {
+                    case 0:
+                        e.setOpenTime(normalizeDate((Date) value));
+                        break;
+                    case 1:
+                        e.setCloseTime(normalizeDate((Date) value));
+                        break;
+                    case 2:
+                        e.setDescription("".equals(value) ? null : value.toString());
+                        break;
+                }
+                viewer.refresh();
+                setChanged();
+                notifyObservers();
+            }
 
-		add = new Button(content, SWT.PUSH);
-		add.setText("Add");
-		add.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Calendar now = Calendar.getInstance();
-				now.set(Calendar.SECOND, 0);
-				now.set(Calendar.MILLISECOND, 0);
-				MarketTimeElement element = new MarketTimeElement(now.getTime(), now.getTime());
-				input.add(element);
-				viewer.refresh();
+            private Date normalizeDate(Date date) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                return calendar.getTime();
+            }
+        });
+        viewer.setColumnProperties(new String[] {
+                "0", "1", "2"
+        });
+        viewer.setCellEditors(new CellEditor[] {
+                new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
+                new CDateTimeCellEditor(viewer.getTable(), CDT.TIME_SHORT),
+                new TextCellEditor(viewer.getTable(), SWT.NONE),
+        });
 
-				setChanged();
-				notifyObservers();
+        viewer.setInput(input);
 
-				viewer.getControl().setFocus();
-				viewer.setSelection(new StructuredSelection(element), true);
-				viewer.editElement(element, 0);
-			}
-		});
-		add.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
-		remove = new Button(content, SWT.PUSH);
-		remove.setText("Remove");
-		remove.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-				if (!selection.isEmpty()) {
-					input.removeAll(selection.toList());
-					viewer.refresh();
-					setChanged();
-					notifyObservers();
-				}
-			}
-		});
-		remove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
-		remove.setEnabled(false);
-	}
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                if (remove != null) {
+                    remove.setEnabled(!event.getSelection().isEmpty());
+                }
+            }
+        });
+    }
 
-	public void setSchedule(MarketTime[] schedule) {
-		input.clear();
-		for (MarketTime time : schedule)
-			input.add(new MarketTimeElement(time));
-		this.viewer.refresh();
-	}
+    protected void createButtons(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 
-	public MarketTime[] getSchedule() {
-		MarketTime[] result = new MarketTime[input.size()];
-		for (int i = 0; i < result.length; i++)
-			result[i] = input.get(i).getMarketTime();
-		return result;
-	}
+        add = new Button(content, SWT.PUSH);
+        add.setText("Add");
+        add.addSelectionListener(new SelectionAdapter() {
 
-	public Control getControl() {
-		return content;
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Calendar now = Calendar.getInstance();
+                now.set(Calendar.SECOND, 0);
+                now.set(Calendar.MILLISECOND, 0);
+                MarketTimeElement element = new MarketTimeElement(now.getTime(), now.getTime());
+                input.add(element);
+                viewer.refresh();
 
-	protected TableViewer getViewer() {
-		return viewer;
-	}
+                setChanged();
+                notifyObservers();
 
-	protected List<MarketTimeElement> getInput() {
-		return input;
-	}
+                viewer.getControl().setFocus();
+                viewer.setSelection(new StructuredSelection(element), true);
+                viewer.editElement(element, 0);
+            }
+        });
+        add.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 
-	protected void addSelectionChangedListener(ISelectionChangedListener listener) {
-		viewer.addSelectionChangedListener(listener);
-	}
+        remove = new Button(content, SWT.PUSH);
+        remove.setText("Remove");
+        remove.addSelectionListener(new SelectionAdapter() {
 
-	protected void removeSelectionChangedListener(ISelectionChangedListener listener) {
-		viewer.removeSelectionChangedListener(listener);
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+                if (!selection.isEmpty()) {
+                    input.removeAll(selection.toList());
+                    viewer.refresh();
+                    setChanged();
+                    notifyObservers();
+                }
+            }
+        });
+        remove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+        remove.setEnabled(false);
+    }
+
+    public void setSchedule(MarketTime[] schedule) {
+        input.clear();
+        for (MarketTime time : schedule) {
+            input.add(new MarketTimeElement(time));
+        }
+        this.viewer.refresh();
+    }
+
+    public MarketTime[] getSchedule() {
+        MarketTime[] result = new MarketTime[input.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = input.get(i).getMarketTime();
+        }
+        return result;
+    }
+
+    public Control getControl() {
+        return content;
+    }
+
+    protected TableViewer getViewer() {
+        return viewer;
+    }
+
+    protected List<MarketTimeElement> getInput() {
+        return input;
+    }
+
+    protected void addSelectionChangedListener(ISelectionChangedListener listener) {
+        viewer.addSelectionChangedListener(listener);
+    }
+
+    protected void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        viewer.removeSelectionChangedListener(listener);
+    }
 }

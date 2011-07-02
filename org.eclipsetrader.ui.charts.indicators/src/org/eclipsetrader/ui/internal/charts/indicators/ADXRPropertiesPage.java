@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,20 +22,21 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.ui.charts.indicators.ADXR;
 
 public class ADXRPropertiesPage extends PropertyPage {
-	private Spinner period;
 
-	public ADXRPropertiesPage() {
+    private Spinner period;
+
+    public ADXRPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setTitle("A/D Movement Index Rating");
@@ -48,26 +49,26 @@ public class ADXRPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	ADXR object = (ADXR) getElement().getAdapter(ADXR.class);
+        ADXR object = (ADXR) getElement().getAdapter(ADXR.class);
         period.setSelection(object.getPeriod());
-	    super.performDefaults();
+        super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	ADXR object = (ADXR) getElement().getAdapter(ADXR.class);
-    	object.setPeriod(period.getSelection());
-	    return super.performOk();
+        ADXR object = (ADXR) getElement().getAdapter(ADXR.class);
+        object.setPeriod(period.getSelection());
+        return super.performOk();
     }
 }

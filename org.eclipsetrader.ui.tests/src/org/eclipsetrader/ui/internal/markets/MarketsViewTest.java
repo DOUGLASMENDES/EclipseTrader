@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,90 +26,97 @@ import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.internal.markets.MarketTime;
 
 public class MarketsViewTest extends TestCase {
-	Shell shell;
-	IWorkbenchPartSite site;
-	MarketService service;
-	Market market;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		shell = new Shell(Display.getDefault());
+    Shell shell;
+    IWorkbenchPartSite site;
+    MarketService service;
+    Market market;
 
-		ISelectionProvider selectionProvider = EasyMock.createNiceMock(ISelectionProvider.class);
-		site = EasyMock.createNiceMock(IWorkbenchPartSite.class);
-		EasyMock.expect(site.getSelectionProvider()).andStubReturn(selectionProvider);
-		site.registerContextMenu(EasyMock.isA(MenuManager.class), EasyMock.isA(ISelectionProvider.class));
-		EasyMock.replay(site);
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        shell = new Shell(Display.getDefault());
 
-		service = new MarketService();
-		service.addMarket(market = new Market("New York", new ArrayList<MarketTime>()));
-	}
+        ISelectionProvider selectionProvider = EasyMock.createNiceMock(ISelectionProvider.class);
+        site = EasyMock.createNiceMock(IWorkbenchPartSite.class);
+        EasyMock.expect(site.getSelectionProvider()).andStubReturn(selectionProvider);
+        site.registerContextMenu(EasyMock.isA(MenuManager.class), EasyMock.isA(ISelectionProvider.class));
+        EasyMock.replay(site);
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		shell.dispose();
-		while (Display.getDefault().readAndDispatch());
-	}
+        service = new MarketService();
+        service.addMarket(market = new Market("New York", new ArrayList<MarketTime>()));
+    }
 
-	public void testShowExistingMarkets() throws Exception {
-		MarketsView view = new MyMarketsView();
-		view.createPartControl(shell);
-		assertEquals(1, view.viewer.getTable().getItemCount());
-	}
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        shell.dispose();
+        while (Display.getDefault().readAndDispatch()) {
+            ;
+        }
+    }
 
-	public void testAddNewMarkets() throws Exception {
-		MarketsView view = new MyMarketsView();
-		view.createPartControl(shell);
+    public void testShowExistingMarkets() throws Exception {
+        MarketsView view = new MyMarketsView();
+        view.createPartControl(shell);
+        assertEquals(1, view.viewer.getTable().getItemCount());
+    }
 
-		service.addMarket(new Market("Milan", new ArrayList<MarketTime>()));
-		while (Display.getDefault().readAndDispatch());
+    public void testAddNewMarkets() throws Exception {
+        MarketsView view = new MyMarketsView();
+        view.createPartControl(shell);
 
-		assertEquals(2, view.viewer.getTable().getItemCount());
-	}
+        service.addMarket(new Market("Milan", new ArrayList<MarketTime>()));
+        while (Display.getDefault().readAndDispatch()) {
+            ;
+        }
 
-	public void testRemoveDeletedMarkets() throws Exception {
-		MarketsView view = new MyMarketsView();
-		view.createPartControl(shell);
+        assertEquals(2, view.viewer.getTable().getItemCount());
+    }
 
-		service.deleteMarket(market);
-		while (Display.getDefault().readAndDispatch());
+    public void testRemoveDeletedMarkets() throws Exception {
+        MarketsView view = new MyMarketsView();
+        view.createPartControl(shell);
 
-		assertEquals(0, view.viewer.getTable().getItemCount());
-	}
+        service.deleteMarket(market);
+        while (Display.getDefault().readAndDispatch()) {
+            ;
+        }
 
-	public void testAddServiceObserverOnCreate() throws Exception {
-		MarketsView view = new MyMarketsView();
-		view.createPartControl(shell);
-		assertEquals(1, service.countObservers());
-	}
+        assertEquals(0, view.viewer.getTable().getItemCount());
+    }
 
-	public void testRemoveServiceObserverOnDispose() throws Exception {
-		MarketsView view = new MyMarketsView();
-		view.createPartControl(shell);
+    public void testAddServiceObserverOnCreate() throws Exception {
+        MarketsView view = new MyMarketsView();
+        view.createPartControl(shell);
+        assertEquals(1, service.countObservers());
+    }
 
-		view.dispose();
+    public void testRemoveServiceObserverOnDispose() throws Exception {
+        MarketsView view = new MyMarketsView();
+        view.createPartControl(shell);
 
-		assertEquals(0, service.countObservers());
-	}
+        view.dispose();
 
-	class MyMarketsView extends MarketsView {
+        assertEquals(0, service.countObservers());
+    }
 
-		public MyMarketsView() {
-			marketService = MarketsViewTest.this.service;
-		}
+    class MyMarketsView extends MarketsView {
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.part.WorkbenchPart#getSite()
-		 */
-		@Override
-		public IWorkbenchPartSite getSite() {
-			return site;
-		}
-	}
+        public MyMarketsView() {
+            marketService = MarketsViewTest.this.service;
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.ui.part.WorkbenchPart#getSite()
+         */
+        @Override
+        public IWorkbenchPartSite getSite() {
+            return site;
+        }
+    }
 }

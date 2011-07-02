@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,177 +41,202 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class DataImportJob extends Job {
-	public static final int FULL = 0;
-	public static final int INCREMENTAL = 1;
-	public static final int FULL_INCREMENTAL = 2;
 
-	private ISecurity[] securities;
-	private int mode;
-	private TimeSpan[] timeSpan;
-	private Date fromDate;
-	private Date toDate;
+    public static final int FULL = 0;
+    public static final int INCREMENTAL = 1;
+    public static final int FULL_INCREMENTAL = 2;
 
-	private BackfillConnector connector = new BackfillConnector();
+    private ISecurity[] securities;
+    private int mode;
+    private TimeSpan[] timeSpan;
+    private Date fromDate;
+    private Date toDate;
 
-	public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
-		super("Import Data");
-		this.securities = securities;
-		this.mode = mode;
-		this.fromDate = fromDate;
-		this.toDate = toDate;
-		this.timeSpan = timeSpan;
-	}
+    private BackfillConnector connector = new BackfillConnector();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	@Override
-	protected IStatus run(IProgressMonitor monitor) {
-		ISecurity[] filteredList = getFilteredSecurities(securities);
-		monitor.beginTask(getName(), filteredList.length * timeSpan.length);
+    public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
+        super("Import Data");
+        this.securities = securities;
+        this.mode = mode;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.timeSpan = timeSpan;
+    }
 
-		try {
-			IRepositoryService repositoryService = getRepositoryService();
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
+     */
+    @Override
+    protected IStatus run(IProgressMonitor monitor) {
+        ISecurity[] filteredList = getFilteredSecurities(securities);
+        monitor.beginTask(getName(), filteredList.length * timeSpan.length);
 
-			for (ISecurity security : filteredList) {
-				if (monitor.isCanceled())
-					return Status.CANCEL_STATUS;
+        try {
+            IRepositoryService repositoryService = getRepositoryService();
 
-				monitor.subTask(security.getName().replace("&", "&&"));
+            for (ISecurity security : filteredList) {
+                if (monitor.isCanceled()) {
+                    return Status.CANCEL_STATUS;
+                }
 
-				try {
-					IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
+                monitor.subTask(security.getName().replace("&", "&&"));
 
-					IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-					if (identifier != null) {
-						Date beginDate = fromDate;
-						Date endDate = toDate;
+                try {
+                    IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
 
-						IHistory history = repositoryService.getHistoryFor(security);
-						Map<Date, IOHLC> dailyDataMap = new HashMap<Date, IOHLC>(2048);
+                    IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+                    if (identifier != null) {
+                        Date beginDate = fromDate;
+                        Date endDate = toDate;
 
-						if (history != null && mode != FULL) {
-							for (IOHLC d : history.getOHLC())
-								dailyDataMap.put(d.getDate(), d);
-							if (mode == FULL_INCREMENTAL) {
-								if (history.getFirst() != null) {
-									beginDate = history.getFirst().getDate();
-									if (fromDate.before(beginDate))
-										beginDate = fromDate;
-								}
-							}
-							else if (mode == INCREMENTAL) {
-								if (history.getLast() != null)
-									beginDate = history.getLast().getDate();
-								endDate = Calendar.getInstance().getTime();
-							}
-						}
+                        IHistory history = repositoryService.getHistoryFor(security);
+                        Map<Date, IOHLC> dailyDataMap = new HashMap<Date, IOHLC>(2048);
 
-						Map<TimeSpan, IOHLC[]> dataMap = new HashMap<TimeSpan, IOHLC[]>();
+                        if (history != null && mode != FULL) {
+                            for (IOHLC d : history.getOHLC()) {
+                                dailyDataMap.put(d.getDate(), d);
+                            }
+                            if (mode == FULL_INCREMENTAL) {
+                                if (history.getFirst() != null) {
+                                    beginDate = history.getFirst().getDate();
+                                    if (fromDate.before(beginDate)) {
+                                        beginDate = fromDate;
+                                    }
+                                }
+                            }
+                            else if (mode == INCREMENTAL) {
+                                if (history.getLast() != null) {
+                                    beginDate = history.getLast().getDate();
+                                }
+                                endDate = Calendar.getInstance().getTime();
+                            }
+                        }
 
-						for (TimeSpan currentTimeSpan : timeSpan) {
-							if (monitor.isCanceled())
-								return Status.CANCEL_STATUS;
+                        Map<TimeSpan, IOHLC[]> dataMap = new HashMap<TimeSpan, IOHLC[]>();
 
-							if (currentTimeSpan.equals(TimeSpan.days(1))) {
-								monitor.subTask(security.getName().replace("&", "&&"));
+                        for (TimeSpan currentTimeSpan : timeSpan) {
+                            if (monitor.isCanceled()) {
+                                return Status.CANCEL_STATUS;
+                            }
 
-								IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
-								if (ohlc != null && ohlc.length != 0)
-									dataMap.put(currentTimeSpan, ohlc);
-							}
-							else {
-								monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString() }));
+                            if (currentTimeSpan.equals(TimeSpan.days(1))) {
+                                monitor.subTask(security.getName().replace("&", "&&"));
 
-								IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
-								if (ohlc != null && ohlc.length != 0)
-									dataMap.put(currentTimeSpan, ohlc);
-							}
+                                IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
+                                if (ohlc != null && ohlc.length != 0) {
+                                    dataMap.put(currentTimeSpan, ohlc);
+                                }
+                            }
+                            else {
+                                monitor.subTask(NLS.bind("{0} ({1})", new Object[] {
+                                        security.getName().replace("&", "&&"),
+                                        currentTimeSpan.toString()
+                                }));
 
-							monitor.worked(1);
-						}
+                                IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
+                                if (ohlc != null && ohlc.length != 0) {
+                                    dataMap.put(currentTimeSpan, ohlc);
+                                }
+                            }
 
-						if (dataMap.size() == timeSpan.length) {
-							for (TimeSpan currentTimeSpan : dataMap.keySet()) {
-								IOHLC[] ohlc = dataMap.get(currentTimeSpan);
-								if (ohlc == null)
-									continue;
-								if (currentTimeSpan.equals(TimeSpan.days(1))) {
-									for (IOHLC d : ohlc)
-										dailyDataMap.put(d.getDate(), d);
-									ohlc = dailyDataMap.values().toArray(new IOHLC[dailyDataMap.values().size()]);
+                            monitor.worked(1);
+                        }
 
-									if (history == null)
-										history = new History(security, ohlc);
-									else if (history instanceof History)
-										((History) history).setOHLC(ohlc);
+                        if (dataMap.size() == timeSpan.length) {
+                            for (TimeSpan currentTimeSpan : dataMap.keySet()) {
+                                IOHLC[] ohlc = dataMap.get(currentTimeSpan);
+                                if (ohlc == null) {
+                                    continue;
+                                }
+                                if (currentTimeSpan.equals(TimeSpan.days(1))) {
+                                    for (IOHLC d : ohlc) {
+                                        dailyDataMap.put(d.getDate(), d);
+                                    }
+                                    ohlc = dailyDataMap.values().toArray(new IOHLC[dailyDataMap.values().size()]);
 
-									repositoryService.moveAdaptable(new IHistory[] { history }, storeObject.getStore().getRepository());
-								}
-								else {
-									IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
-									if (intradayHistory instanceof HistoryDay)
-										((HistoryDay) intradayHistory).setOHLC(ohlc);
+                                    if (history == null) {
+                                        history = new History(security, ohlc);
+                                    }
+                                    else if (history instanceof History) {
+                                        ((History) history).setOHLC(ohlc);
+                                    }
 
-									repositoryService.moveAdaptable(new IHistory[] { intradayHistory }, storeObject.getStore().getRepository());
-								}
-							}
-						}
-						else {
-							Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Missing data for " + security.getName(), null);
-							Activator.log(status);
-						}
-					}
-				} catch (Exception e) {
-					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error downloading data for " + security.getName(), e);
-					Activator.log(status);
-				}
-			}
-		} finally {
-			monitor.done();
-		}
-		return Status.OK_STATUS;
-	}
+                                    repositoryService.moveAdaptable(new IHistory[] {
+                                        history
+                                    }, storeObject.getStore().getRepository());
+                                }
+                                else {
+                                    IHistory intradayHistory = history.getSubset(beginDate, endDate, currentTimeSpan);
+                                    if (intradayHistory instanceof HistoryDay) {
+                                        ((HistoryDay) intradayHistory).setOHLC(ohlc);
+                                    }
 
-	protected ISecurity[] getFilteredSecurities(ISecurity[] list) {
-		List<ISecurity> l = new ArrayList<ISecurity>();
-
-		for (ISecurity security : list) {
-			IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-			if (identifier != null) {
-				String code = identifier.getSymbol();
-				String isin = null;
-
-				IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-				if (properties != null) {
-					if (properties.getProperty(Activator.PROP_ISIN) != null)
-						isin = properties.getProperty(Activator.PROP_ISIN);
-					if (properties.getProperty(Activator.PROP_CODE) != null)
-						code = properties.getProperty(Activator.PROP_CODE);
-				}
-
-				if (code != null && isin != null)
-					l.add(security);
-			}
-		}
-
-		Collections.sort(l, new Comparator<ISecurity>() {
-            public int compare(ISecurity o1, ISecurity o2) {
-	            return o1.getName().compareToIgnoreCase(o2.getName());
+                                    repositoryService.moveAdaptable(new IHistory[] {
+                                        intradayHistory
+                                    }, storeObject.getStore().getRepository());
+                                }
+                            }
+                        }
+                        else {
+                            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Missing data for " + security.getName(), null);
+                            Activator.log(status);
+                        }
+                    }
+                } catch (Exception e) {
+                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error downloading data for " + security.getName(), e);
+                    Activator.log(status);
+                }
             }
-		});
+        } finally {
+            monitor.done();
+        }
+        return Status.OK_STATUS;
+    }
 
-		return l.toArray(new ISecurity[l.size()]);
-	}
+    protected ISecurity[] getFilteredSecurities(ISecurity[] list) {
+        List<ISecurity> l = new ArrayList<ISecurity>();
 
-	protected IRepositoryService getRepositoryService() {
-		IRepositoryService service = null;
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-		if (serviceReference != null) {
-			service = (IRepositoryService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-		}
-		return service;
-	}
+        for (ISecurity security : list) {
+            IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+            if (identifier != null) {
+                String code = identifier.getSymbol();
+                String isin = null;
+
+                IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+                if (properties != null) {
+                    if (properties.getProperty(Activator.PROP_ISIN) != null) {
+                        isin = properties.getProperty(Activator.PROP_ISIN);
+                    }
+                    if (properties.getProperty(Activator.PROP_CODE) != null) {
+                        code = properties.getProperty(Activator.PROP_CODE);
+                    }
+                }
+
+                if (code != null && isin != null) {
+                    l.add(security);
+                }
+            }
+        }
+
+        Collections.sort(l, new Comparator<ISecurity>() {
+
+            @Override
+            public int compare(ISecurity o1, ISecurity o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
+
+        return l.toArray(new ISecurity[l.size()]);
+    }
+
+    protected IRepositoryService getRepositoryService() {
+        IRepositoryService service = null;
+        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+        if (serviceReference != null) {
+            service = (IRepositoryService) context.getService(serviceReference);
+            context.ungetService(serviceReference);
+        }
+        return service;
+    }
 }

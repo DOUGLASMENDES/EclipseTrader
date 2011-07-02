@@ -15,16 +15,17 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 public class CommonColors {
-	public static final Color CONTEXT_ACTIVE = new Color(Display.getDefault(), 36, 22, 50);
-	public static final Color HYPERLINK_WIDGET = new Color(Display.getDefault(), 12, 81, 172);
-	public static final Color TEXT_QUOTED = new Color(Display.getDefault(), 38, 86, 145);
-	public static final Color TEXT_SPELLING_ERROR = new Color(Display.getDefault(), 255, 0, 0);
-	public static final Color GRAY_MID = new Color(Display.getDefault(), 100, 100, 100);
 
-	public static void dispose() {
-		CONTEXT_ACTIVE.dispose();
-		HYPERLINK_WIDGET.dispose();
-		TEXT_QUOTED.dispose();
-		TEXT_SPELLING_ERROR.dispose();
-	}
+    public static final Color CONTEXT_ACTIVE = new Color(Display.getDefault(), 36, 22, 50);
+    public static final Color HYPERLINK_WIDGET = new Color(Display.getDefault(), 12, 81, 172);
+    public static final Color TEXT_QUOTED = new Color(Display.getDefault(), 38, 86, 145);
+    public static final Color TEXT_SPELLING_ERROR = new Color(Display.getDefault(), 255, 0, 0);
+    public static final Color GRAY_MID = new Color(Display.getDefault(), 100, 100, 100);
+
+    public static void dispose() {
+        CONTEXT_ACTIVE.dispose();
+        HYPERLINK_WIDGET.dispose();
+        TEXT_QUOTED.dispose();
+        TEXT_SPELLING_ERROR.dispose();
+    }
 }

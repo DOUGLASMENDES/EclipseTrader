@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,31 +18,35 @@ import org.eclipsetrader.core.trading.IOrder;
 import org.eclipsetrader.core.trading.IOrderMonitor;
 
 public class StopPriceColumn extends ColumnLabelProvider {
-	public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.stopprice"; //$NON-NLS-1$
 
-	private NumberFormat formatter = NumberFormat.getInstance();
+    public static final String COLUMN_ID = "org.eclipsetrader.ui.trading.orders.stopprice"; //$NON-NLS-1$
 
-	public StopPriceColumn() {
-		formatter.setGroupingUsed(true);
-		formatter.setMinimumIntegerDigits(1);
-		formatter.setMinimumFractionDigits(1);
-		formatter.setMaximumFractionDigits(4);
-	}
+    private NumberFormat formatter = NumberFormat.getInstance();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-	 */
-	@Override
-	public String getText(Object element) {
-		IOrder order = null;
-		if (element instanceof IOrder)
-			order = (IOrder) element;
-		else if (element instanceof IOrderMonitor)
-			order = ((IOrderMonitor) element).getOrder();
+    public StopPriceColumn() {
+        formatter.setGroupingUsed(true);
+        formatter.setMinimumIntegerDigits(1);
+        formatter.setMinimumFractionDigits(1);
+        formatter.setMaximumFractionDigits(4);
+    }
 
-		if (order != null && order.getStopPrice() != null)
-			return formatter.format(order.getStopPrice());
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+     */
+    @Override
+    public String getText(Object element) {
+        IOrder order = null;
+        if (element instanceof IOrder) {
+            order = (IOrder) element;
+        }
+        else if (element instanceof IOrderMonitor) {
+            order = ((IOrderMonitor) element).getOrder();
+        }
 
-		return ""; //$NON-NLS-1$
-	}
+        if (order != null && order.getStopPrice() != null) {
+            return formatter.format(order.getStopPrice());
+        }
+
+        return ""; //$NON-NLS-1$
+    }
 }

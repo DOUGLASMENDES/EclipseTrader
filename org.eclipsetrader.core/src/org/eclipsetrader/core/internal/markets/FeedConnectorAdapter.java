@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipsetrader.core.internal.markets;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IConnectorListener;
 import org.eclipsetrader.core.feed.IFeedConnector;
@@ -25,92 +26,101 @@ import org.osgi.framework.ServiceReference;
 
 public class FeedConnectorAdapter extends XmlAdapter<String, IFeedConnector> {
 
-	public class FailsafeFeedConnector implements IFeedConnector {
-		private String id;
+    public class FailsafeFeedConnector implements IFeedConnector {
 
-		public FailsafeFeedConnector(String id) {
-			this.id = id;
-		}
+        private String id;
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
-		 */
-		public void connect() {
-		}
+        public FailsafeFeedConnector(String id) {
+            this.id = id;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
-		 */
-		public void disconnect() {
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#connect()
+         */
+        @Override
+        public void connect() {
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
-		 */
-		public String getId() {
-			return id;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#disconnect()
+         */
+        @Override
+        public void disconnect() {
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
-		 */
-		public String getName() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#getId()
+         */
+        @Override
+        public String getId() {
+            return id;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
-		 */
-		public IFeedSubscription subscribe(IFeedIdentifier identifier) {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#getName()
+         */
+        @Override
+        public String getName() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-		 */
-		public void addConnectorListener(IConnectorListener listener) {
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#subscribe(org.eclipsetrader.core.feed.IFeedIdentifier)
+         */
+        @Override
+        public IFeedSubscription subscribe(IFeedIdentifier identifier) {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
-		 */
-		public void removeConnectorListener(IConnectorListener listener) {
-		}
-	}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#addConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+         */
+        @Override
+        public void addConnectorListener(IConnectorListener listener) {
+        }
 
-	public FeedConnectorAdapter() {
-	}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.feed.IFeedConnector#removeConnectorListener(org.eclipsetrader.core.feed.IConnectorListener)
+         */
+        @Override
+        public void removeConnectorListener(IConnectorListener listener) {
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
-	 */
-	@Override
-	public String marshal(IFeedConnector v) throws Exception {
-		return v != null ? v.getId() : null;
-	}
+    public FeedConnectorAdapter() {
+    }
 
-	/* (non-Javadoc)
-	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
-	 */
-	@Override
-	public IFeedConnector unmarshal(String v) throws Exception {
-		if (v == null)
-			return null;
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+     */
+    @Override
+    public String marshal(IFeedConnector v) throws Exception {
+        return v != null ? v.getId() : null;
+    }
 
-		IFeedConnector connector = null;
-		try {
-			BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+     */
+    @Override
+    public IFeedConnector unmarshal(String v) throws Exception {
+        if (v == null) {
+            return null;
+        }
 
-			IFeedService feedService = (IFeedService) context.getService(serviceReference);
-			connector = feedService.getConnector(v);
+        IFeedConnector connector = null;
+        try {
+            BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
 
-			context.ungetService(serviceReference);
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-			CoreActivator.log(status);
-		}
+            IFeedService feedService = (IFeedService) context.getService(serviceReference);
+            connector = feedService.getConnector(v);
 
-		return connector;
-	}
+            context.ungetService(serviceReference);
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+            CoreActivator.log(status);
+        }
+
+        return connector;
+    }
 }

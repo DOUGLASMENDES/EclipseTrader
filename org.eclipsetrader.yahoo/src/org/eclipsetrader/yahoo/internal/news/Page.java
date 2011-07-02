@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,50 +19,51 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name = "page")
 public class Page {
+
     @XmlElement(name = "title")
-	private String title;
+    private String title;
 
     @XmlElement(name = "url")
-	private String url;
+    private String url;
 
     @XmlAttribute(name = "id")
-	private String id;
+    private String id;
 
-	@XmlTransient
+    @XmlTransient
     private Category parent;
 
-	public Page() {
-	}
-
-	@XmlTransient
-	public String getTitle() {
-    	return title;
+    public Page() {
     }
 
-	@XmlTransient
-	public String getUrl() {
-    	return url;
+    @XmlTransient
+    public String getTitle() {
+        return title;
     }
 
-	@XmlTransient
-	public String getId() {
-    	return id;
+    @XmlTransient
+    public String getUrl() {
+        return url;
     }
 
-	public void afterUnmarshal(Unmarshaller u, Object parent) {
-		this.parent = (Category) parent;
-	}
-
-	@XmlTransient
-	public Category getParent() {
-    	return parent;
+    @XmlTransient
+    public String getId() {
+        return id;
     }
 
-	/* (non-Javadoc)
+    public void afterUnmarshal(Unmarshaller u, Object parent) {
+        this.parent = (Category) parent;
+    }
+
+    @XmlTransient
+    public Category getParent() {
+        return parent;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-	    return title;
+        return title;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,78 +27,85 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.repository.hibernate.internal.Activator;
 
 public class DatabaseSelectionPage extends WizardPage {
-	private TableViewer database;
 
-	public DatabaseSelectionPage() {
-		super("database", "Select a database type", Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/wizban/banner-repository.gif"));
-		setDescription("You can connect to a repository using one of the installed databases.");
-	}
+    private TableViewer database;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		setControl(content);
+    public DatabaseSelectionPage() {
+        super("database", "Select a database type", AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/wizban/banner-repository.gif"));
+        setDescription("You can connect to a repository using one of the installed databases.");
+    }
 
-		initializeDialogUnits(parent);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        setControl(content);
 
-	    database = new TableViewer(content, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
-	    database.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	    database.getTable().setHeaderVisible(false);
-	    database.getTable().setLinesVisible(false);
-	    database.setLabelProvider(new LabelProvider() {
+        initializeDialogUnits(parent);
+
+        database = new TableViewer(content, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
+        database.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        database.getTable().setHeaderVisible(false);
+        database.getTable().setLinesVisible(false);
+        database.setLabelProvider(new LabelProvider() {
+
             @Override
             public String getText(Object element) {
-	            return ((DatabaseElement) element).getLabel();
+                return ((DatabaseElement) element).getLabel();
             }
 
             @Override
             public Image getImage(Object element) {
-	            return ((DatabaseElement) element).getIcon();
+                return ((DatabaseElement) element).getIcon();
             }
-	    });
-	    database.setContentProvider(new ArrayContentProvider());
-	    database.setSorter(new ViewerSorter());
-	    database.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				setPageComplete(!event.getSelection().isEmpty());
-		    }
-		});
+        });
+        database.setContentProvider(new ArrayContentProvider());
+        database.setSorter(new ViewerSorter());
+        database.addSelectionChangedListener(new ISelectionChangedListener() {
 
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.CONNECTIVITY_EXTENSION_ID);
-		if (extensionPoint != null) {
-			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
-			DatabaseElement[] elements = new DatabaseElement[configElements.length];
-			for (int i = 0; i < configElements.length; i++)
-				elements[i] = new DatabaseElement(configElements[i]);
-			database.setInput(elements);
-		}
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                setPageComplete(!event.getSelection().isEmpty());
+            }
+        });
 
-		setPageComplete(false);
-	}
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.CONNECTIVITY_EXTENSION_ID);
+        if (extensionPoint != null) {
+            IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+            DatabaseElement[] elements = new DatabaseElement[configElements.length];
+            for (int i = 0; i < configElements.length; i++) {
+                elements[i] = new DatabaseElement(configElements[i]);
+            }
+            database.setInput(elements);
+        }
 
-	DatabaseElement getSelection() {
-    	IStructuredSelection selection = (IStructuredSelection) database.getSelection();
-    	DatabaseElement element = (DatabaseElement) selection.getFirstElement();
-    	return element;
-	}
+        setPageComplete(false);
+    }
 
-	public String getDriver() {
-    	IStructuredSelection selection = (IStructuredSelection) database.getSelection();
-    	DatabaseElement element = (DatabaseElement) selection.getFirstElement();
-    	return element.getDriver();
-	}
+    DatabaseElement getSelection() {
+        IStructuredSelection selection = (IStructuredSelection) database.getSelection();
+        DatabaseElement element = (DatabaseElement) selection.getFirstElement();
+        return element;
+    }
 
-	public String getDialect() {
-    	IStructuredSelection selection = (IStructuredSelection) database.getSelection();
-    	DatabaseElement element = (DatabaseElement) selection.getFirstElement();
-    	return element.getDialect();
-	}
+    public String getDriver() {
+        IStructuredSelection selection = (IStructuredSelection) database.getSelection();
+        DatabaseElement element = (DatabaseElement) selection.getFirstElement();
+        return element.getDriver();
+    }
+
+    public String getDialect() {
+        IStructuredSelection selection = (IStructuredSelection) database.getSelection();
+        DatabaseElement element = (DatabaseElement) selection.getFirstElement();
+        return element.getDialect();
+    }
 }

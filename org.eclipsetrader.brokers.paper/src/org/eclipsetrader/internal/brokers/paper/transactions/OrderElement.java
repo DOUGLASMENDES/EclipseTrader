@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,149 +34,162 @@ import org.eclipsetrader.internal.brokers.paper.types.SecurityAdapter;
 
 @XmlRootElement(name = "order")
 public class OrderElement {
-	@XmlAttribute(name = "date")
-	@XmlJavaTypeAdapter(DateTimeAdapter.class)
-	private Date date;
 
-	@XmlAttribute(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	private ISecurity security;
+    @XmlAttribute(name = "date")
+    @XmlJavaTypeAdapter(DateTimeAdapter.class)
+    private Date date;
 
-	@XmlAttribute(name = "type")
-	@XmlJavaTypeAdapter(OrderTypeAdapter.class)
-	private IOrderType type;
+    @XmlAttribute(name = "security")
+    @XmlJavaTypeAdapter(SecurityAdapter.class)
+    private ISecurity security;
 
-	@XmlAttribute(name = "side")
-	@XmlJavaTypeAdapter(OrderSideAdapter.class)
-	private IOrderSide side;
+    @XmlAttribute(name = "type")
+    @XmlJavaTypeAdapter(OrderTypeAdapter.class)
+    private IOrderType type;
 
-	@XmlAttribute(name = "quantity")
-	private Long quantity;
+    @XmlAttribute(name = "side")
+    @XmlJavaTypeAdapter(OrderSideAdapter.class)
+    private IOrderSide side;
 
-	@XmlAttribute(name = "price")
-	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
-	private Double price;
+    @XmlAttribute(name = "quantity")
+    private Long quantity;
 
-	@XmlAttribute(name = "stop-price")
-	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
-	private Double stopPrice;
+    @XmlAttribute(name = "price")
+    @XmlJavaTypeAdapter(DoubleValueAdapter.class)
+    private Double price;
 
-	@XmlAttribute(name = "expire")
-	@XmlJavaTypeAdapter(DateTimeAdapter.class)
-	private Date expire;
+    @XmlAttribute(name = "stop-price")
+    @XmlJavaTypeAdapter(DoubleValueAdapter.class)
+    private Double stopPrice;
 
-	@XmlElement(name = "reference")
-	private String reference;
+    @XmlAttribute(name = "expire")
+    @XmlJavaTypeAdapter(DateTimeAdapter.class)
+    private Date expire;
 
-	private IOrder order;
+    @XmlElement(name = "reference")
+    private String reference;
 
-	private class Order implements IOrder {
+    private IOrder order;
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getDate()
-		 */
-		public Date getDate() {
-			return date;
-		}
+    private class Order implements IOrder {
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getAccount()
-		 */
-		public IAccount getAccount() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getDate()
+         */
+        @Override
+        public Date getDate() {
+            return date;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getSecurity()
-		 */
-		public ISecurity getSecurity() {
-			return security;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getAccount()
+         */
+        @Override
+        public IAccount getAccount() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getPrice()
-		 */
-		public Double getPrice() {
-			return price;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getSecurity()
+         */
+        @Override
+        public ISecurity getSecurity() {
+            return security;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getQuantity()
-		 */
-		public Long getQuantity() {
-			return quantity;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getPrice()
+         */
+        @Override
+        public Double getPrice() {
+            return price;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getRoute()
-		 */
-		public IOrderRoute getRoute() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getQuantity()
+         */
+        @Override
+        public Long getQuantity() {
+            return quantity;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getSide()
-		 */
-		public IOrderSide getSide() {
-			return side;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getRoute()
+         */
+        @Override
+        public IOrderRoute getRoute() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getStopPrice()
-		 */
-		public Double getStopPrice() {
-			return stopPrice;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getSide()
+         */
+        @Override
+        public IOrderSide getSide() {
+            return side;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getType()
-		 */
-		public IOrderType getType() {
-			return type;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getStopPrice()
+         */
+        @Override
+        public Double getStopPrice() {
+            return stopPrice;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getValidity()
-		 */
-		public IOrderValidity getValidity() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getType()
+         */
+        @Override
+        public IOrderType getType() {
+            return type;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getExpire()
-		 */
-		public Date getExpire() {
-			return expire;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getValidity()
+         */
+        @Override
+        public IOrderValidity getValidity() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.trading.IOrder#getReference()
-		 */
-		public String getReference() {
-			return reference;
-		}
-	}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getExpire()
+         */
+        @Override
+        public Date getExpire() {
+            return expire;
+        }
 
-	public OrderElement() {
-		order = new Order();
-	}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.trading.IOrder#getReference()
+         */
+        @Override
+        public String getReference() {
+            return reference;
+        }
+    }
 
-	public OrderElement(IOrder order) {
-		this.date = order.getDate();
-		this.side = order.getSide();
-		this.type = order.getType();
-		this.security = order.getSecurity();
-		this.quantity = order.getQuantity();
-		this.price = order.getPrice();
-		this.stopPrice = order.getStopPrice();
-		this.expire = order.getExpire();
-		this.reference = order.getReference();
+    public OrderElement() {
+        order = new Order();
+    }
 
-		this.order = order;
-	}
+    public OrderElement(IOrder order) {
+        this.date = order.getDate();
+        this.side = order.getSide();
+        this.type = order.getType();
+        this.security = order.getSecurity();
+        this.quantity = order.getQuantity();
+        this.price = order.getPrice();
+        this.stopPrice = order.getStopPrice();
+        this.expire = order.getExpire();
+        this.reference = order.getReference();
 
-	@XmlTransient
-	public IOrder getOrder() {
-		return order;
-	}
+        this.order = order;
+    }
+
+    @XmlTransient
+    public IOrder getOrder() {
+        return order;
+    }
 }

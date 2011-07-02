@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,25 +20,25 @@ import java.util.Date;
  */
 public interface ITradeStrategyParameters {
 
-	public String[] getParameterNames();
+    public String[] getParameterNames();
 
-	public boolean hasParameter(String name);
+    public boolean hasParameter(String name);
 
-	public String getString(String name);
+    public String getString(String name);
 
-	public Integer getInteger(String name);
+    public Integer getInteger(String name);
 
-	public Long getLong(String name);
+    public Long getLong(String name);
 
-	public Double getDouble(String name);
+    public Double getDouble(String name);
 
-	public Float getFloat(String name);
+    public Float getFloat(String name);
 
-	public Date getDate(String name);
+    public Date getDate(String name);
 
-	public void setParameter(String name, String value);
+    public void setParameter(String name, String value);
 
-	public void setParameter(String name, Number value);
+    public void setParameter(String name, Number value);
 
-	public void setParameter(String name, Date value);
+    public void setParameter(String name, Date value);
 }

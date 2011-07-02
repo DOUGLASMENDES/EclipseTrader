@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,21 +22,22 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.ui.charts.indicators.SAR;
 
 public class SARPropertiesPage extends PropertyPage {
-	private Spinner acceleration;
-	private Spinner maximum;
 
-	public SARPropertiesPage() {
+    private Spinner acceleration;
+    private Spinner maximum;
+
+    public SARPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setTitle("Parabolic SAR");
@@ -54,28 +55,28 @@ public class SARPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	SAR object = (SAR) getElement().getAdapter(SAR.class);
+        SAR object = (SAR) getElement().getAdapter(SAR.class);
         acceleration.setSelection((int) (object.getAcceleration() * Math.pow(10, acceleration.getDigits())));
         maximum.setSelection((int) (object.getMaximum() * Math.pow(10, maximum.getDigits())));
-	    super.performDefaults();
+        super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	SAR object = (SAR) getElement().getAdapter(SAR.class);
-    	object.setAcceleration(acceleration.getSelection() / Math.pow(10, acceleration.getDigits()));
-    	object.setMaximum(maximum.getSelection() / Math.pow(10, maximum.getDigits()));
-	    return super.performOk();
+        SAR object = (SAR) getElement().getAdapter(SAR.class);
+        object.setAcceleration(acceleration.getSelection() / Math.pow(10, acceleration.getDigits()));
+        object.setMaximum(maximum.getSelection() / Math.pow(10, maximum.getDigits()));
+        return super.performOk();
     }
 }

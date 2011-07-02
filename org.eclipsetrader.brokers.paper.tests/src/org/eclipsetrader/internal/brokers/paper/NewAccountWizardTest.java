@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,55 +21,56 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipsetrader.internal.brokers.paper.schemes.NoExpensesScheme;
 
 public class NewAccountWizardTest extends TestCase {
-	Shell shell;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		shell = new Shell(Display.getDefault());
-		new AccountRepository();
-	}
+    Shell shell;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		shell.dispose();
-	}
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        shell = new Shell(Display.getDefault());
+        new AccountRepository();
+    }
 
-	public void testCanFinish() throws Exception {
-		NewAccountWizard wizard = new NewAccountWizard();
-		wizard.addPages();
-		wizard.createPageControls(shell);
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        shell.dispose();
+    }
 
-		assertFalse(wizard.canFinish());
-	}
+    public void testCanFinish() throws Exception {
+        NewAccountWizard wizard = new NewAccountWizard();
+        wizard.addPages();
+        wizard.createPageControls(shell);
 
-	public void testCanFinishWithDescription() throws Exception {
-		NewAccountWizard wizard = new NewAccountWizard();
-		wizard.addPages();
-		wizard.createPageControls(shell);
+        assertFalse(wizard.canFinish());
+    }
 
-		wizard.namePage.name.setText("Test");
+    public void testCanFinishWithDescription() throws Exception {
+        NewAccountWizard wizard = new NewAccountWizard();
+        wizard.addPages();
+        wizard.createPageControls(shell);
 
-		assertTrue(wizard.canFinish());
-	}
+        wizard.namePage.name.setText("Test");
 
-	public void testCreateAccount() throws Exception {
-		NewAccountWizard wizard = new NewAccountWizard();
-		wizard.addPages();
-		wizard.createPageControls(shell);
+        assertTrue(wizard.canFinish());
+    }
 
-		wizard.namePage.name.setText("Test");
-		wizard.performFinish();
+    public void testCreateAccount() throws Exception {
+        NewAccountWizard wizard = new NewAccountWizard();
+        wizard.addPages();
+        wizard.createPageControls(shell);
 
-		Account account = wizard.getAccount();
-		assertEquals("Test", account.getDescription());
-		assertEquals(0.0, account.getBalance());
-		assertTrue(account.getExpenseScheme() instanceof NoExpensesScheme);
-		assertEquals(Currency.getInstance(Locale.getDefault()), account.getCurrency());
-	}
+        wizard.namePage.name.setText("Test");
+        wizard.performFinish();
+
+        Account account = wizard.getAccount();
+        assertEquals("Test", account.getDescription());
+        assertEquals(0.0, account.getBalance());
+        assertTrue(account.getExpenseScheme() instanceof NoExpensesScheme);
+        assertEquals(Currency.getInstance(Locale.getDefault()), account.getCurrency());
+    }
 }

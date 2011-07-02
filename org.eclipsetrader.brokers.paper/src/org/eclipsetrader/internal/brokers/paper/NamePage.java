@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,42 +22,46 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class NamePage extends WizardPage {
-	Text name;
 
-	public NamePage() {
-		super("name");
-		setTitle("Name");
-	}
+    Text name;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
+    public NamePage() {
+        super("name");
+        setTitle("Name");
+    }
 
-		Label label = new Label(composite, SWT.NONE);
-		label.setText("Name");
-		name = new Text(composite, SWT.BORDER);
-		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		name.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				setPageComplete(isPageComplete());
-			}
-		});
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayout(new GridLayout(2, false));
 
-		setControl(composite);
-	}
+        Label label = new Label(composite, SWT.NONE);
+        label.setText("Name");
+        name = new Text(composite, SWT.BORDER);
+        name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        name.addModifyListener(new ModifyListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
-	 */
-	@Override
-	public boolean isPageComplete() {
-		return !"".equals(name.getText());
-	}
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setPageComplete(isPageComplete());
+            }
+        });
 
-	public String getAccountDescription() {
-		return name.getText();
-	}
+        setControl(composite);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
+     */
+    @Override
+    public boolean isPageComplete() {
+        return !"".equals(name.getText());
+    }
+
+    public String getAccountDescription() {
+        return name.getText();
+    }
 }

@@ -21,120 +21,120 @@ import org.eclipsetrader.core.feed.TimeSpan;
 
 public class BackfillConnectorFunctionalTest extends TestCase {
 
-	public void testBackfill1MinDataForUSStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("MSFT", null);
+    public void testBackfill1MinDataForUSStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("MSFT", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill5MinDataForUSStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("MSFT", null);
+    public void testBackfill5MinDataForUSStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("MSFT", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill1MinDataForItalianStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("MS.MI", null);
+    public void testBackfill1MinDataForItalianStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("MS.MI", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill5MinDataForItalianStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("MS.MI", null);
+    public void testBackfill5MinDataForItalianStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("MS.MI", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill1MinDataForGermanStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("BAS.DE", null);
+    public void testBackfill1MinDataForGermanStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("BAS.DE", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill5MinDataForGermanStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("BAS.DE", null);
+    public void testBackfill5MinDataForGermanStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("BAS.DE", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill1MinDataForFranceStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("AF.PA", null);
+    public void testBackfill1MinDataForFranceStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("AF.PA", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill5MinDataForFranceStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("AF.PA", null);
+    public void testBackfill5MinDataForFranceStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("AF.PA", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill1MinDataForIndianStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("UNITECH.BO", null);
+    public void testBackfill1MinDataForIndianStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("UNITECH.BO", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill5MinDataForIndianStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("UNITECH.BO", null);
+    public void testBackfill5MinDataForIndianStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("UNITECH.BO", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill1MinDataForAustralianStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("LYC.AX", null);
+    public void testBackfill1MinDataForAustralianStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("LYC.AX", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill5MinDataForAustralianStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("LYC.AX", null);
+    public void testBackfill5MinDataForAustralianStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("LYC.AX", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
 
-		assertFalse(result.length == 0);
-	}
+        assertFalse(result.length == 0);
+    }
 
-	public void testBackfill5MinDataForUKStocks() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("BAY.L", null);
+    public void testBackfill5MinDataForUKStocks() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("BAY.L", null);
 
-		BackfillConnector connector = new BackfillConnector();
-		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+        BackfillConnector connector = new BackfillConnector();
+        IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
 
-		assertFalse("No data for " + identifier.toString(), result.length == 0);
-	}
+        assertFalse("No data for " + identifier.toString(), result.length == 0);
+    }
 }

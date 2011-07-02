@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,73 +28,82 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.trading.IAccount;
 
 public class AccountRepository {
-	private static AccountRepository instance;
-	private List<Account> accounts = new ArrayList<Account>();
 
-	public AccountRepository() {
-		instance = this;
-	}
+    private static AccountRepository instance;
+    private List<Account> accounts = new ArrayList<Account>();
 
-	public static AccountRepository getInstance() {
-		return instance;
-	}
+    public AccountRepository() {
+        instance = this;
+    }
 
-	public void add(Account account) {
-		accounts.add(account);
-	}
+    public static AccountRepository getInstance() {
+        return instance;
+    }
 
-	public void remove(Account account) {
-		accounts.remove(account);
-	}
+    public void add(Account account) {
+        accounts.add(account);
+    }
 
-	public int size() {
-		return accounts.size();
-	}
+    public void remove(Account account) {
+        accounts.remove(account);
+    }
 
-	public IAccount[] getAccounts() {
-		return accounts.toArray(new Account[accounts.size()]);
-	}
+    public int size() {
+        return accounts.size();
+    }
 
-	void load(File file) throws JAXBException {
-		if (!file.exists())
-			return;
+    public IAccount[] getAccounts() {
+        return accounts.toArray(new Account[accounts.size()]);
+    }
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(Account[].class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.log(status);
-				return true;
-			}
-		});
-		JAXBElement<Account[]> element = unmarshaller.unmarshal(new StreamSource(file), Account[].class);
-		if (element != null)
-			accounts.addAll(Arrays.asList(element.getValue()));
-	}
+    void load(File file) throws JAXBException {
+        if (!file.exists()) {
+            return;
+        }
 
-	void save(File file) throws JAXBException, IOException {
-		if (file.exists())
-			file.delete();
+        JAXBContext jaxbContext = JAXBContext.newInstance(Account[].class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(Account[].class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.log(status);
-				return true;
-			}
-		});
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.log(status);
+                return true;
+            }
+        });
+        JAXBElement<Account[]> element = unmarshaller.unmarshal(new StreamSource(file), Account[].class);
+        if (element != null) {
+            accounts.addAll(Arrays.asList(element.getValue()));
+        }
+    }
 
-		Account[] elements = accounts.toArray(new Account[accounts.size()]);
-		JAXBElement<Account[]> element = new JAXBElement<Account[]>(new QName("list"), Account[].class, elements);
-		marshaller.marshal(element, new FileWriter(file));
-	}
+    void save(File file) throws JAXBException, IOException {
+        if (file.exists()) {
+            file.delete();
+        }
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(Account[].class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setEventHandler(new ValidationEventHandler() {
+
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.log(status);
+                return true;
+            }
+        });
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+
+        Account[] elements = accounts.toArray(new Account[accounts.size()]);
+        JAXBElement<Account[]> element = new JAXBElement<Account[]>(new QName("list"), Account[].class, elements);
+        marshaller.marshal(element, new FileWriter(file));
+    }
 }

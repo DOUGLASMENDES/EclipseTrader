@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,18 +18,18 @@ package org.eclipsetrader.core.repositories;
  */
 public interface IRepositoryElementFactory {
 
-	/**
-	 * Gets the unique id of this elements factory.
-	 *
-	 * @return the factory id.
-	 */
-	public String getId();
+    /**
+     * Gets the unique id of this elements factory.
+     *
+     * @return the factory id.
+     */
+    public String getId();
 
-	/**
-	 * Re-creates and returns an object from the given properties.
-	 *
-	 * @param properties the object properties
-	 * @return an object, or null if the element could not be created
-	 */
+    /**
+     * Re-creates and returns an object from the given properties.
+     *
+     * @param properties the object properties
+     * @return an object, or null if the element could not be created
+     */
     public IStoreObject createElement(IStore store, IStoreProperties properties);
 }

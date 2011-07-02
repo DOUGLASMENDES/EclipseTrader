@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,28 +26,30 @@ import org.eclipsetrader.yahoo.internal.core.connector.SnapshotConnector;
 import org.eclipsetrader.yahoo.internal.core.connector.StreamingConnector;
 
 public class AuthenticationPage extends PreferencePage implements IWorkbenchPreferencePage {
+
     private Combo driver;
 
-	public AuthenticationPage() {
-	}
+    public AuthenticationPage() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(IWorkbench workbench) {
-		setPreferenceStore(YahooActivator.getDefault().getPreferenceStore());
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+     */
+    @Override
+    public void init(IWorkbench workbench) {
+        setPreferenceStore(YahooActivator.getDefault().getPreferenceStore());
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 2;
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
 
         Label label = new Label(content, SWT.NONE);
         label.setText("Driver");
@@ -57,36 +59,36 @@ public class AuthenticationPage extends PreferencePage implements IWorkbenchPref
         driver.add("Snapshot");
         driver.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		performDefaults();
+        performDefaults();
 
-		return content;
-	}
+        return content;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-	    performApply();
-	    return super.performOk();
+        performApply();
+        return super.performOk();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
     protected void performApply() {
-    	switch(driver.getSelectionIndex()) {
-    		case 0:
-    	    	getPreferenceStore().setValue(YahooActivator.PREFS_DRIVER, StreamingConnector.class.getName());
-    			break;
-    		case 1:
-    	    	getPreferenceStore().setValue(YahooActivator.PREFS_DRIVER, SnapshotConnector.class.getName());
-    			break;
-    	}
+        switch (driver.getSelectionIndex()) {
+            case 0:
+                getPreferenceStore().setValue(YahooActivator.PREFS_DRIVER, StreamingConnector.class.getName());
+                break;
+            case 1:
+                getPreferenceStore().setValue(YahooActivator.PREFS_DRIVER, SnapshotConnector.class.getName());
+                break;
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
@@ -95,9 +97,10 @@ public class AuthenticationPage extends PreferencePage implements IWorkbenchPref
     }
 
     protected int getDriverIndex() {
-    	String driver = getPreferenceStore().getString(YahooActivator.PREFS_DRIVER);
-    	if (driver.equals(SnapshotConnector.class.getName()))
-    		return 1;
-    	return 0;
+        String driver = getPreferenceStore().getString(YahooActivator.PREFS_DRIVER);
+        if (driver.equals(SnapshotConnector.class.getName())) {
+            return 1;
+        }
+        return 0;
     }
 }

@@ -101,6 +101,7 @@ import org.eclipsetrader.ui.internal.repositories.RepositoryObjectTransfer;
 import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
 
 public class WatchListView extends ViewPart implements ISaveablePart {
+
     public static final String VIEW_ID = "org.eclipsetrader.ui.views.watchlist";
     public static final String K_VIEWS = "Views";
     public static final String K_URI = "uri";
@@ -291,11 +292,12 @@ public class WatchListView extends ViewPart implements ISaveablePart {
                 this.watchList = (WatchList) watchList;
             }
         } catch (URISyntaxException e) {
-            Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
             UIActivator.getDefault().getLog().log(status);
         }
 
         deleteAction = new Action("Delete") {
+
             @Override
             public void run() {
                 Object[] s = ((IStructuredSelection) viewer.getSelection()).toArray();
@@ -340,6 +342,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
         viewer = createViewer(parent);
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 deleteAction.setEnabled(!event.getSelection().isEmpty());
@@ -349,6 +352,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
                 SecurityObjectTransfer.getInstance(),
                 RepositoryObjectTransfer.getInstance(),
         }, new ViewerDropAdapter(viewer) {
+
             @Override
             public boolean validateDrop(Object target, int operation, TransferData transferType) {
                 return SecurityObjectTransfer.getInstance().isSupportedType(transferType) || RepositoryObjectTransfer.getInstance().isSupportedType(transferType);
@@ -517,6 +521,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
         final IRepositoryService repositoryService = UIActivator.getDefault().getRepositoryService();
         IStatus status = repositoryService.runInService(new IRepositoryRunnable() {
+
             @Override
             public IStatus run(IProgressMonitor monitor) throws Exception {
                 repositoryService.saveAdaptable(new IAdaptable[] {

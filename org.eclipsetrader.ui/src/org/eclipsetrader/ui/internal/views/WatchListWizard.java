@@ -36,6 +36,7 @@ import org.eclipsetrader.core.views.WatchList;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class WatchListWizard extends Wizard implements INewWizard {
+
     private Image image;
     private NamePage namePage;
     private ColumnsPage columnsPage;
@@ -59,8 +60,9 @@ public class WatchListWizard extends Wizard implements INewWizard {
      */
     @Override
     public void dispose() {
-        if (image != null)
+        if (image != null) {
             image.dispose();
+        }
         super.dispose();
     }
 
@@ -114,6 +116,7 @@ public class WatchListWizard extends Wizard implements INewWizard {
 
         final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
         service.runInService(new IRepositoryRunnable() {
+
             @Override
             public IStatus run(IProgressMonitor monitor) throws Exception {
                 service.moveAdaptable(new IAdaptable[] {
@@ -145,7 +148,7 @@ public class WatchListWizard extends Wizard implements INewWizard {
 
             page.showView(WatchListView.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
         } catch (PartInitException e) {
-            Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening watchlist view", e); //$NON-NLS-1$
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening watchlist view", e); //$NON-NLS-1$
             UIActivator.getDefault().getLog().log(status);
         }
 

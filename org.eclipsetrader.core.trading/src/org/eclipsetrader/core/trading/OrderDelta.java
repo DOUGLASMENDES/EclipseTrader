@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,23 +12,24 @@
 package org.eclipsetrader.core.trading;
 
 public class OrderDelta {
-	public static final int KIND_ADDED = 1;
-	public static final int KIND_REMOVED = 2;
-	public static final int KIND_UPDATED = 3;
 
-	private int kind;
-	private IOrderMonitor order;
+    public static final int KIND_ADDED = 1;
+    public static final int KIND_REMOVED = 2;
+    public static final int KIND_UPDATED = 3;
 
-	public OrderDelta(int kind, IOrderMonitor order) {
-		this.kind = kind;
-		this.order = order;
-	}
+    private int kind;
+    private IOrderMonitor order;
 
-	public int getKind() {
-    	return kind;
+    public OrderDelta(int kind, IOrderMonitor order) {
+        this.kind = kind;
+        this.order = order;
     }
 
-	public IOrderMonitor getOrder() {
-    	return order;
+    public int getKind() {
+        return kind;
+    }
+
+    public IOrderMonitor getOrder() {
+        return order;
     }
 }

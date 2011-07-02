@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,143 +28,151 @@ import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderMonitor;
-import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IOrderType;
+import org.eclipsetrader.core.trading.Order;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class TradeSystemContext implements ITradeSystemContext {
-	private TradeSystemService service;
-	private ITradeSystem system;
 
-	private boolean active;
-	private ISecurity instrument;
-	private TimeSpan timeSpan;
-	private ITradeStrategy strategy;
+    private TradeSystemService service;
+    private ITradeSystem system;
 
-	private TradeStrategyParameters strategyParameters;
+    private boolean active;
+    private ISecurity instrument;
+    private TimeSpan timeSpan;
+    private ITradeStrategy strategy;
 
-	private IBroker broker;
-	private IMarketService marketService;
-	private MarketPricingEnvironment pricingEnvironment;
-	private IBarFactory barFactory;
+    private TradeStrategyParameters strategyParameters;
 
-	private ITradeSystemMonitor strategyMonitor;
+    private IBroker broker;
+    private IMarketService marketService;
+    private MarketPricingEnvironment pricingEnvironment;
+    private IBarFactory barFactory;
 
-	public TradeSystemContext(TradeSystemService service, ITradeSystem system) {
-		this.service = service;
-		this.system = system;
+    private ITradeSystemMonitor strategyMonitor;
 
-		this.active = system.isActive();
-		this.instrument = system.getInstrument();
-		this.timeSpan = system.getTimeSpan();
-		this.strategy = system.getTradeStrategy();
-		this.strategyParameters = new TradeStrategyParameters(system.getParameters());
-	}
+    public TradeSystemContext(TradeSystemService service, ITradeSystem system) {
+        this.service = service;
+        this.system = system;
 
-	public boolean isActive() {
-    	return active;
+        this.active = system.isActive();
+        this.instrument = system.getInstrument();
+        this.timeSpan = system.getTimeSpan();
+        this.strategy = system.getTradeStrategy();
+        this.strategyParameters = new TradeStrategyParameters(system.getParameters());
     }
 
-	public void setActive(boolean active) {
-    	this.active = active;
+    public boolean isActive() {
+        return active;
     }
 
-	/* (non-Javadoc)
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#getSecurity()
      */
+    @Override
     public ISecurity getSecurity() {
-	    return instrument;
+        return instrument;
     }
 
     public ITradeSystemMonitor start() {
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
 
-		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-		if (serviceReference != null) {
-			marketService = (IMarketService) context.getService(serviceReference);
-			pricingEnvironment = new MarketPricingEnvironment(marketService);
-			context.ungetService(serviceReference);
-		}
+        ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+        if (serviceReference != null) {
+            marketService = (IMarketService) context.getService(serviceReference);
+            pricingEnvironment = new MarketPricingEnvironment(marketService);
+            context.ungetService(serviceReference);
+        }
 
-		if (pricingEnvironment != null) {
-			pricingEnvironment.addSecurity(instrument);
-			barFactory = new BarFactory(instrument, timeSpan, pricingEnvironment);
-		}
+        if (pricingEnvironment != null) {
+            pricingEnvironment.addSecurity(instrument);
+            barFactory = new BarFactory(instrument, timeSpan, pricingEnvironment);
+        }
 
-		strategyMonitor = strategy.start(this);
+        strategyMonitor = strategy.start(this);
 
-		return strategyMonitor;
+        return strategyMonitor;
     }
 
     public void stop() {
-    	if (strategyMonitor != null) {
-    		strategyMonitor.stop();
-    		strategyMonitor = null;
-    	}
+        if (strategyMonitor != null) {
+            strategyMonitor.stop();
+            strategyMonitor = null;
+        }
 
-    	if (pricingEnvironment != null) {
-    		pricingEnvironment.dispose();
-    		pricingEnvironment = null;
-    	}
+        if (pricingEnvironment != null) {
+            pricingEnvironment.dispose();
+            pricingEnvironment = null;
+        }
 
-    	if (barFactory != null) {
-    		barFactory.dispose();
-    		barFactory = null;
-    	}
+        if (barFactory != null) {
+            barFactory.dispose();
+            barFactory = null;
+        }
 
-    	if (service != null) {
-        	TradeSystemEvent event = new TradeSystemEvent();
-        	event.kind = TradeSystemEvent.KIND_STOPPED;
-        	event.service = service;
-        	event.tradeSystem = system;
-        	event.tradeSystemContext = this;
-        	service.notifyListeners(event);
-    	}
+        if (service != null) {
+            TradeSystemEvent event = new TradeSystemEvent();
+            event.kind = TradeSystemEvent.KIND_STOPPED;
+            event.service = service;
+            event.tradeSystem = system;
+            event.tradeSystemContext = this;
+            service.notifyListeners(event);
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#getPricingEnvironment()
      */
+    @Override
     public IPricingEnvironment getPricingEnvironment() {
-	    return pricingEnvironment;
+        return pricingEnvironment;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#getBarFactory()
      */
+    @Override
     public IBarFactory getBarFactory() {
-	    return barFactory;
+        return barFactory;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#getBroker()
      */
+    @Override
     public IBroker getBroker() {
-	    return broker;
+        return broker;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#getStrategyParameters()
      */
+    @Override
     public ITradeStrategyParameters getStrategyParameters() {
-	    return strategyParameters;
+        return strategyParameters;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#prepareOrder(org.eclipsetrader.core.trading.IOrderSide, java.lang.Long, java.lang.Double)
      */
+    @Override
     public IOrderMonitor prepareOrder(IOrderSide side, Long quantity, Double price) throws BrokerException {
-    	Order order = new Order(null, IOrderType.Limit, side, instrument, quantity, price);
-	    return broker.prepareOrder(order);
+        Order order = new Order(null, IOrderType.Limit, side, instrument, quantity, price);
+        return broker.prepareOrder(order);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemContext#prepareOrder(org.eclipsetrader.core.trading.IOrderSide, java.lang.Long)
      */
+    @Override
     public IOrderMonitor prepareOrder(IOrderSide side, Long quantity) throws BrokerException {
-    	Order order = new Order(null, side, instrument, quantity);
-	    return broker.prepareOrder(order);
+        Order order = new Order(null, side, instrument, quantity);
+        return broker.prepareOrder(order);
     }
 }

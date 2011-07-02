@@ -19,6 +19,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -43,155 +44,161 @@ import org.eclipsetrader.yahoo.internal.news.Category;
 import org.eclipsetrader.yahoo.internal.news.Page;
 
 public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage {
-	private Spinner interval;
-	private Spinner hoursAsRecent;
-	private Button updateNews;
-	private CheckboxTreeViewer providers;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(IWorkbench workbench) {
-	}
+    private Spinner interval;
+    private Spinner hoursAsRecent;
+    private Button updateNews;
+    private CheckboxTreeViewer providers;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+     */
+    @Override
+    public void init(IWorkbench workbench) {
+    }
 
-		Composite group = new Composite(content, SWT.NONE);
-		gridLayout = new GridLayout(3, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		group.setLayout(gridLayout);
-		group.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-		Label label = new Label(group, SWT.NONE);
-		label.setText("Update every");
-		interval = new Spinner(group, SWT.BORDER);
-		interval.setMinimum(1);
-		interval.setMaximum(9999);
-		label = new Label(group, SWT.NONE);
-		label.setText("minute(s)");
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
 
-		group = new Composite(content, SWT.NONE);
-		gridLayout = new GridLayout(3, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		group.setLayout(gridLayout);
-		group.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-		label = new Label(group, SWT.NONE);
-		label.setText("Consider a news as recent for");
-		hoursAsRecent = new Spinner(group, SWT.BORDER);
-		hoursAsRecent.setMinimum(0);
-		hoursAsRecent.setMaximum(9999);
-		label = new Label(group, SWT.NONE);
-		label.setText("hour(s)");
+        Composite group = new Composite(content, SWT.NONE);
+        gridLayout = new GridLayout(3, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        group.setLayout(gridLayout);
+        group.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        Label label = new Label(group, SWT.NONE);
+        label.setText("Update every");
+        interval = new Spinner(group, SWT.BORDER);
+        interval.setMinimum(1);
+        interval.setMaximum(9999);
+        label = new Label(group, SWT.NONE);
+        label.setText("minute(s)");
 
-		updateNews = new Button(content, SWT.CHECK);
-		updateNews.setText("Update security news");
+        group = new Composite(content, SWT.NONE);
+        gridLayout = new GridLayout(3, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        group.setLayout(gridLayout);
+        group.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        label = new Label(group, SWT.NONE);
+        label.setText("Consider a news as recent for");
+        hoursAsRecent = new Spinner(group, SWT.BORDER);
+        hoursAsRecent.setMinimum(0);
+        hoursAsRecent.setMaximum(9999);
+        label = new Label(group, SWT.NONE);
+        label.setText("hour(s)");
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Subscriptions:");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        updateNews = new Button(content, SWT.CHECK);
+        updateNews.setText("Update security news");
 
-		providers = new CheckboxTreeViewer(content, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		gridData.heightHint = providers.getTree().getItemHeight() * 15 + providers.getTree().getBorderWidth() * 2;
-		providers.getControl().setLayoutData(gridData);
-		providers.setContentProvider(new NewsContentProvider());
-		providers.setLabelProvider(new LabelProvider());
-		providers.setSorter(new ViewerSorter());
-		providers.setUseHashlookup(true);
+        label = new Label(content, SWT.NONE);
+        label.setText("Subscriptions:");
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
-		providers.addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				if (event.getElement() instanceof Category) {
-					Page[] pages = ((Category) event.getElement()).getPages();
-					for (int i = 0; i < pages.length; i++)
-						providers.setChecked(pages[i], event.getChecked());
-				}
-				else if (event.getElement() instanceof Page) {
-					Category category = ((Page) event.getElement()).getParent();
-					boolean allChecked = true;
-					boolean someChecked = false;
-					for (Page page : category.getPages()) {
-						boolean checked = providers.getChecked(page);
-						someChecked = someChecked || checked;
-						allChecked = allChecked && checked;
-					}
-					providers.setChecked(category, someChecked);
-					providers.setGrayed(category, !allChecked);
-				}
-			}
-		});
+        providers = new CheckboxTreeViewer(content, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+        gridData.heightHint = providers.getTree().getItemHeight() * 15 + providers.getTree().getBorderWidth() * 2;
+        providers.getControl().setLayoutData(gridData);
+        providers.setContentProvider(new NewsContentProvider());
+        providers.setLabelProvider(new LabelProvider());
+        providers.setSorter(new ViewerSorter());
+        providers.setUseHashlookup(true);
 
-		performDefaults();
+        providers.addCheckStateListener(new ICheckStateListener() {
 
-		return content;
-	}
+            @Override
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                if (event.getElement() instanceof Category) {
+                    Page[] pages = ((Category) event.getElement()).getPages();
+                    for (int i = 0; i < pages.length; i++) {
+                        providers.setChecked(pages[i], event.getChecked());
+                    }
+                }
+                else if (event.getElement() instanceof Page) {
+                    Category category = ((Page) event.getElement()).getParent();
+                    boolean allChecked = true;
+                    boolean someChecked = false;
+                    for (Page page : category.getPages()) {
+                        boolean checked = providers.getChecked(page);
+                        someChecked = someChecked || checked;
+                        allChecked = allChecked && checked;
+                    }
+                    providers.setChecked(category, someChecked);
+                    providers.setGrayed(category, !allChecked);
+                }
+            }
+        });
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-	 */
-	@Override
-	protected void performDefaults() {
-		IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
+        performDefaults();
 
-		interval.setSelection(store.getInt(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL));
-		hoursAsRecent.setSelection(store.getInt(YahooActivator.PREFS_HOURS_AS_RECENT));
-		updateNews.setSelection(store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS));
+        return content;
+    }
 
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Category[].class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
 
-			InputStream inputStream = FileLocator.openStream(YahooActivator.getDefault().getBundle(), new Path("data/news_feeds.xml"), false);
-			JAXBElement<Category[]> element = unmarshaller.unmarshal(new StreamSource(inputStream), Category[].class);
+        interval.setSelection(store.getInt(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL));
+        hoursAsRecent.setSelection(store.getInt(YahooActivator.PREFS_HOURS_AS_RECENT));
+        updateNews.setSelection(store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS));
 
-			providers.setInput(element.getValue());
-			providers.expandAll();
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Category[].class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-			for (Category category : element.getValue()) {
-				boolean allChecked = true;
-				boolean someChecked = false;
-				for (Page page : category.getPages()) {
-					boolean checked = store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId());
-					someChecked = someChecked || checked;
-					allChecked = allChecked && checked;
-					providers.setChecked(page, checked);
-				}
-				providers.setChecked(category, someChecked);
-				providers.setGrayed(category, !allChecked);
-			}
+            InputStream inputStream = FileLocator.openStream(YahooActivator.getDefault().getBundle(), new Path("data/news_feeds.xml"), false);
+            JAXBElement<Category[]> element = unmarshaller.unmarshal(new StreamSource(inputStream), Category[].class);
 
-		} catch (Exception e) {
-			Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Error reading feed sources", e); //$NON-NLS-1$
-			YahooActivator.getDefault().getLog().log(status);
-		}
+            providers.setInput(element.getValue());
+            providers.expandAll();
 
-		super.performDefaults();
-	}
+            for (Category category : element.getValue()) {
+                boolean allChecked = true;
+                boolean someChecked = false;
+                for (Page page : category.getPages()) {
+                    boolean checked = store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId());
+                    someChecked = someChecked || checked;
+                    allChecked = allChecked && checked;
+                    providers.setChecked(page, checked);
+                }
+                providers.setChecked(category, someChecked);
+                providers.setGrayed(category, !allChecked);
+            }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
-	 */
-	@Override
-	public boolean performOk() {
-		IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
+        } catch (Exception e) {
+            Status status = new Status(IStatus.WARNING, YahooActivator.PLUGIN_ID, 0, "Error reading feed sources", e); //$NON-NLS-1$
+            YahooActivator.getDefault().getLog().log(status);
+        }
 
-		store.setValue(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL, interval.getSelection());
-		store.setValue(YahooActivator.PREFS_HOURS_AS_RECENT, hoursAsRecent.getSelection());
-		store.setValue(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS, updateNews.getSelection());
+        super.performDefaults();
+    }
 
-		Category[] input = (Category[]) providers.getInput();
-		for (Category category : input) {
-			for (Page page : category.getPages())
-				store.setValue(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId(), providers.getChecked(page));
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+        IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
 
-		return super.performOk();
-	}
+        store.setValue(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL, interval.getSelection());
+        store.setValue(YahooActivator.PREFS_HOURS_AS_RECENT, hoursAsRecent.getSelection());
+        store.setValue(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS, updateNews.getSelection());
+
+        Category[] input = (Category[]) providers.getInput();
+        for (Category category : input) {
+            for (Page page : category.getPages()) {
+                store.setValue(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId(), providers.getChecked(page));
+            }
+        }
+
+        return super.performOk();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,82 +29,87 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class TargetPriceWizard extends Wizard implements INewWizard {
-	private TargetPriceWizardPage page;
 
-	private ISecurity security;
+    private TargetPriceWizardPage page;
 
-	public TargetPriceWizard() {
-	}
+    private ISecurity security;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
-	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		if (selection.isEmpty())
-			throw new IllegalStateException("Nothing selected"); //$NON-NLS-1$
+    public TargetPriceWizard() {
+    }
 
-		Object o = selection.getFirstElement();
-		if (o instanceof IAdaptable)
-			o = ((IAdaptable) o).getAdapter(ISecurity.class);
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+     */
+    @Override
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+        if (selection.isEmpty()) {
+            throw new IllegalStateException("Nothing selected"); //$NON-NLS-1$
+        }
 
-		if (o == null || !(o instanceof ISecurity))
-			throw new IllegalStateException("Not a security"); //$NON-NLS-1$
+        Object o = selection.getFirstElement();
+        if (o instanceof IAdaptable) {
+            o = ((IAdaptable) o).getAdapter(ISecurity.class);
+        }
 
-		security = (ISecurity) o;
-	}
+        if (o == null || !(o instanceof ISecurity)) {
+            throw new IllegalStateException("Not a security"); //$NON-NLS-1$
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#getWindowTitle()
-	 */
-	@Override
-	public String getWindowTitle() {
-		return Messages.TargetPriceWizard_WindowTitle;
-	}
+        security = (ISecurity) o;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#getDefaultPageImage()
-	 */
-	@Override
-	public Image getDefaultPageImage() {
-		return Activator.getDefault().getImageRegistry().get(Activator.ALERT_WIZARD_IMAGE);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#getWindowTitle()
+     */
+    @Override
+    public String getWindowTitle() {
+        return Messages.TargetPriceWizard_WindowTitle;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#addPages()
-	 */
-	@Override
-	public void addPages() {
-		addPage(page = new TargetPriceWizardPage());
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#getDefaultPageImage()
+     */
+    @Override
+    public Image getDefaultPageImage() {
+        return Activator.getDefault().getImageRegistry().get(Activator.ALERT_WIZARD_IMAGE);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
-	 */
-	@Override
-	public boolean performFinish() {
-		IAlertService service = getAlertService();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#addPages()
+     */
+    @Override
+    public void addPages() {
+        addPage(page = new TargetPriceWizardPage());
+    }
 
-		List<IAlert> list = new ArrayList<IAlert>(Arrays.asList(service.getAlerts(security)));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#performFinish()
+     */
+    @Override
+    public boolean performFinish() {
+        IAlertService service = getAlertService();
 
-		TargetPrice alert = new TargetPrice();
-		alert.setParameters(page.getParametersMap());
-		list.add(alert);
+        List<IAlert> list = new ArrayList<IAlert>(Arrays.asList(service.getAlerts(security)));
 
-		service.setAlerts(security, list.toArray(new IAlert[list.size()]));
+        TargetPrice alert = new TargetPrice();
+        alert.setParameters(page.getParametersMap());
+        list.add(alert);
 
-		return true;
-	}
+        service.setAlerts(security, list.toArray(new IAlert[list.size()]));
 
-	IAlertService getAlertService() {
-		IAlertService service = null;
+        return true;
+    }
 
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IAlertService.class.getName());
-		if (serviceReference != null) {
-			service = (IAlertService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-		}
+    IAlertService getAlertService() {
+        IAlertService service = null;
 
-		return service;
-	}
+        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        ServiceReference serviceReference = context.getServiceReference(IAlertService.class.getName());
+        if (serviceReference != null) {
+            service = (IAlertService) context.getService(serviceReference);
+            context.ungetService(serviceReference);
+        }
+
+        return service;
+    }
 }

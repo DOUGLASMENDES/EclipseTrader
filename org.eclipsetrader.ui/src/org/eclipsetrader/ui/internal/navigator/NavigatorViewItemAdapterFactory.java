@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,30 +20,33 @@ import org.eclipsetrader.core.views.WatchList;
 
 public class NavigatorViewItemAdapterFactory implements IAdapterFactory {
 
-	public NavigatorViewItemAdapterFactory() {
-	}
-
-	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
-     */
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(Object adaptableObject, Class adapterType) {
-    	if (adaptableObject instanceof NavigatorViewItem)
-    		return ((NavigatorViewItem) adaptableObject).getAdapter(adapterType);
-	    return null;
+    public NavigatorViewItemAdapterFactory() {
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Object adaptableObject, Class adapterType) {
+        if (adaptableObject instanceof NavigatorViewItem) {
+            return ((NavigatorViewItem) adaptableObject).getAdapter(adapterType);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Class[] getAdapterList() {
-	    return new Class[] {
-	    		IWatchList.class,
-	    		WatchList.class,
-	    		Security.class,
-	    		ISecurity.class,
-	    		Market.class,
-	    	};
+        return new Class[] {
+                IWatchList.class,
+                WatchList.class,
+                Security.class,
+                ISecurity.class,
+                Market.class,
+        };
     }
 }

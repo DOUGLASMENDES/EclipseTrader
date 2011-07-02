@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,24 +27,25 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.ui.charts.indicators.MACD;
 
 public class MACDGeneralPropertiesPage extends PropertyPage {
-	private Text text;
-	private Button override;
-	private ColorSelector macdLineColor;
-	private ColorSelector signalLineColor;
-	private ColorSelector histLineColor;
 
-	public MACDGeneralPropertiesPage() {
+    private Text text;
+    private Button override;
+    private ColorSelector macdLineColor;
+    private ColorSelector signalLineColor;
+    private ColorSelector histLineColor;
+
+    public MACDGeneralPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         setTitle("General");
@@ -63,6 +64,7 @@ public class MACDGeneralPropertiesPage extends PropertyPage {
         override.setText("Override color theme");
         override.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
         override.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateControlsEnablement();
@@ -92,51 +94,54 @@ public class MACDGeneralPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	MACD object = (MACD) getElement().getAdapter(MACD.class);
+        MACD object = (MACD) getElement().getAdapter(MACD.class);
         text.setText(object.getName());
 
         override.setSelection(object.getMacdLineColor() != null || object.getSignalLineColor() != null || object.getHistLineColor() != null);
-        if (object.getMacdLineColor() != null)
-        	macdLineColor.setColorValue(object.getMacdLineColor());
-        if (object.getSignalLineColor() != null)
-        	signalLineColor.setColorValue(object.getSignalLineColor());
-        if (object.getHistLineColor() != null)
-        	histLineColor.setColorValue(object.getHistLineColor());
+        if (object.getMacdLineColor() != null) {
+            macdLineColor.setColorValue(object.getMacdLineColor());
+        }
+        if (object.getSignalLineColor() != null) {
+            signalLineColor.setColorValue(object.getSignalLineColor());
+        }
+        if (object.getHistLineColor() != null) {
+            histLineColor.setColorValue(object.getHistLineColor());
+        }
 
         updateControlsEnablement();
 
         super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	MACD object = (MACD) getElement().getAdapter(MACD.class);
-    	object.setName(text.getText());
+        MACD object = (MACD) getElement().getAdapter(MACD.class);
+        object.setName(text.getText());
 
         object.setMacdLineColor(override.getSelection() ? macdLineColor.getColorValue() : null);
         object.setSignalLineColor(override.getSelection() ? signalLineColor.getColorValue() : null);
         object.setHistLineColor(override.getSelection() ? histLineColor.getColorValue() : null);
 
-	    return super.performOk();
+        return super.performOk();
     }
 
     protected void updateControlsEnablement() {
-    	macdLineColor.setEnabled(override.getSelection());
-    	((Label) macdLineColor.getButton().getData("label")).setEnabled(override.getSelection());
-    	signalLineColor.setEnabled(override.getSelection());
-    	((Label) signalLineColor.getButton().getData("label")).setEnabled(override.getSelection());
-    	histLineColor.setEnabled(override.getSelection());
-    	((Label) histLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        macdLineColor.setEnabled(override.getSelection());
+        ((Label) macdLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        signalLineColor.setEnabled(override.getSelection());
+        ((Label) signalLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        histLineColor.setEnabled(override.getSelection());
+        ((Label) histLineColor.getButton().getData("label")).setEnabled(override.getSelection());
     }
 }

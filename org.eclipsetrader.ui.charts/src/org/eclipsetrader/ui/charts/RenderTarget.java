@@ -16,32 +16,33 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Widget;
 
 public class RenderTarget {
-	public Device display;
 
-	public Widget widget;
+    public Device display;
 
-	public GC gc;
+    public Widget widget;
 
-	public int x;
+    public GC gc;
 
-	public int y;
+    public int x;
 
-	public int width;
+    public int y;
 
-	public int height;
+    public int width;
 
-	public IAxis verticalAxis;
+    public int height;
 
-	public IAxis horizontalAxis;
+    public IAxis verticalAxis;
 
-	public Object input;
+    public IAxis horizontalAxis;
 
-	public Object firstValue;
+    public Object input;
 
-	public Object lastValue;
+    public Object firstValue;
 
-	public IColorRegistry registry;
+    public Object lastValue;
 
-	public RenderTarget() {
-	}
+    public IColorRegistry registry;
+
+    public RenderTarget() {
+    }
 }

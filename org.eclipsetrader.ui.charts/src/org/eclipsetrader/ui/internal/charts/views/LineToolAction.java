@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,48 +20,53 @@ import org.eclipsetrader.ui.charts.ChartRowViewItem;
 import org.eclipsetrader.ui.charts.ChartViewItem;
 
 public class LineToolAction implements IWorkbenchWindowActionDelegate {
-	private IWorkbenchWindow window;
-	private ChartRowViewItem rowViewItem;
 
-	public LineToolAction() {
-	}
+    private IWorkbenchWindow window;
+    private ChartRowViewItem rowViewItem;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
-	 */
-	public void dispose() {
-	}
+    public LineToolAction() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
-	 */
-	public void init(IWorkbenchWindow window) {
-		this.window = window;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
+     */
+    @Override
+    public void dispose() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
-	public void run(IAction action) {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
+     */
+    @Override
+    public void init(IWorkbenchWindow window) {
+        this.window = window;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-	 */
-	public void selectionChanged(IAction action, ISelection selection) {
-		boolean enable = false;
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+     */
+    @Override
+    public void run(IAction action) {
+    }
 
-		if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
-			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-			if (structuredSelection.size() == 1) {
-				Object o = structuredSelection.getFirstElement();
-				if (o instanceof ChartViewItem) {
-					rowViewItem = (ChartRowViewItem) ((ChartViewItem) o).getParent();
-					enable = true;
-				}
-			}
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
+     */
+    @Override
+    public void selectionChanged(IAction action, ISelection selection) {
+        boolean enable = false;
 
-		action.setEnabled(enable);
-	}
+        if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
+            IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+            if (structuredSelection.size() == 1) {
+                Object o = structuredSelection.getFirstElement();
+                if (o instanceof ChartViewItem) {
+                    rowViewItem = (ChartRowViewItem) ((ChartViewItem) o).getParent();
+                    enable = true;
+                }
+            }
+        }
+
+        action.setEnabled(enable);
+    }
 }

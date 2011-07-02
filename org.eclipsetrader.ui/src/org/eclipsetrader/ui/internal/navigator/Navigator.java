@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -72,6 +73,7 @@ import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
 
 @SuppressWarnings("restriction")
 public class Navigator extends ViewPart {
+
     private TreeViewer viewer;
     private IMemento memento;
 
@@ -179,7 +181,7 @@ public class Navigator extends ViewPart {
              */
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
-                if ((e1 instanceof IAdaptable) && (e2 instanceof IAdaptable)) {
+                if (e1 instanceof IAdaptable && e2 instanceof IAdaptable) {
                     if (((IAdaptable) e1).getAdapter(String.class) != null && ((IAdaptable) e2).getAdapter(String.class) != null) {
                         return 0;
                     }
@@ -234,11 +236,12 @@ public class Navigator extends ViewPart {
                 menuManager.add(new Separator("group.properties"));
 
                 menuManager.appendToGroup("group.show", new Action("Expand All") {
+
                     @Override
                     public void run() {
                         IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
                         for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
-                            viewer.expandToLevel(iter.next(), TreeViewer.ALL_LEVELS);
+                            viewer.expandToLevel(iter.next(), AbstractTreeViewer.ALL_LEVELS);
                         }
                     }
                 });

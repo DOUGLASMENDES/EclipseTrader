@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,67 +27,71 @@ import org.eclipsetrader.core.internal.markets.SecurityAdapter;
 
 @XmlRootElement(name = "override")
 public class ConnectorOverride implements IConnectorOverride {
-    @XmlAttribute(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	private ISecurity security;
 
-	@XmlElement(name = "feedConnector")
-	@XmlJavaTypeAdapter(FeedConnectorAdapter.class)
-	private IFeedConnector feedConnector;
+    @XmlAttribute(name = "security")
+    @XmlJavaTypeAdapter(SecurityAdapter.class)
+    private ISecurity security;
+
+    @XmlElement(name = "feedConnector")
+    @XmlJavaTypeAdapter(FeedConnectorAdapter.class)
+    private IFeedConnector feedConnector;
 
     @XmlElement(name = "backfillConnector")
-	@XmlJavaTypeAdapter(BackfillConnectorAdapter.class)
-	private IBackfillConnector backfillConnector;
+    @XmlJavaTypeAdapter(BackfillConnectorAdapter.class)
+    private IBackfillConnector backfillConnector;
 
     @XmlElement(name = "intradayBackfillConnector")
-	@XmlJavaTypeAdapter(BackfillConnectorAdapter.class)
-	private IBackfillConnector intradayBackfillConnector;
+    @XmlJavaTypeAdapter(BackfillConnectorAdapter.class)
+    private IBackfillConnector intradayBackfillConnector;
 
-	public ConnectorOverride() {
-	}
-
-	public ConnectorOverride(ISecurity security) {
-		this.security = security;
-	}
-
-	@XmlTransient
-	public ISecurity getSecurity() {
-    	return security;
+    public ConnectorOverride() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IConnectorOverride#getLiveFeedConnector()
-	 */
-	@XmlTransient
-	public IFeedConnector getLiveFeedConnector() {
-		return feedConnector;
-	}
+    public ConnectorOverride(ISecurity security) {
+        this.security = security;
+    }
 
-	public void setLiveFeedConnector(IFeedConnector feedConnector) {
-		this.feedConnector = feedConnector;
-	}
+    @XmlTransient
+    public ISecurity getSecurity() {
+        return security;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IConnectorOverride#getBackfillConnector()
-	 */
-	@XmlTransient
-	public IBackfillConnector getBackfillConnector() {
-		return backfillConnector;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IConnectorOverride#getLiveFeedConnector()
+     */
+    @Override
+    @XmlTransient
+    public IFeedConnector getLiveFeedConnector() {
+        return feedConnector;
+    }
 
-	public void setBackfillConnector(IBackfillConnector backfillConnector) {
-		this.backfillConnector = backfillConnector;
-	}
+    public void setLiveFeedConnector(IFeedConnector feedConnector) {
+        this.feedConnector = feedConnector;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IConnectorOverride#getIntradayBackfillConnector()
-	 */
-	@XmlTransient
-	public IBackfillConnector getIntradayBackfillConnector() {
-		return intradayBackfillConnector;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IConnectorOverride#getBackfillConnector()
+     */
+    @Override
+    @XmlTransient
+    public IBackfillConnector getBackfillConnector() {
+        return backfillConnector;
+    }
 
-	public void setIntradayBackfillConnector(IBackfillConnector intradayBackfillConnector) {
-		this.intradayBackfillConnector = intradayBackfillConnector;
-	}
+    public void setBackfillConnector(IBackfillConnector backfillConnector) {
+        this.backfillConnector = backfillConnector;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IConnectorOverride#getIntradayBackfillConnector()
+     */
+    @Override
+    @XmlTransient
+    public IBackfillConnector getIntradayBackfillConnector() {
+        return intradayBackfillConnector;
+    }
+
+    public void setIntradayBackfillConnector(IBackfillConnector intradayBackfillConnector) {
+        this.intradayBackfillConnector = intradayBackfillConnector;
+    }
 }

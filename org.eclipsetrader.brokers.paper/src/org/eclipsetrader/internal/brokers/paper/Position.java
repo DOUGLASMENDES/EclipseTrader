@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,68 +25,73 @@ import org.eclipsetrader.internal.brokers.paper.types.SecurityAdapter;
 
 @XmlRootElement(name = "position")
 public class Position implements IPosition {
-	@XmlAttribute(name = "date")
-	@XmlJavaTypeAdapter(DateTimeAdapter.class)
-	private Date date;
 
-	@XmlAttribute(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	private ISecurity security;
+    @XmlAttribute(name = "date")
+    @XmlJavaTypeAdapter(DateTimeAdapter.class)
+    private Date date;
 
-	@XmlAttribute(name = "quantity")
-	private long quantity = 0L;
+    @XmlAttribute(name = "security")
+    @XmlJavaTypeAdapter(SecurityAdapter.class)
+    private ISecurity security;
 
-	@XmlAttribute(name = "price")
-	private double price = 0.0;
+    @XmlAttribute(name = "quantity")
+    private long quantity = 0L;
 
-	public Position() {
-	}
+    @XmlAttribute(name = "price")
+    private double price = 0.0;
 
-	public Position(ISecurity security, Long quantity, Double price) {
-		this.date = new Date();
-	    this.security = security;
-	    this.quantity = quantity;
-	    this.price = price;
+    public Position() {
     }
 
-	public Date getDate() {
-    	return date;
+    public Position(ISecurity security, Long quantity, Double price) {
+        this.date = new Date();
+        this.security = security;
+        this.quantity = quantity;
+        this.price = price;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IPosition#getSecurity()
-	 */
-	@XmlTransient
-	public ISecurity getSecurity() {
-		return security;
-	}
+    public Date getDate() {
+        return date;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IPosition#getQuantity()
-	 */
-	@XmlTransient
-	public Long getQuantity() {
-		return quantity;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IPosition#getSecurity()
+     */
+    @Override
+    @XmlTransient
+    public ISecurity getSecurity() {
+        return security;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IPosition#getPrice()
-	 */
-	@XmlTransient
-	public Double getPrice() {
-		return price;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IPosition#getQuantity()
+     */
+    @Override
+    @XmlTransient
+    public Long getQuantity() {
+        return quantity;
+    }
 
-	public void add(long quantity, double price) {
-		if (Math.signum(quantity) == Math.signum(this.quantity) || Math.signum(this.quantity) == 0.0) {
-			double total = this.quantity * this.price + quantity * price;
-			this.quantity += quantity;
-			this.price = total / this.quantity;
-		}
-		else {
-			this.quantity += quantity;
-			if (Math.signum(quantity) == Math.signum(this.quantity))
-				this.price = price;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IPosition#getPrice()
+     */
+    @Override
+    @XmlTransient
+    public Double getPrice() {
+        return price;
+    }
+
+    public void add(long quantity, double price) {
+        if (Math.signum(quantity) == Math.signum(this.quantity) || Math.signum(this.quantity) == 0.0) {
+            double total = this.quantity * this.price + quantity * price;
+            this.quantity += quantity;
+            this.price = total / this.quantity;
+        }
+        else {
+            this.quantity += quantity;
+            if (Math.signum(quantity) == Math.signum(this.quantity)) {
+                this.price = price;
+            }
+        }
     }
 }

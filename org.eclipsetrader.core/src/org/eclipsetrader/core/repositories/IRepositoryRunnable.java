@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,12 +23,12 @@ import org.eclipse.core.runtime.IStatus;
  */
 public interface IRepositoryRunnable {
 
-	/**
-	 * Runs the operation reporting progress to and accepting
-	 * cancellation requests from the given progress monitor.
-	 *
-	 * @param monitor - a progress monitor, or <code>null</code> if progress reporting and cancellation are not desired
-	 * @return the result of the operation
-	 */
-	public IStatus run(IProgressMonitor monitor) throws Exception;
+    /**
+     * Runs the operation reporting progress to and accepting
+     * cancellation requests from the given progress monitor.
+     *
+     * @param monitor - a progress monitor, or <code>null</code> if progress reporting and cancellation are not desired
+     * @return the result of the operation
+     */
+    public IStatus run(IProgressMonitor monitor) throws Exception;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,9 @@ import java.util.TimeZone;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class TimeZoneAdapter extends XmlAdapter<String,TimeZone> {
+public class TimeZoneAdapter extends XmlAdapter<String, TimeZone> {
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
     @Override
@@ -25,7 +25,7 @@ public class TimeZoneAdapter extends XmlAdapter<String,TimeZone> {
         return v != null ? v.getID() : null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,227 +29,254 @@ import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
 
 public class VOLUME implements IChartObjectFactory, IExecutableExtension {
+
     private String id;
     private String name;
 
-	public VOLUME() {
-	}
+    public VOLUME() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
      */
+    @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
+        id = config.getAttribute("id");
+        name = config.getAttribute("name");
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
+    @Override
     public IChartObject createObject(IDataSeries source) {
-		if (source != null) {
-	    	IDataSeries result = new VolumeDataSeries(getName(), source.getValues());
-			return new HistogramBarChart(result);
-		}
-	    return null;
+        if (source != null) {
+            IDataSeries result = new VolumeDataSeries(getName(), source.getValues());
+            return new HistogramBarChart(result);
+        }
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
      */
+    @Override
     public IChartParameters getParameters() {
-	    return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
+    @Override
     public void setParameters(IChartParameters parameters) {
-	    name = parameters.hasParameter("name") ? parameters.getString("name") : name;
+        name = parameters.hasParameter("name") ? parameters.getString("name") : name;
     }
 
     private static class VolumeValueWrapper implements IAdaptable {
-    	private IOHLC ohlc;
 
-		public VolumeValueWrapper(IOHLC ohlc) {
-	        this.ohlc = ohlc;
+        private IOHLC ohlc;
+
+        public VolumeValueWrapper(IOHLC ohlc) {
+            this.ohlc = ohlc;
         }
 
-		public IOHLC getOhlc() {
-        	return ohlc;
+        public IOHLC getOhlc() {
+            return ohlc;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
          */
+        @Override
         @SuppressWarnings("unchecked")
         public Object getAdapter(Class adapter) {
-        	if (adapter.isAssignableFrom(Date.class))
-        		return ohlc.getDate();
-        	if (adapter.isAssignableFrom(Number.class))
-        		return ohlc.getVolume();
-        	if (adapter.isAssignableFrom(getClass()))
-        		return this;
-	        return null;
+            if (adapter.isAssignableFrom(Date.class)) {
+                return ohlc.getDate();
+            }
+            if (adapter.isAssignableFrom(Number.class)) {
+                return ohlc.getVolume();
+            }
+            if (adapter.isAssignableFrom(getClass())) {
+                return this;
+            }
+            return null;
         }
     }
 
     private static class VolumeDataSeries implements IDataSeries {
-    	private String name;
-    	private IAdaptable first;
-    	private IAdaptable last;
-    	private IAdaptable highest;
-    	private IAdaptable lowest;
-    	private IAdaptable[] values;
 
-    	private Long lowestValue;
-    	private Long highestValue;
-    	private Date firstValue;
-    	private Date lastValue;
+        private String name;
+        private IAdaptable first;
+        private IAdaptable last;
+        private IAdaptable highest;
+        private IAdaptable lowest;
+        private IAdaptable[] values;
 
-    	public VolumeDataSeries(String name, IAdaptable[] values) {
-    		this.name = name;
-    		this.values = new IAdaptable[values.length];
-    		for (int i = 0; i < values.length; i++) {
-    			IOHLC ohlc = (IOHLC) values[i].getAdapter(IOHLC.class);
-            	this.values[i] = new VolumeValueWrapper(ohlc);
-       			updateHighestLowest(ohlc.getVolume(), this.values[i]);
-            	if (ohlc.getDate() != null)
-            		updateFirstLast(ohlc.getDate(), this.values[i]);
-    		}
-    	}
+        private Long lowestValue;
+        private Long highestValue;
+        private Date firstValue;
+        private Date lastValue;
 
-    	/* (non-Javadoc)
+        public VolumeDataSeries(String name, IAdaptable[] values) {
+            this.name = name;
+            this.values = new IAdaptable[values.length];
+            for (int i = 0; i < values.length; i++) {
+                IOHLC ohlc = (IOHLC) values[i].getAdapter(IOHLC.class);
+                this.values[i] = new VolumeValueWrapper(ohlc);
+                updateHighestLowest(ohlc.getVolume(), this.values[i]);
+                if (ohlc.getDate() != null) {
+                    updateFirstLast(ohlc.getDate(), this.values[i]);
+                }
+            }
+        }
+
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getName()
          */
+        @Override
         public String getName() {
-    	    return name;
+            return name;
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getFirst()
          */
+        @Override
         public IAdaptable getFirst() {
-    	    return first;
+            return first;
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getLast()
          */
+        @Override
         public IAdaptable getLast() {
-    	    return last;
+            return last;
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getHighest()
          */
+        @Override
         public IAdaptable getHighest() {
-    	    return highest;
+            return highest;
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getLowest()
          */
+        @Override
         public IAdaptable getLowest() {
-    	    return lowest;
+            return lowest;
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getValues()
          */
+        @Override
         public IAdaptable[] getValues() {
-    	    return values;
+            return values;
         }
 
         /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getSeries(org.eclipse.core.runtime.IAdaptable, org.eclipse.core.runtime.IAdaptable)
          */
+        @Override
         public IDataSeries getSeries(IAdaptable first, IAdaptable last) {
-        	return new DataSeries(getName(), getSubset(first, last));
+            return new DataSeries(getName(), getSubset(first, last));
         }
 
         protected IAdaptable[] getSubset(IAdaptable first, IAdaptable last) {
-        	Date firstValue = first != null ? (Date) first.getAdapter(Date.class) : null;
-        	Date lastValue = last != null ? (Date) last.getAdapter(Date.class) : null;
+            Date firstValue = first != null ? (Date) first.getAdapter(Date.class) : null;
+            Date lastValue = last != null ? (Date) last.getAdapter(Date.class) : null;
 
-        	List<IAdaptable> list = new ArrayList<IAdaptable>(values.length);
-        	for (IAdaptable v : values) {
-            	Date date = (Date) v.getAdapter(Date.class);
-            	if ((firstValue == null || !date.before(firstValue)) && (lastValue == null || !date.after(lastValue)))
-            		list.add(v);
-        	}
+            List<IAdaptable> list = new ArrayList<IAdaptable>(values.length);
+            for (IAdaptable v : values) {
+                Date date = (Date) v.getAdapter(Date.class);
+                if ((firstValue == null || !date.before(firstValue)) && (lastValue == null || !date.after(lastValue))) {
+                    list.add(v);
+                }
+            }
 
-        	return list.toArray(new IAdaptable[list.size()]);
+            return list.toArray(new IAdaptable[list.size()]);
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.charts.IDataSeries#isHighestOverride()
          */
+        @Override
         public boolean isHighestOverride() {
-	        return false;
+            return false;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.core.charts.IDataSeries#isLowestOverride()
          */
+        @Override
         public boolean isLowestOverride() {
-	        return false;
+            return false;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#getChildren()
          */
+        @Override
         public IDataSeries[] getChildren() {
-    	    return new IDataSeries[0];
+            return new IDataSeries[0];
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#setChildren(org.eclipsetrader.charts.core.IDataSeries[])
          */
+        @Override
         public void setChildren(IDataSeries[] childrens) {
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipsetrader.charts.core.IDataSeries#accept(org.eclipsetrader.charts.core.IDataSeriesVisitor)
          */
+        @Override
         public void accept(IDataSeriesVisitor visitor) {
-        	visitor.visit(this);
+            visitor.visit(this);
         }
 
         private void updateHighestLowest(Long value, IAdaptable reference) {
-        	if (lowestValue == null || value < lowestValue) {
-        		lowestValue = value;
-        		lowest = reference;
-        	}
-        	if (highestValue == null || value > highestValue) {
-        		highestValue = value;
-        		highest = reference;
-        	}
+            if (lowestValue == null || value < lowestValue) {
+                lowestValue = value;
+                lowest = reference;
+            }
+            if (highestValue == null || value > highestValue) {
+                highestValue = value;
+                highest = reference;
+            }
         }
 
         private void updateFirstLast(Date date, IAdaptable reference) {
-        	if (firstValue == null || date.before(firstValue)) {
-        		firstValue = date;
-        		first = reference;
-        	}
-        	if (lastValue == null || date.after(lastValue)) {
-        		lastValue = date;
-        		last = reference;
-        	}
+            if (firstValue == null || date.before(firstValue)) {
+                firstValue = date;
+                first = reference;
+            }
+            if (lastValue == null || date.after(lastValue)) {
+                lastValue = date;
+                last = reference;
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,29 +18,32 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipsetrader.core.trading.IPosition;
 
 public class PositionLabelProvider extends CellLabelProvider {
-	private NumberFormat formatter = NumberFormat.getInstance();
 
-	public PositionLabelProvider() {
-		formatter.setGroupingUsed(true);
-		formatter.setMinimumIntegerDigits(1);
-		formatter.setMinimumFractionDigits(0);
-		formatter.setMaximumFractionDigits(0);
-	}
+    private NumberFormat formatter = NumberFormat.getInstance();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.CellLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
-	 */
-	@Override
-	public void update(ViewerCell cell) {
-		if (!(cell.getElement() instanceof PositionElement))
-			return;
+    public PositionLabelProvider() {
+        formatter.setGroupingUsed(true);
+        formatter.setMinimumIntegerDigits(1);
+        formatter.setMinimumFractionDigits(0);
+        formatter.setMaximumFractionDigits(0);
+    }
 
-		PositionElement element = (PositionElement) cell.getElement();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.CellLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
+     */
+    @Override
+    public void update(ViewerCell cell) {
+        if (!(cell.getElement() instanceof PositionElement)) {
+            return;
+        }
 
-		IPosition position = (IPosition) element.getAdapter(IPosition.class);
-		if (position == null)
-			return;
+        PositionElement element = (PositionElement) cell.getElement();
 
-		cell.setText(formatter.format(position.getQuantity()));
-	}
+        IPosition position = (IPosition) element.getAdapter(IPosition.class);
+        if (position == null) {
+            return;
+        }
+
+        cell.setText(formatter.format(position.getQuantity()));
+    }
 }

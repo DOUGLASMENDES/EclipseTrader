@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,132 +27,146 @@ import org.eclipsetrader.core.repositories.StoreProperties;
  * @since 1.0
  */
 public class Holding implements IHolding, IStoreObject {
-	private ISecurity security;
-	private Long position;
-	private Double purchasePrice;
-	private Date date;
 
-	private IStore store;
-	private IStoreProperties storeProperties;
+    private ISecurity security;
+    private Long position;
+    private Double purchasePrice;
+    private Date date;
 
-	protected Holding() {
-	}
+    private IStore store;
+    private IStoreProperties storeProperties;
 
-	public Holding(ISecurity security) {
-	    this(security, null, null, null);
+    protected Holding() {
     }
 
-	public Holding(ISecurity security, Long position, Double purchasePrice) {
-	    this(security, position, purchasePrice, null);
+    public Holding(ISecurity security) {
+        this(security, null, null, null);
     }
 
-	public Holding(ISecurity security, Long position, Double purchasePrice, Date date) {
-	    this.security = security;
-	    this.position = position;
-	    this.purchasePrice = purchasePrice;
-	    this.date = date;
+    public Holding(ISecurity security, Long position, Double purchasePrice) {
+        this(security, position, purchasePrice, null);
     }
 
-	public Holding(IStore store, IStoreProperties storeProperties) {
-		setStore(store);
-		setStoreProperties(storeProperties);
+    public Holding(ISecurity security, Long position, Double purchasePrice, Date date) {
+        this.security = security;
+        this.position = position;
+        this.purchasePrice = purchasePrice;
+        this.date = date;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IHolding#getSecurity()
-	 */
-	public ISecurity getSecurity() {
-		return security;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IHolding#getDate()
-	 */
-	public Date getDate() {
-		return date;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IHolding#getPosition()
-	 */
-	public Long getPosition() {
-		return position;
-	}
-
-	public void setPosition(Long position) {
-    	this.position = position;
+    public Holding(IStore store, IStoreProperties storeProperties) {
+        setStore(store);
+        setStoreProperties(storeProperties);
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IHolding#getPurchasePrice()
-	 */
-	public Double getPurchasePrice() {
-		return purchasePrice;
-	}
-
-	public void setPurchasePrice(Double purchasePrice) {
-    	this.purchasePrice = purchasePrice;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IHolding#getSecurity()
+     */
+    @Override
+    public ISecurity getSecurity() {
+        return security;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IHolding#getDate()
+     */
+    @Override
+    public Date getDate() {
+        return date;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IHolding#getPosition()
+     */
+    @Override
+    public Long getPosition() {
+        return position;
+    }
+
+    public void setPosition(Long position) {
+        this.position = position;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IHolding#getPurchasePrice()
+     */
+    @Override
+    public Double getPurchasePrice() {
+        return purchasePrice;
+    }
+
+    public void setPurchasePrice(Double purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-		if (security != null) {
-			if (security.getIdentifier() != null && adapter.isAssignableFrom(security.getIdentifier().getClass()))
-				return security;
-			if (adapter.isAssignableFrom(security.getClass()))
-				return security;
-		}
+        if (security != null) {
+            if (security.getIdentifier() != null && adapter.isAssignableFrom(security.getIdentifier().getClass())) {
+                return security;
+            }
+            if (adapter.isAssignableFrom(security.getClass())) {
+                return security;
+            }
+        }
 
-		if (adapter.isAssignableFrom(getClass()))
-    		return this;
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#getStore()
      */
+    @Override
     public IStore getStore() {
-	    return store;
+        return store;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#setStore(org.eclipsetrader.core.repositories.IStore)
      */
+    @Override
     public void setStore(IStore store) {
-    	this.store = store;
+        this.store = store;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#getStoreProperties()
      */
+    @Override
     public IStoreProperties getStoreProperties() {
-		if (storeProperties == null)
-			storeProperties = new StoreProperties();
+        if (storeProperties == null) {
+            storeProperties = new StoreProperties();
+        }
 
-		storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHolding.class.getName());
+        storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHolding.class.getName());
 
-		storeProperties.setProperty(IPropertyConstants.PURCHASE_DATE, date);
-		storeProperties.setProperty(IPropertyConstants.SECURITY, security);
-		storeProperties.setProperty(IPropertyConstants.PURCHASE_DATE, security);
-		storeProperties.setProperty(IPropertyConstants.PURCHASE_QUANTITY, position);
-		storeProperties.setProperty(IPropertyConstants.PURCHASE_PRICE, purchasePrice);
+        storeProperties.setProperty(IPropertyConstants.PURCHASE_DATE, date);
+        storeProperties.setProperty(IPropertyConstants.SECURITY, security);
+        storeProperties.setProperty(IPropertyConstants.PURCHASE_DATE, security);
+        storeProperties.setProperty(IPropertyConstants.PURCHASE_QUANTITY, position);
+        storeProperties.setProperty(IPropertyConstants.PURCHASE_PRICE, purchasePrice);
 
-		return storeProperties;
+        return storeProperties;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStoreObject#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
      */
+    @Override
     public void setStoreProperties(IStoreProperties storeProperties) {
-	    this.storeProperties = storeProperties;
+        this.storeProperties = storeProperties;
 
-    	date = (Date) storeProperties.getProperty(IPropertyConstants.PURCHASE_DATE);
-    	security = (ISecurity) storeProperties.getProperty(IPropertyConstants.SECURITY);
-    	position = (Long) storeProperties.getProperty(IPropertyConstants.PURCHASE_QUANTITY);
-    	purchasePrice = (Double) storeProperties.getProperty(IPropertyConstants.PURCHASE_PRICE);
+        date = (Date) storeProperties.getProperty(IPropertyConstants.PURCHASE_DATE);
+        security = (ISecurity) storeProperties.getProperty(IPropertyConstants.SECURITY);
+        position = (Long) storeProperties.getProperty(IPropertyConstants.PURCHASE_QUANTITY);
+        purchasePrice = (Double) storeProperties.getProperty(IPropertyConstants.PURCHASE_PRICE);
     }
 }

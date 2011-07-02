@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,14 +16,14 @@ import org.eclipse.swt.graphics.RGB;
 
 public interface IColorRegistry {
 
-	/**
-	 * Returns an instance of Color based on the passed RGB value.
-	 * Color instances are cached so that subsequent requests for the same RGB
-	 * value returns the same Color instance.
-	 *
-	 * @param device the device
-	 * @param rgb the RGB value
-	 * @return the Color instance
-	 */
-	public Color getColor(RGB rgb);
+    /**
+     * Returns an instance of Color based on the passed RGB value.
+     * Color instances are cached so that subsequent requests for the same RGB
+     * value returns the same Color instance.
+     *
+     * @param device the device
+     * @param rgb the RGB value
+     * @return the Color instance
+     */
+    public Color getColor(RGB rgb);
 }

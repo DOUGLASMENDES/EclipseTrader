@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,92 +31,106 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "securities_other_properties")
 public class SecurityUnknownPropertyType {
-	@Id
+
+    @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@SuppressWarnings("unused")
-	private String id;
+    @SuppressWarnings("unused")
+    private String id;
 
-	@Column(name = "name")
-	private String name;
+    @Column(name = "name")
+    private String name;
 
-	@Column(name = "type")
-	private String type;
+    @Column(name = "type")
+    private String type;
 
-	@Column(name = "value")
-	private String value;
+    @Column(name = "value")
+    private String value;
 
-	@ManyToOne
-	@SuppressWarnings("unused")
-	private SecurityStore security;
+    @ManyToOne
+    @SuppressWarnings("unused")
+    private SecurityStore security;
 
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-	private static NumberFormat numberFormat = NumberFormat.getInstance();
+    private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    private static NumberFormat numberFormat = NumberFormat.getInstance();
 
-	public static SecurityUnknownPropertyType create(SecurityStore security, String name, Object value) {
-		if (value instanceof Date)
-			return new SecurityUnknownPropertyType(security, name, Date.class.getName(), dateFormat.format(value));
-		if (value instanceof Number)
-			return new SecurityUnknownPropertyType(security, name, value.getClass().getName(), numberFormat.format(value));
-		if (value instanceof Boolean)
-			return new SecurityUnknownPropertyType(security, name, Boolean.class.getName(), Boolean.TRUE.equals(value) ? "true" : "false");
-		if (value instanceof Currency)
-			return new SecurityUnknownPropertyType(security, name, Currency.class.getName(), ((Currency) value).getCurrencyCode());
-		return new SecurityUnknownPropertyType(security, name, value.toString());
-	}
+    public static SecurityUnknownPropertyType create(SecurityStore security, String name, Object value) {
+        if (value instanceof Date) {
+            return new SecurityUnknownPropertyType(security, name, Date.class.getName(), dateFormat.format(value));
+        }
+        if (value instanceof Number) {
+            return new SecurityUnknownPropertyType(security, name, value.getClass().getName(), numberFormat.format(value));
+        }
+        if (value instanceof Boolean) {
+            return new SecurityUnknownPropertyType(security, name, Boolean.class.getName(), Boolean.TRUE.equals(value) ? "true" : "false");
+        }
+        if (value instanceof Currency) {
+            return new SecurityUnknownPropertyType(security, name, Currency.class.getName(), ((Currency) value).getCurrencyCode());
+        }
+        return new SecurityUnknownPropertyType(security, name, value.toString());
+    }
 
-	public static Object convert(SecurityUnknownPropertyType property) {
+    public static Object convert(SecurityUnknownPropertyType property) {
         try {
-    		if (Date.class.getName().equals(property.getType()))
+            if (Date.class.getName().equals(property.getType())) {
                 return dateFormat.parse(property.getValue());
-    		if (Double.class.getName().equals(property.getType()))
+            }
+            if (Double.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).doubleValue();
-    		if (Float.class.getName().equals(property.getType()))
+            }
+            if (Float.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).floatValue();
-    		if (Integer.class.getName().equals(property.getType()))
+            }
+            if (Integer.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).intValue();
-    		if (Long.class.getName().equals(property.getType()))
+            }
+            if (Long.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).longValue();
-    		if (Byte.class.getName().equals(property.getType()))
+            }
+            if (Byte.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).byteValue();
-    		if (Short.class.getName().equals(property.getType()))
+            }
+            if (Short.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).shortValue();
-    		if (Boolean.class.getName().equals(property.getType()))
-    			return "true".equals(property.getValue());
-    		if (Currency.class.getName().equals(property.getType()))
-    			return Currency.getInstance(property.getValue());
+            }
+            if (Boolean.class.getName().equals(property.getType())) {
+                return "true".equals(property.getValue());
+            }
+            if (Currency.class.getName().equals(property.getType())) {
+                return Currency.getInstance(property.getValue());
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-		return property.getValue();
-	}
-
-	public SecurityUnknownPropertyType() {
-	}
-
-	public SecurityUnknownPropertyType(SecurityStore security, String name, String value) {
-		this.security = security;
-	    this.name = name;
-	    this.value = value;
+        return property.getValue();
     }
 
-	public SecurityUnknownPropertyType(SecurityStore security, String name, String type, String value) {
-		this.security = security;
-	    this.name = name;
-	    this.type = type;
-	    this.value = value;
+    public SecurityUnknownPropertyType() {
     }
 
-	public String getName() {
-    	return name;
+    public SecurityUnknownPropertyType(SecurityStore security, String name, String value) {
+        this.security = security;
+        this.name = name;
+        this.value = value;
     }
 
-	public String getValue() {
-    	return value;
+    public SecurityUnknownPropertyType(SecurityStore security, String name, String type, String value) {
+        this.security = security;
+        this.name = name;
+        this.type = type;
+        this.value = value;
     }
 
-	public String getType() {
-    	return type;
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getType() {
+        return type;
     }
 }

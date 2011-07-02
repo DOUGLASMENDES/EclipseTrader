@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,57 +12,59 @@
 package org.eclipsetrader.ui.internal.charts.views;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.core.feed.TimeSpan;
 
 public class PeriodAction extends Action {
-	private ChartViewPart view;
-	private TimeSpan period;
-	private TimeSpan resolution;
 
-	public PeriodAction(ChartViewPart view, String text, TimeSpan period, TimeSpan resolution) {
-		super(text, Action.AS_RADIO_BUTTON);
+    private ChartViewPart view;
+    private TimeSpan period;
+    private TimeSpan resolution;
 
-		this.view = view;
-		this.period = period;
-		this.resolution = resolution;
-	}
+    public PeriodAction(ChartViewPart view, String text, TimeSpan period, TimeSpan resolution) {
+        super(text, IAction.AS_RADIO_BUTTON);
 
-	public PeriodAction(ChartViewPart view, TimeSpan period, TimeSpan resolution) {
-		super("", Action.AS_RADIO_BUTTON); //$NON-NLS-1$
+        this.view = view;
+        this.period = period;
+        this.resolution = resolution;
+    }
 
-		this.view = view;
-		this.period = period;
-		this.resolution = resolution;
+    public PeriodAction(ChartViewPart view, TimeSpan period, TimeSpan resolution) {
+        super("", IAction.AS_RADIO_BUTTON); //$NON-NLS-1$
 
-		String unit = ""; //$NON-NLS-1$
-		switch (period.getUnits()) {
-			case Days:
-				unit = Messages.PeriodAction_DaysText;
-				break;
-			case Months:
-				unit = Messages.PeriodAction_MonthsText;
-				break;
-			case Years:
-				unit = Messages.PeriodAction_Yearstext;
-				break;
-		}
-		setText(NLS.bind("{0} {1}", new Object[] { String.valueOf(period.getLength()), unit })); //$NON-NLS-1$
-	}
+        this.view = view;
+        this.period = period;
+        this.resolution = resolution;
 
-	/* (non-Javadoc)
+        String unit = ""; //$NON-NLS-1$
+        switch (period.getUnits()) {
+            case Days:
+                unit = Messages.PeriodAction_DaysText;
+                break;
+            case Months:
+                unit = Messages.PeriodAction_MonthsText;
+                break;
+            case Years:
+                unit = Messages.PeriodAction_Yearstext;
+                break;
+        }
+        setText(NLS.bind("{0} {1}", new Object[] { String.valueOf(period.getLength()), unit})); //$NON-NLS-1$
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
     public void run() {
-	    view.setPeriod(period, resolution);
+        view.setPeriod(period, resolution);
     }
 
-	public TimeSpan getPeriod() {
-    	return period;
+    public TimeSpan getPeriod() {
+        return period;
     }
 
-	public TimeSpan getResolution() {
-    	return resolution;
+    public TimeSpan getResolution() {
+        return resolution;
     }
 }

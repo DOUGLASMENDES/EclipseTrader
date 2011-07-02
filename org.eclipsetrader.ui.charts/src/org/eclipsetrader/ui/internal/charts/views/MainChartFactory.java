@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,157 +26,173 @@ import org.eclipsetrader.ui.charts.OHLCLineChart;
 import org.eclipsetrader.ui.charts.OHLCLineChart.LineStyle;
 
 public class MainChartFactory implements IChartObjectFactory {
-	public static final String FACTORY_ID = "org.eclipsetrader.ui.charts.main";
 
-	private MainRenderStyle style = MainRenderStyle.Candles;
-	private OHLCField lineField = OHLCField.Close;
+    public static final String FACTORY_ID = "org.eclipsetrader.ui.charts.main";
 
-	private RGB lineColor;
+    private MainRenderStyle style = MainRenderStyle.Candles;
+    private OHLCField lineField = OHLCField.Close;
 
-	private RGB barPositiveColor;
-	private RGB barNegativeColor;
+    private RGB lineColor;
 
-	private RGB candlePositiveColor;
-	private RGB candleNegativeColor;
-	private RGB candleOutlineColor;
+    private RGB barPositiveColor;
+    private RGB barNegativeColor;
 
-	public MainChartFactory() {
-	}
+    private RGB candlePositiveColor;
+    private RGB candleNegativeColor;
+    private RGB candleOutlineColor;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getId()
-	 */
-	public String getId() {
-		return FACTORY_ID;
-	}
+    public MainChartFactory() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getName()
-	 */
-	public String getName() {
-		return "MAIN";
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getId()
+     */
+    @Override
+    public String getId() {
+        return FACTORY_ID;
+    }
 
-	public OHLCField getLineField() {
-		return lineField;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getName()
+     */
+    @Override
+    public String getName() {
+        return "MAIN";
+    }
 
-	public void setLineField(OHLCField field) {
-		this.lineField = field;
-	}
+    public OHLCField getLineField() {
+        return lineField;
+    }
 
-	public MainRenderStyle getStyle() {
-		return style;
-	}
+    public void setLineField(OHLCField field) {
+        this.lineField = field;
+    }
 
-	public void setStyle(MainRenderStyle style) {
-		this.style = style;
-	}
+    public MainRenderStyle getStyle() {
+        return style;
+    }
 
-	public RGB getLineColor() {
-		return lineColor;
-	}
+    public void setStyle(MainRenderStyle style) {
+        this.style = style;
+    }
 
-	public void setLineColor(RGB lineColor) {
-		this.lineColor = lineColor;
-	}
+    public RGB getLineColor() {
+        return lineColor;
+    }
 
-	public RGB getBarPositiveColor() {
-		return barPositiveColor;
-	}
+    public void setLineColor(RGB lineColor) {
+        this.lineColor = lineColor;
+    }
 
-	public void setBarPositiveColor(RGB barPositiveColor) {
-		this.barPositiveColor = barPositiveColor;
-	}
+    public RGB getBarPositiveColor() {
+        return barPositiveColor;
+    }
 
-	public RGB getBarNegativeColor() {
-		return barNegativeColor;
-	}
+    public void setBarPositiveColor(RGB barPositiveColor) {
+        this.barPositiveColor = barPositiveColor;
+    }
 
-	public void setBarNegativeColor(RGB barNegativeColor) {
-		this.barNegativeColor = barNegativeColor;
-	}
+    public RGB getBarNegativeColor() {
+        return barNegativeColor;
+    }
 
-	public RGB getCandlePositiveColor() {
-		return candlePositiveColor;
-	}
+    public void setBarNegativeColor(RGB barNegativeColor) {
+        this.barNegativeColor = barNegativeColor;
+    }
 
-	public void setCandlePositiveColor(RGB candlePositiveColor) {
-		this.candlePositiveColor = candlePositiveColor;
-	}
+    public RGB getCandlePositiveColor() {
+        return candlePositiveColor;
+    }
 
-	public RGB getCandleNegativeColor() {
-		return candleNegativeColor;
-	}
+    public void setCandlePositiveColor(RGB candlePositiveColor) {
+        this.candlePositiveColor = candlePositiveColor;
+    }
 
-	public void setCandleNegativeColor(RGB candleNegativeColor) {
-		this.candleNegativeColor = candleNegativeColor;
-	}
+    public RGB getCandleNegativeColor() {
+        return candleNegativeColor;
+    }
 
-	public RGB getCandleOutlineColor() {
-		return candleOutlineColor;
-	}
+    public void setCandleNegativeColor(RGB candleNegativeColor) {
+        this.candleNegativeColor = candleNegativeColor;
+    }
 
-	public void setCandleOutlineColor(RGB candleBorderColor) {
-		this.candleOutlineColor = candleBorderColor;
-	}
+    public RGB getCandleOutlineColor() {
+        return candleOutlineColor;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
-	 */
-	public IChartObject createObject(IDataSeries source) {
-		if (source == null || !(source instanceof OHLCDataSeries))
-			return null;
+    public void setCandleOutlineColor(RGB candleBorderColor) {
+        this.candleOutlineColor = candleBorderColor;
+    }
 
-		if (style == MainRenderStyle.Bars)
-			return new BarChart(source, barPositiveColor, barNegativeColor);
-		if (style == MainRenderStyle.Candles)
-			return new CandleStickChart(source, candleOutlineColor, candlePositiveColor, candleNegativeColor);
-		if (style == MainRenderStyle.Histogram)
-			return new HistogramAreaChart(source, lineColor);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
+     */
+    @Override
+    public IChartObject createObject(IDataSeries source) {
+        if (source == null || !(source instanceof OHLCDataSeries)) {
+            return null;
+        }
 
-		return new OHLCLineChart(source, LineStyle.Solid, lineColor);
-	}
+        if (style == MainRenderStyle.Bars) {
+            return new BarChart(source, barPositiveColor, barNegativeColor);
+        }
+        if (style == MainRenderStyle.Candles) {
+            return new CandleStickChart(source, candleOutlineColor, candlePositiveColor, candleNegativeColor);
+        }
+        if (style == MainRenderStyle.Histogram) {
+            return new HistogramAreaChart(source, lineColor);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
-	 */
-	public IChartParameters getParameters() {
-		ChartParameters parameters = new ChartParameters();
+        return new OHLCLineChart(source, LineStyle.Solid, lineColor);
+    }
 
-		parameters.setParameter("style", style.getName());
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+     */
+    @Override
+    public IChartParameters getParameters() {
+        ChartParameters parameters = new ChartParameters();
 
-		if (lineColor != null)
-			parameters.setParameter("line-color", lineColor);
+        parameters.setParameter("style", style.getName());
 
-		if (barPositiveColor != null)
-			parameters.setParameter("bar-positive-color", barPositiveColor);
-		if (barNegativeColor != null)
-			parameters.setParameter("bar-negative-color", barNegativeColor);
+        if (lineColor != null) {
+            parameters.setParameter("line-color", lineColor);
+        }
 
-		if (candlePositiveColor != null)
-			parameters.setParameter("candle-positive-color", candlePositiveColor);
-		if (candleNegativeColor != null)
-			parameters.setParameter("candle-negative-color", candleNegativeColor);
-		if (candleOutlineColor != null)
-			parameters.setParameter("candle-outline-color", candleOutlineColor);
+        if (barPositiveColor != null) {
+            parameters.setParameter("bar-positive-color", barPositiveColor);
+        }
+        if (barNegativeColor != null) {
+            parameters.setParameter("bar-negative-color", barNegativeColor);
+        }
 
-		return parameters;
-	}
+        if (candlePositiveColor != null) {
+            parameters.setParameter("candle-positive-color", candlePositiveColor);
+        }
+        if (candleNegativeColor != null) {
+            parameters.setParameter("candle-negative-color", candleNegativeColor);
+        }
+        if (candleOutlineColor != null) {
+            parameters.setParameter("candle-outline-color", candleOutlineColor);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
-	 */
-	public void setParameters(IChartParameters parameters) {
-		style = parameters.hasParameter("style") ? MainRenderStyle.getStyleFromName(parameters.getString("style")) : MainRenderStyle.Bars;
+        return parameters;
+    }
 
-		lineColor = parameters.getColor("line-color");
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
+     */
+    @Override
+    public void setParameters(IChartParameters parameters) {
+        style = parameters.hasParameter("style") ? MainRenderStyle.getStyleFromName(parameters.getString("style")) : MainRenderStyle.Bars;
 
-		barPositiveColor = parameters.getColor("bar-positive-color");
-		barNegativeColor = parameters.getColor("bar-negative-color");
+        lineColor = parameters.getColor("line-color");
 
-		candlePositiveColor = parameters.getColor("candle-positive-color");
-		candleNegativeColor = parameters.getColor("candle-negative-color");
-		candleOutlineColor = parameters.getColor("candle-outline-color");
-	}
+        barPositiveColor = parameters.getColor("bar-positive-color");
+        barNegativeColor = parameters.getColor("bar-negative-color");
+
+        candlePositiveColor = parameters.getColor("candle-positive-color");
+        candleNegativeColor = parameters.getColor("candle-negative-color");
+        candleOutlineColor = parameters.getColor("candle-outline-color");
+    }
 }

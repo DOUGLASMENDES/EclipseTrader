@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,81 +20,87 @@ import java.io.Serializable;
  * @see org.eclipsetrader.core.feed.IQuote
  */
 public class Quote implements IQuote, Serializable {
-	private static final long serialVersionUID = 4237311627623138246L;
 
-	private Double bid;
-	private Double ask;
-	private Long bidSize;
-	private Long askSize;
+    private static final long serialVersionUID = 4237311627623138246L;
 
-	public Quote(Double bid, Double ask, Long bidSize, Long askSize) {
-		this.bid = bid;
-		this.ask = ask;
-		this.bidSize = bidSize;
-		this.askSize = askSize;
-	}
+    private Double bid;
+    private Double ask;
+    private Long bidSize;
+    private Long askSize;
 
-	public Quote(Double bid, Double ask) {
-		this.bid = bid;
-		this.ask = ask;
-	}
+    public Quote(Double bid, Double ask, Long bidSize, Long askSize) {
+        this.bid = bid;
+        this.ask = ask;
+        this.bidSize = bidSize;
+        this.askSize = askSize;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IQuote#getAsk()
-	 */
-	public Double getAsk() {
-		return ask;
-	}
+    public Quote(Double bid, Double ask) {
+        this.bid = bid;
+        this.ask = ask;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IQuote#getAskSize()
-	 */
-	public Long getAskSize() {
-		return askSize;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IQuote#getAsk()
+     */
+    @Override
+    public Double getAsk() {
+        return ask;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IQuote#getBid()
-	 */
-	public Double getBid() {
-		return bid;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IQuote#getAskSize()
+     */
+    @Override
+    public Long getAskSize() {
+        return askSize;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IQuote#getBidSize()
-	 */
-	public Long getBidSize() {
-		return bidSize;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IQuote#getBid()
+     */
+    @Override
+    public Double getBid() {
+        return bid;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof IQuote))
-			return false;
-		IQuote other = (IQuote) obj;
-		return equals(getBid(), other.getBid()) && equals(getAsk(), other.getAsk()) && equals(getBidSize(), other.getBidSize()) && equals(getAskSize(), other.getAskSize());
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IQuote#getBidSize()
+     */
+    @Override
+    public Long getBidSize() {
+        return bidSize;
+    }
 
-	protected boolean equals(Object o1, Object o2) {
-		return (o1 == o2) || (o1 != null && o1.equals(o2));
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IQuote)) {
+            return false;
+        }
+        IQuote other = (IQuote) obj;
+        return equals(getBid(), other.getBid()) && equals(getAsk(), other.getAsk()) && equals(getBidSize(), other.getBidSize()) && equals(getAskSize(), other.getAskSize());
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return 3 * (bid != null ? bid.hashCode() : 0) + 7 * (ask != null ? ask.hashCode() : 0) + 11 * (bidSize != null ? bidSize.hashCode() : 0) + 13 * (askSize != null ? askSize.hashCode() : 0);
-	}
+    protected boolean equals(Object o1, Object o2) {
+        return o1 == o2 || o1 != null && o1.equals(o2);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "[Quote:" + " B=" + bid + " BS=" + bidSize + " A=" + ask + " AS=" + askSize + "]";
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return 3 * (bid != null ? bid.hashCode() : 0) + 7 * (ask != null ? ask.hashCode() : 0) + 11 * (bidSize != null ? bidSize.hashCode() : 0) + 13 * (askSize != null ? askSize.hashCode() : 0);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "[Quote:" + " B=" + bid + " BS=" + bidSize + " A=" + ask + " AS=" + askSize + "]";
+    }
 }

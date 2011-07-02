@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,47 +29,50 @@ import org.eclipsetrader.core.trading.IAlertListener;
 
 public class AlertServiceTest extends TestCase {
 
-	public void testUnknownSecurityHasTriggeredAlerts() throws Exception {
-		AlertService service = new AlertService();
-		assertFalse(service.hasTriggeredAlerts(new Security("Test", null)));
-	}
+    public void testUnknownSecurityHasTriggeredAlerts() throws Exception {
+        AlertService service = new AlertService();
+        assertFalse(service.hasTriggeredAlerts(new Security("Test", null)));
+    }
 
-	public void testHasTriggeredAlertsWithEmptyList() throws Exception {
-		ISecurity security = new Security("Test", null);
+    public void testHasTriggeredAlertsWithEmptyList() throws Exception {
+        ISecurity security = new Security("Test", null);
 
-		AlertService service = new AlertService();
-		service.triggeredMap.put(security, new ArrayList<IAlert>());
+        AlertService service = new AlertService();
+        service.triggeredMap.put(security, new ArrayList<IAlert>());
 
-		assertFalse(service.hasTriggeredAlerts(security));
-	}
+        assertFalse(service.hasTriggeredAlerts(security));
+    }
 
-	public void testFireSingleAlertEvent() throws Exception {
-		ISecurity security = new Security("Test", null);
-		IAlert alert = new AbstractAlert() {
-			@Override
-			public boolean isTriggered() {
-				return true;
-			}
-		};
-		PricingEvent pricingEvent = new PricingEvent(security, new PricingDelta[] {
-		    new PricingDelta(security, null, new Trade(10.0)),
-		    new PricingDelta(security, null, new Trade(10.1))
-		});
+    public void testFireSingleAlertEvent() throws Exception {
+        ISecurity security = new Security("Test", null);
+        IAlert alert = new AbstractAlert() {
 
-		final List<AlertEvent> events = new ArrayList<AlertEvent>();
+            @Override
+            public boolean isTriggered() {
+                return true;
+            }
+        };
+        PricingEvent pricingEvent = new PricingEvent(security, new PricingDelta[] {
+                new PricingDelta(security, null, new Trade(10.0)),
+                new PricingDelta(security, null, new Trade(10.1))
+        });
 
-		AlertService service = new AlertService();
-		service.map.put(security, Arrays.asList(new IAlert[] {
-			alert
-		}));
-		service.addAlertListener(new IAlertListener() {
-			public void alertTriggered(AlertEvent event) {
-				events.add(event);
-			}
-		});
+        final List<AlertEvent> events = new ArrayList<AlertEvent>();
 
-		service.doPricingUpdate(pricingEvent);
+        AlertService service = new AlertService();
+        service.map.put(security, Arrays.asList(new IAlert[] {
+            alert
+        }));
+        service.addAlertListener(new IAlertListener() {
 
-		assertEquals(1, events.size());
-	}
+            @Override
+            public void alertTriggered(AlertEvent event) {
+                events.add(event);
+            }
+        });
+
+        service.doPricingUpdate(pricingEvent);
+
+        assertEquals(1, events.size());
+    }
 }

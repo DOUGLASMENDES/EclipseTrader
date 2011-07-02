@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,37 +12,40 @@
 package org.eclipsetrader.ui.internal.repositories;
 
 public class WatchListContainerObject {
-	private String name;
 
-	public WatchListContainerObject(String name) {
-		this.name = name;
-	}
+    private String name;
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
+    public WatchListContainerObject(String name) {
+        this.name = name;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof WatchListContainerObject)
-			return name.equals(((WatchListContainerObject) obj).name);
-		if (obj instanceof String)
-			return name.equals(obj);
-		return false;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return name;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof WatchListContainerObject) {
+            return name.equals(((WatchListContainerObject) obj).name);
+        }
+        if (obj instanceof String) {
+            return name.equals(obj);
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
 }

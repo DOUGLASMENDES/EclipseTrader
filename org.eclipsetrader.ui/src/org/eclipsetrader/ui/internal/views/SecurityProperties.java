@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,76 +25,79 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class SecurityProperties extends PropertyPage implements IWorkbenchPropertyPage {
-	private SecuritySelectionControl providers;
 
-	public SecurityProperties() {
-		setTitle("Securities");
-	}
+    private SecuritySelectionControl providers;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		initializeDialogUnits(content);
+    public SecurityProperties() {
+        setTitle("Securities");
+    }
 
-		providers = new SecuritySelectionControl(content);
-		providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		providers.setInput(UIActivator.getDefault().getRepositoryService().getSecurities());
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        initializeDialogUnits(content);
 
-		performDefaults();
+        providers = new SecuritySelectionControl(content);
+        providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        providers.setInput(UIActivator.getDefault().getRepositoryService().getSecurities());
 
-		return content;
-	}
+        performDefaults();
 
-	/* (non-Javadoc)
+        return content;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	TickersView resource = (TickersView) getElement().getAdapter(TickersView.class);
+        TickersView resource = (TickersView) getElement().getAdapter(TickersView.class);
 
-    	TickerViewItem[] columns = resource.getViewItems();
-    	ISecurity[] selectedColumns = new ISecurity[columns.length];
-    	for (int i = 0; i < selectedColumns.length; i++)
-    		selectedColumns[i] = columns[i].getSecurity();
+        TickerViewItem[] columns = resource.getViewItems();
+        ISecurity[] selectedColumns = new ISecurity[columns.length];
+        for (int i = 0; i < selectedColumns.length; i++) {
+            selectedColumns[i] = columns[i].getSecurity();
+        }
 
-    	providers.setSelectedColumns(selectedColumns);
+        providers.setSelectedColumns(selectedColumns);
 
-		super.performDefaults();
+        super.performDefaults();
     }
 
     protected void applyChanges() {
-    	TickersView resource = (TickersView) getElement().getAdapter(TickersView.class);
-		if (resource != null) {
-			List<TickerViewItem> c = new ArrayList<TickerViewItem>();
-			for (ISecurity column : providers.getSelection()) {
-				c.add(new TickerViewItem(column));
-			}
-			resource.setViewItems(c.toArray(new TickerViewItem[c.size()]));
-		}
+        TickersView resource = (TickersView) getElement().getAdapter(TickersView.class);
+        if (resource != null) {
+            List<TickerViewItem> c = new ArrayList<TickerViewItem>();
+            for (ISecurity column : providers.getSelection()) {
+                c.add(new TickerViewItem(column));
+            }
+            resource.setViewItems(c.toArray(new TickerViewItem[c.size()]));
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
     protected void performApply() {
-    	applyChanges();
-	    super.performApply();
+        applyChanges();
+        super.performApply();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	if (getControl() != null)
-    		applyChanges();
-	    return super.performOk();
+        if (getControl() != null) {
+            applyChanges();
+        }
+        return super.performOk();
     }
 }

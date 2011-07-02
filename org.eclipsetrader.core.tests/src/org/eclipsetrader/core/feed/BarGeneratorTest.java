@@ -21,174 +21,182 @@ import junit.framework.TestCase;
 
 public class BarGeneratorTest extends TestCase {
 
-	public void testSetBarCloseTime() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+    public void testSetBarCloseTime() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
 
-		assertEquals(new Date(60 * 1000), generator.dateClose);
-	}
+        assertEquals(new Date(60 * 1000), generator.dateClose);
+    }
 
-	public void testSetInitialValues() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+    public void testSetInitialValues() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
 
-		assertEquals(1.0, generator.open);
-		assertEquals(1.0, generator.high);
-		assertEquals(1.0, generator.low);
-		assertEquals(1.0, generator.close);
-		assertEquals(new Long(100), generator.volume);
-	}
+        assertEquals(1.0, generator.open);
+        assertEquals(1.0, generator.high);
+        assertEquals(1.0, generator.low);
+        assertEquals(1.0, generator.close);
+        assertEquals(new Long(100), generator.volume);
+    }
 
-	public void testSetHighestValue() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+    public void testSetHighestValue() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
 
-		assertEquals(1.1, generator.high);
-		assertEquals(1.0, generator.low);
-	}
+        assertEquals(1.1, generator.high);
+        assertEquals(1.0, generator.low);
+    }
 
-	public void testSetLowestValue() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+    public void testSetLowestValue() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
 
-		assertEquals(1.0, generator.high);
-		assertEquals(0.9, generator.low);
-	}
+        assertEquals(1.0, generator.high);
+        assertEquals(0.9, generator.low);
+    }
 
-	public void testSetCloseToLatestTrade() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+    public void testSetCloseToLatestTrade() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
 
-		assertEquals(0.9, generator.close);
-	}
+        assertEquals(0.9, generator.close);
+    }
 
-	public void testSetOpenToFirstTrade() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+    public void testSetOpenToFirstTrade() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
 
-		assertEquals(1.0, generator.open);
-	}
+        assertEquals(1.0, generator.open);
+    }
 
-	public void testAddTradeGeneratesBarOpen() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+    public void testAddTradeGeneratesBarOpen() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		final List<Object> events = new ArrayList<Object>();
-		generator.addObserver(new Observer() {
-			public void update(Observable o, Object arg) {
-				events.add(arg);
-			}
-		});
-		generator.addTrade(new Trade(new Date(0 * 1000), 1.0, 100L, 1000L));
+        final List<Object> events = new ArrayList<Object>();
+        generator.addObserver(new Observer() {
 
-		IBarOpen barOpen = (IBarOpen) events.get(0);
-		assertEquals(new Date(0), barOpen.getDate());
-		assertEquals(TimeSpan.minutes(1), barOpen.getTimeSpan());
-		assertEquals(1.0, barOpen.getOpen());
-	}
+            @Override
+            public void update(Observable o, Object arg) {
+                events.add(arg);
+            }
+        });
+        generator.addTrade(new Trade(new Date(0 * 1000), 1.0, 100L, 1000L));
 
-	public void testAddTradeGeneratesBar() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
-		generator.addTrade(new Trade(new Date(0 * 1000), 1.0, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(30 * 1000), 1.1, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(59 * 1000), 0.9, 100L, 1000L));
+        IBarOpen barOpen = (IBarOpen) events.get(0);
+        assertEquals(new Date(0), barOpen.getDate());
+        assertEquals(TimeSpan.minutes(1), barOpen.getTimeSpan());
+        assertEquals(1.0, barOpen.getOpen());
+    }
 
-		final List<Object> events = new ArrayList<Object>();
-		generator.addObserver(new Observer() {
-			public void update(Observable o, Object arg) {
-				events.add(arg);
-			}
-		});
-		generator.addTrade(new Trade(new Date(60 * 1000), 1.0, 100L, 1000L));
+    public void testAddTradeGeneratesBar() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+        generator.addTrade(new Trade(new Date(0 * 1000), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(30 * 1000), 1.1, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(59 * 1000), 0.9, 100L, 1000L));
 
-		IBar bar = (IBar) events.get(0);
-		assertEquals(new Date(0), bar.getDate());
-		assertEquals(TimeSpan.minutes(1), bar.getTimeSpan());
-		assertEquals(1.0, bar.getOpen());
-		assertEquals(1.1, bar.getHigh());
-		assertEquals(0.9, bar.getLow());
-		assertEquals(0.9, bar.getClose());
-		assertEquals(new Long(300), bar.getVolume());
-	}
+        final List<Object> events = new ArrayList<Object>();
+        generator.addObserver(new Observer() {
 
-	public void testDontGenerateBarOnAggregatedTrades() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
-		generator.addTrade(new Trade(new Date(0 * 1000), 1.0, 100L, 1000L));
+            @Override
+            public void update(Observable o, Object arg) {
+                events.add(arg);
+            }
+        });
+        generator.addTrade(new Trade(new Date(60 * 1000), 1.0, 100L, 1000L));
 
-		final List<Object> events = new ArrayList<Object>();
-		generator.addObserver(new Observer() {
-			public void update(Observable o, Object arg) {
-				events.add(arg);
-			}
-		});
+        IBar bar = (IBar) events.get(0);
+        assertEquals(new Date(0), bar.getDate());
+        assertEquals(TimeSpan.minutes(1), bar.getTimeSpan());
+        assertEquals(1.0, bar.getOpen());
+        assertEquals(1.1, bar.getHigh());
+        assertEquals(0.9, bar.getLow());
+        assertEquals(0.9, bar.getClose());
+        assertEquals(new Long(300), bar.getVolume());
+    }
 
-		generator.addTrade(new Trade(new Date(30 * 1000), 1.1, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(59 * 1000), 0.9, 100L, 1000L));
+    public void testDontGenerateBarOnAggregatedTrades() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+        generator.addTrade(new Trade(new Date(0 * 1000), 1.0, 100L, 1000L));
 
-		assertEquals(0, events.size());
-	}
+        final List<Object> events = new ArrayList<Object>();
+        generator.addObserver(new Observer() {
 
-	public void testForceBarClose() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
-		generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
-		generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
+            @Override
+            public void update(Observable o, Object arg) {
+                events.add(arg);
+            }
+        });
 
-		final List<Object> events = new ArrayList<Object>();
-		generator.addObserver(new Observer() {
-			public void update(Observable o, Object arg) {
-				events.add(arg);
-			}
-		});
+        generator.addTrade(new Trade(new Date(30 * 1000), 1.1, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(59 * 1000), 0.9, 100L, 1000L));
 
-		generator.forceBarClose();
+        assertEquals(0, events.size());
+    }
 
-		IBar bar = (IBar) events.get(0);
-		assertEquals(new Date(0), bar.getDate());
-		assertEquals(TimeSpan.minutes(1), bar.getTimeSpan());
-		assertEquals(1.0, bar.getOpen());
-		assertEquals(1.1, bar.getHigh());
-		assertEquals(0.9, bar.getLow());
-		assertEquals(0.9, bar.getClose());
-		assertEquals(new Long(300), bar.getVolume());
-	}
+    public void testForceBarClose() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+        generator.addTrade(new Trade(new Date(0), 1.0, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 1.1, 100L, 1000L));
+        generator.addTrade(new Trade(new Date(0), 0.9, 100L, 1000L));
 
-	public void testBarNotExpired() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+        final List<Object> events = new ArrayList<Object>();
+        generator.addObserver(new Observer() {
 
-		generator.addTrade(new Trade(new Date(), 1.0, 100L, 1000L));
+            @Override
+            public void update(Observable o, Object arg) {
+                events.add(arg);
+            }
+        });
 
-		assertFalse(generator.isBarExpired());
-	}
+        generator.forceBarClose();
 
-	public void testBarExpired() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+        IBar bar = (IBar) events.get(0);
+        assertEquals(new Date(0), bar.getDate());
+        assertEquals(TimeSpan.minutes(1), bar.getTimeSpan());
+        assertEquals(1.0, bar.getOpen());
+        assertEquals(1.1, bar.getHigh());
+        assertEquals(0.9, bar.getLow());
+        assertEquals(0.9, bar.getClose());
+        assertEquals(new Long(300), bar.getVolume());
+    }
 
-		generator.addTrade(new Trade(new Date(new Date().getTime() - 60 * 1000), 1.0, 100L, 1000L));
+    public void testBarNotExpired() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		assertTrue(generator.isBarExpired());
-	}
+        generator.addTrade(new Trade(new Date(), 1.0, 100L, 1000L));
 
-	public void testIgnoreTradeWithNullDate() throws Exception {
-		BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+        assertFalse(generator.isBarExpired());
+    }
 
-		generator.addTrade(new Trade(null, 1.0, 100L, 1000L));
+    public void testBarExpired() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
 
-		assertNull(generator.open);
-		assertNull(generator.high);
-		assertNull(generator.low);
-		assertNull(generator.close);
-		assertNull(generator.volume);
-	}
+        generator.addTrade(new Trade(new Date(new Date().getTime() - 60 * 1000), 1.0, 100L, 1000L));
+
+        assertTrue(generator.isBarExpired());
+    }
+
+    public void testIgnoreTradeWithNullDate() throws Exception {
+        BarGenerator generator = new BarGenerator(TimeSpan.minutes(1));
+
+        generator.addTrade(new Trade(null, 1.0, 100L, 1000L));
+
+        assertNull(generator.open);
+        assertNull(generator.high);
+        assertNull(generator.low);
+        assertNull(generator.close);
+        assertNull(generator.volume);
+    }
 }

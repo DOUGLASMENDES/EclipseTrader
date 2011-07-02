@@ -33,6 +33,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
@@ -64,399 +65,437 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class PaperBroker implements IBroker, IExecutableExtension {
-	private String id;
-	private String name;
-	private IMarketService marketService;
-	private MarketPricingEnvironment pricingEnvironment;
 
-	private List<OrderMonitor> pendingOrders = new ArrayList<OrderMonitor>();
-	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+    private String id;
+    private String name;
+    private IMarketService marketService;
+    private MarketPricingEnvironment pricingEnvironment;
 
-	private BundleContext context;
-	private ServiceReference marketServiceReference;
+    private List<OrderMonitor> pendingOrders = new ArrayList<OrderMonitor>();
+    private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-	private IPricingListener pricingListener = new IPricingListener() {
-		public void pricingUpdate(PricingEvent event) {
-			for (PricingDelta delta : event.getDelta()) {
-				if (delta.getNewValue() instanceof ITrade) {
-					IMarket market = marketService.getMarketForSecurity(event.getSecurity());
-					if (market == null || market.isOpen()) {
-						processTrade(event.getSecurity(), (ITrade) delta.getNewValue());
-					}
-				}
-			}
-		}
-	};
+    private BundleContext context;
+    private ServiceReference marketServiceReference;
 
-	public PaperBroker() {
-	}
+    private IPricingListener pricingListener = new IPricingListener() {
 
-	public PaperBroker(MarketPricingEnvironment pricingEnvironment) {
-		this.pricingEnvironment = pricingEnvironment;
-	}
+        @Override
+        public void pricingUpdate(PricingEvent event) {
+            for (PricingDelta delta : event.getDelta()) {
+                if (delta.getNewValue() instanceof ITrade) {
+                    IMarket market = marketService.getMarketForSecurity(event.getSecurity());
+                    if (market == null || market.isOpen()) {
+                        processTrade(event.getSecurity(), (ITrade) delta.getNewValue());
+                    }
+                }
+            }
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    public PaperBroker() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    public PaperBroker(MarketPricingEnvironment pricingEnvironment) {
+        this.pricingEnvironment = pricingEnvironment;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-	 */
-	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-		id = config.getAttribute("id");
-		name = config.getAttribute("name");
-		context = Activator.getDefault().getBundle().getBundleContext();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#connect()
-	 */
-	public void connect() {
-		if (marketService == null) {
-			marketServiceReference = context.getServiceReference(IMarketService.class.getName());
-			if (marketServiceReference != null) {
-				marketService = (IMarketService) context.getService(marketServiceReference);
-			}
-		}
-		if (pricingEnvironment == null) {
-			pricingEnvironment = new MarketPricingEnvironment(marketService);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-		List<OrderDelta> list = new ArrayList<OrderDelta>();
-		for (OrderMonitor monitor : pendingOrders) {
-			pricingEnvironment.addSecurity(monitor.getOrder().getSecurity());
-			list.add(new OrderDelta(OrderDelta.KIND_ADDED, monitor));
-		}
-		fireUpdateNotifications(list.toArray(new OrderDelta[list.size()]));
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+     */
+    @Override
+    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+        id = config.getAttribute("id");
+        name = config.getAttribute("name");
+        context = Activator.getDefault().getBundle().getBundleContext();
+    }
 
-		if (pricingEnvironment != null) {
-			pricingEnvironment.addPricingListener(pricingListener);
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#connect()
+     */
+    @Override
+    public void connect() {
+        if (marketService == null) {
+            marketServiceReference = context.getServiceReference(IMarketService.class.getName());
+            if (marketServiceReference != null) {
+                marketService = (IMarketService) context.getService(marketServiceReference);
+            }
+        }
+        if (pricingEnvironment == null) {
+            pricingEnvironment = new MarketPricingEnvironment(marketService);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#disconnect()
-	 */
-	public void disconnect() {
-		if (pricingEnvironment != null) {
-			pricingEnvironment.removePricingListener(pricingListener);
-			pricingEnvironment = null;
-		}
+        List<OrderDelta> list = new ArrayList<OrderDelta>();
+        for (OrderMonitor monitor : pendingOrders) {
+            pricingEnvironment.addSecurity(monitor.getOrder().getSecurity());
+            list.add(new OrderDelta(OrderDelta.KIND_ADDED, monitor));
+        }
+        fireUpdateNotifications(list.toArray(new OrderDelta[list.size()]));
 
-		if (marketServiceReference != null) {
-			marketService = null;
-			context.ungetService(marketServiceReference);
-			marketServiceReference = null;
-		}
-	}
+        if (pricingEnvironment != null) {
+            pricingEnvironment.addPricingListener(pricingListener);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#canTrade(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public boolean canTrade(ISecurity security) {
-		return true;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#disconnect()
+     */
+    @Override
+    public void disconnect() {
+        if (pricingEnvironment != null) {
+            pricingEnvironment.removePricingListener(pricingListener);
+            pricingEnvironment = null;
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getSecurityFromSymbol(java.lang.String)
-	 */
-	public ISecurity getSecurityFromSymbol(String symbol) {
-		ISecurity security = null;
+        if (marketServiceReference != null) {
+            marketService = null;
+            context.ungetService(marketServiceReference);
+            marketServiceReference = null;
+        }
+    }
 
-		if (Activator.getDefault() != null) {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-			if (serviceReference != null) {
-				IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#canTrade(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public boolean canTrade(ISecurity security) {
+        return true;
+    }
 
-				ISecurity[] securities = service.getSecurities();
-				for (int i = 0; i < securities.length; i++) {
-					IFeedIdentifier identifier = securities[i].getIdentifier();
-					if (identifier != null && symbol.equals(identifier.getSymbol())) {
-						security = securities[i];
-						break;
-					}
-				}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getSecurityFromSymbol(java.lang.String)
+     */
+    @Override
+    public ISecurity getSecurityFromSymbol(String symbol) {
+        ISecurity security = null;
 
-				context.ungetService(serviceReference);
-			}
-		}
+        if (Activator.getDefault() != null) {
+            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+            if (serviceReference != null) {
+                IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
 
-		return security;
-	}
+                ISecurity[] securities = service.getSecurities();
+                for (int i = 0; i < securities.length; i++) {
+                    IFeedIdentifier identifier = securities[i].getIdentifier();
+                    if (identifier != null && symbol.equals(identifier.getSymbol())) {
+                        security = securities[i];
+                        break;
+                    }
+                }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public String getSymbolFromSecurity(ISecurity security) {
-		return security.getIdentifier() != null ? security.getIdentifier().getSymbol() : null;
-	}
+                context.ungetService(serviceReference);
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedSides()
-	 */
-	public IOrderSide[] getAllowedSides() {
-		return new IOrderSide[] {
-		    IOrderSide.Buy, IOrderSide.Sell,
-		};
-	}
+        return security;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedTypes()
-	 */
-	public IOrderType[] getAllowedTypes() {
-		return new IOrderType[] {
-		    IOrderType.Limit, IOrderType.Market,
-		};
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#getSymbolFromSecurity(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public String getSymbolFromSecurity(ISecurity security) {
+        return security.getIdentifier() != null ? security.getIdentifier().getSymbol() : null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedValidity()
-	 */
-	public IOrderValidity[] getAllowedValidity() {
-		return new IOrderValidity[] {
-			IOrderValidity.Day,
-		};
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedSides()
+     */
+    @Override
+    public IOrderSide[] getAllowedSides() {
+        return new IOrderSide[] {
+                IOrderSide.Buy, IOrderSide.Sell,
+        };
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedRoutes()
-	 */
-	public IOrderRoute[] getAllowedRoutes() {
-		return new IOrderRoute[0];
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedTypes()
+     */
+    @Override
+    public IOrderType[] getAllowedTypes() {
+        return new IOrderType[] {
+                IOrderType.Limit, IOrderType.Market,
+        };
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#getOrders()
-	 */
-	public IOrderMonitor[] getOrders() {
-		synchronized (pendingOrders) {
-			return pendingOrders.toArray(new IOrderMonitor[pendingOrders.size()]);
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedValidity()
+     */
+    @Override
+    public IOrderValidity[] getAllowedValidity() {
+        return new IOrderValidity[] {
+            IOrderValidity.Day,
+        };
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBrokerConnector#prepareOrder(org.eclipsetrader.core.trading.IOrder)
-	 */
-	public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
-		if (order.getAccount() != null && !(order.getAccount() instanceof Account))
-			throw new BrokerException("Invalid account");
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getAllowedRoutes()
+     */
+    @Override
+    public IOrderRoute[] getAllowedRoutes() {
+        return new IOrderRoute[0];
+    }
 
-		OrderMonitor monitor = new OrderMonitor(this, order) {
-			@Override
-			public void cancel() throws BrokerException {
-				setStatus(IOrderStatus.Canceled);
-				fireUpdateNotifications(new OrderDelta[] {
-					new OrderDelta(OrderDelta.KIND_UPDATED, this),
-				});
-			}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#getOrders()
+     */
+    @Override
+    public IOrderMonitor[] getOrders() {
+        synchronized (pendingOrders) {
+            return pendingOrders.toArray(new IOrderMonitor[pendingOrders.size()]);
+        }
+    }
 
-			@Override
-			public void submit() throws BrokerException {
-				synchronized (pendingOrders) {
-					pendingOrders.add(this);
-				}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBrokerConnector#prepareOrder(org.eclipsetrader.core.trading.IOrder)
+     */
+    @Override
+    public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
+        if (order.getAccount() != null && !(order.getAccount() instanceof Account)) {
+            throw new BrokerException("Invalid account");
+        }
 
-				SimpleDateFormat idFormatter = new SimpleDateFormat("yyMMddHHmmssSSS");
-				setId(idFormatter.format(new Date()));
-				setStatus(IOrderStatus.PendingNew);
+        OrderMonitor monitor = new OrderMonitor(this, order) {
 
-				fireUpdateNotifications(new OrderDelta[] {
-					new OrderDelta(OrderDelta.KIND_UPDATED, this),
-				});
+            @Override
+            public void cancel() throws BrokerException {
+                setStatus(IOrderStatus.Canceled);
+                fireUpdateNotifications(new OrderDelta[] {
+                    new OrderDelta(OrderDelta.KIND_UPDATED, this),
+                });
+            }
 
-				if (getOrder().getType() == IOrderType.Market) {
-					IQuote quote = pricingEnvironment.getQuote(getOrder().getSecurity());
-					if (quote != null)
-						processMarketOrder(this, quote);
-				}
-			}
-		};
+            @Override
+            public void submit() throws BrokerException {
+                synchronized (pendingOrders) {
+                    pendingOrders.add(this);
+                }
 
-		if (pricingEnvironment != null)
-			pricingEnvironment.addSecurity(order.getSecurity());
+                SimpleDateFormat idFormatter = new SimpleDateFormat("yyMMddHHmmssSSS");
+                setId(idFormatter.format(new Date()));
+                setStatus(IOrderStatus.PendingNew);
 
-		fireUpdateNotifications(new OrderDelta[] {
-			new OrderDelta(OrderDelta.KIND_ADDED, monitor),
-		});
+                fireUpdateNotifications(new OrderDelta[] {
+                    new OrderDelta(OrderDelta.KIND_UPDATED, this),
+                });
 
-		return monitor;
-	}
+                if (getOrder().getType() == IOrderType.Market) {
+                    IQuote quote = pricingEnvironment.getQuote(getOrder().getSecurity());
+                    if (quote != null) {
+                        processMarketOrder(this, quote);
+                    }
+                }
+            }
+        };
 
-	protected void processMarketOrder(OrderMonitor monitor, IQuote quote) {
-		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
+        if (pricingEnvironment != null) {
+            pricingEnvironment.addSecurity(order.getSecurity());
+        }
 
-		IOrder order = monitor.getOrder();
-		if (order.getSide() == IOrderSide.Buy) {
-			if (quote.getAsk() != null) {
-				fillOrder(monitor, monitor.getOrder(), null, quote.getAsk());
-				deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
-			}
-		}
-		else if (order.getSide() == IOrderSide.Sell) {
-			if (quote.getBid() != null) {
-				fillOrder(monitor, monitor.getOrder(), null, quote.getBid());
-				deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
-			}
-		}
+        fireUpdateNotifications(new OrderDelta[] {
+            new OrderDelta(OrderDelta.KIND_ADDED, monitor),
+        });
 
-		if (deltas.size() != 0)
-			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
-	}
+        return monitor;
+    }
 
-	protected void processTrade(ISecurity security, ITrade trade) {
-		List<OrderDelta> deltas = new ArrayList<OrderDelta>();
+    protected void processMarketOrder(OrderMonitor monitor, IQuote quote) {
+        List<OrderDelta> deltas = new ArrayList<OrderDelta>();
 
-		OrderMonitor[] monitors;
-		synchronized (pendingOrders) {
-			monitors = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
-		}
-		for (int i = 0; i < monitors.length; i++) {
-			if (monitors[i].getStatus() != IOrderStatus.PendingNew && monitors[i].getStatus() != IOrderStatus.Partial)
-				continue;
-			IOrder order = monitors[i].getOrder();
-			if (order.getSecurity() == security) {
-				if (order.getType() == IOrderType.Market) {
-					fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
-					deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
-				}
-				else if (order.getType() == IOrderType.Limit) {
-					if (order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) {
-						fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
-						deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
-					}
-					else if (order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice()) {
-						fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
-						deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
-					}
-				}
-			}
-		}
+        IOrder order = monitor.getOrder();
+        if (order.getSide() == IOrderSide.Buy) {
+            if (quote.getAsk() != null) {
+                fillOrder(monitor, monitor.getOrder(), null, quote.getAsk());
+                deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
+            }
+        }
+        else if (order.getSide() == IOrderSide.Sell) {
+            if (quote.getBid() != null) {
+                fillOrder(monitor, monitor.getOrder(), null, quote.getBid());
+                deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
+            }
+        }
 
-		if (deltas.size() != 0)
-			fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
-	}
+        if (deltas.size() != 0) {
+            fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
+        }
+    }
 
-	protected void fillOrder(OrderMonitor monitor, IOrder order, Long size, Double price) {
-		double totalPrice = monitor.getFilledQuantity() != null ? monitor.getFilledQuantity() * monitor.getAveragePrice() : 0.0;
-		long filledQuantity = monitor.getFilledQuantity() != null ? monitor.getFilledQuantity() : 0L;
-		long remainQuantity = order.getQuantity() - filledQuantity;
+    protected void processTrade(ISecurity security, ITrade trade) {
+        List<OrderDelta> deltas = new ArrayList<OrderDelta>();
 
-		long quantity = size != null && size < remainQuantity ? size : remainQuantity;
-		filledQuantity += quantity;
-		totalPrice += quantity * price;
+        OrderMonitor[] monitors;
+        synchronized (pendingOrders) {
+            monitors = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
+        }
+        for (int i = 0; i < monitors.length; i++) {
+            if (monitors[i].getStatus() != IOrderStatus.PendingNew && monitors[i].getStatus() != IOrderStatus.Partial) {
+                continue;
+            }
+            IOrder order = monitors[i].getOrder();
+            if (order.getSecurity() == security) {
+                if (order.getType() == IOrderType.Market) {
+                    fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
+                    deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
+                }
+                else if (order.getType() == IOrderType.Limit) {
+                    if (order.getSide() == IOrderSide.Buy && trade.getPrice() <= order.getPrice()) {
+                        fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
+                        deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
+                    }
+                    else if (order.getSide() == IOrderSide.Sell && trade.getPrice() >= order.getPrice()) {
+                        fillOrder(monitors[i], monitors[i].getOrder(), trade.getSize(), trade.getPrice());
+                        deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitors[i]));
+                    }
+                }
+            }
+        }
 
-		monitor.setFilledQuantity(filledQuantity);
-		monitor.setAveragePrice(totalPrice / filledQuantity);
+        if (deltas.size() != 0) {
+            fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
+        }
+    }
 
-		if (quantity != 0) {
-			if (order.getSide() == IOrderSide.Buy || order.getSide() == IOrderSide.BuyCover)
-				monitor.addTransaction(new StockTransaction(monitor.getOrder().getSecurity(), quantity, price));
-			if (order.getSide() == IOrderSide.Sell || order.getSide() == IOrderSide.SellShort)
-				monitor.addTransaction(new StockTransaction(monitor.getOrder().getSecurity(), -quantity, price));
-		}
+    protected void fillOrder(OrderMonitor monitor, IOrder order, Long size, Double price) {
+        double totalPrice = monitor.getFilledQuantity() != null ? monitor.getFilledQuantity() * monitor.getAveragePrice() : 0.0;
+        long filledQuantity = monitor.getFilledQuantity() != null ? monitor.getFilledQuantity() : 0L;
+        long remainQuantity = order.getQuantity() - filledQuantity;
 
-		if (monitor.getFilledQuantity().equals(order.getQuantity())) {
-			monitor.setStatus(IOrderStatus.Filled);
-			monitor.fireOrderCompletedEvent();
+        long quantity = size != null && size < remainQuantity ? size : remainQuantity;
+        filledQuantity += quantity;
+        totalPrice += quantity * price;
 
-			Account account = (Account) monitor.getOrder().getAccount();
-			if (account != null)
-				account.processCompletedOrder(monitor);
-		}
-		else
-			monitor.setStatus(IOrderStatus.Partial);
-	}
+        monitor.setFilledQuantity(filledQuantity);
+        monitor.setAveragePrice(totalPrice / filledQuantity);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-	 */
-	public void addOrderChangeListener(IOrderChangeListener listener) {
-		listeners.add(listener);
-	}
+        if (quantity != 0) {
+            if (order.getSide() == IOrderSide.Buy || order.getSide() == IOrderSide.BuyCover) {
+                monitor.addTransaction(new StockTransaction(monitor.getOrder().getSecurity(), quantity, price));
+            }
+            if (order.getSide() == IOrderSide.Sell || order.getSide() == IOrderSide.SellShort) {
+                monitor.addTransaction(new StockTransaction(monitor.getOrder().getSecurity(), -quantity, price));
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
-	 */
-	public void removeOrderChangeListener(IOrderChangeListener listener) {
-		listeners.remove(listener);
-	}
+        if (monitor.getFilledQuantity().equals(order.getQuantity())) {
+            monitor.setStatus(IOrderStatus.Filled);
+            monitor.fireOrderCompletedEvent();
 
-	protected void fireUpdateNotifications(OrderDelta[] deltas) {
-		if (deltas.length != 0) {
-			OrderChangeEvent event = new OrderChangeEvent(this, deltas);
-			Object[] l = listeners.getListeners();
-			for (int i = 0; i < l.length; i++) {
-				try {
-					((IOrderChangeListener) l[i]).orderChanged(event);
-				} catch (Throwable e) {
-					Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
-					Activator.log(status);
-				}
-			}
-		}
-	}
+            Account account = (Account) monitor.getOrder().getAccount();
+            if (account != null) {
+                account.processCompletedOrder(monitor);
+            }
+        }
+        else {
+            monitor.setStatus(IOrderStatus.Partial);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IBroker#getAccounts()
-	 */
-	public IAccount[] getAccounts() {
-		return Activator.getDefault().getRepository().getAccounts();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#addOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    @Override
+    public void addOrderChangeListener(IOrderChangeListener listener) {
+        listeners.add(listener);
+    }
 
-	public void load(File file) throws JAXBException {
-		if (!file.exists())
-			return;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#removeOrderChangeListener(org.eclipsetrader.core.trading.IOrderChangeListener)
+     */
+    @Override
+    public void removeOrderChangeListener(IOrderChangeListener listener) {
+        listeners.remove(listener);
+    }
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(OrderMonitor[].class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.log(status);
-				return true;
-			}
-		});
-		JAXBElement<OrderMonitor[]> element = unmarshaller.unmarshal(new StreamSource(file), OrderMonitor[].class);
-		if (element != null) {
-			Calendar today = Calendar.getInstance();
-			Calendar order = Calendar.getInstance();
-			for (OrderMonitor monitor : element.getValue()) {
-				order.setTime(monitor.getOrder().getDate());
-				if (order.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR))
-					pendingOrders.add(monitor);
-			}
-		}
-	}
+    protected void fireUpdateNotifications(OrderDelta[] deltas) {
+        if (deltas.length != 0) {
+            OrderChangeEvent event = new OrderChangeEvent(this, deltas);
+            Object[] l = listeners.getListeners();
+            for (int i = 0; i < l.length; i++) {
+                try {
+                    ((IOrderChangeListener) l[i]).orderChanged(event);
+                } catch (Throwable e) {
+                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+                    Activator.log(status);
+                }
+            }
+        }
+    }
 
-	public void save(File file) throws JAXBException, IOException {
-		if (file.exists())
-			file.delete();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IBroker#getAccounts()
+     */
+    @Override
+    public IAccount[] getAccounts() {
+        return Activator.getDefault().getRepository().getAccounts();
+    }
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(OrderMonitor[].class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.log(status);
-				return true;
-			}
-		});
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+    public void load(File file) throws JAXBException {
+        if (!file.exists()) {
+            return;
+        }
 
-		OrderMonitor[] elements = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
-		JAXBElement<OrderMonitor[]> element = new JAXBElement<OrderMonitor[]>(new QName("list"), OrderMonitor[].class, elements);
-		marshaller.marshal(element, new FileWriter(file));
-	}
+        JAXBContext jaxbContext = JAXBContext.newInstance(OrderMonitor[].class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller.setEventHandler(new ValidationEventHandler() {
+
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.log(status);
+                return true;
+            }
+        });
+        JAXBElement<OrderMonitor[]> element = unmarshaller.unmarshal(new StreamSource(file), OrderMonitor[].class);
+        if (element != null) {
+            Calendar today = Calendar.getInstance();
+            Calendar order = Calendar.getInstance();
+            for (OrderMonitor monitor : element.getValue()) {
+                order.setTime(monitor.getOrder().getDate());
+                if (order.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+                    pendingOrders.add(monitor);
+                }
+            }
+        }
+    }
+
+    public void save(File file) throws JAXBException, IOException {
+        if (file.exists()) {
+            file.delete();
+        }
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(OrderMonitor[].class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setEventHandler(new ValidationEventHandler() {
+
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.log(status);
+                return true;
+            }
+        });
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+
+        OrderMonitor[] elements = pendingOrders.toArray(new OrderMonitor[pendingOrders.size()]);
+        JAXBElement<OrderMonitor[]> element = new JAXBElement<OrderMonitor[]>(new QName("list"), OrderMonitor[].class, elements);
+        marshaller.marshal(element, new FileWriter(file));
+    }
 }

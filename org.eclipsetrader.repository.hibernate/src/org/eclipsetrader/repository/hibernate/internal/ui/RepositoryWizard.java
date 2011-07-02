@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,7 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -43,132 +44,142 @@ import org.eclipsetrader.repository.hibernate.internal.Activator;
 import org.eclipsetrader.repository.hibernate.internal.RepositoryDefinition;
 
 public class RepositoryWizard extends Wizard implements INewWizard {
-	private Shell shell;
 
-	private DatabaseSelectionPage databaseSelectionPage;
-	private RepositoryDetailsPage repositoryDetailsPage;
+    private Shell shell;
 
-	public RepositoryWizard() {
-	}
+    private DatabaseSelectionPage databaseSelectionPage;
+    private RepositoryDetailsPage repositoryDetailsPage;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
-	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		shell = workbench.getActiveWorkbenchWindow().getShell();
-	}
+    public RepositoryWizard() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+     */
+    @Override
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+        shell = workbench.getActiveWorkbenchWindow().getShell();
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.Wizard#addPages()
      */
     @Override
     public void addPages() {
-    	setWindowTitle("Hibernate Repository");
-	    addPage(databaseSelectionPage = new DatabaseSelectionPage());
-	    addPage(repositoryDetailsPage = new RepositoryDetailsPage() {
+        setWindowTitle("Hibernate Repository");
+        addPage(databaseSelectionPage = new DatabaseSelectionPage());
+        addPage(repositoryDetailsPage = new RepositoryDetailsPage() {
+
             @Override
             protected void doSettingsValidation() {
-        		RepositoryDefinition repository = getDefinition();
+                RepositoryDefinition repository = getDefinition();
 
-        		HibernateRepository hibernateRepository = new HibernateRepository(repository);
-	    		try {
-	    			hibernateRepository.startUp(new NullProgressMonitor());
-	        		MessageDialog.openInformation(getShell(), "EclipseTrader", "Database created or updated successfully!");
-	    		} catch (Exception e) {
-	    			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error validating repository", e);
-	    			Activator.log(status);
-	    			ErrorDialog.openError(getShell(), "EclipseTrader", "Database not created or update failed.", status);
-	    		}
-        		hibernateRepository.shutDown(new NullProgressMonitor());
+                HibernateRepository hibernateRepository = new HibernateRepository(repository);
+                try {
+                    hibernateRepository.startUp(new NullProgressMonitor());
+                    MessageDialog.openInformation(getShell(), "EclipseTrader", "Database created or updated successfully!");
+                } catch (Exception e) {
+                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error validating repository", e);
+                    Activator.log(status);
+                    ErrorDialog.openError(getShell(), "EclipseTrader", "Database not created or update failed.", status);
+                }
+                hibernateRepository.shutDown(new NullProgressMonitor());
             }
-	    });
+        });
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
      */
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
-    	if (page == databaseSelectionPage) {
-    		DatabaseElement element = databaseSelectionPage.getSelection();
-    		repositoryDetailsPage.setDefaultName(element.getLabel());
-    		repositoryDetailsPage.setDefaultSchema(element.getSchema());
-    		repositoryDetailsPage.setDefaultUrl(element.getUrl());
-    	}
-	    return super.getNextPage(page);
+        if (page == databaseSelectionPage) {
+            DatabaseElement element = databaseSelectionPage.getSelection();
+            repositoryDetailsPage.setDefaultName(element.getLabel());
+            repositoryDetailsPage.setDefaultSchema(element.getSchema());
+            repositoryDetailsPage.setDefaultUrl(element.getUrl());
+        }
+        return super.getNextPage(page);
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
-	 */
-	@Override
-	public boolean performFinish() {
-		List<RepositoryDefinition> list = new ArrayList<RepositoryDefinition>();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#performFinish()
+     */
+    @Override
+    public boolean performFinish() {
+        List<RepositoryDefinition> list = new ArrayList<RepositoryDefinition>();
 
-		File file = Activator.getDefault().getStateLocation().append(Activator.REPOSITORIES_FILE).toFile();
-		try {
-			if (file.exists()) {
-				JAXBContext jaxbContext = JAXBContext.newInstance(RepositoryDefinition[].class);
-		        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-	            unmarshaller.setEventHandler(new ValidationEventHandler() {
-	            	public boolean handleEvent(ValidationEvent event) {
-	            		Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-	            		Activator.getDefault().getLog().log(status);
-	            		return true;
-	            	}
-	            });
-		        JAXBElement<RepositoryDefinition[]> element = unmarshaller.unmarshal(new StreamSource(file), RepositoryDefinition[].class);
-		        list.addAll(Arrays.asList(element.getValue()));
-			}
-		} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository configuration", e); //$NON-NLS-1$
-    		Activator.getDefault().getLog().log(status);
-		}
+        File file = Activator.getDefault().getStateLocation().append(Activator.REPOSITORIES_FILE).toFile();
+        try {
+            if (file.exists()) {
+                JAXBContext jaxbContext = JAXBContext.newInstance(RepositoryDefinition[].class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-		RepositoryDefinition repository = getDefinition();
-    	list.add(repository);
-
-    	try {
-    		JAXBContext jaxbContext = JAXBContext.newInstance(RepositoryDefinition[].class);
-    		Marshaller marshaller = jaxbContext.createMarshaller();
-    		marshaller.setEventHandler(new ValidationEventHandler() {
-    			public boolean handleEvent(ValidationEvent event) {
-    				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-    				Activator.getDefault().getLog().log(status);
-    				return true;
-    			}
-    		});
-    		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-    		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
-    		JAXBElement<RepositoryDefinition[]> element = new JAXBElement<RepositoryDefinition[]>(new QName("list"), RepositoryDefinition[].class, list.toArray(new RepositoryDefinition[list.size()]));
-    		marshaller.marshal(element, new FileWriter(file));
-		} catch(Exception e) {
-    		Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error writing repository configuration", e); //$NON-NLS-1$
-    		Activator.getDefault().getLog().log(status);
-		}
-
-		Display.getDefault().asyncExec(new Runnable() {
-            public void run() {
-        		if (MessageDialog.openQuestion(shell, "EclipseTrader", "The workbench must be restarted for the changes to take effect.\r\nRestart the workbench now ?"))
-            		PlatformUI.getWorkbench().restart();
+                    @Override
+                    public boolean handleEvent(ValidationEvent event) {
+                        Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                        Activator.getDefault().getLog().log(status);
+                        return true;
+                    }
+                });
+                JAXBElement<RepositoryDefinition[]> element = unmarshaller.unmarshal(new StreamSource(file), RepositoryDefinition[].class);
+                list.addAll(Arrays.asList(element.getValue()));
             }
-		});
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository configuration", e); //$NON-NLS-1$
+            Activator.getDefault().getLog().log(status);
+        }
 
-		return true;
-	}
+        RepositoryDefinition repository = getDefinition();
+        list.add(repository);
 
-	RepositoryDefinition getDefinition() {
-		RepositoryDefinition repository = new RepositoryDefinition();
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(RepositoryDefinition[].class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setEventHandler(new ValidationEventHandler() {
 
-		repository.setDatabaseDriver(databaseSelectionPage.getDriver());
-    	repository.setDialect(databaseSelectionPage.getDialect());
+                @Override
+                public boolean handleEvent(ValidationEvent event) {
+                    Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                    Activator.getDefault().getLog().log(status);
+                    return true;
+                }
+            });
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+            JAXBElement<RepositoryDefinition[]> element = new JAXBElement<RepositoryDefinition[]>(new QName("list"), RepositoryDefinition[].class, list.toArray(new RepositoryDefinition[list.size()]));
+            marshaller.marshal(element, new FileWriter(file));
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error writing repository configuration", e); //$NON-NLS-1$
+            Activator.getDefault().getLog().log(status);
+        }
 
-    	repository.setSchema(repositoryDetailsPage.getSchema());
-    	repository.setLabel(repositoryDetailsPage.getLabel());
-    	repository.setUrl(repositoryDetailsPage.getUrl());
-    	repository.setUser(repositoryDetailsPage.getUserName());
-    	repository.setPassword(repositoryDetailsPage.getPassword());
+        Display.getDefault().asyncExec(new Runnable() {
 
-    	return repository;
-	}
+            @Override
+            public void run() {
+                if (MessageDialog.openQuestion(shell, "EclipseTrader", "The workbench must be restarted for the changes to take effect.\r\nRestart the workbench now ?")) {
+                    PlatformUI.getWorkbench().restart();
+                }
+            }
+        });
+
+        return true;
+    }
+
+    RepositoryDefinition getDefinition() {
+        RepositoryDefinition repository = new RepositoryDefinition();
+
+        repository.setDatabaseDriver(databaseSelectionPage.getDriver());
+        repository.setDialect(databaseSelectionPage.getDialect());
+
+        repository.setSchema(repositoryDetailsPage.getSchema());
+        repository.setLabel(repositoryDetailsPage.getLabel());
+        repository.setUrl(repositoryDetailsPage.getUrl());
+        repository.setUser(repositoryDetailsPage.getUserName());
+        repository.setPassword(repositoryDetailsPage.getPassword());
+
+        return repository;
+    }
 }

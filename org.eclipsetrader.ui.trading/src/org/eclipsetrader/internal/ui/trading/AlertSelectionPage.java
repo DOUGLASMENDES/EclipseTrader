@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,49 +32,54 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 
 public class AlertSelectionPage extends WizardSelectionPage {
-	private IWorkbench workbench;
-	private IStructuredSelection selection;
-	private TableViewer viewer;
 
-	public AlertSelectionPage(IWorkbench workbench, IStructuredSelection selection) {
-		super("selection"); //$NON-NLS-1$
+    private IWorkbench workbench;
+    private IStructuredSelection selection;
+    private TableViewer viewer;
 
-		this.workbench = workbench;
-		this.selection = selection;
+    public AlertSelectionPage(IWorkbench workbench, IStructuredSelection selection) {
+        super("selection"); //$NON-NLS-1$
 
-		setTitle(Messages.AlertSelectionPage_Title);
-	}
+        this.workbench = workbench;
+        this.selection = selection;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL);
-		viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		viewer.setLabelProvider(new LabelProvider());
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setSorter(new ViewerSorter());
-		viewer.setInput(getContributionItems());
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				setSelectedNode((IWizardNode) (selection.isEmpty() ? null : selection.getFirstElement()));
-			}
-		});
-		setControl(viewer.getControl());
-	}
+        setTitle(Messages.AlertSelectionPage_Title);
+    }
 
-	AlertWizardNode[] getContributionItems() {
-		List<AlertWizardNode> list = new ArrayList<AlertWizardNode>();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        viewer = new TableViewer(parent, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL);
+        viewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        viewer.setLabelProvider(new LabelProvider());
+        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setSorter(new ViewerSorter());
+        viewer.setInput(getContributionItems());
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipse.ui.newWizards"); //$NON-NLS-1$
-		IConfigurationElement[] element = extensionPoint.getConfigurationElements();
-		for (int i = 0; i < element.length; i++) {
-			String category = element[i].getAttribute("category"); //$NON-NLS-1$
-			if ("org.eclipsetrader.ui.trading.alerts".equals(category)) //$NON-NLS-1$
-				list.add(new AlertWizardNode(element[i], workbench, selection));
-		}
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                setSelectedNode((IWizardNode) (selection.isEmpty() ? null : selection.getFirstElement()));
+            }
+        });
+        setControl(viewer.getControl());
+    }
 
-		return list.toArray(new AlertWizardNode[list.size()]);
-	}
+    AlertWizardNode[] getContributionItems() {
+        List<AlertWizardNode> list = new ArrayList<AlertWizardNode>();
+
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint("org.eclipse.ui.newWizards"); //$NON-NLS-1$
+        IConfigurationElement[] element = extensionPoint.getConfigurationElements();
+        for (int i = 0; i < element.length; i++) {
+            String category = element[i].getAttribute("category"); //$NON-NLS-1$
+            if ("org.eclipsetrader.ui.trading.alerts".equals(category)) {
+                list.add(new AlertWizardNode(element[i], workbench, selection));
+            }
+        }
+
+        return list.toArray(new AlertWizardNode[list.size()]);
+    }
 }

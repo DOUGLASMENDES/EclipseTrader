@@ -10,22 +10,22 @@ import org.eclipsetrader.core.views.IColumn;
  */
 public interface IWatchListViewerPresentation {
 
-	/**
-	 * Gets the structured viewer used by the receiver.
-	 *
-	 * @return the structured viewer.
-	 */
-	public StructuredViewer getViewer();
+    /**
+     * Gets the structured viewer used by the receiver.
+     *
+     * @return the structured viewer.
+     */
+    public StructuredViewer getViewer();
 
-	/**
-	 * Updates the displayed columns.
-	 *
-	 * @param columns the new columns to display.
-	 */
-	public void updateColumns(IColumn[] columns);
+    /**
+     * Updates the displayed columns.
+     *
+     * @param columns the new columns to display.
+     */
+    public void updateColumns(IColumn[] columns);
 
-	/**
-	 * Disposes the receiver and the associated resources.
-	 */
-	public void dispose();
+    /**
+     * Disposes the receiver and the associated resources.
+     */
+    public void dispose();
 }

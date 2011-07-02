@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,129 +27,148 @@ import java.util.Set;
  * @since 1.0
  */
 public class TradeStrategyParameters implements ITradeStrategyParameters {
-	private Map<String, String> map = new HashMap<String, String>();
-	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	public TradeStrategyParameters() {
-		nf.setMinimumFractionDigits(0);
-	}
+    private Map<String, String> map = new HashMap<String, String>();
+    private NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	public TradeStrategyParameters(ITradeSystemParameter[] parameters) {
-		this();
+    public TradeStrategyParameters() {
+        nf.setMinimumFractionDigits(0);
+    }
 
-		for (ITradeSystemParameter param : parameters)
-			setParameter(param.getName(), param.getValue());
-	}
+    public TradeStrategyParameters(ITradeSystemParameter[] parameters) {
+        this();
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getParameterNames()
-	 */
-	public String[] getParameterNames() {
-		Set<String> c = map.keySet();
-		return c.toArray(new String[c.size()]);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getDate(java.lang.String)
-	 */
-	public Date getDate(String name) {
-    	String s = map.get(name);
-    	if (s != null) {
-    		try {
-    			return dateFormat.parse(s);
-    		} catch(Exception e) {
-    			// Do nothing
-    		}
-    	}
-	    return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getDouble(java.lang.String)
-	 */
-	public Double getDouble(String name) {
-		try {
-	        return map.containsKey(name) ? new Double(nf.parse(map.get(name)).doubleValue()) : null;
-        } catch (ParseException e) {
-	        return null;
+        for (ITradeSystemParameter param : parameters) {
+            setParameter(param.getName(), param.getValue());
         }
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getInteger(java.lang.String)
-	 */
-	public Integer getInteger(String name) {
-		try {
-	        return map.containsKey(name) ? new Integer(nf.parse(map.get(name)).intValue()) : null;
-        } catch (ParseException e) {
-	        return null;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getParameterNames()
+     */
+    @Override
+    public String[] getParameterNames() {
+        Set<String> c = map.keySet();
+        return c.toArray(new String[c.size()]);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getDate(java.lang.String)
+     */
+    @Override
+    public Date getDate(String name) {
+        String s = map.get(name);
+        if (s != null) {
+            try {
+                return dateFormat.parse(s);
+            } catch (Exception e) {
+                // Do nothing
+            }
         }
-	}
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getDouble(java.lang.String)
+     */
+    @Override
+    public Double getDouble(String name) {
+        try {
+            return map.containsKey(name) ? new Double(nf.parse(map.get(name)).doubleValue()) : null;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getInteger(java.lang.String)
+     */
+    @Override
+    public Integer getInteger(String name) {
+        try {
+            return map.containsKey(name) ? new Integer(nf.parse(map.get(name)).intValue()) : null;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getFloat(java.lang.String)
      */
+    @Override
     public Float getFloat(String name) {
-		try {
-	        return map.containsKey(name) ? new Float(nf.parse(map.get(name)).floatValue()) : null;
+        try {
+            return map.containsKey(name) ? new Float(nf.parse(map.get(name)).floatValue()) : null;
         } catch (ParseException e) {
-	        return null;
+            return null;
         }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getLong(java.lang.String)
      */
+    @Override
     public Long getLong(String name) {
-		try {
-	        return map.containsKey(name) ? new Long(nf.parse(map.get(name)).longValue()) : null;
+        try {
+            return map.containsKey(name) ? new Long(nf.parse(map.get(name)).longValue()) : null;
         } catch (ParseException e) {
-	        return null;
+            return null;
         }
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getString(java.lang.String)
-	 */
-	public String getString(String name) {
-		return map.get(name);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#getString(java.lang.String)
+     */
+    @Override
+    public String getString(String name) {
+        return map.get(name);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#hasParameter(java.lang.String)
-	 */
-	public boolean hasParameter(String name) {
-		return map.containsKey(name);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#hasParameter(java.lang.String)
+     */
+    @Override
+    public boolean hasParameter(String name) {
+        return map.containsKey(name);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#setParameter(java.lang.String, java.lang.String)
-	 */
-	public void setParameter(String name, String value) {
-		if (value != null)
-			map.put(name, value);
-		else
-			map.remove(name);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#setParameter(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void setParameter(String name, String value) {
+        if (value != null) {
+            map.put(name, value);
+        }
+        else {
+            map.remove(name);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#setParameter(java.lang.String, java.lang.Number)
-	 */
-	public void setParameter(String name, Number value) {
-		if (value != null)
-			map.put(name, nf.format(value));
-		else
-			map.remove(name);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#setParameter(java.lang.String, java.lang.Number)
+     */
+    @Override
+    public void setParameter(String name, Number value) {
+        if (value != null) {
+            map.put(name, nf.format(value));
+        }
+        else {
+            map.remove(name);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#setParameter(java.lang.String, java.util.Date)
-	 */
-	public void setParameter(String name, Date value) {
-		if (value != null)
-			map.put(name, dateFormat.format(value));
-		else
-			map.remove(name);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradeStrategyParameters#setParameter(java.lang.String, java.util.Date)
+     */
+    @Override
+    public void setParameter(String name, Date value) {
+        if (value != null) {
+            map.put(name, dateFormat.format(value));
+        }
+        else {
+            map.remove(name);
+        }
+    }
 }

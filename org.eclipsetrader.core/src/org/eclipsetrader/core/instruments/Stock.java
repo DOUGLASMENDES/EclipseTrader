@@ -20,80 +20,85 @@ import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 
 public class Stock extends Security implements IStock {
-	private Currency currency;
-	private IDividend[] dividends;
 
-	protected Stock() {
-	}
+    private Currency currency;
+    private IDividend[] dividends;
 
-	public Stock(String name, IFeedIdentifier identifier, Currency currency) {
-		super(name, identifier);
-		this.currency = currency;
-	}
+    protected Stock() {
+    }
 
-	public Stock(IStore store, IStoreProperties storeProperties) {
-		super(store, storeProperties);
-	}
+    public Stock(String name, IFeedIdentifier identifier, Currency currency) {
+        super(name, identifier);
+        this.currency = currency;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.IStock#getCurrency()
-	 */
-	public Currency getCurrency() {
-		return currency;
-	}
+    public Stock(IStore store, IStoreProperties storeProperties) {
+        super(store, storeProperties);
+    }
 
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.IStock#getCurrency()
+     */
+    @Override
+    public Currency getCurrency() {
+        return currency;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.IStock#getDividends()
-	 */
-	public IDividend[] getDividends() {
-		return dividends;
-	}
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
 
-	public void setDividends(IDividend[] dividends) {
-		this.dividends = dividends;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.IStock#getDividends()
+     */
+    @Override
+    public IDividend[] getDividends() {
+        return dividends;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.Security#getAdapter(java.lang.Class)
-	 */
-	@Override
-	@SuppressWarnings({
-	    "unchecked", "rawtypes"
-	})
-	public Object getAdapter(Class adapter) {
-		if (dividends != null && adapter.isAssignableFrom(dividends.getClass()))
-			return dividends;
-		return super.getAdapter(adapter);
-	}
+    public void setDividends(IDividend[] dividends) {
+        this.dividends = dividends;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.Security#getStoreProperties()
-	 */
-	@Override
-	public IStoreProperties getStoreProperties() {
-		IStoreProperties storeProperties = super.getStoreProperties();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.Security#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    public Object getAdapter(Class adapter) {
+        if (dividends != null && adapter.isAssignableFrom(dividends.getClass())) {
+            return dividends;
+        }
+        return super.getAdapter(adapter);
+    }
 
-		storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IStock.class.getName());
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.Security#getStoreProperties()
+     */
+    @Override
+    public IStoreProperties getStoreProperties() {
+        IStoreProperties storeProperties = super.getStoreProperties();
 
-		storeProperties.setProperty(IPropertyConstants.CURRENCY, currency);
-		if (dividends != null)
-			storeProperties.setProperty(IPropertyConstants.DIVIDENDS, dividends);
+        storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IStock.class.getName());
 
-		return storeProperties;
-	}
+        storeProperties.setProperty(IPropertyConstants.CURRENCY, currency);
+        if (dividends != null) {
+            storeProperties.setProperty(IPropertyConstants.DIVIDENDS, dividends);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.instruments.Security#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
-	 */
-	@Override
-	public void setStoreProperties(IStoreProperties storeProperties) {
-		super.setStoreProperties(storeProperties);
+        return storeProperties;
+    }
 
-		this.currency = (Currency) storeProperties.getProperty(IPropertyConstants.CURRENCY);
-		this.dividends = (IDividend[]) storeProperties.getProperty(IPropertyConstants.DIVIDENDS);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.instruments.Security#setStoreProperties(org.eclipsetrader.core.repositories.IStoreProperties)
+     */
+    @Override
+    public void setStoreProperties(IStoreProperties storeProperties) {
+        super.setStoreProperties(storeProperties);
+
+        this.currency = (Currency) storeProperties.getProperty(IPropertyConstants.CURRENCY);
+        this.dividends = (IDividend[]) storeProperties.getProperty(IPropertyConstants.DIVIDENDS);
+    }
 }

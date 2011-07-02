@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,42 +22,43 @@ import org.eclipsetrader.core.feed.OHLC;
 
 @XmlRootElement(name = "bar")
 public class OHLCType {
-	@XmlAttribute(name = "date")
-	@XmlJavaTypeAdapter(DateTimeAdapter.class)
-	private Date date;
 
-	@XmlAttribute(name = "open")
-	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
-	private Double open;
+    @XmlAttribute(name = "date")
+    @XmlJavaTypeAdapter(DateTimeAdapter.class)
+    private Date date;
 
-	@XmlAttribute(name = "high")
-	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
-	private Double high;
+    @XmlAttribute(name = "open")
+    @XmlJavaTypeAdapter(DoubleValueAdapter.class)
+    private Double open;
 
-	@XmlAttribute(name = "low")
-	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
-	private Double low;
+    @XmlAttribute(name = "high")
+    @XmlJavaTypeAdapter(DoubleValueAdapter.class)
+    private Double high;
 
-	@XmlAttribute(name = "close")
-	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
-	private Double close;
+    @XmlAttribute(name = "low")
+    @XmlJavaTypeAdapter(DoubleValueAdapter.class)
+    private Double low;
 
-	@XmlAttribute(name = "volume")
-	private Long volume;
+    @XmlAttribute(name = "close")
+    @XmlJavaTypeAdapter(DoubleValueAdapter.class)
+    private Double close;
 
-	public OHLCType() {
-	}
+    @XmlAttribute(name = "volume")
+    private Long volume;
 
-	public OHLCType(IOHLC ohlc) {
-		this.date = ohlc.getDate();
-		this.open = ohlc.getOpen();
-		this.high = ohlc.getHigh();
-		this.low = ohlc.getLow();
-		this.close = ohlc.getClose();
-		this.volume = ohlc.getVolume();
-	}
+    public OHLCType() {
+    }
 
-	public IOHLC getOHLC() {
-		return new OHLC(date, open, high, low, close, volume);
-	}
+    public OHLCType(IOHLC ohlc) {
+        this.date = ohlc.getDate();
+        this.open = ohlc.getOpen();
+        this.high = ohlc.getHigh();
+        this.low = ohlc.getLow();
+        this.close = ohlc.getClose();
+        this.volume = ohlc.getVolume();
+    }
+
+    public IOHLC getOHLC() {
+        return new OHLC(date, open, high, low, close, volume);
+    }
 }

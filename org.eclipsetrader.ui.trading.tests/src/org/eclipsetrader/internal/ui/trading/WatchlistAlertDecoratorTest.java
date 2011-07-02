@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,108 +25,118 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class WatchlistAlertDecoratorTest extends TestCase {
-	BundleContext context;
-	ServiceReference serviceReference;
-	IAlertService alertService;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		context = EasyMock.createNiceMock(BundleContext.class);
-		serviceReference = EasyMock.createNiceMock(ServiceReference.class);
-		alertService = EasyMock.createNiceMock(IAlertService.class);
-		EasyMock.expect(context.getServiceReference(IAlertService.class.getName())).andStubReturn(serviceReference);
-		EasyMock.expect(context.getService(serviceReference)).andStubReturn(alertService);
-	}
+    BundleContext context;
+    ServiceReference serviceReference;
+    IAlertService alertService;
 
-	public void testDecorateAlwaysReturnsReadyFlag() throws Exception {
-		MyDecoration decoration = new MyDecoration();
-		Security security = new Security("Test", null);
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        context = EasyMock.createNiceMock(BundleContext.class);
+        serviceReference = EasyMock.createNiceMock(ServiceReference.class);
+        alertService = EasyMock.createNiceMock(IAlertService.class);
+        EasyMock.expect(context.getServiceReference(IAlertService.class.getName())).andStubReturn(serviceReference);
+        EasyMock.expect(context.getService(serviceReference)).andStubReturn(alertService);
+    }
 
-		EasyMock.expect(alertService.hasTriggeredAlerts(security)).andStubReturn(false);
-		EasyMock.replay(context, serviceReference, alertService);
+    public void testDecorateAlwaysReturnsReadyFlag() throws Exception {
+        MyDecoration decoration = new MyDecoration();
+        Security security = new Security("Test", null);
 
-		WatchlistAlertDecorator decorator = new MyAlertDecorator();
-		decorator.decorate(security, decoration);
+        EasyMock.expect(alertService.hasTriggeredAlerts(security)).andStubReturn(false);
+        EasyMock.replay(context, serviceReference, alertService);
 
-		assertEquals("*", decoration.prefix);
-	}
+        WatchlistAlertDecorator decorator = new MyAlertDecorator();
+        decorator.decorate(security, decoration);
 
-	public void testDecorateBackgroundColor() throws Exception {
-		MyDecoration decoration = new MyDecoration();
-		Security security = new Security("Test", null);
+        assertEquals("*", decoration.prefix);
+    }
 
-		EasyMock.expect(alertService.hasTriggeredAlerts(security)).andStubReturn(true);
-		EasyMock.replay(context, serviceReference, alertService);
+    public void testDecorateBackgroundColor() throws Exception {
+        MyDecoration decoration = new MyDecoration();
+        Security security = new Security("Test", null);
 
-		WatchlistAlertDecorator decorator = new MyAlertDecorator();
-		decorator.decorate(security, decoration);
+        EasyMock.expect(alertService.hasTriggeredAlerts(security)).andStubReturn(true);
+        EasyMock.replay(context, serviceReference, alertService);
 
-		assertNotNull(decoration.background);
-	}
+        WatchlistAlertDecorator decorator = new MyAlertDecorator();
+        decorator.decorate(security, decoration);
 
-	class MyAlertDecorator extends WatchlistAlertDecorator {
+        assertNotNull(decoration.background);
+    }
 
-		MyAlertDecorator() {
-			super(context);
-		}
-	}
+    class MyAlertDecorator extends WatchlistAlertDecorator {
 
-	class MyDecoration implements IDecoration {
-		String prefix;
-		Color background;
+        MyAlertDecorator() {
+            super(context);
+        }
+    }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#addOverlay(org.eclipse.jface.resource.ImageDescriptor, int)
-		 */
-		public void addOverlay(ImageDescriptor overlay, int quadrant) {
-		}
+    class MyDecoration implements IDecoration {
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#addOverlay(org.eclipse.jface.resource.ImageDescriptor)
-		 */
-		public void addOverlay(ImageDescriptor overlay) {
-		}
+        String prefix;
+        Color background;
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#addPrefix(java.lang.String)
-		 */
-		public void addPrefix(String prefix) {
-			this.prefix = prefix;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#addOverlay(org.eclipse.jface.resource.ImageDescriptor, int)
+         */
+        @Override
+        public void addOverlay(ImageDescriptor overlay, int quadrant) {
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#addSuffix(java.lang.String)
-		 */
-		public void addSuffix(String suffix) {
-		}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#addOverlay(org.eclipse.jface.resource.ImageDescriptor)
+         */
+        @Override
+        public void addOverlay(ImageDescriptor overlay) {
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#getDecorationContext()
-		 */
-		public IDecorationContext getDecorationContext() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#addPrefix(java.lang.String)
+         */
+        @Override
+        public void addPrefix(String prefix) {
+            this.prefix = prefix;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#setBackgroundColor(org.eclipse.swt.graphics.Color)
-		 */
-		public void setBackgroundColor(Color color) {
-			background = color;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#addSuffix(java.lang.String)
+         */
+        @Override
+        public void addSuffix(String suffix) {
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#setFont(org.eclipse.swt.graphics.Font)
-		 */
-		public void setFont(Font font) {
-		}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#getDecorationContext()
+         */
+        @Override
+        public IDecorationContext getDecorationContext() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IDecoration#setForegroundColor(org.eclipse.swt.graphics.Color)
-		 */
-		public void setForegroundColor(Color color) {
-		}
-	}
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#setBackgroundColor(org.eclipse.swt.graphics.Color)
+         */
+        @Override
+        public void setBackgroundColor(Color color) {
+            background = color;
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#setFont(org.eclipse.swt.graphics.Font)
+         */
+        @Override
+        public void setFont(Font font) {
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.IDecoration#setForegroundColor(org.eclipse.swt.graphics.Color)
+         */
+        @Override
+        public void setForegroundColor(Color color) {
+        }
+    }
 }

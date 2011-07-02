@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -50,215 +51,229 @@ import org.osgi.framework.ServiceReference;
 
 @SuppressWarnings("restriction")
 public class AlertPropertyPage extends PropertyPage implements IWorkbenchPropertyPage {
-	TableViewer viewer;
-	Button add;
-	Button delete;
-	CTabFolder folder;
 
-	IAlertService alertService;
-	List<IAlert> list;
-	PropertyPage[] propertyPages = new PropertyPage[0];
+    TableViewer viewer;
+    Button add;
+    Button delete;
+    CTabFolder folder;
 
-	ISelectionChangedListener selectionChangedListener = new ISelectionChangedListener() {
-		public void selectionChanged(SelectionChangedEvent event) {
-			delete.setEnabled(!event.getSelection().isEmpty());
-			doSelectionChanged((IStructuredSelection) event.getSelection());
-		}
-	};
+    IAlertService alertService;
+    List<IAlert> list;
+    PropertyPage[] propertyPages = new PropertyPage[0];
 
-	public AlertPropertyPage() {
-		this(Activator.getDefault().getBundle().getBundleContext());
-	}
+    ISelectionChangedListener selectionChangedListener = new ISelectionChangedListener() {
 
-	protected AlertPropertyPage(BundleContext context) {
-		setTitle(Messages.AlertPropertyPage_Title);
+        @Override
+        public void selectionChanged(SelectionChangedEvent event) {
+            delete.setEnabled(!event.getSelection().isEmpty());
+            doSelectionChanged((IStructuredSelection) event.getSelection());
+        }
+    };
 
-		ServiceReference serviceReference = context.getServiceReference(IAlertService.class.getName());
-		if (serviceReference != null) {
-			alertService = (IAlertService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-		}
-	}
+    public AlertPropertyPage() {
+        this(Activator.getDefault().getBundle().getBundleContext());
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
+    protected AlertPropertyPage(BundleContext context) {
+        setTitle(Messages.AlertPropertyPage_Title);
 
-		initializeDialogUnits(content);
+        ServiceReference serviceReference = context.getServiceReference(IAlertService.class.getName());
+        if (serviceReference != null) {
+            alertService = (IAlertService) context.getService(serviceReference);
+            context.ungetService(serviceReference);
+        }
+    }
 
-		viewer = new TableViewer(content, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
-		viewer.getTable().setHeaderVisible(false);
-		viewer.getTable().setLinesVisible(false);
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		gridData.heightHint = viewer.getTable().getItemHeight() * 5 + viewer.getTable().getBorderWidth() * 2;
-		viewer.getControl().setLayoutData(gridData);
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setLabelProvider(new AlertLabelProvider());
-		viewer.addSelectionChangedListener(selectionChangedListener);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
 
-		createButtonsBar(content);
+        initializeDialogUnits(content);
 
-		folder = new CTabFolder(content, SWT.TOP | SWT.BORDER);
-		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        viewer = new TableViewer(content, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
+        viewer.getTable().setHeaderVisible(false);
+        viewer.getTable().setLinesVisible(false);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gridData.heightHint = viewer.getTable().getItemHeight() * 5 + viewer.getTable().getBorderWidth() * 2;
+        viewer.getControl().setLayoutData(gridData);
+        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setLabelProvider(new AlertLabelProvider());
+        viewer.addSelectionChangedListener(selectionChangedListener);
 
-		performDefaults();
+        createButtonsBar(content);
 
-		return content;
-	}
+        folder = new CTabFolder(content, SWT.TOP | SWT.BORDER);
+        folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-	protected void createButtonsBar(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+        performDefaults();
 
-		add = new Button(content, SWT.NONE);
-		add.setImage(getImageRegistry().get(Activator.ALERT_ADD_IMAGE));
-		add.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				doAddNewAlert();
-			}
-		});
+        return content;
+    }
 
-		delete = new Button(content, SWT.NONE);
-		delete.setImage(getImageRegistry().get(Activator.ALERT_DELETE_IMAGE));
-		delete.setEnabled(false);
-		delete.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-				list.removeAll(selection.toList());
-				viewer.refresh();
-			}
-		});
-	}
+    protected void createButtonsBar(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 
-	ImageRegistry getImageRegistry() {
-		return Activator.getDefault().getImageRegistry();
-	}
+        add = new Button(content, SWT.NONE);
+        add.setImage(getImageRegistry().get(Activator.ALERT_ADD_IMAGE));
+        add.addSelectionListener(new SelectionAdapter() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-	 */
-	@Override
-	protected void performDefaults() {
-		ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                doAddNewAlert();
+            }
+        });
 
-		IAlert[] alerts = alertService.getAlerts(security);
+        delete = new Button(content, SWT.NONE);
+        delete.setImage(getImageRegistry().get(Activator.ALERT_DELETE_IMAGE));
+        delete.setEnabled(false);
+        delete.addSelectionListener(new SelectionAdapter() {
 
-		list = new ArrayList<IAlert>(Arrays.asList(alerts));
-		viewer.setInput(list);
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+                list.removeAll(selection.toList());
+                viewer.refresh();
+            }
+        });
+    }
 
-	@SuppressWarnings("unchecked")
-	void doSelectionChanged(IStructuredSelection selection) {
-		for (int i = 0; i < propertyPages.length; i++)
-			propertyPages[i].dispose();
+    ImageRegistry getImageRegistry() {
+        return Activator.getDefault().getImageRegistry();
+    }
 
-		if (selection.isEmpty()) {
-			propertyPages = new PropertyPage[0];
-			createTabbedPages();
-			return;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
 
-		final Object element = selection.getFirstElement();
+        IAlert[] alerts = alertService.getAlerts(security);
 
-		PropertyPageManager pageManager = new PropertyPageManager();
-		PropertyPageContributorManager.getManager().contribute(pageManager, element);
+        list = new ArrayList<IAlert>(Arrays.asList(alerts));
+        viewer.setInput(list);
+    }
 
-		IAdaptable adaptableElement = new IAdaptable() {
-			public Object getAdapter(Class adapter) {
-				if (adapter.isAssignableFrom(element.getClass()))
-					return element;
-				return null;
-			}
-		};
+    @SuppressWarnings("unchecked")
+    void doSelectionChanged(IStructuredSelection selection) {
+        for (int i = 0; i < propertyPages.length; i++) {
+            propertyPages[i].dispose();
+        }
 
-		List<PropertyPage> list = new ArrayList<PropertyPage>();
-		for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
-			IPreferenceNode node = (IPreferenceNode) nodeObj;
-			node.createPage();
-			if (node.getPage() instanceof PropertyPage) {
-				PropertyPage page = (PropertyPage) node.getPage();
-				page.setElement(adaptableElement);
-				list.add(page);
-			}
-		}
-		propertyPages = list.toArray(new PropertyPage[list.size()]);
+        if (selection.isEmpty()) {
+            propertyPages = new PropertyPage[0];
+            createTabbedPages();
+            return;
+        }
 
-		createTabbedPages();
-	}
+        final Object element = selection.getFirstElement();
 
-	void createTabbedPages() {
-		CTabItem[] existingItems = folder.getItems();
-		for (int i = 0; i < existingItems.length; i++)
-			existingItems[i].dispose();
+        PropertyPageManager pageManager = new PropertyPageManager();
+        PropertyPageContributorManager.getManager().contribute(pageManager, element);
 
-		if (propertyPages != null) {
-			for (int i = 0; i < propertyPages.length; i++)
-				propertyPages[i].dispose();
-		}
+        IAdaptable adaptableElement = new IAdaptable() {
 
-		for (int i = 0; i < propertyPages.length; i++) {
-			CTabItem tabItem = new CTabItem(folder, SWT.NONE);
+            @Override
+            public Object getAdapter(Class adapter) {
+                if (adapter.isAssignableFrom(element.getClass())) {
+                    return element;
+                }
+                return null;
+            }
+        };
 
-			Composite content = new Composite(folder, SWT.NONE);
-			FillLayout layout = new FillLayout();
-			layout.marginWidth = layout.marginHeight = 5;
-			content.setLayout(layout);
+        List<PropertyPage> list = new ArrayList<PropertyPage>();
+        for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
+            IPreferenceNode node = (IPreferenceNode) nodeObj;
+            node.createPage();
+            if (node.getPage() instanceof PropertyPage) {
+                PropertyPage page = (PropertyPage) node.getPage();
+                page.setElement(adaptableElement);
+                list.add(page);
+            }
+        }
+        propertyPages = list.toArray(new PropertyPage[list.size()]);
 
-			propertyPages[i].createControl(content);
+        createTabbedPages();
+    }
 
-			tabItem.setText(propertyPages[i].getTitle());
-			tabItem.setControl(content);
-		}
+    void createTabbedPages() {
+        CTabItem[] existingItems = folder.getItems();
+        for (int i = 0; i < existingItems.length; i++) {
+            existingItems[i].dispose();
+        }
 
-		if (folder.getItemCount() != 0)
-			folder.setSelection(folder.getItem(0));
+        if (propertyPages != null) {
+            for (int i = 0; i < propertyPages.length; i++) {
+                propertyPages[i].dispose();
+            }
+        }
 
-		folder.getParent().layout();
-	}
+        for (int i = 0; i < propertyPages.length; i++) {
+            CTabItem tabItem = new CTabItem(folder, SWT.NONE);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performApply()
-	 */
-	@Override
-	protected void performApply() {
-		super.performApply();
-		viewer.refresh();
-	}
+            Composite content = new Composite(folder, SWT.NONE);
+            FillLayout layout = new FillLayout();
+            layout.marginWidth = layout.marginHeight = 5;
+            content.setLayout(layout);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
-	 */
-	@Override
-	public boolean performOk() {
-		ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
+            propertyPages[i].createControl(content);
 
-		if (isControlCreated()) {
-			for (int i = 0; i < propertyPages.length; i++)
-				propertyPages[i].performOk();
+            tabItem.setText(propertyPages[i].getTitle());
+            tabItem.setControl(content);
+        }
 
-			alertService.setAlerts(security, list.toArray(new IAlert[list.size()]));
-		}
+        if (folder.getItemCount() != 0) {
+            folder.setSelection(folder.getItem(0));
+        }
 
-		return super.performOk();
-	}
+        folder.getParent().layout();
+    }
 
-	void doAddNewAlert() {
-		ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
-		NewAlertWizard wizard = new NewAlertWizard(PlatformUI.getWorkbench(), new StructuredSelection(security));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performApply()
+     */
+    @Override
+    protected void performApply() {
+        super.performApply();
+        viewer.refresh();
+    }
 
-		WizardDialog dlg = new WizardDialog(getShell(), wizard);
-		if (dlg.open() == WizardDialog.OK)
-			performDefaults();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+        ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
+
+        if (isControlCreated()) {
+            for (int i = 0; i < propertyPages.length; i++) {
+                propertyPages[i].performOk();
+            }
+
+            alertService.setAlerts(security, list.toArray(new IAlert[list.size()]));
+        }
+
+        return super.performOk();
+    }
+
+    void doAddNewAlert() {
+        ISecurity security = (ISecurity) getElement().getAdapter(ISecurity.class);
+        NewAlertWizard wizard = new NewAlertWizard(PlatformUI.getWorkbench(), new StructuredSelection(security));
+
+        WizardDialog dlg = new WizardDialog(getShell(), wizard);
+        if (dlg.open() == Window.OK) {
+            performDefaults();
+        }
+    }
 }

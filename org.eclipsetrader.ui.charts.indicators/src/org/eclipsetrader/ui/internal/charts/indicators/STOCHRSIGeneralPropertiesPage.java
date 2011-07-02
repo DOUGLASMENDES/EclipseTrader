@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,23 +27,24 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.ui.charts.indicators.STOCHRSI;
 
 public class STOCHRSIGeneralPropertiesPage extends PropertyPage {
-	private Text text;
-	private Button override;
-	private ColorSelector kLineColor;
-	private ColorSelector dLineColor;
 
-	public STOCHRSIGeneralPropertiesPage() {
+    private Text text;
+    private Button override;
+    private ColorSelector kLineColor;
+    private ColorSelector dLineColor;
+
+    public STOCHRSIGeneralPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         setTitle("General");
@@ -62,6 +63,7 @@ public class STOCHRSIGeneralPropertiesPage extends PropertyPage {
         override.setText("Override color theme");
         override.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
         override.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateControlsEnablement();
@@ -85,46 +87,48 @@ public class STOCHRSIGeneralPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	STOCHRSI object = (STOCHRSI) getElement().getAdapter(STOCHRSI.class);
+        STOCHRSI object = (STOCHRSI) getElement().getAdapter(STOCHRSI.class);
         text.setText(object.getName());
 
         override.setSelection(object.getKLineColor() != null || object.getDLineColor() != null);
-        if (object.getKLineColor() != null)
-        	kLineColor.setColorValue(object.getKLineColor());
-        if (object.getDLineColor() != null)
-        	dLineColor.setColorValue(object.getDLineColor());
+        if (object.getKLineColor() != null) {
+            kLineColor.setColorValue(object.getKLineColor());
+        }
+        if (object.getDLineColor() != null) {
+            dLineColor.setColorValue(object.getDLineColor());
+        }
 
         updateControlsEnablement();
 
         super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	STOCHRSI object = (STOCHRSI) getElement().getAdapter(STOCHRSI.class);
-    	object.setName(text.getText());
+        STOCHRSI object = (STOCHRSI) getElement().getAdapter(STOCHRSI.class);
+        object.setName(text.getText());
 
         object.setKLineColor(override.getSelection() ? kLineColor.getColorValue() : null);
         object.setDLineColor(override.getSelection() ? dLineColor.getColorValue() : null);
 
-	    return super.performOk();
+        return super.performOk();
     }
 
     protected void updateControlsEnablement() {
-    	kLineColor.setEnabled(override.getSelection());
-    	((Label) kLineColor.getButton().getData("label")).setEnabled(override.getSelection());
-    	dLineColor.setEnabled(override.getSelection());
-    	((Label) dLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        kLineColor.setEnabled(override.getSelection());
+        ((Label) kLineColor.getButton().getData("label")).setEnabled(override.getSelection());
+        dLineColor.setEnabled(override.getSelection());
+        ((Label) dLineColor.getButton().getData("label")).setEnabled(override.getSelection());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.RGB;
 
 public interface ILineDecorator {
 
-	public RGB getColor();
+    public RGB getColor();
 
-	public void setColor(RGB color);
+    public void setColor(RGB color);
 }

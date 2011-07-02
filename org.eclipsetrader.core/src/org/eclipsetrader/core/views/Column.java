@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,42 +18,47 @@ package org.eclipsetrader.core.views;
  * @since 1.0
  */
 public class Column implements IColumn {
-	private String name;
-	private IDataProviderFactory dataProviderFactory;
 
-	protected Column() {
-	}
+    private String name;
+    private IDataProviderFactory dataProviderFactory;
 
-	public Column(String name, IDataProviderFactory dataProviderFactory) {
-	    this.name = name;
-	    this.dataProviderFactory = dataProviderFactory;
+    protected Column() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IColumn#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    public Column(String name, IDataProviderFactory dataProviderFactory) {
+        this.name = name;
+        this.dataProviderFactory = dataProviderFactory;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IColumn#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IColumn#getDataProviderFactory()
-	 */
-	public IDataProviderFactory getDataProviderFactory() {
-		return dataProviderFactory;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IColumn#getDataProviderFactory()
+     */
+    @Override
+    public IDataProviderFactory getDataProviderFactory() {
+        return dataProviderFactory;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(getClass()))
-    		return this;
-	    return null;
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+        return null;
     }
 }

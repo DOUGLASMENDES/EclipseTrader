@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,13 @@ import org.eclipsetrader.ui.charts.ChartToolEditor.ChartObjectEditorEvent;
 
 public interface IEditableChartObject extends IChartObject {
 
-	public boolean isOnEditHandle(int x, int y);
+    public boolean isOnEditHandle(int x, int y);
 
-	public boolean isOnDragHandle(int x, int y);
+    public boolean isOnDragHandle(int x, int y);
 
-	public void handleMouseDown(ChartObjectEditorEvent e);
+    public void handleMouseDown(ChartObjectEditorEvent e);
 
-	public void handleMouseUp(ChartObjectEditorEvent e);
+    public void handleMouseUp(ChartObjectEditorEvent e);
 
-	public void handleMouseMove(ChartObjectEditorEvent e);
+    public void handleMouseMove(ChartObjectEditorEvent e);
 }

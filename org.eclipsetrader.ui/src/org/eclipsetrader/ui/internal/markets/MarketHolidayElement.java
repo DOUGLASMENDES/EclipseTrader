@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,54 +16,55 @@ import java.util.Date;
 import org.eclipsetrader.core.internal.markets.MarketHoliday;
 
 public class MarketHolidayElement {
-	private Date date;
-	private Date openTime;
-	private Date closeTime;
-	private String description;
 
-	public MarketHolidayElement() {
-	}
+    private Date date;
+    private Date openTime;
+    private Date closeTime;
+    private String description;
 
-	public MarketHolidayElement(MarketHoliday day) {
-		date = day.getDate();
-		openTime = day.getOpenTime();
-		closeTime = day.getCloseTime();
-		description = day.getDescription();
-	}
-
-	public MarketHoliday getMarketHoliday() {
-		return new MarketHoliday(date, description, openTime, closeTime);
-	}
-
-	public Date getDate() {
-    	return date;
+    public MarketHolidayElement() {
     }
 
-	public void setDate(Date date) {
-    	this.date = date;
+    public MarketHolidayElement(MarketHoliday day) {
+        date = day.getDate();
+        openTime = day.getOpenTime();
+        closeTime = day.getCloseTime();
+        description = day.getDescription();
     }
 
-	public String getDescription() {
-    	return description;
+    public MarketHoliday getMarketHoliday() {
+        return new MarketHoliday(date, description, openTime, closeTime);
     }
 
-	public void setDescription(String description) {
-    	this.description = description;
+    public Date getDate() {
+        return date;
     }
 
-	public Date getOpenTime() {
-    	return openTime;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-	public void setOpenTime(Date openTime) {
-    	this.openTime = openTime;
+    public String getDescription() {
+        return description;
     }
 
-	public Date getCloseTime() {
-    	return closeTime;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-	public void setCloseTime(Date closeTime) {
-    	this.closeTime = closeTime;
+    public Date getOpenTime() {
+        return openTime;
+    }
+
+    public void setOpenTime(Date openTime) {
+        this.openTime = openTime;
+    }
+
+    public Date getCloseTime() {
+        return closeTime;
+    }
+
+    public void setCloseTime(Date closeTime) {
+        this.closeTime = closeTime;
     }
 }

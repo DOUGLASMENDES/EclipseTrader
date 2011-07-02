@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,75 +26,80 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 public class MainRenderStyleInput extends Observable {
-	private Label label;
-	private ComboViewer combo;
 
-	public MainRenderStyleInput(Composite parent) {
-		this(parent, (String) null);
-	}
+    private Label label;
+    private ComboViewer combo;
 
-	public MainRenderStyleInput(Composite parent, String text) {
-		if (text != null) {
-			label = new Label(parent, SWT.NONE);
-			label.setText(text);
-		}
-		initializeCombo(parent);
-	}
+    public MainRenderStyleInput(Composite parent) {
+        this(parent, (String) null);
+    }
 
-	protected void initializeCombo(Composite parent) {
-		combo = new ComboViewer(parent, SWT.READ_ONLY);
-		combo.setLabelProvider(new LabelProvider());
-		combo.setContentProvider(new ArrayContentProvider());
-		combo.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				setChanged();
-				notifyObservers(event.getSelection());
-			}
-		});
-		combo.setInput(MainRenderStyle.values());
-	}
+    public MainRenderStyleInput(Composite parent, String text) {
+        if (text != null) {
+            label = new Label(parent, SWT.NONE);
+            label.setText(text);
+        }
+        initializeCombo(parent);
+    }
 
-	public void setSelection(MainRenderStyle selection) {
-		combo.setSelection(selection != null ? new StructuredSelection(selection) : StructuredSelection.EMPTY);
-	}
+    protected void initializeCombo(Composite parent) {
+        combo = new ComboViewer(parent, SWT.READ_ONLY);
+        combo.setLabelProvider(new LabelProvider());
+        combo.setContentProvider(new ArrayContentProvider());
+        combo.addSelectionChangedListener(new ISelectionChangedListener() {
 
-	public MainRenderStyle getSelection() {
-		IStructuredSelection selection = (IStructuredSelection) combo.getSelection();
-		return selection.isEmpty() ? null : (MainRenderStyle) selection.getFirstElement();
-	}
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                setChanged();
+                notifyObservers(event.getSelection());
+            }
+        });
+        combo.setInput(MainRenderStyle.values());
+    }
 
-	public String getText() {
-		return label != null ? label.getText() : "";
-	}
+    public void setSelection(MainRenderStyle selection) {
+        combo.setSelection(selection != null ? new StructuredSelection(selection) : StructuredSelection.EMPTY);
+    }
 
-	public void setText(String text) {
-		if (label != null)
-			label.setText(text);
-	}
+    public MainRenderStyle getSelection() {
+        IStructuredSelection selection = (IStructuredSelection) combo.getSelection();
+        return selection.isEmpty() ? null : (MainRenderStyle) selection.getFirstElement();
+    }
 
-	public Label getLabel() {
-		return label;
-	}
+    public String getText() {
+        return label != null ? label.getText() : "";
+    }
 
-	public ComboViewer getViewer() {
-		return combo;
-	}
+    public void setText(String text) {
+        if (label != null) {
+            label.setText(text);
+        }
+    }
 
-	public Combo getCombo() {
-		return combo.getCombo();
-	}
+    public Label getLabel() {
+        return label;
+    }
 
-	public void setEnabled(boolean enabled) {
-		if (label != null)
-			label.setEnabled(enabled);
-		combo.getControl().setEnabled(enabled);
-	}
+    public ComboViewer getViewer() {
+        return combo;
+    }
 
-	public boolean getEnabled() {
-		return combo.getControl().getEnabled();
-	}
+    public Combo getCombo() {
+        return combo.getCombo();
+    }
 
-	public boolean isEnabled() {
-		return combo.getControl().isEnabled();
-	}
+    public void setEnabled(boolean enabled) {
+        if (label != null) {
+            label.setEnabled(enabled);
+        }
+        combo.getControl().setEnabled(enabled);
+    }
+
+    public boolean getEnabled() {
+        return combo.getControl().getEnabled();
+    }
+
+    public boolean isEnabled() {
+        return combo.getControl().isEnabled();
+    }
 }

@@ -6,21 +6,21 @@ import org.eclipsetrader.core.instruments.ISecurity;
 
 public interface IHeadLine {
 
-	public Date getDate();
+    public Date getDate();
 
-	public String getText();
+    public String getText();
 
-	public String getSource();
+    public String getSource();
 
-	public boolean contains(ISecurity security);
+    public boolean contains(ISecurity security);
 
-	public ISecurity[] getMembers();
+    public ISecurity[] getMembers();
 
-	public boolean isRecent();
+    public boolean isRecent();
 
-	public boolean isReaded();
+    public boolean isReaded();
 
-	public void setReaded(boolean readed);
+    public void setReaded(boolean readed);
 
-	public String getLink();
+    public String getLink();
 }

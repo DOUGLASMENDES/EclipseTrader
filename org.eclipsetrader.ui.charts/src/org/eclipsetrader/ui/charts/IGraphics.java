@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,64 +18,64 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public interface IGraphics {
 
-	public Rectangle getBounds();
+    public Rectangle getBounds();
 
-	public void drawLine(int x1, int y1, int x2, int y2);
+    public void drawLine(int x1, int y1, int x2, int y2);
 
-	public void drawPolyline(Point[] pointArray);
+    public void drawPolyline(Point[] pointArray);
 
-	public void drawRectangle(int x, int y, int width, int height);
+    public void drawRectangle(int x, int y, int width, int height);
 
-	public void drawRectangle(Rectangle rect);
+    public void drawRectangle(Rectangle rect);
 
-	public void fillRectangle(int x, int y, int width, int height);
+    public void fillRectangle(int x, int y, int width, int height);
 
-	public void fillRectangle(Rectangle rect);
+    public void fillRectangle(Rectangle rect);
 
-	public void fillPolygon(int[] pointArray);
+    public void fillPolygon(int[] pointArray);
 
-	public void setLineStyle(int lineStyle);
+    public void setLineStyle(int lineStyle);
 
-	public void setLineDash(int[] dash);
+    public void setLineDash(int[] dash);
 
-	public Point mapToPoint(Object xValue, Object yValue);
+    public Point mapToPoint(Object xValue, Object yValue);
 
-	public int mapToVerticalAxis(Object value);
+    public int mapToVerticalAxis(Object value);
 
-	public Object mapToVerticalValue(int y);
+    public Object mapToVerticalValue(int y);
 
-	public int mapToHorizontalAxis(Object value);
+    public int mapToHorizontalAxis(Object value);
 
-	public Object mapToHorizontalValue(int x);
+    public Object mapToHorizontalValue(int x);
 
-	public RGB getBackgroundColor();
+    public RGB getBackgroundColor();
 
-	public void setBackgroundColor(RGB rgb);
+    public void setBackgroundColor(RGB rgb);
 
-	public RGB getForegroundColor();
+    public RGB getForegroundColor();
 
-	public void setForegroundColor(RGB rgb);
+    public void setForegroundColor(RGB rgb);
 
-	public Font getFont();
+    public Font getFont();
 
-	public void setFont(Font font);
+    public void setFont(Font font);
 
-	public void drawString(String s, int x, int y);
+    public void drawString(String s, int x, int y);
 
-	public Point stringExtent(String s);
+    public Point stringExtent(String s);
 
-	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle);
+    public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle);
 
-	public void setLineWidth(int lineWidth);
+    public void setLineWidth(int lineWidth);
 
-	/**
-	 * Pushes the current state of this graphics object onto a stack.
-	 */
-	public void pushState();
+    /**
+     * Pushes the current state of this graphics object onto a stack.
+     */
+    public void pushState();
 
-	/**
-	 * Pops the previous state of this graphics object off the stack (if <code>pushState()</code>
-	 * has previously been called) and restores the current state to that popped state.
-	 */
-	public void popState();
+    /**
+     * Pops the previous state of this graphics object off the stack (if <code>pushState()</code>
+     * has previously been called) and restores the current state to that popped state.
+     */
+    public void popState();
 }

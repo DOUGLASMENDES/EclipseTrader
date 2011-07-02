@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -24,33 +25,36 @@ import org.eclipse.ui.IStartup;
 import org.eclipsetrader.core.ILauncher;
 
 public class LaunchersStartup implements IStartup {
-	public static final String LAUNCHERS_EXTENSION_ID = "org.eclipsetrader.core.launchers";
 
-	public LaunchersStartup() {
-	}
+    public static final String LAUNCHERS_EXTENSION_ID = "org.eclipsetrader.core.launchers";
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IStartup#earlyStartup()
-	 */
-	public void earlyStartup() {
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LAUNCHERS_EXTENSION_ID);
-		if (extensionPoint != null) {
-    		IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
-        	Set<String> set = new HashSet<String>(Arrays.asList(UIActivator.getDefault().getPreferenceStore().getString("STARTUP_LAUNCHERS").split(";")));
+    public LaunchersStartup() {
+    }
 
-    		for (int j = 0; j < configElements.length; j++) {
-    			String id = configElements[j].getAttribute("id"); //$NON-NLS-1$
-    			if (set.contains(id)) {
-        			try {
-        				ILauncher launcher = (ILauncher) configElements[j].createExecutableExtension("class");
-        				if (launcher != null)
-        					launcher.launch(new NullProgressMonitor());
-        			} catch (Exception e) {
-        	    		Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error launching " + id, e);
-        	    		UIActivator.getDefault().getLog().log(status);
-        			}
-    			}
-    		}
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IStartup#earlyStartup()
+     */
+    @Override
+    public void earlyStartup() {
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LAUNCHERS_EXTENSION_ID);
+        if (extensionPoint != null) {
+            IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+            Set<String> set = new HashSet<String>(Arrays.asList(UIActivator.getDefault().getPreferenceStore().getString("STARTUP_LAUNCHERS").split(";")));
+
+            for (int j = 0; j < configElements.length; j++) {
+                String id = configElements[j].getAttribute("id"); //$NON-NLS-1$
+                if (set.contains(id)) {
+                    try {
+                        ILauncher launcher = (ILauncher) configElements[j].createExecutableExtension("class");
+                        if (launcher != null) {
+                            launcher.launch(new NullProgressMonitor());
+                        }
+                    } catch (Exception e) {
+                        Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error launching " + id, e);
+                        UIActivator.getDefault().getLog().log(status);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,92 +36,101 @@ import org.eclipsetrader.internal.brokers.paper.types.DateTimeAdapter;
 
 @XmlRootElement(name = "trade")
 public class TradeTransaction implements ITransaction {
-	@XmlAttribute(name = "id")
-	private String id;
 
-	@XmlAttribute(name = "date")
-	@XmlJavaTypeAdapter(DateTimeAdapter.class)
-	private Date date;
+    @XmlAttribute(name = "id")
+    private String id;
 
-	@XmlElement(name = "order")
-	private OrderElement order;
+    @XmlAttribute(name = "date")
+    @XmlJavaTypeAdapter(DateTimeAdapter.class)
+    private Date date;
 
-	private Cash amount;
+    @XmlElement(name = "order")
+    private OrderElement order;
 
-	@XmlElementWrapper(name = "details")
-	@XmlElementRefs({
-		@XmlElementRef(type = ExpenseTransaction.class),
-		@XmlElementRef(type = TradeTransaction.class),
-		@XmlElementRef(type = StockTransaction.class),
-		@XmlElementRef(type = OrderElement.class),
-	})
-	private List<ITransaction> childs;
+    private Cash amount;
 
-	protected TradeTransaction() {
-	}
+    @XmlElementWrapper(name = "details")
+    @XmlElementRefs({
+            @XmlElementRef(type = ExpenseTransaction.class),
+            @XmlElementRef(type = TradeTransaction.class),
+            @XmlElementRef(type = StockTransaction.class),
+            @XmlElementRef(type = OrderElement.class),
+    })
+    private List<ITransaction> childs;
 
-	public TradeTransaction(IOrder order, ITransaction[] chunks, ITransaction expenses) {
-		this.id = UUID.randomUUID().toString();
-	    this.date = new Date();
-		this.order = order != null ? new OrderElement(order) : null;
-		this.childs = new ArrayList<ITransaction>(Arrays.asList(chunks));
-		if (expenses != null)
-			this.childs.add(expenses);
+    protected TradeTransaction() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getId()
-	 */
-	@XmlTransient
-	public String getId() {
-		return id;
-	}
+    public TradeTransaction(IOrder order, ITransaction[] chunks, ITransaction expenses) {
+        this.id = UUID.randomUUID().toString();
+        this.date = new Date();
+        this.order = order != null ? new OrderElement(order) : null;
+        this.childs = new ArrayList<ITransaction>(Arrays.asList(chunks));
+        if (expenses != null) {
+            this.childs.add(expenses);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getDate()
-	 */
-	@XmlTransient
-	public Date getDate() {
-		return date;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getId()
+     */
+    @Override
+    @XmlTransient
+    public String getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getDescription()
-	 */
-	@XmlTransient
-	public String getDescription() {
-		return NLS.bind("OrderElement {0}", new Object[] {
-				order.toString(),
-			});
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getDate()
+     */
+    @Override
+    @XmlTransient
+    public Date getDate() {
+        return date;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getAmount()
-	 */
-	@XmlTransient
-	public Cash getAmount() {
-		if (amount == null) {
-			double value = 0.0;
-			for (ITransaction t : childs)
-				value += t.getAmount().getAmount();
-			amount = new Cash(value, Currency.getInstance(Locale.getDefault()));
-		}
-		return amount;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getDescription()
+     */
+    @Override
+    @XmlTransient
+    public String getDescription() {
+        return NLS.bind("OrderElement {0}", new Object[] {
+            order.toString(),
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getOrder()
-	 */
-	@XmlTransient
-	public IOrder getOrder() {
-		return order.getOrder();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getAmount()
+     */
+    @Override
+    @XmlTransient
+    public Cash getAmount() {
+        if (amount == null) {
+            double value = 0.0;
+            for (ITransaction t : childs) {
+                value += t.getAmount().getAmount();
+            }
+            amount = new Cash(value, Currency.getInstance(Locale.getDefault()));
+        }
+        return amount;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getOrder()
+     */
+    @Override
+    @XmlTransient
+    public IOrder getOrder() {
+        return order.getOrder();
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.trading.ITransaction#getTransactions()
      */
-	@XmlTransient
+    @Override
+    @XmlTransient
     public ITransaction[] getTransactions() {
-		return childs.toArray(new ITransaction[childs.size()]);
+        return childs.toArray(new ITransaction[childs.size()]);
     }
 }

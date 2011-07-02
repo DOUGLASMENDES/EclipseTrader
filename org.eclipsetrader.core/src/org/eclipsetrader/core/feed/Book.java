@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,54 +19,62 @@ import java.io.Serializable;
  * @since 1.0
  */
 public class Book implements IBook, Serializable {
-	private static final long serialVersionUID = -5987580457341623002L;
 
-	private IBookEntry[] bid;
-	private IBookEntry[] ask;
+    private static final long serialVersionUID = -5987580457341623002L;
 
-	protected Book() {
-	}
+    private IBookEntry[] bid;
+    private IBookEntry[] ask;
 
-	public Book(IBookEntry[] bid, IBookEntry[] ask) {
-		this.bid = bid;
-		this.ask = ask;
-	}
+    protected Book() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBook#getBidProposals()
-	 */
-	public IBookEntry[] getBidProposals() {
-		return bid;
-	}
+    public Book(IBookEntry[] bid, IBookEntry[] ask) {
+        this.bid = bid;
+        this.ask = ask;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBook#getAskProposals()
-	 */
-	public IBookEntry[] getAskProposals() {
-		return ask;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBook#getBidProposals()
+     */
+    @Override
+    public IBookEntry[] getBidProposals() {
+        return bid;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof IBook))
-			return false;
-		return equals(((IBook) obj).getBidProposals(), bid) && equals(((IBook) obj).getAskProposals(), ask);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBook#getAskProposals()
+     */
+    @Override
+    public IBookEntry[] getAskProposals() {
+        return ask;
+    }
 
-	protected boolean equals(IBookEntry[] oldEntries, IBookEntry[] newEntries) {
-		if (oldEntries == newEntries)
-			return true;
-		if ((oldEntries == null && newEntries != null) || (oldEntries != null && newEntries == null))
-			return false;
-		if (oldEntries.length != newEntries.length)
-			return false;
-		for (int i = 0; i < oldEntries.length; i++) {
-			if (!oldEntries[i].equals(newEntries[i]))
-				return false;
-		}
-		return true;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IBook)) {
+            return false;
+        }
+        return equals(((IBook) obj).getBidProposals(), bid) && equals(((IBook) obj).getAskProposals(), ask);
+    }
+
+    protected boolean equals(IBookEntry[] oldEntries, IBookEntry[] newEntries) {
+        if (oldEntries == newEntries) {
+            return true;
+        }
+        if (oldEntries == null && newEntries != null || oldEntries != null && newEntries == null) {
+            return false;
+        }
+        if (oldEntries.length != newEntries.length) {
+            return false;
+        }
+        for (int i = 0; i < oldEntries.length; i++) {
+            if (!oldEntries[i].equals(newEntries[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

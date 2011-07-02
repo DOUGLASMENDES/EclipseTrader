@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,218 +35,231 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 
 public class BoxItem extends Item {
-	private Canvas canvas;
-	private Composite row1;
-	private Composite row2;
-	private Composite group;
-	private Label[] columns = new Label[5];
-	private Color background = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
-	private Color foreground = Display.getDefault().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
-	private Font boldFont;
 
-	private Listener eventListener = new Listener() {
+    private Canvas canvas;
+    private Composite row1;
+    private Composite row2;
+    private Composite group;
+    private Label[] columns = new Label[5];
+    private Color background = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+    private Color foreground = Display.getDefault().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
+    private Font boldFont;
+
+    private Listener eventListener = new Listener() {
+
+        @Override
         public void handleEvent(Event event) {
-        	Point p = canvas.getParent().toControl(((Control) event.widget).toDisplay(event.x, event.y));
-        	event.x = p.x;
-        	event.y = p.y;
-			event.item = BoxItem.this;
-			canvas.getParent().notifyListeners(event.type, event);
+            Point p = canvas.getParent().toControl(((Control) event.widget).toDisplay(event.x, event.y));
+            event.x = p.x;
+            event.y = p.y;
+            event.item = BoxItem.this;
+            canvas.getParent().notifyListeners(event.type, event);
         }
-	};
+    };
 
-	private PaintListener paintListener = new PaintListener() {
+    private PaintListener paintListener = new PaintListener() {
+
+        @Override
         public void paintControl(PaintEvent e) {
-    		e.gc.setForeground(foreground);
-    		Rectangle rect = canvas.getClientArea();
-    		e.gc.drawRectangle(0, 0, rect.width - 1, rect.height - 1);
+            e.gc.setForeground(foreground);
+            Rectangle rect = canvas.getClientArea();
+            e.gc.drawRectangle(0, 0, rect.width - 1, rect.height - 1);
         }
-	};
+    };
 
-	private DisposeListener disposeListener = new DisposeListener() {
+    private DisposeListener disposeListener = new DisposeListener() {
+
+        @Override
         public void widgetDisposed(DisposeEvent e) {
-        	if (boldFont != null)
-        		boldFont.dispose();
+            if (boldFont != null) {
+                boldFont.dispose();
+            }
         }
-	};
+    };
 
-	public BoxItem(Composite parent, int style) {
-		super(parent, style);
+    public BoxItem(Composite parent, int style) {
+        super(parent, style);
 
-		FontData[] fontData = parent.getFont().getFontData();
-		for (int i = 0; i < fontData.length; i++)
-			fontData[i].setStyle(fontData[i].getStyle() | SWT.BOLD);
-		boldFont = new Font(parent.getDisplay(), fontData);
+        FontData[] fontData = parent.getFont().getFontData();
+        for (int i = 0; i < fontData.length; i++) {
+            fontData[i].setStyle(fontData[i].getStyle() | SWT.BOLD);
+        }
+        boldFont = new Font(parent.getDisplay(), fontData);
 
-		canvas = new Canvas(parent, style);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginWidth = 5;
-		gridLayout.marginHeight = 3;
-		gridLayout.horizontalSpacing = 5;
-		gridLayout.verticalSpacing = 2;
-		canvas.setLayout(gridLayout);
-		canvas.setBackground(background);
-		canvas.addPaintListener(paintListener);
-		canvas.addDisposeListener(disposeListener);
-		canvas.setBackgroundMode(SWT.INHERIT_NONE);
+        canvas = new Canvas(parent, style);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = 5;
+        gridLayout.marginHeight = 3;
+        gridLayout.horizontalSpacing = 5;
+        gridLayout.verticalSpacing = 2;
+        canvas.setLayout(gridLayout);
+        canvas.setBackground(background);
+        canvas.addPaintListener(paintListener);
+        canvas.addDisposeListener(disposeListener);
+        canvas.setBackgroundMode(SWT.INHERIT_NONE);
 
-		row1 = new Composite(canvas, SWT.NONE);
-		gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		gridLayout.horizontalSpacing = 3;
-		gridLayout.verticalSpacing = 0;
-		row1.setLayout(gridLayout);
-		row1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		row1.setBackground(background);
+        row1 = new Composite(canvas, SWT.NONE);
+        gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        gridLayout.horizontalSpacing = 3;
+        gridLayout.verticalSpacing = 0;
+        row1.setLayout(gridLayout);
+        row1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        row1.setBackground(background);
 
-		columns[0] = new Label(row1, SWT.NONE);
-		columns[0].setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		columns[0].setForeground(foreground);
-		columns[0].setBackground(background);
+        columns[0] = new Label(row1, SWT.NONE);
+        columns[0].setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        columns[0].setForeground(foreground);
+        columns[0].setBackground(background);
 
-		columns[1] = new Label(row1, SWT.NONE);
-		columns[1].setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
-		columns[1].setForeground(foreground);
-		columns[1].setBackground(background);
+        columns[1] = new Label(row1, SWT.NONE);
+        columns[1].setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+        columns[1].setForeground(foreground);
+        columns[1].setBackground(background);
 
-		row2 = new Composite(canvas, SWT.NONE);
-		gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		gridLayout.horizontalSpacing = 3;
-		gridLayout.verticalSpacing = 0;
-		row2.setLayout(gridLayout);
-		row2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		row2.setBackground(background);
+        row2 = new Composite(canvas, SWT.NONE);
+        gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        gridLayout.horizontalSpacing = 3;
+        gridLayout.verticalSpacing = 0;
+        row2.setLayout(gridLayout);
+        row2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        row2.setBackground(background);
 
-		columns[2] = new Label(row2, SWT.NONE);
-		columns[2].setFont(boldFont);
-		columns[2].setForeground(foreground);
-		columns[2].setBackground(background);
+        columns[2] = new Label(row2, SWT.NONE);
+        columns[2].setFont(boldFont);
+        columns[2].setForeground(foreground);
+        columns[2].setBackground(background);
 
-		group = new Composite(row2, SWT.NONE);
-		gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		gridLayout.horizontalSpacing = 3;
-		gridLayout.verticalSpacing = 0;
-		group.setLayout(gridLayout);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		group.setBackground(background);
+        group = new Composite(row2, SWT.NONE);
+        gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        gridLayout.horizontalSpacing = 3;
+        gridLayout.verticalSpacing = 0;
+        group.setLayout(gridLayout);
+        group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        group.setBackground(background);
 
-		columns[3] = new Label(group, SWT.NONE);
-		columns[3].setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
-		columns[3].setForeground(foreground);
-		columns[3].setBackground(background);
+        columns[3] = new Label(group, SWT.NONE);
+        columns[3].setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+        columns[3].setForeground(foreground);
+        columns[3].setBackground(background);
 
-		columns[4] = new Label(group, SWT.NONE);
-		columns[4].setBackground(background);
+        columns[4] = new Label(group, SWT.NONE);
+        columns[4].setBackground(background);
 
-		canvas.addListener(SWT.MouseDown, eventListener);
-		canvas.addListener(SWT.MouseUp, eventListener);
-		row1.addListener(SWT.MouseDown, eventListener);
-		row1.addListener(SWT.MouseUp, eventListener);
-		row2.addListener(SWT.MouseDown, eventListener);
-		row2.addListener(SWT.MouseUp, eventListener);
-		group.addListener(SWT.MouseUp, eventListener);
-		group.addListener(SWT.MouseDown, eventListener);
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].addListener(SWT.MouseDown, eventListener);
-			columns[i].addListener(SWT.MouseUp, eventListener);
-		}
-	}
+        canvas.addListener(SWT.MouseDown, eventListener);
+        canvas.addListener(SWT.MouseUp, eventListener);
+        row1.addListener(SWT.MouseDown, eventListener);
+        row1.addListener(SWT.MouseUp, eventListener);
+        row2.addListener(SWT.MouseDown, eventListener);
+        row2.addListener(SWT.MouseUp, eventListener);
+        group.addListener(SWT.MouseUp, eventListener);
+        group.addListener(SWT.MouseDown, eventListener);
+        for (int i = 0; i < columns.length; i++) {
+            columns[i].addListener(SWT.MouseDown, eventListener);
+            columns[i].addListener(SWT.MouseUp, eventListener);
+        }
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.swt.widgets.Widget#dispose()
      */
     @Override
     public void dispose() {
-		canvas.setMenu(null);
-		row1.setMenu(null);
-		row2.setMenu(null);
-		group.setMenu(null);
-		for (int i = 0; i < columns.length; i++)
-			columns[i].setMenu(null);
+        canvas.setMenu(null);
+        row1.setMenu(null);
+        row2.setMenu(null);
+        group.setMenu(null);
+        for (int i = 0; i < columns.length; i++) {
+            columns[i].setMenu(null);
+        }
 
-		if (canvas != null)
-    		canvas.dispose();
-    	if (boldFont != null)
-    		boldFont.dispose();
+        if (canvas != null) {
+            canvas.dispose();
+        }
+        if (boldFont != null) {
+            boldFont.dispose();
+        }
 
-    	super.dispose();
+        super.dispose();
     }
 
-	public Canvas getCanvas() {
-    	return canvas;
+    public Canvas getCanvas() {
+        return canvas;
     }
 
-	public void setText(int index, String string) {
-		columns[index].setText(string.replaceAll("[&]", "&&"));
-	}
+    public void setText(int index, String string) {
+        columns[index].setText(string.replaceAll("[&]", "&&"));
+    }
 
-	public String getText(int index) {
-		return columns[index].getText();
-	}
+    public String getText(int index) {
+        return columns[index].getText();
+    }
 
     public Color getBackground(int index) {
-		return columns[index].getBackground();
+        return columns[index].getBackground();
     }
 
     public void setBackground(int index, Color color) {
-		columns[index].setBackground(color);
+        columns[index].setBackground(color);
     }
 
     public Color getForeground(int index) {
-		return columns[index].getForeground();
+        return columns[index].getForeground();
     }
 
     public void setForeground(int index, Color color) {
-		columns[index].setForeground(color);
+        columns[index].setForeground(color);
     }
 
     public Rectangle getBounds() {
-    	return canvas.getBounds();
+        return canvas.getBounds();
     }
 
     public Rectangle getBounds(int index) {
-    	return columns[index].getBounds();
+        return columns[index].getBounds();
     }
 
     public Font getFont(int index) {
-		return columns[index].getFont();
+        return columns[index].getFont();
     }
 
     public void setFont(int index, Font font) {
-		columns[index].setFont(font);
+        columns[index].setFont(font);
     }
 
     public Image getImage(int index) {
-		return columns[index].getImage();
+        return columns[index].getImage();
     }
 
     public void setImage(int index, Image image) {
-		columns[index].setImage(image);
+        columns[index].setImage(image);
     }
 
     public Composite getParent() {
-    	return canvas.getParent();
+        return canvas.getParent();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.swt.widgets.Widget#toString()
      */
     @Override
     public String toString() {
-	    return "[BoxItem] " + columns[0].getText();
+        return "[BoxItem] " + columns[0].getText();
     }
 
-	public void setMenu(Menu menu) {
-		canvas.setMenu(menu);
-		row1.setMenu(menu);
-		row2.setMenu(menu);
-		group.setMenu(menu);
-		for (int i = 0; i < columns.length; i++)
-			columns[i].setMenu(menu);
+    public void setMenu(Menu menu) {
+        canvas.setMenu(menu);
+        row1.setMenu(menu);
+        row2.setMenu(menu);
+        group.setMenu(menu);
+        for (int i = 0; i < columns.length; i++) {
+            columns[i].setMenu(menu);
+        }
     }
 
-	public Menu getMenu() {
-		return canvas.getMenu();
-	}
+    public Menu getMenu() {
+        return canvas.getMenu();
+    }
 }

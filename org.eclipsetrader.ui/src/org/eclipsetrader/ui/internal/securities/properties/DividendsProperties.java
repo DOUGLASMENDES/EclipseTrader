@@ -51,212 +51,221 @@ import org.eclipsetrader.ui.DoubleCellEditor;
 import org.eclipsetrader.ui.Util;
 
 public class DividendsProperties extends PropertyPage implements IWorkbenchPropertyPage {
-	TableViewer viewer;
-	Button add;
-	Button remove;
 
-	List<IDividend> input;
-	DateFormat dateFormat = Util.getDateFormat();
-	NumberFormat numberFormat = NumberFormat.getInstance();
+    TableViewer viewer;
+    Button add;
+    Button remove;
 
-	class DividendLabelProvider extends LabelProvider implements ITableLabelProvider {
+    List<IDividend> input;
+    DateFormat dateFormat = Util.getDateFormat();
+    NumberFormat numberFormat = NumberFormat.getInstance();
 
-		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
-		}
+    class DividendLabelProvider extends LabelProvider implements ITableLabelProvider {
 
-		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			IDividend dividend = (IDividend) element;
+        @Override
+        public Image getColumnImage(Object element, int columnIndex) {
+            return null;
+        }
 
-			switch (columnIndex) {
-				case 0:
-					return dateFormat.format(dividend.getExDate());
-				case 1:
-					return numberFormat.format(dividend.getValue());
-			}
+        @Override
+        public String getColumnText(Object element, int columnIndex) {
+            IDividend dividend = (IDividend) element;
 
-			return "";
-		}
-	}
+            switch (columnIndex) {
+                case 0:
+                    return dateFormat.format(dividend.getExDate());
+                case 1:
+                    return numberFormat.format(dividend.getValue());
+            }
 
-	class DividendCellModifier implements ICellModifier {
+            return "";
+        }
+    }
 
-		@Override
-		public boolean canModify(Object element, String property) {
-			return element instanceof Dividend;
-		}
+    class DividendCellModifier implements ICellModifier {
 
-		@Override
-		public Object getValue(Object element, String property) {
-			Dividend dividend = (Dividend) element;
+        @Override
+        public boolean canModify(Object element, String property) {
+            return element instanceof Dividend;
+        }
 
-			if ("ex-date".equals(property))
-				return dividend.getExDate();
+        @Override
+        public Object getValue(Object element, String property) {
+            Dividend dividend = (Dividend) element;
 
-			if ("amount".equals(property))
-				return dividend.getValue();
+            if ("ex-date".equals(property)) {
+                return dividend.getExDate();
+            }
 
-			return null;
-		}
+            if ("amount".equals(property)) {
+                return dividend.getValue();
+            }
 
-		@Override
-		public void modify(Object element, String property, Object value) {
-			Dividend dividend = (Dividend) ((element instanceof Dividend) ? element : ((TableItem) element).getData());
+            return null;
+        }
 
-			if ("ex-date".equals(property))
-				dividend.setExDate((Date) value);
-			else if ("amount".equals(property))
-				dividend.setValue((Double) value);
+        @Override
+        public void modify(Object element, String property, Object value) {
+            Dividend dividend = (Dividend) (element instanceof Dividend ? element : ((TableItem) element).getData());
 
-			viewer.update(dividend, null);
-		}
-	}
+            if ("ex-date".equals(property)) {
+                dividend.setExDate((Date) value);
+            }
+            else if ("amount".equals(property)) {
+                dividend.setValue((Double) value);
+            }
 
-	public DividendsProperties() {
-		setTitle("Dividends");
-	}
+            viewer.update(dividend, null);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		initializeDialogUnits(content);
+    public DividendsProperties() {
+        setTitle("Dividends");
+    }
 
-		viewer = new TableViewer(content, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL);
-		viewer.getTable().setHeaderVisible(true);
-		viewer.getTable().setLinesVisible(false);
-		viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		((GridData) viewer.getControl().getLayoutData()).heightHint = viewer.getTable().getItemHeight() * 5;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        initializeDialogUnits(content);
 
-		TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Ex. Date");
-		tableColumn.setWidth(convertHorizontalDLUsToPixels(70));
+        viewer = new TableViewer(content, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL);
+        viewer.getTable().setHeaderVisible(true);
+        viewer.getTable().setLinesVisible(false);
+        viewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData) viewer.getControl().getLayoutData()).heightHint = viewer.getTable().getItemHeight() * 5;
 
-		tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
-		tableColumn.setText("Amount");
-		tableColumn.setWidth(convertHorizontalDLUsToPixels(70));
+        TableColumn tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Ex. Date");
+        tableColumn.setWidth(convertHorizontalDLUsToPixels(70));
 
-		viewer.setLabelProvider(new DividendLabelProvider());
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setComparator(new ViewerComparator() {
-			@Override
-			public int compare(Viewer viewer, Object e1, Object e2) {
-				return ((IDividend) e1).getExDate().compareTo(((IDividend) e2).getExDate());
-			}
-		});
+        tableColumn = new TableColumn(viewer.getTable(), SWT.NONE);
+        tableColumn.setText("Amount");
+        tableColumn.setWidth(convertHorizontalDLUsToPixels(70));
 
-		viewer.setCellModifier(new DividendCellModifier());
-		viewer.setColumnProperties(new String[] {
-		    "ex-date", "amount"
-		});
-		viewer.setCellEditors(new CellEditor[] {
-		    new DateCellEditor(viewer.getTable()), new DoubleCellEditor(viewer.getTable()),
-		});
+        viewer.setLabelProvider(new DividendLabelProvider());
+        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setComparator(new ViewerComparator() {
 
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2) {
+                return ((IDividend) e1).getExDate().compareTo(((IDividend) e2).getExDate());
+            }
+        });
 
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				remove.setEnabled(!event.getSelection().isEmpty());
-			}
-		});
+        viewer.setCellModifier(new DividendCellModifier());
+        viewer.setColumnProperties(new String[] {
+                "ex-date", "amount"
+        });
+        viewer.setCellEditors(new CellEditor[] {
+                new DateCellEditor(viewer.getTable()),
+                new DoubleCellEditor(viewer.getTable()),
+        });
 
-		createButtonsGroup(content);
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
-		performDefaults();
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                remove.setEnabled(!event.getSelection().isEmpty());
+            }
+        });
 
-		return content;
-	}
+        createButtonsGroup(content);
 
-	void createButtonsGroup(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        performDefaults();
 
-		add = new Button(content, SWT.PUSH);
-		add.setText("Add");
-		add.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		add.addSelectionListener(new SelectionAdapter() {
+        return content;
+    }
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				input.add(new Dividend(new Date(), 0.0));
-				viewer.refresh();
-			}
-		});
+    void createButtonsGroup(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
-		remove = new Button(content, SWT.PUSH);
-		remove.setText("Remove");
-		remove.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		remove.addSelectionListener(new SelectionAdapter() {
+        add = new Button(content, SWT.PUSH);
+        add.setText("Add");
+        add.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        add.addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-				input.removeAll(selection.toList());
-				viewer.refresh();
-			}
-		});
-		remove.setEnabled(false);
-	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                input.add(new Dividend(new Date(), 0.0));
+                viewer.refresh();
+            }
+        });
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-	 */
-	@Override
-	protected void performDefaults() {
-		IStock security = (IStock) getElement().getAdapter(IStock.class);
+        remove = new Button(content, SWT.PUSH);
+        remove.setText("Remove");
+        remove.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        remove.addSelectionListener(new SelectionAdapter() {
 
-		input = new ArrayList<IDividend>();
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+                input.removeAll(selection.toList());
+                viewer.refresh();
+            }
+        });
+        remove.setEnabled(false);
+    }
 
-		IDividend[] dividends = security.getDividends();
-		if (dividends != null)
-			input.addAll(Arrays.asList(dividends));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        IStock security = (IStock) getElement().getAdapter(IStock.class);
 
-		viewer.setInput(input);
+        input = new ArrayList<IDividend>();
 
-		super.performDefaults();
-	}
+        IDividend[] dividends = security.getDividends();
+        if (dividends != null) {
+            input.addAll(Arrays.asList(dividends));
+        }
 
-	protected void applyChanges() {
-		Stock security = (Stock) getElement().getAdapter(Stock.class);
+        viewer.setInput(input);
 
-		security.setDividends(input.toArray(new IDividend[input.size()]));
-	}
+        super.performDefaults();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#isValid()
-	 */
-	@Override
-	public boolean isValid() {
-		return true;
-	}
+    protected void applyChanges() {
+        Stock security = (Stock) getElement().getAdapter(Stock.class);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
-	 */
-	@Override
-	public boolean performOk() {
-		if (getControl() != null)
-			applyChanges();
-		return super.performOk();
-	}
+        security.setDividends(input.toArray(new IDividend[input.size()]));
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performApply()
-	 */
-	@Override
-	protected void performApply() {
-		applyChanges();
-		super.performApply();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#isValid()
+     */
+    @Override
+    public boolean isValid() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+        if (getControl() != null) {
+            applyChanges();
+        }
+        return super.performOk();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performApply()
+     */
+    @Override
+    protected void performApply() {
+        applyChanges();
+        super.performApply();
+    }
 }

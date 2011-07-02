@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,109 +29,116 @@ import org.osgi.framework.ServiceReference;
 
 @XmlRootElement(name = "position")
 public class Position implements IPosition {
-	private static final int IDX_SYMBOL = 5;
-	private static final int IDX_PF_QUANTITY = 9;
-	private static final int IDX_AVERAGE_PRICE = 10;
 
-	@XmlAttribute(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	ISecurity security;
+    private static final int IDX_SYMBOL = 5;
+    private static final int IDX_PF_QUANTITY = 9;
+    private static final int IDX_AVERAGE_PRICE = 10;
 
-	@XmlAttribute(name = "quantity")
-	Long quantity;
+    @XmlAttribute(name = "security")
+    @XmlJavaTypeAdapter(SecurityAdapter.class)
+    ISecurity security;
 
-	@XmlAttribute(name = "price")
-	Double price;
+    @XmlAttribute(name = "quantity")
+    Long quantity;
 
-	public Position() {
-	}
+    @XmlAttribute(name = "price")
+    Double price;
 
-	public Position(String line) {
-		String[] item = line.split(";");
-		security = getSecurityFromSymbol(item[IDX_SYMBOL]);
-		quantity = Long.parseLong(item[IDX_PF_QUANTITY]);
-		price = Double.parseDouble(item[IDX_AVERAGE_PRICE]);
-	}
+    public Position() {
+    }
 
-	public Position(ISecurity security, Long quantity, Double price) {
-		this.security = security;
-		this.quantity = quantity;
-		this.price = price;
-	}
+    public Position(String line) {
+        String[] item = line.split(";");
+        security = getSecurityFromSymbol(item[IDX_SYMBOL]);
+        quantity = Long.parseLong(item[IDX_PF_QUANTITY]);
+        price = Double.parseDouble(item[IDX_AVERAGE_PRICE]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IPosition#getPrice()
-	 */
-	@XmlTransient
-	public Double getPrice() {
-		return price;
-	}
+    public Position(ISecurity security, Long quantity, Double price) {
+        this.security = security;
+        this.quantity = quantity;
+        this.price = price;
+    }
 
-	public void setPrice(Double price) {
-		this.price = price;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IPosition#getPrice()
+     */
+    @Override
+    @XmlTransient
+    public Double getPrice() {
+        return price;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IPosition#getQuantity()
-	 */
-	@XmlTransient
-	public Long getQuantity() {
-		return quantity;
-	}
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IPosition#getQuantity()
+     */
+    @Override
+    @XmlTransient
+    public Long getQuantity() {
+        return quantity;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IPosition#getSecurity()
-	 */
-	@XmlTransient
-	public ISecurity getSecurity() {
-		return security;
-	}
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
 
-	ISecurity getSecurityFromSymbol(String symbol) {
-		ISecurity security = null;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IPosition#getSecurity()
+     */
+    @Override
+    @XmlTransient
+    public ISecurity getSecurity() {
+        return security;
+    }
 
-		if (Activator.getDefault() != null) {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-			if (serviceReference != null) {
-				IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
+    ISecurity getSecurityFromSymbol(String symbol) {
+        ISecurity security = null;
 
-				ISecurity[] securities = service.getSecurities();
-				for (int i = 0; i < securities.length; i++) {
-					String feedSymbol = getSymbolFromSecurity(securities[i]);
-					if (feedSymbol != null && feedSymbol.equals(symbol)) {
-						security = securities[i];
-						break;
-					}
-				}
+        if (Activator.getDefault() != null) {
+            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+            if (serviceReference != null) {
+                IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
 
-				context.ungetService(serviceReference);
-			}
-		}
+                ISecurity[] securities = service.getSecurities();
+                for (int i = 0; i < securities.length; i++) {
+                    String feedSymbol = getSymbolFromSecurity(securities[i]);
+                    if (feedSymbol != null && feedSymbol.equals(symbol)) {
+                        security = securities[i];
+                        break;
+                    }
+                }
 
-		if (security == null)
-			security = new Security(symbol, null);
+                context.ungetService(serviceReference);
+            }
+        }
 
-		return security;
-	}
+        if (security == null) {
+            security = new Security(symbol, null);
+        }
 
-	String getSymbolFromSecurity(ISecurity security) {
-		IFeedIdentifier identifier = security.getIdentifier();
-		if (identifier == null)
-			return null;
+        return security;
+    }
 
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			for (int p = 0; p < WebConnector.PROPERTIES.length; p++) {
-				if (properties.getProperty(WebConnector.PROPERTIES[p]) != null)
-					return properties.getProperty(WebConnector.PROPERTIES[p]);
-			}
-		}
+    String getSymbolFromSecurity(ISecurity security) {
+        IFeedIdentifier identifier = security.getIdentifier();
+        if (identifier == null) {
+            return null;
+        }
 
-		return null;
-	}
+        IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+        if (properties != null) {
+            for (int p = 0; p < WebConnector.PROPERTIES.length; p++) {
+                if (properties.getProperty(WebConnector.PROPERTIES[p]) != null) {
+                    return properties.getProperty(WebConnector.PROPERTIES[p]);
+                }
+            }
+        }
+
+        return null;
+    }
 }

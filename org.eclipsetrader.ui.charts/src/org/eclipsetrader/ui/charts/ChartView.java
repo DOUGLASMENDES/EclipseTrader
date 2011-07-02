@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,150 +30,162 @@ import org.eclipsetrader.core.views.ViewItemDelta;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ChartView implements IView {
-	private String name;
-	private List<ChartRowViewItem> rows = new ArrayList<ChartRowViewItem>();
-	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-	private IDataSeries rootDataSeries;
+    private String name;
+    private List<ChartRowViewItem> rows = new ArrayList<ChartRowViewItem>();
+    private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-	protected ChartView() {
-	}
+    private IDataSeries rootDataSeries;
 
-	public ChartView(String name) {
-		this.name = name;
-	}
-
-	public ChartView(IChartTemplate template) {
-		this.name = template.getName();
-
-		IChartSection[] section = template.getSections();
-		for (int i = 0; i < section.length; i++) {
-			ChartRowViewItem viewItem = new ChartRowViewItem(this, section[i]);
-			rows.add(viewItem);
-		}
-	}
-
-	public String getName() {
-    	return name;
+    protected ChartView() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#dispose()
-	 */
-	public void dispose() {
-		listeners.clear();
-		rows.clear();
-	}
-
-	public void addRow(ChartRowViewItem viewItem) {
-		rows.add(viewItem);
-		fireViewChangedEvent(new ViewItemDelta[] {
-				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
-			});
-	}
-
-	public void addRowBefore(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
-		int index = rows.indexOf(referenceViewItem);
-		rows.add(index != -1 ? index : 0, viewItem);
-		fireViewChangedEvent(new ViewItemDelta[] {
-				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
-			});
-	}
-
-	public void addRowAfter(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
-		int index = rows.indexOf(referenceViewItem);
-		rows.add(index != -1 ? index + 1 : rows.size(), viewItem);
-		fireViewChangedEvent(new ViewItemDelta[] {
-				new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
-			});
-	}
-
-	public void removeRow(ChartRowViewItem viewItem) {
-		rows.remove(viewItem);
-		fireViewChangedEvent(new ViewItemDelta[] {
-				new ViewItemDelta(ViewItemDelta.REMOVED, viewItem),
-			});
-	}
-
-	public IDataSeries getRootDataSeries() {
-    	return rootDataSeries;
+    public ChartView(String name) {
+        this.name = name;
     }
 
-	public void setRootDataSeries(IDataSeries rootDataSeries) {
-    	this.rootDataSeries = rootDataSeries;
+    public ChartView(IChartTemplate template) {
+        this.name = template.getName();
 
-    	for (ChartRowViewItem viewItem : rows)
-    		viewItem.setRootDataSeries(rootDataSeries);
+        IChartSection[] section = template.getSections();
+        for (int i = 0; i < section.length; i++) {
+            ChartRowViewItem viewItem = new ChartRowViewItem(this, section[i]);
+            rows.add(viewItem);
+        }
     }
 
-	protected void fireViewChangedEvent(ViewItemDelta[] delta) {
-		ViewEvent event = new ViewEvent(this, delta);
+    public String getName() {
+        return name;
+    }
 
-		Object[] l = listeners.getListeners();
-		for (int i = 0; i < l.length; i++) {
-			try {
-				((IViewChangeListener) l[i]).viewChanged(event);
-			} catch(Throwable e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartView_NotificationErrorMessage, e);
-				ChartsUIActivator.log(status);
-			}
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#dispose()
+     */
+    @Override
+    public void dispose() {
+        listeners.clear();
+        rows.clear();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#getItems()
-	 */
-	public IViewItem[] getItems() {
-		return rows.toArray(new IViewItem[rows.size()]);
-	}
+    public void addRow(ChartRowViewItem viewItem) {
+        rows.add(viewItem);
+        fireViewChangedEvent(new ViewItemDelta[] {
+            new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#addViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
-	 */
-	public void addViewChangeListener(IViewChangeListener listener) {
-		listeners.add(listener);
-	}
+    public void addRowBefore(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
+        int index = rows.indexOf(referenceViewItem);
+        rows.add(index != -1 ? index : 0, viewItem);
+        fireViewChangedEvent(new ViewItemDelta[] {
+            new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#removeViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
-	 */
-	public void removeViewChangeListener(IViewChangeListener listener) {
-		listeners.remove(listener);
-	}
+    public void addRowAfter(ChartRowViewItem referenceViewItem, ChartRowViewItem viewItem) {
+        int index = rows.indexOf(referenceViewItem);
+        rows.add(index != -1 ? index + 1 : rows.size(), viewItem);
+        fireViewChangedEvent(new ViewItemDelta[] {
+            new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
+    public void removeRow(ChartRowViewItem viewItem) {
+        rows.remove(viewItem);
+        fireViewChangedEvent(new ViewItemDelta[] {
+            new ViewItemDelta(ViewItemDelta.REMOVED, viewItem),
+        });
+    }
+
+    public IDataSeries getRootDataSeries() {
+        return rootDataSeries;
+    }
+
+    public void setRootDataSeries(IDataSeries rootDataSeries) {
+        this.rootDataSeries = rootDataSeries;
+
+        for (ChartRowViewItem viewItem : rows) {
+            viewItem.setRootDataSeries(rootDataSeries);
+        }
+    }
+
+    protected void fireViewChangedEvent(ViewItemDelta[] delta) {
+        ViewEvent event = new ViewEvent(this, delta);
+
+        Object[] l = listeners.getListeners();
+        for (int i = 0; i < l.length; i++) {
+            try {
+                ((IViewChangeListener) l[i]).viewChanged(event);
+            } catch (Throwable e) {
+                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartView_NotificationErrorMessage, e);
+                ChartsUIActivator.log(status);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#getItems()
+     */
+    @Override
+    public IViewItem[] getItems() {
+        return rows.toArray(new IViewItem[rows.size()]);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#addViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
+     */
+    @Override
+    public void addViewChangeListener(IViewChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#removeViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
+     */
+    @Override
+    public void removeViewChangeListener(IViewChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-		if (adapter.isAssignableFrom(ChartRowViewItem[].class))
-			return rows.toArray(new ChartRowViewItem[rows.size()]);
+        if (adapter.isAssignableFrom(ChartRowViewItem[].class)) {
+            return rows.toArray(new ChartRowViewItem[rows.size()]);
+        }
 
-		if (adapter.isAssignableFrom(getClass()))
-			return this;
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#accept(org.eclipsetrader.core.views.IViewVisitor)
-	 */
-	public void accept(IViewVisitor visitor) {
-		if (visitor.visit(this)) {
-			IViewItem[] child = getItems();
-			for (int i = 0; i < child.length; i++)
-				child[i].accept(visitor);
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#accept(org.eclipsetrader.core.views.IViewVisitor)
+     */
+    @Override
+    public void accept(IViewVisitor visitor) {
+        if (visitor.visit(this)) {
+            IViewItem[] child = getItems();
+            for (int i = 0; i < child.length; i++) {
+                child[i].accept(visitor);
+            }
+        }
+    }
 
-	public IChartTemplate getTemplate() {
-		ChartTemplate template = new ChartTemplate(name);
+    public IChartTemplate getTemplate() {
+        ChartTemplate template = new ChartTemplate(name);
 
-		IChartSection[] section = new IChartSection[rows.size()];
-		for (int i = 0; i < section.length; i++)
-			section[i] = rows.get(i).getTemplate();
-		template.setSections(section);
+        IChartSection[] section = new IChartSection[rows.size()];
+        for (int i = 0; i < section.length; i++) {
+            section[i] = rows.get(i).getTemplate();
+        }
+        template.setSections(section);
 
-		return template;
-	}
+        return template;
+    }
 }

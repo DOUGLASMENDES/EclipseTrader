@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,94 +31,106 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class TradeHandler extends AbstractHandler {
-	public static final String PARAM_BROKER = "broker"; //$NON-NLS-1$
-	public static final String PARAM_LIMIT_PRICE = "limitPrice"; //$NON-NLS-1$
-	public static final String PARAM_SIDE = "side"; //$NON-NLS-1$
 
-	BundleContext context;
-	ServiceReference serviceReference;
-	ITradingService tradingService;
+    public static final String PARAM_BROKER = "broker"; //$NON-NLS-1$
+    public static final String PARAM_LIMIT_PRICE = "limitPrice"; //$NON-NLS-1$
+    public static final String PARAM_SIDE = "side"; //$NON-NLS-1$
 
-	public TradeHandler() {
-		context = Activator.getDefault().getBundle().getBundleContext();
-		serviceReference = context.getServiceReference(ITradingService.class.getName());
-		tradingService = (ITradingService) context.getService(serviceReference);
-	}
+    BundleContext context;
+    ServiceReference serviceReference;
+    ITradingService tradingService;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.commands.AbstractHandler#dispose()
-	 */
-	@Override
-	public void dispose() {
-		context.ungetService(serviceReference);
-		super.dispose();
-	}
+    public TradeHandler() {
+        context = Activator.getDefault().getBundle().getBundleContext();
+        serviceReference = context.getServiceReference(ITradingService.class.getName());
+        tradingService = (ITradingService) context.getService(serviceReference);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-	 */
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
-		IWorkbenchSite site = HandlerUtil.getActiveSite(event);
+    /* (non-Javadoc)
+     * @see org.eclipse.core.commands.AbstractHandler#dispose()
+     */
+    @Override
+    public void dispose() {
+        context.ungetService(serviceReference);
+        super.dispose();
+    }
 
-		if (selection != null && !selection.isEmpty()) {
-			for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
-				IAdaptable target = (IAdaptable) iter.next();
-				openDialog(event, site, target);
-			}
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+     */
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
+        IWorkbenchSite site = HandlerUtil.getActiveSite(event);
 
-		return null;
-	}
+        if (selection != null && !selection.isEmpty()) {
+            for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
+                IAdaptable target = (IAdaptable) iter.next();
+                openDialog(event, site, target);
+            }
+        }
 
-	private void openDialog(ExecutionEvent event, IWorkbenchSite site, IAdaptable target) {
-		OrderDialog dlg = new OrderDialog(site.getShell(), tradingService);
+        return null;
+    }
 
-		ISecurity security = (ISecurity) target.getAdapter(ISecurity.class);
-		dlg.setSecurity(security);
+    private void openDialog(ExecutionEvent event, IWorkbenchSite site, IAdaptable target) {
+        OrderDialog dlg = new OrderDialog(site.getShell(), tradingService);
 
-		String brokerId = event.getParameter(PARAM_BROKER);
-		if (brokerId != null)
-			dlg.setBroker(tradingService.getBroker(brokerId));
-		else {
-			IBroker broker = (IBroker) target.getAdapter(IBroker.class);
-			if (broker == null)
-				broker = tradingService.getBrokerForSecurity(security);
-			dlg.setBroker(broker);
+        ISecurity security = (ISecurity) target.getAdapter(ISecurity.class);
+        dlg.setSecurity(security);
 
-			IAccount account = (IAccount) target.getAdapter(IAccount.class);
-			dlg.setAccount(account);
-		}
+        String brokerId = event.getParameter(PARAM_BROKER);
+        if (brokerId != null) {
+            dlg.setBroker(tradingService.getBroker(brokerId));
+        }
+        else {
+            IBroker broker = (IBroker) target.getAdapter(IBroker.class);
+            if (broker == null) {
+                broker = tradingService.getBrokerForSecurity(security);
+            }
+            dlg.setBroker(broker);
 
-		IPosition position = (IPosition) target.getAdapter(IPosition.class);
-		if (position != null)
-			dlg.setPosition(position.getQuantity());
+            IAccount account = (IAccount) target.getAdapter(IAccount.class);
+            dlg.setAccount(account);
+        }
 
-		String limitPrice = event.getParameter(PARAM_LIMIT_PRICE);
-		if (limitPrice != null)
-			dlg.setLimitPrice(Double.parseDouble(limitPrice));
-		else {
-			ITrade trade = (ITrade) target.getAdapter(ITrade.class);
-			if (trade != null && trade.getPrice() != null)
-				dlg.setLimitPrice(trade.getPrice());
-		}
+        IPosition position = (IPosition) target.getAdapter(IPosition.class);
+        if (position != null) {
+            dlg.setPosition(position.getQuantity());
+        }
 
-		String side = event.getParameter(PARAM_SIDE);
-		if (side != null) {
-			if (IOrderSide.Buy.getId().equals(side))
-				dlg.setOrderSide(IOrderSide.Buy);
-			else if (IOrderSide.Sell.getId().equals(side))
-				dlg.setOrderSide(IOrderSide.Sell);
-			else if (IOrderSide.BuyCover.getId().equals(side))
-				dlg.setOrderSide(IOrderSide.BuyCover);
-			else if (IOrderSide.SellShort.getId().equals(side))
-				dlg.setOrderSide(IOrderSide.SellShort);
-		}
-		else {
-			if (position != null)
-				dlg.setOrderSide(position.getQuantity() > 0 ? IOrderSide.Sell : IOrderSide.Buy);
-		}
+        String limitPrice = event.getParameter(PARAM_LIMIT_PRICE);
+        if (limitPrice != null) {
+            dlg.setLimitPrice(Double.parseDouble(limitPrice));
+        }
+        else {
+            ITrade trade = (ITrade) target.getAdapter(ITrade.class);
+            if (trade != null && trade.getPrice() != null) {
+                dlg.setLimitPrice(trade.getPrice());
+            }
+        }
 
-		dlg.open();
-	}
+        String side = event.getParameter(PARAM_SIDE);
+        if (side != null) {
+            if (IOrderSide.Buy.getId().equals(side)) {
+                dlg.setOrderSide(IOrderSide.Buy);
+            }
+            else if (IOrderSide.Sell.getId().equals(side)) {
+                dlg.setOrderSide(IOrderSide.Sell);
+            }
+            else if (IOrderSide.BuyCover.getId().equals(side)) {
+                dlg.setOrderSide(IOrderSide.BuyCover);
+            }
+            else if (IOrderSide.SellShort.getId().equals(side)) {
+                dlg.setOrderSide(IOrderSide.SellShort);
+            }
+        }
+        else {
+            if (position != null) {
+                dlg.setOrderSide(position.getQuantity() > 0 ? IOrderSide.Sell : IOrderSide.Buy);
+            }
+        }
+
+        dlg.open();
+    }
 }

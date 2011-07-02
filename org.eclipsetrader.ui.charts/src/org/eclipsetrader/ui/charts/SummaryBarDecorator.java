@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,116 +25,131 @@ import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Point;
 
 public class SummaryBarDecorator implements MouseListener, MouseMoveListener, MouseTrackListener, DisposeListener {
-	private Point location;
-	private boolean mouseDown;
-	private List<ChartCanvas> decoratedCanvas = new ArrayList<ChartCanvas>();
 
-	private IChartObjectVisitor summaryLabelVisitor = new IChartObjectVisitor() {
+    private Point location;
+    private boolean mouseDown;
+    private List<ChartCanvas> decoratedCanvas = new ArrayList<ChartCanvas>();
+
+    private IChartObjectVisitor summaryLabelVisitor = new IChartObjectVisitor() {
+
+        @Override
         public boolean visit(IChartObject object) {
-        	ISummaryBarDecorator factory = null;
-        	if (object instanceof IAdaptable) {
-        		factory = (ISummaryBarDecorator) ((IAdaptable) object).getAdapter(ISummaryBarDecorator.class);
-        		if (factory != null)
-        			factory.updateDecorator(location != null ? location.x : SWT.DEFAULT, SWT.DEFAULT);
-        	}
-	        return true;
+            ISummaryBarDecorator factory = null;
+            if (object instanceof IAdaptable) {
+                factory = (ISummaryBarDecorator) ((IAdaptable) object).getAdapter(ISummaryBarDecorator.class);
+                if (factory != null) {
+                    factory.updateDecorator(location != null ? location.x : SWT.DEFAULT, SWT.DEFAULT);
+                }
+            }
+            return true;
         }
-	};
+    };
 
-	public SummaryBarDecorator() {
-	}
+    public SummaryBarDecorator() {
+    }
 
-	public void decorateCanvas(ChartCanvas canvas) {
-		canvas.getCanvas().addMouseListener(this);
-		canvas.getCanvas().addMouseMoveListener(this);
-		canvas.getCanvas().addMouseTrackListener(this);
+    public void decorateCanvas(ChartCanvas canvas) {
+        canvas.getCanvas().addMouseListener(this);
+        canvas.getCanvas().addMouseMoveListener(this);
+        canvas.getCanvas().addMouseTrackListener(this);
 
-		canvas.getCanvas().addDisposeListener(this);
+        canvas.getCanvas().addDisposeListener(this);
 
-		decoratedCanvas.add(canvas);
-	}
+        decoratedCanvas.add(canvas);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseDoubleClick(MouseEvent e) {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseDoubleClick(MouseEvent e) {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseDown(MouseEvent e) {
-		if (e.button != 1)
-			return;
-		if (!mouseDown) {
-			location = new Point(e.x, e.y);
-			updateLabel();
-			mouseDown = true;
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseDown(MouseEvent e) {
+        if (e.button != 1) {
+            return;
+        }
+        if (!mouseDown) {
+            location = new Point(e.x, e.y);
+            updateLabel();
+            mouseDown = true;
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseUp(MouseEvent e) {
-		if (e.button != 1)
-			return;
-		if (mouseDown) {
-			location = null;
-			updateLabel();
-			mouseDown = false;
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseUp(MouseEvent e) {
+        if (e.button != 1) {
+            return;
+        }
+        if (mouseDown) {
+            location = null;
+            updateLabel();
+            mouseDown = false;
+        }
+    }
 
-	private void updateLabel() {
-		for (ChartCanvas canvas : decoratedCanvas)
-    		canvas.accept(summaryLabelVisitor);
-	}
+    private void updateLabel() {
+        for (ChartCanvas canvas : decoratedCanvas) {
+            canvas.accept(summaryLabelVisitor);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseEnter(MouseEvent e) {
-		if (mouseDown) {
-			location = new Point(e.x, e.y);
-			updateLabel();
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseEnter(MouseEvent e) {
+        if (mouseDown) {
+            location = new Point(e.x, e.y);
+            updateLabel();
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseExit(MouseEvent e) {
-		if (location != null) {
-			location = null;
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseExit(MouseEvent e) {
+        if (location != null) {
+            location = null;
+        }
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(org.eclipse.swt.events.MouseEvent)
      */
+    @Override
     public void mouseHover(MouseEvent e) {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseMove(MouseEvent e) {
-		if (mouseDown) {
-			location = new Point(e.x, e.y);
-			updateLabel();
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseMove(MouseEvent e) {
+        if (mouseDown) {
+            location = new Point(e.x, e.y);
+            updateLabel();
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(org.eclipse.swt.events.DisposeEvent)
-	 */
-	public void widgetDisposed(DisposeEvent e) {
-		for (ChartCanvas canvas : decoratedCanvas) {
-			if (canvas.getCanvas() == e.widget) {
-				decoratedCanvas.remove(canvas);
-				break;
-			}
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(org.eclipse.swt.events.DisposeEvent)
+     */
+    @Override
+    public void widgetDisposed(DisposeEvent e) {
+        for (ChartCanvas canvas : decoratedCanvas) {
+            if (canvas.getCanvas() == e.widget) {
+                decoratedCanvas.remove(canvas);
+                break;
+            }
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,45 +20,53 @@ import org.eclipsetrader.directa.internal.Activator;
 
 public class PropertyTester extends org.eclipse.core.expressions.PropertyTester {
 
-	public PropertyTester() {
-	}
+    public PropertyTester() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.expressions.IPropertyTester#test(java.lang.Object, java.lang.String, java.lang.Object[], java.lang.Object)
-	 */
-	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
-		ISecurity security = null;
+    /* (non-Javadoc)
+     * @see org.eclipse.core.expressions.IPropertyTester#test(java.lang.Object, java.lang.String, java.lang.Object[], java.lang.Object)
+     */
+    @Override
+    public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
+        ISecurity security = null;
 
-		if (receiver instanceof ISecurity)
-			security = (ISecurity) receiver;
-		else if (receiver instanceof IAdaptable)
-			security = (ISecurity) ((IAdaptable) receiver).getAdapter(ISecurity.class);
+        if (receiver instanceof ISecurity) {
+            security = (ISecurity) receiver;
+        }
+        else if (receiver instanceof IAdaptable) {
+            security = (ISecurity) ((IAdaptable) receiver).getAdapter(ISecurity.class);
+        }
 
-		if (security == null)
-			security = (ISecurity) Platform.getAdapterManager().getAdapter(receiver, ISecurity.class);
+        if (security == null) {
+            security = (ISecurity) Platform.getAdapterManager().getAdapter(receiver, ISecurity.class);
+        }
 
-		if (security == null)
-			return false;
+        if (security == null) {
+            return false;
+        }
 
-		if ("canTrade".equals(property)) {
-			IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
-			if (identifier != null) {
-				String code = null;
-				String isin = null;
+        if ("canTrade".equals(property)) {
+            IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
+            if (identifier != null) {
+                String code = null;
+                String isin = null;
 
-				IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-				if (properties != null) {
-					if (properties.getProperty(Activator.PROP_ISIN) != null)
-						isin = properties.getProperty(Activator.PROP_ISIN);
-					if (properties.getProperty(Activator.PROP_CODE) != null)
-						code = properties.getProperty(Activator.PROP_CODE);
-				}
+                IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+                if (properties != null) {
+                    if (properties.getProperty(Activator.PROP_ISIN) != null) {
+                        isin = properties.getProperty(Activator.PROP_ISIN);
+                    }
+                    if (properties.getProperty(Activator.PROP_CODE) != null) {
+                        code = properties.getProperty(Activator.PROP_CODE);
+                    }
+                }
 
-				if (code != null && isin != null)
-					return true;
-			}
-		}
+                if (code != null && isin != null) {
+                    return true;
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

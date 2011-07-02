@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,12 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipsetrader.core.feed.LastClose;
-import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
+import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITodayOHL;
 import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.LastClose;
 import org.eclipsetrader.core.feed.Quote;
 import org.eclipsetrader.core.feed.TodayOHL;
 import org.eclipsetrader.core.feed.Trade;
@@ -30,134 +30,137 @@ import org.eclipsetrader.core.feed.Trade;
 @XmlRootElement(name = "identifier")
 @XmlType(name = "org.eclipsetrader.yahoo.Identifier")
 public class IdentifierType {
-	@XmlAttribute(name = "symbol")
-	private String symbol;
+
+    @XmlAttribute(name = "symbol")
+    private String symbol;
 
     @XmlElementRef
-	private PriceDataType priceData;
+    private PriceDataType priceData;
 
-	private IFeedIdentifier identifier;
-	private ITrade trade;
-	private IQuote quote;
-	private ITodayOHL todayOHL;
-	private ILastClose lastClose;
+    private IFeedIdentifier identifier;
+    private ITrade trade;
+    private IQuote quote;
+    private ITodayOHL todayOHL;
+    private ILastClose lastClose;
 
-	private long lastUpdate;
+    private long lastUpdate;
 
-	protected IdentifierType() {
-	}
-
-	public IdentifierType(String symbol) {
-		this.symbol = symbol;
+    protected IdentifierType() {
     }
 
-	@XmlTransient
-	public String getSymbol() {
-    	return symbol;
+    public IdentifierType(String symbol) {
+        this.symbol = symbol;
     }
 
-	protected void setSymbol(String symbol) {
-    	this.symbol = symbol;
+    @XmlTransient
+    public String getSymbol() {
+        return symbol;
     }
 
-	@XmlTransient
-	public PriceDataType getPriceData() {
-		if (priceData == null)
-			priceData = new PriceDataType();
-    	return priceData;
+    protected void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
-	public void setPriceData(PriceDataType data) {
-    	this.priceData = data;
+    @XmlTransient
+    public PriceDataType getPriceData() {
+        if (priceData == null) {
+            priceData = new PriceDataType();
+        }
+        return priceData;
     }
 
-	@XmlTransient
-	public IFeedIdentifier getIdentifier() {
-    	return identifier;
+    public void setPriceData(PriceDataType data) {
+        this.priceData = data;
     }
 
-	public void setIdentifier(IFeedIdentifier identifier) {
-    	this.identifier = identifier;
+    @XmlTransient
+    public IFeedIdentifier getIdentifier() {
+        return identifier;
     }
 
-	@XmlTransient
-	public ITrade getTrade() {
-		if (trade == null) {
-			getPriceData();
-			trade = new Trade(priceData.getTime(), priceData.getLast(), null, priceData.getVolume());
-		}
-    	return trade;
+    public void setIdentifier(IFeedIdentifier identifier) {
+        this.identifier = identifier;
     }
 
-	public void setTrade(ITrade price) {
-    	this.trade = price;
-    	this.lastUpdate = System.currentTimeMillis();
+    @XmlTransient
+    public ITrade getTrade() {
+        if (trade == null) {
+            getPriceData();
+            trade = new Trade(priceData.getTime(), priceData.getLast(), null, priceData.getVolume());
+        }
+        return trade;
     }
 
-	@XmlTransient
-	public IQuote getQuote() {
-		if (quote == null) {
-			getPriceData();
-			quote = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
-		}
-    	return quote;
+    public void setTrade(ITrade price) {
+        this.trade = price;
+        this.lastUpdate = System.currentTimeMillis();
     }
 
-	public void setQuote(IQuote quote) {
-    	this.quote = quote;
-    	this.lastUpdate = System.currentTimeMillis();
+    @XmlTransient
+    public IQuote getQuote() {
+        if (quote == null) {
+            getPriceData();
+            quote = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
+        }
+        return quote;
     }
 
-	@XmlTransient
-	public ITodayOHL getTodayOHL() {
-		if (todayOHL == null) {
-			getPriceData();
-			todayOHL = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-		}
-    	return todayOHL;
+    public void setQuote(IQuote quote) {
+        this.quote = quote;
+        this.lastUpdate = System.currentTimeMillis();
     }
 
-	public void setTodayOHL(ITodayOHL todayOHL) {
-    	this.todayOHL = todayOHL;
+    @XmlTransient
+    public ITodayOHL getTodayOHL() {
+        if (todayOHL == null) {
+            getPriceData();
+            todayOHL = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
+        }
+        return todayOHL;
     }
 
-	@XmlTransient
-	public ILastClose getLastClose() {
-		if (lastClose == null) {
-			getPriceData();
-			lastClose = new LastClose(priceData.getClose(), null);
-		}
-    	return lastClose;
+    public void setTodayOHL(ITodayOHL todayOHL) {
+        this.todayOHL = todayOHL;
     }
 
-	public void setLastClose(ILastClose close) {
-    	this.lastClose = close;
+    @XmlTransient
+    public ILastClose getLastClose() {
+        if (lastClose == null) {
+            getPriceData();
+            lastClose = new LastClose(priceData.getClose(), null);
+        }
+        return lastClose;
     }
 
-	@XmlTransient
-	public long getLastUpdate() {
-    	return lastUpdate;
+    public void setLastClose(ILastClose close) {
+        this.lastClose = close;
     }
 
-	public void setLastUpdate(long lastUpdate) {
-    	this.lastUpdate = lastUpdate;
+    @XmlTransient
+    public long getLastUpdate() {
+        return lastUpdate;
     }
 
-	/* (non-Javadoc)
+    public void setLastUpdate(long lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
     public int hashCode() {
-	    return symbol.hashCode();
+        return symbol.hashCode();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-    	if (!(obj instanceof IdentifierType))
-    		return false;
-	    return getSymbol().equals(((IdentifierType) obj).getSymbol());
+        if (!(obj instanceof IdentifierType)) {
+            return false;
+        }
+        return getSymbol().equals(((IdentifierType) obj).getSymbol());
     }
 }

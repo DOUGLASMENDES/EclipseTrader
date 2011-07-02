@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,58 +21,59 @@ import org.eclipse.ui.keys.IBindingService;
 
 public abstract class QuickMenuAction extends Action {
 
-	private QuickMenuCreator creator = new QuickMenuCreator() {
-		@Override
+    private QuickMenuCreator creator = new QuickMenuCreator() {
+
+        @Override
         protected void fillMenu(IMenuManager menu) {
-			QuickMenuAction.this.fillMenu(menu);
-		}
-	};
+            QuickMenuAction.this.fillMenu(menu);
+        }
+    };
 
-	/**
-	 * Creates a new quick menu action with the given command id.
-	 *
-	 * @param commandId the command id of the short cut used to open the sub menu
-	 */
-	public QuickMenuAction(String commandId) {
-		setId(commandId);
-		setActionDefinitionId(commandId);
-	}
+    /**
+     * Creates a new quick menu action with the given command id.
+     *
+     * @param commandId the command id of the short cut used to open the sub menu
+     */
+    public QuickMenuAction(String commandId) {
+        setId(commandId);
+        setActionDefinitionId(commandId);
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
     public void run() {
-		creator.createMenu();
-	}
+        creator.createMenu();
+    }
 
-	/**
-	 * Dispose of this menu action.
-	 */
-	public void dispose() {
-		if (creator != null) {
-			creator.dispose();
-			creator = null;
-		}
-	}
+    /**
+     * Dispose of this menu action.
+     */
+    public void dispose() {
+        if (creator != null) {
+            creator.dispose();
+            creator = null;
+        }
+    }
 
-	/**
-	 * Hook to fill a menu manager with the items of the sub menu.
-	 *
-	 * @param menu the sub menu to fill
-	 */
-	protected abstract void fillMenu(IMenuManager menu);
+    /**
+     * Hook to fill a menu manager with the items of the sub menu.
+     *
+     * @param menu the sub menu to fill
+     */
+    protected abstract void fillMenu(IMenuManager menu);
 
-	/**
-	 * Returns the short cut assigned to the sub menu or <code>null</code> if
-	 * no short cut is assigned.
-	 *
-	 * @return the short cut as a human readable string or <code>null</code>
-	 */
-	public String getShortCutString() {
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		IBindingService bindingService = (IBindingService) workbench.getAdapter(IBindingService.class);
-		TriggerSequence[] activeBindings = bindingService.getActiveBindingsFor(getActionDefinitionId());
-		return activeBindings.length > 0 ? activeBindings[0].format() : null;
-	}
+    /**
+     * Returns the short cut assigned to the sub menu or <code>null</code> if
+     * no short cut is assigned.
+     *
+     * @return the short cut as a human readable string or <code>null</code>
+     */
+    public String getShortCutString() {
+        IWorkbench workbench = PlatformUI.getWorkbench();
+        IBindingService bindingService = (IBindingService) workbench.getAdapter(IBindingService.class);
+        TriggerSequence[] activeBindings = bindingService.getActiveBindingsFor(getActionDefinitionId());
+        return activeBindings.length > 0 ? activeBindings[0].format() : null;
+    }
 }

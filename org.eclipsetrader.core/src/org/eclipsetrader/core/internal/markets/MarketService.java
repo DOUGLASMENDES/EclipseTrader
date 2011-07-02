@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,7 @@ import javax.xml.bind.ValidationEventHandler;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -39,226 +40,250 @@ import org.eclipsetrader.core.markets.IMarketStatusListener;
 import org.eclipsetrader.core.markets.MarketStatusEvent;
 
 public class MarketService extends Observable implements IMarketService, Runnable {
-	public static final String REPOSITORY_FILE = "markets.xml"; //$NON-NLS-1$
-	private static IMarketService instance;
-	private List<Market> marketsList = new ArrayList<Market>();
-	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-	private Thread thread;
-	private boolean stopping = false;
+    public static final String REPOSITORY_FILE = "markets.xml"; //$NON-NLS-1$
+    private static IMarketService instance;
+    private List<Market> marketsList = new ArrayList<Market>();
+    private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-	public MarketService() {
-		instance = this;
-	}
+    private Thread thread;
+    private boolean stopping = false;
 
-	public static IMarketService getInstance() {
-		return instance;
-	}
+    public MarketService() {
+        instance = this;
+    }
 
-	public void startUp(IProgressMonitor monitor) throws Exception {
-		JAXBContext jaxbContext = JAXBContext.newInstance(MarketList.class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				CoreActivator.getDefault().getLog().log(status);
-				return true;
-			}
-		});
-		MarketList list = null;
-		File file = CoreActivator.getDefault().getStateLocation().append(REPOSITORY_FILE).toFile();
-		if (file.exists())
-			list = (MarketList) unmarshaller.unmarshal(file);
-		else
-			list = (MarketList) unmarshaller.unmarshal(FileLocator.openStream(CoreActivator.getDefault().getBundle(), new Path("data").append(REPOSITORY_FILE), false));
+    public static IMarketService getInstance() {
+        return instance;
+    }
 
-		if (list != null) {
-			this.marketsList = list.getList();
-			for (Market market : this.marketsList) {
-				if (market.getTimeZone() != null)
-					market.setTimeZone(market.getTimeZone());
-			}
-		}
+    public void startUp(IProgressMonitor monitor) throws Exception {
+        JAXBContext jaxbContext = JAXBContext.newInstance(MarketList.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-		if (thread == null) {
-			stopping = false;
-			thread = new Thread(this);
-			thread.start();
-		}
-	}
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                CoreActivator.getDefault().getLog().log(status);
+                return true;
+            }
+        });
+        MarketList list = null;
+        File file = CoreActivator.getDefault().getStateLocation().append(REPOSITORY_FILE).toFile();
+        if (file.exists()) {
+            list = (MarketList) unmarshaller.unmarshal(file);
+        }
+        else {
+            list = (MarketList) unmarshaller.unmarshal(FileLocator.openStream(CoreActivator.getDefault().getBundle(), new Path("data").append(REPOSITORY_FILE), false));
+        }
 
-	public void shutDown(IProgressMonitor monitor) throws Exception {
-		stopping = true;
-		if (thread != null) {
-			try {
-				synchronized (thread) {
-					thread.notify();
-				}
-				thread.join(30 * 1000);
-			} catch (InterruptedException e) {
-				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error stopping thread", e);
-				CoreActivator.log(status);
-			}
-			thread = null;
-		}
+        if (list != null) {
+            this.marketsList = list.getList();
+            for (Market market : this.marketsList) {
+                if (market.getTimeZone() != null) {
+                    market.setTimeZone(market.getTimeZone());
+                }
+            }
+        }
 
-		File file = CoreActivator.getDefault().getStateLocation().append(REPOSITORY_FILE).toFile();
-		if (file.exists())
-			file.delete();
-		JAXBContext jaxbContext = JAXBContext.newInstance(MarketList.class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				CoreActivator.getDefault().getLog().log(status);
-				return true;
-			}
-		});
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
-		marshaller.marshal(new MarketList(marketsList), new FileWriter(file));
-	}
+        if (thread == null) {
+            stopping = false;
+            thread = new Thread(this);
+            thread.start();
+        }
+    }
 
-	public void addMarket(Market market) {
-		marketsList.add(market);
-		setChanged();
-		notifyObservers();
-	}
+    public void shutDown(IProgressMonitor monitor) throws Exception {
+        stopping = true;
+        if (thread != null) {
+            try {
+                synchronized (thread) {
+                    thread.notify();
+                }
+                thread.join(30 * 1000);
+            } catch (InterruptedException e) {
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error stopping thread", e);
+                CoreActivator.log(status);
+            }
+            thread = null;
+        }
 
-	public void deleteMarket(Market market) {
-		marketsList.remove(market);
-		setChanged();
-		notifyObservers();
-	}
+        File file = CoreActivator.getDefault().getStateLocation().append(REPOSITORY_FILE).toFile();
+        if (file.exists()) {
+            file.delete();
+        }
+        JAXBContext jaxbContext = JAXBContext.newInstance(MarketList.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setEventHandler(new ValidationEventHandler() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarketService#getMarkets()
-	 */
-	public IMarket[] getMarkets() {
-		return marketsList.toArray(new IMarket[marketsList.size()]);
-	}
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                CoreActivator.getDefault().getLog().log(status);
+                return true;
+            }
+        });
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+        marshaller.marshal(new MarketList(marketsList), new FileWriter(file));
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarketService#getMarket(java.lang.String)
-	 */
-	public IMarket getMarket(String name) {
-		for (Market market : marketsList) {
-			if (market.getName().equals(name))
-				return market;
-		}
-		return null;
-	}
+    public void addMarket(Market market) {
+        marketsList.add(market);
+        setChanged();
+        notifyObservers();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarketService#getOpenMarkets()
-	 */
-	public IMarket[] getOpenMarkets() {
-		List<IMarket> l = new ArrayList<IMarket>();
-		for (Market market : marketsList) {
-			if (market.isOpen())
-				l.add(market);
-		}
-		return l.toArray(new IMarket[l.size()]);
-	}
+    public void deleteMarket(Market market) {
+        marketsList.remove(market);
+        setChanged();
+        notifyObservers();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarketService#getOpenMarkets(java.util.Date)
-	 */
-	public IMarket[] getOpenMarkets(Date time) {
-		List<IMarket> l = new ArrayList<IMarket>();
-		for (Market market : marketsList) {
-			if (market.isOpen(time))
-				l.add(market);
-		}
-		return l.toArray(new IMarket[l.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarketService#getMarkets()
+     */
+    @Override
+    public IMarket[] getMarkets() {
+        return marketsList.toArray(new IMarket[marketsList.size()]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarketService#addMarketStatusListener(org.eclipsetrader.core.markets.IMarketStatusListener)
-	 */
-	public void addMarketStatusListener(IMarketStatusListener listener) {
-		listeners.add(listener);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarketService#getMarket(java.lang.String)
+     */
+    @Override
+    public IMarket getMarket(String name) {
+        for (Market market : marketsList) {
+            if (market.getName().equals(name)) {
+                return market;
+            }
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarketService#removeMarketStatusListener(org.eclipsetrader.core.markets.IMarketStatusListener)
-	 */
-	public void removeMarketStatusListener(IMarketStatusListener listener) {
-		listeners.remove(listener);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarketService#getOpenMarkets()
+     */
+    @Override
+    public IMarket[] getOpenMarkets() {
+        List<IMarket> l = new ArrayList<IMarket>();
+        for (Market market : marketsList) {
+            if (market.isOpen()) {
+                l.add(market);
+            }
+        }
+        return l.toArray(new IMarket[l.size()]);
+    }
 
-	public boolean isRunning() {
-		return thread != null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarketService#getOpenMarkets(java.util.Date)
+     */
+    @Override
+    public IMarket[] getOpenMarkets(Date time) {
+        List<IMarket> l = new ArrayList<IMarket>();
+        for (Market market : marketsList) {
+            if (market.isOpen(time)) {
+                l.add(market);
+            }
+        }
+        return l.toArray(new IMarket[l.size()]);
+    }
 
-	protected boolean isStopping() {
-		return stopping;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarketService#addMarketStatusListener(org.eclipsetrader.core.markets.IMarketStatusListener)
+     */
+    @Override
+    public void addMarketStatusListener(IMarketStatusListener listener) {
+        listeners.add(listener);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		Map<IMarket, Boolean> statusMap = new HashMap<IMarket, Boolean>();
-		Map<IMarket, String> messageMap = new HashMap<IMarket, String>();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarketService#removeMarketStatusListener(org.eclipsetrader.core.markets.IMarketStatusListener)
+     */
+    @Override
+    public void removeMarketStatusListener(IMarketStatusListener listener) {
+        listeners.remove(listener);
+    }
 
-		for (IMarket market : marketsList)
-			statusMap.put(market, market.isOpen());
+    public boolean isRunning() {
+        return thread != null;
+    }
 
-		synchronized (thread) {
-			while (!isStopping()) {
-				for (IMarket market : marketsList) {
-					boolean oldStatus = statusMap.get(market);
-					boolean newStatus = market.isOpen();
+    protected boolean isStopping() {
+        return stopping;
+    }
 
-					String oldMessage = messageMap.get(market);
-					String newMessage = market.getToday().getMessage();
+    /* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     */
+    @Override
+    public void run() {
+        Map<IMarket, Boolean> statusMap = new HashMap<IMarket, Boolean>();
+        Map<IMarket, String> messageMap = new HashMap<IMarket, String>();
 
-					if (oldStatus != newStatus || (newMessage != null && !newMessage.equals(oldMessage)) || (oldMessage != null && !oldMessage.equals(newMessage))) {
-						if (newStatus)
-							fireMarketStatusEvent(market);
-						else
-							fireMarketStatusEvent(market);
+        for (IMarket market : marketsList) {
+            statusMap.put(market, market.isOpen());
+        }
 
-						statusMap.put(market, newStatus);
-						messageMap.put(market, newMessage);
-					}
-				}
+        synchronized (thread) {
+            while (!isStopping()) {
+                for (IMarket market : marketsList) {
+                    boolean oldStatus = statusMap.get(market);
+                    boolean newStatus = market.isOpen();
 
-				try {
-					long delay = 60000 - System.currentTimeMillis() % 60000;
-					thread.wait(delay);
-				} catch (InterruptedException e) {
-					// Ignore exception, not important at this time
-				}
-			}
-		}
-	}
+                    String oldMessage = messageMap.get(market);
+                    String newMessage = market.getToday().getMessage();
 
-	protected void fireMarketStatusEvent(IMarket market) {
-		MarketStatusEvent event = new MarketStatusEvent(market);
-		Object[] l = listeners.getListeners();
-		for (int i = 0; i < l.length; i++) {
-			try {
-				((IMarketStatusListener) l[i]).marketStatusChanged(event);
-			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error notifying market status update", e);
-				CoreActivator.log(status);
-			} catch (LinkageError e) {
-				Status status = new Status(Status.ERROR, CoreActivator.PLUGIN_ID, 0, "Error notifying market status update", e);
-				CoreActivator.log(status);
-			}
-		}
-	}
+                    if (oldStatus != newStatus || newMessage != null && !newMessage.equals(oldMessage) || oldMessage != null && !oldMessage.equals(newMessage)) {
+                        if (newStatus) {
+                            fireMarketStatusEvent(market);
+                        }
+                        else {
+                            fireMarketStatusEvent(market);
+                        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.markets.IMarketService#getMarketForSecurity(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public IMarket getMarketForSecurity(ISecurity security) {
-		for (IMarket market : getMarkets()) {
-			if (market.hasMember(security))
-				return market;
-		}
-		return null;
-	}
+                        statusMap.put(market, newStatus);
+                        messageMap.put(market, newMessage);
+                    }
+                }
+
+                try {
+                    long delay = 60000 - System.currentTimeMillis() % 60000;
+                    thread.wait(delay);
+                } catch (InterruptedException e) {
+                    // Ignore exception, not important at this time
+                }
+            }
+        }
+    }
+
+    protected void fireMarketStatusEvent(IMarket market) {
+        MarketStatusEvent event = new MarketStatusEvent(market);
+        Object[] l = listeners.getListeners();
+        for (int i = 0; i < l.length; i++) {
+            try {
+                ((IMarketStatusListener) l[i]).marketStatusChanged(event);
+            } catch (Exception e) {
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error notifying market status update", e);
+                CoreActivator.log(status);
+            } catch (LinkageError e) {
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error notifying market status update", e);
+                CoreActivator.log(status);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.markets.IMarketService#getMarketForSecurity(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public IMarket getMarketForSecurity(ISecurity security) {
+        for (IMarket market : getMarkets()) {
+            if (market.hasMember(security)) {
+                return market;
+            }
+        }
+        return null;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,87 +26,98 @@ import org.eclipsetrader.ui.charts.IChartParameters;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class CurrentBookFactory implements IChartObjectFactory {
-	private ISecurity security;
-	private MarketPricingEnvironment pricingEnvironment;
-	private CurrentBook object = new CurrentBook();
 
-	private IPricingListener pricingListener = new IPricingListener() {
-		public void pricingUpdate(PricingEvent event) {
-			if (!event.getSecurity().equals(security))
-				return;
-			for (PricingDelta delta : event.getDelta()) {
-				if (delta.getNewValue() instanceof IBook)
-					object.setBook((IBook) delta.getNewValue());
-				if (delta.getNewValue() instanceof ITrade)
-					object.setTrade((ITrade) delta.getNewValue());
-			}
-		}
-	};
+    private ISecurity security;
+    private MarketPricingEnvironment pricingEnvironment;
+    private CurrentBook object = new CurrentBook();
 
-	public CurrentBookFactory() {
-		IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
+    private IPricingListener pricingListener = new IPricingListener() {
 
-		pricingEnvironment = new MarketPricingEnvironment(marketService);
-		pricingEnvironment.addPricingListener(pricingListener);
-	}
+        @Override
+        public void pricingUpdate(PricingEvent event) {
+            if (!event.getSecurity().equals(security)) {
+                return;
+            }
+            for (PricingDelta delta : event.getDelta()) {
+                if (delta.getNewValue() instanceof IBook) {
+                    object.setBook((IBook) delta.getNewValue());
+                }
+                if (delta.getNewValue() instanceof ITrade) {
+                    object.setTrade((ITrade) delta.getNewValue());
+                }
+            }
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getId()
-	 */
-	public String getId() {
-		return null;
-	}
+    public CurrentBookFactory() {
+        IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
-	 */
-	public String getName() {
-		return Messages.CurrentBookFactory_Name;
-	}
+        pricingEnvironment = new MarketPricingEnvironment(marketService);
+        pricingEnvironment.addPricingListener(pricingListener);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
-	 */
-	public IChartObject createObject(IDataSeries source) {
-		return object;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getId()
+     */
+    @Override
+    public String getId() {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
-	 */
-	public IChartParameters getParameters() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
+     */
+    @Override
+    public String getName() {
+        return Messages.CurrentBookFactory_Name;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
-	 */
-	public void setParameters(IChartParameters parameters) {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
+     */
+    @Override
+    public IChartObject createObject(IDataSeries source) {
+        return object;
+    }
 
-	public void setSecurity(ISecurity security) {
-		this.security = security;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
+     */
+    @Override
+    public IChartParameters getParameters() {
+        return null;
+    }
 
-	public void setEnable(boolean enable) {
-		if (enable) {
-			pricingEnvironment.addSecurity(security);
-			pricingEnvironment.addLevel2Security(security);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
+     */
+    @Override
+    public void setParameters(IChartParameters parameters) {
+    }
 
-			ITrade trade = pricingEnvironment.getTrade(security);
-			IBook book = pricingEnvironment.getBook(security);
+    public void setSecurity(ISecurity security) {
+        this.security = security;
+    }
 
-			object.setTrade(trade);
-			object.setBook(book);
-		}
-		else {
-			pricingEnvironment.removeLevel2Security(security);
-			pricingEnvironment.removeSecurity(security);
-			object.setBook(null);
-		}
-	}
+    public void setEnable(boolean enable) {
+        if (enable) {
+            pricingEnvironment.addSecurity(security);
+            pricingEnvironment.addLevel2Security(security);
 
-	public void dispose() {
-		pricingEnvironment.dispose();
-	}
+            ITrade trade = pricingEnvironment.getTrade(security);
+            IBook book = pricingEnvironment.getBook(security);
+
+            object.setTrade(trade);
+            object.setBook(book);
+        }
+        else {
+            pricingEnvironment.removeLevel2Security(security);
+            pricingEnvironment.removeSecurity(security);
+            object.setBook(null);
+        }
+    }
+
+    public void dispose() {
+        pricingEnvironment.dispose();
+    }
 }

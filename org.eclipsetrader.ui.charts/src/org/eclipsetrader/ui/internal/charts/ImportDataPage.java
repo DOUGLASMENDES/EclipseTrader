@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,269 +44,290 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 
 public class ImportDataPage extends WizardPage {
-	private static final String K_SELECTION = "SELECTION"; //$NON-NLS-1$
-	private static final String K_SECURITIES = "SECURITIES"; //$NON-NLS-1$
-	private static final String K_MODE = "MODE"; //$NON-NLS-1$
-	private static final String K_FROM_DATE = "FROM_DATE"; //$NON-NLS-1$
-	private static final String K_AGGREGATION = "AGGREGATION"; //$NON-NLS-1$
 
-	private Combo type;
-	private CDateTime from;
-	private CDateTime to;
-	private CheckboxTableViewer aggregation;
-	private Combo combo;
-	private CheckboxTableViewer members;
+    private static final String K_SELECTION = "SELECTION"; //$NON-NLS-1$
+    private static final String K_SECURITIES = "SECURITIES"; //$NON-NLS-1$
+    private static final String K_MODE = "MODE"; //$NON-NLS-1$
+    private static final String K_FROM_DATE = "FROM_DATE"; //$NON-NLS-1$
+    private static final String K_AGGREGATION = "AGGREGATION"; //$NON-NLS-1$
 
-	public ImportDataPage() {
-		super("data", Messages.ImportDataPage_Title, null); //$NON-NLS-1$
-		setDescription(Messages.ImportDataPage_Description);
-	}
+    private Combo type;
+    private CDateTime from;
+    private CDateTime to;
+    private CheckboxTableViewer aggregation;
+    private Combo combo;
+    private CheckboxTableViewer members;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		setControl(content);
+    public ImportDataPage() {
+        super("data", Messages.ImportDataPage_Title, null); //$NON-NLS-1$
+        setDescription(Messages.ImportDataPage_Description);
+    }
 
-		initializeDialogUnits(parent);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        setControl(content);
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText(Messages.ImportDataPage_TypeLabel);
-		type = new Combo(content, SWT.DROP_DOWN | SWT.READ_ONLY);
-		type.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		type.add(Messages.ImportDataPage_FullText);
-		type.add(Messages.ImportDataPage_IncrementalText);
-		type.add(Messages.ImportDataPage_FullIncrementalText);
-		type.select(1);
-		type.addSelectionListener(new SelectionAdapter() {
+        initializeDialogUnits(parent);
+
+        Label label = new Label(content, SWT.NONE);
+        label.setText(Messages.ImportDataPage_TypeLabel);
+        type = new Combo(content, SWT.DROP_DOWN | SWT.READ_ONLY);
+        type.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        type.add(Messages.ImportDataPage_FullText);
+        type.add(Messages.ImportDataPage_IncrementalText);
+        type.add(Messages.ImportDataPage_FullIncrementalText);
+        type.select(1);
+        type.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	int typeIndex = type.getSelectionIndex();
-            	from.setEnabled(typeIndex == 0 || typeIndex == 2);
-            	to.setEnabled(typeIndex == 0);
-            	if (typeIndex != 0)
-            		to.setSelection(Calendar.getInstance().getTime());
-            	setPageComplete(isPageComplete());
+                int typeIndex = type.getSelectionIndex();
+                from.setEnabled(typeIndex == 0 || typeIndex == 2);
+                to.setEnabled(typeIndex == 0);
+                if (typeIndex != 0) {
+                    to.setSelection(Calendar.getInstance().getTime());
+                }
+                setPageComplete(isPageComplete());
             }
-		});
+        });
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.ImportDataPage_PeriodLabel);
-		Composite group = new Composite(content, SWT.NONE);
-		gridLayout = new GridLayout(3, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		gridLayout.verticalSpacing = 0;
-		group.setLayout(gridLayout);
-		from = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
-		label = new Label(group, SWT.NONE);
-		label.setText(Messages.ImportDataPage_ToLabel);
-		to = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.ImportDataPage_PeriodLabel);
+        Composite group = new Composite(content, SWT.NONE);
+        gridLayout = new GridLayout(3, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        gridLayout.verticalSpacing = 0;
+        group.setLayout(gridLayout);
+        from = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        label = new Label(group, SWT.NONE);
+        label.setText(Messages.ImportDataPage_ToLabel);
+        to = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
 
-		Calendar today = Calendar.getInstance();
-		to.setSelection(today.getTime());
-		today.add(Calendar.YEAR, -10);
-		from.setSelection(today.getTime());
+        Calendar today = Calendar.getInstance();
+        to.setSelection(today.getTime());
+        today.add(Calendar.YEAR, -10);
+        from.setSelection(today.getTime());
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.ImportDataPage_AggregationLabel);
-		label.setLayoutData(new GridData(SWT.TOP, SWT.RIGHT, false, false));
-		((GridData) label.getLayoutData()).verticalIndent = convertVerticalDLUsToPixels(2);
-		aggregation = CheckboxTableViewer.newCheckList(content, SWT.BORDER);
-		aggregation.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		((GridData) aggregation.getControl().getLayoutData()).heightHint = aggregation.getTable().getItemHeight() * 3;
-		aggregation.setContentProvider(new ArrayContentProvider());
-		aggregation.setLabelProvider(new LabelProvider() {
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.ImportDataPage_AggregationLabel);
+        label.setLayoutData(new GridData(SWT.TOP, SWT.RIGHT, false, false));
+        ((GridData) label.getLayoutData()).verticalIndent = convertVerticalDLUsToPixels(2);
+        aggregation = CheckboxTableViewer.newCheckList(content, SWT.BORDER);
+        aggregation.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        ((GridData) aggregation.getControl().getLayoutData()).heightHint = aggregation.getTable().getItemHeight() * 3;
+        aggregation.setContentProvider(new ArrayContentProvider());
+        aggregation.setLabelProvider(new LabelProvider() {
+
             @Override
             public String getText(Object element) {
-            	TimeSpan timeSpan = (TimeSpan) element;
-	            return NLS.bind("{0} {1}", new Object[] { //$NON-NLS-1$
-	            		String.valueOf(timeSpan.getLength()),
-	            		timeSpan.getUnits() == Units.Minutes ? Messages.ImportDataPage_MinutesText : Messages.ImportDataPage_DaysText,
-	            	});
+                TimeSpan timeSpan = (TimeSpan) element;
+                return NLS.bind("{0} {1}", new Object[] { //$NON-NLS-1$
+                        String.valueOf(timeSpan.getLength()),
+                        timeSpan.getUnits() == Units.Minutes ? Messages.ImportDataPage_MinutesText : Messages.ImportDataPage_DaysText,
+                });
             }
-		});
-		aggregation.setInput(new TimeSpan[] {
-				TimeSpan.days(1),
-				TimeSpan.minutes(1),
-				TimeSpan.minutes(2),
-				TimeSpan.minutes(3),
-				TimeSpan.minutes(5),
-				TimeSpan.minutes(10),
-				TimeSpan.minutes(15),
-				TimeSpan.minutes(30),
-				TimeSpan.minutes(60),
-			});
-		aggregation.setChecked(((Object[]) aggregation.getInput())[0], true);
+        });
+        aggregation.setInput(new TimeSpan[] {
+                TimeSpan.days(1),
+                TimeSpan.minutes(1),
+                TimeSpan.minutes(2),
+                TimeSpan.minutes(3),
+                TimeSpan.minutes(5),
+                TimeSpan.minutes(10),
+                TimeSpan.minutes(15),
+                TimeSpan.minutes(30),
+                TimeSpan.minutes(60),
+        });
+        aggregation.setChecked(((Object[]) aggregation.getInput())[0], true);
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.ImportDataPage_ImportLabel);
-		combo = new Combo(content, SWT.DROP_DOWN | SWT.READ_ONLY);
-		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		combo.add(Messages.ImportDataPage_AllSecuritiesText);
-		combo.add(Messages.ImportDataPage_SelectedSecuritiesText);
-		combo.select(0);
-		combo.addSelectionListener(new SelectionAdapter() {
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.ImportDataPage_ImportLabel);
+        combo = new Combo(content, SWT.DROP_DOWN | SWT.READ_ONLY);
+        combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        combo.add(Messages.ImportDataPage_AllSecuritiesText);
+        combo.add(Messages.ImportDataPage_SelectedSecuritiesText);
+        combo.select(0);
+        combo.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-    			members.getControl().setEnabled(combo.getSelectionIndex() != 0);
-            	setPageComplete(isPageComplete());
+                members.getControl().setEnabled(combo.getSelectionIndex() != 0);
+                setPageComplete(isPageComplete());
             }
-		});
+        });
 
-		members = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		members.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		((GridData) members.getControl().getLayoutData()).heightHint = members.getTable().getItemHeight() * 10 + members.getTable().getBorderWidth() * 2;
-		((GridData) members.getControl().getLayoutData()).verticalIndent = 5;
-		members.setLabelProvider(new LabelProvider() {
+        members = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        members.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        ((GridData) members.getControl().getLayoutData()).heightHint = members.getTable().getItemHeight() * 10 + members.getTable().getBorderWidth() * 2;
+        ((GridData) members.getControl().getLayoutData()).verticalIndent = 5;
+        members.setLabelProvider(new LabelProvider() {
+
             @Override
             public String getText(Object element) {
-	            return ((ISecurity) element).getName();
+                return ((ISecurity) element).getName();
             }
-		});
-		members.setContentProvider(new ArrayContentProvider());
-		members.setSorter(new ViewerSorter());
-		members.setInput(ChartsUIActivator.getDefault().getRepositoryService().getSecurities());
+        });
+        members.setContentProvider(new ArrayContentProvider());
+        members.setSorter(new ViewerSorter());
+        members.setInput(ChartsUIActivator.getDefault().getRepositoryService().getSecurities());
 
-		restoreState();
+        restoreState();
 
-		int typeIndex = type.getSelectionIndex();
-    	from.setEnabled(typeIndex == 0 || typeIndex == 2);
-    	to.setEnabled(typeIndex == 0);
+        int typeIndex = type.getSelectionIndex();
+        from.setEnabled(typeIndex == 0 || typeIndex == 2);
+        to.setEnabled(typeIndex == 0);
 
-		members.getControl().setEnabled(combo.getSelectionIndex() != 0);
+        members.getControl().setEnabled(combo.getSelectionIndex() != 0);
 
-		aggregation.addCheckStateListener(new ICheckStateListener() {
+        aggregation.addCheckStateListener(new ICheckStateListener() {
+
+            @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-            	setPageComplete(isPageComplete());
+                setPageComplete(isPageComplete());
             }
-		});
+        });
 
-		members.addCheckStateListener(new ICheckStateListener() {
+        members.addCheckStateListener(new ICheckStateListener() {
+
+            @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-            	setPageComplete(isPageComplete());
+                setPageComplete(isPageComplete());
             }
-		});
-	}
+        });
+    }
 
-	protected void restoreState() {
-		IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
-		if (dialogSettings != null) {
-			if (dialogSettings.get(K_MODE) != null)
-				type.select(dialogSettings.getInt(K_MODE));
+    protected void restoreState() {
+        IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
+        if (dialogSettings != null) {
+            if (dialogSettings.get(K_MODE) != null) {
+                type.select(dialogSettings.getInt(K_MODE));
+            }
 
-			if (dialogSettings.get(K_FROM_DATE) != null) {
-				try {
-					from.setSelection(new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_FROM_DATE))); //$NON-NLS-1$
-				} catch(Exception e) {
-					// Do nothing
-				}
-			}
+            if (dialogSettings.get(K_FROM_DATE) != null) {
+                try {
+                    from.setSelection(new SimpleDateFormat("yyyyMMdd").parse(dialogSettings.get(K_FROM_DATE))); //$NON-NLS-1$
+                } catch (Exception e) {
+                    // Do nothing
+                }
+            }
 
-			String[] s = dialogSettings.getArray(K_AGGREGATION);
-			if (s != null) {
-				aggregation.setAllChecked(false);
-				TimeSpan[] ts = new TimeSpan[s.length];
-				for (int i = 0; i < ts.length; i++)
-					ts[i] = TimeSpan.fromString(s[i]);
-				aggregation.setCheckedElements(ts);
-			}
+            String[] s = dialogSettings.getArray(K_AGGREGATION);
+            if (s != null) {
+                aggregation.setAllChecked(false);
+                TimeSpan[] ts = new TimeSpan[s.length];
+                for (int i = 0; i < ts.length; i++) {
+                    ts[i] = TimeSpan.fromString(s[i]);
+                }
+                aggregation.setCheckedElements(ts);
+            }
 
-			if (dialogSettings.get(K_SECURITIES) != null)
-				combo.select(dialogSettings.getInt(K_SECURITIES));
+            if (dialogSettings.get(K_SECURITIES) != null) {
+                combo.select(dialogSettings.getInt(K_SECURITIES));
+            }
 
-			String[] selection = dialogSettings.getArray(K_SELECTION);
-			if (selection != null) {
-				IRepositoryService repository = ChartsUIActivator.getDefault().getRepositoryService();
-				for (int i = 0; i < selection.length; i++) {
-					try {
-	                    ISecurity security = repository.getSecurityFromURI(new URI(selection[i]));
-	                    if (security != null)
-	                    	members.setChecked(security, true);
+            String[] selection = dialogSettings.getArray(K_SELECTION);
+            if (selection != null) {
+                IRepositoryService repository = ChartsUIActivator.getDefault().getRepositoryService();
+                for (int i = 0; i < selection.length; i++) {
+                    try {
+                        ISecurity security = repository.getSecurityFromURI(new URI(selection[i]));
+                        if (security != null) {
+                            members.setChecked(security, true);
+                        }
                     } catch (URISyntaxException e) {
-	                    // Ignore URI exception, not really important here
+                        // Ignore URI exception, not really important here
                     }
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 
-	public void saveState() {
-		IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
-		if (dialogSettings == null)
-			dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().addNewSection(getClass().getName());
+    public void saveState() {
+        IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
+        if (dialogSettings == null) {
+            dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().addNewSection(getClass().getName());
+        }
 
-		dialogSettings.put(K_MODE, type.getSelectionIndex());
+        dialogSettings.put(K_MODE, type.getSelectionIndex());
 
-		dialogSettings.put(K_FROM_DATE, new SimpleDateFormat("yyyyMMdd").format(from.getSelection())); //$NON-NLS-1$
+        dialogSettings.put(K_FROM_DATE, new SimpleDateFormat("yyyyMMdd").format(from.getSelection())); //$NON-NLS-1$
 
-		TimeSpan[] ts = getAggregation();
-		String[] s = new String[ts.length];
-		for (int i = 0; i < s.length; i++)
-			s[i] = ts[i].toString();
-		dialogSettings.put(K_AGGREGATION, s);
+        TimeSpan[] ts = getAggregation();
+        String[] s = new String[ts.length];
+        for (int i = 0; i < s.length; i++) {
+            s[i] = ts[i].toString();
+        }
+        dialogSettings.put(K_AGGREGATION, s);
 
-		dialogSettings.put(K_SECURITIES, combo.getSelectionIndex());
+        dialogSettings.put(K_SECURITIES, combo.getSelectionIndex());
 
-		Object[] o = members.getCheckedElements();
-		String[] selection = new String[o.length];
-		for (int i = 0; i < o.length; i++) {
-			IStoreObject storeObject = (IStoreObject) ((IAdaptable) o[i]).getAdapter(IStoreObject.class);
-			selection[i] = storeObject.getStore().toURI().toString();
-		}
-		dialogSettings.put(K_SELECTION, selection);
-	}
+        Object[] o = members.getCheckedElements();
+        String[] selection = new String[o.length];
+        for (int i = 0; i < o.length; i++) {
+            IStoreObject storeObject = (IStoreObject) ((IAdaptable) o[i]).getAdapter(IStoreObject.class);
+            selection[i] = storeObject.getStore().toURI().toString();
+        }
+        dialogSettings.put(K_SELECTION, selection);
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
      */
     @Override
     public boolean isPageComplete() {
-    	if (aggregation.getCheckedElements().length == 0)
-    		return false;
-    	if (from.getEnabled() && from.getSelection() == null)
-    		return false;
-    	if (to.getEnabled() && to.getSelection() == null)
-    		return false;
-    	if (combo.getSelectionIndex() == 0)
-    		return true;
-	    return members.getCheckedElements().length != 0;
+        if (aggregation.getCheckedElements().length == 0) {
+            return false;
+        }
+        if (from.getEnabled() && from.getSelection() == null) {
+            return false;
+        }
+        if (to.getEnabled() && to.getSelection() == null) {
+            return false;
+        }
+        if (combo.getSelectionIndex() == 0) {
+            return true;
+        }
+        return members.getCheckedElements().length != 0;
     }
 
     public ISecurity[] getCheckedSecurities() {
-    	Object[] o = combo.getSelectionIndex() == 0 ? (Object[])members.getInput() : members.getCheckedElements();
-    	ISecurity[] securities = new ISecurity[o.length];
-    	System.arraycopy(o, 0, securities, 0, securities.length);
-    	return securities;
+        Object[] o = combo.getSelectionIndex() == 0 ? (Object[]) members.getInput() : members.getCheckedElements();
+        ISecurity[] securities = new ISecurity[o.length];
+        System.arraycopy(o, 0, securities, 0, securities.length);
+        return securities;
     }
 
     public TimeSpan[] getAggregation() {
-    	Object[] ar = aggregation.getCheckedElements();
-    	TimeSpan[] r = new TimeSpan[ar.length];
-    	System.arraycopy(ar, 0, r, 0, r.length);
-    	return r;
+        Object[] ar = aggregation.getCheckedElements();
+        TimeSpan[] r = new TimeSpan[ar.length];
+        System.arraycopy(ar, 0, r, 0, r.length);
+        return r;
     }
 
     public Date getFromDate() {
-    	return from.getSelection();
+        return from.getSelection();
     }
 
     public Date getToDate() {
-    	return to.getSelection();
+        return to.getSelection();
     }
 
     public int getImportType() {
-    	switch(type.getSelectionIndex()) {
-    		case 0:
-    			return DataImportJob.FULL;
-    		case 1:
-    			return DataImportJob.INCREMENTAL;
-    		case 2:
-    			return DataImportJob.FULL_INCREMENTAL;
-    	}
-		return DataImportJob.FULL;
+        switch (type.getSelectionIndex()) {
+            case 0:
+                return DataImportJob.FULL;
+            case 1:
+                return DataImportJob.INCREMENTAL;
+            case 2:
+                return DataImportJob.FULL_INCREMENTAL;
+        }
+        return DataImportJob.FULL;
     }
 }

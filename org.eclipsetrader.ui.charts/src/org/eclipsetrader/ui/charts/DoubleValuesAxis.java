@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,157 +23,224 @@ import org.eclipsetrader.core.feed.IOHLC;
  * @since 1.0
  */
 public class DoubleValuesAxis implements IAxis {
-	public int marginHeight = 5;
 
-	private Double scaleHigh;
-	private Double scaleLow;
-	private int height;
-	private double span;
-	private double[] scaleList;
+    public int marginHeight = 5;
 
-	public DoubleValuesAxis() {
-		scaleList = new double[] {
-				.0001, .0002, .0005, .001, .002, .005, .01, .02, .05,
-				.1, .2, .5, 1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 100.0, 250.0, 500.0,
-				1000.0, 2500.0, 5000.0, 10000.0, 25000.0, 50000.0, 100000.0, 250000.0, 500000.0,
-				1000000.0, 2500000.0, 5000000.0, 10000000.0, 25000000.0, 50000000.0, 100000000.0, 250000000.0, 500000000.0,
-				1000000000.0, 2500000000.0, 5000000000.0, 10000000000.0, 25000000000.0, 50000000000.0, 100000000000.0, 250000000000.0, 500000000000.0,
-			};
-	}
+    private Double scaleHigh;
+    private Double scaleLow;
+    private int height;
+    private double span;
+    private double[] scaleList;
 
-	/* (non-Javadoc)
+    public DoubleValuesAxis() {
+        scaleList = new double[] {
+                .0001,
+                .0002,
+                .0005,
+                .001,
+                .002,
+                .005,
+                .01,
+                .02,
+                .05,
+                .1,
+                .2,
+                .5,
+                1.0,
+                2.0,
+                5.0,
+                10.0,
+                25.0,
+                50.0,
+                100.0,
+                250.0,
+                500.0,
+                1000.0,
+                2500.0,
+                5000.0,
+                10000.0,
+                25000.0,
+                50000.0,
+                100000.0,
+                250000.0,
+                500000.0,
+                1000000.0,
+                2500000.0,
+                5000000.0,
+                10000000.0,
+                25000000.0,
+                50000000.0,
+                100000000.0,
+                250000000.0,
+                500000000.0,
+                1000000000.0,
+                2500000000.0,
+                5000000000.0,
+                10000000000.0,
+                25000000000.0,
+                50000000000.0,
+                100000000000.0,
+                250000000000.0,
+                500000000000.0,
+        };
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.charts.ui.IAxis#addValues(java.lang.Object[])
      */
+    @Override
     public void addValues(Object[] values) {
-    	for (Object v : values) {
-    		Number highValue = null;
-    		Number lowValue = null;
+        for (Object v : values) {
+            Number highValue = null;
+            Number lowValue = null;
 
-    		if (v instanceof Number)
-    			highValue = lowValue = (Number) v;
-    		if (v instanceof IAdaptable) {
-    			IOHLC ohlc = (IOHLC) ((IAdaptable) v).getAdapter(IOHLC.class);
-    			if (ohlc != null) {
-    				highValue = ohlc.getHigh();
-    				lowValue = ohlc.getLow();
-    			}
-    			else
-    				highValue = lowValue = (Number) ((IAdaptable) v).getAdapter(Number.class);
-    		}
+            if (v instanceof Number) {
+                highValue = lowValue = (Number) v;
+            }
+            if (v instanceof IAdaptable) {
+                IOHLC ohlc = (IOHLC) ((IAdaptable) v).getAdapter(IOHLC.class);
+                if (ohlc != null) {
+                    highValue = ohlc.getHigh();
+                    lowValue = ohlc.getLow();
+                }
+                else {
+                    highValue = lowValue = (Number) ((IAdaptable) v).getAdapter(Number.class);
+                }
+            }
 
-    		if (highValue != null) {
-        		if (scaleHigh == null || highValue.doubleValue() > scaleHigh)
-        			scaleHigh = highValue.doubleValue();
-    		}
-    		if (lowValue != null) {
-        		if (scaleLow == null || lowValue.doubleValue() < scaleLow)
-        			scaleLow = lowValue.doubleValue();
-    		}
-    	}
+            if (highValue != null) {
+                if (scaleHigh == null || highValue.doubleValue() > scaleHigh) {
+                    scaleHigh = highValue.doubleValue();
+                }
+            }
+            if (lowValue != null) {
+                if (scaleLow == null || lowValue.doubleValue() < scaleLow) {
+                    scaleLow = lowValue.doubleValue();
+                }
+            }
+        }
 
-		if (scaleHigh != null && scaleLow != null)
-			span = (height - marginHeight * 2) / (scaleHigh - scaleLow);
+        if (scaleHigh != null && scaleLow != null) {
+            span = (height - marginHeight * 2) / (scaleHigh - scaleLow);
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.charts.ui.IAxis#clear()
      */
+    @Override
     public void clear() {
-    	scaleHigh = null;
-    	scaleLow = null;
-    	span = 0;
+        scaleHigh = null;
+        scaleLow = null;
+        span = 0;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.IAxis#computeSize(int)
-	 */
-	public int computeSize(int preferredSize) {
-		height = preferredSize;
-		if (scaleHigh != null && scaleLow != null)
-			span = (height - marginHeight * 2) / (scaleHigh - scaleLow);
-		return height;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.IAxis#computeSize(int)
+     */
+    @Override
+    public int computeSize(int preferredSize) {
+        height = preferredSize;
+        if (scaleHigh != null && scaleLow != null) {
+            span = (height - marginHeight * 2) / (scaleHigh - scaleLow);
+        }
+        return height;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.IAxis#mapToAxis(java.lang.Object)
-	 */
-	public int mapToAxis(Object value) {
-		Number n = null;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.IAxis#mapToAxis(java.lang.Object)
+     */
+    @Override
+    public int mapToAxis(Object value) {
+        Number n = null;
 
-		if (value instanceof Number)
-			n = (Number) value;
-		if (value instanceof IAdaptable)
-			n = (Number) ((IAdaptable) value).getAdapter(Number.class);
+        if (value instanceof Number) {
+            n = (Number) value;
+        }
+        if (value instanceof IAdaptable) {
+            n = (Number) ((IAdaptable) value).getAdapter(Number.class);
+        }
 
-		if (n == null || scaleLow == null)
-			return 0;
+        if (n == null || scaleLow == null) {
+            return 0;
+        }
 
-		double t = n.doubleValue() - scaleLow;
-		int y = (int) (t * span);
-		return height - y - marginHeight;
-	}
+        double t = n.doubleValue() - scaleLow;
+        int y = (int) (t * span);
+        return height - y - marginHeight;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.IAxis#mapToValue(int)
-	 */
-	public Object mapToValue(int position) {
-		if (height == 0 || scaleLow == null)
-			return 0;
-		int p = height - position - marginHeight;
-		return scaleLow + (p / span);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.IAxis#mapToValue(int)
+     */
+    @Override
+    public Object mapToValue(int position) {
+        if (height == 0 || scaleLow == null) {
+            return 0;
+        }
+        int p = height - position - marginHeight;
+        return scaleLow + p / span;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.charts.ui.IAxis#getFirstValue()
      */
+    @Override
     public Object getFirstValue() {
-	    return scaleLow;
+        return scaleLow;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.charts.ui.IAxis#getLastValue()
      */
+    @Override
     public Object getLastValue() {
-	    return scaleHigh;
+        return scaleHigh;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.charts.ui.IAxis#getValues()
      */
+    @Override
     public Object[] getValues() {
-		if (scaleHigh == null || scaleLow == null)
-			return new Object[0];
+        if (scaleHigh == null || scaleLow == null) {
+            return new Object[0];
+        }
 
-		int ticks;
-		for (ticks = 2; (ticks * 15) < height; ticks++);
-		ticks--;
-		if (ticks > 10)
-			ticks = 10;
+        int ticks;
+        for (ticks = 2; ticks * 15 < height; ticks++) {
+            ;
+        }
+        ticks--;
+        if (ticks > 10) {
+            ticks = 10;
+        }
 
-		double range = scaleHigh - scaleLow;
-		double interval = 0;
-		int loop;
-		for (loop = 0; loop < scaleList.length; loop++) {
-			interval = scaleList[loop];
-			if ((range / interval) < ticks)
-				break;
-		}
+        double range = scaleHigh - scaleLow;
+        double interval = 0;
+        int loop;
+        for (loop = 0; loop < scaleList.length; loop++) {
+            interval = scaleList[loop];
+            if (range / interval < ticks) {
+                break;
+            }
+        }
 
-		loop = 0;
-		double t = 0 - (ticks * interval);
-		List<Double> scaleArray = new ArrayList<Double>();
+        loop = 0;
+        double t = 0 - ticks * interval;
+        List<Double> scaleArray = new ArrayList<Double>();
 
-		if (interval > 0) {
-			while (t <= scaleHigh) {
-				t = t + interval;
+        if (interval > 0) {
+            while (t <= scaleHigh) {
+                t = t + interval;
 
-				if (t >= scaleLow) {
-					scaleArray.add(new Double(t));
-					loop++;
-				}
-			}
-		}
+                if (t >= scaleLow) {
+                    scaleArray.add(new Double(t));
+                    loop++;
+                }
+            }
+        }
 
-		return scaleArray.toArray(new Double[scaleArray.size()]);
+        return scaleArray.toArray(new Double[scaleArray.size()]);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,85 +31,92 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class NamePage extends WizardPage {
-	private Text name;
-	private ComboViewer repository;
 
-	private ModifyListener modifyListener = new ModifyListener() {
-		public void modifyText(ModifyEvent e) {
-			if (isCurrentPage())
-				getContainer().updateButtons();
-		}
-	};
+    private Text name;
+    private ComboViewer repository;
 
-	public NamePage() {
-		super("name", "Watch List", null);
-		setDescription("Create a new Watch List");
-	}
+    private ModifyListener modifyListener = new ModifyListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(2, false));
-		setControl(content);
-		initializeDialogUnits(content);
+        @Override
+        public void modifyText(ModifyEvent e) {
+            if (isCurrentPage()) {
+                getContainer().updateButtons();
+            }
+        }
+    };
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Watch List name:");
-		name = new Text(content, SWT.BORDER);
-		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		name.addModifyListener(modifyListener);
+    public NamePage() {
+        super("name", "Watch List", null);
+        setDescription("Create a new Watch List");
+    }
 
-		label = new Label(content, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(2, false));
+        setControl(content);
+        initializeDialogUnits(content);
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Target repository:");
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		repository = new ComboViewer(content, SWT.READ_ONLY);
-		repository.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		repository.setLabelProvider(new LabelProvider());
-		repository.setContentProvider(new ArrayContentProvider());
-		repository.setSorter(new ViewerSorter());
-		repository.setInput(getRepositoryService().getRepositories());
-		repository.setSelection(new StructuredSelection(getRepositoryService().getRepository("local")));
-	}
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Watch List name:");
+        name = new Text(content, SWT.BORDER);
+        name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        name.addModifyListener(modifyListener);
 
-	/* (non-Javadoc)
+        label = new Label(content, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+        label = new Label(content, SWT.NONE);
+        label.setText("Target repository:");
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        repository = new ComboViewer(content, SWT.READ_ONLY);
+        repository.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        repository.setLabelProvider(new LabelProvider());
+        repository.setContentProvider(new ArrayContentProvider());
+        repository.setSorter(new ViewerSorter());
+        repository.setInput(getRepositoryService().getRepositories());
+        repository.setSelection(new StructuredSelection(getRepositoryService().getRepository("local")));
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
      */
     @Override
     public void setVisible(boolean visible) {
-	    name.setFocus();
-	    super.setVisible(visible);
+        name.setFocus();
+        super.setVisible(visible);
     }
 
-	protected IRepositoryService getRepositoryService() {
-		return UIActivator.getDefault().getRepositoryService();
-	}
+    protected IRepositoryService getRepositoryService() {
+        return UIActivator.getDefault().getRepositoryService();
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
      */
     @Override
     public boolean isPageComplete() {
-    	if (name.getText().equals(""))
-    		return false;
-    	if (getRepositoryService().getWatchListFromName(name.getText()) != null) {
-    		setErrorMessage("A watch list with the same name already exists. Choose a different name.");
-    		return false;
-    	}
-    	if (getErrorMessage() != null)
-    		setErrorMessage(null);
-	    return true;
+        if (name.getText().equals("")) {
+            return false;
+        }
+        if (getRepositoryService().getWatchListFromName(name.getText()) != null) {
+            setErrorMessage("A watch list with the same name already exists. Choose a different name.");
+            return false;
+        }
+        if (getErrorMessage() != null) {
+            setErrorMessage(null);
+        }
+        return true;
     }
 
     public String getResourceName() {
-    	return name.getText();
+        return name.getText();
     }
 
-	public IRepository getRepository() {
-    	return (IRepository) ((IStructuredSelection) repository.getSelection()).getFirstElement();
+    public IRepository getRepository() {
+        return (IRepository) ((IStructuredSelection) repository.getSelection()).getFirstElement();
     }
 }

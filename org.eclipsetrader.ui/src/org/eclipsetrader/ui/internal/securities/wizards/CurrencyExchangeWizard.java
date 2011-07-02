@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,77 +30,87 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class CurrencyExchangeWizard extends Wizard implements INewWizard {
-	private Image image;
-	private CurrencyExchangePage namePage;
-	private IdentifierPage identifierPage;
-	private MarketsPage marketsPage;
 
-	public CurrencyExchangeWizard() {
-		ImageDescriptor descriptor = ImageDescriptor.createFromURL(UIActivator.getDefault().getBundle().getResource("icons/wizban/newfile_wiz.gif"));
-		image = descriptor.createImage();
-	}
+    private Image image;
+    private CurrencyExchangePage namePage;
+    private IdentifierPage identifierPage;
+    private MarketsPage marketsPage;
 
-	/* (non-Javadoc)
+    public CurrencyExchangeWizard() {
+        ImageDescriptor descriptor = ImageDescriptor.createFromURL(UIActivator.getDefault().getBundle().getResource("icons/wizban/newfile_wiz.gif"));
+        image = descriptor.createImage();
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
      */
+    @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.Wizard#dispose()
      */
     @Override
     public void dispose() {
-    	if (image != null)
-    		image.dispose();
-	    super.dispose();
+        if (image != null) {
+            image.dispose();
+        }
+        super.dispose();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.Wizard#getWindowTitle()
      */
     @Override
     public String getWindowTitle() {
-	    return "New Currency Exchange";
+        return "New Currency Exchange";
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.Wizard#getDefaultPageImage()
      */
     @Override
     public Image getDefaultPageImage() {
-	    return image;
+        return image;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.Wizard#addPages()
      */
     @Override
     public void addPages() {
-	    addPage(namePage = new CurrencyExchangePage());
-	    addPage(identifierPage = new IdentifierPage());
-	    addPage(marketsPage = new MarketsPage());
+        addPage(namePage = new CurrencyExchangePage());
+        addPage(identifierPage = new IdentifierPage());
+        addPage(marketsPage = new MarketsPage());
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
-	 */
-	@Override
-	public boolean performFinish() {
-		final IRepository repository = namePage.getRepository();
-		final ISecurity resource = new CurrencyExchange(namePage.getSecurityName(), identifierPage.getFeedIdentifier(), namePage.getFromCurrency(), namePage.getToCurrency(), 1.0);
-		final IMarket[] markets = marketsPage.getSelectedMarkets();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#performFinish()
+     */
+    @Override
+    public boolean performFinish() {
+        final IRepository repository = namePage.getRepository();
+        final ISecurity resource = new CurrencyExchange(namePage.getSecurityName(), identifierPage.getFeedIdentifier(), namePage.getFromCurrency(), namePage.getToCurrency(), 1.0);
+        final IMarket[] markets = marketsPage.getSelectedMarkets();
 
-		final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
-		service.runInService(new IRepositoryRunnable() {
-			public IStatus run(IProgressMonitor monitor) throws Exception {
-				service.moveAdaptable(new IAdaptable[] { resource }, repository);
-				for (int i = 0; i < markets.length; i++)
-					markets[i].addMembers(new ISecurity[] { resource });
-	            return Status.OK_STATUS;
+        final IRepositoryService service = UIActivator.getDefault().getRepositoryService();
+        service.runInService(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                service.moveAdaptable(new IAdaptable[] {
+                    resource
+                }, repository);
+                for (int i = 0; i < markets.length; i++) {
+                    markets[i].addMembers(new ISecurity[] {
+                        resource
+                    });
+                }
+                return Status.OK_STATUS;
             }
-		}, null);
+        }, null);
 
-		return true;
-	}
+        return true;
+    }
 }

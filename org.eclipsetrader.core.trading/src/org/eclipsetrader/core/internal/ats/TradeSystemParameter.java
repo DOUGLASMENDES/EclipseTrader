@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,33 +20,36 @@ import org.eclipsetrader.core.ats.ITradeSystemParameter;
 
 @XmlRootElement(name = "param")
 public class TradeSystemParameter implements ITradeSystemParameter {
-	@XmlAttribute(name = "id")
-	private String name;
 
-	@XmlValue
-	private String value;
+    @XmlAttribute(name = "id")
+    private String name;
 
-	protected TradeSystemParameter() {
-	}
+    @XmlValue
+    private String value;
 
-	public TradeSystemParameter(String name, String value) {
-	    this.name = name;
-	    this.value = value;
+    protected TradeSystemParameter() {
     }
 
-	/* (non-Javadoc)
+    public TradeSystemParameter(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IParameter#getName()
      */
-	@XmlTransient
+    @Override
+    @XmlTransient
     public String getName() {
-    	return name;
+        return name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IParameter#getValue()
      */
-	@XmlTransient
+    @Override
+    @XmlTransient
     public String getValue() {
-    	return value;
+        return value;
     }
 }

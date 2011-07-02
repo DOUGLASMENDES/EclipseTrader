@@ -21,103 +21,110 @@ import java.util.Observable;
  * @since 1.0
  */
 public class BarGenerator extends Observable {
-	private TimeSpan timeSpan;
 
-	Date dateOpen;
-	Double open;
-	Double high;
-	Double low;
-	Double close;
-	Long volume;
+    private TimeSpan timeSpan;
 
-	Date dateClose;
-	private Calendar calendar = Calendar.getInstance();
+    Date dateOpen;
+    Double open;
+    Double high;
+    Double low;
+    Double close;
+    Long volume;
 
-	/**
-	 * Constructs a new instance of the generator using the given time span to aggregate trades.
-	 *
-	 * @param timeSpan the aggregation time span.
-	 */
-	public BarGenerator(TimeSpan timeSpan) {
-		this.timeSpan = timeSpan;
-	}
+    Date dateClose;
+    private Calendar calendar = Calendar.getInstance();
 
-	/**
-	 * Adds a new trade to the current bar.
-	 * <p>If the new trade causes a pending bar to close (the trade time is past the expected close time)
-	 * the method returns the closed bar, otherwise it returns <code>null</code>.</p>
-	 *
-	 * @param trade the trade to add.
-	 */
-	public void addTrade(ITrade trade) {
-		if (trade.getTime() == null)
-			return;
+    /**
+     * Constructs a new instance of the generator using the given time span to aggregate trades.
+     *
+     * @param timeSpan the aggregation time span.
+     */
+    public BarGenerator(TimeSpan timeSpan) {
+        this.timeSpan = timeSpan;
+    }
 
-		calendar.setTime(trade.getTime());
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
+    /**
+     * Adds a new trade to the current bar.
+     * <p>If the new trade causes a pending bar to close (the trade time is past the expected close time)
+     * the method returns the closed bar, otherwise it returns <code>null</code>.</p>
+     *
+     * @param trade the trade to add.
+     */
+    public void addTrade(ITrade trade) {
+        if (trade.getTime() == null) {
+            return;
+        }
 
-		if (dateOpen != null && dateClose != null) {
-			Date time = calendar.getTime();
+        calendar.setTime(trade.getTime());
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-			if (!time.before(dateOpen) && time.before(dateClose)) {
-				if (high == null || trade.getPrice() > high)
-					high = trade.getPrice();
-				if (low == null || trade.getPrice() < low)
-					low = trade.getPrice();
-				close = trade.getPrice();
+        if (dateOpen != null && dateClose != null) {
+            Date time = calendar.getTime();
 
-				if (trade.getSize() != null)
-					volume = volume != null ? volume + trade.getSize() : trade.getSize();
-			}
+            if (!time.before(dateOpen) && time.before(dateClose)) {
+                if (high == null || trade.getPrice() > high) {
+                    high = trade.getPrice();
+                }
+                if (low == null || trade.getPrice() < low) {
+                    low = trade.getPrice();
+                }
+                close = trade.getPrice();
 
-			if (!time.before(dateClose)) {
-				setChanged();
-				notifyObservers(new Bar(dateOpen, timeSpan, open, high, low, close, volume));
-				dateOpen = null;
-			}
-		}
+                if (trade.getSize() != null) {
+                    volume = volume != null ? volume + trade.getSize() : trade.getSize();
+                }
+            }
 
-		if (dateOpen == null) {
-			int round = calendar.get(Calendar.MINUTE) % timeSpan.getLength();
-			calendar.add(Calendar.MINUTE, -round);
-			dateOpen = calendar.getTime();
-			calendar.add(Calendar.MINUTE, timeSpan.getLength());
-			dateClose = calendar.getTime();
+            if (!time.before(dateClose)) {
+                setChanged();
+                notifyObservers(new Bar(dateOpen, timeSpan, open, high, low, close, volume));
+                dateOpen = null;
+            }
+        }
 
-			open = trade.getPrice();
-			high = trade.getPrice();
-			low = trade.getPrice();
-			close = trade.getPrice();
-			volume = trade.getSize();
+        if (dateOpen == null) {
+            int round = calendar.get(Calendar.MINUTE) % timeSpan.getLength();
+            calendar.add(Calendar.MINUTE, -round);
+            dateOpen = calendar.getTime();
+            calendar.add(Calendar.MINUTE, timeSpan.getLength());
+            dateClose = calendar.getTime();
 
-			setChanged();
-			notifyObservers(new BarOpen(dateOpen, timeSpan, open));
-		}
-	}
+            open = trade.getPrice();
+            high = trade.getPrice();
+            low = trade.getPrice();
+            close = trade.getPrice();
+            volume = trade.getSize();
 
-	/**
-	 * Forces the current pending bar to close.
-	 */
-	public void forceBarClose() {
-		if (dateOpen == null)
-			return;
+            setChanged();
+            notifyObservers(new BarOpen(dateOpen, timeSpan, open));
+        }
+    }
 
-		setChanged();
-		notifyObservers(new Bar(dateOpen, timeSpan, open, high, low, close, volume));
+    /**
+     * Forces the current pending bar to close.
+     */
+    public void forceBarClose() {
+        if (dateOpen == null) {
+            return;
+        }
 
-		dateOpen = null;
-	}
+        setChanged();
+        notifyObservers(new Bar(dateOpen, timeSpan, open, high, low, close, volume));
 
-	/**
-	 * Gets if the there is a pending bar that is expired (current time is past the expected
-	 * close time).
-	 *
-	 * @return <code>true</code> if there is a pending expired bar.
-	 */
-	public boolean isBarExpired() {
-		if (dateOpen == null || dateClose == null)
-			return false;
-		return new Date().after(dateClose);
-	}
+        dateOpen = null;
+    }
+
+    /**
+     * Gets if the there is a pending bar that is expired (current time is past the expected
+     * close time).
+     *
+     * @return <code>true</code> if there is a pending expired bar.
+     */
+    public boolean isBarExpired() {
+        if (dateOpen == null || dateClose == null) {
+            return false;
+        }
+        return new Date().after(dateClose);
+    }
 }

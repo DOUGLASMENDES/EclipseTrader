@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,22 +22,23 @@ import org.eclipsetrader.core.views.IDataProviderFactory;
 
 @XmlRootElement(name = "column")
 public class ColumnType {
-	@XmlValue
-	private String name;
 
-	@XmlAttribute(name = "factory")
-	@XmlJavaTypeAdapter(DataProviderFactoryAdapter.class)
-	private IDataProviderFactory dataProviderFactory;
+    @XmlValue
+    private String name;
 
-	public ColumnType() {
-	}
+    @XmlAttribute(name = "factory")
+    @XmlJavaTypeAdapter(DataProviderFactoryAdapter.class)
+    private IDataProviderFactory dataProviderFactory;
 
-	public ColumnType(IColumn column) {
-		this.name = column.getName();
-		this.dataProviderFactory = column.getDataProviderFactory();
-	}
+    public ColumnType() {
+    }
 
-	public IColumn getElement() {
-		return new Column(name != null && !name.equals("") ? name : null, dataProviderFactory);
-	}
+    public ColumnType(IColumn column) {
+        this.name = column.getName();
+        this.dataProviderFactory = column.getDataProviderFactory();
+    }
+
+    public IColumn getElement() {
+        return new Column(name != null && !name.equals("") ? name : null, dataProviderFactory);
+    }
 }

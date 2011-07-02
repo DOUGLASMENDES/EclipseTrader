@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,31 +18,31 @@ package org.eclipsetrader.core.feed;
  */
 public interface IQuote {
 
-	/**
-	 * Returns the bid price.
-	 *
-	 * @return the price.
-	 */
-	public Double getBid();
+    /**
+     * Returns the bid price.
+     *
+     * @return the price.
+     */
+    public Double getBid();
 
-	/**
-	 * Returns the ask price.
-	 *
-	 * @return the price.
-	 */
-	public Double getAsk();
+    /**
+     * Returns the ask price.
+     *
+     * @return the price.
+     */
+    public Double getAsk();
 
-	/**
-	 * Returns the number of lots in the bid.
-	 *
-	 * @return the number of lots.
-	 */
-	public Long getBidSize();
+    /**
+     * Returns the number of lots in the bid.
+     *
+     * @return the number of lots.
+     */
+    public Long getBidSize();
 
-	/**
-	 * Returns the number of lots in the ask.
-	 *
-	 * @return the number of lots.
-	 */
-	public Long getAskSize();
+    /**
+     * Returns the number of lots in the ask.
+     *
+     * @return the number of lots.
+     */
+    public Long getAskSize();
 }

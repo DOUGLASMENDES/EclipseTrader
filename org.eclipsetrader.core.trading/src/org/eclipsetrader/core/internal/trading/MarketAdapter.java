@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
@@ -27,144 +28,159 @@ import org.osgi.framework.ServiceReference;
 
 public class MarketAdapter extends XmlAdapter<String, IMarket> {
 
-	private class FailsafeMarket implements IMarket {
-		private String name;
+    private class FailsafeMarket implements IMarket {
 
-		public FailsafeMarket(String name) {
-			this.name = name;
-		}
+        private String name;
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#addMembers(org.eclipsetrader.core.instruments.ISecurity[])
-		 */
-		public void addMembers(ISecurity[] securities) {
-		}
+        public FailsafeMarket(String name) {
+            this.name = name;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
-		 */
-		public IBackfillConnector getBackfillConnector() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#addMembers(org.eclipsetrader.core.instruments.ISecurity[])
+         */
+        @Override
+        public void addMembers(ISecurity[] securities) {
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
-		 */
-		public IBackfillConnector getIntradayBackfillConnector() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#getBackfillConnector()
+         */
+        @Override
+        public IBackfillConnector getBackfillConnector() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#getLiveFeedConnector()
-		 */
-		public IFeedConnector getLiveFeedConnector() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#getIntradayBackfillConnector()
+         */
+        @Override
+        public IBackfillConnector getIntradayBackfillConnector() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#getMembers()
-		 */
-		public ISecurity[] getMembers() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#getLiveFeedConnector()
+         */
+        @Override
+        public IFeedConnector getLiveFeedConnector() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#getName()
-		 */
-		public String getName() {
-			return name;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#getMembers()
+         */
+        @Override
+        public ISecurity[] getMembers() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#getNextDay()
-		 */
-		public IMarketDay getNextDay() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#getName()
+         */
+        @Override
+        public String getName() {
+            return name;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#getToday()
-		 */
-		public IMarketDay getToday() {
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#getNextDay()
+         */
+        @Override
+        public IMarketDay getNextDay() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#hasMember(org.eclipsetrader.core.instruments.ISecurity)
-		 */
-		public boolean hasMember(ISecurity security) {
-			return false;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#getToday()
+         */
+        @Override
+        public IMarketDay getToday() {
+            return null;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#isOpen()
-		 */
-		public boolean isOpen() {
-			return false;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#hasMember(org.eclipsetrader.core.instruments.ISecurity)
+         */
+        @Override
+        public boolean hasMember(ISecurity security) {
+            return false;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#isOpen(java.util.Date)
-		 */
-		public boolean isOpen(Date time) {
-			return false;
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#isOpen()
+         */
+        @Override
+        public boolean isOpen() {
+            return false;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.core.markets.IMarket#removeMembers(org.eclipsetrader.core.instruments.ISecurity[])
-		 */
-		public void removeMembers(ISecurity[] securities) {
-		}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#isOpen(java.util.Date)
+         */
+        @Override
+        public boolean isOpen(Date time) {
+            return false;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-		 */
-		@SuppressWarnings("unchecked")
-		public Object getAdapter(Class adapter) {
-			return null;
-		}
-	}
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.markets.IMarket#removeMembers(org.eclipsetrader.core.instruments.ISecurity[])
+         */
+        @Override
+        public void removeMembers(ISecurity[] securities) {
+        }
 
-	public MarketAdapter() {
-	}
+        /* (non-Javadoc)
+         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+         */
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object getAdapter(Class adapter) {
+            return null;
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
-	 */
-	@Override
-	public String marshal(IMarket v) throws Exception {
-		return v != null ? v.getName() : null;
-	}
+    public MarketAdapter() {
+    }
 
-	/* (non-Javadoc)
-	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
-	 */
-	@Override
-	public IMarket unmarshal(String v) throws Exception {
-		if (v == null)
-			return null;
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+     */
+    @Override
+    public String marshal(IMarket v) throws Exception {
+        return v != null ? v.getName() : null;
+    }
 
-		IMarket market = null;
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+     */
+    @Override
+    public IMarket unmarshal(String v) throws Exception {
+        if (v == null) {
+            return null;
+        }
 
-		try {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+        IMarket market = null;
 
-			IMarketService marketService = (IMarketService) context.getService(serviceReference);
-			market = marketService.getMarket(v);
+        try {
+            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
 
-			context.ungetService(serviceReference);
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading market service", e);
-			Activator.log(status);
-		}
+            IMarketService marketService = (IMarketService) context.getService(serviceReference);
+            market = marketService.getMarket(v);
 
-		if (market == null) {
-			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Failed to load market " + v, null);
-			Activator.log(status);
-			return new FailsafeMarket(v);
-		}
+            context.ungetService(serviceReference);
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading market service", e);
+            Activator.log(status);
+        }
 
-		return market;
-	}
+        if (market == null) {
+            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load market " + v, null);
+            Activator.log(status);
+            return new FailsafeMarket(v);
+        }
+
+        return market;
+    }
 }

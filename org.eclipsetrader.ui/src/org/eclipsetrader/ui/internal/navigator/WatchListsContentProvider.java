@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,60 +21,72 @@ import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class WatchListsContentProvider implements IStructuredContentProvider {
-	private Viewer viewer;
 
-	private IRepositoryChangeListener resourceListener = new IRepositoryChangeListener() {
-		public void repositoryResourceChanged(RepositoryChangeEvent event) {
-    		NavigatorView view = (NavigatorView) viewer.getInput();
-    		view.update();
+    private Viewer viewer;
 
-			if (!viewer.getControl().isDisposed()) {
-				try {
-					viewer.getControl().getDisplay().asyncExec(new Runnable() {
-						public void run() {
-							if (!viewer.getControl().isDisposed())
-								viewer.refresh();
-						}
-					});
-				} catch (SWTException e) {
-					if (e.code != SWT.ERROR_DEVICE_DISPOSED)
-						throw e;
-				}
-			}
-		}
-	};
+    private IRepositoryChangeListener resourceListener = new IRepositoryChangeListener() {
 
-	public WatchListsContentProvider() {
-	}
+        @Override
+        public void repositoryResourceChanged(RepositoryChangeEvent event) {
+            NavigatorView view = (NavigatorView) viewer.getInput();
+            view.update();
 
-	/* (non-Javadoc)
+            if (!viewer.getControl().isDisposed()) {
+                try {
+                    viewer.getControl().getDisplay().asyncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            if (!viewer.getControl().isDisposed()) {
+                                viewer.refresh();
+                            }
+                        }
+                    });
+                } catch (SWTException e) {
+                    if (e.code != SWT.ERROR_DEVICE_DISPOSED) {
+                        throw e;
+                    }
+                }
+            }
+        }
+    };
+
+    public WatchListsContentProvider() {
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
      */
+    @Override
     public Object[] getElements(Object inputElement) {
-		return getRepositoryService().getWatchLists();
+        return getRepositoryService().getWatchLists();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.IContentProvider#dispose()
      */
+    @Override
     public void dispose() {
-		getRepositoryService().removeRepositoryResourceListener(resourceListener);
+        getRepositoryService().removeRepositoryResourceListener(resourceListener);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
      */
+    @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-    	if (oldInput != null)
-			getRepositoryService().removeRepositoryResourceListener(resourceListener);
+        if (oldInput != null) {
+            getRepositoryService().removeRepositoryResourceListener(resourceListener);
+        }
 
-    	this.viewer = viewer;
+        this.viewer = viewer;
 
-    	if (newInput != null)
-			getRepositoryService().addRepositoryResourceListener(resourceListener);
+        if (newInput != null) {
+            getRepositoryService().addRepositoryResourceListener(resourceListener);
+        }
     }
 
-	protected IRepositoryService getRepositoryService() {
-		return UIActivator.getDefault().getRepositoryService();
-	}
+    protected IRepositoryService getRepositoryService() {
+        return UIActivator.getDefault().getRepositoryService();
+    }
 }

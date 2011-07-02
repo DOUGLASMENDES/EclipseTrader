@@ -18,38 +18,39 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 public class DoubleCellEditor extends TextCellEditor {
-	NumberFormat numberFormat = NumberFormat.getInstance();
 
-	public DoubleCellEditor() {
-	}
+    NumberFormat numberFormat = NumberFormat.getInstance();
 
-	public DoubleCellEditor(Composite parent) {
-		super(parent);
-	}
+    public DoubleCellEditor() {
+    }
 
-	public DoubleCellEditor(Composite parent, int style) {
-		super(parent, style);
-	}
+    public DoubleCellEditor(Composite parent) {
+        super(parent);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.TextCellEditor#doGetValue()
-	 */
-	@Override
-	protected Object doGetValue() {
-		String text = (String) super.doGetValue();
-		try {
-			return numberFormat.parse(text).doubleValue();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public DoubleCellEditor(Composite parent, int style) {
+        super(parent, style);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.TextCellEditor#doSetValue(java.lang.Object)
-	 */
-	@Override
-	protected void doSetValue(Object value) {
-		super.doSetValue(numberFormat.format(value));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.TextCellEditor#doGetValue()
+     */
+    @Override
+    protected Object doGetValue() {
+        String text = (String) super.doGetValue();
+        try {
+            return numberFormat.parse(text).doubleValue();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.TextCellEditor#doSetValue(java.lang.Object)
+     */
+    @Override
+    protected void doSetValue(Object value) {
+        super.doSetValue(numberFormat.format(value));
+    }
 }

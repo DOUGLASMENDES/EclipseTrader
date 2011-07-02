@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,116 +30,133 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.trading.IBroker;
 
 public class MarketBrokerAdapterFactory implements IAdapterFactory {
-	private File file;
-	private List<MarketBroker> list;
 
-	public MarketBrokerAdapterFactory(File file) {
-		this.file = file;
-	}
+    private File file;
+    private List<MarketBroker> list;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (list == null) {
-			list = new ArrayList<MarketBroker>();
-			try {
-				if (file.exists())
-					load(file);
-			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error loading market brokers settings", null); //$NON-NLS-1$
-				Activator.getDefault().getLog().log(status);
-			}
-		}
+    public MarketBrokerAdapterFactory(File file) {
+        this.file = file;
+    }
 
-		if (!(adaptableObject instanceof IMarket))
-			return null;
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Object adaptableObject, Class adapterType) {
+        if (list == null) {
+            list = new ArrayList<MarketBroker>();
+            try {
+                if (file.exists()) {
+                    load(file);
+                }
+            } catch (Exception e) {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error loading market brokers settings", null); //$NON-NLS-1$
+                Activator.getDefault().getLog().log(status);
+            }
+        }
 
-		if (adapterType.isAssignableFrom(getClass()))
-			return this;
+        if (!(adaptableObject instanceof IMarket)) {
+            return null;
+        }
 
-		if (adapterType.isAssignableFrom(IBroker.class)) {
-			for (MarketBroker broker : list) {
-				if (broker.getMarket() == adaptableObject)
-					return broker.getConnector();
-			}
-		}
+        if (adapterType.isAssignableFrom(getClass())) {
+            return this;
+        }
 
-		return null;
-	}
+        if (adapterType.isAssignableFrom(IBroker.class)) {
+            for (MarketBroker broker : list) {
+                if (broker.getMarket() == adaptableObject) {
+                    return broker.getConnector();
+                }
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
-	 */
-	@SuppressWarnings("unchecked")
-	public Class[] getAdapterList() {
-		return new Class[] {
-		    IBroker.class, MarketBrokerAdapterFactory.class,
-		};
-	}
+        return null;
+    }
 
-	void load(File file) throws JAXBException {
-		JAXBContext jaxbContext = JAXBContext.newInstance(MarketBroker[].class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.log(status);
-				return true;
-			}
-		});
-		JAXBElement<MarketBroker[]> element = unmarshaller.unmarshal(new StreamSource(file), MarketBroker[].class);
-		list.addAll(Arrays.asList(element.getValue()));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class[] getAdapterList() {
+        return new Class[] {
+                IBroker.class, MarketBrokerAdapterFactory.class,
+        };
+    }
 
-	public void addOverride(MarketBroker override) {
-		for (Iterator<MarketBroker> iter = list.iterator(); iter.hasNext();) {
-			if (iter.next().getMarket() == override.getMarket())
-				iter.remove();
-		}
-		list.add(override);
-	}
+    void load(File file) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(MarketBroker[].class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-	public void removeOverride(MarketBroker override) {
-		for (Iterator<MarketBroker> iter = list.iterator(); iter.hasNext();) {
-			if (iter.next().getMarket() == override.getMarket())
-				iter.remove();
-		}
-	}
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.log(status);
+                return true;
+            }
+        });
+        JAXBElement<MarketBroker[]> element = unmarshaller.unmarshal(new StreamSource(file), MarketBroker[].class);
+        list.addAll(Arrays.asList(element.getValue()));
+    }
 
-	public void clearOverride(IMarket market) {
-		for (Iterator<MarketBroker> iter = list.iterator(); iter.hasNext();) {
-			if (iter.next().getMarket() == market)
-				iter.remove();
-		}
-	}
+    public void addOverride(MarketBroker override) {
+        for (Iterator<MarketBroker> iter = list.iterator(); iter.hasNext();) {
+            if (iter.next().getMarket() == override.getMarket()) {
+                iter.remove();
+            }
+        }
+        list.add(override);
+    }
 
-	public void save(File file) throws JAXBException, IOException {
-		if (list == null)
-			return;
+    public void removeOverride(MarketBroker override) {
+        for (Iterator<MarketBroker> iter = list.iterator(); iter.hasNext();) {
+            if (iter.next().getMarket() == override.getMarket()) {
+                iter.remove();
+            }
+        }
+    }
 
-		if (file.exists())
-			file.delete();
+    public void clearOverride(IMarket market) {
+        for (Iterator<MarketBroker> iter = list.iterator(); iter.hasNext();) {
+            if (iter.next().getMarket() == market) {
+                iter.remove();
+            }
+        }
+    }
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(MarketBroker[].class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.getDefault().getLog().log(status);
-				return true;
-			}
-		});
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+    public void save(File file) throws JAXBException, IOException {
+        if (list == null) {
+            return;
+        }
 
-		JAXBElement<MarketBroker[]> element = new JAXBElement<MarketBroker[]>(new QName("list"), MarketBroker[].class, list.toArray(new MarketBroker[list.size()]));
-		marshaller.marshal(element, new FileWriter(file));
-	}
+        if (file.exists()) {
+            file.delete();
+        }
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(MarketBroker[].class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setEventHandler(new ValidationEventHandler() {
+
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.getDefault().getLog().log(status);
+                return true;
+            }
+        });
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+
+        JAXBElement<MarketBroker[]> element = new JAXBElement<MarketBroker[]>(new QName("list"), MarketBroker[].class, list.toArray(new MarketBroker[list.size()]));
+        marshaller.marshal(element, new FileWriter(file));
+    }
 }

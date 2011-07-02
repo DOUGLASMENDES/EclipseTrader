@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,11 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class DateAdapter extends XmlAdapter<String,Date> {
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+public class DateAdapter extends XmlAdapter<String, Date> {
 
-	/* (non-Javadoc)
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    /* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
     @Override
@@ -28,7 +29,7 @@ public class DateAdapter extends XmlAdapter<String,Date> {
         return v != null ? dateFormat.format(v) : null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
     @Override

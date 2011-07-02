@@ -16,30 +16,34 @@ import org.eclipse.swt.graphics.Image;
 
 public abstract class AbstractNotification implements INotification, IAdaptable, Comparable<AbstractNotification> {
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.commons.INotification#getDescription()
      */
+    @Override
     public String getDescription() {
-	    return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.commons.INotification#getLabel()
      */
+    @Override
     public String getLabel() {
-	    return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.commons.INotification#getNotificationImage()
      */
+    @Override
     public Image getNotificationImage() {
-	    return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.commons.INotification#open()
      */
+    @Override
     public void open() {
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,23 +12,24 @@
 package org.eclipsetrader.core.feed;
 
 public class ConnectorEvent {
-	public IFeedConnector connector;
-	public int status;
-	public String message;
 
-	public ConnectorEvent(IFeedConnector connector, int status) {
-		this.connector = connector;
-		this.status = status;
-	}
+    public IFeedConnector connector;
+    public int status;
+    public String message;
 
-	public ConnectorEvent(IFeedConnector connector, String message) {
-		this.connector = connector;
-		this.message = message;
-	}
+    public ConnectorEvent(IFeedConnector connector, int status) {
+        this.connector = connector;
+        this.status = status;
+    }
 
-	public ConnectorEvent(IFeedConnector connector, int status, String message) {
-		this.connector = connector;
-		this.status = status;
-		this.message = message;
-	}
+    public ConnectorEvent(IFeedConnector connector, String message) {
+        this.connector = connector;
+        this.message = message;
+    }
+
+    public ConnectorEvent(IFeedConnector connector, int status, String message) {
+        this.connector = connector;
+        this.status = status;
+        this.message = message;
+    }
 }

@@ -19,33 +19,36 @@ import java.util.Date;
  * @since 1.0
  */
 public class Dividend implements IDividend {
-	private Date exDate;
-	private Double value;
 
-	public Dividend(Date exDate, double value) {
-		this.exDate = exDate;
-		this.value = value;
-	}
+    private Date exDate;
+    private Double value;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IDividend#getExDate()
-	 */
-	public Date getExDate() {
-		return exDate;
-	}
+    public Dividend(Date exDate, double value) {
+        this.exDate = exDate;
+        this.value = value;
+    }
 
-	public void setExDate(Date exDate) {
-		this.exDate = exDate;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IDividend#getExDate()
+     */
+    @Override
+    public Date getExDate() {
+        return exDate;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IDividend#getValue()
-	 */
-	public Double getValue() {
-		return value;
-	}
+    public void setExDate(Date exDate) {
+        this.exDate = exDate;
+    }
 
-	public void setValue(double value) {
-		this.value = value;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IDividend#getValue()
+     */
+    @Override
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
 }

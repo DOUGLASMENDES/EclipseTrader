@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,21 +23,21 @@ import org.eclipsetrader.core.feed.ITrade;
  */
 public interface IAlert {
 
-	public String getId();
+    public String getId();
 
-	public String getName();
+    public String getName();
 
-	public String getDescription();
+    public String getDescription();
 
-	public void setParameters(Map<String, Object> map);
+    public void setParameters(Map<String, Object> map);
 
-	public Map<String, Object> getParameters();
+    public Map<String, Object> getParameters();
 
-	public void setInitialValues(ITrade trade, IQuote quote);
+    public void setInitialValues(ITrade trade, IQuote quote);
 
-	public void setTrade(ITrade trade);
+    public void setTrade(ITrade trade);
 
-	public void setQuote(IQuote quote);
+    public void setQuote(IQuote quote);
 
-	public boolean isTriggered();
+    public boolean isTriggered();
 }

@@ -14,46 +14,50 @@ package org.eclipsetrader.core.feed;
 import java.util.Date;
 
 public class Split implements ISplit {
-	private Date date;
-	private double oldQuantity;
-	private double newQuantity;
 
-	public Split(Date date, double oldQuantity, double newQuantity) {
-		this.date = date;
-		this.oldQuantity = oldQuantity;
-		this.newQuantity = newQuantity;
-	}
+    private Date date;
+    private double oldQuantity;
+    private double newQuantity;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.ISplit#getDate()
-	 */
-	public Date getDate() {
-		return date;
-	}
+    public Split(Date date, double oldQuantity, double newQuantity) {
+        this.date = date;
+        this.oldQuantity = oldQuantity;
+        this.newQuantity = newQuantity;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.ISplit#getDate()
+     */
+    @Override
+    public Date getDate() {
+        return date;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.ISplit#getNewQuantity()
-	 */
-	public Double getNewQuantity() {
-		return newQuantity;
-	}
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
-	public void setNewQuantity(double newQuantity) {
-		this.newQuantity = newQuantity;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.ISplit#getNewQuantity()
+     */
+    @Override
+    public Double getNewQuantity() {
+        return newQuantity;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.ISplit#getOldQuantity()
-	 */
-	public Double getOldQuantity() {
-		return oldQuantity;
-	}
+    public void setNewQuantity(double newQuantity) {
+        this.newQuantity = newQuantity;
+    }
 
-	public void setOldQuantity(double oldQuantity) {
-		this.oldQuantity = oldQuantity;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.ISplit#getOldQuantity()
+     */
+    @Override
+    public Double getOldQuantity() {
+        return oldQuantity;
+    }
+
+    public void setOldQuantity(double oldQuantity) {
+        this.oldQuantity = oldQuantity;
+    }
 }

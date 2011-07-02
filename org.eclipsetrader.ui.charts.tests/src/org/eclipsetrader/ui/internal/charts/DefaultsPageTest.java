@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,154 +21,155 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class DefaultsPageTest extends TestCase {
-	Shell shell;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		shell = new Shell(Display.getDefault());
-	}
+    Shell shell;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		shell.dispose();
-	}
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        shell = new Shell(Display.getDefault());
+    }
 
-	public void testDefaultBackfillMethodSelection() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        shell.dispose();
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testDefaultBackfillMethodSelection() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
 
-		page.performDefaults();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertTrue(page.useStartDate.getSelection());
-		assertFalse(page.useYears.getSelection());
-	}
+        page.performDefaults();
 
-	public void testDefaultStartDateSelection() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
+        assertTrue(page.useStartDate.getSelection());
+        assertFalse(page.useYears.getSelection());
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testDefaultStartDateSelection() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
 
-		page.performDefaults();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertNull(page.startDate.getSelection());
-	}
+        page.performDefaults();
 
-	public void testDefaultYearsSelection() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
+        assertNull(page.startDate.getSelection());
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testDefaultYearsSelection() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
 
-		page.performDefaults();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertEquals(1, page.years.getSelection());
-	}
+        page.performDefaults();
 
-	public void testSelectBackfillMethodFromPreferences() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
-		preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
+        assertEquals(1, page.years.getSelection());
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testSelectBackfillMethodFromPreferences() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
+        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
 
-		page.performDefaults();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertFalse(page.useStartDate.getSelection());
-		assertTrue(page.useYears.getSelection());
-	}
+        page.performDefaults();
 
-	public void testSelectStartDateFromPreferences() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
-		preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "20090620");
+        assertFalse(page.useStartDate.getSelection());
+        assertTrue(page.useYears.getSelection());
+    }
 
-		Date expectedDate = new SimpleDateFormat("yyyyMMdd").parse(preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
+    public void testSelectStartDateFromPreferences() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
+        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "20090620");
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+        Date expectedDate = new SimpleDateFormat("yyyyMMdd").parse(preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
 
-		page.performDefaults();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertEquals(expectedDate, page.startDate.getSelection());
-	}
+        page.performDefaults();
 
-	public void testSelectYearsFromPreferences() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
-		preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS, 5);
+        assertEquals(expectedDate, page.startDate.getSelection());
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testSelectYearsFromPreferences() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
+        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS, 5);
 
-		page.performDefaults();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertEquals(5, page.years.getSelection());
-	}
+        page.performDefaults();
 
-	public void testSaveStartDateBackfillMethod() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
+        assertEquals(5, page.years.getSelection());
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testSaveStartDateBackfillMethod() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
 
-		page.useStartDate.setSelection(true);
-		page.useYears.setSelection(false);
-		page.performOk();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertEquals(0, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD));
-	}
+        page.useStartDate.setSelection(true);
+        page.useYears.setSelection(false);
+        page.performOk();
 
-	public void testSaveYearsBackfillMethod() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
+        assertEquals(0, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD));
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testSaveYearsBackfillMethod() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
 
-		page.useStartDate.setSelection(false);
-		page.useYears.setSelection(true);
-		page.performOk();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertEquals(1, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD));
-	}
+        page.useStartDate.setSelection(false);
+        page.useYears.setSelection(true);
+        page.performOk();
 
-	public void testSaveStartDate() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
+        assertEquals(1, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD));
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testSaveStartDate() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
 
-		page.startDate.setSelection(new SimpleDateFormat("yyyyMMdd").parse("20090620"));
-		page.performOk();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertEquals("20090620", preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
-	}
+        page.startDate.setSelection(new SimpleDateFormat("yyyyMMdd").parse("20090620"));
+        page.performOk();
 
-	public void testSaveYears() throws Exception {
-		PreferenceStore preferences = new PreferenceStore();
+        assertEquals("20090620", preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
+    }
 
-		DefaultsPage page = new DefaultsPage();
-		page.setPreferenceStore(preferences);
-		page.createContents(shell);
+    public void testSaveYears() throws Exception {
+        PreferenceStore preferences = new PreferenceStore();
 
-		page.years.setSelection(5);
-		page.performOk();
+        DefaultsPage page = new DefaultsPage();
+        page.setPreferenceStore(preferences);
+        page.createContents(shell);
 
-		assertEquals(5, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS));
-	}
+        page.years.setSelection(5);
+        page.performOk();
+
+        assertEquals(5, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS));
+    }
 }

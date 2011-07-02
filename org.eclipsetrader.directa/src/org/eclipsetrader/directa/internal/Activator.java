@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,154 +39,169 @@ import org.osgi.framework.ServiceReference;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-	public static final String PLUGIN_ID = "org.eclipsetrader.directa";
-	public static final String REPOSITORY_FILE = "identifiers.xml"; //$NON-NLS-1$
 
-	public static final String PROP_CODE = "org.eclipsetrader.borsaitalia.code"; //$NON-NLS-1$
-	public static final String PROP_ISIN = "org.eclipsetrader.borsaitalia.isin"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "org.eclipsetrader.directa";
+    public static final String REPOSITORY_FILE = "identifiers.xml"; //$NON-NLS-1$
 
-	public static final String PREFS_USERNAME = "USERNAME";
-	public static final String PREFS_PASSWORD = "PASSWORD";
-	public static final String PREFS_CONNECTION_METHOD = "CONNECTION_METHOD";
-	public static final String PREFS_TRADING_HOST = "TRADING_HOST";
+    public static final String PROP_CODE = "org.eclipsetrader.borsaitalia.code"; //$NON-NLS-1$
+    public static final String PROP_ISIN = "org.eclipsetrader.borsaitalia.isin"; //$NON-NLS-1$
 
-	// The shared instance
-	private static Activator plugin;
+    public static final String PREFS_USERNAME = "USERNAME";
+    public static final String PREFS_PASSWORD = "PASSWORD";
+    public static final String PREFS_CONNECTION_METHOD = "CONNECTION_METHOD";
+    public static final String PREFS_TRADING_HOST = "TRADING_HOST";
 
-	private IdentifiersList identifiersList;
+    // The shared instance
+    private static Activator plugin;
 
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
+    private IdentifiersList identifiersList;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
+    /**
+     * The constructor
+     */
+    public Activator() {
+    }
 
-		startupRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        plugin = this;
 
-		IAdapterManager adapterManager = Platform.getAdapterManager();
-		adapterManager.registerAdapters(new IAdapterFactory() {
-			@SuppressWarnings("unchecked")
-			public Object getAdapter(Object adaptableObject, Class adapterType) {
-				if (adaptableObject instanceof OrderMonitor) {
-					if (adapterType.isAssignableFrom(PropertyChangeSupport.class))
-						return ((OrderMonitor) adaptableObject).getPropertyChangeSupport();
-				}
-				return null;
-			}
+        startupRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
 
-			@SuppressWarnings("unchecked")
-			public Class[] getAdapterList() {
-				return new Class[] {
-					PropertyChangeSupport.class,
-				};
-			}
-		}, OrderMonitor.class);
+        IAdapterManager adapterManager = Platform.getAdapterManager();
+        adapterManager.registerAdapters(new IAdapterFactory() {
 
-		WebConnector.getInstance();
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object getAdapter(Object adaptableObject, Class adapterType) {
+                if (adaptableObject instanceof OrderMonitor) {
+                    if (adapterType.isAssignableFrom(PropertyChangeSupport.class)) {
+                        return ((OrderMonitor) adaptableObject).getPropertyChangeSupport();
+                    }
+                }
+                return null;
+            }
 
-		ServiceReference serviceReference = context.getServiceReference(IStatusLineManager.class.getName());
-		if (serviceReference != null) {
-			IStatusLineManager statusLine = (IStatusLineManager) context.getService(serviceReference);
+            @Override
+            @SuppressWarnings("unchecked")
+            public Class[] getAdapterList() {
+                return new Class[] {
+                    PropertyChangeSupport.class,
+                };
+            }
+        }, OrderMonitor.class);
 
-			StatusLineContributionItem item = new StatusLineContributionItem(PLUGIN_ID);
-			item.setImage(imageDescriptorFromPlugin(PLUGIN_ID, "icons/d-small.gif").createImage());
-			statusLine.add(item);
+        WebConnector.getInstance();
 
-			context.ungetService(serviceReference);
-		}
-	}
+        ServiceReference serviceReference = context.getServiceReference(IStatusLineManager.class.getName());
+        if (serviceReference != null) {
+            IStatusLineManager statusLine = (IStatusLineManager) context.getService(serviceReference);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		shutdownRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
+            StatusLineContributionItem item = new StatusLineContributionItem(PLUGIN_ID);
+            item.setImage(imageDescriptorFromPlugin(PLUGIN_ID, "icons/d-small.gif").createImage());
+            statusLine.add(item);
 
-		WebConnector.getInstance().getAccount().save();
+            context.ungetService(serviceReference);
+        }
+    }
 
-		plugin = null;
-		super.stop(context);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        shutdownRepository(getStateLocation().append(REPOSITORY_FILE).toFile());
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static Activator getDefault() {
-		return plugin;
-	}
+        WebConnector.getInstance().getAccount().save();
 
-	public static void log(IStatus status) {
-		if (plugin != null)
-			plugin.getLog().log(status);
-		else
-			System.err.println(status);
-	}
+        plugin = null;
+        super.stop(context);
+    }
 
-	public static void log(String message, Throwable throwable) {
-		Status status = new Status(Status.ERROR, PLUGIN_ID, message, throwable);
-		if (plugin != null)
-			plugin.getLog().log(status);
-		else
-			System.err.println(status);
-	}
+    /**
+     * Returns the shared instance
+     *
+     * @return the shared instance
+     */
+    public static Activator getDefault() {
+        return plugin;
+    }
 
-	public void startupRepository(File file) {
-		if (file.exists() == true) {
-			try {
-				JAXBContext jaxbContext = JAXBContext.newInstance(IdentifiersList.class);
-				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				unmarshaller.setEventHandler(new ValidationEventHandler() {
-					public boolean handleEvent(ValidationEvent event) {
-						Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-						getLog().log(status);
-						return true;
-					}
-				});
-				identifiersList = (IdentifiersList) unmarshaller.unmarshal(file);
-			} catch (Exception e) {
-				Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
-				log(status);
-			}
-		}
+    public static void log(IStatus status) {
+        if (plugin != null) {
+            plugin.getLog().log(status);
+        }
+        else {
+            System.err.println(status);
+        }
+    }
 
-		// Fail safe, create an empty repository
-		if (identifiersList == null)
-			identifiersList = new IdentifiersList();
-	}
+    public static void log(String message, Throwable throwable) {
+        Status status = new Status(IStatus.ERROR, PLUGIN_ID, message, throwable);
+        if (plugin != null) {
+            plugin.getLog().log(status);
+        }
+        else {
+            System.err.println(status);
+        }
+    }
 
-	public void shutdownRepository(File file) {
-		try {
-			if (file.exists())
-				file.delete();
+    public void startupRepository(File file) {
+        if (file.exists() == true) {
+            try {
+                JAXBContext jaxbContext = JAXBContext.newInstance(IdentifiersList.class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-			JAXBContext jaxbContext = JAXBContext.newInstance(IdentifiersList.class);
-			Marshaller marshaller = jaxbContext.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
-			marshaller.setEventHandler(new ValidationEventHandler() {
-				public boolean handleEvent(ValidationEvent event) {
-					Status status = new Status(Status.WARNING, PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-					getLog().log(status);
-					return true;
-				}
-			});
-			marshaller.marshal(identifiersList, new FileWriter(file));
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, PLUGIN_ID, 0, "Error saving repository", e); //$NON-NLS-1$
-			log(status);
-		}
-	}
+                    @Override
+                    public boolean handleEvent(ValidationEvent event) {
+                        Status status = new Status(IStatus.WARNING, PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                        getLog().log(status);
+                        return true;
+                    }
+                });
+                identifiersList = (IdentifiersList) unmarshaller.unmarshal(file);
+            } catch (Exception e) {
+                Status status = new Status(IStatus.ERROR, PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
+                log(status);
+            }
+        }
+
+        // Fail safe, create an empty repository
+        if (identifiersList == null) {
+            identifiersList = new IdentifiersList();
+        }
+    }
+
+    public void shutdownRepository(File file) {
+        try {
+            if (file.exists()) {
+                file.delete();
+            }
+
+            JAXBContext jaxbContext = JAXBContext.newInstance(IdentifiersList.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+            marshaller.setEventHandler(new ValidationEventHandler() {
+
+                @Override
+                public boolean handleEvent(ValidationEvent event) {
+                    Status status = new Status(IStatus.WARNING, PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                    getLog().log(status);
+                    return true;
+                }
+            });
+            marshaller.marshal(identifiersList, new FileWriter(file));
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, PLUGIN_ID, 0, "Error saving repository", e); //$NON-NLS-1$
+            log(status);
+        }
+    }
 }

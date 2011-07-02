@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,49 +20,54 @@ import org.eclipsetrader.core.trading.IOrderMonitor;
 import org.eclipsetrader.core.trading.IOrderStatus;
 
 public class OrdersLabelProviderWrapper extends ColumnLabelProvider {
-	private Color canceledColor;
-	private Color rejectedColor;
-	private Color filledColor;
-	private Color partialColor;
 
-	private ColumnLabelProvider labelProvider;
+    private Color canceledColor;
+    private Color rejectedColor;
+    private Color filledColor;
+    private Color partialColor;
 
-	public OrdersLabelProviderWrapper(ColumnLabelProvider labelProvider) {
-		this.labelProvider = labelProvider;
+    private ColumnLabelProvider labelProvider;
 
-		canceledColor = Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
-		rejectedColor = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
-		filledColor = Display.getCurrent().getSystemColor(SWT.COLOR_GREEN);
-		partialColor = Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
-	}
+    public OrdersLabelProviderWrapper(ColumnLabelProvider labelProvider) {
+        this.labelProvider = labelProvider;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ColumnLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
-	 */
-	@Override
-	public void update(ViewerCell cell) {
-		Object element = cell.getElement();
-		cell.setText(labelProvider.getText(element));
-		cell.setImage(labelProvider.getImage(element));
-		cell.setBackground(labelProvider.getBackground(element));
+        canceledColor = Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
+        rejectedColor = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+        filledColor = Display.getCurrent().getSystemColor(SWT.COLOR_GREEN);
+        partialColor = Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+    }
 
-		Color color = labelProvider.getForeground(element);
-		cell.setForeground(color != null ? color : getForeground(element));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ColumnLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
+     */
+    @Override
+    public void update(ViewerCell cell) {
+        Object element = cell.getElement();
+        cell.setText(labelProvider.getText(element));
+        cell.setImage(labelProvider.getImage(element));
+        cell.setBackground(labelProvider.getBackground(element));
 
-		cell.setFont(labelProvider.getFont(element));
-	}
+        Color color = labelProvider.getForeground(element);
+        cell.setForeground(color != null ? color : getForeground(element));
 
-	@Override
-	public Color getForeground(Object element) {
-		IOrderMonitor order = (IOrderMonitor) element;
-		if (order.getStatus() == IOrderStatus.Canceled || order.getStatus() == IOrderStatus.Expired)
-			return canceledColor;
-		if (order.getStatus() == IOrderStatus.Rejected)
-			return rejectedColor;
-		if (order.getStatus() == IOrderStatus.Filled)
-			return filledColor;
-		if (order.getStatus() == IOrderStatus.Partial)
-			return partialColor;
-		return null;
-	}
+        cell.setFont(labelProvider.getFont(element));
+    }
+
+    @Override
+    public Color getForeground(Object element) {
+        IOrderMonitor order = (IOrderMonitor) element;
+        if (order.getStatus() == IOrderStatus.Canceled || order.getStatus() == IOrderStatus.Expired) {
+            return canceledColor;
+        }
+        if (order.getStatus() == IOrderStatus.Rejected) {
+            return rejectedColor;
+        }
+        if (order.getStatus() == IOrderStatus.Filled) {
+            return filledColor;
+        }
+        if (order.getStatus() == IOrderStatus.Partial) {
+            return partialColor;
+        }
+        return null;
+    }
 }

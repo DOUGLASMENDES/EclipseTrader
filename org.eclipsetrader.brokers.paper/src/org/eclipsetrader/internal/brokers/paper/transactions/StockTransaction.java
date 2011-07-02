@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,84 +32,91 @@ import org.eclipsetrader.internal.brokers.paper.types.SecurityAdapter;
 
 @XmlRootElement(name = "stock")
 public class StockTransaction implements ITransaction {
-	@XmlAttribute(name = "id")
-	private String id;
 
-	@XmlAttribute(name = "date")
-	@XmlJavaTypeAdapter(DateTimeAdapter.class)
-	private Date date;
+    @XmlAttribute(name = "id")
+    private String id;
 
-	@XmlAttribute(name = "security")
-	@XmlJavaTypeAdapter(SecurityAdapter.class)
-	private ISecurity security;
+    @XmlAttribute(name = "date")
+    @XmlJavaTypeAdapter(DateTimeAdapter.class)
+    private Date date;
 
-	@XmlAttribute(name = "quantity")
-	private Long quantity;
+    @XmlAttribute(name = "security")
+    @XmlJavaTypeAdapter(SecurityAdapter.class)
+    private ISecurity security;
 
-	@XmlAttribute(name = "price")
-	@XmlJavaTypeAdapter(DoubleValueAdapter.class)
-	private Double price;
+    @XmlAttribute(name = "quantity")
+    private Long quantity;
 
-	protected StockTransaction() {
-	}
+    @XmlAttribute(name = "price")
+    @XmlJavaTypeAdapter(DoubleValueAdapter.class)
+    private Double price;
 
-	public StockTransaction(ISecurity security, Long quantity, Double price) {
-		this.id = UUID.randomUUID().toString();
-	    this.date = new Date();
-	    this.security = security;
-	    this.quantity = quantity;
-	    this.price = price;
+    protected StockTransaction() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getId()
-	 */
-	@XmlTransient
-	public String getId() {
-		return id;
-	}
+    public StockTransaction(ISecurity security, Long quantity, Double price) {
+        this.id = UUID.randomUUID().toString();
+        this.date = new Date();
+        this.security = security;
+        this.quantity = quantity;
+        this.price = price;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getDate()
-	 */
-	@XmlTransient
-	public Date getDate() {
-		return date;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getId()
+     */
+    @Override
+    @XmlTransient
+    public String getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getDescription()
-	 */
-	@XmlTransient
-	public String getDescription() {
-		return NLS.bind("{1} {0} at {2}", new Object[] {
-				security.getName(),
-				String.valueOf(quantity),
-				String.valueOf(price),
-			});
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getDate()
+     */
+    @Override
+    @XmlTransient
+    public Date getDate() {
+        return date;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getAmount()
-	 */
-	@XmlTransient
-	public Cash getAmount() {
-		return new Cash(quantity * price, Currency.getInstance(Locale.getDefault()));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getDescription()
+     */
+    @Override
+    @XmlTransient
+    public String getDescription() {
+        return NLS.bind("{1} {0} at {2}", new Object[] {
+                security.getName(),
+                String.valueOf(quantity),
+                String.valueOf(price),
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.ITransaction#getOrder()
-	 */
-	@XmlTransient
-	public IOrder getOrder() {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getAmount()
+     */
+    @Override
+    @XmlTransient
+    public Cash getAmount() {
+        return new Cash(quantity * price, Currency.getInstance(Locale.getDefault()));
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.ITransaction#getOrder()
+     */
+    @Override
+    @XmlTransient
+    public IOrder getOrder() {
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.trading.ITransaction#getTransactions()
      */
-	@XmlTransient
+    @Override
+    @XmlTransient
     public ITransaction[] getTransactions() {
-	    return null;
+        return null;
     }
 }

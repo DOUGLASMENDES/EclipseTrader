@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,140 +36,155 @@ import org.eclipsetrader.news.core.IHeadLine;
 import org.eclipsetrader.news.internal.repository.HeadLine;
 
 public class NewsViewer extends ViewPart {
-	public static final String VIEW_ID = "org.eclipsetrader.news.browser";
 
-	private Action stopAction;
-	private Action refreshAction;
-	private Browser browser;
+    public static final String VIEW_ID = "org.eclipsetrader.news.browser";
 
-	private IHeadLine headLine;
+    private Action stopAction;
+    private Action refreshAction;
+    private Browser browser;
 
-	public NewsViewer() {
-	}
+    private IHeadLine headLine;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
-	 */
-	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException {
-		super.init(site, memento);
+    public NewsViewer() {
+    }
 
-		if (memento != null) {
-			String title = memento.getString("title");
-			String url = memento.getString("url");
-			if (url != null)
-				headLine = new HeadLine(null, null, title != null ? title : "", null, url);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+        super.init(site, memento);
 
-		stopAction = new Action("Stop") {
-			@Override
-			public void run() {
-				browser.stop();
-			}
-		};
-		stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_STOP));
-		stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
-		stopAction.setEnabled(false);
+        if (memento != null) {
+            String title = memento.getString("title");
+            String url = memento.getString("url");
+            if (url != null) {
+                headLine = new HeadLine(null, null, title != null ? title : "", null, url);
+            }
+        }
 
-		refreshAction = new Action("Refresh") {
-			@Override
-			public void run() {
-				stopAction.setEnabled(true);
-				refreshAction.setEnabled(false);
-				browser.refresh();
-			}
-		};
-		refreshAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_REFRESH));
-		refreshAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_REFRESH));
-		refreshAction.setEnabled(false);
+        stopAction = new Action("Stop") {
 
-		IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
-		toolbarManager.add(refreshAction);
-		toolbarManager.add(stopAction);
-		toolbarManager.add(new Separator("additions"));
+            @Override
+            public void run() {
+                browser.stop();
+            }
+        };
+        stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_STOP));
+        stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
+        stopAction.setEnabled(false);
 
-		site.getActionBars().updateActionBars();
+        refreshAction = new Action("Refresh") {
 
-		site.setSelectionProvider(new SelectionProvider());
-	}
+            @Override
+            public void run() {
+                stopAction.setEnabled(true);
+                refreshAction.setEnabled(false);
+                browser.refresh();
+            }
+        };
+        refreshAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_NAV_REFRESH));
+        refreshAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_REFRESH));
+        refreshAction.setEnabled(false);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
-	 */
-	@Override
-	public void saveState(IMemento memento) {
-		super.saveState(memento);
+        IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
+        toolbarManager.add(refreshAction);
+        toolbarManager.add(stopAction);
+        toolbarManager.add(new Separator("additions"));
 
-		if (headLine != null) {
-			memento.putString("title", headLine.getText());
-			memento.putString("url", headLine.getLink());
-		}
-	}
+        site.getActionBars().updateActionBars();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	public void createPartControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
-		content.setLayout(gridLayout);
+        site.setSelectionProvider(new SelectionProvider());
+    }
 
-		browser = new Browser(content, SWT.NONE);
-		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		browser.addTitleListener(new TitleListener() {
-			public void changed(TitleEvent event) {
-				setTitleToolTip(event.title);
-			}
-		});
-		browser.addProgressListener(new ProgressListener() {
-			public void changed(ProgressEvent event) {
-			}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
+    @Override
+    public void saveState(IMemento memento) {
+        super.saveState(memento);
 
-			public void completed(ProgressEvent event) {
-				stopAction.setEnabled(false);
-				refreshAction.setEnabled(true);
-			}
-		});
-		browser.addLocationListener(new LocationListener() {
-			public void changed(LocationEvent event) {
-			}
+        if (headLine != null) {
+            memento.putString("title", headLine.getText());
+            memento.putString("url", headLine.getLink());
+        }
+    }
 
-			public void changing(LocationEvent event) {
-				stopAction.setEnabled(true);
-				refreshAction.setEnabled(false);
-			}
-		});
-		browser.addOpenWindowListener(new OpenWindowListener() {
-			public void open(WindowEvent event) {
-				event.browser = browser;
-			}
-		});
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createPartControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
+        content.setLayout(gridLayout);
 
-		setTitleToolTip(getPartName());
+        browser = new Browser(content, SWT.NONE);
+        browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        browser.addTitleListener(new TitleListener() {
 
-		if (headLine != null)
-			setHeadLine(headLine);
-	}
+            @Override
+            public void changed(TitleEvent event) {
+                setTitleToolTip(event.title);
+            }
+        });
+        browser.addProgressListener(new ProgressListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-	 */
-	@Override
-	public void setFocus() {
-		browser.setFocus();
-	}
+            @Override
+            public void changed(ProgressEvent event) {
+            }
 
-	public IHeadLine getHeadLine() {
-		return headLine;
-	}
+            @Override
+            public void completed(ProgressEvent event) {
+                stopAction.setEnabled(false);
+                refreshAction.setEnabled(true);
+            }
+        });
+        browser.addLocationListener(new LocationListener() {
 
-	public void setHeadLine(IHeadLine headLine) {
-		this.headLine = headLine;
-		browser.setUrl(headLine.getLink());
-		setPartName(headLine.getText());
-		getSite().getSelectionProvider().setSelection(new StructuredSelection(headLine));
-	}
+            @Override
+            public void changed(LocationEvent event) {
+            }
+
+            @Override
+            public void changing(LocationEvent event) {
+                stopAction.setEnabled(true);
+                refreshAction.setEnabled(false);
+            }
+        });
+        browser.addOpenWindowListener(new OpenWindowListener() {
+
+            @Override
+            public void open(WindowEvent event) {
+                event.browser = browser;
+            }
+        });
+
+        setTitleToolTip(getPartName());
+
+        if (headLine != null) {
+            setHeadLine(headLine);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+     */
+    @Override
+    public void setFocus() {
+        browser.setFocus();
+    }
+
+    public IHeadLine getHeadLine() {
+        return headLine;
+    }
+
+    public void setHeadLine(IHeadLine headLine) {
+        this.headLine = headLine;
+        browser.setUrl(headLine.getLink());
+        setPartName(headLine.getText());
+        getSite().getSelectionProvider().setSelection(new StructuredSelection(headLine));
+    }
 }

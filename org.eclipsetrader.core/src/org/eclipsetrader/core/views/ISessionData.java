@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,21 +19,21 @@ package org.eclipsetrader.core.views;
  */
 public interface ISessionData {
 
-	/**
-	 * Returns the application defined property of the receiver with
-	 * the specified name, or null if it has not been set.
-	 *
-	 * @param key the name of the property.
-	 * @return the value of the property or null if it has not been set.
-	 */
-	public Object getData(Object key);
+    /**
+     * Returns the application defined property of the receiver with
+     * the specified name, or null if it has not been set.
+     *
+     * @param key the name of the property.
+     * @return the value of the property or null if it has not been set.
+     */
+    public Object getData(Object key);
 
-	/**
-	 * Sets the application defined property of the receiver with the
-	 * specified name to the given value.
-	 *
-	 * @param key the name of the property.
-	 * @param value the new value for the property.
-	 */
-	public void setData(Object key, Object value);
+    /**
+     * Sets the application defined property of the receiver with the
+     * specified name to the given value.
+     *
+     * @param key the name of the property.
+     * @param value the new value for the property.
+     */
+    public void setData(Object key, Object value);
 }

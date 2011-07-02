@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,187 +40,199 @@ import org.eclipsetrader.repository.hibernate.internal.Activator;
 import org.eclipsetrader.repository.hibernate.internal.RepositoryDefinition;
 
 public class RepositoryProperties extends PropertyPage implements IWorkbenchPropertyPage {
-	private ComboViewer database;
-	private Text description;
-	private Text schema;
-	private Text url;
-	private Text user;
-	private Text password;
 
-	private ModifyListener modifyListener = new ModifyListener() {
+    private ComboViewer database;
+    private Text description;
+    private Text schema;
+    private Text url;
+    private Text user;
+    private Text password;
+
+    private ModifyListener modifyListener = new ModifyListener() {
+
+        @Override
         public void modifyText(ModifyEvent e) {
-    		setValid(isValid());
+            setValid(isValid());
         }
-	};
+    };
 
-	public RepositoryProperties() {
-		setTitle("General");
-	}
+    public RepositoryProperties() {
+        setTitle("General");
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		initializeDialogUnits(content);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        initializeDialogUnits(content);
 
-	    Label label = new Label(content, SWT.NONE);
-	    label.setText("Database");
-	    database = new ComboViewer(content, SWT.READ_ONLY | SWT.DROP_DOWN);
-	    database.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    database.setLabelProvider(new LabelProvider() {
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Database");
+        database = new ComboViewer(content, SWT.READ_ONLY | SWT.DROP_DOWN);
+        database.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        database.setLabelProvider(new LabelProvider() {
+
             @Override
             public String getText(Object element) {
-	            return ((DatabaseElement) element).getLabel();
+                return ((DatabaseElement) element).getLabel();
             }
 
             @Override
             public Image getImage(Object element) {
-	            return ((DatabaseElement) element).getIcon();
+                return ((DatabaseElement) element).getIcon();
             }
-	    });
-	    database.setContentProvider(new ArrayContentProvider());
-	    database.setSorter(new ViewerSorter());
-	    database.getCombo().setVisibleItemCount(15);
+        });
+        database.setContentProvider(new ArrayContentProvider());
+        database.setSorter(new ViewerSorter());
+        database.getCombo().setVisibleItemCount(15);
 
-	    label = new Label(content, SWT.NONE);
-	    label.setText("Label");
-	    description = new Text(content, SWT.BORDER);
-	    description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        label = new Label(content, SWT.NONE);
+        label.setText("Label");
+        description = new Text(content, SWT.BORDER);
+        description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-	    label = new Label(content, SWT.NONE);
-	    label.setText("Schema");
-	    schema = new Text(content, SWT.BORDER);
-	    schema.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
+        label = new Label(content, SWT.NONE);
+        label.setText("Schema");
+        schema = new Text(content, SWT.BORDER);
+        schema.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
 
-	    label = new Label(content, SWT.NONE);
-	    label.setText("Connection URL");
-	    url = new Text(content, SWT.BORDER);
-	    url.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    ((GridData) url.getLayoutData()).widthHint = convertWidthInCharsToPixels(50);
+        label = new Label(content, SWT.NONE);
+        label.setText("Connection URL");
+        url = new Text(content, SWT.BORDER);
+        url.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        ((GridData) url.getLayoutData()).widthHint = convertWidthInCharsToPixels(50);
 
-	    label = new Label(content, SWT.NONE);
-	    label.setText("User Name");
-	    user = new Text(content, SWT.BORDER);
-	    user.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
+        label = new Label(content, SWT.NONE);
+        label.setText("User Name");
+        user = new Text(content, SWT.BORDER);
+        user.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
 
-	    label = new Label(content, SWT.NONE);
-	    label.setText("Password");
-	    password = new Text(content, SWT.BORDER | SWT.PASSWORD);
-	    password.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
+        label = new Label(content, SWT.NONE);
+        label.setText("Password");
+        password = new Text(content, SWT.BORDER | SWT.PASSWORD);
+        password.setLayoutData(new GridData(convertWidthInCharsToPixels(20), SWT.DEFAULT));
 
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.CONNECTIVITY_EXTENSION_ID);
-		if (extensionPoint != null) {
-			IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
-			DatabaseElement[] elements = new DatabaseElement[configElements.length];
-			for (int i = 0; i < configElements.length; i++)
-				elements[i] = new DatabaseElement(configElements[i]);
-			database.setInput(elements);
-		}
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.CONNECTIVITY_EXTENSION_ID);
+        if (extensionPoint != null) {
+            IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+            DatabaseElement[] elements = new DatabaseElement[configElements.length];
+            for (int i = 0; i < configElements.length; i++) {
+                elements[i] = new DatabaseElement(configElements[i]);
+            }
+            database.setInput(elements);
+        }
 
-		performDefaults();
+        performDefaults();
 
-		description.addModifyListener(modifyListener);
-	    schema.addModifyListener(modifyListener);
-	    url.addModifyListener(modifyListener);
-	    user.addModifyListener(modifyListener);
-	    password.addModifyListener(modifyListener);
+        description.addModifyListener(modifyListener);
+        schema.addModifyListener(modifyListener);
+        url.addModifyListener(modifyListener);
+        user.addModifyListener(modifyListener);
+        password.addModifyListener(modifyListener);
 
-	    description.setFocus();
+        description.setFocus();
 
-		return content;
-	}
+        return content;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#isValid()
      */
     @Override
     public boolean isValid() {
-		if ("".equals(description.getText()))
-			return false;
-		if ("".equals(schema.getText()))
-			return false;
-		if ("".equals(url.getText())) {
-	    	IStructuredSelection selection = (IStructuredSelection) database.getSelection();
-	    	DatabaseElement element = (DatabaseElement) selection.getFirstElement();
-    		if (!"org.apache.derby.jdbc.EmbeddedDriver".equals(element.getDriver()) && !"org.hsqldb.jdbcDriver".equals(element.getDriver()))
-    			return false;
-		}
-		if (!"".equals(user.getText())) {
-			if ("".equals(password.getText()))
-				return false;
-		}
-		return true;
-	}
+        if ("".equals(description.getText())) {
+            return false;
+        }
+        if ("".equals(schema.getText())) {
+            return false;
+        }
+        if ("".equals(url.getText())) {
+            IStructuredSelection selection = (IStructuredSelection) database.getSelection();
+            DatabaseElement element = (DatabaseElement) selection.getFirstElement();
+            if (!"org.apache.derby.jdbc.EmbeddedDriver".equals(element.getDriver()) && !"org.hsqldb.jdbcDriver".equals(element.getDriver())) {
+                return false;
+            }
+        }
+        if (!"".equals(user.getText())) {
+            if ("".equals(password.getText())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-		RepositoryDefinition repository = (RepositoryDefinition) getElement().getAdapter(RepositoryDefinition.class);
+        RepositoryDefinition repository = (RepositoryDefinition) getElement().getAdapter(RepositoryDefinition.class);
 
-		DatabaseElement[] elements = (DatabaseElement[]) database.getInput();
-		for (int i = 0; i < elements.length; i++) {
-			if (elements[i].getDriver().equals(repository.getDatabaseDriver()) && elements[i].getDialect().equals(repository.getDialect())) {
-				database.setSelection(new StructuredSelection(elements[i]));
-				break;
-			}
-		}
-		description.setText(repository.getLabel());
-		schema.setText(repository.getSchema());
-		url.setText(repository.getUrl() != null ? repository.getUrl() : "");
-		user.setText(repository.getUser() != null ? repository.getUser() : "");
-		password.setText(repository.getPassword() != null ? repository.getPassword() : "");
+        DatabaseElement[] elements = (DatabaseElement[]) database.getInput();
+        for (int i = 0; i < elements.length; i++) {
+            if (elements[i].getDriver().equals(repository.getDatabaseDriver()) && elements[i].getDialect().equals(repository.getDialect())) {
+                database.setSelection(new StructuredSelection(elements[i]));
+                break;
+            }
+        }
+        description.setText(repository.getLabel());
+        schema.setText(repository.getSchema());
+        url.setText(repository.getUrl() != null ? repository.getUrl() : "");
+        user.setText(repository.getUser() != null ? repository.getUser() : "");
+        password.setText(repository.getPassword() != null ? repository.getPassword() : "");
 
-		super.performDefaults();
+        super.performDefaults();
     }
 
     protected void applyChanges() {
-		RepositoryDefinition repository = (RepositoryDefinition) getElement().getAdapter(RepositoryDefinition.class);
+        RepositoryDefinition repository = (RepositoryDefinition) getElement().getAdapter(RepositoryDefinition.class);
 
-    	IStructuredSelection selection = (IStructuredSelection) database.getSelection();
-    	DatabaseElement element = (DatabaseElement) selection.getFirstElement();
-		repository.setDatabaseDriver(element.getDriver());
-    	repository.setDialect(element.getDialect());
+        IStructuredSelection selection = (IStructuredSelection) database.getSelection();
+        DatabaseElement element = (DatabaseElement) selection.getFirstElement();
+        repository.setDatabaseDriver(element.getDriver());
+        repository.setDialect(element.getDialect());
 
-    	repository.setSchema(schema.getText());
-    	repository.setLabel(description.getText());
-    	repository.setUrl("".equals(url.getText()) ? null : url.getText());
-    	repository.setUser("".equals(user.getText()) ? null : user.getText());
-    	repository.setPassword("".equals(password.getText()) ? null : password.getText());
+        repository.setSchema(schema.getText());
+        repository.setLabel(description.getText());
+        repository.setUrl("".equals(url.getText()) ? null : url.getText());
+        repository.setUser("".equals(user.getText()) ? null : user.getText());
+        repository.setPassword("".equals(password.getText()) ? null : password.getText());
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	if (getControl() != null)
-    		applyChanges();
-	    return super.performOk();
+        if (getControl() != null) {
+            applyChanges();
+        }
+        return super.performOk();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
     protected void performApply() {
-    	applyChanges();
+        applyChanges();
 
-    	Activator.saveRepositoryDefinitions();
+        Activator.saveRepositoryDefinitions();
 
-    	Shell shell = getShell();
-    	if (MessageDialog.openQuestion(shell, "EclipseTrader", "The workbench must be restarted for the changes to take effect.\r\nRestart the workbench now ?")) {
-    		Display.getDefault().asyncExec(new Runnable() {
+        Shell shell = getShell();
+        if (MessageDialog.openQuestion(shell, "EclipseTrader", "The workbench must be restarted for the changes to take effect.\r\nRestart the workbench now ?")) {
+            Display.getDefault().asyncExec(new Runnable() {
+
+                @Override
                 public void run() {
-            		PlatformUI.getWorkbench().restart();
+                    PlatformUI.getWorkbench().restart();
                 }
-    		});
-    	}
+            });
+        }
     }
 }

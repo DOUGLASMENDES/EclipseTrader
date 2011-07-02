@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,92 +28,98 @@ import org.eclipsetrader.core.charts.repository.IParameter;
 
 @XmlRootElement(name = "element")
 public class ElementSection implements IElementSection {
-	@XmlAttribute(name = "id")
-	private String id;
 
-	@XmlAttribute(name = "plugin-id")
-	private String pluginId;
+    @XmlAttribute(name = "id")
+    private String id;
+
+    @XmlAttribute(name = "plugin-id")
+    private String pluginId;
 
     @XmlElement(name = "param")
     @XmlJavaTypeAdapter(ParameterAdapter.class)
-	private List<IParameter> parameters;
+    private List<IParameter> parameters;
 
     public static class ParameterAdapter extends XmlAdapter<Parameter, IParameter> {
 
-    	public ParameterAdapter() {
-    	}
+        public ParameterAdapter() {
+        }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
          */
         @Override
         public Parameter marshal(IParameter v) throws Exception {
-    	    return v != null ? new Parameter(v.getName(), v.getValue()) : null;
+            return v != null ? new Parameter(v.getName(), v.getValue()) : null;
         }
 
-    	/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
          */
         @Override
         public IParameter unmarshal(Parameter v) throws Exception {
-    	    return v;
+            return v;
         }
     }
 
-	protected ElementSection() {
-	}
-
-	protected ElementSection(IElementSection section) {
-		this.id = section.getId();
-		this.pluginId = section.getPluginId();
-    	this.parameters = section.getParameters() != null ? Arrays.asList(section.getParameters()) : null;
-	}
-
-	public ElementSection(String pluginId) {
-	    this.id = UUID.randomUUID().toString();
-	    this.pluginId = pluginId;
+    protected ElementSection() {
     }
 
-	public ElementSection(String id, String pluginId) {
-	    this.id = id;
-	    this.pluginId = pluginId;
+    protected ElementSection(IElementSection section) {
+        this.id = section.getId();
+        this.pluginId = section.getPluginId();
+        this.parameters = section.getParameters() != null ? Arrays.asList(section.getParameters()) : null;
     }
 
-	/* (non-Javadoc)
+    public ElementSection(String pluginId) {
+        this.id = UUID.randomUUID().toString();
+        this.pluginId = pluginId;
+    }
+
+    public ElementSection(String id, String pluginId) {
+        this.id = id;
+        this.pluginId = pluginId;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IElementSection#getId()
      */
-	@XmlTransient
-	public String getId() {
-    	return id;
+    @Override
+    @XmlTransient
+    public String getId() {
+        return id;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IElementSection#getPluginId()
      */
-	@XmlTransient
+    @Override
+    @XmlTransient
     public String getPluginId() {
-	    return pluginId;
+        return pluginId;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IElementSection#getParameters()
      */
-	@XmlTransient
+    @Override
+    @XmlTransient
     public IParameter[] getParameters() {
-    	return parameters != null ? parameters.toArray(new IParameter[parameters.size()]) : new IParameter[0];
+        return parameters != null ? parameters.toArray(new IParameter[parameters.size()]) : new IParameter[0];
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IElementSection#setParameters(org.eclipsetrader.core.charts.repository.IParameter[])
      */
+    @Override
     public void setParameters(IParameter[] parameters) {
-    	this.parameters = parameters != null ? Arrays.asList(parameters) : null;
+        this.parameters = parameters != null ? Arrays.asList(parameters) : null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IElementSection#accept(org.eclipsetrader.core.charts.repository.IChartVisitor)
      */
-	public void accept(IChartVisitor visitor) {
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(IChartVisitor visitor) {
+        visitor.visit(this);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,16 +17,17 @@ package org.eclipsetrader.core.repositories;
  * @since 1.0
  */
 public class RepositoryChangeEvent {
-	private RepositoryResourceDelta[] deltas;
 
-	protected RepositoryChangeEvent() {
-	}
+    private RepositoryResourceDelta[] deltas;
 
-	public RepositoryChangeEvent(RepositoryResourceDelta[] deltas) {
-	    this.deltas = deltas;
+    protected RepositoryChangeEvent() {
     }
 
-	public RepositoryResourceDelta[] getDeltas() {
-    	return deltas;
+    public RepositoryChangeEvent(RepositoryResourceDelta[] deltas) {
+        this.deltas = deltas;
+    }
+
+    public RepositoryResourceDelta[] getDeltas() {
+        return deltas;
     }
 }

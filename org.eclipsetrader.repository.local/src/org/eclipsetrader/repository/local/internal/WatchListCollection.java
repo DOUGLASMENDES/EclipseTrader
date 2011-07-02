@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,65 +26,69 @@ import org.eclipsetrader.repository.local.internal.stores.WatchListStore;
 
 @XmlRootElement(name = "list")
 public class WatchListCollection {
-	private static WatchListCollection instance;
 
-	@XmlAttribute(name = "next_id")
-	private Integer nextId = new Integer(1);
+    private static WatchListCollection instance;
 
-	@XmlElementRef
-	private List<WatchListStore> list;
+    @XmlAttribute(name = "next_id")
+    private Integer nextId = new Integer(1);
 
-	private Map<URI, WatchListStore> uriMap;
+    @XmlElementRef
+    private List<WatchListStore> list;
 
-	public WatchListCollection() {
-		instance = this;
-		list = new ArrayList<WatchListStore>();
-	}
+    private Map<URI, WatchListStore> uriMap;
 
-	public static WatchListCollection getInstance() {
-    	return instance;
+    public WatchListCollection() {
+        instance = this;
+        list = new ArrayList<WatchListStore>();
     }
 
-	public WatchListStore get(URI uri) {
-		synchronized(this) {
-			if (uriMap == null) {
-				uriMap = new HashMap<URI, WatchListStore>();
-				for (WatchListStore securityStore : list)
-					uriMap.put(securityStore.toURI(), securityStore);
-			}
-		}
-		return uriMap.get(uri);
-	}
+    public static WatchListCollection getInstance() {
+        return instance;
+    }
 
-	public WatchListStore create() {
-		WatchListStore securityStore = new WatchListStore(nextId);
-		list.add(securityStore);
-		if (uriMap != null)
-			uriMap.put(securityStore.toURI(), securityStore);
-		nextId = new Integer(nextId + 1);
-		return securityStore;
-	}
+    public WatchListStore get(URI uri) {
+        synchronized (this) {
+            if (uriMap == null) {
+                uriMap = new HashMap<URI, WatchListStore>();
+                for (WatchListStore securityStore : list) {
+                    uriMap.put(securityStore.toURI(), securityStore);
+                }
+            }
+        }
+        return uriMap.get(uri);
+    }
 
-	public void delete(WatchListStore securityStore) {
-		for (Iterator<WatchListStore> iter = list.iterator(); iter.hasNext(); ) {
-			if (iter.next() == securityStore) {
-				iter.remove();
-				if (uriMap != null)
-					uriMap.remove(securityStore.toURI());
-				break;
-			}
-		}
-	}
+    public WatchListStore create() {
+        WatchListStore securityStore = new WatchListStore(nextId);
+        list.add(securityStore);
+        if (uriMap != null) {
+            uriMap.put(securityStore.toURI(), securityStore);
+        }
+        nextId = new Integer(nextId + 1);
+        return securityStore;
+    }
 
-	public WatchListStore[] getAll() {
-		return list.toArray(new WatchListStore[list.size()]);
-	}
+    public void delete(WatchListStore securityStore) {
+        for (Iterator<WatchListStore> iter = list.iterator(); iter.hasNext();) {
+            if (iter.next() == securityStore) {
+                iter.remove();
+                if (uriMap != null) {
+                    uriMap.remove(securityStore.toURI());
+                }
+                break;
+            }
+        }
+    }
 
-	public List<WatchListStore> getList() {
-		return list;
-	}
+    public WatchListStore[] getAll() {
+        return list.toArray(new WatchListStore[list.size()]);
+    }
 
-	public WatchListStore[] toArray() {
-		return list.toArray(new WatchListStore[list.size()]);
-	}
+    public List<WatchListStore> getList() {
+        return list;
+    }
+
+    public WatchListStore[] toArray() {
+        return list.toArray(new WatchListStore[list.size()]);
+    }
 }

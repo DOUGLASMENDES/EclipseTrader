@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,55 +36,58 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.core.internal.markets.Market;
 
 public class GeneralPage extends PropertyPage {
-	private TimeScheduleEditor schedule;
-	private ExclusionScheduleEditor excluded;
-	private Button sun;
-	private Button mon;
-	private Button tue;
-	private Button wed;
-	private Button thu;
-	private Button fri;
-	private Button sat;
-	private ComboViewer timeZone;
 
-	public GeneralPage() {
-		setTitle("General");
-		noDefaultAndApplyButton();
-	}
+    private TimeScheduleEditor schedule;
+    private ExclusionScheduleEditor excluded;
+    private Button sun;
+    private Button mon;
+    private Button tue;
+    private Button wed;
+    private Button thu;
+    private Button fri;
+    private Button sat;
+    private ComboViewer timeZone;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		initializeDialogUnits(content);
+    public GeneralPage() {
+        setTitle("General");
+        noDefaultAndApplyButton();
+    }
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Schedule");
-		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
-		((GridData) label.getLayoutData()).horizontalSpan = 2;
-		schedule = new TimeScheduleEditor(content);
-		((GridData) schedule.getControl().getLayoutData()).horizontalSpan = 2;
-		schedule.addSelectionChangedListener(new ISelectionChangedListener() {
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        initializeDialogUnits(content);
+
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Schedule");
+        label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
+        ((GridData) label.getLayoutData()).horizontalSpan = 2;
+        schedule = new TimeScheduleEditor(content);
+        ((GridData) schedule.getControl().getLayoutData()).horizontalSpan = 2;
+        schedule.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
-            	IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-            	if (selection.size() == 1) {
-            		MarketTimeElement element = (MarketTimeElement) selection.getFirstElement();
-            		excluded.setInput(element.getExclude());
-            	}
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                if (selection.size() == 1) {
+                    MarketTimeElement element = (MarketTimeElement) selection.getFirstElement();
+                    excluded.setInput(element.getExclude());
+                }
             }
-		});
+        });
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Excluded Days");
-		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
-		((GridData) label.getLayoutData()).horizontalSpan = 2;
-		excluded = new ExclusionScheduleEditor(content);
-		((GridData) excluded.getControl().getLayoutData()).horizontalSpan = 2;
+        label = new Label(content, SWT.NONE);
+        label.setText("Excluded Days");
+        label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
+        ((GridData) label.getLayoutData()).horizontalSpan = 2;
+        excluded = new ExclusionScheduleEditor(content);
+        ((GridData) excluded.getControl().getLayoutData()).horizontalSpan = 2;
 
         label = new Label(content, SWT.NONE);
         label.setText("Week Days");
@@ -110,78 +113,87 @@ public class GeneralPage extends PropertyPage {
         sat = new Button(group, SWT.CHECK);
         sat.setText("Sat");
 
-		label = new Label(content, SWT.NONE);
-		label.setText("Time Zone");
-		timeZone = new ComboViewer(content, SWT.READ_ONLY);
-		timeZone.getCombo().setVisibleItemCount(15);
-		timeZone.setLabelProvider(new LabelProvider());
-		timeZone.setSorter(new ViewerSorter());
-		timeZone.setContentProvider(new ArrayContentProvider());
-		timeZone.setInput(TimeZone.getAvailableIDs());
+        label = new Label(content, SWT.NONE);
+        label.setText("Time Zone");
+        timeZone = new ComboViewer(content, SWT.READ_ONLY);
+        timeZone.getCombo().setVisibleItemCount(15);
+        timeZone.setLabelProvider(new LabelProvider());
+        timeZone.setSorter(new ViewerSorter());
+        timeZone.setContentProvider(new ArrayContentProvider());
+        timeZone.setInput(TimeZone.getAvailableIDs());
 
-		if (getElement() != null) {
-			Market market = (Market) getElement().getAdapter(Market.class);
-			if (market != null) {
-				schedule.setSchedule(market.getSchedule());
+        if (getElement() != null) {
+            Market market = (Market) getElement().getAdapter(Market.class);
+            if (market != null) {
+                schedule.setSchedule(market.getSchedule());
 
-				Set<Integer> weekdays = new HashSet<Integer>(Arrays.asList(market.getWeekDays()));
-				sun.setSelection(weekdays.contains(Calendar.SUNDAY));
-				mon.setSelection(weekdays.contains(Calendar.MONDAY));
-				tue.setSelection(weekdays.contains(Calendar.TUESDAY));
-				wed.setSelection(weekdays.contains(Calendar.WEDNESDAY));
-				thu.setSelection(weekdays.contains(Calendar.THURSDAY));
-				fri.setSelection(weekdays.contains(Calendar.FRIDAY));
-				sat.setSelection(weekdays.contains(Calendar.SATURDAY));
+                Set<Integer> weekdays = new HashSet<Integer>(Arrays.asList(market.getWeekDays()));
+                sun.setSelection(weekdays.contains(Calendar.SUNDAY));
+                mon.setSelection(weekdays.contains(Calendar.MONDAY));
+                tue.setSelection(weekdays.contains(Calendar.TUESDAY));
+                wed.setSelection(weekdays.contains(Calendar.WEDNESDAY));
+                thu.setSelection(weekdays.contains(Calendar.THURSDAY));
+                fri.setSelection(weekdays.contains(Calendar.FRIDAY));
+                sat.setSelection(weekdays.contains(Calendar.SATURDAY));
 
-				if (market.getTimeZone() != null)
-					timeZone.setSelection(new StructuredSelection(market.getTimeZone().getID()));
-			}
-		}
+                if (market.getTimeZone() != null) {
+                    timeZone.setSelection(new StructuredSelection(market.getTimeZone().getID()));
+                }
+            }
+        }
 
-		return content;
-	}
+        return content;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#isValid()
      */
     @Override
     public boolean isValid() {
-    	if (!sun.getSelection() && !mon.getSelection() && !tue.getSelection() && !wed.getSelection() && !thu.getSelection() && !fri.getSelection() && !sat.getSelection())
-    		return false;
-	    return true;
+        if (!sun.getSelection() && !mon.getSelection() && !tue.getSelection() && !wed.getSelection() && !thu.getSelection() && !fri.getSelection() && !sat.getSelection()) {
+            return false;
+        }
+        return true;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-		if (isControlCreated() && getElement() != null) {
-			Market market = (Market) getElement().getAdapter(Market.class);
-			if (market != null) {
-				market.setSchedule(schedule.getSchedule());
+        if (isControlCreated() && getElement() != null) {
+            Market market = (Market) getElement().getAdapter(Market.class);
+            if (market != null) {
+                market.setSchedule(schedule.getSchedule());
 
-				Set<Integer> weekdays = new HashSet<Integer>();
-				if (sun.getSelection())
-					weekdays.add(Calendar.SUNDAY);
-				if (mon.getSelection())
-					weekdays.add(Calendar.MONDAY);
-				if (tue.getSelection())
-					weekdays.add(Calendar.TUESDAY);
-				if (wed.getSelection())
-					weekdays.add(Calendar.WEDNESDAY);
-				if (thu.getSelection())
-					weekdays.add(Calendar.THURSDAY);
-				if (fri.getSelection())
-					weekdays.add(Calendar.FRIDAY);
-				if (sat.getSelection())
-					weekdays.add(Calendar.SATURDAY);
-				market.setWeekDays(weekdays.toArray(new Integer[weekdays.size()]));
+                Set<Integer> weekdays = new HashSet<Integer>();
+                if (sun.getSelection()) {
+                    weekdays.add(Calendar.SUNDAY);
+                }
+                if (mon.getSelection()) {
+                    weekdays.add(Calendar.MONDAY);
+                }
+                if (tue.getSelection()) {
+                    weekdays.add(Calendar.TUESDAY);
+                }
+                if (wed.getSelection()) {
+                    weekdays.add(Calendar.WEDNESDAY);
+                }
+                if (thu.getSelection()) {
+                    weekdays.add(Calendar.THURSDAY);
+                }
+                if (fri.getSelection()) {
+                    weekdays.add(Calendar.FRIDAY);
+                }
+                if (sat.getSelection()) {
+                    weekdays.add(Calendar.SATURDAY);
+                }
+                market.setWeekDays(weekdays.toArray(new Integer[weekdays.size()]));
 
-				IStructuredSelection selection = (IStructuredSelection) timeZone.getSelection();
-				market.setTimeZone(selection.isEmpty() ? null : TimeZone.getTimeZone((String) selection.getFirstElement()));
-			}
-		}
-	    return super.performOk();
+                IStructuredSelection selection = (IStructuredSelection) timeZone.getSelection();
+                market.setTimeZone(selection.isEmpty() ? null : TimeZone.getTimeZone((String) selection.getFirstElement()));
+            }
+        }
+        return super.performOk();
     }
 }

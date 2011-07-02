@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,11 +20,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public interface IRepositoryProvider {
 
-	/**
-	 * Gets the user-defined repositories.
-	 *
-	 * @param monitor - a progress monitor, or null if progress reporting is not desired.
-	 * @return the array of repositories.
-	 */
-	public IRepository[] getRepositories(IProgressMonitor monitor);
+    /**
+     * Gets the user-defined repositories.
+     *
+     * @param monitor - a progress monitor, or null if progress reporting is not desired.
+     * @return the array of repositories.
+     */
+    public IRepository[] getRepositories(IProgressMonitor monitor);
 }

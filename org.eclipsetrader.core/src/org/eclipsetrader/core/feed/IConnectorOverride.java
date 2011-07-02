@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,14 +21,14 @@ package org.eclipsetrader.core.feed;
  */
 public interface IConnectorOverride {
 
-	/**
-	 * Gets the connector used to receive live data.
-	 *
-	 * @return the feed connector.
-	 */
-	public IFeedConnector getLiveFeedConnector();
+    /**
+     * Gets the connector used to receive live data.
+     *
+     * @return the feed connector.
+     */
+    public IFeedConnector getLiveFeedConnector();
 
-	public IBackfillConnector getBackfillConnector();
+    public IBackfillConnector getBackfillConnector();
 
-	public IBackfillConnector getIntradayBackfillConnector();
+    public IBackfillConnector getIntradayBackfillConnector();
 }

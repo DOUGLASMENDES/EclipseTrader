@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,271 +29,296 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 
 public class CrosshairDecorator implements MouseListener, MouseMoveListener, MouseTrackListener, DisposeListener, PaintListener {
-	public static final int MODE_OFF = 0;
-	public static final int MODE_MOUSE_DOWN = 1;
-	public static final int MODE_MOUSE_HOVER = 2;
 
-	private boolean active = true;
+    public static final int MODE_OFF = 0;
+    public static final int MODE_MOUSE_DOWN = 1;
+    public static final int MODE_MOUSE_HOVER = 2;
 
-	private int mode = MODE_OFF;
-	private boolean showSummaryTooltip;
-	private boolean mouseDown;
-	private boolean skipPaint;
-	private Point location;
-	private ChartCanvas focusCanvas;
+    private boolean active = true;
 
-	private List<ChartCanvas> decoratedCanvas = new ArrayList<ChartCanvas>();
+    private int mode = MODE_OFF;
+    private boolean showSummaryTooltip;
+    private boolean mouseDown;
+    private boolean skipPaint;
+    private Point location;
+    private ChartCanvas focusCanvas;
 
-	private DecoratorToolTip tooltip;
+    private List<ChartCanvas> decoratedCanvas = new ArrayList<ChartCanvas>();
 
-	private StringBuilder summary = new StringBuilder();
+    private DecoratorToolTip tooltip;
 
-	private IChartObjectVisitor summaryLabelVisitor = new IChartObjectVisitor() {
+    private StringBuilder summary = new StringBuilder();
+
+    private IChartObjectVisitor summaryLabelVisitor = new IChartObjectVisitor() {
+
+        @Override
         public boolean visit(IChartObject object) {
-    		String s = object.getToolTip(location.x, SWT.DEFAULT);
-        	if (s != null) {
-	        	if (summary.length() != 0)
-	        		summary.append("\r\n"); //$NON-NLS-1$
-	        	summary.append(s);
-        	}
-	        return true;
+            String s = object.getToolTip(location.x, SWT.DEFAULT);
+            if (s != null) {
+                if (summary.length() != 0) {
+                    summary.append("\r\n"); //$NON-NLS-1$
+                }
+                summary.append(s);
+            }
+            return true;
         }
-	};
+    };
 
-	public CrosshairDecorator() {
-	}
-
-	public void decorateCanvas(ChartCanvas canvas) {
-		canvas.getCanvas().addMouseListener(this);
-		canvas.getCanvas().addMouseMoveListener(this);
-		canvas.getCanvas().addMouseTrackListener(this);
-		canvas.getCanvas().addDisposeListener(this);
-		canvas.getCanvas().addPaintListener(this);
-
-		decoratedCanvas.add(canvas);
-	}
-
-	public void createSummaryLabel(Composite parent) {
-		tooltip = new DecoratorToolTip(parent);
-		tooltip.setRespectDisplayBounds(true);
-		tooltip.setRespectMonitorBounds(true);
-	}
-
-	public void dispose() {
-		for (ChartCanvas canvas : decoratedCanvas) {
-			canvas.getCanvas().removeMouseListener(this);
-			canvas.getCanvas().removeMouseMoveListener(this);
-			canvas.getCanvas().removeMouseTrackListener(this);
-			canvas.getCanvas().removeDisposeListener(this);
-			canvas.getCanvas().removePaintListener(this);
-		}
-		decoratedCanvas.clear();
-	}
-
-	public void activate() {
-		if (!active)
-			active = true;
-	}
-
-	public void deactivate() {
-		if (active)
-			active = false;
-	}
-
-	public boolean isActive() {
-    	return active;
+    public CrosshairDecorator() {
     }
 
-	public boolean isVisible() {
-		return location != null;
-	}
+    public void decorateCanvas(ChartCanvas canvas) {
+        canvas.getCanvas().addMouseListener(this);
+        canvas.getCanvas().addMouseMoveListener(this);
+        canvas.getCanvas().addMouseTrackListener(this);
+        canvas.getCanvas().addDisposeListener(this);
+        canvas.getCanvas().addPaintListener(this);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(org.eclipse.swt.events.DisposeEvent)
-	 */
-	public void widgetDisposed(DisposeEvent e) {
-		for (ChartCanvas canvas : decoratedCanvas) {
-			if (canvas.getCanvas() == e.widget) {
-				decoratedCanvas.remove(canvas);
-				break;
-			}
-		}
-	}
+        decoratedCanvas.add(canvas);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseDoubleClick(MouseEvent e) {
-	}
+    public void createSummaryLabel(Composite parent) {
+        tooltip = new DecoratorToolTip(parent);
+        tooltip.setRespectDisplayBounds(true);
+        tooltip.setRespectMonitorBounds(true);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseDown(MouseEvent e) {
-		if (e.button != 1)
-			return;
-		if (mode == MODE_MOUSE_DOWN && !mouseDown && active) {
-			location = new Point(e.x, e.y);
-			focusCanvas = (ChartCanvas) e.widget.getData();
-			drawLines(location);
-			updateLabel(location);
-			mouseDown = true;
-		}
-	}
+    public void dispose() {
+        for (ChartCanvas canvas : decoratedCanvas) {
+            canvas.getCanvas().removeMouseListener(this);
+            canvas.getCanvas().removeMouseMoveListener(this);
+            canvas.getCanvas().removeMouseTrackListener(this);
+            canvas.getCanvas().removeDisposeListener(this);
+            canvas.getCanvas().removePaintListener(this);
+        }
+        decoratedCanvas.clear();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseUp(MouseEvent e) {
-		if (e.button != 1)
-			return;
-		if (mode == MODE_MOUSE_DOWN && mouseDown) {
-			skipPaint = true;
-			restoreBackground(location);
-			skipPaint = false;
+    public void activate() {
+        if (!active) {
+            active = true;
+        }
+    }
 
-			location = null;
-			mouseDown = false;
+    public void deactivate() {
+        if (active) {
+            active = false;
+        }
+    }
 
-			if (tooltip != null)
-				tooltip.hide();
-		}
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseEnter(MouseEvent e) {
-		if (mode == MODE_MOUSE_HOVER || mouseDown) {
-			focusCanvas = (ChartCanvas) e.widget.getData();
-			location = new Point(e.x, e.y);
+    public boolean isVisible() {
+        return location != null;
+    }
 
-			drawLines(location);
-			updateLabel(location);
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(org.eclipse.swt.events.DisposeEvent)
+     */
+    @Override
+    public void widgetDisposed(DisposeEvent e) {
+        for (ChartCanvas canvas : decoratedCanvas) {
+            if (canvas.getCanvas() == e.widget) {
+                decoratedCanvas.remove(canvas);
+                break;
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseExit(MouseEvent e) {
-		if (location != null) {
-			skipPaint = true;
-			restoreBackground(location);
-			skipPaint = false;
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseDoubleClick(MouseEvent e) {
+    }
 
-			location = null;
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseDown(MouseEvent e) {
+        if (e.button != 1) {
+            return;
+        }
+        if (mode == MODE_MOUSE_DOWN && !mouseDown && active) {
+            location = new Point(e.x, e.y);
+            focusCanvas = (ChartCanvas) e.widget.getData();
+            drawLines(location);
+            updateLabel(location);
+            mouseDown = true;
+        }
+    }
 
-			if (tooltip != null)
-				tooltip.hide();
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseUp(MouseEvent e) {
+        if (e.button != 1) {
+            return;
+        }
+        if (mode == MODE_MOUSE_DOWN && mouseDown) {
+            skipPaint = true;
+            restoreBackground(location);
+            skipPaint = false;
 
-	/* (non-Javadoc)
+            location = null;
+            mouseDown = false;
+
+            if (tooltip != null) {
+                tooltip.hide();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseEnter(MouseEvent e) {
+        if (mode == MODE_MOUSE_HOVER || mouseDown) {
+            focusCanvas = (ChartCanvas) e.widget.getData();
+            location = new Point(e.x, e.y);
+
+            drawLines(location);
+            updateLabel(location);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseExit(MouseEvent e) {
+        if (location != null) {
+            skipPaint = true;
+            restoreBackground(location);
+            skipPaint = false;
+
+            location = null;
+
+            if (tooltip != null) {
+                tooltip.hide();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(org.eclipse.swt.events.MouseEvent)
      */
+    @Override
     public void mouseHover(MouseEvent e) {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseMove(MouseEvent e) {
-		if (mode == MODE_MOUSE_HOVER || mouseDown) {
-			skipPaint = true;
-			restoreBackground(location);
-			skipPaint = false;
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseMove(MouseEvent e) {
+        if (mode == MODE_MOUSE_HOVER || mouseDown) {
+            skipPaint = true;
+            restoreBackground(location);
+            skipPaint = false;
 
-			focusCanvas = (ChartCanvas) e.widget.getData();
-			location = new Point(e.x, e.y);
+            focusCanvas = (ChartCanvas) e.widget.getData();
+            location = new Point(e.x, e.y);
 
-			drawLines(location);
-			updateLabel(location);
-		}
-	}
+            drawLines(location);
+            updateLabel(location);
+        }
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
      */
+    @Override
     public void paintControl(PaintEvent e) {
-    	if (!skipPaint && active)
-    		drawLines(location);
+        if (!skipPaint && active) {
+            drawLines(location);
+        }
     }
 
-	private void drawLines(Point location) {
-		if (focusCanvas == null || location == null)
-			return;
+    private void drawLines(Point location) {
+        if (focusCanvas == null || location == null) {
+            return;
+        }
 
-		Rectangle bounds = focusCanvas.getCanvas().getBounds();
+        Rectangle bounds = focusCanvas.getCanvas().getBounds();
 
-		GC gc = new GC(focusCanvas.getCanvas());
-		gc.drawLine(location.x, 0, location.x, bounds.height);
-		gc.drawLine(0, location.y, bounds.width, location.y);
-		gc.dispose();
+        GC gc = new GC(focusCanvas.getCanvas());
+        gc.drawLine(location.x, 0, location.x, bounds.height);
+        gc.drawLine(0, location.y, bounds.width, location.y);
+        gc.dispose();
 
-		for (ChartCanvas canvas : decoratedCanvas) {
-			if (canvas.getCanvas() != focusCanvas.getCanvas()) {
-				bounds = canvas.getCanvas().getBounds();
-				gc = new GC(canvas.getCanvas());
-				gc.drawLine(location.x, 0, location.x, bounds.height);
-				gc.dispose();
-			}
-		}
-	}
-
-	private void restoreBackground(Point location) {
-		if (focusCanvas == null || location == null)
-			return;
-
-		Rectangle bounds = focusCanvas.getCanvas().getBounds();
-		focusCanvas.getCanvas().redraw(location.x, 0, 1, bounds.height, false);
-		focusCanvas.getCanvas().update();
-		focusCanvas.getCanvas().redraw(0, location.y, bounds.width, 1, false);
-		focusCanvas.getCanvas().update();
-
-		for (ChartCanvas canvas : decoratedCanvas) {
-			if (canvas.getCanvas() != focusCanvas.getCanvas()) {
-				bounds = canvas.getCanvas().getBounds();
-				canvas.getCanvas().redraw(location.x, 0, 1, bounds.height, false);
-				canvas.getCanvas().update();
-			}
-		}
-	}
-
-	private void updateLabel(Point location) {
-		if (tooltip != null && location != null) {
-	    	summary = new StringBuilder();
-			for (ChartCanvas canvas : decoratedCanvas)
-	    		canvas.accept(summaryLabelVisitor);
-    		tooltip.setText(summary.toString());
-
-    		if (showSummaryTooltip) {
-        		if (!"".equals(tooltip.getText())) { //$NON-NLS-1$
-        			Point p = new Point(location.x, location.y);
-        			p = focusCanvas.getCanvas().toDisplay(p);
-        			tooltip.show(p);
-        		}
-        		else
-        			tooltip.hide();
-    		}
-		}
-	}
-
-	public int getMode() {
-    	return mode;
+        for (ChartCanvas canvas : decoratedCanvas) {
+            if (canvas.getCanvas() != focusCanvas.getCanvas()) {
+                bounds = canvas.getCanvas().getBounds();
+                gc = new GC(canvas.getCanvas());
+                gc.drawLine(location.x, 0, location.x, bounds.height);
+                gc.dispose();
+            }
+        }
     }
 
-	public void setMode(int mode) {
-    	this.mode = mode;
+    private void restoreBackground(Point location) {
+        if (focusCanvas == null || location == null) {
+            return;
+        }
+
+        Rectangle bounds = focusCanvas.getCanvas().getBounds();
+        focusCanvas.getCanvas().redraw(location.x, 0, 1, bounds.height, false);
+        focusCanvas.getCanvas().update();
+        focusCanvas.getCanvas().redraw(0, location.y, bounds.width, 1, false);
+        focusCanvas.getCanvas().update();
+
+        for (ChartCanvas canvas : decoratedCanvas) {
+            if (canvas.getCanvas() != focusCanvas.getCanvas()) {
+                bounds = canvas.getCanvas().getBounds();
+                canvas.getCanvas().redraw(location.x, 0, 1, bounds.height, false);
+                canvas.getCanvas().update();
+            }
+        }
     }
 
-	public boolean isShowSummaryTooltip() {
-    	return showSummaryTooltip;
+    private void updateLabel(Point location) {
+        if (tooltip != null && location != null) {
+            summary = new StringBuilder();
+            for (ChartCanvas canvas : decoratedCanvas) {
+                canvas.accept(summaryLabelVisitor);
+            }
+            tooltip.setText(summary.toString());
+
+            if (showSummaryTooltip) {
+                if (!"".equals(tooltip.getText())) { //$NON-NLS-1$
+                    Point p = new Point(location.x, location.y);
+                    p = focusCanvas.getCanvas().toDisplay(p);
+                    tooltip.show(p);
+                }
+                else {
+                    tooltip.hide();
+                }
+            }
+        }
     }
 
-	public void setShowSummaryTooltip(boolean showSummaryTooltip) {
-    	this.showSummaryTooltip = showSummaryTooltip;
-    	if (!showSummaryTooltip && tooltip != null)
-			tooltip.hide();
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    public boolean isShowSummaryTooltip() {
+        return showSummaryTooltip;
+    }
+
+    public void setShowSummaryTooltip(boolean showSummaryTooltip) {
+        this.showSummaryTooltip = showSummaryTooltip;
+        if (!showSummaryTooltip && tooltip != null) {
+            tooltip.hide();
+        }
     }
 }

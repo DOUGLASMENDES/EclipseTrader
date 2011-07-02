@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,59 +27,64 @@ import org.hibernate.annotations.Target;
 @Entity
 @Table(name = "watchlists_columns")
 public class WatchListColumn implements IColumn {
+
     @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@SuppressWarnings("unused")
-	private String id;
+    @SuppressWarnings("unused")
+    private String id;
 
-	@Column(name = "name", nullable = true)
-	private String name;
+    @Column(name = "name", nullable = true)
+    private String name;
 
-	@Column(name = "provider")
-	@Target(DataProviderFactoryAdapter.class)
-	private IDataProviderFactory dataProviderFactory;
+    @Column(name = "provider")
+    @Target(DataProviderFactoryAdapter.class)
+    private IDataProviderFactory dataProviderFactory;
 
     @Column(name = "index")
-	@SuppressWarnings("unused")
-	private int index;
+    @SuppressWarnings("unused")
+    private int index;
 
-	@ManyToOne
-	@SuppressWarnings("unused")
-	private WatchListStore watchlist;
+    @ManyToOne
+    @SuppressWarnings("unused")
+    private WatchListStore watchlist;
 
-	public WatchListColumn() {
-	}
+    public WatchListColumn() {
+    }
 
-	public WatchListColumn(IColumn column, WatchListStore watchlist, int index) {
-		this.name = column.getName();
-		this.dataProviderFactory = column.getDataProviderFactory();
-		this.watchlist = watchlist;
-		this.index = index;
-	}
+    public WatchListColumn(IColumn column, WatchListStore watchlist, int index) {
+        this.name = column.getName();
+        this.dataProviderFactory = column.getDataProviderFactory();
+        this.watchlist = watchlist;
+        this.index = index;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IColumn#getName()
      */
+    @Override
     public String getName() {
-	    return name;
+        return name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.views.IColumn#getDataProviderFactory()
      */
+    @Override
     public IDataProviderFactory getDataProviderFactory() {
-	    return dataProviderFactory;
+        return dataProviderFactory;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(getClass()))
-    		return this;
-	    return null;
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+        return null;
     }
 }

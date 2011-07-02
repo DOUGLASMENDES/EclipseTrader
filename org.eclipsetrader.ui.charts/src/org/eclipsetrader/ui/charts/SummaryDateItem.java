@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@
 package org.eclipsetrader.ui.charts;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
@@ -20,22 +19,26 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 public class SummaryDateItem {
-	Label label;
-	DateFormat dateFormat;
 
-	public SummaryDateItem(Composite parent, int style) {
-		label = new Label(parent, SWT.NONE);
+    Label label;
+    DateFormat dateFormat;
 
-		if ((style & (SWT.DATE | SWT.TIME)) == (SWT.DATE | SWT.TIME))
-			dateFormat = SimpleDateFormat.getDateTimeInstance();
-		else if ((style & SWT.DATE) == SWT.DATE)
-			dateFormat = SimpleDateFormat.getDateInstance();
-		else if ((style & SWT.TIME) == SWT.TIME)
-			dateFormat = SimpleDateFormat.getTimeInstance();
-	}
+    public SummaryDateItem(Composite parent, int style) {
+        label = new Label(parent, SWT.NONE);
 
-	public void setDate(Date date) {
-		label.setText(date != null ? dateFormat.format(date) : ""); //$NON-NLS-1$
-		label.getParent().layout();
-	}
+        if ((style & (SWT.DATE | SWT.TIME)) == (SWT.DATE | SWT.TIME)) {
+            dateFormat = DateFormat.getDateTimeInstance();
+        }
+        else if ((style & SWT.DATE) == SWT.DATE) {
+            dateFormat = DateFormat.getDateInstance();
+        }
+        else if ((style & SWT.TIME) == SWT.TIME) {
+            dateFormat = DateFormat.getTimeInstance();
+        }
+    }
+
+    public void setDate(Date date) {
+        label.setText(date != null ? dateFormat.format(date) : ""); //$NON-NLS-1$
+        label.getParent().layout();
+    }
 }

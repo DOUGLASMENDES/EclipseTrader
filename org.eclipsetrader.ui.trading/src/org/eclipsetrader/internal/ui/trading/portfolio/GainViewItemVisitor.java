@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,36 +17,38 @@ import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
 
 public class GainViewItemVisitor implements IViewItemVisitor {
-	double purchaseValue = 0.0;
-	double marketValue = 0.0;
-	double value = 0.0;
-	double percentage = 0.0;
 
-	public GainViewItemVisitor() {
-	}
+    double purchaseValue = 0.0;
+    double marketValue = 0.0;
+    double value = 0.0;
+    double percentage = 0.0;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewItemVisitor#visit(org.eclipsetrader.core.views.IViewItem)
-	 */
-	public boolean visit(IViewItem viewItem) {
-		IPosition position = (IPosition) viewItem.getAdapter(IPosition.class);
-		ITrade trade = (ITrade) viewItem.getAdapter(ITrade.class);
+    public GainViewItemVisitor() {
+    }
 
-		if (position != null && trade != null && trade.getPrice() != null) {
-			purchaseValue += position.getQuantity() * position.getPrice();
-			marketValue += position.getQuantity() * trade.getPrice();
-			value = marketValue - purchaseValue;
-			percentage = value / purchaseValue * 100.0;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewItemVisitor#visit(org.eclipsetrader.core.views.IViewItem)
+     */
+    @Override
+    public boolean visit(IViewItem viewItem) {
+        IPosition position = (IPosition) viewItem.getAdapter(IPosition.class);
+        ITrade trade = (ITrade) viewItem.getAdapter(ITrade.class);
 
-		return true;
-	}
+        if (position != null && trade != null && trade.getPrice() != null) {
+            purchaseValue += position.getQuantity() * position.getPrice();
+            marketValue += position.getQuantity() * trade.getPrice();
+            value = marketValue - purchaseValue;
+            percentage = value / purchaseValue * 100.0;
+        }
 
-	public double getValue() {
-		return value;
-	}
+        return true;
+    }
 
-	public double getPercentage() {
-		return percentage;
-	}
+    public double getValue() {
+        return value;
+    }
+
+    public double getPercentage() {
+        return percentage;
+    }
 }

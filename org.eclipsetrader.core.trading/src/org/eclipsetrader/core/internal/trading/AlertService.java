@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,7 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IPricingListener;
@@ -48,271 +49,302 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class AlertService implements IAlertService {
-	MarketPricingEnvironment pricingEnvironment;
 
-	Map<ISecurity, List<IAlert>> map = new HashMap<ISecurity, List<IAlert>>();
-	Map<ISecurity, List<IAlert>> triggeredMap = new HashMap<ISecurity, List<IAlert>>();
+    MarketPricingEnvironment pricingEnvironment;
 
-	ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+    Map<ISecurity, List<IAlert>> map = new HashMap<ISecurity, List<IAlert>>();
+    Map<ISecurity, List<IAlert>> triggeredMap = new HashMap<ISecurity, List<IAlert>>();
 
-	private IPricingListener pricingListener = new IPricingListener() {
-		public void pricingUpdate(PricingEvent event) {
-			doPricingUpdate(event);
-		}
-	};
+    ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-	public AlertService() {
-	}
+    private IPricingListener pricingListener = new IPricingListener() {
 
-	public void startUp() throws Exception {
-		BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-		pricingEnvironment = new MarketPricingEnvironment((IMarketService) context.getService(serviceReference));
-		context.ungetService(serviceReference);
+        @Override
+        public void pricingUpdate(PricingEvent event) {
+            doPricingUpdate(event);
+        }
+    };
 
-		load(Activator.getDefault().getStateLocation().append("alerts.xml").toFile());
+    public AlertService() {
+    }
 
-		for (ISecurity instrument : map.keySet()) {
-			pricingEnvironment.addSecurity(instrument);
+    public void startUp() throws Exception {
+        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+        pricingEnvironment = new MarketPricingEnvironment((IMarketService) context.getService(serviceReference));
+        context.ungetService(serviceReference);
 
-			ITrade trade = pricingEnvironment.getTrade(instrument);
-			IQuote quote = pricingEnvironment.getQuote(instrument);
+        load(Activator.getDefault().getStateLocation().append("alerts.xml").toFile());
 
-			for (IAlert alert : map.get(instrument))
-				alert.setInitialValues(trade, quote);
-		}
+        for (ISecurity instrument : map.keySet()) {
+            pricingEnvironment.addSecurity(instrument);
 
-		pricingEnvironment.addPricingListener(pricingListener);
-	}
+            ITrade trade = pricingEnvironment.getTrade(instrument);
+            IQuote quote = pricingEnvironment.getQuote(instrument);
 
-	void load(File file) throws JAXBException {
-		if (!file.exists())
-			return;
+            for (IAlert alert : map.get(instrument)) {
+                alert.setInitialValues(trade, quote);
+            }
+        }
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(InstrumentElement[].class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.log(status);
-				return true;
-			}
-		});
-		JAXBElement<InstrumentElement[]> element = unmarshaller.unmarshal(new StreamSource(file), InstrumentElement[].class);
-		if (element == null)
-			return;
+        pricingEnvironment.addPricingListener(pricingListener);
+    }
 
-		for (InstrumentElement ie : element.getValue()) {
-			ISecurity instrument = ie.getInstrument();
+    void load(File file) throws JAXBException {
+        if (!file.exists()) {
+            return;
+        }
 
-			List<IAlert> list = new ArrayList<IAlert>();
+        JAXBContext jaxbContext = JAXBContext.newInstance(InstrumentElement[].class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-			AlertElement[] alerts = ie.getAlerts();
-			for (int ii = 0; ii < alerts.length; ii++) {
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				for (ParameterElement param : alerts[ii].getParameters())
-					parameters.put(param.getName(), ParameterElement.convert(param));
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.log(status);
+                return true;
+            }
+        });
+        JAXBElement<InstrumentElement[]> element = unmarshaller.unmarshal(new StreamSource(file), InstrumentElement[].class);
+        if (element == null) {
+            return;
+        }
 
-				IAlert alert = alerts[ii].getAlert();
-				if (alert != null) {
-					alert.setParameters(parameters);
-					list.add(alert);
-				}
-			}
+        for (InstrumentElement ie : element.getValue()) {
+            ISecurity instrument = ie.getInstrument();
 
-			map.put(instrument, list);
-		}
-	}
+            List<IAlert> list = new ArrayList<IAlert>();
 
-	protected synchronized void doPricingUpdate(PricingEvent event) {
-		List<IAlert> set = map.get(event.getSecurity());
-		if (set == null)
-			return;
+            AlertElement[] alerts = ie.getAlerts();
+            for (int ii = 0; ii < alerts.length; ii++) {
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                for (ParameterElement param : alerts[ii].getParameters()) {
+                    parameters.put(param.getName(), ParameterElement.convert(param));
+                }
 
-		List<IAlert> list = new ArrayList<IAlert>();
+                IAlert alert = alerts[ii].getAlert();
+                if (alert != null) {
+                    alert.setParameters(parameters);
+                    list.add(alert);
+                }
+            }
 
-		List<IAlert> triggeredList;
-		synchronized (triggeredMap) {
-			triggeredList = triggeredMap.get(event.getSecurity());
-			if (triggeredList == null) {
-				triggeredList = new ArrayList<IAlert>();
-				triggeredMap.put(event.getSecurity(), triggeredList);
-			}
-		}
+            map.put(instrument, list);
+        }
+    }
 
-		for (IAlert alert : set) {
-			if (triggeredList.contains(alert))
-				continue;
-			for (PricingDelta delta : event.getDelta()) {
-				if (delta.getNewValue() instanceof ITrade) {
-					alert.setTrade((ITrade) delta.getNewValue());
-					if (alert.isTriggered()) {
-						triggeredList.add(alert);
-						list.add(alert);
-						break;
-					}
-				}
-				if (delta.getNewValue() instanceof IQuote) {
-					alert.setQuote((IQuote) delta.getNewValue());
-					if (alert.isTriggered()) {
-						triggeredList.add(alert);
-						list.add(alert);
-						break;
-					}
-				}
-			}
-		}
+    protected synchronized void doPricingUpdate(PricingEvent event) {
+        List<IAlert> set = map.get(event.getSecurity());
+        if (set == null) {
+            return;
+        }
 
-		if (list.size() != 0) {
-			ITrade trade = pricingEnvironment.getTrade(event.getSecurity());
-			IQuote quote = pricingEnvironment.getQuote(event.getSecurity());
-			AlertEvent alertEvent = new AlertEvent(event.getSecurity(), trade, quote, list.toArray(new IAlert[list.size()]));
-			fireAlertTriggeredEvent(alertEvent);
-		}
-	}
+        List<IAlert> list = new ArrayList<IAlert>();
 
-	protected void fireAlertTriggeredEvent(AlertEvent alertEvent) {
-		Object[] l = listeners.getListeners();
-		for (int i = 0; i < l.length; i++) {
-			try {
-				((IAlertListener) l[i]).alertTriggered(alertEvent);
-			} catch (Throwable t) {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error notifying listeners", t); //$NON-NLS-1$
-				Activator.log(status);
-			}
-		}
-	}
+        List<IAlert> triggeredList;
+        synchronized (triggeredMap) {
+            triggeredList = triggeredMap.get(event.getSecurity());
+            if (triggeredList == null) {
+                triggeredList = new ArrayList<IAlert>();
+                triggeredMap.put(event.getSecurity(), triggeredList);
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#addAlertListener(org.eclipsetrader.core.trading.IAlertListener)
-	 */
-	public void addAlertListener(org.eclipsetrader.core.trading.IAlertListener l) {
-		listeners.add(l);
-	}
+        for (IAlert alert : set) {
+            if (triggeredList.contains(alert)) {
+                continue;
+            }
+            for (PricingDelta delta : event.getDelta()) {
+                if (delta.getNewValue() instanceof ITrade) {
+                    alert.setTrade((ITrade) delta.getNewValue());
+                    if (alert.isTriggered()) {
+                        triggeredList.add(alert);
+                        list.add(alert);
+                        break;
+                    }
+                }
+                if (delta.getNewValue() instanceof IQuote) {
+                    alert.setQuote((IQuote) delta.getNewValue());
+                    if (alert.isTriggered()) {
+                        triggeredList.add(alert);
+                        list.add(alert);
+                        break;
+                    }
+                }
+            }
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#removeAlertListener(org.eclipsetrader.core.trading.IAlertListener)
-	 */
-	public void removeAlertListener(org.eclipsetrader.core.trading.IAlertListener l) {
-		listeners.remove(l);
-	}
+        if (list.size() != 0) {
+            ITrade trade = pricingEnvironment.getTrade(event.getSecurity());
+            IQuote quote = pricingEnvironment.getQuote(event.getSecurity());
+            AlertEvent alertEvent = new AlertEvent(event.getSecurity(), trade, quote, list.toArray(new IAlert[list.size()]));
+            fireAlertTriggeredEvent(alertEvent);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#resetTrigger(org.eclipsetrader.core.trading.IAlert)
-	 */
-	public void resetTrigger(IAlert alert) {
-		for (List<IAlert> triggeredList : triggeredMap.values())
-			triggeredList.remove(alert);
-	}
+    protected void fireAlertTriggeredEvent(AlertEvent alertEvent) {
+        Object[] l = listeners.getListeners();
+        for (int i = 0; i < l.length; i++) {
+            try {
+                ((IAlertListener) l[i]).alertTriggered(alertEvent);
+            } catch (Throwable t) {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifying listeners", t); //$NON-NLS-1$
+                Activator.log(status);
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#resetAllTriggers()
-	 */
-	public void resetAllTriggers() {
-		triggeredMap.clear();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#addAlertListener(org.eclipsetrader.core.trading.IAlertListener)
+     */
+    @Override
+    public void addAlertListener(org.eclipsetrader.core.trading.IAlertListener l) {
+        listeners.add(l);
+    }
 
-	public void shutDown() throws IllegalStateException, JAXBException, IOException {
-		pricingEnvironment.dispose();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#removeAlertListener(org.eclipsetrader.core.trading.IAlertListener)
+     */
+    @Override
+    public void removeAlertListener(org.eclipsetrader.core.trading.IAlertListener l) {
+        listeners.remove(l);
+    }
 
-		listeners.clear();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#resetTrigger(org.eclipsetrader.core.trading.IAlert)
+     */
+    @Override
+    public void resetTrigger(IAlert alert) {
+        for (List<IAlert> triggeredList : triggeredMap.values()) {
+            triggeredList.remove(alert);
+        }
+    }
 
-		List<InstrumentElement> list = new ArrayList<InstrumentElement>();
-		for (ISecurity instrument : map.keySet()) {
-			List<AlertElement> alertList = new ArrayList<AlertElement>();
-			for (IAlert alert : map.get(instrument))
-				alertList.add(new AlertElement(alert));
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#resetAllTriggers()
+     */
+    @Override
+    public void resetAllTriggers() {
+        triggeredMap.clear();
+    }
 
-			list.add(new InstrumentElement(instrument, alertList));
-		}
-		save(Activator.getDefault().getStateLocation().append("alerts.xml").toFile(), list.toArray(new InstrumentElement[list.size()]));
-	}
+    public void shutDown() throws IllegalStateException, JAXBException, IOException {
+        pricingEnvironment.dispose();
 
-	void save(File file, InstrumentElement[] elements) throws JAXBException, IOException {
-		if (file.exists())
-			file.delete();
+        listeners.clear();
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(InstrumentElement[].class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				Activator.log(status);
-				return true;
-			}
-		});
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+        List<InstrumentElement> list = new ArrayList<InstrumentElement>();
+        for (ISecurity instrument : map.keySet()) {
+            List<AlertElement> alertList = new ArrayList<AlertElement>();
+            for (IAlert alert : map.get(instrument)) {
+                alertList.add(new AlertElement(alert));
+            }
 
-		JAXBElement<InstrumentElement[]> element = new JAXBElement<InstrumentElement[]>(new QName("list"), InstrumentElement[].class, elements);
-		marshaller.marshal(element, new FileWriter(file));
-	}
+            list.add(new InstrumentElement(instrument, alertList));
+        }
+        save(Activator.getDefault().getStateLocation().append("alerts.xml").toFile(), list.toArray(new InstrumentElement[list.size()]));
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#getAlerts(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public IAlert[] getAlerts(ISecurity instrument) {
-		List<IAlert> list = map.get(instrument);
-		if (list == null)
-			return new IAlert[0];
-		return list.toArray(new IAlert[list.size()]);
-	}
+    void save(File file, InstrumentElement[] elements) throws JAXBException, IOException {
+        if (file.exists()) {
+            file.delete();
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#setAlerts(org.eclipsetrader.core.instruments.ISecurity, org.eclipsetrader.core.trading.IAlert[])
-	 */
-	public void setAlerts(ISecurity instrument, IAlert[] alerts) {
-		if (!map.containsKey(instrument))
-			pricingEnvironment.addSecurity(instrument);
+        JAXBContext jaxbContext = JAXBContext.newInstance(InstrumentElement[].class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setEventHandler(new ValidationEventHandler() {
 
-		List<IAlert> oldList = map.get(instrument);
-		if (oldList != null) {
-			ITrade trade = pricingEnvironment.getTrade(instrument);
-			IQuote quote = pricingEnvironment.getQuote(instrument);
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                Activator.log(status);
+                return true;
+            }
+        });
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
 
-			for (int i = 0; i < alerts.length; i++) {
-				if (!oldList.contains(alerts[i]))
-					alerts[i].setInitialValues(trade, quote);
-			}
-		}
+        JAXBElement<InstrumentElement[]> element = new JAXBElement<InstrumentElement[]>(new QName("list"), InstrumentElement[].class, elements);
+        marshaller.marshal(element, new FileWriter(file));
+    }
 
-		map.put(instrument, new ArrayList<IAlert>(Arrays.asList(alerts)));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#getAlerts(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public IAlert[] getAlerts(ISecurity instrument) {
+        List<IAlert> list = map.get(instrument);
+        if (list == null) {
+            return new IAlert[0];
+        }
+        return list.toArray(new IAlert[list.size()]);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#getTriggeredAlerts(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public IAlert[] getTriggeredAlerts(ISecurity instrument) {
-		List<IAlert> list = triggeredMap.get(instrument);
-		if (list == null)
-			return new IAlert[0];
-		return list.toArray(new IAlert[list.size()]);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#setAlerts(org.eclipsetrader.core.instruments.ISecurity, org.eclipsetrader.core.trading.IAlert[])
+     */
+    @Override
+    public void setAlerts(ISecurity instrument, IAlert[] alerts) {
+        if (!map.containsKey(instrument)) {
+            pricingEnvironment.addSecurity(instrument);
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#hasTriggeredAlerts(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public boolean hasTriggeredAlerts(ISecurity instrument) {
-		List<IAlert> list = triggeredMap.get(instrument);
-		if (list == null)
-			return false;
-		return !list.isEmpty();
-	}
+        List<IAlert> oldList = map.get(instrument);
+        if (oldList != null) {
+            ITrade trade = pricingEnvironment.getTrade(instrument);
+            IQuote quote = pricingEnvironment.getQuote(instrument);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.trading.IAlertService#resetTriggers(org.eclipsetrader.core.instruments.ISecurity)
-	 */
-	public void resetTriggers(ISecurity instrument) {
-		ITrade trade = pricingEnvironment.getTrade(instrument);
-		IQuote quote = pricingEnvironment.getQuote(instrument);
+            for (int i = 0; i < alerts.length; i++) {
+                if (!oldList.contains(alerts[i])) {
+                    alerts[i].setInitialValues(trade, quote);
+                }
+            }
+        }
 
-		synchronized (triggeredMap) {
-			for (IAlert alert : triggeredMap.get(instrument))
-				alert.setInitialValues(trade, quote);
+        map.put(instrument, new ArrayList<IAlert>(Arrays.asList(alerts)));
+    }
 
-			triggeredMap.remove(instrument);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#getTriggeredAlerts(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public IAlert[] getTriggeredAlerts(ISecurity instrument) {
+        List<IAlert> list = triggeredMap.get(instrument);
+        if (list == null) {
+            return new IAlert[0];
+        }
+        return list.toArray(new IAlert[list.size()]);
+    }
 
-		fireAlertTriggeredEvent(new AlertEvent(instrument, trade, quote, new IAlert[0]));
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#hasTriggeredAlerts(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public boolean hasTriggeredAlerts(ISecurity instrument) {
+        List<IAlert> list = triggeredMap.get(instrument);
+        if (list == null) {
+            return false;
+        }
+        return !list.isEmpty();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAlertService#resetTriggers(org.eclipsetrader.core.instruments.ISecurity)
+     */
+    @Override
+    public void resetTriggers(ISecurity instrument) {
+        ITrade trade = pricingEnvironment.getTrade(instrument);
+        IQuote quote = pricingEnvironment.getQuote(instrument);
+
+        synchronized (triggeredMap) {
+            for (IAlert alert : triggeredMap.get(instrument)) {
+                alert.setInitialValues(trade, quote);
+            }
+
+            triggeredMap.remove(instrument);
+        }
+
+        fireAlertTriggeredEvent(new AlertEvent(instrument, trade, quote, new IAlert[0]));
+    }
 }

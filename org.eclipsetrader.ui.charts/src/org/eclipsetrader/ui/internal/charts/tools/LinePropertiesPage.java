@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,50 +31,52 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 public class LinePropertiesPage extends PropertyPage {
-	private Text text;
-	private ColorSelector color;
 
-	private Text value1;
-	private CDateTime date1;
-	private Button extend1;
+    private Text text;
+    private ColorSelector color;
 
-	private Text value2;
-	private CDateTime date2;
-	private Button extend2;
+    private Text value1;
+    private CDateTime date1;
+    private Button extend1;
 
-	private NumberFormat numberFormat = NumberFormat.getInstance();
+    private Text value2;
+    private CDateTime date2;
+    private Button extend2;
 
-	private FocusAdapter numberFocusListener = new FocusAdapter() {
+    private NumberFormat numberFormat = NumberFormat.getInstance();
+
+    private FocusAdapter numberFocusListener = new FocusAdapter() {
+
         @Override
         public void focusLost(FocusEvent event) {
-        	Text text = (Text) event.widget;
-        	try {
-        		Number number = numberFormat.parse(text.getText());
-        		text.setText(numberFormat.format(number));
+            Text text = (Text) event.widget;
+            try {
+                Number number = numberFormat.parse(text.getText());
+                text.setText(numberFormat.format(number));
             } catch (ParseException e) {
-            	text.setData("valid", Boolean.FALSE); //$NON-NLS-1$
+                text.setData("valid", Boolean.FALSE); //$NON-NLS-1$
             }
-	        setValid(!Boolean.FALSE.equals(value1.getData("valid")) && !Boolean.FALSE.equals(value2.getData("valid"))); //$NON-NLS-1$ //$NON-NLS-2$
+            setValid(!Boolean.FALSE.equals(value1.getData("valid")) && !Boolean.FALSE.equals(value2.getData("valid"))); //$NON-NLS-1$ //$NON-NLS-2$
         }
-	};
+    };
 
-	public LinePropertiesPage() {
+    public LinePropertiesPage() {
         noDefaultAndApplyButton();
 
         numberFormat.setGroupingUsed(true);
-	    numberFormat.setMinimumIntegerDigits(1);
-	    numberFormat.setMinimumFractionDigits(0);
-	    numberFormat.setMaximumFractionDigits(4);
-	}
+        numberFormat.setMinimumIntegerDigits(1);
+        numberFormat.setMinimumFractionDigits(0);
+        numberFormat.setMaximumFractionDigits(4);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(3, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(3, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         setTitle(Messages.LinePropertiesPage_Title);
@@ -123,52 +125,52 @@ public class LinePropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
-	}
+        return content;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	LineToolFactory object = (LineToolFactory) getElement().getAdapter(LineToolFactory.class);
+        LineToolFactory object = (LineToolFactory) getElement().getAdapter(LineToolFactory.class);
 
-    	text.setText(object.getName());
+        text.setText(object.getName());
 
-    	value1.setText(numberFormat.format(object.getValue1().getValue()));
-    	date1.setSelection(object.getValue1().getDate());
-    	extend1.setSelection(object.isExtend1());
+        value1.setText(numberFormat.format(object.getValue1().getValue()));
+        date1.setSelection(object.getValue1().getDate());
+        extend1.setSelection(object.isExtend1());
 
-    	value2.setText(numberFormat.format(object.getValue2().getValue()));
-    	date2.setSelection(object.getValue2().getDate());
-    	extend2.setSelection(object.isExtend2());
+        value2.setText(numberFormat.format(object.getValue2().getValue()));
+        date2.setSelection(object.getValue2().getDate());
+        extend2.setSelection(object.isExtend2());
 
-    	color.setColorValue(object.getColor() != null ? object.getColor() : new RGB(0, 0, 0));
+        color.setColorValue(object.getColor() != null ? object.getColor() : new RGB(0, 0, 0));
 
-    	super.performDefaults();
+        super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	LineToolFactory object = (LineToolFactory) getElement().getAdapter(LineToolFactory.class);
+        LineToolFactory object = (LineToolFactory) getElement().getAdapter(LineToolFactory.class);
 
-    	object.setName(text.getText());
+        object.setName(text.getText());
 
-    	try {
-        	object.setValue1(new LineToolFactory.Value(date1.getSelection(), numberFormat.parse(value1.getText())));
-	        object.setValue2(new LineToolFactory.Value(date2.getSelection(), numberFormat.parse(value2.getText())));
+        try {
+            object.setValue1(new LineToolFactory.Value(date1.getSelection(), numberFormat.parse(value1.getText())));
+            object.setValue2(new LineToolFactory.Value(date2.getSelection(), numberFormat.parse(value2.getText())));
         } catch (ParseException e) {
-	        e.printStackTrace();
+            e.printStackTrace();
         }
 
         object.setExtend1(extend1.getSelection());
         object.setExtend2(extend2.getSelection());
 
-    	object.setColor(color.getColorValue());
+        object.setColor(color.getColorValue());
 
-    	return super.performOk();
+        return super.performOk();
     }
 }

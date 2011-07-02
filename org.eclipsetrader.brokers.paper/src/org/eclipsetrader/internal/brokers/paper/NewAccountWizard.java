@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,46 +17,48 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
 public class NewAccountWizard extends Wizard implements INewWizard {
-	NamePage namePage;
-	SettingsPage settingsPage;
 
-	private Account account;
+    NamePage namePage;
+    SettingsPage settingsPage;
 
-	public NewAccountWizard() {
-	}
+    private Account account;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
-	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-	}
+    public NewAccountWizard() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#addPages()
-	 */
-	@Override
-	public void addPages() {
-		addPage(namePage = new NamePage());
-		addPage(settingsPage = new SettingsPage());
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+     */
+    @Override
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
-	 */
-	@Override
-	public boolean performFinish() {
-		account = new Account();
-		account.setDescription(namePage.getAccountDescription());
-		account.setCurrency(settingsPage.getCurrency());
-		account.setBalance(settingsPage.getBalance());
-		account.setExpenseScheme(settingsPage.getExpenseScheme());
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#addPages()
+     */
+    @Override
+    public void addPages() {
+        addPage(namePage = new NamePage());
+        addPage(settingsPage = new SettingsPage());
+    }
 
-		AccountRepository.getInstance().add(account);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.Wizard#performFinish()
+     */
+    @Override
+    public boolean performFinish() {
+        account = new Account();
+        account.setDescription(namePage.getAccountDescription());
+        account.setCurrency(settingsPage.getCurrency());
+        account.setBalance(settingsPage.getBalance());
+        account.setExpenseScheme(settingsPage.getExpenseScheme());
 
-		return true;
-	}
+        AccountRepository.getInstance().add(account);
 
-	public Account getAccount() {
-		return account;
-	}
+        return true;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
 }

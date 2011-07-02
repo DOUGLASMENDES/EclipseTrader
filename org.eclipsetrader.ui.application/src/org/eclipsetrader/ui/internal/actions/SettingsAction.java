@@ -21,9 +21,9 @@ import org.eclipse.ui.actions.RetargetAction;
  */
 public class SettingsAction extends RetargetAction {
 
-	public SettingsAction(IWorkbenchWindow window) {
-		super("settings", "Settings...");
-		window.getPartService().addPartListener(this);
-		setActionDefinitionId("org.eclipse.ui.edit.settings"); //$NON-NLS-1$
-	}
+    public SettingsAction(IWorkbenchWindow window) {
+        super("settings", "Settings...");
+        window.getPartService().addPartListener(this);
+        setActionDefinitionId("org.eclipse.ui.edit.settings"); //$NON-NLS-1$
+    }
 }

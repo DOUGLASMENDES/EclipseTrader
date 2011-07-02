@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,7 @@ import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
 public class ULTOSC implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
+
     private String id;
     private String factoryName;
     private String name;
@@ -44,152 +45,167 @@ public class ULTOSC implements IChartObjectFactory, IGeneralPropertiesAdapter, I
     private RenderStyle renderStyle = RenderStyle.Line;
     private RGB color;
 
-	public ULTOSC() {
-	}
+    public ULTOSC() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
      */
+    @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	factoryName = config.getAttribute("name");
-    	name = config.getAttribute("name");
+        id = config.getAttribute("id");
+        factoryName = config.getAttribute("name");
+        name = config.getAttribute("name");
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.charts.ui.indicators.IChartIndicator#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setName(java.lang.String)
      */
-	public void setName(String name) {
-    	this.name = name;
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
-	public int getShortPeriod() {
-    	return shortPeriod;
+    public int getShortPeriod() {
+        return shortPeriod;
     }
 
-	public void setShortPeriod(int shortPeriod) {
-    	this.shortPeriod = shortPeriod;
+    public void setShortPeriod(int shortPeriod) {
+        this.shortPeriod = shortPeriod;
     }
 
-	public int getMediumPeriod() {
-    	return mediumPeriod;
+    public int getMediumPeriod() {
+        return mediumPeriod;
     }
 
-	public void setMediumPeriod(int mediumPeriod) {
-    	this.mediumPeriod = mediumPeriod;
+    public void setMediumPeriod(int mediumPeriod) {
+        this.mediumPeriod = mediumPeriod;
     }
 
-	public int getLongPeriod() {
-    	return longPeriod;
+    public int getLongPeriod() {
+        return longPeriod;
     }
 
-	public void setLongPeriod(int longPeriod) {
-    	this.longPeriod = longPeriod;
+    public void setLongPeriod(int longPeriod) {
+        this.longPeriod = longPeriod;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#getRenderStyle()
      */
-	public RenderStyle getRenderStyle() {
-    	return renderStyle;
+    @Override
+    public RenderStyle getRenderStyle() {
+        return renderStyle;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.IGeneralPropertiesAdapter#setRenderStyle(org.eclipsetrader.ui.charts.RenderStyle)
      */
-	public void setRenderStyle(RenderStyle renderStyle) {
-    	this.renderStyle = renderStyle;
+    @Override
+    public void setRenderStyle(RenderStyle renderStyle) {
+        this.renderStyle = renderStyle;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ILineDecorator#getColor()
      */
-	public RGB getColor() {
-    	return color;
+    @Override
+    public RGB getColor() {
+        return color;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ILineDecorator#setColor(org.eclipse.swt.graphics.RGB)
      */
-	public void setColor(RGB color) {
-    	this.color = color;
+    @Override
+    public void setColor(RGB color) {
+        this.color = color;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
+    @Override
     public IChartObject createObject(IDataSeries source) {
-    	if (source == null)
-    		return null;
+        if (source == null) {
+            return null;
+        }
 
-		IAdaptable[] values = source.getValues();
-		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
+        IAdaptable[] values = source.getValues();
+        Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-		int lookback = core.ultOscLookback(shortPeriod, mediumPeriod, longPeriod);
-		if (values.length < lookback)
-			return null;
+        int lookback = core.ultOscLookback(shortPeriod, mediumPeriod, longPeriod);
+        if (values.length < lookback) {
+            return null;
+        }
 
         int startIdx = 0;
         int endIdx = values.length - 1;
-		double[] inHigh = Util.getValuesForField(values, OHLCField.High);
-		double[] inLow = Util.getValuesForField(values, OHLCField.Low);
-		double[] inClose = Util.getValuesForField(values, OHLCField.Close);
+        double[] inHigh = Util.getValuesForField(values, OHLCField.High);
+        double[] inLow = Util.getValuesForField(values, OHLCField.Low);
+        double[] inClose = Util.getValuesForField(values, OHLCField.Close);
 
-		MInteger outBegIdx = new MInteger();
+        MInteger outBegIdx = new MInteger();
         MInteger outNbElement = new MInteger();
         double[] outReal = new double[values.length - lookback];
 
         core.ultOsc(startIdx, endIdx, inHigh, inLow, inClose, shortPeriod, mediumPeriod, longPeriod, outBegIdx, outNbElement, outReal);
 
         NumericDataSeries result = new NumericDataSeries(getName(), outReal, source);
-		return Util.createLineChartObject(result, renderStyle, color);
+        return Util.createLineChartObject(result, renderStyle, color);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
      */
+    @Override
     public IChartParameters getParameters() {
-    	ChartParameters parameters = new ChartParameters();
+        ChartParameters parameters = new ChartParameters();
 
-    	if (!factoryName.equals(name))
-    		parameters.setParameter("name", name);
+        if (!factoryName.equals(name)) {
+            parameters.setParameter("name", name);
+        }
 
-    	parameters.setParameter("short-period", shortPeriod);
-    	parameters.setParameter("medium-period", mediumPeriod);
-    	parameters.setParameter("long-period", longPeriod);
+        parameters.setParameter("short-period", shortPeriod);
+        parameters.setParameter("medium-period", mediumPeriod);
+        parameters.setParameter("long-period", longPeriod);
 
-    	parameters.setParameter("style", renderStyle.getName());
-    	if (color != null)
-        	parameters.setParameter("color", color);
+        parameters.setParameter("style", renderStyle.getName());
+        if (color != null) {
+            parameters.setParameter("color", color);
+        }
 
-	    return parameters;
+        return parameters;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
+    @Override
     public void setParameters(IChartParameters parameters) {
-	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
+        name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
 
-	    shortPeriod = parameters.getInteger("short-period");
-	    mediumPeriod = parameters.getInteger("medium-period");
-	    longPeriod = parameters.getInteger("long-period");
+        shortPeriod = parameters.getInteger("short-period");
+        mediumPeriod = parameters.getInteger("medium-period");
+        longPeriod = parameters.getInteger("long-period");
 
-	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
-	    color = parameters.getColor("color");
+        renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
+        color = parameters.getColor("color");
     }
 }

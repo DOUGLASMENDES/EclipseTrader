@@ -25,6 +25,7 @@ import org.eclipsetrader.core.views.IWatchListColumn;
 import org.eclipsetrader.core.views.WatchListColumn;
 
 public class ColumnsPage extends WizardPage {
+
     private ColumnsViewer providers;
     private IColumn[] defaultColumns;
 
@@ -67,10 +68,12 @@ public class ColumnsPage extends WizardPage {
     public IWatchListColumn[] getColumns() {
         List<IWatchListColumn> c = new ArrayList<IWatchListColumn>();
         for (IColumn column : providers.getSelection()) {
-            if (column instanceof IWatchListColumn)
+            if (column instanceof IWatchListColumn) {
                 c.add((IWatchListColumn) column);
-            else
+            }
+            else {
                 c.add(new WatchListColumn(column));
+            }
         }
         return c.toArray(new IWatchListColumn[c.size()]);
     }

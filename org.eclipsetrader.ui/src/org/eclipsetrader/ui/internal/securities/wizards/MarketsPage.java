@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,68 +30,73 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class MarketsPage extends WizardPage {
-	private CheckboxTableViewer markets;
 
-	public MarketsPage() {
-		super("markets", "Markets", null);
-		setDescription("Assign the security to one or more markets.");
-	}
+    private CheckboxTableViewer markets;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(2, false));
-		setControl(content);
-		initializeDialogUnits(content);
+    public MarketsPage() {
+        super("markets", "Markets", null);
+        setDescription("Assign the security to one or more markets.");
+    }
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Markets:");
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		markets = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		markets.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		((GridData) markets.getControl().getLayoutData()).heightHint = markets.getTable().getItemHeight() * 4 + markets.getTable().getBorderWidth() * 2;
-		markets.setLabelProvider(new LabelProvider());
-		markets.setContentProvider(new ArrayContentProvider());
-		markets.setSorter(new ViewerSorter());
-		markets.setInput(getMarkets());
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(2, false));
+        setControl(content);
+        initializeDialogUnits(content);
 
-		markets.addCheckStateListener(new ICheckStateListener() {
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Markets:");
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        markets = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        markets.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        ((GridData) markets.getControl().getLayoutData()).heightHint = markets.getTable().getItemHeight() * 4 + markets.getTable().getBorderWidth() * 2;
+        markets.setLabelProvider(new LabelProvider());
+        markets.setContentProvider(new ArrayContentProvider());
+        markets.setSorter(new ViewerSorter());
+        markets.setInput(getMarkets());
+
+        markets.addCheckStateListener(new ICheckStateListener() {
+
+            @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-            	if (event.getChecked()) {
-                	Object[] elements = markets.getCheckedElements();
-                	for (int i = 0; i < elements.length; i++) {
-                		if (elements[i] != event.getElement())
-                			markets.setChecked(elements[i], false);
-                	}
-            	}
+                if (event.getChecked()) {
+                    Object[] elements = markets.getCheckedElements();
+                    for (int i = 0; i < elements.length; i++) {
+                        if (elements[i] != event.getElement()) {
+                            markets.setChecked(elements[i], false);
+                        }
+                    }
+                }
             }
-		});
-	}
+        });
+    }
 
-	protected IMarket[] getMarkets() {
-		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-		if (serviceReference != null) {
-			IMarketService marketService = (IMarketService) context.getService(serviceReference);
-			return marketService.getMarkets();
-		}
-		return new IMarket[0];
-	}
+    protected IMarket[] getMarkets() {
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+        ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+        if (serviceReference != null) {
+            IMarketService marketService = (IMarketService) context.getService(serviceReference);
+            return marketService.getMarkets();
+        }
+        return new IMarket[0];
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
      */
     @Override
     public boolean isPageComplete() {
-	    return true;
+        return true;
     }
 
-	public IMarket[] getSelectedMarkets() {
-		Object[] checkedElements = markets.getCheckedElements();
-		IMarket[] selectedMarkets = new IMarket[checkedElements.length];
-		System.arraycopy(checkedElements, 0, selectedMarkets, 0, checkedElements.length);
-		return selectedMarkets;
-	}
+    public IMarket[] getSelectedMarkets() {
+        Object[] checkedElements = markets.getCheckedElements();
+        IMarket[] selectedMarkets = new IMarket[checkedElements.length];
+        System.arraycopy(checkedElements, 0, selectedMarkets, 0, checkedElements.length);
+        return selectedMarkets;
+    }
 }

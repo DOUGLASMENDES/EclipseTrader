@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,64 +23,64 @@ import org.eclipsetrader.core.instruments.Stock;
 
 public class UtilTest extends TestCase {
 
-	public void testGetYahooSymbol() throws Exception {
-		FeedProperties properties = new FeedProperties();
-		properties.setProperty("org.eclipsetrader.yahoo.symbol", "F.MI");
-		FeedIdentifier identifier = new FeedIdentifier("F", properties);
-		assertEquals("F.MI", Util.getSymbol(identifier));
-	}
+    public void testGetYahooSymbol() throws Exception {
+        FeedProperties properties = new FeedProperties();
+        properties.setProperty("org.eclipsetrader.yahoo.symbol", "F.MI");
+        FeedIdentifier identifier = new FeedIdentifier("F", properties);
+        assertEquals("F.MI", Util.getSymbol(identifier));
+    }
 
-	public void testGetDefaultSymbolIfYahooIsMissing() throws Exception {
-		FeedProperties properties = new FeedProperties();
-		FeedIdentifier identifier = new FeedIdentifier("F.MI", properties);
-		assertEquals("F.MI", Util.getSymbol(identifier));
-	}
+    public void testGetDefaultSymbolIfYahooIsMissing() throws Exception {
+        FeedProperties properties = new FeedProperties();
+        FeedIdentifier identifier = new FeedIdentifier("F.MI", properties);
+        assertEquals("F.MI", Util.getSymbol(identifier));
+    }
 
-	public void testGet1YearBackfillMethod() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("MSFT", new FeedProperties());
-		String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/msft/chartdata;type=quote;ys=2011;yz=1/csv/";
+    public void testGet1YearBackfillMethod() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("MSFT", new FeedProperties());
+        String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/msft/chartdata;type=quote;ys=2011;yz=1/csv/";
 
-		HttpMethod method = Util.get1YearHistoryFeedMethod(identifier, 2011);
-		assertEquals(expected, method.getURI().toString());
-	}
+        HttpMethod method = Util.get1YearHistoryFeedMethod(identifier, 2011);
+        assertEquals(expected, method.getURI().toString());
+    }
 
-	public void testGet1DaysBackfillMethod() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("MSFT", new FeedProperties());
-		String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/msft/chartdata;type=quote;range=1d/csv/";
+    public void testGet1DaysBackfillMethod() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("MSFT", new FeedProperties());
+        String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/msft/chartdata;type=quote;range=1d/csv/";
 
-		HttpMethod method = Util.get1DayHistoryFeedMethod(identifier);
-		assertEquals(expected, method.getURI().toString());
-	}
+        HttpMethod method = Util.get1DayHistoryFeedMethod(identifier);
+        assertEquals(expected, method.getURI().toString());
+    }
 
-	public void testGet5DaysBackfillMethod() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("MSFT", new FeedProperties());
-		String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/msft/chartdata;type=quote;range=5d/csv/";
+    public void testGet5DaysBackfillMethod() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("MSFT", new FeedProperties());
+        String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/msft/chartdata;type=quote;range=5d/csv/";
 
-		HttpMethod method = Util.get5DayHistoryFeedMethod(identifier);
-		assertEquals(expected, method.getURI().toString());
-	}
+        HttpMethod method = Util.get5DayHistoryFeedMethod(identifier);
+        assertEquals(expected, method.getURI().toString());
+    }
 
-	public void testGetBackfillMethodForIndex() throws Exception {
-		FeedIdentifier identifier = new FeedIdentifier("^IXIC", new FeedProperties());
-		String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/%5Eixic/chartdata;type=quote;ys=2011;yz=1/csv/";
+    public void testGetBackfillMethodForIndex() throws Exception {
+        FeedIdentifier identifier = new FeedIdentifier("^IXIC", new FeedProperties());
+        String expected = "http://chartapi.finance.yahoo.com/instrument/1.0/%5Eixic/chartdata;type=quote;ys=2011;yz=1/csv/";
 
-		HttpMethod method = Util.get1YearHistoryFeedMethod(identifier, 2011);
-		assertEquals(expected, method.getURI().toString());
-	}
+        HttpMethod method = Util.get1YearHistoryFeedMethod(identifier, 2011);
+        assertEquals(expected, method.getURI().toString());
+    }
 
-	public void testGetRSSNewsFeed() throws Exception {
-		Stock stock = new Stock("Stock", new FeedIdentifier("MSFT", new FeedProperties()), Currency.getInstance("USD"));
-		String expected = "http://finance.yahoo.com/rss/headline?s=MSFT";
+    public void testGetRSSNewsFeed() throws Exception {
+        Stock stock = new Stock("Stock", new FeedIdentifier("MSFT", new FeedProperties()), Currency.getInstance("USD"));
+        String expected = "http://finance.yahoo.com/rss/headline?s=MSFT";
 
-		URL url = Util.getRSSNewsFeedForSecurity(stock);
-		assertEquals(expected, url.toString());
-	}
+        URL url = Util.getRSSNewsFeedForSecurity(stock);
+        assertEquals(expected, url.toString());
+    }
 
-	public void testGetRSSNewsFeedForIndex() throws Exception {
-		Stock stock = new Stock("Stock", new FeedIdentifier("^IXIC", new FeedProperties()), Currency.getInstance("USD"));
-		String expected = "http://finance.yahoo.com/rss/headline?s=%5EIXIC";
+    public void testGetRSSNewsFeedForIndex() throws Exception {
+        Stock stock = new Stock("Stock", new FeedIdentifier("^IXIC", new FeedProperties()), Currency.getInstance("USD"));
+        String expected = "http://finance.yahoo.com/rss/headline?s=%5EIXIC";
 
-		URL url = Util.getRSSNewsFeedForSecurity(stock);
-		assertEquals(expected, url.toString());
-	}
+        URL url = Util.getRSSNewsFeedForSecurity(stock);
+        assertEquals(expected, url.toString());
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,158 +42,169 @@ import org.eclipsetrader.core.charts.IDataSeriesVisitor;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ChartViewer {
-	private static final String K_NEEDS_REDRAW = "needs_redraw"; //$NON-NLS-1$
 
-	private Composite composite;
-	private SashForm sashForm;
-	private ChartItem[] items = new ChartItem[0];
-	private Canvas horizontalScaleCanvas;
-	private Label verticalScaleLabel;
+    private static final String K_NEEDS_REDRAW = "needs_redraw"; //$NON-NLS-1$
 
-	private IAxis horizontalAxis;
-	private IAxis verticalAxis;
-	private IChartContentProvider contentProvider;
-	private IChartRenderer renderer;
+    private Composite composite;
+    private SashForm sashForm;
+    private ChartItem[] items = new ChartItem[0];
+    private Canvas horizontalScaleCanvas;
+    private Label verticalScaleLabel;
 
-	private boolean verticalScaleVisible;
-	private boolean horizontalScaleVisible;
-	private Image horizontalScaleImage;
-	private boolean needsRedraw;
+    private IAxis horizontalAxis;
+    private IAxis verticalAxis;
+    private IChartContentProvider contentProvider;
+    private IChartRenderer renderer;
 
-	private Object input;
+    private boolean verticalScaleVisible;
+    private boolean horizontalScaleVisible;
+    private Image horizontalScaleImage;
+    private boolean needsRedraw;
 
-	public ChartViewer(Composite parent, int style) {
-		composite = new Composite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 3;
-		composite.setLayout(gridLayout);
+    private Object input;
 
-		sashForm = new SashForm(composite, SWT.VERTICAL);
-		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+    public ChartViewer(Composite parent, int style) {
+        composite = new Composite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 3;
+        composite.setLayout(gridLayout);
 
-		horizontalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
-		horizontalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-		horizontalScaleCanvas.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		((GridData) horizontalScaleCanvas.getLayoutData()).heightHint = ChartItem.HORIZONTAL_SCALE_HEIGHT;
-		((GridData) horizontalScaleCanvas.getLayoutData()).exclude = true;
-		horizontalScaleCanvas.setVisible(false);
-		horizontalScaleCanvas.addPaintListener(new PaintListener() {
+        sashForm = new SashForm(composite, SWT.VERTICAL);
+        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+        horizontalScaleCanvas = new Canvas(composite, SWT.DOUBLE_BUFFERED);
+        horizontalScaleCanvas.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        horizontalScaleCanvas.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        ((GridData) horizontalScaleCanvas.getLayoutData()).heightHint = ChartItem.HORIZONTAL_SCALE_HEIGHT;
+        ((GridData) horizontalScaleCanvas.getLayoutData()).exclude = true;
+        horizontalScaleCanvas.setVisible(false);
+        horizontalScaleCanvas.addPaintListener(new PaintListener() {
+
+            @Override
             public void paintControl(PaintEvent e) {
-            	onPaintHorizontalScale(e);
+                onPaintHorizontalScale(e);
             }
-		});
-		horizontalScaleCanvas.addControlListener(new ControlAdapter() {
+        });
+        horizontalScaleCanvas.addControlListener(new ControlAdapter() {
+
             @Override
             public void controlResized(ControlEvent e) {
-            	if (horizontalScaleImage != null) {
-            		horizontalScaleImage.dispose();
-            		horizontalScaleImage = null;
-            	}
+                if (horizontalScaleImage != null) {
+                    horizontalScaleImage.dispose();
+                    horizontalScaleImage = null;
+                }
             }
-		});
+        });
 
-		verticalScaleLabel = new Label(composite, SWT.NONE);
-		verticalScaleLabel.setLayoutData(new GridData(ChartItem.VERTICAL_SCALE_WIDTH, SWT.DEFAULT));
-		((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
-		verticalScaleLabel.setVisible(false);
+        verticalScaleLabel = new Label(composite, SWT.NONE);
+        verticalScaleLabel.setLayoutData(new GridData(ChartItem.VERTICAL_SCALE_WIDTH, SWT.DEFAULT));
+        ((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
+        verticalScaleLabel.setVisible(false);
 
-		Label label = new Label(sashForm, SWT.NONE);
-		label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        Label label = new Label(sashForm, SWT.NONE);
+        label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
-		composite.getHorizontalBar().setVisible(false);
-		composite.getHorizontalBar().addSelectionListener(new SelectionAdapter() {
+        composite.getHorizontalBar().setVisible(false);
+        composite.getHorizontalBar().addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	needsRedraw = true;
-            	for (int i = 0; i < items.length; i++) {
-            		items[i].getCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
-            		if (items[i].getVerticalScaleCanvas() != null)
-            			items[i].getVerticalScaleCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
-            		items[i].redraw();
-            	}
-            	if (horizontalScaleCanvas != null) {
-            		horizontalScaleCanvas.setData(K_NEEDS_REDRAW, Boolean.TRUE);
-            		horizontalScaleCanvas.redraw();
-            	}
+                needsRedraw = true;
+                for (int i = 0; i < items.length; i++) {
+                    items[i].getCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
+                    if (items[i].getVerticalScaleCanvas() != null) {
+                        items[i].getVerticalScaleCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
+                    }
+                    items[i].redraw();
+                }
+                if (horizontalScaleCanvas != null) {
+                    horizontalScaleCanvas.setData(K_NEEDS_REDRAW, Boolean.TRUE);
+                    horizontalScaleCanvas.redraw();
+                }
             }
-		});
+        });
 
-		composite.getVerticalBar().setVisible(false);
-		composite.getVerticalBar().addSelectionListener(new SelectionAdapter() {
+        composite.getVerticalBar().setVisible(false);
+        composite.getVerticalBar().addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	sashForm.redraw(0, 0, 0, 0, true);
+                sashForm.redraw(0, 0, 0, 0, true);
             }
-		});
+        });
 
-		sashForm.addDisposeListener(new DisposeListener() {
+        sashForm.addDisposeListener(new DisposeListener() {
+
+            @Override
             public void widgetDisposed(DisposeEvent e) {
-            	if (contentProvider != null)
-            		contentProvider.dispose();
-            	if (renderer != null)
-            		renderer.dispose();
+                if (contentProvider != null) {
+                    contentProvider.dispose();
+                }
+                if (renderer != null) {
+                    renderer.dispose();
+                }
             }
-		});
-	}
-
-	public void dispose() {
-		composite.dispose();
-	}
-
-	public IAxis getHorizontalAxis() {
-    	return horizontalAxis;
+        });
     }
 
-	public void setHorizontalAxis(IAxis horizontalAxis) {
-    	this.horizontalAxis = horizontalAxis;
+    public void dispose() {
+        composite.dispose();
     }
 
-	public boolean isHorizontalScaleVisible() {
-    	return horizontalScaleVisible;
+    public IAxis getHorizontalAxis() {
+        return horizontalAxis;
     }
 
-	public void setHorizontalScaleVisible(boolean visible) {
-		this.horizontalScaleVisible = visible;
-	}
-
-	public boolean isVerticalScaleVisible() {
-    	return verticalScaleVisible;
+    public void setHorizontalAxis(IAxis horizontalAxis) {
+        this.horizontalAxis = horizontalAxis;
     }
 
-	public void setVerticalScaleVisible(boolean verticalScaleVisible) {
-    	this.verticalScaleVisible = verticalScaleVisible;
+    public boolean isHorizontalScaleVisible() {
+        return horizontalScaleVisible;
     }
 
-	public IAxis getVerticalAxis() {
-    	return verticalAxis;
+    public void setHorizontalScaleVisible(boolean visible) {
+        this.horizontalScaleVisible = visible;
     }
 
-	public void setVerticalAxis(IAxis verticalAxis) {
-    	this.verticalAxis = verticalAxis;
+    public boolean isVerticalScaleVisible() {
+        return verticalScaleVisible;
     }
 
-	public IChartContentProvider getContentProvider() {
-    	return contentProvider;
+    public void setVerticalScaleVisible(boolean verticalScaleVisible) {
+        this.verticalScaleVisible = verticalScaleVisible;
     }
 
-	public void setContentProvider(IChartContentProvider contentProvider) {
-    	this.contentProvider = contentProvider;
+    public IAxis getVerticalAxis() {
+        return verticalAxis;
     }
 
-	public IChartRenderer getRenderer() {
-    	return renderer;
+    public void setVerticalAxis(IAxis verticalAxis) {
+        this.verticalAxis = verticalAxis;
     }
 
-	public void setRenderer(IChartRenderer renderer) {
-    	this.renderer = renderer;
+    public IChartContentProvider getContentProvider() {
+        return contentProvider;
     }
 
-	public Object getInput() {
-    	return input;
+    public void setContentProvider(IChartContentProvider contentProvider) {
+        this.contentProvider = contentProvider;
     }
 
-	public void setInput(Object input) {
+    public IChartRenderer getRenderer() {
+        return renderer;
+    }
+
+    public void setRenderer(IChartRenderer renderer) {
+        this.renderer = renderer;
+    }
+
+    public Object getInput() {
+        return input;
+    }
+
+    public void setInput(Object input) {
         Assert.isTrue(getContentProvider() != null, "ChartTemplate must have a content provider when input is set."); //$NON-NLS-1$
 
         Object oldInput = getInput();
@@ -203,378 +214,411 @@ public class ChartViewer {
         refresh();
     }
 
-	public void refresh() {
-    	horizontalAxis.clear();
-    	verticalAxis.clear();
+    public void refresh() {
+        horizontalAxis.clear();
+        verticalAxis.clear();
 
-    	Object[] elements = getInput() != null ? contentProvider.getElements(getInput()) : new Object[0];
+        Object[] elements = getInput() != null ? contentProvider.getElements(getInput()) : new Object[0];
 
-    	ChartItem[] newItems = new ChartItem[elements.length];
-		if (items != null) {
-			int length = Math.min(items.length, newItems.length);
-			System.arraycopy(items, 0, newItems, 0, length);
-			for (int i = length; i < items.length; i++)
-				items[i].dispose();
+        ChartItem[] newItems = new ChartItem[elements.length];
+        if (items != null) {
+            int length = Math.min(items.length, newItems.length);
+            System.arraycopy(items, 0, newItems, 0, length);
+            for (int i = length; i < items.length; i++) {
+                items[i].dispose();
+            }
 
-			if (items.length == 0) {
-				Control[] c = sashForm.getChildren();
-				if (c.length != 0)
-					c[0].dispose();
-			}
-		}
-		items = newItems;
+            if (items.length == 0) {
+                Control[] c = sashForm.getChildren();
+                if (c.length != 0) {
+                    c[0].dispose();
+                }
+            }
+        }
+        items = newItems;
 
-		for (int i = 0; i < elements.length; i++) {
-			if (items[i] == null || items[i].isDisposed()) {
-				items[i] = new ChartItem(sashForm, SWT.NONE);
-				items[i].setVerticalScaleVisible(verticalScaleVisible);
-				items[i].getCanvas().addPaintListener(new PaintListener() {
-	                public void paintControl(PaintEvent e) {
-	                	onPaintItem(e);
-	                }
-				});
-				items[i].getCanvas().addControlListener(new ControlAdapter() {
+        for (int i = 0; i < elements.length; i++) {
+            if (items[i] == null || items[i].isDisposed()) {
+                items[i] = new ChartItem(sashForm, SWT.NONE);
+                items[i].setVerticalScaleVisible(verticalScaleVisible);
+                items[i].getCanvas().addPaintListener(new PaintListener() {
+
+                    @Override
+                    public void paintControl(PaintEvent e) {
+                        onPaintItem(e);
+                    }
+                });
+                items[i].getCanvas().addControlListener(new ControlAdapter() {
+
                     @Override
                     public void controlResized(ControlEvent e) {
-	                    e.widget.setData(K_NEEDS_REDRAW, Boolean.TRUE);
+                        e.widget.setData(K_NEEDS_REDRAW, Boolean.TRUE);
                     }
-				});
-				items[i].getVerticalScaleCanvas().addPaintListener(new PaintListener() {
-	                public void paintControl(PaintEvent e) {
-	                	onPaintItemVerticalScale(e);
-	                }
-				});
-				items[i].getVerticalScaleCanvas().addControlListener(new ControlAdapter() {
+                });
+                items[i].getVerticalScaleCanvas().addPaintListener(new PaintListener() {
+
+                    @Override
+                    public void paintControl(PaintEvent e) {
+                        onPaintItemVerticalScale(e);
+                    }
+                });
+                items[i].getVerticalScaleCanvas().addControlListener(new ControlAdapter() {
+
                     @Override
                     public void controlResized(ControlEvent e) {
-	                    e.widget.setData(K_NEEDS_REDRAW, Boolean.TRUE);
+                        e.widget.setData(K_NEEDS_REDRAW, Boolean.TRUE);
                     }
-				});
-				if (i == 0) {
-					items[i].getCanvas().addControlListener(new ControlAdapter() {
+                });
+                if (i == 0) {
+                    items[i].getCanvas().addControlListener(new ControlAdapter() {
+
                         @Override
                         public void controlResized(ControlEvent e) {
-    		            	updateScrollbars();
+                            updateScrollbars();
                         }
-					});
-				}
-			}
-			items[i].setData(elements[i]);
-    		items[i].getCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
-    		if (items[i].getVerticalScaleCanvas() != null)
-    			items[i].getVerticalScaleCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
-    		items[i].redraw();
+                    });
+                }
+            }
+            items[i].setData(elements[i]);
+            items[i].getCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
+            if (items[i].getVerticalScaleCanvas() != null) {
+                items[i].getVerticalScaleCanvas().setData(K_NEEDS_REDRAW, Boolean.TRUE);
+            }
+            items[i].redraw();
 
-			IDataSeries dataSeries = null;
-			if (elements[i] instanceof IDataSeries)
-				dataSeries = (IDataSeries) elements[i];
-			else if (elements[i] instanceof IAdaptable)
-				dataSeries = (IDataSeries) ((IAdaptable) elements[i]).getAdapter(IDataSeries.class);
+            IDataSeries dataSeries = null;
+            if (elements[i] instanceof IDataSeries) {
+                dataSeries = (IDataSeries) elements[i];
+            }
+            else if (elements[i] instanceof IAdaptable) {
+                dataSeries = (IDataSeries) ((IAdaptable) elements[i]).getAdapter(IDataSeries.class);
+            }
 
-			if (dataSeries != null) {
-				dataSeries.accept(new IDataSeriesVisitor() {
+            if (dataSeries != null) {
+                dataSeries.accept(new IDataSeriesVisitor() {
+
+                    @Override
                     public boolean visit(IDataSeries data) {
-        				horizontalAxis.addValues(data.getValues());
-	                    return true;
+                        horizontalAxis.addValues(data.getValues());
+                        return true;
                     }
-				});
-				verticalAxis.addValues(new IAdaptable[] { dataSeries.getHighest(), dataSeries.getLowest() });
-			}
-		}
+                });
+                verticalAxis.addValues(new IAdaptable[] {
+                        dataSeries.getHighest(), dataSeries.getLowest()
+                });
+            }
+        }
 
-		if (items.length == 0) {
-			Label label = new Label(sashForm, SWT.NONE);
-			label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-		}
+        if (items.length == 0) {
+            Label label = new Label(sashForm, SWT.NONE);
+            label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        }
 
-    	needsRedraw = true;
-    	if (horizontalScaleCanvas != null) {
-    		horizontalScaleCanvas.setData(K_NEEDS_REDRAW, Boolean.TRUE);
-    		horizontalScaleCanvas.redraw();
-    	}
+        needsRedraw = true;
+        if (horizontalScaleCanvas != null) {
+            horizontalScaleCanvas.setData(K_NEEDS_REDRAW, Boolean.TRUE);
+            horizontalScaleCanvas.redraw();
+        }
 
-    	updateScrollbars();
+        updateScrollbars();
 
-    	int[] weights = new int[items.length];
-    	if (weights.length != 0) {
-    		weights[0] = 100;
-    		for (int i = 1; i < weights.length; i++)
-        		weights[i] = 25;
-    		sashForm.setWeights(weights);
-    	}
-    	sashForm.layout();
+        int[] weights = new int[items.length];
+        if (weights.length != 0) {
+            weights[0] = 100;
+            for (int i = 1; i < weights.length; i++) {
+                weights[i] = 25;
+            }
+            sashForm.setWeights(weights);
+        }
+        sashForm.layout();
 
-    	if (items.length != 0 && verticalScaleVisible && !verticalScaleLabel.getVisible()) {
-    		((GridData) verticalScaleLabel.getLayoutData()).exclude = false;
-    		verticalScaleLabel.setVisible(true);
-    	}
-		if ((items.length == 0 || !verticalScaleVisible) && verticalScaleLabel.getVisible()) {
-			((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
-			verticalScaleLabel.setVisible(false);
-		}
+        if (items.length != 0 && verticalScaleVisible && !verticalScaleLabel.getVisible()) {
+            ((GridData) verticalScaleLabel.getLayoutData()).exclude = false;
+            verticalScaleLabel.setVisible(true);
+        }
+        if ((items.length == 0 || !verticalScaleVisible) && verticalScaleLabel.getVisible()) {
+            ((GridData) verticalScaleLabel.getLayoutData()).exclude = true;
+            verticalScaleLabel.setVisible(false);
+        }
 
-    	if (items.length != 0 && horizontalScaleVisible && !horizontalScaleCanvas.getVisible()) {
-			((GridData) horizontalScaleCanvas.getLayoutData()).exclude = false;
-			horizontalScaleCanvas.setVisible(true);
-			composite.layout();
-		}
-		if ((items.length == 0 || !horizontalScaleVisible) && horizontalScaleCanvas.getVisible()) {
-			((GridData) horizontalScaleCanvas.getLayoutData()).exclude = true;
-			horizontalScaleCanvas.setVisible(false);
-			composite.layout();
-		}
-	}
+        if (items.length != 0 && horizontalScaleVisible && !horizontalScaleCanvas.getVisible()) {
+            ((GridData) horizontalScaleCanvas.getLayoutData()).exclude = false;
+            horizontalScaleCanvas.setVisible(true);
+            composite.layout();
+        }
+        if ((items.length == 0 || !horizontalScaleVisible) && horizontalScaleCanvas.getVisible()) {
+            ((GridData) horizontalScaleCanvas.getLayoutData()).exclude = true;
+            horizontalScaleCanvas.setVisible(false);
+            composite.layout();
+        }
+    }
 
-	public Display getDisplay() {
-		return sashForm.getDisplay();
-	}
+    public Display getDisplay() {
+        return sashForm.getDisplay();
+    }
 
-	public boolean isDisposed() {
-		return sashForm.isDisposed();
-	}
+    public boolean isDisposed() {
+        return sashForm.isDisposed();
+    }
 
-	private void onPaintHorizontalScale(PaintEvent event) {
-		if (!(renderer instanceof IScaleRenderer))
-			return;
+    private void onPaintHorizontalScale(PaintEvent event) {
+        if (!(renderer instanceof IScaleRenderer)) {
+            return;
+        }
 
-		Rectangle clientArea = horizontalScaleCanvas.getClientArea();
-		ScrollBar hScroll = composite.getHorizontalBar();
-		Object firstElement = horizontalAxis.mapToValue(hScroll != null ? hScroll.getSelection() : 0);
-		Object lastElement = horizontalAxis.mapToValue((hScroll != null ? hScroll.getSelection() : 0) + clientArea.width);
+        Rectangle clientArea = horizontalScaleCanvas.getClientArea();
+        ScrollBar hScroll = composite.getHorizontalBar();
+        Object firstElement = horizontalAxis.mapToValue(hScroll != null ? hScroll.getSelection() : 0);
+        Object lastElement = horizontalAxis.mapToValue((hScroll != null ? hScroll.getSelection() : 0) + clientArea.width);
 
-		if (getInput() != null && needsRedraw) {
-    		Object[] elements = contentProvider.getElements(getInput());
-    		if (elements != null && elements.length != 0) {
-    			RenderTarget graphics = new RenderTarget();
-    			try {
-    				Rectangle canvasArea = horizontalScaleCanvas.getClientArea();
-    	        	if (horizontalScaleImage == null)
-    	        		horizontalScaleImage = new Image(horizontalScaleCanvas.getDisplay(), canvasArea.width, canvasArea.height);
+        if (getInput() != null && needsRedraw) {
+            Object[] elements = contentProvider.getElements(getInput());
+            if (elements != null && elements.length != 0) {
+                RenderTarget graphics = new RenderTarget();
+                try {
+                    Rectangle canvasArea = horizontalScaleCanvas.getClientArea();
+                    if (horizontalScaleImage == null) {
+                        horizontalScaleImage = new Image(horizontalScaleCanvas.getDisplay(), canvasArea.width, canvasArea.height);
+                    }
 
-    	        	graphics.gc = new GC(horizontalScaleImage);
-    				graphics.display = horizontalScaleCanvas.getDisplay();
-    				graphics.x = hScroll != null ? -hScroll.getSelection() : 0;
-    				graphics.y = 0;
-    				graphics.width = canvasArea.width;
-    				graphics.height = canvasArea.height;
-    				graphics.widget = horizontalScaleCanvas;
-    				graphics.horizontalAxis = horizontalAxis;
-    				graphics.verticalAxis = verticalAxis;
+                    graphics.gc = new GC(horizontalScaleImage);
+                    graphics.display = horizontalScaleCanvas.getDisplay();
+                    graphics.x = hScroll != null ? -hScroll.getSelection() : 0;
+                    graphics.y = 0;
+                    graphics.width = canvasArea.width;
+                    graphics.height = canvasArea.height;
+                    graphics.widget = horizontalScaleCanvas;
+                    graphics.horizontalAxis = horizontalAxis;
+                    graphics.verticalAxis = verticalAxis;
 
-    				graphics.firstValue = new AdaptableWrapper(firstElement);
-    				graphics.lastValue = new AdaptableWrapper(lastElement);
-    				graphics.input = input;
+                    graphics.firstValue = new AdaptableWrapper(firstElement);
+                    graphics.lastValue = new AdaptableWrapper(lastElement);
+                    graphics.input = input;
 
-    				graphics.gc.setAntialias(SWT.OFF);
-    				graphics.gc.setForeground(horizontalScaleCanvas.getForeground());
-    				graphics.gc.setBackground(horizontalScaleCanvas.getBackground());
+                    graphics.gc.setAntialias(SWT.OFF);
+                    graphics.gc.setForeground(horizontalScaleCanvas.getForeground());
+                    graphics.gc.setBackground(horizontalScaleCanvas.getBackground());
 
-   					((IScaleRenderer) renderer).renderHorizontalScale(graphics);
-    			} catch(Error e) {
-    				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_HorizontalScaleRenderingError);
-    				ChartsUIActivator.log(status);
-    			} finally {
-    				if (graphics.gc != null)
-    					graphics.gc.dispose();
-    			}
-    		}
-		}
+                    ((IScaleRenderer) renderer).renderHorizontalScale(graphics);
+                } catch (Error e) {
+                    Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_HorizontalScaleRenderingError);
+                    ChartsUIActivator.log(status);
+                } finally {
+                    if (graphics.gc != null) {
+                        graphics.gc.dispose();
+                    }
+                }
+            }
+        }
 
-		if (horizontalScaleImage != null && !horizontalScaleImage.isDisposed())
-			event.gc.drawImage(horizontalScaleImage, 0, 0);
-		else {
-			event.gc.setForeground(horizontalScaleCanvas.getForeground());
-			event.gc.setBackground(horizontalScaleCanvas.getBackground());
-			event.gc.fillRectangle(event.x, event.y, event.width, event.height);
-		}
-	}
+        if (horizontalScaleImage != null && !horizontalScaleImage.isDisposed()) {
+            event.gc.drawImage(horizontalScaleImage, 0, 0);
+        }
+        else {
+            event.gc.setForeground(horizontalScaleCanvas.getForeground());
+            event.gc.setBackground(horizontalScaleCanvas.getBackground());
+            event.gc.fillRectangle(event.x, event.y, event.width, event.height);
+        }
+    }
 
-	protected void updateScrollbars() {
-		if (items != null && items.length != 0) {
-			Point chartSize = new Point(0, 0);
-			Rectangle clientArea = items[0].getCanvas().getClientArea();
-			ScrollBar hScroll = composite.getHorizontalBar();
-			boolean wasVisible = hScroll.getVisible();
+    protected void updateScrollbars() {
+        if (items != null && items.length != 0) {
+            Point chartSize = new Point(0, 0);
+            Rectangle clientArea = items[0].getCanvas().getClientArea();
+            ScrollBar hScroll = composite.getHorizontalBar();
+            boolean wasVisible = hScroll.getVisible();
 
-			for (int i = 0; i < 2; i++) {
-				if (horizontalAxis != null) {
-					chartSize.x = horizontalAxis.computeSize(clientArea.width);
-					if (hScroll != null) {
-						if (chartSize.x > clientArea.width)
-							hScroll.setVisible(true);
-						else {
-			                hScroll.setVisible(false);
-			                hScroll.setValues(0, 0, 1, 1, 1, 1);
-						}
-					}
-				}
-				clientArea = items[0].getCanvas().getClientArea();
-			}
+            for (int i = 0; i < 2; i++) {
+                if (horizontalAxis != null) {
+                    chartSize.x = horizontalAxis.computeSize(clientArea.width);
+                    if (hScroll != null) {
+                        if (chartSize.x > clientArea.width) {
+                            hScroll.setVisible(true);
+                        }
+                        else {
+                            hScroll.setVisible(false);
+                            hScroll.setValues(0, 0, 1, 1, 1, 1);
+                        }
+                    }
+                }
+                clientArea = items[0].getCanvas().getClientArea();
+            }
 
-			if (hScroll.getVisible()) {
-				int hiddenArea = chartSize.x - clientArea.width + 1;
-				int currentSelection = hScroll.getSelection();
-				int rightAnchor = hScroll.getMaximum() - hScroll.getThumb();
+            if (hScroll.getVisible()) {
+                int hiddenArea = chartSize.x - clientArea.width + 1;
+                int currentSelection = hScroll.getSelection();
+                int rightAnchor = hScroll.getMaximum() - hScroll.getThumb();
 
-				int selection = Math.min(currentSelection, hiddenArea - 1);
-				if (!wasVisible || currentSelection == rightAnchor)
-					selection = hiddenArea - 1;
+                int selection = Math.min(currentSelection, hiddenArea - 1);
+                if (!wasVisible || currentSelection == rightAnchor) {
+                    selection = hiddenArea - 1;
+                }
 
-				hScroll.setValues(selection, 0, hiddenArea + clientArea.width - 1, clientArea.width, 5, clientArea.width);
-			}
-		}
-	}
+                hScroll.setValues(selection, 0, hiddenArea + clientArea.width - 1, clientArea.width, 5, clientArea.width);
+            }
+        }
+    }
 
-	private void onPaintItem(PaintEvent event) {
-    	ChartItem item = (ChartItem) event.widget.getData();
-    	Canvas canvas = item.getCanvas();
-    	Image image = item.getImage();
-    	boolean needsRedraw = Boolean.TRUE.equals(canvas.getData(K_NEEDS_REDRAW));
+    private void onPaintItem(PaintEvent event) {
+        ChartItem item = (ChartItem) event.widget.getData();
+        Canvas canvas = item.getCanvas();
+        Image image = item.getImage();
+        boolean needsRedraw = Boolean.TRUE.equals(canvas.getData(K_NEEDS_REDRAW));
 
-		Rectangle clientArea = canvas.getClientArea();
-		ScrollBar hScroll = composite.getHorizontalBar();
+        Rectangle clientArea = canvas.getClientArea();
+        ScrollBar hScroll = composite.getHorizontalBar();
 
-		if (image != null && !image.isDisposed()) {
-			if (image.getBounds().width != clientArea.width || image.getBounds().height != clientArea.height)
-				image.dispose();
-		}
+        if (image != null && !image.isDisposed()) {
+            if (image.getBounds().width != clientArea.width || image.getBounds().height != clientArea.height) {
+                image.dispose();
+            }
+        }
 
-		if (image == null || image.isDisposed()) {
-			image = new Image(canvas.getDisplay(), clientArea.width, clientArea.height);
-			item.setImage(image);
-			needsRedraw = true;
-		}
+        if (image == null || image.isDisposed()) {
+            image = new Image(canvas.getDisplay(), clientArea.width, clientArea.height);
+            item.setImage(image);
+            needsRedraw = true;
+        }
 
-		if (needsRedraw && image != null && !image.isDisposed()) {
-			RenderTarget target = new RenderTarget();
-			try {
-				Object firstElement = horizontalAxis.mapToValue(hScroll.getSelection());
-				Object lastElement = horizontalAxis.mapToValue(hScroll.getSelection() + clientArea.width);
+        if (needsRedraw && image != null && !image.isDisposed()) {
+            RenderTarget target = new RenderTarget();
+            try {
+                Object firstElement = horizontalAxis.mapToValue(hScroll.getSelection());
+                Object lastElement = horizontalAxis.mapToValue(hScroll.getSelection() + clientArea.width);
 
-				target.gc = new GC(image);
-				target.display = event.display;
-				target.x = -hScroll.getSelection();
-				target.y = 0;
-				target.width = clientArea.width;
-				target.height = clientArea.height;
-				target.widget = event.widget;
-				target.horizontalAxis = horizontalAxis;
-				target.verticalAxis = verticalAxis;
+                target.gc = new GC(image);
+                target.display = event.display;
+                target.x = -hScroll.getSelection();
+                target.y = 0;
+                target.width = clientArea.width;
+                target.height = clientArea.height;
+                target.widget = event.widget;
+                target.horizontalAxis = horizontalAxis;
+                target.verticalAxis = verticalAxis;
 
-				target.input = item.getData();
-				target.firstValue = firstElement instanceof IAdaptable ? firstElement : new AdaptableWrapper(firstElement);
-				target.lastValue = lastElement instanceof IAdaptable ? lastElement : new AdaptableWrapper(lastElement);
+                target.input = item.getData();
+                target.firstValue = firstElement instanceof IAdaptable ? firstElement : new AdaptableWrapper(firstElement);
+                target.lastValue = lastElement instanceof IAdaptable ? lastElement : new AdaptableWrapper(lastElement);
 
-				//target.gc.setAntialias(SWT.ON);
-				target.gc.setForeground(canvas.getForeground());
-				target.gc.setBackground(canvas.getBackground());
+                //target.gc.setAntialias(SWT.ON);
+                target.gc.setForeground(canvas.getForeground());
+                target.gc.setBackground(canvas.getBackground());
 
-				IChartRenderer renderer = getRenderer();
-				renderer.renderBackground(target);
+                IChartRenderer renderer = getRenderer();
+                renderer.renderBackground(target);
 
-				Object[] elements = getContentProvider().getChildren(item.getData());
-				if (elements != null) {
-					for (int i = 0; i < elements.length; i++) {
-						target.gc.setForeground(canvas.getForeground());
-						target.gc.setBackground(canvas.getBackground());
-						target.gc.setLineWidth(1);
-						renderer.renderElement(target, elements[i]);
-					}
-				}
-			} catch(Error e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
-				ChartsUIActivator.log(status);
-			} finally {
-				if (target.gc != null)
-					target.gc.dispose();
-			}
-			canvas.setData(K_NEEDS_REDRAW, Boolean.FALSE);
-		}
+                Object[] elements = getContentProvider().getChildren(item.getData());
+                if (elements != null) {
+                    for (int i = 0; i < elements.length; i++) {
+                        target.gc.setForeground(canvas.getForeground());
+                        target.gc.setBackground(canvas.getBackground());
+                        target.gc.setLineWidth(1);
+                        renderer.renderElement(target, elements[i]);
+                    }
+                }
+            } catch (Error e) {
+                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
+                ChartsUIActivator.log(status);
+            } finally {
+                if (target.gc != null) {
+                    target.gc.dispose();
+                }
+            }
+            canvas.setData(K_NEEDS_REDRAW, Boolean.FALSE);
+        }
 
-		if (image != null && !image.isDisposed()) {
-			Rectangle bounds = image.getBounds();
-			int width = event.width;
-			if ((event.x + width) > bounds.width)
-				width = bounds.width - event.x;
-			int height = event.height;
-			if ((event.y + height) > bounds.height)
-				height = bounds.height - event.y;
-			if (width != 0 && height != 0)
-				event.gc.drawImage(image, event.x, event.y, width, height, event.x, event.y, width, height);
-		}
-	}
+        if (image != null && !image.isDisposed()) {
+            Rectangle bounds = image.getBounds();
+            int width = event.width;
+            if (event.x + width > bounds.width) {
+                width = bounds.width - event.x;
+            }
+            int height = event.height;
+            if (event.y + height > bounds.height) {
+                height = bounds.height - event.y;
+            }
+            if (width != 0 && height != 0) {
+                event.gc.drawImage(image, event.x, event.y, width, height, event.x, event.y, width, height);
+            }
+        }
+    }
 
-	private void onPaintItemVerticalScale(PaintEvent event) {
-    	ChartItem item = (ChartItem) event.widget.getData();
+    private void onPaintItemVerticalScale(PaintEvent event) {
+        ChartItem item = (ChartItem) event.widget.getData();
 
-    	Canvas canvas = item.getVerticalScaleCanvas();
-    	Image image = item.getVerticalScaleImage();
-    	boolean needsRedraw = Boolean.TRUE.equals(canvas.getData(K_NEEDS_REDRAW));
+        Canvas canvas = item.getVerticalScaleCanvas();
+        Image image = item.getVerticalScaleImage();
+        boolean needsRedraw = Boolean.TRUE.equals(canvas.getData(K_NEEDS_REDRAW));
 
-		Rectangle clientArea = canvas.getClientArea();
-		ScrollBar hScroll = composite.getHorizontalBar();
+        Rectangle clientArea = canvas.getClientArea();
+        ScrollBar hScroll = composite.getHorizontalBar();
 
-		if (image != null && !image.isDisposed()) {
-			if (image.getBounds().width != clientArea.width || image.getBounds().height != clientArea.height)
-				image.dispose();
-		}
+        if (image != null && !image.isDisposed()) {
+            if (image.getBounds().width != clientArea.width || image.getBounds().height != clientArea.height) {
+                image.dispose();
+            }
+        }
 
-		if (image == null || image.isDisposed()) {
-			image = new Image(canvas.getDisplay(), clientArea.width, clientArea.height);
-			item.setVerticalScaleImage(image);
-			needsRedraw = true;
-		}
+        if (image == null || image.isDisposed()) {
+            image = new Image(canvas.getDisplay(), clientArea.width, clientArea.height);
+            item.setVerticalScaleImage(image);
+            needsRedraw = true;
+        }
 
-		if (needsRedraw && image != null && !image.isDisposed()) {
-			RenderTarget target = new RenderTarget();
-			try {
-				Object firstElement = horizontalAxis.mapToValue(hScroll.getSelection());
-				Object lastElement = horizontalAxis.mapToValue(hScroll.getSelection() + item.getCanvas().getClientArea().width);
+        if (needsRedraw && image != null && !image.isDisposed()) {
+            RenderTarget target = new RenderTarget();
+            try {
+                Object firstElement = horizontalAxis.mapToValue(hScroll.getSelection());
+                Object lastElement = horizontalAxis.mapToValue(hScroll.getSelection() + item.getCanvas().getClientArea().width);
 
-				target.gc = new GC(image);
-				target.display = event.display;
-				target.x = -hScroll.getSelection();
-				target.y = 0;
-				target.width = clientArea.width;
-				target.height = clientArea.height;
-				target.widget = event.widget;
-				target.horizontalAxis = horizontalAxis;
-				target.verticalAxis = verticalAxis;
+                target.gc = new GC(image);
+                target.display = event.display;
+                target.x = -hScroll.getSelection();
+                target.y = 0;
+                target.width = clientArea.width;
+                target.height = clientArea.height;
+                target.widget = event.widget;
+                target.horizontalAxis = horizontalAxis;
+                target.verticalAxis = verticalAxis;
 
-				target.input = item.getData();
-				target.firstValue = firstElement instanceof IAdaptable ? firstElement : new AdaptableWrapper(firstElement);
-				target.lastValue = lastElement instanceof IAdaptable ? lastElement : new AdaptableWrapper(lastElement);
+                target.input = item.getData();
+                target.firstValue = firstElement instanceof IAdaptable ? firstElement : new AdaptableWrapper(firstElement);
+                target.lastValue = lastElement instanceof IAdaptable ? lastElement : new AdaptableWrapper(lastElement);
 
-				target.gc.setAntialias(SWT.OFF);
-				target.gc.setForeground(canvas.getForeground());
-				target.gc.setBackground(canvas.getBackground());
+                target.gc.setAntialias(SWT.OFF);
+                target.gc.setForeground(canvas.getForeground());
+                target.gc.setBackground(canvas.getBackground());
 
-				IScaleRenderer renderer = (IScaleRenderer) getRenderer();
-				renderer.renderVerticalScale(target);
-			} catch(Error e) {
-				Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
-				ChartsUIActivator.log(status);
-			} finally {
-				if (target.gc != null)
-					target.gc.dispose();
-			}
-			canvas.setData(K_NEEDS_REDRAW, Boolean.FALSE);
-		}
+                IScaleRenderer renderer = (IScaleRenderer) getRenderer();
+                renderer.renderVerticalScale(target);
+            } catch (Error e) {
+                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
+                ChartsUIActivator.log(status);
+            } finally {
+                if (target.gc != null) {
+                    target.gc.dispose();
+                }
+            }
+            canvas.setData(K_NEEDS_REDRAW, Boolean.FALSE);
+        }
 
-		if (image != null && !image.isDisposed()) {
-			Rectangle bounds = image.getBounds();
-			int width = event.width;
-			if ((event.x + width) > bounds.width)
-				width = bounds.width - event.x;
-			int height = event.height;
-			if ((event.y + height) > bounds.height)
-				height = bounds.height - event.y;
-			if (width != 0 && height != 0)
-				event.gc.drawImage(image, event.x, event.y, width, height, event.x, event.y, width, height);
-		}
-	}
+        if (image != null && !image.isDisposed()) {
+            Rectangle bounds = image.getBounds();
+            int width = event.width;
+            if (event.x + width > bounds.width) {
+                width = bounds.width - event.x;
+            }
+            int height = event.height;
+            if (event.y + height > bounds.height) {
+                height = bounds.height - event.y;
+            }
+            if (width != 0 && height != 0) {
+                event.gc.drawImage(image, event.x, event.y, width, height, event.x, event.y, width, height);
+            }
+        }
+    }
 
-	public Control getControl() {
-		return composite;
-	}
+    public Control getControl() {
+        return composite;
+    }
 }

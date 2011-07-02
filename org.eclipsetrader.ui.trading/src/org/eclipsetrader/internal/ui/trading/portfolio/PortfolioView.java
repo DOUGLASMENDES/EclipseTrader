@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.Status;
@@ -40,229 +41,272 @@ import org.eclipsetrader.core.views.ViewItemDelta;
 import org.eclipsetrader.internal.ui.trading.Activator;
 
 public class PortfolioView extends PlatformObject implements IView {
-	ITradingService tradingService;
-	IMarketService marketService;
-	IBroker[] broker;
 
-	List<BrokerElement> items;
-	MarketPricingEnvironment pricingEnvironment;
-	ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+    ITradingService tradingService;
+    IMarketService marketService;
+    IBroker[] broker;
 
-	IPositionListener positionListener = new IPositionListener() {
-		public void positionChanged(PositionEvent e) {
-			updateView();
-		}
+    List<BrokerElement> items;
+    MarketPricingEnvironment pricingEnvironment;
+    ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
-		public void positionClosed(PositionEvent e) {
-			updateView();
-		}
+    IPositionListener positionListener = new IPositionListener() {
 
-		public void positionOpened(PositionEvent e) {
-			updateView();
-		}
-	};
+        @Override
+        public void positionChanged(PositionEvent e) {
+            updateView();
+        }
 
-	public PortfolioView() {
-		items = new ArrayList<BrokerElement>();
-	}
+        @Override
+        public void positionClosed(PositionEvent e) {
+            updateView();
+        }
 
-	public PortfolioView(ITradingService tradingService, IMarketService marketService) {
-		this.tradingService = tradingService;
-		this.marketService = marketService;
+        @Override
+        public void positionOpened(PositionEvent e) {
+            updateView();
+        }
+    };
 
-		this.broker = tradingService.getBrokers();
+    public PortfolioView() {
+        items = new ArrayList<BrokerElement>();
+    }
 
-		items = new ArrayList<BrokerElement>();
-		for (int i = 0; i < broker.length; i++)
-			items.add(new BrokerElement(broker[i]));
+    public PortfolioView(ITradingService tradingService, IMarketService marketService) {
+        this.tradingService = tradingService;
+        this.marketService = marketService;
 
-		final Set<ISecurity> list = new HashSet<ISecurity>();
-		accept(new IViewVisitor() {
-			public boolean visit(IView view) {
-				return true;
-			}
+        this.broker = tradingService.getBrokers();
 
-			public boolean visit(IViewItem viewItem) {
-				IAccount account = (IAccount) viewItem.getAdapter(IAccount.class);
-				if (account != null)
-					account.addPositionListener(positionListener);
+        items = new ArrayList<BrokerElement>();
+        for (int i = 0; i < broker.length; i++) {
+            items.add(new BrokerElement(broker[i]));
+        }
 
-				ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
-				if (security != null && !list.contains(security))
-					list.add(security);
-				return true;
-			}
-		});
+        final Set<ISecurity> list = new HashSet<ISecurity>();
+        accept(new IViewVisitor() {
 
-		pricingEnvironment = new MarketPricingEnvironment(marketService);
-		pricingEnvironment.addSecurities(list.toArray(new ISecurity[list.size()]));
-		pricingEnvironment.addPricingListener(new IPricingListener() {
-			public void pricingUpdate(PricingEvent event) {
-				doPricingUpdate(event);
-			}
-		});
+            @Override
+            public boolean visit(IView view) {
+                return true;
+            }
 
-		accept(new IViewVisitor() {
-			public boolean visit(IView view) {
-				return true;
-			}
+            @Override
+            public boolean visit(IViewItem viewItem) {
+                IAccount account = (IAccount) viewItem.getAdapter(IAccount.class);
+                if (account != null) {
+                    account.addPositionListener(positionListener);
+                }
 
-			public boolean visit(IViewItem viewItem) {
-				PositionElement element = (PositionElement) viewItem.getAdapter(PositionElement.class);
-				ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
-				if (element != null && security != null) {
-					ITrade trade = pricingEnvironment.getTrade(security);
-					if (trade != null)
-						element.setTrade(trade);
-				}
-				return true;
-			}
-		});
-	}
+                ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
+                if (security != null && !list.contains(security)) {
+                    list.add(security);
+                }
+                return true;
+            }
+        });
 
-	protected void doPricingUpdate(final PricingEvent event) {
-		final Set<ViewItemDelta> viewDelta = new HashSet<ViewItemDelta>();
+        pricingEnvironment = new MarketPricingEnvironment(marketService);
+        pricingEnvironment.addSecurities(list.toArray(new ISecurity[list.size()]));
+        pricingEnvironment.addPricingListener(new IPricingListener() {
 
-		accept(new IViewVisitor() {
-			public boolean visit(IView view) {
-				return true;
-			}
+            @Override
+            public void pricingUpdate(PricingEvent event) {
+                doPricingUpdate(event);
+            }
+        });
 
-			public boolean visit(IViewItem viewItem) {
-				ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
-				if (security == null || !event.getSecurity().equals(security))
-					return true;
+        accept(new IViewVisitor() {
 
-				PositionElement element = (PositionElement) viewItem.getAdapter(PositionElement.class);
-				if (element != null) {
-					for (PricingDelta delta : event.getDelta()) {
-						if (delta.getNewValue() instanceof ITrade) {
-							element.setTrade((ITrade) delta.getNewValue());
-							viewDelta.add(new ViewItemDelta(ViewItemDelta.CHANGED, viewItem));
-						}
-					}
-				}
-				return true;
-			}
-		});
+            @Override
+            public boolean visit(IView view) {
+                return true;
+            }
 
-		if (viewDelta.size() != 0)
-			fireViewChangedEvent(viewDelta.toArray(new ViewItemDelta[viewDelta.size()]));
-	}
+            @Override
+            public boolean visit(IViewItem viewItem) {
+                PositionElement element = (PositionElement) viewItem.getAdapter(PositionElement.class);
+                ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
+                if (element != null && security != null) {
+                    ITrade trade = pricingEnvironment.getTrade(security);
+                    if (trade != null) {
+                        element.setTrade(trade);
+                    }
+                }
+                return true;
+            }
+        });
+    }
 
-	void updateView() {
-		accept(new IViewVisitor() {
-			public boolean visit(IView view) {
-				return true;
-			}
+    protected void doPricingUpdate(final PricingEvent event) {
+        final Set<ViewItemDelta> viewDelta = new HashSet<ViewItemDelta>();
 
-			public boolean visit(IViewItem viewItem) {
-				IAccount account = (IAccount) viewItem.getAdapter(IAccount.class);
-				if (account != null)
-					account.removePositionListener(positionListener);
-				return true;
-			}
-		});
+        accept(new IViewVisitor() {
 
-		List<BrokerElement> items = new ArrayList<BrokerElement>();
-		for (int i = 0; i < broker.length; i++)
-			items.add(new BrokerElement(broker[i]));
+            @Override
+            public boolean visit(IView view) {
+                return true;
+            }
 
-		this.items = items;
+            @Override
+            public boolean visit(IViewItem viewItem) {
+                ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
+                if (security == null || !event.getSecurity().equals(security)) {
+                    return true;
+                }
 
-		final Set<ISecurity> list = new HashSet<ISecurity>();
-		accept(new IViewVisitor() {
-			public boolean visit(IView view) {
-				return true;
-			}
+                PositionElement element = (PositionElement) viewItem.getAdapter(PositionElement.class);
+                if (element != null) {
+                    for (PricingDelta delta : event.getDelta()) {
+                        if (delta.getNewValue() instanceof ITrade) {
+                            element.setTrade((ITrade) delta.getNewValue());
+                            viewDelta.add(new ViewItemDelta(ViewItemDelta.CHANGED, viewItem));
+                        }
+                    }
+                }
+                return true;
+            }
+        });
 
-			public boolean visit(IViewItem viewItem) {
-				IAccount account = (IAccount) viewItem.getAdapter(IAccount.class);
-				if (account != null)
-					account.addPositionListener(positionListener);
+        if (viewDelta.size() != 0) {
+            fireViewChangedEvent(viewDelta.toArray(new ViewItemDelta[viewDelta.size()]));
+        }
+    }
 
-				ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
-				if (security != null && !list.contains(security))
-					list.add(security);
+    void updateView() {
+        accept(new IViewVisitor() {
 
-				return true;
-			}
-		});
+            @Override
+            public boolean visit(IView view) {
+                return true;
+            }
 
-		pricingEnvironment.addSecurities(list.toArray(new ISecurity[list.size()]));
+            @Override
+            public boolean visit(IViewItem viewItem) {
+                IAccount account = (IAccount) viewItem.getAdapter(IAccount.class);
+                if (account != null) {
+                    account.removePositionListener(positionListener);
+                }
+                return true;
+            }
+        });
 
-		accept(new IViewVisitor() {
-			public boolean visit(IView view) {
-				return true;
-			}
+        List<BrokerElement> items = new ArrayList<BrokerElement>();
+        for (int i = 0; i < broker.length; i++) {
+            items.add(new BrokerElement(broker[i]));
+        }
 
-			public boolean visit(IViewItem viewItem) {
-				PositionElement element = (PositionElement) viewItem.getAdapter(PositionElement.class);
-				ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
-				if (element != null && security != null) {
-					ITrade trade = pricingEnvironment.getTrade(security);
-					if (trade != null)
-						element.setTrade(trade);
-				}
-				return true;
-			}
-		});
+        this.items = items;
 
-		fireViewChangedEvent(new ViewItemDelta[0]);
-	}
+        final Set<ISecurity> list = new HashSet<ISecurity>();
+        accept(new IViewVisitor() {
 
-	protected void fireViewChangedEvent(ViewItemDelta[] delta) {
-		ViewEvent e = new ViewEvent(this, delta);
+            @Override
+            public boolean visit(IView view) {
+                return true;
+            }
 
-		Object[] l = listeners.getListeners();
-		for (int i = 0; i < l.length; i++) {
-			try {
-				((IViewChangeListener) l[i]).viewChanged(e);
-			} catch (Throwable t) {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error notifiying listeners", t); //$NON-NLS-1$
-				Activator.log(status);
-			}
-		}
-	}
+            @Override
+            public boolean visit(IViewItem viewItem) {
+                IAccount account = (IAccount) viewItem.getAdapter(IAccount.class);
+                if (account != null) {
+                    account.addPositionListener(positionListener);
+                }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#accept(org.eclipsetrader.core.views.IViewVisitor)
-	 */
-	public void accept(IViewVisitor visitor) {
-		if (visitor.visit(this)) {
-			for (IViewItem viewItem : items)
-				viewItem.accept(visitor);
-		}
-	}
+                ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
+                if (security != null && !list.contains(security)) {
+                    list.add(security);
+                }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#addViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
-	 */
-	public void addViewChangeListener(IViewChangeListener listener) {
-		listeners.add(listener);
-	}
+                return true;
+            }
+        });
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#dispose()
-	 */
-	public void dispose() {
-		listeners.clear();
+        pricingEnvironment.addSecurities(list.toArray(new ISecurity[list.size()]));
 
-		if (pricingEnvironment != null)
-			pricingEnvironment.dispose();
-	}
+        accept(new IViewVisitor() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#getItems()
-	 */
-	public IViewItem[] getItems() {
-		return items.toArray(new IViewItem[items.size()]);
-	}
+            @Override
+            public boolean visit(IView view) {
+                return true;
+            }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IView#removeViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
-	 */
-	public void removeViewChangeListener(IViewChangeListener listener) {
-		listeners.remove(listener);
-	}
+            @Override
+            public boolean visit(IViewItem viewItem) {
+                PositionElement element = (PositionElement) viewItem.getAdapter(PositionElement.class);
+                ISecurity security = (ISecurity) viewItem.getAdapter(ISecurity.class);
+                if (element != null && security != null) {
+                    ITrade trade = pricingEnvironment.getTrade(security);
+                    if (trade != null) {
+                        element.setTrade(trade);
+                    }
+                }
+                return true;
+            }
+        });
+
+        fireViewChangedEvent(new ViewItemDelta[0]);
+    }
+
+    protected void fireViewChangedEvent(ViewItemDelta[] delta) {
+        ViewEvent e = new ViewEvent(this, delta);
+
+        Object[] l = listeners.getListeners();
+        for (int i = 0; i < l.length; i++) {
+            try {
+                ((IViewChangeListener) l[i]).viewChanged(e);
+            } catch (Throwable t) {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifiying listeners", t); //$NON-NLS-1$
+                Activator.log(status);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#accept(org.eclipsetrader.core.views.IViewVisitor)
+     */
+    @Override
+    public void accept(IViewVisitor visitor) {
+        if (visitor.visit(this)) {
+            for (IViewItem viewItem : items) {
+                viewItem.accept(visitor);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#addViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
+     */
+    @Override
+    public void addViewChangeListener(IViewChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#dispose()
+     */
+    @Override
+    public void dispose() {
+        listeners.clear();
+
+        if (pricingEnvironment != null) {
+            pricingEnvironment.dispose();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#getItems()
+     */
+    @Override
+    public IViewItem[] getItems() {
+        return items.toArray(new IViewItem[items.size()]);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IView#removeViewChangeListener(org.eclipsetrader.core.views.IViewChangeListener)
+     */
+    @Override
+    public void removeViewChangeListener(IViewChangeListener listener) {
+        listeners.remove(listener);
+    }
 }

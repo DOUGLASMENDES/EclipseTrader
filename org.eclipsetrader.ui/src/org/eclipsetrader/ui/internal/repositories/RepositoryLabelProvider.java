@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,79 +26,94 @@ import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class RepositoryLabelProvider extends LabelProvider implements IFontProvider {
-	private Font repositoryFont;
-	private Font categoryFont;
-	private Image repositoryIcon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY);
-	private Image securityFolderIcon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY_OBJECT_FOLDER);
-	private Image securityIcon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY_OBJECT);
 
-	public RepositoryLabelProvider() {
-		FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
-		if (fontData != null && fontData.length != 0) {
-			repositoryFont = new Font(Display.getDefault(), fontData[0].getName(), fontData[0].getHeight(), SWT.BOLD);
-			categoryFont = new Font(Display.getDefault(), fontData[0].getName(), fontData[0].getHeight(), SWT.BOLD);
-		}
-	}
+    private Font repositoryFont;
+    private Font categoryFont;
+    private Image repositoryIcon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY);
+    private Image securityFolderIcon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY_OBJECT_FOLDER);
+    private Image securityIcon = UIActivator.getDefault().getImageRegistry().get(UIConstants.REPOSITORY_OBJECT);
 
-	/* (non-Javadoc)
+    public RepositoryLabelProvider() {
+        FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
+        if (fontData != null && fontData.length != 0) {
+            repositoryFont = new Font(Display.getDefault(), fontData[0].getName(), fontData[0].getHeight(), SWT.BOLD);
+            categoryFont = new Font(Display.getDefault(), fontData[0].getName(), fontData[0].getHeight(), SWT.BOLD);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
      */
     @Override
     public void dispose() {
-    	if (repositoryFont != null)
-    		repositoryFont.dispose();
-    	if (categoryFont != null)
-    		categoryFont.dispose();
-	    super.dispose();
+        if (repositoryFont != null) {
+            repositoryFont.dispose();
+        }
+        if (categoryFont != null) {
+            categoryFont.dispose();
+        }
+        super.dispose();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
      */
     @Override
     public Image getImage(Object element) {
-    	if (element instanceof IAdaptable)
-    		element = ((IAdaptable) element).getAdapter(Object.class);
+        if (element instanceof IAdaptable) {
+            element = ((IAdaptable) element).getAdapter(Object.class);
+        }
 
-		if (element instanceof IRepository)
-			return repositoryIcon;
-		if (element instanceof ISecurity || element instanceof IWatchList)
-			return securityIcon;
-		if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject)
-			return securityFolderIcon;
+        if (element instanceof IRepository) {
+            return repositoryIcon;
+        }
+        if (element instanceof ISecurity || element instanceof IWatchList) {
+            return securityIcon;
+        }
+        if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject) {
+            return securityFolderIcon;
+        }
 
-		return null;
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
     @Override
     public String getText(Object element) {
-    	if (element instanceof IAdaptable)
-    		element = ((IAdaptable) element).getAdapter(Object.class);
+        if (element instanceof IAdaptable) {
+            element = ((IAdaptable) element).getAdapter(Object.class);
+        }
 
-		if (element instanceof IRepository)
-			return ((IRepository) element).toString();
-		if (element instanceof ISecurity)
-			return ((ISecurity) element).getName();
-		if (element instanceof IWatchList)
-			return ((IWatchList) element).getName();
-		return element != null ? element.toString() : ""; //$NON-NLS-1$
+        if (element instanceof IRepository) {
+            return ((IRepository) element).toString();
+        }
+        if (element instanceof ISecurity) {
+            return ((ISecurity) element).getName();
+        }
+        if (element instanceof IWatchList) {
+            return ((IWatchList) element).getName();
+        }
+        return element != null ? element.toString() : ""; //$NON-NLS-1$
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.IFontProvider#getFont(java.lang.Object)
      */
+    @Override
     public Font getFont(Object element) {
-    	if (element instanceof IAdaptable)
-    		element = ((IAdaptable) element).getAdapter(Object.class);
+        if (element instanceof IAdaptable) {
+            element = ((IAdaptable) element).getAdapter(Object.class);
+        }
 
-		if (element instanceof IRepository)
-			return repositoryFont;
-		if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject)
-			return categoryFont;
+        if (element instanceof IRepository) {
+            return repositoryFont;
+        }
+        if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject) {
+            return categoryFont;
+        }
 
-		return null;
+        return null;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,59 +24,70 @@ import org.eclipsetrader.core.internal.markets.Market;
 import org.eclipsetrader.core.internal.markets.MarketTime;
 
 public class GeneralPageTest extends TestCase {
-	private Shell shell;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		shell = new Shell(Display.getCurrent());
-	}
+    private Shell shell;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		shell.dispose();
-	}
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        shell = new Shell(Display.getCurrent());
+    }
 
-	public void testFillValuesFromElement() throws Exception {
-		GeneralPage page = new GeneralPage();
-		final Market market = new Market("Market", Arrays.asList(new MarketTime[] { new MarketTime(getTime(9, 30), getTime(16, 0)) }));
-		page.setElement(new IAdaptable() {
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        shell.dispose();
+    }
+
+    public void testFillValuesFromElement() throws Exception {
+        GeneralPage page = new GeneralPage();
+        final Market market = new Market("Market", Arrays.asList(new MarketTime[] {
+            new MarketTime(getTime(9, 30), getTime(16, 0))
+        }));
+        page.setElement(new IAdaptable() {
+
+            @Override
             @SuppressWarnings("unchecked")
             public Object getAdapter(Class adapter) {
-            	if (adapter.isAssignableFrom(Market.class))
-            		return market;
-	            return null;
+                if (adapter.isAssignableFrom(Market.class)) {
+                    return market;
+                }
+                return null;
             }
-		});
-		page.createContents(shell);
-	}
+        });
+        page.createContents(shell);
+    }
 
-	public void testUpdateElementValuesOnPerformOk() throws Exception {
-		GeneralPage page = new GeneralPage();
-		final Market market = new Market("Market", Arrays.asList(new MarketTime[] { new MarketTime(getTime(9, 30), getTime(16, 0)) }));
-		page.setElement(new IAdaptable() {
+    public void testUpdateElementValuesOnPerformOk() throws Exception {
+        GeneralPage page = new GeneralPage();
+        final Market market = new Market("Market", Arrays.asList(new MarketTime[] {
+            new MarketTime(getTime(9, 30), getTime(16, 0))
+        }));
+        page.setElement(new IAdaptable() {
+
+            @Override
             @SuppressWarnings("unchecked")
             public Object getAdapter(Class adapter) {
-            	if (adapter.isAssignableFrom(Market.class))
-            		return market;
-	            return null;
+                if (adapter.isAssignableFrom(Market.class)) {
+                    return market;
+                }
+                return null;
             }
-		});
-		page.createContents(shell);
-		page.performOk();
-	}
+        });
+        page.createContents(shell);
+        page.performOk();
+    }
 
-	private Date getTime(int hour, int minute) {
-	    Calendar date = Calendar.getInstance();
-		date.set(Calendar.HOUR_OF_DAY, hour);
-		date.set(Calendar.MINUTE, minute);
-		date.set(Calendar.SECOND, 0);
-		date.set(Calendar.MILLISECOND, 0);
-		return date.getTime();
-	}
+    private Date getTime(int hour, int minute) {
+        Calendar date = Calendar.getInstance();
+        date.set(Calendar.HOUR_OF_DAY, hour);
+        date.set(Calendar.MINUTE, minute);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date.getTime();
+    }
 }

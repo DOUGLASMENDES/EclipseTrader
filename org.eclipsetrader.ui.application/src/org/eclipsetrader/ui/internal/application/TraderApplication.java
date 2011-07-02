@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,104 +32,117 @@ import org.eclipse.ui.PlatformUI;
  */
 public class TraderApplication implements IApplication {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
-	 */
-	public Object start(IApplicationContext context) throws Exception {
-		Display display = PlatformUI.createDisplay();
-		try {
-			Shell shell = new Shell(display, SWT.ON_TOP);
-			try {
-				if (!checkInstanceLocation(shell)) {
-					Platform.endSplash();
-					return EXIT_OK;
-				}
-			} finally {
-				if (shell != null)
-					shell.dispose();
-			}
+    /* (non-Javadoc)
+     * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
+     */
+    @Override
+    public Object start(IApplicationContext context) throws Exception {
+        Display display = PlatformUI.createDisplay();
+        try {
+            Shell shell = new Shell(display, SWT.ON_TOP);
+            try {
+                if (!checkInstanceLocation(shell)) {
+                    Platform.endSplash();
+                    return EXIT_OK;
+                }
+            } finally {
+                if (shell != null) {
+                    shell.dispose();
+                }
+            }
 
-			int returnCode = PlatformUI.createAndRunWorkbench(display, new TraderWorkbenchAdvisor());
-			if (returnCode == PlatformUI.RETURN_RESTART)
-				return IApplication.EXIT_RESTART;
-			else
-				return IApplication.EXIT_OK;
-		} finally {
-			display.dispose();
-		}
+            int returnCode = PlatformUI.createAndRunWorkbench(display, new TraderWorkbenchAdvisor());
+            if (returnCode == PlatformUI.RETURN_RESTART) {
+                return IApplication.EXIT_RESTART;
+            }
+            else {
+                return IApplication.EXIT_OK;
+            }
+        } finally {
+            display.dispose();
+        }
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.equinox.app.IApplication#stop()
-	 */
-	public void stop() {
-		final IWorkbench workbench = PlatformUI.getWorkbench();
-		if (workbench == null)
-			return;
-		final Display display = workbench.getDisplay();
-		display.syncExec(new Runnable() {
-			public void run() {
-				if (!display.isDisposed())
-					workbench.close();
-			}
-		});
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.equinox.app.IApplication#stop()
+     */
+    @Override
+    public void stop() {
+        final IWorkbench workbench = PlatformUI.getWorkbench();
+        if (workbench == null) {
+            return;
+        }
+        final Display display = workbench.getDisplay();
+        display.syncExec(new Runnable() {
 
-	/**
-	 * Return true if a valid workspace path has been set and false otherwise.
-	 *
-	 * @return true if a valid instance location has been set and false otherwise
-	 */
-	private boolean checkInstanceLocation(Shell shell) {
-		Location instanceLoc = Platform.getInstanceLocation();
+            @Override
+            public void run() {
+                if (!display.isDisposed()) {
+                    workbench.close();
+                }
+            }
+        });
+    }
 
-		// -data @none was specified but workspace is required
-		if (instanceLoc == null) {
-			MessageDialog.openError(shell, "Workspace is Mandatory", "Platform need a valid workspace. Restart without the @none option.");
-			return false;
-		}
+    /**
+     * Return true if a valid workspace path has been set and false otherwise.
+     *
+     * @return true if a valid instance location has been set and false otherwise
+     */
+    private boolean checkInstanceLocation(Shell shell) {
+        Location instanceLoc = Platform.getInstanceLocation();
 
-		// -data "/valid/path", workspace already set
-		if (instanceLoc.isSet()) {
+        // -data @none was specified but workspace is required
+        if (instanceLoc == null) {
+            MessageDialog.openError(shell, "Workspace is Mandatory", "Platform need a valid workspace. Restart without the @none option.");
+            return false;
+        }
 
-			// at this point its valid, so try to lock it and update the
-			// metadata version information if successful
-			try {
-				if (instanceLoc.lock())
-					return true;
+        // -data "/valid/path", workspace already set
+        if (instanceLoc.isSet()) {
 
-				// we failed to create the directory.
-				// Two possibilities:
-				// 1. directory is already in use
-				// 2. directory could not be created
-				File workspaceDirectory = new File(instanceLoc.getURL().getFile());
-				if (workspaceDirectory.exists())
-					MessageDialog.openError(shell, "Workspace Cannot Be Locked", "Could not launch the product because the associated workspace is currently in use by another Eclipse application.");
-				else
-					MessageDialog.openError(shell, "Workspace Cannot Be Created", "Could not launch the product because the specified workspace cannot be created. The specified workspace directory is either invalid or read-only.");
-			} catch (IOException e) {
-				Activator.log("Could not obtain lock for workspace location", e);
-				MessageDialog.openError(shell, "Internal Error", e.getMessage());
-			}
-		}
+            // at this point its valid, so try to lock it and update the
+            // metadata version information if successful
+            try {
+                if (instanceLoc.lock()) {
+                    return true;
+                }
 
-		// create the workspace if it does not already exist
-		File workspace = new File(System.getProperty("user.dir") + File.separator + "workspace");
-		if (!workspace.exists())
-			workspace.mkdir();
+                // we failed to create the directory.
+                // Two possibilities:
+                // 1. directory is already in use
+                // 2. directory could not be created
+                File workspaceDirectory = new File(instanceLoc.getURL().getFile());
+                if (workspaceDirectory.exists()) {
+                    MessageDialog.openError(shell, "Workspace Cannot Be Locked", "Could not launch the product because the associated workspace is currently in use by another Eclipse application.");
+                }
+                else {
+                    MessageDialog.openError(shell, "Workspace Cannot Be Created", "Could not launch the product because the specified workspace cannot be created. The specified workspace directory is either invalid or read-only.");
+                }
+            } catch (IOException e) {
+                Activator.log("Could not obtain lock for workspace location", e);
+                MessageDialog.openError(shell, "Internal Error", e.getMessage());
+            }
+        }
 
-		try {
-			// Don't use File.toURL() since it adds a leading slash that Platform does not
-			// handle properly.  See bug 54081 for more details.
-			String path = workspace.getAbsolutePath().replace(File.separatorChar, '/');
-			instanceLoc.setURL(new URL("file", null, path), true);
-			return true;
-		} catch (MalformedURLException e) {
-			Activator.log("Selected workspace is not valid", e);
-			MessageDialog.openError(shell, "Invalid Workspace", "Selected workspace is not valid; choose a different one.");
-		}
+        // create the workspace if it does not already exist
+        File workspace = new File(System.getProperty("user.dir") + File.separator + "workspace");
+        if (!workspace.exists()) {
+            workspace.mkdir();
+        }
 
-		return false;
-	}
+        try {
+            // Don't use File.toURL() since it adds a leading slash that Platform does not
+            // handle properly.  See bug 54081 for more details.
+            String path = workspace.getAbsolutePath().replace(File.separatorChar, '/');
+            instanceLoc.setURL(new URL("file", null, path), true);
+            return true;
+        } catch (MalformedURLException e) {
+            Activator.log("Selected workspace is not valid", e);
+            MessageDialog.openError(shell, "Invalid Workspace", "Selected workspace is not valid; choose a different one.");
+        }
+
+        return false;
+    }
 }

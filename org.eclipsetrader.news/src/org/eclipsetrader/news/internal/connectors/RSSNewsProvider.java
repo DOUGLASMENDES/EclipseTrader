@@ -60,266 +60,290 @@ import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class RSSNewsProvider implements INewsProvider, IExecutableExtension {
-	public static final String HEADLINES_FILE = "rss.xml"; //$NON-NLS-1$
 
-	private String id;
-	private String name;
+    public static final String HEADLINES_FILE = "rss.xml"; //$NON-NLS-1$
 
-	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
-	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
+    private String id;
+    private String name;
 
-	private INewsService newsService;
-	private boolean started;
+    private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
+    private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
 
-	static private List<HeadLine> oldItems = new ArrayList<HeadLine>();
+    private INewsService newsService;
+    private boolean started;
 
-	private JobChangeAdapter jobChangeListener = new JobChangeAdapter() {
-		@Override
-		public void done(IJobChangeEvent event) {
-			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-			int interval = store.getInt(Activator.PREFS_UPDATE_INTERVAL);
-			job.schedule(interval * 60 * 1000);
-		}
-	};
+    static private List<HeadLine> oldItems = new ArrayList<HeadLine>();
 
-	private Job job = new Job("RSS Subscriptions") {
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			return jobRunner(monitor);
-		}
-	};
+    private JobChangeAdapter jobChangeListener = new JobChangeAdapter() {
 
-	public RSSNewsProvider() {
-	}
+        @Override
+        public void done(IJobChangeEvent event) {
+            IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+            int interval = store.getInt(Activator.PREFS_UPDATE_INTERVAL);
+            job.schedule(interval * 60 * 1000);
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-	 */
-	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-		id = config.getAttribute("id");
-		name = config.getAttribute("name");
-	}
+    private Job job = new Job("RSS Subscriptions") {
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            return jobRunner(monitor);
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    public RSSNewsProvider() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
-	 */
-	public IHeadLine[] getHeadLines() {
-		return new IHeadLine[0];
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+     */
+    @Override
+    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+        id = config.getAttribute("id");
+        name = config.getAttribute("name");
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#start()
-	 */
-	public void start() {
-		if (!started) {
-			job.schedule(5 * 1000);
-			job.addJobChangeListener(jobChangeListener);
-			started = true;
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#stop()
-	 */
-	public void stop() {
-		if (started) {
-			job.removeJobChangeListener(jobChangeListener);
-			job.cancel();
-			started = false;
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#refresh()
-	 */
-	public void refresh() {
-		job.removeJobChangeListener(jobChangeListener);
-		job.cancel();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
+     */
+    @Override
+    public IHeadLine[] getHeadLines() {
+        return new IHeadLine[0];
+    }
 
-		if (started)
-			job.addJobChangeListener(jobChangeListener);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#start()
+     */
+    @Override
+    public void start() {
+        if (!started) {
+            job.schedule(5 * 1000);
+            job.addJobChangeListener(jobChangeListener);
+            started = true;
+        }
+    }
 
-		job.schedule(0);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#stop()
+     */
+    @Override
+    public void stop() {
+        if (started) {
+            job.removeJobChangeListener(jobChangeListener);
+            job.cancel();
+            started = false;
+        }
+    }
 
-	protected IStatus jobRunner(IProgressMonitor monitor) {
-		final List<IHeadLine> list = new ArrayList<IHeadLine>();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#refresh()
+     */
+    @Override
+    public void refresh() {
+        job.removeJobChangeListener(jobChangeListener);
+        job.cancel();
 
-		FeedSource[] sources = getActiveSubscriptions();
-		monitor.beginTask("Updating RSS Subscriptions", sources.length);
+        if (started) {
+            job.addJobChangeListener(jobChangeListener);
+        }
 
-		try {
-			for (int i = 0; i < sources.length; i++) {
-				try {
-					HeadLine[] headLines = update(new URL(sources[i].getUrl()), sources[i].getName());
-					for (HeadLine headLine : headLines) {
-						if (!oldItems.contains(headLine)) {
-							headLine.setRecent(true);
-							oldItems.add(headLine);
-							list.add(headLine);
-						}
-					}
-				} catch (Exception e) {
-					Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error updating headlines from " + sources[i].getUrl(), null); //$NON-NLS-1$
-					Activator.getDefault().getLog().log(status);
-				} finally {
-					monitor.worked(1);
-				}
-			}
+        job.schedule(0);
+    }
 
-			final INewsService service = getNewsService();
-			service.runInService(new INewsServiceRunnable() {
-				public IStatus run(IProgressMonitor monitor) throws Exception {
-					service.addHeadLines(list.toArray(new IHeadLine[list.size()]));
-					return Status.OK_STATUS;
-				}
-			}, null);
-		} finally {
-			monitor.done();
-		}
+    protected IStatus jobRunner(IProgressMonitor monitor) {
+        final List<IHeadLine> list = new ArrayList<IHeadLine>();
 
-		return Status.OK_STATUS;
-	}
+        FeedSource[] sources = getActiveSubscriptions();
+        monitor.beginTask("Updating RSS Subscriptions", sources.length);
 
-	protected void resetRecentFlag() {
-		final List<HeadLine> updated = new ArrayList<HeadLine>();
-		for (HeadLine headLine : oldItems) {
-			if (headLine.isRecent()) {
-				headLine.setRecent(false);
-				updated.add(headLine);
-			}
-		}
+        try {
+            for (int i = 0; i < sources.length; i++) {
+                try {
+                    HeadLine[] headLines = update(new URL(sources[i].getUrl()), sources[i].getName());
+                    for (HeadLine headLine : headLines) {
+                        if (!oldItems.contains(headLine)) {
+                            headLine.setRecent(true);
+                            oldItems.add(headLine);
+                            list.add(headLine);
+                        }
+                    }
+                } catch (Exception e) {
+                    Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error updating headlines from " + sources[i].getUrl(), null); //$NON-NLS-1$
+                    Activator.getDefault().getLog().log(status);
+                } finally {
+                    monitor.worked(1);
+                }
+            }
 
-		final INewsService service = getNewsService();
-		service.runInService(new INewsServiceRunnable() {
-			public IStatus run(IProgressMonitor monitor) throws Exception {
-				service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
-				return Status.OK_STATUS;
-			}
-		}, null);
-	}
+            final INewsService service = getNewsService();
+            service.runInService(new INewsServiceRunnable() {
 
-	protected FeedSource[] getActiveSubscriptions() {
-		List<FeedSource> list = new ArrayList<FeedSource>();
+                @Override
+                public IStatus run(IProgressMonitor monitor) throws Exception {
+                    service.addHeadLines(list.toArray(new IHeadLine[list.size()]));
+                    return Status.OK_STATUS;
+                }
+            }, null);
+        } finally {
+            monitor.done();
+        }
 
-		try {
-			File file = Activator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
-			if (file.exists()) {
-				JAXBContext jaxbContext = JAXBContext.newInstance(FeedSource[].class);
-				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				unmarshaller.setEventHandler(new ValidationEventHandler() {
-					public boolean handleEvent(ValidationEvent event) {
-						Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-						Activator.getDefault().getLog().log(status);
-						return true;
-					}
-				});
-				JAXBElement<FeedSource[]> element = unmarshaller.unmarshal(new StreamSource(file), FeedSource[].class);
-				for (FeedSource source : element.getValue()) {
-					if (source.isEnabled())
-						list.add(source);
-				}
-			}
-		} catch (Exception e) {
-			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscriptions", null); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(status);
-		}
+        return Status.OK_STATUS;
+    }
 
-		return list.toArray(new FeedSource[list.size()]);
-	}
+    protected void resetRecentFlag() {
+        final List<HeadLine> updated = new ArrayList<HeadLine>();
+        for (HeadLine headLine : oldItems) {
+            if (headLine.isRecent()) {
+                headLine.setRecent(false);
+                updated.add(headLine);
+            }
+        }
 
-	private HeadLine[] update(URL feedUrl, String source) {
-		Map<String, SyndEntry> titles = new HashMap<String, SyndEntry>();
-		Map<SyndEntry, Set<ISecurity>> entries = new HashMap<SyndEntry, Set<ISecurity>>();
-		Set<HeadLine> headLines = new HashSet<HeadLine>();
+        final INewsService service = getNewsService();
+        service.runInService(new INewsServiceRunnable() {
 
-		try {
-			HttpClient client = new HttpClient();
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
+                return Status.OK_STATUS;
+            }
+        }, null);
+    }
 
-			if (Activator.getDefault() != null) {
-				BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-				ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-				if (reference != null) {
-					IProxyService proxy = (IProxyService) context.getService(reference);
-					IProxyData data = proxy.getProxyDataForHost(feedUrl.getHost(), IProxyData.HTTP_PROXY_TYPE);
-					if (data != null) {
-						if (data.getHost() != null)
-							client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-						if (data.isRequiresAuthentication())
-							client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
-					}
-					context.ungetService(reference);
-				}
-			}
+    protected FeedSource[] getActiveSubscriptions() {
+        List<FeedSource> list = new ArrayList<FeedSource>();
 
-			SyndFeed feed = fetcher.retrieveFeed(feedUrl, client);
-			for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
-				SyndEntry entry = (SyndEntry) iter.next();
+        try {
+            File file = Activator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
+            if (file.exists()) {
+                JAXBContext jaxbContext = JAXBContext.newInstance(FeedSource[].class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-				if (titles.containsKey(entry.getTitle()))
-					entry = titles.get(entry.getTitle());
-				else
-					titles.put(entry.getTitle(), entry);
+                    @Override
+                    public boolean handleEvent(ValidationEvent event) {
+                        Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                        Activator.getDefault().getLog().log(status);
+                        return true;
+                    }
+                });
+                JAXBElement<FeedSource[]> element = unmarshaller.unmarshal(new StreamSource(file), FeedSource[].class);
+                for (FeedSource source : element.getValue()) {
+                    if (source.isEnabled()) {
+                        list.add(source);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscriptions", null); //$NON-NLS-1$
+            Activator.getDefault().getLog().log(status);
+        }
 
-				Set<ISecurity> set = entries.get(entry);
-				if (set == null) {
-					set = new HashSet<ISecurity>();
-					entries.put(entry, set);
-				}
-			}
+        return list.toArray(new FeedSource[list.size()]);
+    }
 
-			for (SyndEntry entry : entries.keySet()) {
-				Set<ISecurity> set = entries.get(entry);
+    private HeadLine[] update(URL feedUrl, String source) {
+        Map<String, SyndEntry> titles = new HashMap<String, SyndEntry>();
+        Map<SyndEntry, Set<ISecurity>> entries = new HashMap<SyndEntry, Set<ISecurity>>();
+        Set<HeadLine> headLines = new HashSet<HeadLine>();
 
-				String url = entry.getLink();
-				if (url.indexOf('*') != -1)
-					url = url.substring(url.indexOf('*') + 1);
+        try {
+            HttpClient client = new HttpClient();
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-				String title = entry.getTitle();
-				if (title.endsWith(")")) {
-					int s = title.lastIndexOf('(');
-					if (s != -1) {
-						source = title.substring(s + 1, title.length() - 1);
-						if (source.startsWith("at "))
-							source = source.substring(3);
-						title = title.substring(0, s - 1).trim();
-					}
-				}
+            if (Activator.getDefault() != null) {
+                BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+                ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
+                if (reference != null) {
+                    IProxyService proxy = (IProxyService) context.getService(reference);
+                    IProxyData data = proxy.getProxyDataForHost(feedUrl.getHost(), IProxyData.HTTP_PROXY_TYPE);
+                    if (data != null) {
+                        if (data.getHost() != null) {
+                            client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
+                        }
+                        if (data.isRequiresAuthentication()) {
+                            client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
+                        }
+                    }
+                    context.ungetService(reference);
+                }
+            }
 
-				HeadLine headLine = new HeadLine(entry.getPublishedDate(), source, title, set.toArray(new ISecurity[set.size()]), url);
-				headLines.add(headLine);
-			}
-		} catch (Exception e) {
-			Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscription " + feedUrl.toString(), e); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(status);
-		}
-		return headLines.toArray(new HeadLine[headLines.size()]);
-	}
+            SyndFeed feed = fetcher.retrieveFeed(feedUrl, client);
+            for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
+                SyndEntry entry = (SyndEntry) iter.next();
 
-	protected INewsService getNewsService() {
-		if (newsService == null) {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(INewsService.class.getName());
-			if (serviceReference != null) {
-				newsService = (INewsService) context.getService(serviceReference);
-				context.ungetService(serviceReference);
-			}
-		}
-		return newsService;
-	}
+                if (titles.containsKey(entry.getTitle())) {
+                    entry = titles.get(entry.getTitle());
+                }
+                else {
+                    titles.put(entry.getTitle(), entry);
+                }
+
+                Set<ISecurity> set = entries.get(entry);
+                if (set == null) {
+                    set = new HashSet<ISecurity>();
+                    entries.put(entry, set);
+                }
+            }
+
+            for (SyndEntry entry : entries.keySet()) {
+                Set<ISecurity> set = entries.get(entry);
+
+                String url = entry.getLink();
+                if (url.indexOf('*') != -1) {
+                    url = url.substring(url.indexOf('*') + 1);
+                }
+
+                String title = entry.getTitle();
+                if (title.endsWith(")")) {
+                    int s = title.lastIndexOf('(');
+                    if (s != -1) {
+                        source = title.substring(s + 1, title.length() - 1);
+                        if (source.startsWith("at ")) {
+                            source = source.substring(3);
+                        }
+                        title = title.substring(0, s - 1).trim();
+                    }
+                }
+
+                HeadLine headLine = new HeadLine(entry.getPublishedDate(), source, title, set.toArray(new ISecurity[set.size()]), url);
+                headLines.add(headLine);
+            }
+        } catch (Exception e) {
+            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error reading RSS subscription " + feedUrl.toString(), e); //$NON-NLS-1$
+            Activator.getDefault().getLog().log(status);
+        }
+        return headLines.toArray(new HeadLine[headLines.size()]);
+    }
+
+    protected INewsService getNewsService() {
+        if (newsService == null) {
+            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(INewsService.class.getName());
+            if (serviceReference != null) {
+                newsService = (INewsService) context.getService(serviceReference);
+                context.ungetService(serviceReference);
+            }
+        }
+        return newsService;
+    }
 }

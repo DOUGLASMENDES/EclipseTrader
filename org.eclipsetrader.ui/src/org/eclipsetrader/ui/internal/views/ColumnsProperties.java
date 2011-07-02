@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,76 +26,79 @@ import org.eclipsetrader.core.views.Column;
 import org.eclipsetrader.core.views.IColumn;
 
 public class ColumnsProperties extends PropertyPage implements IWorkbenchPropertyPage {
-	private ColumnsViewer providers;
 
-	public ColumnsProperties() {
-		setTitle("Columns");
-	}
+    private ColumnsViewer providers;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		initializeDialogUnits(content);
+    public ColumnsProperties() {
+        setTitle("Columns");
+    }
 
-		providers = new ColumnsViewer(content);
-		providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		providers.setInput(CoreActivator.getDefault().getDataProviderFactories());
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        initializeDialogUnits(content);
 
-		performDefaults();
+        providers = new ColumnsViewer(content);
+        providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        providers.setInput(CoreActivator.getDefault().getDataProviderFactories());
 
-		return content;
-	}
+        performDefaults();
 
-	/* (non-Javadoc)
+        return content;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
+        WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
 
-    	WatchListViewColumn[] columns = resource.getColumns();
-    	Column[] selectedColumns = new Column[columns.length];
-    	for (int i = 0; i < selectedColumns.length; i++)
-    		selectedColumns[i] = new Column(columns[i].getName(), columns[i].getDataProviderFactory());
+        WatchListViewColumn[] columns = resource.getColumns();
+        Column[] selectedColumns = new Column[columns.length];
+        for (int i = 0; i < selectedColumns.length; i++) {
+            selectedColumns[i] = new Column(columns[i].getName(), columns[i].getDataProviderFactory());
+        }
 
-    	providers.setSelectedColumns(selectedColumns);
+        providers.setSelectedColumns(selectedColumns);
 
-		super.performDefaults();
+        super.performDefaults();
     }
 
     protected void applyChanges() {
-    	WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
-		if (resource != null) {
-			List<WatchListViewColumn> c = new ArrayList<WatchListViewColumn>();
-			for (IColumn column : providers.getSelection()) {
-				c.add(new WatchListViewColumn(column));
-			}
-			resource.setColumns(c.toArray(new WatchListViewColumn[c.size()]));
-		}
+        WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
+        if (resource != null) {
+            List<WatchListViewColumn> c = new ArrayList<WatchListViewColumn>();
+            for (IColumn column : providers.getSelection()) {
+                c.add(new WatchListViewColumn(column));
+            }
+            resource.setColumns(c.toArray(new WatchListViewColumn[c.size()]));
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
     protected void performApply() {
-    	applyChanges();
-	    super.performApply();
+        applyChanges();
+        super.performApply();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	if (getControl() != null)
-    		applyChanges();
-	    return super.performOk();
+        if (getControl() != null) {
+            applyChanges();
+        }
+        return super.performOk();
     }
 }

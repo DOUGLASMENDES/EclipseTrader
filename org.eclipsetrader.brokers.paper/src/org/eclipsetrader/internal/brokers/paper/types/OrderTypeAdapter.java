@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,30 +17,34 @@ import org.eclipsetrader.core.trading.IOrderType;
 
 public class OrderTypeAdapter extends XmlAdapter<String, IOrderType> {
 
-	public OrderTypeAdapter() {
-	}
+    public OrderTypeAdapter() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
     @Override
     public String marshal(IOrderType v) throws Exception {
-	    return v != null ? v.getId() : null;
+        return v != null ? v.getId() : null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
     @Override
     public IOrderType unmarshal(String v) throws Exception {
-    	if (IOrderType.Limit.getId().equals(v))
-    		return IOrderType.Limit;
-    	if (IOrderType.Market.getId().equals(v))
-    		return IOrderType.Market;
-    	if (IOrderType.Stop.getId().equals(v))
-    		return IOrderType.Stop;
-    	if (IOrderType.StopLimit.getId().equals(v))
-    		return IOrderType.StopLimit;
-	    return null;
+        if (IOrderType.Limit.getId().equals(v)) {
+            return IOrderType.Limit;
+        }
+        if (IOrderType.Market.getId().equals(v)) {
+            return IOrderType.Market;
+        }
+        if (IOrderType.Stop.getId().equals(v)) {
+            return IOrderType.Stop;
+        }
+        if (IOrderType.StopLimit.getId().equals(v)) {
+            return IOrderType.StopLimit;
+        }
+        return null;
     }
 }

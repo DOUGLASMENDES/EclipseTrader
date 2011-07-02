@@ -1,5 +1,5 @@
 /*
-  * Copyright (c) 2004-2008 Marco Maccaferri and others.
+  * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -41,110 +42,121 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.borsaitalia.internal.Activator;
 
 public class InstrumentsPage extends WizardPage {
-	private CheckboxTableViewer instruments;
 
-	private List<Instrument> instrumentList;
+    private CheckboxTableViewer instruments;
 
-	public InstrumentsPage() {
-		super("instrument", "Import Instruments", null);
-		setDescription("Select the intruments.");
-		setPageComplete(false);
-	}
+    private List<Instrument> instrumentList;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(1, false));
-		setControl(content);
-		initializeDialogUnits(content);
+    public InstrumentsPage() {
+        super("instrument", "Import Instruments", null);
+        setDescription("Select the intruments.");
+        setPageComplete(false);
+    }
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Instruments:");
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(1, false));
+        setControl(content);
+        initializeDialogUnits(content);
 
-		instruments = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		instruments.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		((GridData) instruments.getControl().getLayoutData()).heightHint = instruments.getTable().getItemHeight() * 15 + instruments.getTable().getBorderWidth() * 2;
-		instruments.setLabelProvider(new LabelProvider());
-		instruments.setContentProvider(new ArrayContentProvider());
-		instruments.setSorter(new ViewerSorter());
-		instruments.addCheckStateListener(new ICheckStateListener() {
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Instruments:");
+
+        instruments = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        instruments.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData) instruments.getControl().getLayoutData()).heightHint = instruments.getTable().getItemHeight() * 15 + instruments.getTable().getBorderWidth() * 2;
+        instruments.setLabelProvider(new LabelProvider());
+        instruments.setContentProvider(new ArrayContentProvider());
+        instruments.setSorter(new ViewerSorter());
+        instruments.addCheckStateListener(new ICheckStateListener() {
+
+            @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-            	setPageComplete(instruments.getCheckedElements().length != 0);
+                setPageComplete(instruments.getCheckedElements().length != 0);
             }
-		});
-	}
+        });
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
      */
     @Override
     public void setVisible(boolean visible) {
-	    super.setVisible(visible);
-	    if (visible && instrumentList == null) {
-	    	Display.getCurrent().asyncExec(new Runnable() {
+        super.setVisible(visible);
+        if (visible && instrumentList == null) {
+            Display.getCurrent().asyncExec(new Runnable() {
+
+                @Override
                 public void run() {
-                	init();
+                    init();
                 }
-	    	});
-	    }
+            });
+        }
     }
 
-	protected void init() {
-		try {
-    		File file = Activator.getDefault().getStateLocation().append("instruments.xml").toFile();
-    		if (!file.exists())
-    			file = new File(FileLocator.getBundleFile(Activator.getDefault().getBundle()), "data/instruments.xml");
+    protected void init() {
+        try {
+            File file = Activator.getDefault().getStateLocation().append("instruments.xml").toFile();
+            if (!file.exists()) {
+                file = new File(FileLocator.getBundleFile(Activator.getDefault().getBundle()), "data/instruments.xml");
+            }
             if (file.exists() == true) {
-    			try {
-    				JAXBContext jaxbContext = JAXBContext.newInstance(Instrument[].class);
-    				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-    				unmarshaller.setEventHandler(new ValidationEventHandler() {
+                try {
+                    JAXBContext jaxbContext = JAXBContext.newInstance(Instrument[].class);
+                    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                    unmarshaller.setEventHandler(new ValidationEventHandler() {
+
+                        @Override
                         public boolean handleEvent(ValidationEvent event) {
-            				Status status = new Status(Status.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-            				Activator.log(status);
-    	                    return true;
+                            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                            Activator.log(status);
+                            return true;
                         }
-    				});
-    		        JAXBElement<Instrument[]> element = unmarshaller.unmarshal(new StreamSource(file), Instrument[].class);
-    		        instrumentList = new ArrayList<Instrument>(Arrays.asList(element.getValue()));
-    			} catch (Exception e) {
-    				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error loading exchanges from " + file, e); //$NON-NLS-1$
-    				Activator.log(status);
-    			}
+                    });
+                    JAXBElement<Instrument[]> element = unmarshaller.unmarshal(new StreamSource(file), Instrument[].class);
+                    instrumentList = new ArrayList<Instrument>(Arrays.asList(element.getValue()));
+                } catch (Exception e) {
+                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error loading exchanges from " + file, e); //$NON-NLS-1$
+                    Activator.log(status);
+                }
             }
 
-    	    if (instrumentList != null) {
-    			try {
-    				if (!instruments.getControl().isDisposed()) {
-    					instruments.getControl().getDisplay().asyncExec(new Runnable() {
-    						public void run() {
-                				if (!instruments.getControl().isDisposed()) {
-                					instruments.getControl().setRedraw(false);
-               						instruments.setInput(instrumentList);
-                					instruments.getControl().setRedraw(true);
-                        			instruments.getControl().setEnabled(true);
-                        			setPageComplete(false);
-                				}
-    						}
-    					});
-    				}
-    			} catch(Exception e) {
-    				// Do nothing
-    			}
-    	    	return;
-    	    }
-    	} catch(Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error loading instruments", e); //$NON-NLS-1$
-			Activator.log(status);
-    	}
-	}
+            if (instrumentList != null) {
+                try {
+                    if (!instruments.getControl().isDisposed()) {
+                        instruments.getControl().getDisplay().asyncExec(new Runnable() {
 
-	public Instrument[] getInstruments() {
-		Object[] o = instruments.getCheckedElements();
-		Instrument[] i = new Instrument[o.length];
-		System.arraycopy(o, 0, i, 0, i.length);
-		return i;
-	}
+                            @Override
+                            public void run() {
+                                if (!instruments.getControl().isDisposed()) {
+                                    instruments.getControl().setRedraw(false);
+                                    instruments.setInput(instrumentList);
+                                    instruments.getControl().setRedraw(true);
+                                    instruments.getControl().setEnabled(true);
+                                    setPageComplete(false);
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    // Do nothing
+                }
+                return;
+            }
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error loading instruments", e); //$NON-NLS-1$
+            Activator.log(status);
+        }
+    }
+
+    public Instrument[] getInstruments() {
+        Object[] o = instruments.getCheckedElements();
+        Instrument[] i = new Instrument[o.length];
+        System.arraycopy(o, 0, i, 0, i.length);
+        return i;
+    }
 }

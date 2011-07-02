@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,102 +24,114 @@ import org.eclipsetrader.core.feed.TimeSpan;
  * @see org.eclipsetrader.core.feed.IOHLC
  */
 public class OHLCDataSeries extends DataSeries {
-	private TimeSpan resolution;
+
+    private TimeSpan resolution;
 
     private static class OHLCWrapper implements IAdaptable {
-    	private IOHLC ohlc;
 
-		public OHLCWrapper(IOHLC ohlc) {
-	        this.ohlc = ohlc;
+        private IOHLC ohlc;
+
+        public OHLCWrapper(IOHLC ohlc) {
+            this.ohlc = ohlc;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
          */
+        @Override
         @SuppressWarnings("unchecked")
         public Object getAdapter(Class adapter) {
-        	if (ohlc != null && adapter.isAssignableFrom(ohlc.getClass()))
-        		return ohlc;
-        	if (adapter.isAssignableFrom(Date.class))
-        		return ohlc.getDate();
-        	if (adapter.isAssignableFrom(Number.class))
-        		return ohlc.getClose();
-	        return null;
+            if (ohlc != null && adapter.isAssignableFrom(ohlc.getClass())) {
+                return ohlc;
+            }
+            if (adapter.isAssignableFrom(Date.class)) {
+                return ohlc.getDate();
+            }
+            if (adapter.isAssignableFrom(Number.class)) {
+                return ohlc.getClose();
+            }
+            return null;
         }
     }
 
     private static class DoubleWrapper implements IAdaptable {
-    	private Double value;
 
-		public DoubleWrapper(Double value) {
-	        this.value = value;
+        private Double value;
+
+        public DoubleWrapper(Double value) {
+            this.value = value;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
          */
+        @Override
         @SuppressWarnings("unchecked")
         public Object getAdapter(Class adapter) {
-        	if (value != null && adapter.isAssignableFrom(value.getClass()))
-        		return value;
-	        return null;
+            if (value != null && adapter.isAssignableFrom(value.getClass())) {
+                return value;
+            }
+            return null;
         }
     }
 
     private static IAdaptable[] convertValues(IOHLC[] values) {
-    	IAdaptable[] v = new OHLCWrapper[values.length];
-		for (int i = 0; i < values.length; i++)
-			v[i] = new OHLCWrapper(values[i]);
-		return v;
+        IAdaptable[] v = new OHLCWrapper[values.length];
+        for (int i = 0; i < values.length; i++) {
+            v[i] = new OHLCWrapper(values[i]);
+        }
+        return v;
     }
 
-	public OHLCDataSeries(String name, IOHLC[] values, TimeSpan resolution) {
-		super(name, convertValues(values));
-		this.resolution = resolution;
-	}
-
-	protected OHLCDataSeries(String name, IAdaptable[] values, TimeSpan resolution) {
-	    super(name, values);
-		this.resolution = resolution;
+    public OHLCDataSeries(String name, IOHLC[] values, TimeSpan resolution) {
+        super(name, convertValues(values));
+        this.resolution = resolution;
     }
 
-	/* (non-Javadoc)
+    protected OHLCDataSeries(String name, IAdaptable[] values, TimeSpan resolution) {
+        super(name, values);
+        this.resolution = resolution;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.charts.core.DataSeries#getSeries(org.eclipse.core.runtime.IAdaptable, org.eclipse.core.runtime.IAdaptable)
      */
-	@Override
+    @Override
     public IDataSeries getSeries(IAdaptable first, IAdaptable last) {
-    	return new OHLCDataSeries(getName(), getSubset(first, last), resolution);
+        return new OHLCDataSeries(getName(), getSubset(first, last), resolution);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.DataSeries#getHighest()
      */
     @Override
     public IAdaptable getHighest() {
-    	IAdaptable v = super.getHighest();
-    	if (v != null) {
-        	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
-        	if (ohlc != null)
-        		v = new DoubleWrapper(ohlc.getHigh());
-    	}
-    	return v;
+        IAdaptable v = super.getHighest();
+        if (v != null) {
+            IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
+            if (ohlc != null) {
+                v = new DoubleWrapper(ohlc.getHigh());
+            }
+        }
+        return v;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.DataSeries#getLowest()
      */
     @Override
     public IAdaptable getLowest() {
-    	IAdaptable v = super.getLowest();
-    	if (v != null) {
-        	IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
-        	if (ohlc != null)
-        		v = new DoubleWrapper(ohlc.getLow());
-    	}
-    	return v;
+        IAdaptable v = super.getLowest();
+        if (v != null) {
+            IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
+            if (ohlc != null) {
+                v = new DoubleWrapper(ohlc.getLow());
+            }
+        }
+        return v;
     }
 
-	public TimeSpan getResolution() {
-    	return resolution;
+    public TimeSpan getResolution() {
+        return resolution;
     }
 }

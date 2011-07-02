@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,17 +18,17 @@ package org.eclipsetrader.core.feed;
  */
 public interface IBook {
 
-	/**
-	 * Gets the possibly empty array of bid proposals.
-	 *
-	 * @return the proposals array.
-	 */
-	public IBookEntry[] getBidProposals();
+    /**
+     * Gets the possibly empty array of bid proposals.
+     *
+     * @return the proposals array.
+     */
+    public IBookEntry[] getBidProposals();
 
-	/**
-	 * Gets the possibly empty array of ask proposals.
-	 *
-	 * @return the proposals array.
-	 */
-	public IBookEntry[] getAskProposals();
+    /**
+     * Gets the possibly empty array of ask proposals.
+     *
+     * @return the proposals array.
+     */
+    public IBookEntry[] getAskProposals();
 }

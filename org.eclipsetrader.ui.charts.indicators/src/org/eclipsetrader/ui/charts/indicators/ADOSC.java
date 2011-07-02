@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,7 @@ import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
 public class ADOSC implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
+
     private String id;
     private String factoryName;
     private String name;
@@ -43,143 +44,158 @@ public class ADOSC implements IChartObjectFactory, IGeneralPropertiesAdapter, IL
     private RenderStyle renderStyle = RenderStyle.Line;
     private RGB color;
 
-	public ADOSC() {
-	}
+    public ADOSC() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
      */
+    @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	factoryName = config.getAttribute("name");
-    	name = config.getAttribute("name");
+        id = config.getAttribute("id");
+        factoryName = config.getAttribute("name");
+        name = config.getAttribute("name");
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getId()
      */
+    @Override
     public String getId() {
-	    return id;
+        return id;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getName()
      */
+    @Override
     public String getName() {
-	    return name;
+        return name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter#setName(java.lang.String)
      */
+    @Override
     public void setName(String name) {
-    	this.name = name;
+        this.name = name;
     }
 
-	public int getFastPeriod() {
-    	return fastPeriod;
+    public int getFastPeriod() {
+        return fastPeriod;
     }
 
-	public void setFastPeriod(int fastPeriod) {
-    	this.fastPeriod = fastPeriod;
+    public void setFastPeriod(int fastPeriod) {
+        this.fastPeriod = fastPeriod;
     }
 
-	public int getSlowPeriod() {
-    	return slowPeriod;
+    public int getSlowPeriod() {
+        return slowPeriod;
     }
 
-	public void setSlowPeriod(int slowPeriod) {
-    	this.slowPeriod = slowPeriod;
+    public void setSlowPeriod(int slowPeriod) {
+        this.slowPeriod = slowPeriod;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter#getRenderStyle()
      */
+    @Override
     public RenderStyle getRenderStyle() {
-	    return renderStyle;
+        return renderStyle;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter#setRenderStyle(org.eclipsetrader.ui.charts.RenderStyle)
      */
+    @Override
     public void setRenderStyle(RenderStyle renderStyle) {
-    	this.renderStyle = renderStyle;
+        this.renderStyle = renderStyle;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ILineDecorator#getColor()
      */
+    @Override
     public RGB getColor() {
-	    return color;
+        return color;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ILineDecorator#setColor(org.eclipse.swt.graphics.RGB)
      */
+    @Override
     public void setColor(RGB color) {
-    	this.color = color;
+        this.color = color;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#createObject(org.eclipsetrader.core.charts.IDataSeries)
      */
+    @Override
     public IChartObject createObject(IDataSeries source) {
-    	if (source == null)
-    		return null;
+        if (source == null) {
+            return null;
+        }
 
-		IAdaptable[] values = source.getValues();
-		Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
+        IAdaptable[] values = source.getValues();
+        Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
-		int lookback = core.adOscLookback(fastPeriod, slowPeriod);
-		if (values.length < lookback)
-			return null;
+        int lookback = core.adOscLookback(fastPeriod, slowPeriod);
+        if (values.length < lookback) {
+            return null;
+        }
 
         int startIdx = 0;
         int endIdx = values.length - 1;
-		double[] inHigh = Util.getValuesForField(values, OHLCField.High);
-		double[] inLow = Util.getValuesForField(values, OHLCField.Low);
-		double[] inClose = Util.getValuesForField(values, OHLCField.Close);
-		double[] inVolume = Util.getValuesForField(values, OHLCField.Volume);
+        double[] inHigh = Util.getValuesForField(values, OHLCField.High);
+        double[] inLow = Util.getValuesForField(values, OHLCField.Low);
+        double[] inClose = Util.getValuesForField(values, OHLCField.Close);
+        double[] inVolume = Util.getValuesForField(values, OHLCField.Volume);
 
-		MInteger outBegIdx = new MInteger();
+        MInteger outBegIdx = new MInteger();
         MInteger outNbElement = new MInteger();
         double[] outReal = new double[values.length - lookback];
 
         core.adOsc(startIdx, endIdx, inHigh, inLow, inClose, inVolume, fastPeriod, slowPeriod, outBegIdx, outNbElement, outReal);
 
-		IDataSeries result = new NumericDataSeries(getName(), outReal, source);
-		return Util.createLineChartObject(result, renderStyle, color);
+        IDataSeries result = new NumericDataSeries(getName(), outReal, source);
+        return Util.createLineChartObject(result, renderStyle, color);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#getParameters()
      */
+    @Override
     public IChartParameters getParameters() {
-    	ChartParameters parameters = new ChartParameters();
+        ChartParameters parameters = new ChartParameters();
 
-    	if (!factoryName.equals(name))
-    		parameters.setParameter("name", name);
+        if (!factoryName.equals(name)) {
+            parameters.setParameter("name", name);
+        }
 
-    	parameters.setParameter("fast-period", fastPeriod);
-    	parameters.setParameter("slow-period", slowPeriod);
+        parameters.setParameter("fast-period", fastPeriod);
+        parameters.setParameter("slow-period", slowPeriod);
 
-    	parameters.setParameter("style", renderStyle.getName());
-    	if (color != null)
-        	parameters.setParameter("color", color);
+        parameters.setParameter("style", renderStyle.getName());
+        if (color != null) {
+            parameters.setParameter("color", color);
+        }
 
-	    return parameters;
+        return parameters;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObjectFactory#setParameters(org.eclipsetrader.ui.charts.IChartParameters)
      */
+    @Override
     public void setParameters(IChartParameters parameters) {
-	    name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
+        name = parameters.hasParameter("name") ? parameters.getString("name") : factoryName;
 
-	    fastPeriod = parameters.getInteger("fast-period");
-	    slowPeriod = parameters.getInteger("slow-period");
+        fastPeriod = parameters.getInteger("fast-period");
+        slowPeriod = parameters.getInteger("slow-period");
 
-	    renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
-	    color = parameters.getColor("color");
+        renderStyle = parameters.hasParameter("style") ? RenderStyle.getStyleFromName(parameters.getString("style")) : RenderStyle.Line;
+        color = parameters.getColor("color");
     }
 }

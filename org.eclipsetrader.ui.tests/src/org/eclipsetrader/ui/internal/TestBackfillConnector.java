@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,53 +21,60 @@ import org.eclipsetrader.core.feed.ISplit;
 import org.eclipsetrader.core.feed.TimeSpan;
 
 public class TestBackfillConnector implements IBackfillConnector {
-	private String id;
-	private String name;
 
-	public TestBackfillConnector(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    private String id;
+    private String name;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillDividends(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
-	 */
-	public IDividend[] backfillDividends(IFeedIdentifier identifier, Date from, Date to) {
-		return null;
-	}
+    public TestBackfillConnector(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillHistory(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
-	 */
-	public IOHLC[] backfillHistory(IFeedIdentifier identifier, Date from, Date to, TimeSpan timeSpan) {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillDividends(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
+     */
+    @Override
+    public IDividend[] backfillDividends(IFeedIdentifier identifier, Date from, Date to) {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillSplits(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
-	 */
-	public ISplit[] backfillSplits(IFeedIdentifier identifier, Date from, Date to) {
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillHistory(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
+     */
+    @Override
+    public IOHLC[] backfillHistory(IFeedIdentifier identifier, Date from, Date to, TimeSpan timeSpan) {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#canBackfill(org.eclipsetrader.core.feed.IFeedIdentifier, org.eclipsetrader.core.feed.TimeSpan)
-	 */
-	public boolean canBackfill(IFeedIdentifier identifier, TimeSpan timeSpan) {
-		return false;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillSplits(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
+     */
+    @Override
+    public ISplit[] backfillSplits(IFeedIdentifier identifier, Date from, Date to) {
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#canBackfill(org.eclipsetrader.core.feed.IFeedIdentifier, org.eclipsetrader.core.feed.TimeSpan)
+     */
+    @Override
+    public boolean canBackfill(IFeedIdentifier identifier, TimeSpan timeSpan) {
+        return false;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 }

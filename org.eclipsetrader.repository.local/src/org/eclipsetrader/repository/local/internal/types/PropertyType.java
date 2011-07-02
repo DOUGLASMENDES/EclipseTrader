@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,82 +25,96 @@ import javax.xml.bind.annotation.XmlValue;
 
 @XmlRootElement(name = "property")
 public class PropertyType {
-	@XmlAttribute(name = "name")
-	private String name;
 
-	@XmlAttribute(name = "type")
-	private String type;
+    @XmlAttribute(name = "name")
+    private String name;
 
-	@XmlValue
-	private String value;
+    @XmlAttribute(name = "type")
+    private String type;
 
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-	private static NumberFormat numberFormat = NumberFormat.getInstance();
+    @XmlValue
+    private String value;
 
-	public static PropertyType create(String name, Object value) {
-		if (value instanceof Date)
-			return new PropertyType(name, Date.class.getName(), dateFormat.format(value));
-		if (value instanceof Number)
-			return new PropertyType(name, value.getClass().getName(), numberFormat.format(value));
-		if (value instanceof Boolean)
-			return new PropertyType(name, Boolean.class.getName(), Boolean.TRUE.equals(value) ? "true" : "false");
-		if (value instanceof Currency)
-			return new PropertyType(name, Currency.class.getName(), ((Currency) value).getCurrencyCode());
-		return new PropertyType(name, value.toString());
-	}
+    private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    private static NumberFormat numberFormat = NumberFormat.getInstance();
 
-	public static Object convert(PropertyType property) {
+    public static PropertyType create(String name, Object value) {
+        if (value instanceof Date) {
+            return new PropertyType(name, Date.class.getName(), dateFormat.format(value));
+        }
+        if (value instanceof Number) {
+            return new PropertyType(name, value.getClass().getName(), numberFormat.format(value));
+        }
+        if (value instanceof Boolean) {
+            return new PropertyType(name, Boolean.class.getName(), Boolean.TRUE.equals(value) ? "true" : "false");
+        }
+        if (value instanceof Currency) {
+            return new PropertyType(name, Currency.class.getName(), ((Currency) value).getCurrencyCode());
+        }
+        return new PropertyType(name, value.toString());
+    }
+
+    public static Object convert(PropertyType property) {
         try {
-    		if (Date.class.getName().equals(property.getType()))
+            if (Date.class.getName().equals(property.getType())) {
                 return dateFormat.parse(property.getValue());
-    		if (Double.class.getName().equals(property.getType()))
+            }
+            if (Double.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).doubleValue();
-    		if (Float.class.getName().equals(property.getType()))
+            }
+            if (Float.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).floatValue();
-    		if (Integer.class.getName().equals(property.getType()))
+            }
+            if (Integer.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).intValue();
-    		if (Long.class.getName().equals(property.getType()))
+            }
+            if (Long.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).longValue();
-    		if (Byte.class.getName().equals(property.getType()))
+            }
+            if (Byte.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).byteValue();
-    		if (Short.class.getName().equals(property.getType()))
+            }
+            if (Short.class.getName().equals(property.getType())) {
                 return numberFormat.parse(property.getValue()).shortValue();
-    		if (Boolean.class.getName().equals(property.getType()))
-    			return "true".equals(property.getValue());
-    		if (Currency.class.getName().equals(property.getType()))
-    			return Currency.getInstance(property.getValue());
+            }
+            if (Boolean.class.getName().equals(property.getType())) {
+                return "true".equals(property.getValue());
+            }
+            if (Currency.class.getName().equals(property.getType())) {
+                return Currency.getInstance(property.getValue());
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-		return property.getValue();
-	}
-
-	public PropertyType() {
-	}
-
-	public PropertyType(String name, String value) {
-	    this.name = name;
-	    this.value = value;
+        return property.getValue();
     }
 
-	public PropertyType(String name, String type, String value) {
-	    this.name = name;
-	    this.type = type;
-	    this.value = value;
+    public PropertyType() {
     }
 
-	@XmlTransient
-	public String getName() {
-    	return name;
+    public PropertyType(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
-	@XmlTransient
-	public String getValue() {
-    	return value;
+    public PropertyType(String name, String type, String value) {
+        this.name = name;
+        this.type = type;
+        this.value = value;
     }
 
-	@XmlTransient
-	public String getType() {
-    	return type;
+    @XmlTransient
+    public String getName() {
+        return name;
+    }
+
+    @XmlTransient
+    public String getValue() {
+        return value;
+    }
+
+    @XmlTransient
+    public String getType() {
+        return type;
     }
 }

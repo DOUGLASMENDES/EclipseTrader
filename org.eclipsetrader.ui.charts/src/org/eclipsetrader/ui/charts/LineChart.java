@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,228 +29,249 @@ import org.eclipsetrader.core.charts.IDataSeries;
  * @since 1.0
  */
 public class LineChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
-	private IDataSeries dataSeries;
 
-	private LineStyle style;
-	private RGB color;
-	private int width = 5;
+    private IDataSeries dataSeries;
 
-	private IAdaptable[] values;
-	private Point[] pointArray;
-	private boolean valid;
-	private boolean hasFocus;
+    private LineStyle style;
+    private RGB color;
+    private int width = 5;
 
-	private SummaryNumberItem numberItem;
+    private IAdaptable[] values;
+    private Point[] pointArray;
+    private boolean valid;
+    private boolean hasFocus;
 
-	private NumberFormat numberFormat = NumberFormat.getInstance();
+    private SummaryNumberItem numberItem;
 
-	public static enum LineStyle {
-		Solid,
-		Dot,
-		Dash,
-		Invisible
-	}
+    private NumberFormat numberFormat = NumberFormat.getInstance();
 
-	public LineChart(IDataSeries dataSeries, LineStyle style, RGB color) {
-	    this.dataSeries = dataSeries;
-	    this.style = style;
-	    this.color = color;
-
-	    numberFormat.setGroupingUsed(true);
-	    numberFormat.setMinimumIntegerDigits(1);
-	    numberFormat.setMinimumFractionDigits(0);
-	    numberFormat.setMaximumFractionDigits(4);
-	}
-
-	public RGB getColor() {
-    	return color;
+    public static enum LineStyle {
+        Solid, Dot, Dash, Invisible
     }
 
-	public void setColor(RGB color) {
-    	this.color = color;
+    public LineChart(IDataSeries dataSeries, LineStyle style, RGB color) {
+        this.dataSeries = dataSeries;
+        this.style = style;
+        this.color = color;
+
+        numberFormat.setGroupingUsed(true);
+        numberFormat.setMinimumIntegerDigits(1);
+        numberFormat.setMinimumFractionDigits(0);
+        numberFormat.setMaximumFractionDigits(4);
     }
 
-	/* (non-Javadoc)
+    public RGB getColor() {
+        return color;
+    }
+
+    public void setColor(RGB color) {
+        this.color = color;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
      */
+    @Override
     public void setDataBounds(DataBounds dataBounds) {
-    	List<IAdaptable> l = new ArrayList<IAdaptable>(2048);
-    	for (IAdaptable value : dataSeries.getValues()) {
-        	Date date = (Date) value.getAdapter(Date.class);
-        	if ((dataBounds.first == null || !date.before(dataBounds.first)) && (dataBounds.last == null || !date.after(dataBounds.last)))
-        		l.add(value);
-    	}
-    	this.values = l.toArray(new IAdaptable[l.size()]);
-    	this.width = dataBounds.horizontalSpacing;
-    	this.valid = false;
+        List<IAdaptable> l = new ArrayList<IAdaptable>(2048);
+        for (IAdaptable value : dataSeries.getValues()) {
+            Date date = (Date) value.getAdapter(Date.class);
+            if ((dataBounds.first == null || !date.before(dataBounds.first)) && (dataBounds.last == null || !date.after(dataBounds.last))) {
+                l.add(value);
+            }
+        }
+        this.values = l.toArray(new IAdaptable[l.size()]);
+        this.width = dataBounds.horizontalSpacing;
+        this.valid = false;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
      */
+    @Override
     public void handleFocusGained(ChartObjectFocusEvent event) {
-    	hasFocus = true;
+        hasFocus = true;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
      */
+    @Override
     public void handleFocusLost(ChartObjectFocusEvent event) {
-    	hasFocus = false;
+        hasFocus = false;
     }
 
     protected boolean hasFocus() {
-    	return hasFocus;
+        return hasFocus;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
      */
+    @Override
     public void invalidate() {
-    	this.valid = false;
+        this.valid = false;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
      */
+    @Override
     public void paint(IGraphics graphics) {
-    	if ((!valid || pointArray == null) && values != null && style != LineStyle.Invisible) {
-    		pointArray = new Point[values.length];
-    		for (int i = 0; i < values.length; i++) {
-    			Date date = (Date) values[i].getAdapter(Date.class);
-    			Number value = (Number) values[i].getAdapter(Number.class);
-    			pointArray[i] = graphics.mapToPoint(date, value);
-    		}
-        	valid = true;
-    	}
+        if ((!valid || pointArray == null) && values != null && style != LineStyle.Invisible) {
+            pointArray = new Point[values.length];
+            for (int i = 0; i < values.length; i++) {
+                Date date = (Date) values[i].getAdapter(Date.class);
+                Number value = (Number) values[i].getAdapter(Number.class);
+                pointArray[i] = graphics.mapToPoint(date, value);
+            }
+            valid = true;
+        }
 
-    	if (pointArray != null && style != LineStyle.Invisible) {
-        	switch(style) {
-        		case Dash:
-        			graphics.setLineStyle(SWT.LINE_DASH);
-        			break;
-        		case Dot:
-        			graphics.setLineStyle(SWT.LINE_DOT);
-        			break;
-        		default:
-        			graphics.setLineStyle(SWT.LINE_SOLID);
-    				break;
-        	}
+        if (pointArray != null && style != LineStyle.Invisible) {
+            switch (style) {
+                case Dash:
+                    graphics.setLineStyle(SWT.LINE_DASH);
+                    break;
+                case Dot:
+                    graphics.setLineStyle(SWT.LINE_DOT);
+                    break;
+                default:
+                    graphics.setLineStyle(SWT.LINE_SOLID);
+                    break;
+            }
 
-        	graphics.pushState();
-        	graphics.setForegroundColor(color);
-        	graphics.setLineWidth(hasFocus() ? 2 : 1);
-        	graphics.drawPolyline(pointArray);
-        	graphics.popState();
-    	}
+            graphics.pushState();
+            graphics.setForegroundColor(color);
+            graphics.setLineWidth(hasFocus() ? 2 : 1);
+            graphics.drawPolyline(pointArray);
+            graphics.popState();
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
      */
+    @Override
     public void paintScale(Graphics graphics) {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
-	 */
-	public boolean containsPoint(int x, int y) {
-		if (pointArray != null) {
-			if (y == SWT.DEFAULT)
-				return true;
-			return PixelTools.isPointOnLine(x, y, pointArray);
-		}
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#getDataSeries()
-	 */
-	public IDataSeries getDataSeries() {
-		return dataSeries;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
-	 */
-	public String getToolTip() {
-		if (dataSeries.getLast() != null)
-			return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class)); //$NON-NLS-1$
-		return dataSeries.getName();
-	}
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip(int, int)
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
      */
-    public String getToolTip(int x, int y) {
-		if (pointArray != null) {
-			if (y == SWT.DEFAULT) {
-				for (int i = 0; i < pointArray.length; i++) {
-					if (x >= (pointArray[i].x - width / 2) && x <= (pointArray[i].x + width / 2))
-						return dataSeries.getName() + ": " + numberFormat.format(values[i].getAdapter(Number.class)); //$NON-NLS-1$
-				}
-			}
-			else {
-				for (int i = 1; i < pointArray.length; i++) {
-					if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y))
-						return dataSeries.getName() + " " + numberFormat.format(values[i - 1].getAdapter(Number.class)); //$NON-NLS-1$
-				}
-			}
-		}
-	    return null;
+    @Override
+    public boolean containsPoint(int x, int y) {
+        if (pointArray != null) {
+            if (y == SWT.DEFAULT) {
+                return true;
+            }
+            return PixelTools.isPointOnLine(x, y, pointArray);
+        }
+        return false;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#getDataSeries()
+     */
+    @Override
+    public IDataSeries getDataSeries() {
+        return dataSeries;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
+     */
+    @Override
+    public String getToolTip() {
+        if (dataSeries.getLast() != null) {
+            return dataSeries.getName() + ": " + numberFormat.format(dataSeries.getLast().getAdapter(Number.class)); //$NON-NLS-1$
+        }
+        return dataSeries.getName();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip(int, int)
+     */
+    @Override
+    public String getToolTip(int x, int y) {
+        if (pointArray != null) {
+            if (y == SWT.DEFAULT) {
+                for (int i = 0; i < pointArray.length; i++) {
+                    if (x >= pointArray[i].x - width / 2 && x <= pointArray[i].x + width / 2) {
+                        return dataSeries.getName() + ": " + numberFormat.format(values[i].getAdapter(Number.class)); //$NON-NLS-1$
+                    }
+                }
+            }
+            else {
+                for (int i = 1; i < pointArray.length; i++) {
+                    if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y)) {
+                        return dataSeries.getName() + " " + numberFormat.format(values[i - 1].getAdapter(Number.class)); //$NON-NLS-1$
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
      */
+    @Override
     public void accept(IChartObjectVisitor visitor) {
-    	visitor.visit(this);
+        visitor.visit(this);
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-    	if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
-    		return this;
-    	}
-	    return null;
+        if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
+            return this;
+        }
+        return null;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
      */
+    @Override
     public void createDecorator(Composite parent) {
-		IAdaptable[] values = dataSeries.getValues();
-		Number value = (Number) (values.length > 0 ? values[values.length - 1].getAdapter(Number.class) : null);
+        IAdaptable[] values = dataSeries.getValues();
+        Number value = (Number) (values.length > 0 ? values[values.length - 1].getAdapter(Number.class) : null);
 
-		numberItem = new SummaryNumberItem(parent, SWT.NONE);
-		numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
-		if (color != null)
-			numberItem.setForeground(color);
+        numberItem = new SummaryNumberItem(parent, SWT.NONE);
+        numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
+        if (color != null) {
+            numberItem.setForeground(color);
+        }
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
      */
+    @Override
     public void updateDecorator(int x, int y) {
-		if (pointArray != null) {
-			Number value = null;
-			if (y == SWT.DEFAULT) {
-				for (int i = 0; i < pointArray.length; i++) {
-					if (x >= (pointArray[i].x - width / 2) && x <= (pointArray[i].x + width / 2))
-						value = (Number) values[i].getAdapter(Number.class);
-				}
-			}
-			else {
-				for (int i = 1; i < pointArray.length; i++) {
-					if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y))
-						value = (Number) values[i - 1].getAdapter(Number.class);
-				}
-			}
-			if (value != null)
-				numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
-		}
+        if (pointArray != null) {
+            Number value = null;
+            if (y == SWT.DEFAULT) {
+                for (int i = 0; i < pointArray.length; i++) {
+                    if (x >= pointArray[i].x - width / 2 && x <= pointArray[i].x + width / 2) {
+                        value = (Number) values[i].getAdapter(Number.class);
+                    }
+                }
+            }
+            else {
+                for (int i = 1; i < pointArray.length; i++) {
+                    if (PixelTools.isPointOnLine(x, y, pointArray[i - 1].x, pointArray[i - 1].y, pointArray[i].x, pointArray[i].y)) {
+                        value = (Number) values[i - 1].getAdapter(Number.class);
+                    }
+                }
+            }
+            if (value != null) {
+                numberItem.setValue(dataSeries.getName() + ": ", value); //$NON-NLS-1$
+            }
+        }
     }
 }

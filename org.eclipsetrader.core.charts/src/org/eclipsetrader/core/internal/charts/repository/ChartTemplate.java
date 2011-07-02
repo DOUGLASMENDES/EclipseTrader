@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,102 +26,113 @@ import org.eclipsetrader.core.charts.repository.IChartVisitor;
 
 @XmlRootElement(name = "chart")
 public class ChartTemplate implements IChartTemplate {
-	@XmlElement(name = "name")
-	private String name;
 
-	@XmlElement(name = "section")
-	@XmlJavaTypeAdapter(ChartSectionAdapter.class)
-	private List<IChartSection> sections;
+    @XmlElement(name = "name")
+    private String name;
+
+    @XmlElement(name = "section")
+    @XmlJavaTypeAdapter(ChartSectionAdapter.class)
+    private List<IChartSection> sections;
 
     public static class ChartSectionAdapter extends XmlAdapter<ChartSection, IChartSection> {
 
-    	public ChartSectionAdapter() {
-    	}
+        public ChartSectionAdapter() {
+        }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
          */
         @Override
         public ChartSection marshal(IChartSection v) throws Exception {
-	        return v != null ? new ChartSection(v) : null;
+            return v != null ? new ChartSection(v) : null;
         }
 
-		/* (non-Javadoc)
+        /* (non-Javadoc)
          * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
          */
         @Override
         public IChartSection unmarshal(ChartSection v) throws Exception {
-	        return v;
+            return v;
         }
     }
 
-	public ChartTemplate() {
-	}
-
-	public ChartTemplate(String name) {
-	    this.name = name;
+    public ChartTemplate() {
     }
 
-	/* (non-Javadoc)
+    public ChartTemplate(String name) {
+        this.name = name;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartTemplate#getName()
      */
-	@XmlTransient
-	public String getName() {
-    	return name;
+    @Override
+    @XmlTransient
+    public String getName() {
+        return name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartTemplate#setName(java.lang.String)
      */
-	public void setName(String name) {
-    	this.name = name;
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartTemplate#getSections()
      */
-	@XmlTransient
-	public IChartSection[] getSections() {
-    	return sections != null ? sections.toArray(new ChartSection[sections.size()]) : new ChartSection[0];
+    @Override
+    @XmlTransient
+    public IChartSection[] getSections() {
+        return sections != null ? sections.toArray(new ChartSection[sections.size()]) : new ChartSection[0];
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartTemplate#setSections(org.eclipsetrader.core.charts.repository.IChartSection[])
      */
+    @Override
     public void setSections(IChartSection[] sections) {
-    	this.sections = Arrays.asList(sections);
+        this.sections = Arrays.asList(sections);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartTemplate#getSectionWithName(java.lang.String)
      */
-	public IChartSection getSectionWithName(String name) {
-		for (IChartSection s : sections) {
-			if (s.getName().equals(name))
-				return s;
-		}
-		return null;
-	}
+    @Override
+    public IChartSection getSectionWithName(String name) {
+        for (IChartSection s : sections) {
+            if (s.getName().equals(name)) {
+                return s;
+            }
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartTemplate#getSectionWithId(java.lang.String)
      */
-	public IChartSection getSectionWithId(String id) {
-		for (IChartSection s : sections) {
-			if (s.getId().equals(id))
-				return s;
-		}
-		return null;
-	}
+    @Override
+    public IChartSection getSectionWithId(String id) {
+        for (IChartSection s : sections) {
+            if (s.getId().equals(id)) {
+                return s;
+            }
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.charts.repository.IChartTemplate#accept(org.eclipsetrader.core.charts.repository.IChartVisitor)
      */
-	public void accept(IChartVisitor visitor) {
-		if (visitor.visit(this)) {
-			IChartSection[] s = getSections();
-			for (int i = 0; i < s.length; i++)
-				s[i].accept(visitor);
-		}
-	}
+    @Override
+    public void accept(IChartVisitor visitor) {
+        if (visitor.visit(this)) {
+            IChartSection[] s = getSections();
+            for (int i = 0; i < s.length; i++) {
+                s[i].accept(visitor);
+            }
+        }
+    }
 }

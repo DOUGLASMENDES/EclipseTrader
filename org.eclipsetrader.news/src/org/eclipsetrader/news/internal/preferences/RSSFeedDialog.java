@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,81 +26,84 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipsetrader.news.internal.connectors.FeedSource;
 
 public class RSSFeedDialog extends Dialog {
-	private Text name;
-	private Text url;
 
-	private FeedSource feedSource;
+    private Text name;
+    private Text url;
 
-	public RSSFeedDialog(Shell shell) {
-		super(shell);
-	}
+    private FeedSource feedSource;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
-	 */
-	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText(Messages.RSSFeedDialog_Title);
-	}
+    public RSSFeedDialog(Shell shell) {
+        super(shell);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite content = new Composite((Composite) super.createDialogArea(parent), SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
-		content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+     */
+    @Override
+    protected void configureShell(Shell newShell) {
+        super.configureShell(newShell);
+        newShell.setText(Messages.RSSFeedDialog_Title);
+    }
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText(Messages.RSSFeedDialog_Source);
-		label.setLayoutData(new GridData(75, SWT.DEFAULT));
-		name = new Text(content, SWT.BORDER);
-		name.setLayoutData(new GridData(140, SWT.DEFAULT));
-		name.setText(feedSource != null ? feedSource.getName() : "");
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite content = new Composite((Composite) super.createDialogArea(parent), SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
+        content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.RSSFeedDialog_URL);
-		label.setLayoutData(new GridData(75, SWT.DEFAULT));
-		url = new Text(content, SWT.BORDER);
-		url.setLayoutData(new GridData(280, SWT.DEFAULT));
-		url.setText(feedSource != null ? feedSource.getUrl() : "");
-		url.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				getButton(IDialogConstants.OK_ID).setEnabled(url.getText().length() != 0);
-			}
-		});
+        Label label = new Label(content, SWT.NONE);
+        label.setText(Messages.RSSFeedDialog_Source);
+        label.setLayoutData(new GridData(75, SWT.DEFAULT));
+        name = new Text(content, SWT.BORDER);
+        name.setLayoutData(new GridData(140, SWT.DEFAULT));
+        name.setText(feedSource != null ? feedSource.getName() : "");
 
-		return content;
-	}
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.RSSFeedDialog_URL);
+        label.setLayoutData(new GridData(75, SWT.DEFAULT));
+        url = new Text(content, SWT.BORDER);
+        url.setLayoutData(new GridData(280, SWT.DEFAULT));
+        url.setText(feedSource != null ? feedSource.getUrl() : "");
+        url.addModifyListener(new ModifyListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#createButtonBar(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createButtonBar(Composite parent) {
-		Control control = super.createButtonBar(parent);
-		getButton(IDialogConstants.OK_ID).setEnabled(url.getText().length() != 0);
-		return control;
-	}
+            @Override
+            public void modifyText(ModifyEvent e) {
+                getButton(IDialogConstants.OK_ID).setEnabled(url.getText().length() != 0);
+            }
+        });
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
-	 */
-	@Override
-	protected void okPressed() {
-		feedSource = new FeedSource(name.getText(), url.getText());
-		super.okPressed();
-	}
+        return content;
+    }
 
-	public FeedSource getFeedSource() {
-		return feedSource;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#createButtonBar(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createButtonBar(Composite parent) {
+        Control control = super.createButtonBar(parent);
+        getButton(IDialogConstants.OK_ID).setEnabled(url.getText().length() != 0);
+        return control;
+    }
 
-	public void setFeedSource(FeedSource feedSource) {
-		this.feedSource = feedSource;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+     */
+    @Override
+    protected void okPressed() {
+        feedSource = new FeedSource(name.getText(), url.getText());
+        super.okPressed();
+    }
+
+    public FeedSource getFeedSource() {
+        return feedSource;
+    }
+
+    public void setFeedSource(FeedSource feedSource) {
+        this.feedSource = feedSource;
+    }
 }

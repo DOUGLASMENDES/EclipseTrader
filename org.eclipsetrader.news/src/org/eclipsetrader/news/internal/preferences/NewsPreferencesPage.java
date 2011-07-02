@@ -34,106 +34,110 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipsetrader.news.internal.Activator;
 
 public class NewsPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage {
-	private static final String K_ID = "id"; //$NON-NLS-1$
-	private static final String K_NAME = "name"; //$NON-NLS-1$
 
-	private Button followQuoteFeed;
-	private Spinner daysToKeep;
-	private Button enableDecorators;
-	private CheckboxTableViewer providers;
+    private static final String K_ID = "id"; //$NON-NLS-1$
+    private static final String K_NAME = "name"; //$NON-NLS-1$
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(IWorkbench workbench) {
-	}
+    private Button followQuoteFeed;
+    private Spinner daysToKeep;
+    private Button enableDecorators;
+    private CheckboxTableViewer providers;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = gridLayout.marginHeight = 0;
-		content.setLayout(gridLayout);
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+     */
+    @Override
+    public void init(IWorkbench workbench) {
+    }
 
-		enableDecorators = new Button(content, SWT.CHECK);
-		enableDecorators.setText(Messages.NewsPreferencesPage_EnableDecorators);
-		enableDecorators.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        content.setLayout(gridLayout);
 
-		followQuoteFeed = new Button(content, SWT.CHECK);
-		followQuoteFeed.setText(Messages.NewsPreferencesPage_FollowQuoteFeed);
-		followQuoteFeed.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        enableDecorators = new Button(content, SWT.CHECK);
+        enableDecorators.setText(Messages.NewsPreferencesPage_EnableDecorators);
+        enableDecorators.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText(Messages.NewsPreferencesPage_DaysToKeep);
-		daysToKeep = new Spinner(content, SWT.BORDER);
-		daysToKeep.setMinimum(1);
-		daysToKeep.setMaximum(9999);
+        followQuoteFeed = new Button(content, SWT.CHECK);
+        followQuoteFeed.setText(Messages.NewsPreferencesPage_FollowQuoteFeed);
+        followQuoteFeed.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
-		label = new Label(content, SWT.NONE);
-		label.setText(Messages.NewsPreferencesPage_Providers);
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        Label label = new Label(content, SWT.NONE);
+        label.setText(Messages.NewsPreferencesPage_DaysToKeep);
+        daysToKeep = new Spinner(content, SWT.BORDER);
+        daysToKeep.setMinimum(1);
+        daysToKeep.setMaximum(9999);
 
-		providers = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-		providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		providers.setContentProvider(new ArrayContentProvider());
-		providers.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				return ((IConfigurationElement) element).getAttribute(K_NAME);
-			}
-		});
-		providers.setSorter(new ViewerSorter());
+        label = new Label(content, SWT.NONE);
+        label.setText(Messages.NewsPreferencesPage_Providers);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
-		performDefaults();
+        providers = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+        providers.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        providers.setContentProvider(new ArrayContentProvider());
+        providers.setLabelProvider(new LabelProvider() {
 
-		return content;
-	}
+            @Override
+            public String getText(Object element) {
+                return ((IConfigurationElement) element).getAttribute(K_NAME);
+            }
+        });
+        providers.setSorter(new ViewerSorter());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
-	 */
-	@Override
-	protected void performDefaults() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+        performDefaults();
 
-		followQuoteFeed.setSelection(store.getBoolean(Activator.PREFS_FOLLOW_QUOTE_FEED));
-		daysToKeep.setSelection(store.getInt(Activator.PREFS_DATE_RANGE));
-		enableDecorators.setSelection(store.getBoolean(Activator.PREFS_ENABLE_DECORATORS));
+        return content;
+    }
 
-		IConfigurationElement[] elements = getProvidersConfigurationElements();
-		providers.setInput(elements);
-		for (int i = 0; i < elements.length; i++)
-			providers.setChecked(elements[i], store.getBoolean(elements[i].getAttribute(K_ID)));
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		super.performDefaults();
-	}
+        followQuoteFeed.setSelection(store.getBoolean(Activator.PREFS_FOLLOW_QUOTE_FEED));
+        daysToKeep.setSelection(store.getInt(Activator.PREFS_DATE_RANGE));
+        enableDecorators.setSelection(store.getBoolean(Activator.PREFS_ENABLE_DECORATORS));
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
-	 */
-	@Override
-	public boolean performOk() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+        IConfigurationElement[] elements = getProvidersConfigurationElements();
+        providers.setInput(elements);
+        for (int i = 0; i < elements.length; i++) {
+            providers.setChecked(elements[i], store.getBoolean(elements[i].getAttribute(K_ID)));
+        }
 
-		store.setValue(Activator.PREFS_FOLLOW_QUOTE_FEED, followQuoteFeed.getSelection());
-		store.setValue(Activator.PREFS_DATE_RANGE, daysToKeep.getSelection());
-		store.setValue(Activator.PREFS_ENABLE_DECORATORS, enableDecorators.getSelection());
+        super.performDefaults();
+    }
 
-		IConfigurationElement[] elements = getProvidersConfigurationElements();
-		for (int i = 0; i < elements.length; i++) {
-			String id = elements[i].getAttribute(K_ID);
-			store.setValue(id, providers.getChecked(elements[i]));
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+        IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		return super.performOk();
-	}
+        store.setValue(Activator.PREFS_FOLLOW_QUOTE_FEED, followQuoteFeed.getSelection());
+        store.setValue(Activator.PREFS_DATE_RANGE, daysToKeep.getSelection());
+        store.setValue(Activator.PREFS_ENABLE_DECORATORS, enableDecorators.getSelection());
 
-	protected IConfigurationElement[] getProvidersConfigurationElements() {
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = registry.getExtensionPoint(Activator.PROVIDER_EXTENSION_POINT);
-		return extensionPoint != null ? extensionPoint.getConfigurationElements() : new IConfigurationElement[0];
-	}
+        IConfigurationElement[] elements = getProvidersConfigurationElements();
+        for (int i = 0; i < elements.length; i++) {
+            String id = elements[i].getAttribute(K_ID);
+            store.setValue(id, providers.getChecked(elements[i]));
+        }
+
+        return super.performOk();
+    }
+
+    protected IConfigurationElement[] getProvidersConfigurationElements() {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(Activator.PROVIDER_EXTENSION_POINT);
+        return extensionPoint != null ? extensionPoint.getConfigurationElements() : new IConfigurationElement[0];
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,9 @@
 
 package org.eclipsetrader.ui.charts;
 
-
 public interface IChartContentProvider {
 
-	/**
+    /**
      * Disposes of this content provider.
      * This is called by the viewer when it is disposed.
      * <p>
@@ -32,7 +31,7 @@ public interface IChartContentProvider {
      * @param inputElement the input element
      * @return the array of elements to display in the viewer
      */
-	public Object[] getElements(Object inputElement);
+    public Object[] getElements(Object inputElement);
 
     /**
      * Notifies this content provider that the given viewer's input
@@ -52,7 +51,7 @@ public interface IChartContentProvider {
      * @param oldInput the old input element, or <code>null</code> if the viewer did not previously have an input
      * @param newInput the new input element, or <code>null</code> if the viewer does not have an input
      */
-	public void inputChanged(ChartViewer viewer, Object oldInput, Object newInput);
+    public void inputChanged(ChartViewer viewer, Object oldInput, Object newInput);
 
-	public Object[] getChildren(Object parentElement);
+    public Object[] getChildren(Object parentElement);
 }

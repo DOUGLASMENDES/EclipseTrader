@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,61 +19,63 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-	public static final String PLUGIN_ID = "org.eclipsetrader.brokers.paper";
 
-	private static Activator plugin;
+    public static final String PLUGIN_ID = "org.eclipsetrader.brokers.paper";
 
-	private AccountRepository repository;
+    private static Activator plugin;
 
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
+    private AccountRepository repository;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
+    /**
+     * The constructor
+     */
+    public Activator() {
+    }
 
-		repository = new AccountRepository();
-		repository.load(getStateLocation().append("accounts.xml").toFile());
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        plugin = this;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		repository.save(getStateLocation().append("accounts.xml").toFile());
+        repository = new AccountRepository();
+        repository.load(getStateLocation().append("accounts.xml").toFile());
+    }
 
-		new PaperBrokerFactory().dispose();
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        repository.save(getStateLocation().append("accounts.xml").toFile());
 
-		plugin = null;
-		super.stop(context);
-	}
+        new PaperBrokerFactory().dispose();
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static Activator getDefault() {
-		return plugin;
-	}
+        plugin = null;
+        super.stop(context);
+    }
 
-	public static void log(IStatus status) {
-		if (plugin == null)
-			throw new RuntimeException(status.getMessage(), status.getException());
-		plugin.getLog().log(status);
-	}
+    /**
+     * Returns the shared instance
+     *
+     * @return the shared instance
+     */
+    public static Activator getDefault() {
+        return plugin;
+    }
 
-	public AccountRepository getRepository() {
-		return repository;
-	}
+    public static void log(IStatus status) {
+        if (plugin == null) {
+            throw new RuntimeException(status.getMessage(), status.getException());
+        }
+        plugin.getLog().log(status);
+    }
+
+    public AccountRepository getRepository() {
+        return repository;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,305 +30,335 @@ import org.eclipsetrader.core.feed.IOHLC;
  * @since 1.0
  */
 public class CandleStickChart implements IChartObject, ISummaryBarDecorator, IAdaptable {
-	private IDataSeries dataSeries;
 
-	private int width = 5;
-	private RGB outlineColor = new RGB(0, 0, 0);
-	private RGB positiveColor = new RGB(254, 254, 254);
-	private RGB negativeColor = new RGB(0, 0, 0);
+    private IDataSeries dataSeries;
 
-	private IAdaptable[] values;
-	private List<Candle> pointArray;
-	private boolean valid;
-	private boolean hasFocus;
+    private int width = 5;
+    private RGB outlineColor = new RGB(0, 0, 0);
+    private RGB positiveColor = new RGB(254, 254, 254);
+    private RGB negativeColor = new RGB(0, 0, 0);
 
-	private SummaryDateItem dateItem;
-	private SummaryOHLCItem ohlcItem;
+    private IAdaptable[] values;
+    private List<Candle> pointArray;
+    private boolean valid;
+    private boolean hasFocus;
 
-	private DateFormat dateFormat = DateFormat.getDateInstance();
-	private NumberFormat numberFormat = NumberFormat.getInstance();
+    private SummaryDateItem dateItem;
+    private SummaryOHLCItem ohlcItem;
 
-	public CandleStickChart(IDataSeries dataSeries) {
-		this.dataSeries = dataSeries;
+    private DateFormat dateFormat = DateFormat.getDateInstance();
+    private NumberFormat numberFormat = NumberFormat.getInstance();
 
-		numberFormat.setGroupingUsed(true);
-		numberFormat.setMinimumIntegerDigits(1);
-		numberFormat.setMinimumFractionDigits(0);
-		numberFormat.setMaximumFractionDigits(4);
-	}
+    public CandleStickChart(IDataSeries dataSeries) {
+        this.dataSeries = dataSeries;
 
-	public CandleStickChart(IDataSeries dataSeries, RGB outlineColor, RGB positiveColor, RGB negativeColor) {
-		this.dataSeries = dataSeries;
-		if (outlineColor != null)
-			this.outlineColor = outlineColor;
-		if (positiveColor != null)
-			this.positiveColor = positiveColor;
-		if (negativeColor != null)
-			this.negativeColor = negativeColor;
+        numberFormat.setGroupingUsed(true);
+        numberFormat.setMinimumIntegerDigits(1);
+        numberFormat.setMinimumFractionDigits(0);
+        numberFormat.setMaximumFractionDigits(4);
+    }
 
-		numberFormat.setGroupingUsed(true);
-		numberFormat.setMinimumIntegerDigits(1);
-		numberFormat.setMinimumFractionDigits(0);
-		numberFormat.setMaximumFractionDigits(4);
-	}
+    public CandleStickChart(IDataSeries dataSeries, RGB outlineColor, RGB positiveColor, RGB negativeColor) {
+        this.dataSeries = dataSeries;
+        if (outlineColor != null) {
+            this.outlineColor = outlineColor;
+        }
+        if (positiveColor != null) {
+            this.positiveColor = positiveColor;
+        }
+        if (negativeColor != null) {
+            this.negativeColor = negativeColor;
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
-	 */
-	public void setDataBounds(DataBounds dataBounds) {
-		List<IAdaptable> l = new ArrayList<IAdaptable>(2048);
-		for (IAdaptable value : dataSeries.getValues()) {
-			Date date = (Date) value.getAdapter(Date.class);
-			if ((dataBounds.first == null || !date.before(dataBounds.first)) && (dataBounds.last == null || !date.after(dataBounds.last)))
-				l.add(value);
-		}
-		this.values = l.toArray(new IAdaptable[l.size()]);
-		this.width = dataBounds.horizontalSpacing;
-		this.valid = false;
-	}
+        numberFormat.setGroupingUsed(true);
+        numberFormat.setMinimumIntegerDigits(1);
+        numberFormat.setMinimumFractionDigits(0);
+        numberFormat.setMaximumFractionDigits(4);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
-	 */
-	public void invalidate() {
-		this.valid = false;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
+     */
+    @Override
+    public void setDataBounds(DataBounds dataBounds) {
+        List<IAdaptable> l = new ArrayList<IAdaptable>(2048);
+        for (IAdaptable value : dataSeries.getValues()) {
+            Date date = (Date) value.getAdapter(Date.class);
+            if ((dataBounds.first == null || !date.before(dataBounds.first)) && (dataBounds.last == null || !date.after(dataBounds.last))) {
+                l.add(value);
+            }
+        }
+        this.values = l.toArray(new IAdaptable[l.size()]);
+        this.width = dataBounds.horizontalSpacing;
+        this.valid = false;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
-	 */
-	public void paint(IGraphics graphics) {
-		if (!valid || pointArray == null && values != null) {
-			if (pointArray == null)
-				pointArray = new ArrayList<Candle>(values.length);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
+     */
+    @Override
+    public void invalidate() {
+        this.valid = false;
+    }
 
-			for (int i = 0; i < values.length; i++) {
-				IOHLC ohlc = (IOHLC) values[i].getAdapter(IOHLC.class);
-				if (ohlc == null)
-					continue;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
+     */
+    @Override
+    public void paint(IGraphics graphics) {
+        if (!valid || pointArray == null && values != null) {
+            if (pointArray == null) {
+                pointArray = new ArrayList<Candle>(values.length);
+            }
 
-				int h = graphics.mapToVerticalAxis(ohlc.getHigh());
-				int l = graphics.mapToVerticalAxis(ohlc.getLow());
-				int c = graphics.mapToVerticalAxis(ohlc.getClose());
-				int o = graphics.mapToVerticalAxis(ohlc.getOpen());
+            for (int i = 0; i < values.length; i++) {
+                IOHLC ohlc = (IOHLC) values[i].getAdapter(IOHLC.class);
+                if (ohlc == null) {
+                    continue;
+                }
 
-				int x = graphics.mapToHorizontalAxis(ohlc.getDate());
+                int h = graphics.mapToVerticalAxis(ohlc.getHigh());
+                int l = graphics.mapToVerticalAxis(ohlc.getLow());
+                int c = graphics.mapToVerticalAxis(ohlc.getClose());
+                int o = graphics.mapToVerticalAxis(ohlc.getOpen());
 
-				Candle candle;
-				if (i < pointArray.size())
-					candle = pointArray.get(i);
-				else {
-					candle = new Candle();
-					pointArray.add(candle);
-				}
-				candle.setBounds(x, h, o, c, l);
-				candle.setOhlc(ohlc);
-				candle.setOutlineColor(outlineColor);
-				candle.setFillColor(ohlc.getClose() < ohlc.getOpen() ? negativeColor : positiveColor);
-			}
-			while (pointArray.size() > values.length)
-				pointArray.remove(pointArray.size() - 1);
+                int x = graphics.mapToHorizontalAxis(ohlc.getDate());
 
-			valid = true;
-		}
+                Candle candle;
+                if (i < pointArray.size()) {
+                    candle = pointArray.get(i);
+                }
+                else {
+                    candle = new Candle();
+                    pointArray.add(candle);
+                }
+                candle.setBounds(x, h, o, c, l);
+                candle.setOhlc(ohlc);
+                candle.setOutlineColor(outlineColor);
+                candle.setFillColor(ohlc.getClose() < ohlc.getOpen() ? negativeColor : positiveColor);
+            }
+            while (pointArray.size() > values.length) {
+                pointArray.remove(pointArray.size() - 1);
+            }
 
-		if (pointArray != null) {
-			graphics.pushState();
-			graphics.setLineWidth(hasFocus ? 2 : 1);
-			for (Candle c : pointArray)
-				c.paint(graphics);
-			graphics.popState();
-		}
-	}
+            valid = true;
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
-	 */
-	public void paintScale(Graphics graphics) {
-	}
+        if (pointArray != null) {
+            graphics.pushState();
+            graphics.setLineWidth(hasFocus ? 2 : 1);
+            for (Candle c : pointArray) {
+                c.paint(graphics);
+            }
+            graphics.popState();
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
-	 */
-	public boolean containsPoint(int x, int y) {
-		if (pointArray != null) {
-			for (Candle c : pointArray) {
-				if (c.containsPoint(x, y))
-					return true;
-			}
-		}
-		return false;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
+     */
+    @Override
+    public void paintScale(Graphics graphics) {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#getDataSeries()
-	 */
-	public IDataSeries getDataSeries() {
-		return dataSeries;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
+     */
+    @Override
+    public boolean containsPoint(int x, int y) {
+        if (pointArray != null) {
+            for (Candle c : pointArray) {
+                if (c.containsPoint(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
-	 */
-	public String getToolTip() {
-		if (dataSeries.getLast() != null) {
-			IOHLC ohlc = (IOHLC) dataSeries.getLast().getAdapter(IOHLC.class);
-			return dateFormat.format(ohlc.getDate()) + " O:" + numberFormat.format(ohlc.getOpen()) + //$NON-NLS-1$
-			" H:" + numberFormat.format(ohlc.getHigh()) + //$NON-NLS-1$
-			" L:" + numberFormat.format(ohlc.getLow()) + //$NON-NLS-1$
-			" C:" + numberFormat.format(ohlc.getHigh()); //$NON-NLS-1$
-		}
-		return dataSeries.getName();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#getDataSeries()
+     */
+    @Override
+    public IDataSeries getDataSeries() {
+        return dataSeries;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip(int, int)
-	 */
-	public String getToolTip(int x, int y) {
-		if (pointArray != null) {
-			for (Candle c : pointArray) {
-				if (c.containsPoint(x, y))
-					return c.getToolTip();
-			}
-		}
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
+     */
+    @Override
+    public String getToolTip() {
+        if (dataSeries.getLast() != null) {
+            IOHLC ohlc = (IOHLC) dataSeries.getLast().getAdapter(IOHLC.class);
+            return dateFormat.format(ohlc.getDate()) + " O:" + numberFormat.format(ohlc.getOpen()) + //$NON-NLS-1$
+            " H:" + numberFormat.format(ohlc.getHigh()) + //$NON-NLS-1$
+            " L:" + numberFormat.format(ohlc.getLow()) + //$NON-NLS-1$
+            " C:" + numberFormat.format(ohlc.getHigh()); //$NON-NLS-1$
+        }
+        return dataSeries.getName();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
-	 */
-	public void handleFocusGained(ChartObjectFocusEvent event) {
-		hasFocus = true;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip(int, int)
+     */
+    @Override
+    public String getToolTip(int x, int y) {
+        if (pointArray != null) {
+            for (Candle c : pointArray) {
+                if (c.containsPoint(x, y)) {
+                    return c.getToolTip();
+                }
+            }
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
-	 */
-	public void handleFocusLost(ChartObjectFocusEvent event) {
-		hasFocus = false;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    @Override
+    public void handleFocusGained(ChartObjectFocusEvent event) {
+        hasFocus = true;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
-	 */
-	public void accept(IChartObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+     */
+    @Override
+    public void handleFocusLost(ChartObjectFocusEvent event) {
+        hasFocus = false;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Class adapter) {
-		if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
-			return this;
-		}
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
+     */
+    @Override
+    public void accept(IChartObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createDecorator(Composite parent) {
-		IAdaptable[] values = dataSeries.getValues();
-		IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
-		IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(ISummaryBarDecorator.class)) {
+            return this;
+        }
+        return null;
+    }
 
-		dateItem = new SummaryDateItem(parent, SWT.DATE);
-		dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#createDecorator(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createDecorator(Composite parent) {
+        IAdaptable[] values = dataSeries.getValues();
+        IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
+        IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
 
-		ohlcItem = new SummaryOHLCItem(parent, SWT.NONE);
-		ohlcItem.setOHLC(ohlc, previousOhlc);
-	}
+        dateItem = new SummaryDateItem(parent, SWT.DATE);
+        dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
-	 */
-	public void updateDecorator(int x, int y) {
-		if (x == SWT.DEFAULT) {
-			IAdaptable[] values = dataSeries.getValues();
-			IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
-			IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
+        ohlcItem = new SummaryOHLCItem(parent, SWT.NONE);
+        ohlcItem.setOHLC(ohlc, previousOhlc);
+    }
 
-			dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
-			ohlcItem.setOHLC(ohlc, previousOhlc);
-		}
-		else if (pointArray != null) {
-			for (int i = 1; i < pointArray.size(); i++) {
-				Candle c = pointArray.get(i);
-				if (c.containsPoint(x, y)) {
-					dateItem.setDate(c.ohlc.getDate());
-					ohlcItem.setOHLC(c.ohlc, pointArray.get(i - 1).ohlc);
-				}
-			}
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.charts.ISummaryBarDecorator#updateDecorator(int, int)
+     */
+    @Override
+    public void updateDecorator(int x, int y) {
+        if (x == SWT.DEFAULT) {
+            IAdaptable[] values = dataSeries.getValues();
+            IOHLC ohlc = (IOHLC) (values.length > 0 ? values[values.length - 1].getAdapter(IOHLC.class) : null);
+            IOHLC previousOhlc = (IOHLC) (values.length > 1 ? values[values.length - 2].getAdapter(IOHLC.class) : null);
 
-	private class Candle {
-		int x;
-		int yHigh;
-		int yOpen;
-		int yClose;
-		int yLow;
+            dateItem.setDate(ohlc != null ? ohlc.getDate() : null);
+            ohlcItem.setOHLC(ohlc, previousOhlc);
+        }
+        else if (pointArray != null) {
+            for (int i = 1; i < pointArray.size(); i++) {
+                Candle c = pointArray.get(i);
+                if (c.containsPoint(x, y)) {
+                    dateItem.setDate(c.ohlc.getDate());
+                    ohlcItem.setOHLC(c.ohlc, pointArray.get(i - 1).ohlc);
+                }
+            }
+        }
+    }
 
-		IOHLC ohlc;
-		RGB fillColor;
-		RGB outlineColor;
+    private class Candle {
 
-		public Candle() {
-		}
+        int x;
+        int yHigh;
+        int yOpen;
+        int yClose;
+        int yLow;
 
-		public void setBounds(int x, int yHigh, int yOpen, int yClose, int yLow) {
-			this.x = x;
-			this.yHigh = yHigh;
-			this.yOpen = yOpen;
-			this.yClose = yClose;
-			this.yLow = yLow;
-		}
+        IOHLC ohlc;
+        RGB fillColor;
+        RGB outlineColor;
 
-		public void setFillColor(RGB fillColor) {
-			this.fillColor = fillColor;
-		}
+        public Candle() {
+        }
 
-		public void setOutlineColor(RGB outlineColor) {
-			this.outlineColor = outlineColor;
-		}
+        public void setBounds(int x, int yHigh, int yOpen, int yClose, int yLow) {
+            this.x = x;
+            this.yHigh = yHigh;
+            this.yOpen = yOpen;
+            this.yClose = yClose;
+            this.yLow = yLow;
+        }
 
-		public void setOhlc(IOHLC ohlc) {
-			this.ohlc = ohlc;
-		}
+        public void setFillColor(RGB fillColor) {
+            this.fillColor = fillColor;
+        }
 
-		public void paint(IGraphics graphics) {
-			graphics.setForegroundColor(outlineColor);
-			graphics.drawLine(x, yHigh, x, yLow);
-			if (yOpen < yClose) {
-				graphics.setBackgroundColor(fillColor);
-				graphics.fillRectangle(x - width / 2, yOpen, width, yClose - yOpen);
-				graphics.drawRectangle(x - width / 2, yOpen, width - 1, yClose - yOpen - 1);
-			}
-			else {
-				graphics.setBackgroundColor(fillColor);
-				graphics.fillRectangle(x - width / 2, yClose, width, yOpen - yClose);
-				graphics.drawRectangle(x - width / 2, yClose, width - 1, yOpen - yClose - 1);
-			}
-		}
+        public void setOutlineColor(RGB outlineColor) {
+            this.outlineColor = outlineColor;
+        }
 
-		public boolean containsPoint(int x, int y) {
-			if (y == SWT.DEFAULT)
-				return x >= (this.x - width / 2) && x <= (this.x + width / 2);
-			if (x == this.x)
-				return y >= yHigh && y <= yLow;
-			if (x >= (this.x - width / 2) && x <= (this.x + width / 2))
-				return y >= yHigh && y <= yLow;
-			return false;
-		}
+        public void setOhlc(IOHLC ohlc) {
+            this.ohlc = ohlc;
+        }
 
-		public String getToolTip() {
-			return dataSeries.getName() + "\r\nD:" + dateFormat.format(ohlc.getDate()) + //$NON-NLS-1$
-			"\r\nO:" + numberFormat.format(ohlc.getOpen()) + //$NON-NLS-1$
-			"\r\nH:" + numberFormat.format(ohlc.getHigh()) + //$NON-NLS-1$
-			"\r\nL:" + numberFormat.format(ohlc.getLow()) + //$NON-NLS-1$
-			"\r\nC:" + numberFormat.format(ohlc.getHigh()); //$NON-NLS-1$
-		}
-	}
+        public void paint(IGraphics graphics) {
+            graphics.setForegroundColor(outlineColor);
+            graphics.drawLine(x, yHigh, x, yLow);
+            if (yOpen < yClose) {
+                graphics.setBackgroundColor(fillColor);
+                graphics.fillRectangle(x - width / 2, yOpen, width, yClose - yOpen);
+                graphics.drawRectangle(x - width / 2, yOpen, width - 1, yClose - yOpen - 1);
+            }
+            else {
+                graphics.setBackgroundColor(fillColor);
+                graphics.fillRectangle(x - width / 2, yClose, width, yOpen - yClose);
+                graphics.drawRectangle(x - width / 2, yClose, width - 1, yOpen - yClose - 1);
+            }
+        }
+
+        public boolean containsPoint(int x, int y) {
+            if (y == SWT.DEFAULT) {
+                return x >= this.x - width / 2 && x <= this.x + width / 2;
+            }
+            if (x == this.x) {
+                return y >= yHigh && y <= yLow;
+            }
+            if (x >= this.x - width / 2 && x <= this.x + width / 2) {
+                return y >= yHigh && y <= yLow;
+            }
+            return false;
+        }
+
+        public String getToolTip() {
+            return dataSeries.getName() + "\r\nD:" + dateFormat.format(ohlc.getDate()) + //$NON-NLS-1$
+            "\r\nO:" + numberFormat.format(ohlc.getOpen()) + //$NON-NLS-1$
+            "\r\nH:" + numberFormat.format(ohlc.getHigh()) + //$NON-NLS-1$
+            "\r\nL:" + numberFormat.format(ohlc.getLow()) + //$NON-NLS-1$
+            "\r\nC:" + numberFormat.format(ohlc.getHigh()); //$NON-NLS-1$
+        }
+    }
 }

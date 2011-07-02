@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,36 +20,42 @@ import org.eclipsetrader.ui.INotification;
 import org.eclipsetrader.ui.INotificationService;
 
 public class NotificationService implements INotificationService {
-	private List<INotification> queue = new ArrayList<INotification>();
 
-	private Runnable notificationRunnable = new Runnable() {
+    private List<INotification> queue = new ArrayList<INotification>();
+
+    private Runnable notificationRunnable = new Runnable() {
+
+        @Override
         public void run() {
-    		synchronized (queue) {
-        		NotificationPopup popup = new NotificationPopup(Display.getDefault());
-        		popup.setContents(queue);
-        		queue.clear();
-        		popup.setBlockOnOpen(false);
-        		popup.open();
-    		}
+            synchronized (queue) {
+                NotificationPopup popup = new NotificationPopup(Display.getDefault());
+                popup.setContents(queue);
+                queue.clear();
+                popup.setBlockOnOpen(false);
+                popup.open();
+            }
         }
-	};
+    };
 
-	public NotificationService() {
-	}
+    public NotificationService() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.ui.commons.INotificationService#popupNotification(org.eclipsetrader.ui.commons.INotification[])
-	 */
-	public void popupNotification(INotification[] notifications) {
-		synchronized (queue) {
-			if (queue.size() == 0 && notifications.length != 0) {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						Display.getDefault().timerExec(2000, notificationRunnable);
-					}
-				});
-			}
-			queue.addAll(Arrays.asList(notifications));
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.commons.INotificationService#popupNotification(org.eclipsetrader.ui.commons.INotification[])
+     */
+    @Override
+    public void popupNotification(INotification[] notifications) {
+        synchronized (queue) {
+            if (queue.size() == 0 && notifications.length != 0) {
+                Display.getDefault().asyncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Display.getDefault().timerExec(2000, notificationRunnable);
+                    }
+                });
+            }
+            queue.addAll(Arrays.asList(notifications));
         }
-	}
+    }
 }

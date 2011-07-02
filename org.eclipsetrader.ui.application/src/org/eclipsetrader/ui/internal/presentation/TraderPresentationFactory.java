@@ -34,48 +34,37 @@ import org.eclipse.ui.presentations.WorkbenchPresentationFactory;
 @SuppressWarnings("restriction")
 public class TraderPresentationFactory extends WorkbenchPresentationFactory {
 
-	private static int viewTabPosition = WorkbenchPlugin.getDefault()
-			.getPreferenceStore()
-			.getInt(IWorkbenchPreferenceConstants.VIEW_TAB_POSITION);
+    private static int viewTabPosition = WorkbenchPlugin.getDefault().getPreferenceStore().getInt(IWorkbenchPreferenceConstants.VIEW_TAB_POSITION);
 
-	public TraderPresentationFactory() {
-	}
+    public TraderPresentationFactory() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.presentations.AbstractPresentationFactory#createViewPresentation(org.eclipse.swt.widgets.Composite, org.eclipse.ui.presentations.IStackPresentationSite)
-	 */
-	@Override
-    public StackPresentation createViewPresentation(Composite parent,
-			IStackPresentationSite site) {
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.presentations.AbstractPresentationFactory#createViewPresentation(org.eclipse.swt.widgets.Composite, org.eclipse.ui.presentations.IStackPresentationSite)
+     */
+    @Override
+    public StackPresentation createViewPresentation(Composite parent, IStackPresentationSite site) {
 
-		DefaultTabFolder folder = new DefaultTabFolder(parent, viewTabPosition
-				| SWT.BORDER, site
-				.supportsState(IStackPresentationSite.STATE_MINIMIZED), site
-				.supportsState(IStackPresentationSite.STATE_MAXIMIZED));
+        DefaultTabFolder folder = new DefaultTabFolder(parent, viewTabPosition | SWT.BORDER, site.supportsState(IStackPresentationSite.STATE_MINIMIZED), site.supportsState(IStackPresentationSite.STATE_MAXIMIZED));
 
-		final IPreferenceStore store = PlatformUI.getPreferenceStore();
-		final int minimumCharacters = store
-				.getInt(IWorkbenchPreferenceConstants.VIEW_MINIMUM_CHARACTERS);
-		if (minimumCharacters >= 0) {
-			folder.setMinimumCharacters(minimumCharacters);
-		}
+        final IPreferenceStore store = PlatformUI.getPreferenceStore();
+        final int minimumCharacters = store.getInt(IWorkbenchPreferenceConstants.VIEW_MINIMUM_CHARACTERS);
+        if (minimumCharacters >= 0) {
+            folder.setMinimumCharacters(minimumCharacters);
+        }
 
-		PresentablePartFolder partFolder = new PresentablePartFolder(folder);
+        PresentablePartFolder partFolder = new PresentablePartFolder(folder);
 
-		folder.setUnselectedCloseVisible(true);
-		folder.setUnselectedImageVisible(true);
+        folder.setUnselectedCloseVisible(true);
+        folder.setUnselectedImageVisible(true);
 
-		TabbedStackPresentation result = new TabbedStackPresentation(site,
-				partFolder, new StandardViewSystemMenu(site));
+        TabbedStackPresentation result = new TabbedStackPresentation(site, partFolder, new StandardViewSystemMenu(site));
 
-		DefaultThemeListener themeListener = new DefaultThemeListener(folder,
-				result.getTheme());
-		result.getTheme().addListener(themeListener);
+        DefaultThemeListener themeListener = new DefaultThemeListener(folder, result.getTheme());
+        result.getTheme().addListener(themeListener);
 
-		new DefaultSimpleTabListener(result.getApiPreferences(),
-				IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS,
-				folder);
+        new DefaultSimpleTabListener(result.getApiPreferences(), IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS, folder);
 
-		return result;
-	}
+        return result;
+    }
 }

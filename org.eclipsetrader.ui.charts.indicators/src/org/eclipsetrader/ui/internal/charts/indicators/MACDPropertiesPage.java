@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,29 +25,30 @@ import org.eclipsetrader.ui.internal.charts.OHLCFieldInput;
 import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
 public class MACDPropertiesPage extends PropertyPage {
-	private OHLCFieldInput input;
-	private Spinner fastPeriod;
-	private Spinner slowPeriod;
-	private Spinner signalPeriod;
-	private MATypeInput fastMaType;
-	private MATypeInput slowMaType;
-	private MATypeInput signalMaType;
-	private RenderStyleInput macdLineStyle;
-	private RenderStyleInput signalLineStyle;
-	private RenderStyleInput histLineStyle;
 
-	public MACDPropertiesPage() {
+    private OHLCFieldInput input;
+    private Spinner fastPeriod;
+    private Spinner slowPeriod;
+    private Spinner signalPeriod;
+    private MATypeInput fastMaType;
+    private MATypeInput slowMaType;
+    private MATypeInput signalMaType;
+    private RenderStyleInput macdLineStyle;
+    private RenderStyleInput signalLineStyle;
+    private RenderStyleInput histLineStyle;
+
+    public MACDPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setTitle("M/A Convergence / Divergence");
@@ -106,15 +107,15 @@ public class MACDPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	MACD object = (MACD) getElement().getAdapter(MACD.class);
+        MACD object = (MACD) getElement().getAdapter(MACD.class);
         input.setSelection(object.getField());
         fastPeriod.setSelection(object.getFastPeriod());
         fastMaType.setSelection(object.getFastMaType());
@@ -127,27 +128,27 @@ public class MACDPropertiesPage extends PropertyPage {
         signalLineStyle.setSelection(object.getSignalLineStyle());
         histLineStyle.setSelection(object.getHistLineStyle());
 
-	    super.performDefaults();
+        super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	MACD object = (MACD) getElement().getAdapter(MACD.class);
-    	object.setField(input.getSelection());
-    	object.setFastPeriod(fastPeriod.getSelection());
-    	object.setFastMaType(fastMaType.getSelection());
-    	object.setSlowPeriod(slowPeriod.getSelection());
-    	object.setSlowMaType(slowMaType.getSelection());
-    	object.setSignalPeriod(signalPeriod.getSelection());
-    	object.setSignalMaType(signalMaType.getSelection());
+        MACD object = (MACD) getElement().getAdapter(MACD.class);
+        object.setField(input.getSelection());
+        object.setFastPeriod(fastPeriod.getSelection());
+        object.setFastMaType(fastMaType.getSelection());
+        object.setSlowPeriod(slowPeriod.getSelection());
+        object.setSlowMaType(slowMaType.getSelection());
+        object.setSignalPeriod(signalPeriod.getSelection());
+        object.setSignalMaType(signalMaType.getSelection());
 
-    	object.setMacdLineStyle(macdLineStyle.getSelection());
-    	object.setSignalLineStyle(signalLineStyle.getSelection());
-    	object.setHistLineStyle(histLineStyle.getSelection());
+        object.setMacdLineStyle(macdLineStyle.getSelection());
+        object.setSignalLineStyle(signalLineStyle.getSelection());
+        object.setHistLineStyle(histLineStyle.getSelection());
 
-	    return super.performOk();
+        return super.performOk();
     }
 }

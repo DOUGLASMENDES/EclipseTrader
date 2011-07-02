@@ -21,62 +21,74 @@ import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class SecuritiesContentProvider implements IStructuredContentProvider {
-	final IRepositoryService repository;
-	Viewer viewer;
 
-	IRepositoryChangeListener resourceListener = new IRepositoryChangeListener() {
-		public void repositoryResourceChanged(RepositoryChangeEvent event) {
-			NavigatorView view = (NavigatorView) viewer.getInput();
-			view.update();
+    final IRepositoryService repository;
+    Viewer viewer;
 
-			if (!viewer.getControl().isDisposed()) {
-				try {
-					viewer.getControl().getDisplay().asyncExec(new Runnable() {
-						public void run() {
-							if (!viewer.getControl().isDisposed())
-								viewer.refresh();
-						}
-					});
-				} catch (SWTException e) {
-					if (e.code != SWT.ERROR_DEVICE_DISPOSED)
-						throw e;
-				}
-			}
-		}
-	};
+    IRepositoryChangeListener resourceListener = new IRepositoryChangeListener() {
 
-	public SecuritiesContentProvider() {
-		repository = getRepositoryService();
-	}
+        @Override
+        public void repositoryResourceChanged(RepositoryChangeEvent event) {
+            NavigatorView view = (NavigatorView) viewer.getInput();
+            view.update();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-	 */
-	public Object[] getElements(Object inputElement) {
-		return repository.getSecurities();
-	}
+            if (!viewer.getControl().isDisposed()) {
+                try {
+                    viewer.getControl().getDisplay().asyncExec(new Runnable() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-	 */
-	public void dispose() {
-		repository.removeRepositoryResourceListener(resourceListener);
-	}
+                        @Override
+                        public void run() {
+                            if (!viewer.getControl().isDisposed()) {
+                                viewer.refresh();
+                            }
+                        }
+                    });
+                } catch (SWTException e) {
+                    if (e.code != SWT.ERROR_DEVICE_DISPOSED) {
+                        throw e;
+                    }
+                }
+            }
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-	 */
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (oldInput != null)
-			repository.removeRepositoryResourceListener(resourceListener);
+    public SecuritiesContentProvider() {
+        repository = getRepositoryService();
+    }
 
-		this.viewer = viewer;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+     */
+    @Override
+    public Object[] getElements(Object inputElement) {
+        return repository.getSecurities();
+    }
 
-		if (newInput != null)
-			repository.addRepositoryResourceListener(resourceListener);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+     */
+    @Override
+    public void dispose() {
+        repository.removeRepositoryResourceListener(resourceListener);
+    }
 
-	protected IRepositoryService getRepositoryService() {
-		return UIActivator.getDefault().getRepositoryService();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        if (oldInput != null) {
+            repository.removeRepositoryResourceListener(resourceListener);
+        }
+
+        this.viewer = viewer;
+
+        if (newInput != null) {
+            repository.addRepositoryResourceListener(resourceListener);
+        }
+    }
+
+    protected IRepositoryService getRepositoryService() {
+        return UIActivator.getDefault().getRepositoryService();
+    }
 }

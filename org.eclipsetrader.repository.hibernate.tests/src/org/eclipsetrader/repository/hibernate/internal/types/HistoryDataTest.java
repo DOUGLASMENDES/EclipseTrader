@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,23 +25,23 @@ import org.eclipsetrader.core.feed.TimeSpan;
 
 public class HistoryDataTest extends TestCase {
 
-	public void testListContains() throws Exception {
-		Date date = new Date();
-	    List<HistoryData> l = new ArrayList<HistoryData>();
-	    l.add(new HistoryData(null, new OHLC(date, 1.0, 2.0,3.0, 4.0, 5L), TimeSpan.minutes(1)));
-	    assertTrue(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0,3.0, 4.0, 5L), TimeSpan.minutes(1))));
-	    assertFalse(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0,3.0, 4.0, 1L), TimeSpan.minutes(1))));
-	    assertTrue(l.contains(new OHLC(date, 1.0, 2.0,3.0, 4.0, 5L)));
-	    assertFalse(l.contains(new OHLC(date, 1.0, 2.0,3.0, 4.0, 1L)));
+    public void testListContains() throws Exception {
+        Date date = new Date();
+        List<HistoryData> l = new ArrayList<HistoryData>();
+        l.add(new HistoryData(null, new OHLC(date, 1.0, 2.0, 3.0, 4.0, 5L), TimeSpan.minutes(1)));
+        assertTrue(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0, 3.0, 4.0, 5L), TimeSpan.minutes(1))));
+        assertFalse(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0, 3.0, 4.0, 1L), TimeSpan.minutes(1))));
+        assertTrue(l.contains(new OHLC(date, 1.0, 2.0, 3.0, 4.0, 5L)));
+        assertFalse(l.contains(new OHLC(date, 1.0, 2.0, 3.0, 4.0, 1L)));
     }
 
-	public void testSetContains() throws Exception {
-		Date date = new Date();
-	    Set<IOHLC> l = new HashSet<IOHLC>();
-	    l.add(new HistoryData(null, new OHLC(date, 1.0, 2.0,3.0, 4.0, 5L), TimeSpan.minutes(1)));
-	    assertTrue(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0,3.0, 4.0, 5L), TimeSpan.minutes(1))));
-	    assertFalse(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0,3.0, 4.0, 1L), TimeSpan.minutes(1))));
-	    assertFalse(l.contains(new OHLC(date, 1.0, 2.0,3.0, 4.0, 5L)));
-	    assertFalse(l.contains(new OHLC(date, 1.0, 2.0,3.0, 4.0, 1L)));
+    public void testSetContains() throws Exception {
+        Date date = new Date();
+        Set<IOHLC> l = new HashSet<IOHLC>();
+        l.add(new HistoryData(null, new OHLC(date, 1.0, 2.0, 3.0, 4.0, 5L), TimeSpan.minutes(1)));
+        assertTrue(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0, 3.0, 4.0, 5L), TimeSpan.minutes(1))));
+        assertFalse(l.contains(new HistoryData(null, new OHLC(date, 1.0, 2.0, 3.0, 4.0, 1L), TimeSpan.minutes(1))));
+        assertFalse(l.contains(new OHLC(date, 1.0, 2.0, 3.0, 4.0, 5L)));
+        assertFalse(l.contains(new OHLC(date, 1.0, 2.0, 3.0, 4.0, 1L)));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2010 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -69,393 +69,427 @@ import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class NewsProvider implements INewsProvider {
-	public static final String HEADLINES_FILE = "headlines.xml"; //$NON-NLS-1$
 
-	private String id;
-	private String name;
+    public static final String HEADLINES_FILE = "headlines.xml"; //$NON-NLS-1$
 
-	private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
-	private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
+    private String id;
+    private String name;
 
-	private INewsService newsService;
-	private IRepositoryService repositoryService;
-	private boolean started;
+    private FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
+    private HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher(feedInfoCache);
 
-	static private List<HeadLine> oldItems = new ArrayList<HeadLine>();
+    private INewsService newsService;
+    private IRepositoryService repositoryService;
+    private boolean started;
 
-	private JobChangeAdapter jobChangeListener = new JobChangeAdapter() {
-		@Override
-		public void done(IJobChangeEvent event) {
-			IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
-			int interval = store.getInt(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL);
-			job.schedule(interval * 60 * 1000);
-		}
-	};
+    static private List<HeadLine> oldItems = new ArrayList<HeadLine>();
 
-	private Job job = new Job("Yahoo! News") {
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			return jobRunner(monitor);
-		}
-	};
+    private JobChangeAdapter jobChangeListener = new JobChangeAdapter() {
 
-	public NewsProvider() {
-	}
+        @Override
+        public void done(IJobChangeEvent event) {
+            IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
+            int interval = store.getInt(YahooActivator.PREFS_NEWS_UPDATE_INTERVAL);
+            job.schedule(interval * 60 * 1000);
+        }
+    };
 
-	public NewsProvider(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    private Job job = new Job("Yahoo! News") {
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            return jobRunner(monitor);
+        }
+    };
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    public NewsProvider() {
+    }
 
-	public void startUp() throws JAXBException {
-		File file = YahooActivator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
-		if (file.exists()) {
-			JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			unmarshaller.setEventHandler(new ValidationEventHandler() {
-				public boolean handleEvent(ValidationEvent event) {
-					Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-					YahooActivator.getDefault().getLog().log(status);
-					return true;
-				}
-			});
-			JAXBElement<HeadLine[]> element = unmarshaller.unmarshal(new StreamSource(file), HeadLine[].class);
-			oldItems.addAll(Arrays.asList(element.getValue()));
+    public NewsProvider(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-			Date limitDate = getLimitDate();
-			for (Iterator<HeadLine> iter = oldItems.iterator(); iter.hasNext();) {
-				if (iter.next().getDate().before(limitDate))
-					iter.remove();
-			}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
 
-			int hoursAsRecent = YahooActivator.getDefault().getPreferenceStore().getInt(YahooActivator.PREFS_HOURS_AS_RECENT);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-			Calendar today = Calendar.getInstance();
-			today.add(Calendar.HOUR_OF_DAY, -hoursAsRecent);
-			Date recentLimitDate = today.getTime();
+    public void startUp() throws JAXBException {
+        File file = YahooActivator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
+        if (file.exists()) {
+            JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-			for (HeadLine headLine : oldItems) {
-				if (!headLine.getDate().before(recentLimitDate))
-					headLine.setRecent(true);
-			}
-		}
-	}
+                @Override
+                public boolean handleEvent(ValidationEvent event) {
+                    Status status = new Status(IStatus.WARNING, YahooActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                    YahooActivator.getDefault().getLog().log(status);
+                    return true;
+                }
+            });
+            JAXBElement<HeadLine[]> element = unmarshaller.unmarshal(new StreamSource(file), HeadLine[].class);
+            oldItems.addAll(Arrays.asList(element.getValue()));
 
-	protected void save() throws JAXBException, IOException {
-		File file = YahooActivator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
-		if (file.exists())
-			file.delete();
+            Date limitDate = getLimitDate();
+            for (Iterator<HeadLine> iter = oldItems.iterator(); iter.hasNext();) {
+                if (iter.next().getDate().before(limitDate)) {
+                    iter.remove();
+                }
+            }
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setEventHandler(new ValidationEventHandler() {
-			public boolean handleEvent(ValidationEvent event) {
-				Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-				YahooActivator.getDefault().getLog().log(status);
-				return true;
-			}
-		});
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
+            int hoursAsRecent = YahooActivator.getDefault().getPreferenceStore().getInt(YahooActivator.PREFS_HOURS_AS_RECENT);
 
-		JAXBElement<HeadLine[]> element = new JAXBElement<HeadLine[]>(new QName("list"), HeadLine[].class, oldItems.toArray(new HeadLine[oldItems.size()]));
-		marshaller.marshal(element, new FileWriter(file));
-	}
+            Calendar today = Calendar.getInstance();
+            today.add(Calendar.HOUR_OF_DAY, -hoursAsRecent);
+            Date recentLimitDate = today.getTime();
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
-	 */
-	public IHeadLine[] getHeadLines() {
-		return oldItems.toArray(new IHeadLine[oldItems.size()]);
-	}
+            for (HeadLine headLine : oldItems) {
+                if (!headLine.getDate().before(recentLimitDate)) {
+                    headLine.setRecent(true);
+                }
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#start()
-	 */
-	public void start() {
-		if (!started) {
-			job.schedule(5 * 1000);
-			job.addJobChangeListener(jobChangeListener);
-			started = true;
-		}
-	}
+    protected void save() throws JAXBException, IOException {
+        File file = YahooActivator.getDefault().getStateLocation().append(HEADLINES_FILE).toFile();
+        if (file.exists()) {
+            file.delete();
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#stop()
-	 */
-	public void stop() {
-		if (started) {
-			job.removeJobChangeListener(jobChangeListener);
-			job.cancel();
-			started = false;
-		}
-	}
+        JAXBContext jaxbContext = JAXBContext.newInstance(HeadLine[].class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setEventHandler(new ValidationEventHandler() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.news.core.INewsProvider#refresh()
-	 */
-	public void refresh() {
-		job.removeJobChangeListener(jobChangeListener);
-		job.cancel();
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                Status status = new Status(IStatus.WARNING, YahooActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                YahooActivator.getDefault().getLog().log(status);
+                return true;
+            }
+        });
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
 
-		if (started)
-			job.addJobChangeListener(jobChangeListener);
+        JAXBElement<HeadLine[]> element = new JAXBElement<HeadLine[]>(new QName("list"), HeadLine[].class, oldItems.toArray(new HeadLine[oldItems.size()]));
+        marshaller.marshal(element, new FileWriter(file));
+    }
 
-		job.schedule(0);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#getHeadLines()
+     */
+    @Override
+    public IHeadLine[] getHeadLines() {
+        return oldItems.toArray(new IHeadLine[oldItems.size()]);
+    }
 
-	protected IStatus jobRunner(IProgressMonitor monitor) {
-		IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#start()
+     */
+    @Override
+    public void start() {
+        if (!started) {
+            job.schedule(5 * 1000);
+            job.addJobChangeListener(jobChangeListener);
+            started = true;
+        }
+    }
 
-		Date limitDate = getLimitDate();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#stop()
+     */
+    @Override
+    public void stop() {
+        if (started) {
+            job.removeJobChangeListener(jobChangeListener);
+            job.cancel();
+            started = false;
+        }
+    }
 
-		Calendar today = Calendar.getInstance();
-		int hoursAsRecent = YahooActivator.getDefault().getPreferenceStore().getInt(YahooActivator.PREFS_HOURS_AS_RECENT);
-		today.add(Calendar.HOUR_OF_DAY, -hoursAsRecent);
-		Date recentLimitDate = today.getTime();
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.news.core.INewsProvider#refresh()
+     */
+    @Override
+    public void refresh() {
+        job.removeJobChangeListener(jobChangeListener);
+        job.cancel();
 
-		HttpClient client = new HttpClient();
-		client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+        if (started) {
+            job.addJobChangeListener(jobChangeListener);
+        }
 
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Category[].class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        job.schedule(0);
+    }
 
-			InputStream inputStream = FileLocator.openStream(YahooActivator.getDefault().getBundle(), new Path("data/news_feeds.xml"), false);
-			JAXBElement<Category[]> element = unmarshaller.unmarshal(new StreamSource(inputStream), Category[].class);
+    protected IStatus jobRunner(IProgressMonitor monitor) {
+        IPreferenceStore store = YahooActivator.getDefault().getPreferenceStore();
 
-			int total = 0;
-			for (Category category : element.getValue()) {
-				for (Page page : category.getPages()) {
-					if (store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId()))
-						total++;
-				}
-			}
+        Date limitDate = getLimitDate();
 
-			ISecurity[] securities = getRepositoryService().getSecurities();
-			total += securities.length;
+        Calendar today = Calendar.getInstance();
+        int hoursAsRecent = YahooActivator.getDefault().getPreferenceStore().getInt(YahooActivator.PREFS_HOURS_AS_RECENT);
+        today.add(Calendar.HOUR_OF_DAY, -hoursAsRecent);
+        Date recentLimitDate = today.getTime();
 
-			monitor.beginTask("Fetching Yahoo! News", total);
+        HttpClient client = new HttpClient();
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 
-			resetRecentFlag();
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Category[].class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-			final Set<HeadLine> added = new HashSet<HeadLine>();
-			final Set<HeadLine> updated = new HashSet<HeadLine>();
+            InputStream inputStream = FileLocator.openStream(YahooActivator.getDefault().getBundle(), new Path("data/news_feeds.xml"), false);
+            JAXBElement<Category[]> element = unmarshaller.unmarshal(new StreamSource(inputStream), Category[].class);
 
-			Category[] category = element.getValue();
-			for (int i = 0; i < category.length && !monitor.isCanceled(); i++) {
-				INewsHandler handler = new RSSNewsHandler();
-				if (category[i].getHandler() != null) {
-					try {
-						handler = (INewsHandler) Class.forName(category[i].getHandler()).newInstance();
-					} catch (Exception e) {
-						Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Invalid news handler class", e);
-						YahooActivator.log(status);
-					}
-				}
+            int total = 0;
+            for (Category category : element.getValue()) {
+                for (Page page : category.getPages()) {
+                    if (store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page.getId())) {
+                        total++;
+                    }
+                }
+            }
 
-				List<URL> l = new ArrayList<URL>();
+            ISecurity[] securities = getRepositoryService().getSecurities();
+            total += securities.length;
 
-				Page[] page = category[i].getPages();
-				for (int ii = 0; ii < page.length && !monitor.isCanceled(); ii++) {
-					if (store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page[ii].getId()))
-						l.add(new URL(page[ii].getUrl()));
-				}
+            monitor.beginTask("Fetching Yahoo! News", total);
 
-				HeadLine[] list = handler.parseNewsPages(l.toArray(new URL[l.size()]), monitor);
-				for (HeadLine headLine : list) {
-					if (headLine.getDate() == null || headLine.getDate().before(limitDate))
-						continue;
-					if (!oldItems.contains(headLine)) {
-						if (!headLine.getDate().before(recentLimitDate))
-							headLine.setRecent(true);
-						oldItems.add(headLine);
-						added.add(headLine);
-					}
-				}
-			}
+            resetRecentFlag();
 
-			if (store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS)) {
-				for (int i = 0; i < securities.length && !monitor.isCanceled(); i++) {
-					URL feedUrl = Util.getRSSNewsFeedForSecurity(securities[i]);
-					if (feedUrl == null)
-						continue;
+            final Set<HeadLine> added = new HashSet<HeadLine>();
+            final Set<HeadLine> updated = new HashSet<HeadLine>();
 
-					monitor.subTask(feedUrl.toString());
+            Category[] category = element.getValue();
+            for (int i = 0; i < category.length && !monitor.isCanceled(); i++) {
+                INewsHandler handler = new RSSNewsHandler();
+                if (category[i].getHandler() != null) {
+                    try {
+                        handler = (INewsHandler) Class.forName(category[i].getHandler()).newInstance();
+                    } catch (Exception e) {
+                        Status status = new Status(IStatus.ERROR, YahooActivator.PLUGIN_ID, 0, "Invalid news handler class", e);
+                        YahooActivator.log(status);
+                    }
+                }
 
-					try {
-						if (YahooActivator.getDefault() != null) {
-							BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
-							ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
-							if (reference != null) {
-								IProxyService proxy = (IProxyService) context.getService(reference);
-								IProxyData data = proxy.getProxyDataForHost(feedUrl.getHost(), IProxyData.HTTP_PROXY_TYPE);
-								if (data != null) {
-									if (data.getHost() != null)
-										client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
-									if (data.isRequiresAuthentication())
-										client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
-								}
-								context.ungetService(reference);
-							}
-						}
+                List<URL> l = new ArrayList<URL>();
 
-						SyndFeed feed = fetcher.retrieveFeed(feedUrl, client);
-						for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
-							SyndEntry entry = (SyndEntry) iter.next();
+                Page[] page = category[i].getPages();
+                for (int ii = 0; ii < page.length && !monitor.isCanceled(); ii++) {
+                    if (store.getBoolean(YahooActivator.PREFS_SUBSCRIBE_PREFIX + page[ii].getId())) {
+                        l.add(new URL(page[ii].getUrl()));
+                    }
+                }
 
-							String link = entry.getLink();
-							if (link == null && entry.getLinks().size() != 0) {
-								link = (String) entry.getLinks().get(0);
-							}
-							if (link != null) {
-								while (link.indexOf('*') != -1)
-									link = link.substring(link.indexOf('*') + 1);
-								link = URLDecoder.decode(link, "UTF-8");
-							}
-							if (link == null)
-								continue;
+                HeadLine[] list = handler.parseNewsPages(l.toArray(new URL[l.size()]), monitor);
+                for (HeadLine headLine : list) {
+                    if (headLine.getDate() == null || headLine.getDate().before(limitDate)) {
+                        continue;
+                    }
+                    if (!oldItems.contains(headLine)) {
+                        if (!headLine.getDate().before(recentLimitDate)) {
+                            headLine.setRecent(true);
+                        }
+                        oldItems.add(headLine);
+                        added.add(headLine);
+                    }
+                }
+            }
 
-							String source = null;
+            if (store.getBoolean(YahooActivator.PREFS_UPDATE_SECURITIES_NEWS)) {
+                for (int i = 0; i < securities.length && !monitor.isCanceled(); i++) {
+                    URL feedUrl = Util.getRSSNewsFeedForSecurity(securities[i]);
+                    if (feedUrl == null) {
+                        continue;
+                    }
 
-							String title = entry.getTitle();
-							if (title.startsWith("[$$]"))
-								title = title.substring(4, title.length());
+                    monitor.subTask(feedUrl.toString());
 
-							if (title.endsWith(")")) {
-								int s = title.lastIndexOf('(');
-								if (s != -1) {
-									source = title.substring(s + 1, title.length() - 1);
-									if (source.startsWith("at "))
-										source = source.substring(3);
-									title = title.substring(0, s - 1).trim();
-								}
-							}
+                    try {
+                        if (YahooActivator.getDefault() != null) {
+                            BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
+                            ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
+                            if (reference != null) {
+                                IProxyService proxy = (IProxyService) context.getService(reference);
+                                IProxyData data = proxy.getProxyDataForHost(feedUrl.getHost(), IProxyData.HTTP_PROXY_TYPE);
+                                if (data != null) {
+                                    if (data.getHost() != null) {
+                                        client.getHostConfiguration().setProxy(data.getHost(), data.getPort());
+                                    }
+                                    if (data.isRequiresAuthentication()) {
+                                        client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(data.getUserId(), data.getPassword()));
+                                    }
+                                }
+                                context.ungetService(reference);
+                            }
+                        }
 
-							HeadLine headLine = new HeadLine(entry.getPublishedDate(), source, title, new ISecurity[] {
-								securities[i]
-							}, link);
-							int index = oldItems.indexOf(headLine);
-							if (index != -1) {
-								if (headLine.getDate().before(limitDate))
-									continue;
-								headLine = oldItems.get(index);
-								if (!headLine.contains(securities[i])) {
-									headLine.addMember(securities[i]);
-									updated.add(headLine);
-								}
-							}
-							else {
-								if (!headLine.getDate().before(recentLimitDate))
-									headLine.setRecent(true);
-								oldItems.add(headLine);
-								added.add(headLine);
-							}
-						}
-					} catch (Exception e) {
-					    String msg = "Error fetching news from " + feedUrl.toString();
-						Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, msg, e);
-						YahooActivator.log(status);
-					}
+                        SyndFeed feed = fetcher.retrieveFeed(feedUrl, client);
+                        for (Iterator<?> iter = feed.getEntries().iterator(); iter.hasNext();) {
+                            SyndEntry entry = (SyndEntry) iter.next();
 
-					monitor.worked(1);
-				}
-			}
+                            String link = entry.getLink();
+                            if (link == null && entry.getLinks().size() != 0) {
+                                link = (String) entry.getLinks().get(0);
+                            }
+                            if (link != null) {
+                                while (link.indexOf('*') != -1) {
+                                    link = link.substring(link.indexOf('*') + 1);
+                                }
+                                link = URLDecoder.decode(link, "UTF-8");
+                            }
+                            if (link == null) {
+                                continue;
+                            }
 
-			if (added.size() != 0 || updated.size() != 0) {
-				final INewsService service = getNewsService();
-				service.runInService(new INewsServiceRunnable() {
-					public IStatus run(IProgressMonitor monitor) throws Exception {
-						service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
-						service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
-						return Status.OK_STATUS;
-					}
-				}, null);
-			}
+                            String source = null;
 
-			save();
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error fetching news", e);
-			YahooActivator.log(status);
-		} finally {
-			monitor.done();
-		}
+                            String title = entry.getTitle();
+                            if (title.startsWith("[$$]")) {
+                                title = title.substring(4, title.length());
+                            }
 
-		return Status.OK_STATUS;
-	}
+                            if (title.endsWith(")")) {
+                                int s = title.lastIndexOf('(');
+                                if (s != -1) {
+                                    source = title.substring(s + 1, title.length() - 1);
+                                    if (source.startsWith("at ")) {
+                                        source = source.substring(3);
+                                    }
+                                    title = title.substring(0, s - 1).trim();
+                                }
+                            }
 
-	protected void resetRecentFlag() {
-		int hoursAsRecent = YahooActivator.getDefault().getPreferenceStore().getInt(YahooActivator.PREFS_HOURS_AS_RECENT);
+                            HeadLine headLine = new HeadLine(entry.getPublishedDate(), source, title, new ISecurity[] {
+                                securities[i]
+                            }, link);
+                            int index = oldItems.indexOf(headLine);
+                            if (index != -1) {
+                                if (headLine.getDate().before(limitDate)) {
+                                    continue;
+                                }
+                                headLine = oldItems.get(index);
+                                if (!headLine.contains(securities[i])) {
+                                    headLine.addMember(securities[i]);
+                                    updated.add(headLine);
+                                }
+                            }
+                            else {
+                                if (!headLine.getDate().before(recentLimitDate)) {
+                                    headLine.setRecent(true);
+                                }
+                                oldItems.add(headLine);
+                                added.add(headLine);
+                            }
+                        }
+                    } catch (Exception e) {
+                        String msg = "Error fetching news from " + feedUrl.toString();
+                        Status status = new Status(IStatus.ERROR, YahooActivator.PLUGIN_ID, 0, msg, e);
+                        YahooActivator.log(status);
+                    }
 
-		Calendar today = Calendar.getInstance();
-		today.add(Calendar.HOUR_OF_DAY, -hoursAsRecent);
-		Date limit = today.getTime();
+                    monitor.worked(1);
+                }
+            }
 
-		final List<HeadLine> updated = new ArrayList<HeadLine>();
+            if (added.size() != 0 || updated.size() != 0) {
+                final INewsService service = getNewsService();
+                service.runInService(new INewsServiceRunnable() {
 
-		for (HeadLine headLine : oldItems) {
-			if (headLine.getDate().before(limit) && headLine.isRecent()) {
-				headLine.setRecent(false);
-				updated.add(headLine);
-			}
-		}
+                    @Override
+                    public IStatus run(IProgressMonitor monitor) throws Exception {
+                        service.addHeadLines(added.toArray(new IHeadLine[added.size()]));
+                        service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
+                        return Status.OK_STATUS;
+                    }
+                }, null);
+            }
 
-		if (updated.size() != 0) {
-			final INewsService service = getNewsService();
-			service.runInService(new INewsServiceRunnable() {
-				public IStatus run(IProgressMonitor monitor) throws Exception {
-					service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
-					return Status.OK_STATUS;
-				}
-			}, null);
-		}
-	}
+            save();
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, YahooActivator.PLUGIN_ID, 0, "Error fetching news", e);
+            YahooActivator.log(status);
+        } finally {
+            monitor.done();
+        }
 
-	protected INewsService getNewsService() {
-		if (newsService == null) {
-			BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(INewsService.class.getName());
-			if (serviceReference != null) {
-				newsService = (INewsService) context.getService(serviceReference);
-				context.ungetService(serviceReference);
-			}
-		}
-		return newsService;
-	}
+        return Status.OK_STATUS;
+    }
 
-	protected IRepositoryService getRepositoryService() {
-		if (repositoryService == null) {
-			BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-			if (serviceReference != null) {
-				repositoryService = (IRepositoryService) context.getService(serviceReference);
-				context.ungetService(serviceReference);
-			}
-		}
-		return repositoryService;
-	}
+    protected void resetRecentFlag() {
+        int hoursAsRecent = YahooActivator.getDefault().getPreferenceStore().getInt(YahooActivator.PREFS_HOURS_AS_RECENT);
 
-	protected Date getLimitDate() {
-		Calendar limit = Calendar.getInstance();
-		limit.set(Calendar.HOUR_OF_DAY, 0);
-		limit.set(Calendar.MINUTE, 0);
-		limit.set(Calendar.SECOND, 0);
-		limit.set(Calendar.MILLISECOND, 0);
-		limit.add(Calendar.DATE, -Activator.getDefault().getPreferenceStore().getInt(Activator.PREFS_DATE_RANGE));
-		return limit.getTime();
-	}
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.HOUR_OF_DAY, -hoursAsRecent);
+        Date limit = today.getTime();
+
+        final List<HeadLine> updated = new ArrayList<HeadLine>();
+
+        for (HeadLine headLine : oldItems) {
+            if (headLine.getDate().before(limit) && headLine.isRecent()) {
+                headLine.setRecent(false);
+                updated.add(headLine);
+            }
+        }
+
+        if (updated.size() != 0) {
+            final INewsService service = getNewsService();
+            service.runInService(new INewsServiceRunnable() {
+
+                @Override
+                public IStatus run(IProgressMonitor monitor) throws Exception {
+                    service.updateHeadLines(updated.toArray(new IHeadLine[updated.size()]));
+                    return Status.OK_STATUS;
+                }
+            }, null);
+        }
+    }
+
+    protected INewsService getNewsService() {
+        if (newsService == null) {
+            BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(INewsService.class.getName());
+            if (serviceReference != null) {
+                newsService = (INewsService) context.getService(serviceReference);
+                context.ungetService(serviceReference);
+            }
+        }
+        return newsService;
+    }
+
+    protected IRepositoryService getRepositoryService() {
+        if (repositoryService == null) {
+            BundleContext context = YahooActivator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+            if (serviceReference != null) {
+                repositoryService = (IRepositoryService) context.getService(serviceReference);
+                context.ungetService(serviceReference);
+            }
+        }
+        return repositoryService;
+    }
+
+    protected Date getLimitDate() {
+        Calendar limit = Calendar.getInstance();
+        limit.set(Calendar.HOUR_OF_DAY, 0);
+        limit.set(Calendar.MINUTE, 0);
+        limit.set(Calendar.SECOND, 0);
+        limit.set(Calendar.MILLISECOND, 0);
+        limit.add(Calendar.DATE, -Activator.getDefault().getPreferenceStore().getInt(Activator.PREFS_DATE_RANGE));
+        return limit.getTime();
+    }
 }

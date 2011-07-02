@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,79 +21,92 @@ import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.ViewEvent;
 
 public class PortfolioContentProvider implements ITreeContentProvider, IViewChangeListener {
-	Display display;
-	TreeViewer viewer;
-	PortfolioView input;
 
-	public PortfolioContentProvider() {
-	}
+    Display display;
+    TreeViewer viewer;
+    PortfolioView input;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-	 */
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (input != null) {
-			input.removeViewChangeListener(this);
-			input.dispose();
-		}
+    public PortfolioContentProvider() {
+    }
 
-		this.display = viewer.getControl().getDisplay();
-		this.viewer = (TreeViewer) viewer;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        if (input != null) {
+            input.removeViewChangeListener(this);
+            input.dispose();
+        }
 
-		input = (PortfolioView) newInput;
-		if (input != null)
-			input.addViewChangeListener(this);
-	}
+        this.display = viewer.getControl().getDisplay();
+        this.viewer = (TreeViewer) viewer;
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.views.IViewChangeListener#viewChanged(org.eclipsetrader.core.views.ViewEvent)
-	 */
-	public void viewChanged(ViewEvent event) {
-		display.asyncExec(new Runnable() {
-			public void run() {
-				if (viewer != null && !viewer.getControl().isDisposed())
-					viewer.refresh();
-			}
-		});
-	}
+        input = (PortfolioView) newInput;
+        if (input != null) {
+            input.addViewChangeListener(this);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-	 */
-	public Object[] getElements(Object inputElement) {
-		if (inputElement == null)
-			return new Object[0];
-		return ((IView) inputElement).getItems();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.views.IViewChangeListener#viewChanged(org.eclipsetrader.core.views.ViewEvent)
+     */
+    @Override
+    public void viewChanged(ViewEvent event) {
+        display.asyncExec(new Runnable() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
-	 */
-	public Object[] getChildren(Object parentElement) {
-		return ((IViewItem) parentElement).getItems();
-	}
+            @Override
+            public void run() {
+                if (viewer != null && !viewer.getControl().isDisposed()) {
+                    viewer.refresh();
+                }
+            }
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
-	 */
-	public Object getParent(Object element) {
-		return ((IViewItem) element).getParent();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+     */
+    @Override
+    public Object[] getElements(Object inputElement) {
+        if (inputElement == null) {
+            return new Object[0];
+        }
+        return ((IView) inputElement).getItems();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
-	 */
-	public boolean hasChildren(Object element) {
-		return ((IViewItem) element).getItemCount() != 0;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
+     */
+    @Override
+    public Object[] getChildren(Object parentElement) {
+        return ((IViewItem) parentElement).getItems();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-	 */
-	public void dispose() {
-		if (input != null) {
-			input.removeViewChangeListener(this);
-			input.dispose();
-		}
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
+     */
+    @Override
+    public Object getParent(Object element) {
+        return ((IViewItem) element).getParent();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
+     */
+    @Override
+    public boolean hasChildren(Object element) {
+        return ((IViewItem) element).getItemCount() != 0;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+     */
+    @Override
+    public void dispose() {
+        if (input != null) {
+            input.removeViewChangeListener(this);
+            input.dispose();
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,32 +25,37 @@ import org.eclipsetrader.repository.hibernate.internal.types.HistoryData;
 import org.hibernate.Session;
 
 public class HistoryStoreTest extends TestCase {
-	HibernateRepository repository;
 
-	/* (non-Javadoc)
+    HibernateRepository repository;
+
+    /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
     @Override
     protected void setUp() throws Exception {
-    	repository = EasyMock.createNiceMock(HibernateRepository.class);
-    	Session session =  EasyMock.createNiceMock(Session.class);
-    	EasyMock.expect(repository.getSession()).andStubReturn(session);
-    	EasyMock.replay(repository, session);
+        repository = EasyMock.createNiceMock(HibernateRepository.class);
+        Session session = EasyMock.createNiceMock(Session.class);
+        org.easymock.EasyMock.expect(repository.getSession()).andStubReturn(session);
+        EasyMock.replay(repository, session);
     }
 
     public void testDontReplaceExistingHistoryData() throws Exception {
-    	HistoryStore store = new HistoryStore(null, repository);
-    	StoreProperties properties = new StoreProperties();
-    	OHLC ohlc1 = new OHLC(new Date(), 1.0, 2.0, 3.0, 4.0, 5L);
-    	OHLC ohlc2 = new OHLC(new Date(), 1.0, 2.0, 3.0, 4.0, 15L);
-    	properties.setProperty(IPropertyConstants.BARS, new IOHLC[] { ohlc1 });
-    	store.putProperties(properties, null);
-    	assertEquals(1, store.data.size());
-    	HistoryData data = store.data.get(0);
+        HistoryStore store = new HistoryStore(null, repository);
+        StoreProperties properties = new StoreProperties();
+        OHLC ohlc1 = new OHLC(new Date(), 1.0, 2.0, 3.0, 4.0, 5L);
+        OHLC ohlc2 = new OHLC(new Date(), 1.0, 2.0, 3.0, 4.0, 15L);
+        properties.setProperty(IPropertyConstants.BARS, new IOHLC[] {
+            ohlc1
+        });
+        store.putProperties(properties, null);
+        assertEquals(1, store.data.size());
+        HistoryData data = store.data.get(0);
 
-    	properties.setProperty(IPropertyConstants.BARS, new IOHLC[] { ohlc1, ohlc2 });
-    	store.putProperties(properties, null);
-    	assertEquals(2, store.data.size());
-    	assertSame(data, store.data.get(0));
+        properties.setProperty(IPropertyConstants.BARS, new IOHLC[] {
+                ohlc1, ohlc2
+        });
+        store.putProperties(properties, null);
+        assertEquals(2, store.data.size());
+        assertSame(data, store.data.get(0));
     }
 }

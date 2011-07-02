@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,32 +21,33 @@ import org.eclipsetrader.core.trading.IBroker;
 
 @XmlRootElement(name = "broker")
 public class MarketBroker {
-	@XmlAttribute(name = "market")
-	@XmlJavaTypeAdapter(MarketAdapter.class)
-	private IMarket market;
 
-	@XmlAttribute(name = "connector")
-	@XmlJavaTypeAdapter(BrokerAdapter.class)
-	private IBroker connector;
+    @XmlAttribute(name = "market")
+    @XmlJavaTypeAdapter(MarketAdapter.class)
+    private IMarket market;
 
-	public MarketBroker() {
-	}
+    @XmlAttribute(name = "connector")
+    @XmlJavaTypeAdapter(BrokerAdapter.class)
+    private IBroker connector;
 
-	public MarketBroker(IMarket market) {
-		this.market = market;
-	}
+    public MarketBroker() {
+    }
 
-	@XmlTransient
-	public IMarket getMarket() {
-		return market;
-	}
+    public MarketBroker(IMarket market) {
+        this.market = market;
+    }
 
-	@XmlTransient
-	public IBroker getConnector() {
-		return connector;
-	}
+    @XmlTransient
+    public IMarket getMarket() {
+        return market;
+    }
 
-	public void setConnector(IBroker connector) {
-		this.connector = connector;
-	}
+    @XmlTransient
+    public IBroker getConnector() {
+        return connector;
+    }
+
+    public void setConnector(IBroker connector) {
+        this.connector = connector;
+    }
 }

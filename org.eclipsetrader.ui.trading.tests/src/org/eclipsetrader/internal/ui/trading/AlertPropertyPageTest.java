@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,93 +30,98 @@ import org.osgi.framework.ServiceReference;
 
 @SuppressWarnings("unchecked")
 public class AlertPropertyPageTest extends TestCase {
-	Shell shell;
-	ImageRegistry imageRegistry;
 
-	BundleContext context;
-	ServiceReference serviceReference;
-	IAlertService alertService;
+    Shell shell;
+    ImageRegistry imageRegistry;
 
-	Security security;
-	IAdaptable element;
-	PropertyPage[] propertyPages;
+    BundleContext context;
+    ServiceReference serviceReference;
+    IAlertService alertService;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		shell = new Shell(Display.getDefault());
-		imageRegistry = new ImageRegistry(Display.getDefault());
+    Security security;
+    IAdaptable element;
+    PropertyPage[] propertyPages;
 
-		security = new Security("Test", null);
-		element = new IAdaptable() {
-			public Object getAdapter(Class adapter) {
-				if (adapter.isAssignableFrom(security.getClass()))
-					return security;
-				return null;
-			}
-		};
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        shell = new Shell(Display.getDefault());
+        imageRegistry = new ImageRegistry(Display.getDefault());
 
-		context = EasyMock.createNiceMock(BundleContext.class);
-		serviceReference = EasyMock.createNiceMock(ServiceReference.class);
-		alertService = EasyMock.createNiceMock(IAlertService.class);
-		EasyMock.expect(context.getServiceReference(IAlertService.class.getName())).andStubReturn(serviceReference);
-		EasyMock.expect(context.getService(serviceReference)).andStubReturn(alertService);
-		EasyMock.expect(alertService.getAlerts(security)).andStubReturn(new IAlert[0]);
+        security = new Security("Test", null);
+        element = new IAdaptable() {
 
-		EasyMock.replay(context, serviceReference, alertService);
-	}
+            @Override
+            public Object getAdapter(Class adapter) {
+                if (adapter.isAssignableFrom(security.getClass())) {
+                    return security;
+                }
+                return null;
+            }
+        };
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		imageRegistry.dispose();
-		shell.dispose();
-	}
+        context = EasyMock.createNiceMock(BundleContext.class);
+        serviceReference = EasyMock.createNiceMock(ServiceReference.class);
+        alertService = EasyMock.createNiceMock(IAlertService.class);
+        EasyMock.expect(context.getServiceReference(IAlertService.class.getName())).andStubReturn(serviceReference);
+        EasyMock.expect(context.getService(serviceReference)).andStubReturn(alertService);
+        EasyMock.expect(alertService.getAlerts(security)).andStubReturn(new IAlert[0]);
 
-	public void testCreateContents() throws Exception {
-		AlertPropertyPage page = new MyAlertPropertyPage();
-		page.createContents(shell);
-	}
+        EasyMock.replay(context, serviceReference, alertService);
+    }
 
-	public void testFillTabsFromSelection() throws Exception {
-		AlertPropertyPage page = new MyAlertPropertyPage();
-		page.createContents(shell);
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        imageRegistry.dispose();
+        shell.dispose();
+    }
 
-		PropertyPage property = new PropertyPage() {
-			@Override
-			protected Control createContents(Composite parent) {
-				return new Composite(parent, SWT.NONE);
-			}
-		};
-		property.setTitle("Page1");
+    public void testCreateContents() throws Exception {
+        AlertPropertyPage page = new MyAlertPropertyPage();
+        page.createContents(shell);
+    }
 
-		page.propertyPages = new PropertyPage[] {
-			property
-		};
+    public void testFillTabsFromSelection() throws Exception {
+        AlertPropertyPage page = new MyAlertPropertyPage();
+        page.createContents(shell);
 
-		page.createTabbedPages();
+        PropertyPage property = new PropertyPage() {
 
-		assertEquals(1, page.folder.getItemCount());
-		assertEquals("Page1", page.folder.getItem(0).getText());
-	}
+            @Override
+            protected Control createContents(Composite parent) {
+                return new Composite(parent, SWT.NONE);
+            }
+        };
+        property.setTitle("Page1");
 
-	class MyAlertPropertyPage extends AlertPropertyPage {
+        page.propertyPages = new PropertyPage[] {
+            property
+        };
 
-		MyAlertPropertyPage() {
-			super(context);
-			setElement(element);
-		}
+        page.createTabbedPages();
 
-		/* (non-Javadoc)
-		 * @see org.eclipsetrader.internal.ui.trading.AlertPropertyPage#getImageRegistry()
-		 */
-		@Override
-		ImageRegistry getImageRegistry() {
-			return imageRegistry;
-		}
-	}
+        assertEquals(1, page.folder.getItemCount());
+        assertEquals("Page1", page.folder.getItem(0).getText());
+    }
+
+    class MyAlertPropertyPage extends AlertPropertyPage {
+
+        MyAlertPropertyPage() {
+            super(context);
+            setElement(element);
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.internal.ui.trading.AlertPropertyPage#getImageRegistry()
+         */
+        @Override
+        ImageRegistry getImageRegistry() {
+            return imageRegistry;
+        }
+    }
 }

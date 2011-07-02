@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,48 +20,50 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "instrument")
 @XmlType(name = "org.eclipsetrader.borsaitalia.Instrument")
 public class Instrument {
-	@XmlAttribute(name = "code")
+
+    @XmlAttribute(name = "code")
     private String code;
 
-	@XmlAttribute(name = "isin")
+    @XmlAttribute(name = "isin")
     private String isin;
 
-	@XmlValue
+    @XmlValue
     private String company;
 
-	@XmlAttribute(name = "currency")
+    @XmlAttribute(name = "currency")
     private String currency;
 
-	public Instrument() {
-	}
-
-	@XmlTransient
-	public String getCode() {
-    	return code;
+    public Instrument() {
     }
 
-	@XmlTransient
-	public String getIsin() {
-    	return isin;
+    @XmlTransient
+    public String getCode() {
+        return code;
     }
 
-	@XmlTransient
-	public String getCompany() {
-    	return company;
+    @XmlTransient
+    public String getIsin() {
+        return isin;
     }
 
-	@XmlTransient
-	public String getCurrency() {
-    	return currency;
+    @XmlTransient
+    public String getCompany() {
+        return company;
     }
 
-	/* (non-Javadoc)
+    @XmlTransient
+    public String getCurrency() {
+        return currency;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-    	if ("".equals(company))
-    		return code;
-	    return company + " (" + code +")";
+        if ("".equals(company)) {
+            return code;
+        }
+        return company + " (" + code + ")";
     }
 }

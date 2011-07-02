@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,137 +35,151 @@ import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class Level2QuickTradeDecorator implements MouseTrackListener, MouseMoveListener, SelectionListener {
-	Table table;
-	ICommandService commandService;
-	IHandlerService handlerService;
 
-	Cursor buyCursor;
-	Cursor sellCursor;
+    Table table;
+    ICommandService commandService;
+    IHandlerService handlerService;
 
-	boolean entered;
+    Cursor buyCursor;
+    Cursor sellCursor;
 
-	public Level2QuickTradeDecorator(Table table, ICommandService commandService, IHandlerService handlerService) {
-		this.table = table;
-		this.commandService = commandService;
-		this.handlerService = handlerService;
+    boolean entered;
 
-		initializeCursors();
+    public Level2QuickTradeDecorator(Table table, ICommandService commandService, IHandlerService handlerService) {
+        this.table = table;
+        this.commandService = commandService;
+        this.handlerService = handlerService;
 
-		table.addMouseTrackListener(this);
-		table.addMouseMoveListener(this);
-		table.addSelectionListener(this);
+        initializeCursors();
 
-		table.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				buyCursor.dispose();
-				sellCursor.dispose();
-			}
-		});
-	}
+        table.addMouseTrackListener(this);
+        table.addMouseMoveListener(this);
+        table.addSelectionListener(this);
 
-	void initializeCursors() {
-		ImageDescriptor sourceDescriptor = UIActivator.getImageDescriptor("icons/pointers/buysell-source.bmp");
-		ImageDescriptor buyMaskDescriptor = UIActivator.getImageDescriptor("icons/pointers/buy-mask.bmp");
-		ImageDescriptor sellMaskDescriptor = UIActivator.getImageDescriptor("icons/pointers/sell-mask.bmp");
+        table.addDisposeListener(new DisposeListener() {
 
-		buyCursor = new Cursor(Display.getCurrent(), sourceDescriptor.getImageData(), buyMaskDescriptor.getImageData(), 15, 7);
-		sellCursor = new Cursor(Display.getCurrent(), sourceDescriptor.getImageData(), sellMaskDescriptor.getImageData(), 15, 7);
-	}
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                buyCursor.dispose();
+                sellCursor.dispose();
+            }
+        });
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseEnter(MouseEvent e) {
-		entered = true;
-	}
+    void initializeCursors() {
+        ImageDescriptor sourceDescriptor = UIActivator.getImageDescriptor("icons/pointers/buysell-source.bmp");
+        ImageDescriptor buyMaskDescriptor = UIActivator.getImageDescriptor("icons/pointers/buy-mask.bmp");
+        ImageDescriptor sellMaskDescriptor = UIActivator.getImageDescriptor("icons/pointers/sell-mask.bmp");
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseMove(MouseEvent e) {
-		int x = 0;
+        buyCursor = new Cursor(Display.getCurrent(), sourceDescriptor.getImageData(), buyMaskDescriptor.getImageData(), 15, 7);
+        sellCursor = new Cursor(Display.getCurrent(), sourceDescriptor.getImageData(), sellMaskDescriptor.getImageData(), 15, 7);
+    }
 
-		if (!entered)
-			return;
-		if (table.getItem(new Point(e.x, e.y)) == null) {
-			table.setCursor(null);
-			return;
-		}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseEnter(MouseEvent e) {
+        entered = true;
+    }
 
-		TableColumn[] column = table.getColumns();
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseMove(MouseEvent e) {
+        int x = 0;
 
-		int i = 0;
-		for (; i < column.length / 2; i++) {
-			if (e.x >= x && e.x <= x + column[i].getWidth()) {
-				if (table.getCursor() != buyCursor)
-					table.setCursor(buyCursor);
-				return;
-			}
-			x += column[i].getWidth();
-		}
-		for (; i < column.length; i++) {
-			if (e.x >= x && e.x <= x + column[i].getWidth()) {
-				if (table.getCursor() != sellCursor)
-					table.setCursor(sellCursor);
-				return;
-			}
-			x += column[i].getWidth();
-		}
-	}
+        if (!entered) {
+            return;
+        }
+        if (table.getItem(new Point(e.x, e.y)) == null) {
+            table.setCursor(null);
+            return;
+        }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseExit(MouseEvent e) {
-		if (entered)
-			table.setCursor(null);
-		entered = false;
-	}
+        TableColumn[] column = table.getColumns();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(org.eclipse.swt.events.MouseEvent)
-	 */
-	public void mouseHover(MouseEvent e) {
-	}
+        int i = 0;
+        for (; i < column.length / 2; i++) {
+            if (e.x >= x && e.x <= x + column[i].getWidth()) {
+                if (table.getCursor() != buyCursor) {
+                    table.setCursor(buyCursor);
+                }
+                return;
+            }
+            x += column[i].getWidth();
+        }
+        for (; i < column.length; i++) {
+            if (e.x >= x && e.x <= x + column[i].getWidth()) {
+                if (table.getCursor() != sellCursor) {
+                    table.setCursor(sellCursor);
+                }
+                return;
+            }
+            x += column[i].getWidth();
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
-	 */
-	public void widgetDefaultSelected(SelectionEvent e) {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseExit(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseExit(MouseEvent e) {
+        if (entered) {
+            table.setCursor(null);
+        }
+        entered = false;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-	 */
-	public void widgetSelected(SelectionEvent e) {
-		IBookEntry entry = null;
-		IOrderSide orderSide = null;
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(org.eclipse.swt.events.MouseEvent)
+     */
+    @Override
+    public void mouseHover(MouseEvent e) {
+    }
 
-		if (table.getCursor() == buyCursor) {
-			entry = (IBookEntry) e.item.getData("bid");
-			orderSide = IOrderSide.Buy;
-		}
-		else if (table.getCursor() == sellCursor) {
-			entry = (IBookEntry) e.item.getData("ask");
-			orderSide = IOrderSide.Sell;
-		}
-		if (entry == null)
-			return;
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
+     */
+    @Override
+    public void widgetDefaultSelected(SelectionEvent e) {
+    }
 
-		Command tradeCommand = commandService.getCommand("org.eclipsetrader.ui.file.trade");
-		if (tradeCommand != null) {
-			try {
-				IParameter limitPrice = tradeCommand.getParameter("limitPrice");
-				IParameter side = tradeCommand.getParameter("side");
-				ParameterizedCommand parmCommand = new ParameterizedCommand(tradeCommand, new Parameterization[] {
-				    new Parameterization(limitPrice, Double.toString(entry.getPrice())),
-				    new Parameterization(side, orderSide.getId())
-				});
+    /* (non-Javadoc)
+     * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+     */
+    @Override
+    public void widgetSelected(SelectionEvent e) {
+        IBookEntry entry = null;
+        IOrderSide orderSide = null;
 
-				handlerService.executeCommand(parmCommand, null);
-			} catch (Exception e1) {
-				UIActivator.log("Error executing org.eclipsetrader.ui.file.trade command", e1);
-			}
-		}
-	}
+        if (table.getCursor() == buyCursor) {
+            entry = (IBookEntry) e.item.getData("bid");
+            orderSide = IOrderSide.Buy;
+        }
+        else if (table.getCursor() == sellCursor) {
+            entry = (IBookEntry) e.item.getData("ask");
+            orderSide = IOrderSide.Sell;
+        }
+        if (entry == null) {
+            return;
+        }
+
+        Command tradeCommand = commandService.getCommand("org.eclipsetrader.ui.file.trade");
+        if (tradeCommand != null) {
+            try {
+                IParameter limitPrice = tradeCommand.getParameter("limitPrice");
+                IParameter side = tradeCommand.getParameter("side");
+                ParameterizedCommand parmCommand = new ParameterizedCommand(tradeCommand, new Parameterization[] {
+                        new Parameterization(limitPrice, Double.toString(entry.getPrice())),
+                        new Parameterization(side, orderSide.getId())
+                });
+
+                handlerService.executeCommand(parmCommand, null);
+            } catch (Exception e1) {
+                UIActivator.log("Error executing org.eclipsetrader.ui.file.trade command", e1);
+            }
+        }
+    }
 }

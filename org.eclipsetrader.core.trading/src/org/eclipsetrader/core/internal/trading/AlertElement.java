@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,29 +24,31 @@ import org.eclipsetrader.core.trading.IAlert;
 
 @XmlRootElement(name = "alert")
 public class AlertElement {
-	@XmlAttribute(name = "id")
-	@XmlJavaTypeAdapter(AlertTypeAdapter.class)
-	private IAlert alert;
 
-	@XmlElementRef
-	private List<ParameterElement> parameters = new ArrayList<ParameterElement>();
+    @XmlAttribute(name = "id")
+    @XmlJavaTypeAdapter(AlertTypeAdapter.class)
+    private IAlert alert;
 
-	public AlertElement() {
-	}
+    @XmlElementRef
+    private List<ParameterElement> parameters = new ArrayList<ParameterElement>();
 
-	public AlertElement(IAlert alert) {
-		this.alert = alert;
+    public AlertElement() {
+    }
 
-		this.parameters = new ArrayList<ParameterElement>();
-		for (Entry<String, Object> entry : alert.getParameters().entrySet())
-			this.parameters.add(ParameterElement.create(entry.getKey(), entry.getValue()));
-	}
+    public AlertElement(IAlert alert) {
+        this.alert = alert;
 
-	public IAlert getAlert() {
-		return alert;
-	}
+        this.parameters = new ArrayList<ParameterElement>();
+        for (Entry<String, Object> entry : alert.getParameters().entrySet()) {
+            this.parameters.add(ParameterElement.create(entry.getKey(), entry.getValue()));
+        }
+    }
 
-	public ParameterElement[] getParameters() {
-		return parameters.toArray(new ParameterElement[parameters.size()]);
-	}
+    public IAlert getAlert() {
+        return alert;
+    }
+
+    public ParameterElement[] getParameters() {
+        return parameters.toArray(new ParameterElement[parameters.size()]);
+    }
 }

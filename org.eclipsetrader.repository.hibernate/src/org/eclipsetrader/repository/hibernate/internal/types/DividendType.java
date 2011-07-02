@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,37 +28,38 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "securities_dividends")
 public class DividendType {
-	@Id
+
+    @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@SuppressWarnings("unused")
-	private String id;
+    @SuppressWarnings("unused")
+    private String id;
 
-	@Column(name = "ex_date")
-	private Date exDate;
+    @Column(name = "ex_date")
+    private Date exDate;
 
-	@Column(name = "value")
-	private Double value;
+    @Column(name = "value")
+    private Double value;
 
-	@ManyToOne
-	@SuppressWarnings("unused")
-	private SecurityStore security;
+    @ManyToOne
+    @SuppressWarnings("unused")
+    private SecurityStore security;
 
-	public DividendType() {
-	}
+    public DividendType() {
+    }
 
-	public DividendType(SecurityStore security, IDividend dividend) {
-		this.security = security;
-		this.exDate = dividend.getExDate();
-		this.value = dividend.getValue();
-	}
+    public DividendType(SecurityStore security, IDividend dividend) {
+        this.security = security;
+        this.exDate = dividend.getExDate();
+        this.value = dividend.getValue();
+    }
 
-	public IDividend getDividend() {
-		return new Dividend(exDate, value);
-	}
+    public IDividend getDividend() {
+        return new Dividend(exDate, value);
+    }
 
-	public Date getExDate() {
-    	return exDate;
+    public Date getExDate() {
+        return exDate;
     }
 }

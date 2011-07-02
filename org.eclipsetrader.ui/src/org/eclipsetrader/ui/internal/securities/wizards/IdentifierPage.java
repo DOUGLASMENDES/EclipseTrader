@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,101 +31,110 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class IdentifierPage extends WizardPage {
-	private Text name;
-	private Label propertiesLabel;
-	private FeedPropertiesControl properties;
 
-	private IFeedIdentifier feedIdentifier;
+    private Text name;
+    private Label propertiesLabel;
+    private FeedPropertiesControl properties;
 
-	private ModifyListener modifyListener = new ModifyListener() {
-		public void modifyText(ModifyEvent e) {
-			updateSymbolSelection();
-			if (isCurrentPage())
-				getContainer().updateButtons();
-		}
-	};
+    private IFeedIdentifier feedIdentifier;
 
-	public IdentifierPage() {
-		super("identifier", "Identifier", null);
-		setDescription("Assign a feed identifier to the Security");
-	}
+    private ModifyListener modifyListener = new ModifyListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(2, false));
-		setControl(content);
-		initializeDialogUnits(content);
+        @Override
+        public void modifyText(ModifyEvent e) {
+            updateSymbolSelection();
+            if (isCurrentPage()) {
+                getContainer().updateButtons();
+            }
+        }
+    };
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Identifier name:");
-		name = new Text(content, SWT.BORDER);
-		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		name.addModifyListener(modifyListener);
+    public IdentifierPage() {
+        super("identifier", "Identifier", null);
+        setDescription("Assign a feed identifier to the Security");
+    }
 
-		propertiesLabel = new Label(content, SWT.NONE);
-		propertiesLabel.setText("Properties:");
-		propertiesLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		properties = new FeedPropertiesControl(content);
-		properties.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		((GridData) properties.getControl().getLayoutData()).heightHint = properties.getTree().getItemHeight() * 15;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(2, false));
+        setControl(content);
+        initializeDialogUnits(content);
 
-		updateSymbolSelection();
-	}
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Identifier name:");
+        name = new Text(content, SWT.BORDER);
+        name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        name.addModifyListener(modifyListener);
 
-	/* (non-Javadoc)
+        propertiesLabel = new Label(content, SWT.NONE);
+        propertiesLabel.setText("Properties:");
+        propertiesLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        properties = new FeedPropertiesControl(content);
+        properties.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        ((GridData) properties.getControl().getLayoutData()).heightHint = properties.getTree().getItemHeight() * 15;
+
+        updateSymbolSelection();
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
      */
     @Override
     public void setVisible(boolean visible) {
-	    name.setFocus();
-	    super.setVisible(visible);
+        name.setFocus();
+        super.setVisible(visible);
     }
 
-	protected IMarket[] getMarkets() {
-		BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-		ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-		if (serviceReference != null) {
-			IMarketService marketService = (IMarketService) context.getService(serviceReference);
-			return marketService.getMarkets();
-		}
-		return new IMarket[0];
-	}
+    protected IMarket[] getMarkets() {
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+        ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
+        if (serviceReference != null) {
+            IMarketService marketService = (IMarketService) context.getService(serviceReference);
+            return marketService.getMarkets();
+        }
+        return new IMarket[0];
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
      */
     @Override
     public boolean isPageComplete() {
-	    return true;
+        return true;
     }
 
     protected void updateSymbolSelection() {
-		feedIdentifier = getFeedIdentifierFromSymbol(name.getText());
-		if (feedIdentifier != null)
-			properties.setProperties((FeedProperties) feedIdentifier.getAdapter(FeedProperties.class));
-		else
-			properties.setProperties(null);
+        feedIdentifier = getFeedIdentifierFromSymbol(name.getText());
+        if (feedIdentifier != null) {
+            properties.setProperties((FeedProperties) feedIdentifier.getAdapter(FeedProperties.class));
+        }
+        else {
+            properties.setProperties(null);
+        }
 
-		boolean hasIdentifier = !name.getText().equals("");
-		propertiesLabel.setEnabled(hasIdentifier);
-		properties.getTree().setEnabled(hasIdentifier);
+        boolean hasIdentifier = !name.getText().equals("");
+        propertiesLabel.setEnabled(hasIdentifier);
+        properties.getTree().setEnabled(hasIdentifier);
     }
 
     protected IFeedIdentifier getFeedIdentifierFromSymbol(String s) {
-		return UIActivator.getDefault().getRepositoryService().getFeedIdentifierFromSymbol(s);
+        return UIActivator.getDefault().getRepositoryService().getFeedIdentifierFromSymbol(s);
     }
 
-	public IFeedIdentifier getFeedIdentifier() {
-		if (!name.getText().equals("")) {
-			if (feedIdentifier == null)
-				feedIdentifier = new FeedIdentifier(name.getText(), new FeedProperties());
-			FeedProperties feedProperties = properties.getProperties();
-			if (feedIdentifier instanceof FeedIdentifier)
-				((FeedIdentifier) feedIdentifier).setProperties(feedProperties);
-		}
-    	return feedIdentifier;
+    public IFeedIdentifier getFeedIdentifier() {
+        if (!name.getText().equals("")) {
+            if (feedIdentifier == null) {
+                feedIdentifier = new FeedIdentifier(name.getText(), new FeedProperties());
+            }
+            FeedProperties feedProperties = properties.getProperties();
+            if (feedIdentifier instanceof FeedIdentifier) {
+                ((FeedIdentifier) feedIdentifier).setProperties(feedProperties);
+            }
+        }
+        return feedIdentifier;
     }
 }

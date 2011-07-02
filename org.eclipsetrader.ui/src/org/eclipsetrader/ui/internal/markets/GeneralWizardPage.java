@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,60 +23,66 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipsetrader.core.internal.markets.MarketService;
 
 public class GeneralWizardPage extends WizardPage {
-	Text name;
-	MarketService marketService;
 
-	public GeneralWizardPage(MarketService marketService) {
-		super("general", "General", null);
-		setDescription("Set the market's name");
+    Text name;
+    MarketService marketService;
 
-		this.marketService = marketService;
-	}
+    public GeneralWizardPage(MarketService marketService) {
+        super("general", "General", null);
+        setDescription("Set the market's name");
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(2, false));
-		setControl(content);
+        this.marketService = marketService;
+    }
 
-		initializeDialogUnits(parent);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(2, false));
+        setControl(content);
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Name");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-		name = new Text(content, SWT.BORDER);
-		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		name.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				getContainer().updateButtons();
-			}
-		});
+        initializeDialogUnits(parent);
 
-		name.setFocus();
-	}
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Name");
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+        name = new Text(content, SWT.BORDER);
+        name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        name.addModifyListener(new ModifyListener() {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
-	 */
-	@Override
-	public boolean isPageComplete() {
-		if (name.getText().equals(""))
-			return false;
+            @Override
+            public void modifyText(ModifyEvent e) {
+                getContainer().updateButtons();
+            }
+        });
 
-		if (marketService.getMarket(name.getText()) != null) {
-			setErrorMessage("Another market with the same name exists. Choose another name.");
-			return false;
-		}
+        name.setFocus();
+    }
 
-		if (getErrorMessage() != null)
-			setErrorMessage(null);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
+     */
+    @Override
+    public boolean isPageComplete() {
+        if (name.getText().equals("")) {
+            return false;
+        }
 
-		return true;
-	}
+        if (marketService.getMarket(name.getText()) != null) {
+            setErrorMessage("Another market with the same name exists. Choose another name.");
+            return false;
+        }
 
-	public String getMarketName() {
-		return name.getText();
-	}
+        if (getErrorMessage() != null) {
+            setErrorMessage(null);
+        }
+
+        return true;
+    }
+
+    public String getMarketName() {
+        return name.getText();
+    }
 }

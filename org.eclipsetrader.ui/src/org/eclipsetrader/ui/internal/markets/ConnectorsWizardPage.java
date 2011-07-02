@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -37,77 +38,80 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class ConnectorsWizardPage extends WizardPage {
-	ComboViewer liveFeed;
-	private List<Object> connectors = new ArrayList<Object>();
 
-	public ConnectorsWizardPage() {
-		super("connectors", "Connectors", null);
-		setDescription("Select the connectors used by this market");
-	}
+    ComboViewer liveFeed;
+    private List<Object> connectors = new ArrayList<Object>();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		Composite content = new Composite(parent, SWT.NONE);
-		content.setLayout(new GridLayout(2, false));
-		setControl(content);
+    public ConnectorsWizardPage() {
+        super("connectors", "Connectors", null);
+        setDescription("Select the connectors used by this market");
+    }
 
-		initializeDialogUnits(parent);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    @Override
+    public void createControl(Composite parent) {
+        Composite content = new Composite(parent, SWT.NONE);
+        content.setLayout(new GridLayout(2, false));
+        setControl(content);
 
-		Label label = new Label(content, SWT.NONE);
-		label.setText("Live Feed");
-		label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
-		liveFeed = new ComboViewer(content, SWT.READ_ONLY);
-		liveFeed.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		liveFeed.getCombo().setVisibleItemCount(15);
-		liveFeed.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				if (!(element instanceof IFeedConnector)) {
-					IFeedConnector defaultConnector = CoreActivator.getDefault().getDefaultConnector();
-					return NLS.bind("- Default ({0}) -", new Object[] {
-						defaultConnector != null ? defaultConnector.getName() : "None",
-					});
-				}
-				return ((IFeedConnector) element).getName();
-			}
-		});
-		liveFeed.setSorter(new ViewerSorter());
-		liveFeed.setContentProvider(new ArrayContentProvider());
+        initializeDialogUnits(parent);
 
-		connectors.add(new Object());
-		connectors.addAll(Arrays.asList(getFeedService().getConnectors()));
-		liveFeed.setInput(connectors.toArray());
-		liveFeed.setSelection(new StructuredSelection(connectors.get(0)));
+        Label label = new Label(content, SWT.NONE);
+        label.setText("Live Feed");
+        label.setLayoutData(new GridData(convertHorizontalDLUsToPixels(80), SWT.DEFAULT));
+        liveFeed = new ComboViewer(content, SWT.READ_ONLY);
+        liveFeed.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        liveFeed.getCombo().setVisibleItemCount(15);
+        liveFeed.setLabelProvider(new LabelProvider() {
 
-		liveFeed.getControl().setFocus();
-	}
+            @Override
+            public String getText(Object element) {
+                if (!(element instanceof IFeedConnector)) {
+                    IFeedConnector defaultConnector = CoreActivator.getDefault().getDefaultConnector();
+                    return NLS.bind("- Default ({0}) -", new Object[] {
+                        defaultConnector != null ? defaultConnector.getName() : "None",
+                    });
+                }
+                return ((IFeedConnector) element).getName();
+            }
+        });
+        liveFeed.setSorter(new ViewerSorter());
+        liveFeed.setContentProvider(new ArrayContentProvider());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
-	 */
-	@Override
-	public boolean isPageComplete() {
-		return true;
-	}
+        connectors.add(new Object());
+        connectors.addAll(Arrays.asList(getFeedService().getConnectors()));
+        liveFeed.setInput(connectors.toArray());
+        liveFeed.setSelection(new StructuredSelection(connectors.get(0)));
 
-	public IFeedConnector getLiveFeedConnector() {
-		Object s = ((IStructuredSelection) liveFeed.getSelection()).getFirstElement();
-		return s instanceof IFeedConnector ? (IFeedConnector) s : null;
-	}
+        liveFeed.getControl().setFocus();
+    }
 
-	protected IFeedService getFeedService() {
-		try {
-			BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
-			IFeedService service = (IFeedService) context.getService(serviceReference);
-			context.ungetService(serviceReference);
-			return service;
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-			UIActivator.getDefault().getLog().log(status);
-		}
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
+     */
+    @Override
+    public boolean isPageComplete() {
+        return true;
+    }
+
+    public IFeedConnector getLiveFeedConnector() {
+        Object s = ((IStructuredSelection) liveFeed.getSelection()).getFirstElement();
+        return s instanceof IFeedConnector ? (IFeedConnector) s : null;
+    }
+
+    protected IFeedService getFeedService() {
+        try {
+            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+            IFeedService service = (IFeedService) context.getService(serviceReference);
+            context.ungetService(serviceReference);
+            return service;
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+            UIActivator.getDefault().getLog().log(status);
+        }
+        return null;
+    }
 }

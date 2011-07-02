@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,39 +17,43 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IExecutableExtensionFactory;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
 
 public class NewsProviderFactory implements IExecutableExtensionFactory, IExecutableExtension {
-	private static NewsProvider provider;
 
-	private String id;
+    private static NewsProvider provider;
+
+    private String id;
     private String name;
 
-	public NewsProviderFactory() {
-	}
-
-	/* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
+    public NewsProviderFactory() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
-	 */
-	public Object create() throws CoreException {
-		if (provider == null) {
-			provider = new NewsProvider(id, name);
-			try {
-	            provider.startUp();
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+     */
+    @Override
+    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+        id = config.getAttribute("id");
+        name = config.getAttribute("name");
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IExecutableExtensionFactory#create()
+     */
+    @Override
+    public Object create() throws CoreException {
+        if (provider == null) {
+            provider = new NewsProvider(id, name);
+            try {
+                provider.startUp();
             } catch (JAXBException e) {
-				Status status = new Status(Status.WARNING, YahooActivator.PLUGIN_ID, 0, "Error initializing news provider", e);
-	            throw new CoreException(status);
+                Status status = new Status(IStatus.WARNING, YahooActivator.PLUGIN_ID, 0, "Error initializing news provider", e);
+                throw new CoreException(status);
             }
-		}
-		return provider;
-	}
+        }
+        return provider;
+    }
 }

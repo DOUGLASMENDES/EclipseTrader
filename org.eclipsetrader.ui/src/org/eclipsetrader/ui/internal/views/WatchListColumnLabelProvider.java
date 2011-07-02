@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,163 +28,167 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IDecoratorManager;
 
 public class WatchListColumnLabelProvider extends ColumnLabelProvider {
-	private WatchListViewColumn column;
 
-	private ILabelDecorator labelDecorator;
-	private IColorDecorator colorDecorator;
+    private WatchListViewColumn column;
 
-	private Color evenRowsColor;
-	private Color oddRowsColor;
-	private Color tickBackgroundColor;
-	private Color[] tickOddRowsFade;
-	private Color[] tickEvenRowsFade;
+    private ILabelDecorator labelDecorator;
+    private IColorDecorator colorDecorator;
 
-	private Map<WatchListViewItem, Color> colorMap = new HashMap<WatchListViewItem, Color>();
+    private Color evenRowsColor;
+    private Color oddRowsColor;
+    private Color tickBackgroundColor;
+    private Color[] tickOddRowsFade;
+    private Color[] tickEvenRowsFade;
 
-	public WatchListColumnLabelProvider(WatchListViewColumn column, IDecoratorManager decoratorManager) {
-		this.column = column;
-		this.labelDecorator = decoratorManager.getLabelDecorator();
-		if (this.labelDecorator instanceof IColorDecorator)
-			this.colorDecorator = (IColorDecorator) this.labelDecorator;
-	}
+    private Map<WatchListViewItem, Color> colorMap = new HashMap<WatchListViewItem, Color>();
 
-	public void setColors(Color evenRowsColor, Color oddRowsColor, Color tickBackgroundColor, Color[] tickEvenRowsFade, Color[] tickOddRowsFade) {
-		this.evenRowsColor = evenRowsColor;
-		this.oddRowsColor = oddRowsColor;
-		this.tickBackgroundColor = tickBackgroundColor;
-		this.tickEvenRowsFade = tickEvenRowsFade;
-		this.tickOddRowsFade = tickOddRowsFade;
-	}
+    public WatchListColumnLabelProvider(WatchListViewColumn column, IDecoratorManager decoratorManager) {
+        this.column = column;
+        this.labelDecorator = decoratorManager.getLabelDecorator();
+        if (this.labelDecorator instanceof IColorDecorator) {
+            this.colorDecorator = (IColorDecorator) this.labelDecorator;
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.BaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-	 */
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		return column.getDataProviderFactory().getId().equals(property);
-	}
+    public void setColors(Color evenRowsColor, Color oddRowsColor, Color tickBackgroundColor, Color[] tickEvenRowsFade, Color[] tickOddRowsFade) {
+        this.evenRowsColor = evenRowsColor;
+        this.oddRowsColor = oddRowsColor;
+        this.tickBackgroundColor = tickBackgroundColor;
+        this.tickEvenRowsFade = tickEvenRowsFade;
+        this.tickOddRowsFade = tickOddRowsFade;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ColumnLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
-	 */
-	@Override
-	public void update(ViewerCell cell) {
-		WatchListViewItem viewItem = (WatchListViewItem) cell.getElement();
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.BaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+     */
+    @Override
+    public boolean isLabelProperty(Object element, String property) {
+        return column.getDataProviderFactory().getId().equals(property);
+    }
 
-		IAdaptable value = viewItem.getValue(column.getDataProviderFactory().getId());
-		if (value != null) {
-			String s = (String) value.getAdapter(String.class);
-			if (s != null && !cell.getText().equals(s))
-				cell.setText(s);
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ColumnLabelProvider#update(org.eclipse.jface.viewers.ViewerCell)
+     */
+    @Override
+    public void update(ViewerCell cell) {
+        WatchListViewItem viewItem = (WatchListViewItem) cell.getElement();
 
-			Image image = (Image) value.getAdapter(Image.class);
-			cell.setImage(image);
+        IAdaptable value = viewItem.getValue(column.getDataProviderFactory().getId());
+        if (value != null) {
+            String s = (String) value.getAdapter(String.class);
+            if (s != null && !cell.getText().equals(s)) {
+                cell.setText(s);
+            }
 
-			Color color = (Color) value.getAdapter(Color.class);
-			cell.setForeground(color);
+            Image image = (Image) value.getAdapter(Image.class);
+            cell.setImage(image);
 
-			Font font = (Font) value.getAdapter(Font.class);
-			cell.setFont(font);
-		}
-		else {
-			cell.setText("");
-			cell.setImage(null);
-			cell.setForeground(null);
-			cell.setFont(null);
-		}
+            Color color = (Color) value.getAdapter(Color.class);
+            cell.setForeground(color);
 
-		Color decoratedBackgroundColor = colorMap.get(viewItem);
-		boolean ready = "*".equals(labelDecorator.decorateText("", viewItem));
-		if (ready) {
-			if (colorDecorator != null) {
-				decoratedBackgroundColor = colorDecorator.decorateBackground(viewItem);
-				colorMap.put(viewItem, decoratedBackgroundColor);
-			}
-		}
-		if (decoratedBackgroundColor != null) {
-			cell.setBackground(decoratedBackgroundColor);
-			return;
-		}
+            Font font = (Font) value.getAdapter(Font.class);
+            cell.setFont(font);
+        }
+        else {
+            cell.setText("");
+            cell.setImage(null);
+            cell.setForeground(null);
+            cell.setFont(null);
+        }
 
-		if (cell.getImage() == null)
-			updateBackground(cell);
-	}
+        Color decoratedBackgroundColor = colorMap.get(viewItem);
+        boolean ready = "*".equals(labelDecorator.decorateText("", viewItem));
+        if (ready) {
+            if (colorDecorator != null) {
+                decoratedBackgroundColor = colorDecorator.decorateBackground(viewItem);
+                colorMap.put(viewItem, decoratedBackgroundColor);
+            }
+        }
+        if (decoratedBackgroundColor != null) {
+            cell.setBackground(decoratedBackgroundColor);
+            return;
+        }
 
-	protected void updateBackground(ViewerCell cell) {
-		WatchListViewItem viewItem = (WatchListViewItem) cell.getElement();
-		Integer timer = viewItem.getUpdateTime(column.getDataProviderFactory().getId());
+        if (cell.getImage() == null) {
+            updateBackground(cell);
+        }
+    }
 
-		if (cell.getControl() instanceof Table && cell.getItem() instanceof TableItem) {
-			int rowIndex = ((Table) cell.getControl()).indexOf((TableItem) cell.getItem());
-			cell.setBackground((rowIndex & 1) != 0 ? oddRowsColor : evenRowsColor);
-			if (timer != null) {
-				if (timer > 0) {
-					switch (timer) {
-						case 4:
-							cell.setBackground((rowIndex & 1) != 0 ? tickOddRowsFade[0] : tickEvenRowsFade[0]);
-							break;
-						case 3:
-							cell.setBackground((rowIndex & 1) != 0 ? tickOddRowsFade[1] : tickEvenRowsFade[1]);
-							break;
-						case 2:
-							cell.setBackground((rowIndex & 1) != 0 ? tickOddRowsFade[2] : tickEvenRowsFade[2]);
-							break;
-						case 1:
-							break;
-						default:
-							cell.setBackground(tickBackgroundColor);
-							break;
-					}
-				}
-			}
-		}
-		else {
-			cell.setBackground(evenRowsColor);
-			if (timer > 0) {
-				switch (timer) {
-					case 4:
-						cell.setBackground(tickEvenRowsFade[0]);
-						break;
-					case 3:
-						cell.setBackground(tickEvenRowsFade[1]);
-						break;
-					case 2:
-						cell.setBackground(tickEvenRowsFade[2]);
-						break;
-					case 1:
-						break;
-					default:
-						cell.setBackground(tickBackgroundColor);
-						break;
-				}
-			}
-		}
-	}
+    protected void updateBackground(ViewerCell cell) {
+        WatchListViewItem viewItem = (WatchListViewItem) cell.getElement();
+        Integer timer = viewItem.getUpdateTime(column.getDataProviderFactory().getId());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.BaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-		labelDecorator.addListener(listener);
-		super.addListener(listener);
-	}
+        if (cell.getControl() instanceof Table && cell.getItem() instanceof TableItem) {
+            int rowIndex = ((Table) cell.getControl()).indexOf((TableItem) cell.getItem());
+            cell.setBackground((rowIndex & 1) != 0 ? oddRowsColor : evenRowsColor);
+            if (timer != null) {
+                if (timer > 0) {
+                    switch (timer) {
+                        case 4:
+                            cell.setBackground((rowIndex & 1) != 0 ? tickOddRowsFade[0] : tickEvenRowsFade[0]);
+                            break;
+                        case 3:
+                            cell.setBackground((rowIndex & 1) != 0 ? tickOddRowsFade[1] : tickEvenRowsFade[1]);
+                            break;
+                        case 2:
+                            cell.setBackground((rowIndex & 1) != 0 ? tickOddRowsFade[2] : tickEvenRowsFade[2]);
+                            break;
+                        case 1:
+                            break;
+                        default:
+                            cell.setBackground(tickBackgroundColor);
+                            break;
+                    }
+                }
+            }
+        }
+        else {
+            cell.setBackground(evenRowsColor);
+            if (timer > 0) {
+                switch (timer) {
+                    case 4:
+                        cell.setBackground(tickEvenRowsFade[0]);
+                        break;
+                    case 3:
+                        cell.setBackground(tickEvenRowsFade[1]);
+                        break;
+                    case 2:
+                        cell.setBackground(tickEvenRowsFade[2]);
+                        break;
+                    case 1:
+                        break;
+                    default:
+                        cell.setBackground(tickBackgroundColor);
+                        break;
+                }
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.BaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-		labelDecorator.removeListener(listener);
-		super.removeListener(listener);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.BaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
+     */
+    @Override
+    public void addListener(ILabelProviderListener listener) {
+        labelDecorator.addListener(listener);
+        super.addListener(listener);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
-	 */
-	@Override
-	public void dispose() {
-		labelDecorator.dispose();
-		super.dispose();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.BaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
+     */
+    @Override
+    public void removeListener(ILabelProviderListener listener) {
+        labelDecorator.removeListener(listener);
+        super.removeListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
+     */
+    @Override
+    public void dispose() {
+        labelDecorator.dispose();
+        super.dispose();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,68 +32,77 @@ import org.eclipsetrader.ui.internal.markets.GeneralPage;
 @SuppressWarnings("restriction")
 public class MarketPropertiesHandler extends AbstractHandler {
 
-	public MarketPropertiesHandler() {
-	}
+    public MarketPropertiesHandler() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-	 */
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
-		IWorkbenchSite site = HandlerUtil.getActiveSite(event);
+    /* (non-Javadoc)
+     * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+     */
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
+        IWorkbenchSite site = HandlerUtil.getActiveSite(event);
 
-		if (selection != null && !selection.isEmpty()) {
-			Object target = selection.getFirstElement();
-			if (target instanceof IAdaptable)
-				target = ((IAdaptable) target).getAdapter(Market.class);
-			if (target instanceof Market)
-				openPropertiesDialog(site.getShell(), getWrappedElement(target));
-		}
+        if (selection != null && !selection.isEmpty()) {
+            Object target = selection.getFirstElement();
+            if (target instanceof IAdaptable) {
+                target = ((IAdaptable) target).getAdapter(Market.class);
+            }
+            if (target instanceof Market) {
+                openPropertiesDialog(site.getShell(), getWrappedElement(target));
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	protected void openPropertiesDialog(Shell shell, final IAdaptable adaptableElement) {
-		if (adaptableElement.getAdapter(Market.class) != null) {
-			PropertyPageManager pageManager = new PropertyPageManager();
-			pageManager.addToRoot(new PriorityPreferenceNode("org.eclipsetrader.ui.propertypages.markets.general", new GeneralPage(), -1));
-			PropertyPageContributorManager.getManager().contribute(pageManager, adaptableElement);
+    protected void openPropertiesDialog(Shell shell, final IAdaptable adaptableElement) {
+        if (adaptableElement.getAdapter(Market.class) != null) {
+            PropertyPageManager pageManager = new PropertyPageManager();
+            pageManager.addToRoot(new PriorityPreferenceNode("org.eclipsetrader.ui.propertypages.markets.general", new GeneralPage(), -1));
+            PropertyPageContributorManager.getManager().contribute(pageManager, adaptableElement);
 
-			for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
-				IPreferenceNode node = (IPreferenceNode) nodeObj;
-				if (node.getPage() instanceof PropertyPage)
-					((PropertyPage) node.getPage()).setElement(adaptableElement);
-			}
+            for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {
+                IPreferenceNode node = (IPreferenceNode) nodeObj;
+                if (node.getPage() instanceof PropertyPage) {
+                    ((PropertyPage) node.getPage()).setElement(adaptableElement);
+                }
+            }
 
-			FilteredPreferenceDialog dlg = new FilteredPreferenceDialog(shell, pageManager) {
-				@Override
-				protected void configureShell(Shell newShell) {
-					super.configureShell(newShell);
-					Market market = (Market) adaptableElement.getAdapter(Market.class);
-					newShell.setText("Properties for " + market.getName());
-				}
-			};
-			dlg.open();
-		}
-	}
+            FilteredPreferenceDialog dlg = new FilteredPreferenceDialog(shell, pageManager) {
 
-	/**
-	 * Wraps the element object to an IAdaptable instance, if necessary.
-	 *
-	 * @param element the object to wrap
-	 * @return an IAdaptable instance that wraps the object
-	 */
-	protected IAdaptable getWrappedElement(final Object element) {
-		if (element instanceof IAdaptable)
-			return (IAdaptable) element;
+                @Override
+                protected void configureShell(Shell newShell) {
+                    super.configureShell(newShell);
+                    Market market = (Market) adaptableElement.getAdapter(Market.class);
+                    newShell.setText("Properties for " + market.getName());
+                }
+            };
+            dlg.open();
+        }
+    }
 
-		return new IAdaptable() {
-			@SuppressWarnings("unchecked")
-			public Object getAdapter(Class adapter) {
-				if (adapter.isAssignableFrom(element.getClass()))
-					return element;
-				return null;
-			}
-		};
-	}
+    /**
+     * Wraps the element object to an IAdaptable instance, if necessary.
+     *
+     * @param element the object to wrap
+     * @return an IAdaptable instance that wraps the object
+     */
+    protected IAdaptable getWrappedElement(final Object element) {
+        if (element instanceof IAdaptable) {
+            return (IAdaptable) element;
+        }
+
+        return new IAdaptable() {
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object getAdapter(Class adapter) {
+                if (adapter.isAssignableFrom(element.getClass())) {
+                    return element;
+                }
+                return null;
+            }
+        };
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,32 +22,33 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "properties")
 public class SecurityPropertyType {
-	@Id
+
+    @Id
     @Column(name = "id", length = 32)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@SuppressWarnings("unused")
-	private String id;
+    @SuppressWarnings("unused")
+    private String id;
 
-	@Column(name = "name")
-	private String name;
+    @Column(name = "name")
+    private String name;
 
-	@Column(name = "value")
-	private String value;
+    @Column(name = "value")
+    private String value;
 
-	public SecurityPropertyType() {
-	}
-
-	public SecurityPropertyType(String name, String value) {
-	    this.name = name;
-	    this.value = value;
+    public SecurityPropertyType() {
     }
 
-	public String getName() {
-    	return name;
+    public SecurityPropertyType(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
-	public String getValue() {
-    	return value;
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

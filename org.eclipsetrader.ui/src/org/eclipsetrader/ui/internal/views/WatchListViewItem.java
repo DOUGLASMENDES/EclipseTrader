@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,173 +30,185 @@ import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IWatchListElement;
 
 public class WatchListViewItem extends PlatformObject {
-	private IWatchListElement reference;
 
-	private ISecurity security;
-	private Holding holding;
+    private IWatchListElement reference;
 
-	private ITrade trade;
-	private IQuote quote;
-	private ITodayOHL todayOHL;
-	private ILastClose lastClose;
-	private IBook book;
-	private MarketPricingEnvironment pricingEnvironment;
+    private ISecurity security;
+    private Holding holding;
 
-	private Map<String, IDataProvider> dataProviders = new HashMap<String, IDataProvider>();
-	private Map<String, IAdaptable> values = new HashMap<String, IAdaptable>();
-	private Map<String, Integer> updateTime = new HashMap<String, Integer>();
+    private ITrade trade;
+    private IQuote quote;
+    private ITodayOHL todayOHL;
+    private ILastClose lastClose;
+    private IBook book;
+    private MarketPricingEnvironment pricingEnvironment;
 
-	public WatchListViewItem() {
-	}
+    private Map<String, IDataProvider> dataProviders = new HashMap<String, IDataProvider>();
+    private Map<String, IAdaptable> values = new HashMap<String, IAdaptable>();
+    private Map<String, Integer> updateTime = new HashMap<String, Integer>();
 
-	public WatchListViewItem(IWatchListElement reference) {
-	    this(reference.getSecurity(), reference.getPosition(), reference.getPurchasePrice(), reference.getDate());
-	    this.reference = reference;
+    public WatchListViewItem() {
     }
 
-	public WatchListViewItem(ISecurity security) {
-	    this(security, null, null, null);
+    public WatchListViewItem(IWatchListElement reference) {
+        this(reference.getSecurity(), reference.getPosition(), reference.getPurchasePrice(), reference.getDate());
+        this.reference = reference;
     }
 
-	public WatchListViewItem(ISecurity security, Long position, Double purchasePrice) {
-	    this(security, position, purchasePrice, null);
+    public WatchListViewItem(ISecurity security) {
+        this(security, null, null, null);
     }
 
-	public WatchListViewItem(ISecurity security, Long position, Double purchasePrice, Date date) {
-	    this.security = security;
-	    this.holding = new Holding(security, position, purchasePrice, date);
+    public WatchListViewItem(ISecurity security, Long position, Double purchasePrice) {
+        this(security, position, purchasePrice, null);
     }
 
-	public ISecurity getSecurity() {
-		return security;
-	}
-
-	public Date getDate() {
-		return holding != null ? holding.getDate() : null;
-	}
-
-	public Long getPosition() {
-		return holding != null ? holding.getPosition() : null;
-	}
-
-	public Double getPurchasePrice() {
-		return holding != null ? holding.getPurchasePrice() : null;
-	}
-
-	public IWatchListElement getReference() {
-    	return reference;
+    public WatchListViewItem(ISecurity security, Long position, Double purchasePrice, Date date) {
+        this.security = security;
+        this.holding = new Holding(security, position, purchasePrice, date);
     }
 
-	public IDataProvider getDataProvider(String propertyName) {
-		return dataProviders.get(propertyName);
-	}
-
-	public void setDataProvider(String propertyName, IDataProvider value) {
-    	this.dataProviders.put(propertyName, value);
+    public ISecurity getSecurity() {
+        return security;
     }
 
-	public void clearDataProvider(String propertyName) {
-    	this.dataProviders.remove(propertyName);
+    public Date getDate() {
+        return holding != null ? holding.getDate() : null;
     }
 
-	public IAdaptable getValue(String propertyName) {
-		return values.get(propertyName);
-	}
-
-	public void setValue(String propertyName, IAdaptable value) {
-    	this.values.put(propertyName, value);
+    public Long getPosition() {
+        return holding != null ? holding.getPosition() : null;
     }
 
-	public void clearValue(String propertyName) {
-		values.remove(propertyName);
-		updateTime.remove(propertyName);
-	}
-
-	public String[] getValueProperties() {
-		Set<String> s = values.keySet();
-		return s.toArray(new String[s.size()]);
-	}
-
-	public Integer getUpdateTime(String propertyName) {
-		return updateTime.get(propertyName);
-	}
-
-	public void setUpdateTime(String propertyName, Integer value) {
-    	this.updateTime.put(propertyName, value);
+    public Double getPurchasePrice() {
+        return holding != null ? holding.getPurchasePrice() : null;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Class adapter) {
-		if (security != null) {
-			Object obj = security.getAdapter(adapter);
-			if (obj != null)
-				return obj;
-		}
-
-		if (adapter.isAssignableFrom(Holding.class))
-			return holding;
-
-		if (adapter.isAssignableFrom(ITrade.class))
-			return trade;
-		if (adapter.isAssignableFrom(IQuote.class))
-			return quote;
-		if (adapter.isAssignableFrom(ITodayOHL.class))
-			return todayOHL;
-		if (adapter.isAssignableFrom(ILastClose.class))
-			return lastClose;
-		if (adapter.isAssignableFrom(IBook.class))
-			return book;
-		if (adapter.isAssignableFrom(MarketPricingEnvironment.class))
-			return pricingEnvironment;
-
-		if (adapter.isAssignableFrom(getClass()))
-			return this;
-
-		if (reference != null) {
-			Object obj = reference.getAdapter(adapter);
-			if (obj != null)
-				return obj;
-		}
-
-		if (adapter.isAssignableFrom(getClass()))
-			return this;
-
-		return super.getAdapter(adapter);
-	}
-
-	public void setTrade(ITrade trade) {
-    	this.trade = trade;
+    public IWatchListElement getReference() {
+        return reference;
     }
 
-	public void setQuote(IQuote quote) {
-    	this.quote = quote;
+    public IDataProvider getDataProvider(String propertyName) {
+        return dataProviders.get(propertyName);
     }
 
-	public void setTodayOHL(ITodayOHL todayOHL) {
-    	this.todayOHL = todayOHL;
+    public void setDataProvider(String propertyName, IDataProvider value) {
+        this.dataProviders.put(propertyName, value);
     }
 
-	public void setLastClose(ILastClose lastClose) {
-    	this.lastClose = lastClose;
+    public void clearDataProvider(String propertyName) {
+        this.dataProviders.remove(propertyName);
     }
 
-	public IBook getBook() {
-    	return book;
+    public IAdaptable getValue(String propertyName) {
+        return values.get(propertyName);
     }
 
-	public void setBook(IBook book) {
-    	this.book = book;
+    public void setValue(String propertyName, IAdaptable value) {
+        this.values.put(propertyName, value);
     }
 
-	public MarketPricingEnvironment getPricingEnvironment() {
-    	return pricingEnvironment;
+    public void clearValue(String propertyName) {
+        values.remove(propertyName);
+        updateTime.remove(propertyName);
     }
 
-	public void setPricingEnvironment(MarketPricingEnvironment pricingEnvironment) {
-    	this.pricingEnvironment = pricingEnvironment;
+    public String[] getValueProperties() {
+        Set<String> s = values.keySet();
+        return s.toArray(new String[s.size()]);
+    }
+
+    public Integer getUpdateTime(String propertyName) {
+        return updateTime.get(propertyName);
+    }
+
+    public void setUpdateTime(String propertyName, Integer value) {
+        this.updateTime.put(propertyName, value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class adapter) {
+        if (security != null) {
+            Object obj = security.getAdapter(adapter);
+            if (obj != null) {
+                return obj;
+            }
+        }
+
+        if (adapter.isAssignableFrom(Holding.class)) {
+            return holding;
+        }
+
+        if (adapter.isAssignableFrom(ITrade.class)) {
+            return trade;
+        }
+        if (adapter.isAssignableFrom(IQuote.class)) {
+            return quote;
+        }
+        if (adapter.isAssignableFrom(ITodayOHL.class)) {
+            return todayOHL;
+        }
+        if (adapter.isAssignableFrom(ILastClose.class)) {
+            return lastClose;
+        }
+        if (adapter.isAssignableFrom(IBook.class)) {
+            return book;
+        }
+        if (adapter.isAssignableFrom(MarketPricingEnvironment.class)) {
+            return pricingEnvironment;
+        }
+
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+
+        if (reference != null) {
+            Object obj = reference.getAdapter(adapter);
+            if (obj != null) {
+                return obj;
+            }
+        }
+
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+
+        return super.getAdapter(adapter);
+    }
+
+    public void setTrade(ITrade trade) {
+        this.trade = trade;
+    }
+
+    public void setQuote(IQuote quote) {
+        this.quote = quote;
+    }
+
+    public void setTodayOHL(ITodayOHL todayOHL) {
+        this.todayOHL = todayOHL;
+    }
+
+    public void setLastClose(ILastClose lastClose) {
+        this.lastClose = lastClose;
+    }
+
+    public IBook getBook() {
+        return book;
+    }
+
+    public void setBook(IBook book) {
+        this.book = book;
+    }
+
+    public MarketPricingEnvironment getPricingEnvironment() {
+        return pricingEnvironment;
+    }
+
+    public void setPricingEnvironment(MarketPricingEnvironment pricingEnvironment) {
+        this.pricingEnvironment = pricingEnvironment;
     }
 }

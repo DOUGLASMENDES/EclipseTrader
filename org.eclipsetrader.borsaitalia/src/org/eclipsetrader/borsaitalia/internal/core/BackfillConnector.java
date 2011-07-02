@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipsetrader.borsaitalia.internal.Activator;
@@ -41,157 +42,169 @@ import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.TimeSpan.Units;
 
 public class BackfillConnector implements IBackfillConnector, IExecutableExtension {
-	private String id;
-	private String name;
 
-	private String host = "grafici.borsaitalia.it"; //$NON-NLS-1$
-	private NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); //$NON-NLS-1$
+    private String id;
+    private String name;
 
-	public BackfillConnector() {
-	}
+    private String host = "grafici.borsaitalia.it"; //$NON-NLS-1$
+    private NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); //$NON-NLS-1$
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-	 */
-	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-		id = config.getAttribute("id");
-		name = config.getAttribute("name");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#getId()
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#getName()
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/* (non-Javadoc)
-     * @see org.eclipsetrader.core.feed.IBackfillConnector#canBackfill(org.eclipsetrader.core.feed.IFeedIdentifier, org.eclipsetrader.core.feed.TimeSpan)
-     */
-    public boolean canBackfill(IFeedIdentifier identifier, TimeSpan timeSpan) {
-		String code = identifier.getSymbol();
-		String isin = null;
-
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			if (properties.getProperty(Activator.PROP_ISIN) != null)
-				isin = properties.getProperty(Activator.PROP_ISIN);
-			if (properties.getProperty(Activator.PROP_CODE) != null)
-				code = properties.getProperty(Activator.PROP_CODE);
-		}
-
-		if (code == null || isin == null)
-			return false;
-
-		if (timeSpan.getUnits() == Units.Days && timeSpan.getLength() != 1)
-			return false;
-		if (timeSpan.getUnits() != Units.Days && timeSpan.getUnits() != Units.Minutes)
-			return false;
-
-		return true;
+    public BackfillConnector() {
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillHistory(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
-	 */
-	public IOHLC[] backfillHistory(IFeedIdentifier identifier, Date from, Date to, TimeSpan timeSpan) {
-		String code = identifier.getSymbol();
-		String isin = null;
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
+     */
+    @Override
+    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+        id = config.getAttribute("id");
+        name = config.getAttribute("name");
+    }
 
-		IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
-		if (properties != null) {
-			if (properties.getProperty(Activator.PROP_ISIN) != null)
-				isin = properties.getProperty(Activator.PROP_ISIN);
-			if (properties.getProperty(Activator.PROP_CODE) != null)
-				code = properties.getProperty(Activator.PROP_CODE);
-		}
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#getId()
+     */
+    @Override
+    public String getId() {
+        return id;
+    }
 
-		if (code == null || isin == null)
-			return null;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-		String period = String.valueOf(timeSpan.getLength()) + (timeSpan.getUnits() == Units.Minutes ? "MIN" : "DAY");
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#canBackfill(org.eclipsetrader.core.feed.IFeedIdentifier, org.eclipsetrader.core.feed.TimeSpan)
+     */
+    @Override
+    public boolean canBackfill(IFeedIdentifier identifier, TimeSpan timeSpan) {
+        String code = identifier.getSymbol();
+        String isin = null;
 
-		List<OHLC> list = new ArrayList<OHLC>();
+        IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+        if (properties != null) {
+            if (properties.getProperty(Activator.PROP_ISIN) != null) {
+                isin = properties.getProperty(Activator.PROP_ISIN);
+            }
+            if (properties.getProperty(Activator.PROP_CODE) != null) {
+                code = properties.getProperty(Activator.PROP_CODE);
+            }
+        }
 
-		try {
-			HttpMethod method = new GetMethod("http://" + host + "/scripts/cligipsw.dll");
-			method.setQueryString(new NameValuePair[] {
-					new NameValuePair("app", "tic_d"),
-					new NameValuePair("action", "dwnld4push"),
-					new NameValuePair("cod", code),
-					new NameValuePair("codneb", isin),
-					new NameValuePair("req_type", "GRAF_DS"),
-					new NameValuePair("ascii", "1"),
-					new NameValuePair("form_id", ""),
-					new NameValuePair("period", period),
-					new NameValuePair("From", new SimpleDateFormat("yyyyMMdd000000").format(from)),
-					new NameValuePair("To", new SimpleDateFormat("yyyyMMdd000000").format(to)),
-				});
-			method.setFollowRedirects(true);
+        if (code == null || isin == null) {
+            return false;
+        }
 
-			HttpClient client = new HttpClient();
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-			client.executeMethod(method);
+        if (timeSpan.getUnits() == Units.Days && timeSpan.getLength() != 1) {
+            return false;
+        }
+        if (timeSpan.getUnits() != Units.Days && timeSpan.getUnits() != Units.Minutes) {
+            return false;
+        }
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+        return true;
+    }
 
-			String inputLine = in.readLine();
-			if (inputLine.startsWith("@")) {
-				while ((inputLine = in.readLine()) != null) {
-					if (inputLine.startsWith("@") || inputLine.length() == 0) //$NON-NLS-1$
-						continue;
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillHistory(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date, org.eclipsetrader.core.feed.TimeSpan)
+     */
+    @Override
+    public IOHLC[] backfillHistory(IFeedIdentifier identifier, Date from, Date to, TimeSpan timeSpan) {
+        String code = identifier.getSymbol();
+        String isin = null;
 
-					try {
-						String[] item = inputLine.split("\\|"); //$NON-NLS-1$
-						OHLC bar = new OHLC(
-								df.parse(item[0]),
-								nf.parse(item[1]).doubleValue(),
-								nf.parse(item[2]).doubleValue(),
-								nf.parse(item[3]).doubleValue(),
-								nf.parse(item[4]).doubleValue(),
-								nf.parse(item[5]).longValue()
-							);
-						list.add(bar);
-					} catch (Exception e) {
-						Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error parsing data: " + inputLine, e); //$NON-NLS-1$
-						Activator.getDefault().getLog().log(status);
-					}
-				}
-			}
-			else {
-				Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, NLS.bind("Unexpected response from {0}: {1}", new Object[] { method.getURI().toString(), inputLine}), null);
-				Activator.getDefault().getLog().log(status);
-			}
+        IFeedProperties properties = (IFeedProperties) identifier.getAdapter(IFeedProperties.class);
+        if (properties != null) {
+            if (properties.getProperty(Activator.PROP_ISIN) != null) {
+                isin = properties.getProperty(Activator.PROP_ISIN);
+            }
+            if (properties.getProperty(Activator.PROP_CODE) != null) {
+                code = properties.getProperty(Activator.PROP_CODE);
+            }
+        }
 
-			in.close();
+        if (code == null || isin == null) {
+            return null;
+        }
 
-		} catch (Exception e) {
-			Status status = new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(status);
-		}
+        String period = String.valueOf(timeSpan.getLength()) + (timeSpan.getUnits() == Units.Minutes ? "MIN" : "DAY");
 
-		return list.toArray(new IOHLC[list.size()]);
-	}
+        List<OHLC> list = new ArrayList<OHLC>();
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillDividends(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
-	 */
-	public IDividend[] backfillDividends(IFeedIdentifier identifier, Date from, Date to) {
-		return null;
-	}
+        try {
+            HttpMethod method = new GetMethod("http://" + host + "/scripts/cligipsw.dll");
+            method.setQueryString(new NameValuePair[] {
+                    new NameValuePair("app", "tic_d"),
+                    new NameValuePair("action", "dwnld4push"),
+                    new NameValuePair("cod", code),
+                    new NameValuePair("codneb", isin),
+                    new NameValuePair("req_type", "GRAF_DS"),
+                    new NameValuePair("ascii", "1"),
+                    new NameValuePair("form_id", ""),
+                    new NameValuePair("period", period),
+                    new NameValuePair("From", new SimpleDateFormat("yyyyMMdd000000").format(from)),
+                    new NameValuePair("To", new SimpleDateFormat("yyyyMMdd000000").format(to)),
+            });
+            method.setFollowRedirects(true);
 
-	/* (non-Javadoc)
-	 * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillSplits(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
-	 */
-	public ISplit[] backfillSplits(IFeedIdentifier identifier, Date from, Date to) {
-		return null;
-	}
+            HttpClient client = new HttpClient();
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            client.executeMethod(method);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+
+            String inputLine = in.readLine();
+            if (inputLine.startsWith("@")) {
+                while ((inputLine = in.readLine()) != null) {
+                    if (inputLine.startsWith("@") || inputLine.length() == 0) {
+                        continue;
+                    }
+
+                    try {
+                        String[] item = inputLine.split("\\|"); //$NON-NLS-1$
+                        OHLC bar = new OHLC(df.parse(item[0]), nf.parse(item[1]).doubleValue(), nf.parse(item[2]).doubleValue(), nf.parse(item[3]).doubleValue(), nf.parse(item[4]).doubleValue(), nf.parse(item[5]).longValue());
+                        list.add(bar);
+                    } catch (Exception e) {
+                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing data: " + inputLine, e); //$NON-NLS-1$
+                        Activator.getDefault().getLog().log(status);
+                    }
+                }
+            }
+            else {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, NLS.bind("Unexpected response from {0}: {1}", new Object[] {
+                        method.getURI().toString(), inputLine
+                }), null);
+                Activator.getDefault().getLog().log(status);
+            }
+
+            in.close();
+
+        } catch (Exception e) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e); //$NON-NLS-1$
+            Activator.getDefault().getLog().log(status);
+        }
+
+        return list.toArray(new IOHLC[list.size()]);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillDividends(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
+     */
+    @Override
+    public IDividend[] backfillDividends(IFeedIdentifier identifier, Date from, Date to) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IBackfillConnector#backfillSplits(org.eclipsetrader.core.feed.IFeedIdentifier, java.util.Date, java.util.Date)
+     */
+    @Override
+    public ISplit[] backfillSplits(IFeedIdentifier identifier, Date from, Date to) {
+        return null;
+    }
 }

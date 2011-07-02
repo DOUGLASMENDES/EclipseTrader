@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,39 +14,42 @@ package org.eclipsetrader.ui.charts;
 import org.eclipse.core.runtime.IAdaptable;
 
 public class AdaptableWrapper implements IAdaptable {
-	private Object obj;
 
-	public AdaptableWrapper(Object obj) {
-	    this.obj = obj;
+    private Object obj;
+
+    public AdaptableWrapper(Object obj) {
+        this.obj = obj;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
-		if (obj != null && adapter.isAssignableFrom(obj.getClass()))
-			return obj;
-		return null;
-	}
+        if (obj != null && adapter.isAssignableFrom(obj.getClass())) {
+            return obj;
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
     public int hashCode() {
-	    return obj.hashCode();
+        return obj.hashCode();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-    	if (obj instanceof IAdaptable) {
-    		Object other = ((IAdaptable) obj).getAdapter(this.obj.getClass());
-    		return this.obj.equals(other);
-    	}
-	    return this.obj.equals(obj);
+        if (obj instanceof IAdaptable) {
+            Object other = ((IAdaptable) obj).getAdapter(this.obj.getClass());
+            return this.obj.equals(other);
+        }
+        return this.obj.equals(obj);
     }
 }

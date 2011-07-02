@@ -21,9 +21,9 @@ import org.eclipse.ui.actions.RetargetAction;
  */
 public class OpenAction extends RetargetAction {
 
-	public OpenAction(IWorkbenchWindow window) {
-		super("open", "&Open");
-		window.getPartService().addPartListener(this);
-		setActionDefinitionId("org.eclipse.ui.file.open"); //$NON-NLS-1$
-	}
+    public OpenAction(IWorkbenchWindow window) {
+        super("open", "&Open");
+        window.getPartService().addPartListener(this);
+        setActionDefinitionId("org.eclipse.ui.file.open"); //$NON-NLS-1$
+    }
 }

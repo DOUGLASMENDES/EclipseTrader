@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,102 +24,106 @@ import org.eclipsetrader.internal.brokers.paper.schemes.NoExpensesScheme;
 import org.eclipsetrader.internal.brokers.paper.schemes.SimpleFixedScheme;
 
 public class AccountPropertyPageTest extends TestCase {
-	Shell shell;
-	Account account;
-	IAdaptable element;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		shell = new Shell(Display.getDefault());
+    Shell shell;
+    Account account;
+    IAdaptable element;
 
-		account = new Account();
-		account.setDescription("Test");
-		account.setCurrency(Currency.getInstance("USD"));
-		account.setBalance(1500.0);
-		account.setExpenseScheme(new SimpleFixedScheme());
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        shell = new Shell(Display.getDefault());
 
-		element = new IAdaptable() {
-			@SuppressWarnings("unchecked")
-			public Object getAdapter(Class adapter) {
-				if (adapter.isAssignableFrom(account.getClass()))
-					return account;
-				return null;
-			}
-		};
-	}
+        account = new Account();
+        account.setDescription("Test");
+        account.setCurrency(Currency.getInstance("USD"));
+        account.setBalance(1500.0);
+        account.setExpenseScheme(new SimpleFixedScheme());
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		shell.dispose();
-	}
+        element = new IAdaptable() {
 
-	public void testFillAccountSettings() throws Exception {
-		AccountPropertyPage dialog = new AccountPropertyPage();
-		dialog.setElement(element);
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object getAdapter(Class adapter) {
+                if (adapter.isAssignableFrom(account.getClass())) {
+                    return account;
+                }
+                return null;
+            }
+        };
+    }
 
-		dialog.createContents(shell);
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        shell.dispose();
+    }
 
-		assertEquals("Test", dialog.name.getText());
-		assertEquals(Currency.getInstance("USD"), ((IStructuredSelection) dialog.currency.getSelection()).getFirstElement());
-		assertTrue(((IStructuredSelection) dialog.expenses.getSelection()).getFirstElement() instanceof SimpleFixedScheme);
-		assertEquals(150000, dialog.balance.getSelection());
-	}
+    public void testFillAccountSettings() throws Exception {
+        AccountPropertyPage dialog = new AccountPropertyPage();
+        dialog.setElement(element);
 
-	public void testUpdateBalance() throws Exception {
-		AccountPropertyPage dialog = new AccountPropertyPage();
-		dialog.setElement(element);
-		dialog.createContents(shell);
+        dialog.createContents(shell);
 
-		dialog.balance.setSelection(350000);
-		dialog.performOk();
+        assertEquals("Test", dialog.name.getText());
+        assertEquals(Currency.getInstance("USD"), ((IStructuredSelection) dialog.currency.getSelection()).getFirstElement());
+        assertTrue(((IStructuredSelection) dialog.expenses.getSelection()).getFirstElement() instanceof SimpleFixedScheme);
+        assertEquals(150000, dialog.balance.getSelection());
+    }
 
-		assertEquals(3500.0, account.getBalance());
-	}
+    public void testUpdateBalance() throws Exception {
+        AccountPropertyPage dialog = new AccountPropertyPage();
+        dialog.setElement(element);
+        dialog.createContents(shell);
 
-	public void testUpdateDescription() throws Exception {
-		AccountPropertyPage dialog = new AccountPropertyPage();
-		dialog.setElement(element);
-		dialog.createContents(shell);
+        dialog.balance.setSelection(350000);
+        dialog.performOk();
 
-		dialog.name.setText("New Description");
-		dialog.performOk();
+        assertEquals(3500.0, account.getBalance());
+    }
 
-		assertEquals("New Description", account.getDescription());
-	}
+    public void testUpdateDescription() throws Exception {
+        AccountPropertyPage dialog = new AccountPropertyPage();
+        dialog.setElement(element);
+        dialog.createContents(shell);
 
-	public void testUpdateExpensesScheme() throws Exception {
-		AccountPropertyPage dialog = new AccountPropertyPage();
-		dialog.setElement(element);
-		dialog.createContents(shell);
+        dialog.name.setText("New Description");
+        dialog.performOk();
 
-		dialog.expenses.setSelection(new StructuredSelection(new NoExpensesScheme()));
-		dialog.performOk();
+        assertEquals("New Description", account.getDescription());
+    }
 
-		assertTrue(account.getExpenseScheme() instanceof NoExpensesScheme);
-	}
+    public void testUpdateExpensesScheme() throws Exception {
+        AccountPropertyPage dialog = new AccountPropertyPage();
+        dialog.setElement(element);
+        dialog.createContents(shell);
 
-	public void testIsValid() throws Exception {
-		AccountPropertyPage dialog = new AccountPropertyPage();
-		dialog.setElement(element);
+        dialog.expenses.setSelection(new StructuredSelection(new NoExpensesScheme()));
+        dialog.performOk();
 
-		dialog.createContents(shell);
+        assertTrue(account.getExpenseScheme() instanceof NoExpensesScheme);
+    }
 
-		assertTrue(dialog.isValid());
-	}
+    public void testIsValid() throws Exception {
+        AccountPropertyPage dialog = new AccountPropertyPage();
+        dialog.setElement(element);
 
-	public void testInvalidDescription() throws Exception {
-		AccountPropertyPage dialog = new AccountPropertyPage();
-		dialog.setElement(element);
+        dialog.createContents(shell);
 
-		dialog.createContents(shell);
-		dialog.name.setText("");
+        assertTrue(dialog.isValid());
+    }
 
-		assertFalse(dialog.isValid());
-	}
+    public void testInvalidDescription() throws Exception {
+        AccountPropertyPage dialog = new AccountPropertyPage();
+        dialog.setElement(element);
+
+        dialog.createContents(shell);
+        dialog.name.setText("");
+
+        assertFalse(dialog.isValid());
+    }
 }

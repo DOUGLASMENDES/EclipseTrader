@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,61 +26,69 @@ import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
 
 public class MarketGroup implements INavigatorContentGroup, IExecutableExtension {
-	private String id;
-	private String name;
 
-	public MarketGroup() {
-	}
+    private String id;
+    private String name;
 
-	/* (non-Javadoc)
+    public MarketGroup() {
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
      */
+    @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-    	id = config.getAttribute("id");
-    	name = config.getAttribute("name");
+        id = config.getAttribute("id");
+        name = config.getAttribute("name");
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.securities.IContentGroup#getId()
      */
+    @Override
     public String getId() {
-	    return id;
+        return id;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.securities.IContentGroup#getName()
      */
+    @Override
     public String getName() {
-	    return name;
+        return name;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipsetrader.ui.internal.securities.IContentGroup#getGroupedContent(org.eclipse.core.runtime.IAdaptable[])
      */
+    @Override
     public IViewItem[] getGroupedContent(IAdaptable[] elements) {
-    	Set<IViewItem> result = new HashSet<IViewItem>();
+        Set<IViewItem> result = new HashSet<IViewItem>();
 
-    	Set<ISecurity> set = new HashSet<ISecurity>();
-    	for (IAdaptable e : elements) {
-    		ISecurity security = (ISecurity) e.getAdapter(ISecurity.class);
-    		if (security != null)
-    			set.add(security);
-    	}
+        Set<ISecurity> set = new HashSet<ISecurity>();
+        for (IAdaptable e : elements) {
+            ISecurity security = (ISecurity) e.getAdapter(ISecurity.class);
+            if (security != null) {
+                set.add(security);
+            }
+        }
 
-    	for (IMarket market : getMarketService().getMarkets()) {
-			NavigatorViewItem viewItem = new NavigatorViewItem(null, market);
-    		for (ISecurity s : market.getMembers()) {
-    			if (set.contains(s))
-    				viewItem.createChild(s);
-    		}
-    		if (viewItem.getItemCount() != 0)
-    			result.add(viewItem);
-    	}
+        for (IMarket market : getMarketService().getMarkets()) {
+            NavigatorViewItem viewItem = new NavigatorViewItem(null, market);
+            for (ISecurity s : market.getMembers()) {
+                if (set.contains(s)) {
+                    viewItem.createChild(s);
+                }
+            }
+            if (viewItem.getItemCount() != 0) {
+                result.add(viewItem);
+            }
+        }
 
-    	return result.toArray(new IViewItem[result.size()]);
+        return result.toArray(new IViewItem[result.size()]);
     }
 
     protected IMarketService getMarketService() {
-    	return UIActivator.getDefault().getMarketService();
+        return UIActivator.getDefault().getMarketService();
     }
 }

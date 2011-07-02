@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2009 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,13 @@
 package org.eclipsetrader.core.trading;
 
 public class PositionEvent {
-	public IAccount account;
 
-	public IPosition position;
+    public IAccount account;
 
-	public PositionEvent(IAccount account, IPosition position) {
-		this.account = account;
-		this.position = position;
-	}
+    public IPosition position;
+
+    public PositionEvent(IAccount account, IPosition position) {
+        this.account = account;
+        this.position = position;
+    }
 }

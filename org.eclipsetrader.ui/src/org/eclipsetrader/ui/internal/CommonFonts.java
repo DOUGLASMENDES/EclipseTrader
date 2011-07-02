@@ -20,72 +20,75 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 
 public class CommonFonts {
-	public static Font BOLD;
-	public static Font ITALIC;
-	public static Font BOLD_ITALIC;
-	public static Font STRIKETHROUGH = null;
-	public static boolean HAS_STRIKETHROUGH;
 
-	static {
-		if (Display.getCurrent() != null) {
-			init();
-		}
-		else {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					init();
-				}
-			});
-		}
-	}
+    public static Font BOLD;
+    public static Font ITALIC;
+    public static Font BOLD_ITALIC;
+    public static Font STRIKETHROUGH = null;
+    public static boolean HAS_STRIKETHROUGH;
 
-	private static void init() {
-		BOLD = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
-		ITALIC = JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT);
-		BOLD_ITALIC = new Font(Display.getCurrent(), getModifiedFontData(ITALIC.getFontData(), SWT.BOLD | SWT.ITALIC));
+    static {
+        if (Display.getCurrent() != null) {
+            init();
+        }
+        else {
+            Display.getDefault().asyncExec(new Runnable() {
 
-		Font defaultFont = JFaceResources.getFontRegistry().get(JFaceResources.DEFAULT_FONT);
-		FontData[] defaultData = defaultFont.getFontData();
-		if (defaultData != null && defaultData.length == 1) {
-			FontData data = new FontData(defaultData[0].getName(), defaultData[0].getHeight(), defaultData[0].getStyle());
+                @Override
+                public void run() {
+                    init();
+                }
+            });
+        }
+    }
 
-			if ("win32".equals(SWT.getPlatform())) { //$NON-NLS-1$
-				// NOTE: Windows only, for: data.data.lfStrikeOut = 1;
-				try {
-					Field dataField = data.getClass().getDeclaredField("data"); //$NON-NLS-1$
-					Object dataObject = dataField.get(data);
-					Class<?> clazz = dataObject.getClass().getSuperclass();
-					Field strikeOutFiled = clazz.getDeclaredField("lfStrikeOut"); //$NON-NLS-1$
-					strikeOutFiled.set(dataObject, (byte) 1);
-					CommonFonts.STRIKETHROUGH = new Font(Display.getCurrent(), data);
-				} catch (Throwable t) {
-					// ignore
-				}
-			}
-		}
-		if (CommonFonts.STRIKETHROUGH == null) {
-			CommonFonts.HAS_STRIKETHROUGH = false;
-			CommonFonts.STRIKETHROUGH = defaultFont;
-		}
-		else {
-			CommonFonts.HAS_STRIKETHROUGH = true;
-		}
-	}
+    private static void init() {
+        BOLD = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
+        ITALIC = JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT);
+        BOLD_ITALIC = new Font(Display.getCurrent(), getModifiedFontData(ITALIC.getFontData(), SWT.BOLD | SWT.ITALIC));
 
-	public static void dispose() {
-		if (CommonFonts.STRIKETHROUGH != null && !CommonFonts.STRIKETHROUGH.isDisposed()) {
-			CommonFonts.STRIKETHROUGH.dispose();
-			CommonFonts.BOLD_ITALIC.dispose();
-		}
-	}
+        Font defaultFont = JFaceResources.getFontRegistry().get(JFaceResources.DEFAULT_FONT);
+        FontData[] defaultData = defaultFont.getFontData();
+        if (defaultData != null && defaultData.length == 1) {
+            FontData data = new FontData(defaultData[0].getName(), defaultData[0].getHeight(), defaultData[0].getStyle());
 
-	private static FontData[] getModifiedFontData(FontData[] baseData, int style) {
-		FontData[] styleData = new FontData[baseData.length];
-		for (int i = 0; i < styleData.length; i++) {
-			FontData base = baseData[i];
-			styleData[i] = new FontData(base.getName(), base.getHeight(), base.getStyle() | style);
-		}
+            if ("win32".equals(SWT.getPlatform())) { //$NON-NLS-1$
+                // NOTE: Windows only, for: data.data.lfStrikeOut = 1;
+                try {
+                    Field dataField = data.getClass().getDeclaredField("data"); //$NON-NLS-1$
+                    Object dataObject = dataField.get(data);
+                    Class<?> clazz = dataObject.getClass().getSuperclass();
+                    Field strikeOutFiled = clazz.getDeclaredField("lfStrikeOut"); //$NON-NLS-1$
+                    strikeOutFiled.set(dataObject, (byte) 1);
+                    CommonFonts.STRIKETHROUGH = new Font(Display.getCurrent(), data);
+                } catch (Throwable t) {
+                    // ignore
+                }
+            }
+        }
+        if (CommonFonts.STRIKETHROUGH == null) {
+            CommonFonts.HAS_STRIKETHROUGH = false;
+            CommonFonts.STRIKETHROUGH = defaultFont;
+        }
+        else {
+            CommonFonts.HAS_STRIKETHROUGH = true;
+        }
+    }
 
-		return styleData;
-	}
+    public static void dispose() {
+        if (CommonFonts.STRIKETHROUGH != null && !CommonFonts.STRIKETHROUGH.isDisposed()) {
+            CommonFonts.STRIKETHROUGH.dispose();
+            CommonFonts.BOLD_ITALIC.dispose();
+        }
+    }
+
+    private static FontData[] getModifiedFontData(FontData[] baseData, int style) {
+        FontData[] styleData = new FontData[baseData.length];
+        for (int i = 0; i < styleData.length; i++) {
+            FontData base = baseData[i];
+            styleData[i] = new FontData(base.getName(), base.getHeight(), base.getStyle() | style);
+        }
+
+        return styleData;
+    }
 }

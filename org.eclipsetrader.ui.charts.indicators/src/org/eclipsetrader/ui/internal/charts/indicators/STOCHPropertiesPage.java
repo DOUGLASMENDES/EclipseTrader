@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,26 +24,27 @@ import org.eclipsetrader.ui.internal.charts.MATypeInput;
 import org.eclipsetrader.ui.internal.charts.RenderStyleInput;
 
 public class STOCHPropertiesPage extends PropertyPage {
-	private Spinner kFastPeriod;
-	private Spinner kSlowPeriod;
-	private Spinner dPeriod;
-	private MATypeInput kMaType;
-	private MATypeInput dMaType;
-	private RenderStyleInput kLineStyle;
-	private RenderStyleInput dLineStyle;
 
-	public STOCHPropertiesPage() {
+    private Spinner kFastPeriod;
+    private Spinner kSlowPeriod;
+    private Spinner dPeriod;
+    private MATypeInput kMaType;
+    private MATypeInput dMaType;
+    private RenderStyleInput kLineStyle;
+    private RenderStyleInput dLineStyle;
+
+    public STOCHPropertiesPage() {
         noDefaultAndApplyButton();
-	}
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
     protected Control createContents(Composite parent) {
-	    Composite content = new Composite(parent, SWT.NONE);
-	    GridLayout gridLayout = new GridLayout(2, false);
-	    gridLayout.marginWidth = gridLayout.marginHeight = 0;
+        Composite content = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = gridLayout.marginHeight = 0;
         content.setLayout(gridLayout);
         content.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
         setTitle("Stochastic");
@@ -86,15 +87,15 @@ public class STOCHPropertiesPage extends PropertyPage {
 
         performDefaults();
 
-	    return content;
+        return content;
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
     protected void performDefaults() {
-    	STOCH object = (STOCH) getElement().getAdapter(STOCH.class);
+        STOCH object = (STOCH) getElement().getAdapter(STOCH.class);
         kFastPeriod.setSelection(object.getKFastPeriod());
         kSlowPeriod.setSelection(object.getKSlowPeriod());
         kMaType.setSelection(object.getKMaType());
@@ -104,24 +105,24 @@ public class STOCHPropertiesPage extends PropertyPage {
         kLineStyle.setSelection(object.getKLineStyle());
         dLineStyle.setSelection(object.getDLineStyle());
 
-	    super.performDefaults();
+        super.performDefaults();
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-    	STOCH object = (STOCH) getElement().getAdapter(STOCH.class);
-    	object.setKFastPeriod(kFastPeriod.getSelection());
-    	object.setKSlowPeriod(kSlowPeriod.getSelection());
-    	object.setKMaType(kMaType.getSelection());
-    	object.setDPeriod(dPeriod.getSelection());
-    	object.setDMaType(dMaType.getSelection());
+        STOCH object = (STOCH) getElement().getAdapter(STOCH.class);
+        object.setKFastPeriod(kFastPeriod.getSelection());
+        object.setKSlowPeriod(kSlowPeriod.getSelection());
+        object.setKMaType(kMaType.getSelection());
+        object.setDPeriod(dPeriod.getSelection());
+        object.setDMaType(dMaType.getSelection());
 
-    	object.setKLineStyle(kLineStyle.getSelection());
-    	object.setDLineStyle(dLineStyle.getSelection());
+        object.setKLineStyle(kLineStyle.getSelection());
+        object.setDLineStyle(dLineStyle.getSelection());
 
-	    return super.performOk();
+        return super.performOk();
     }
 }
